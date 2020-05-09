@@ -1,0 +1,71 @@
+.profile-sidebar {
+  background: #fff;
+  border: 1px solid #bdc3c7;
+  border-radius: 3px;
+
+  @media (max-width: 991px) {
+    border-bottom: none;
+    border-radius: 3px 3px 0 0;
+  }
+}
+
+.profile-userpic {
+  float: none;
+  width: 50%;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #95a5a6;
+  border-radius: 50% !important;
+
+  img {
+    width: 100%;
+    display: block;
+  }
+
+  a {
+    top: 0;
+    right: 0;
+    opacity: 0;
+    width: 100%;
+    color: #fff;
+    height: 100%;
+    font-size: 40px;
+    position: absolute;
+    transition: opacity .3s;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  &:hover a {
+    opacity: 1;
+  }
+
+  table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+  }
+}
+
+.profile-usertitle-name {
+  color: #5a7391;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+
+.profile-usertitle-job {
+  text-transform: uppercase;
+  color: #5b9bd1;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.page-content {
+  > .card {
+    > .card-body {
+      min-height: 600px;
+    }
+  }
+}
