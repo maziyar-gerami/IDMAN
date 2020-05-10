@@ -16,29 +16,29 @@ public class UsersController {
     @Autowired
     private PersonRepo personRepo;
 
-    @PostMapping("/add-user")
+    @PostMapping("/users/add-user")
     public ResponseEntity<String> bindLdapPerson(@RequestBody Person person) {
         String result = personRepo.create(person);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    @PutMapping("/update-user")
+    @PutMapping("/users/update-user")
 
     public ResponseEntity<String> rebindLdapPerson(@RequestBody Person person) {
         String result = personRepo.update(person);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/retrieve-users")
+    @GetMapping("/users/retrieve-users")
     public ResponseEntity<List<Person>> retrieve() {
         return new ResponseEntity<List<Person>>(personRepo.retrieve(), HttpStatus.OK);
     }
 
-    @GetMapping("/retrieve-user")
+    @GetMapping("/users/retrieve-user")
     public ResponseEntity <Person> retrievePerson(@RequestParam(name = "userId") String userId) {
         return new ResponseEntity<Person> (personRepo.retrievePerson(userId), HttpStatus.OK);
     }
 
-    @GetMapping("/remove-user")
+    @GetMapping("/users/remove-user")
     public ResponseEntity<String> unbindLdapPerson(@RequestParam(name = "userId") String userId) {
         return new ResponseEntity<>(personRepo.remove(userId), HttpStatus.OK);
     }

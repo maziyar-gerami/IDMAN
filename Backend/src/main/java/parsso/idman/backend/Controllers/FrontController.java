@@ -17,32 +17,30 @@ public class FrontController {
     @Autowired
     private OusRepo ousRepo;
 
-    @PostMapping("/add-ou")
+    @PostMapping("/ous/add-ou")
     public ResponseEntity<String> bindLdapPerson(@RequestBody OrganizationalUnit ou) {
         String result = ousRepo.create(ou);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    @PutMapping("/update-ou")
+    @PutMapping("/ous/update-ou")
 
     public ResponseEntity<String> rebindLdapPerson(@RequestBody OrganizationalUnit ou) {
         String result = ousRepo.update(ou);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/retrieve-ous")
+    @GetMapping("/ous/retrieve-ous")
     public ResponseEntity<List<OrganizationalUnit>> retrieve() {
         return new ResponseEntity<List<OrganizationalUnit>>(ousRepo.retrieve(), HttpStatus.OK);
     }
 
-    @GetMapping("/retrieve-ou")
+    @GetMapping("/ous/retrieve-ou")
     public ResponseEntity <OrganizationalUnit> retrieveOU(@RequestParam(name = "name") String name) {
         return new ResponseEntity<OrganizationalUnit> (ousRepo.retrieveOu(name), HttpStatus.OK);
     }
 
-    @GetMapping("/remove-ou")
+    @GetMapping("/ous/remove-ou")
     public ResponseEntity<String> unbindLdapOU(@RequestParam(name = "name") String name) {
         return new ResponseEntity<>(ousRepo.remove(name), HttpStatus.OK);
     }
-
-
 }
