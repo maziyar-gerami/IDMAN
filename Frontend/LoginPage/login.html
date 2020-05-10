@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fa" dir='rtl'>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>پارسو</title>
+
+    <link href="../css/Bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="../fonts/IranSans/font.css" rel="stylesheet">
+    <link href="../css/LoginPage/style.css" rel="stylesheet">
+
+    <script src="../js/vue.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      new Vue({
+        el: '#app',
+        data: {
+          placeholder: "text-align: right;",
+          lang: "EN",
+          s1: "نام کاربری و رمز عبور خود را وارد کنید",
+          s2: "نام کاربری",
+          s3: "رمز عبور",
+          s4: "ورود"
+        },
+        methods: {
+          changeLang: function () {
+            if(this.lang == "EN"){
+                this.placeholder = "text-align: left;"
+                this.lang  = "فارسی";
+                this.s1 = "Enter Your Username and Password";
+                this.s2 = "Username";
+                this.s3 = "Password";
+                this.s4 = "Sign in";
+            } else{
+              this.placeholder = "text-align: right;"
+                this.lang  = "EN";
+                this.s1 = "نام کاربری و رمز عبور خود را وارد کنید";
+                this.s2 = "نام کاربری";
+                this.s3 = "رمز عبور";
+                this.s4 = "ورود";
+            }
+          }
+        }
+      })
+    })
+  </script>
+  </head>
+  <body class="text-center">
+    <div id="app" class="wrapper">
+        <form class="form-signin" action="/" method="POST">
+            <img class="mb-4" src="../images/1.png" alt="" width="120" height="120">
+            <h1 class="mb-3 font-weight-normal">{{s1}}</h1>
+            <input type="text" id="inputUsername" class="form-control" v-bind:placeholder="s2" v-bind:style="placeholder"  required autofocus> </br>
+            <input type="password" id="inputPassword" class="form-control" v-bind:placeholder="s3" v-bind:style="placeholder" required> </br>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">{{s4}}</button>    
+        </form>
+        <button class="mt-5 mb-3 text-muted" v-on:click="changeLang"><b>{{lang}}</b></button>
+    </div>
+  </body>
+</html>
