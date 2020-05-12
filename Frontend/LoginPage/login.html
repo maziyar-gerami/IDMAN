@@ -1,60 +1,57 @@
 <!DOCTYPE html>
-<html lang="fa" dir='rtl'>
-  <head>
+<html lang="fa" class="h-100">
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>پارسو</title>
-
+    
     <link href="../css/Bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="../fonts/IranSans/font.css" rel="stylesheet">
     <link href="../css/LoginPage/style.css" rel="stylesheet">
 
     <script src="../js/vue.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      new Vue({
-        el: '#app',
-        data: {
-          placeholder: "text-align: right;",
-          lang: "EN",
-          s1: "نام کاربری و رمز عبور خود را وارد کنید",
-          s2: "نام کاربری",
-          s3: "رمز عبور",
-          s4: "ورود"
-        },
-        methods: {
-          changeLang: function () {
-            if(this.lang == "EN"){
-                this.placeholder = "text-align: left;"
-                this.lang  = "فارسی";
-                this.s1 = "Enter Your Username and Password";
-                this.s2 = "Username";
-                this.s3 = "Password";
-                this.s4 = "Sign in";
-            } else{
-              this.placeholder = "text-align: right;"
-                this.lang  = "EN";
-                this.s1 = "نام کاربری و رمز عبور خود را وارد کنید";
-                this.s2 = "نام کاربری";
-                this.s3 = "رمز عبور";
-                this.s4 = "ورود";
-            }
-          }
-        }
-      })
-    })
-  </script>
-  </head>
-  <body class="text-center">
+    <script src="../js/LoginPage/script.js"></script>
+</head>
+<body class="h-100">
     <div id="app" class="wrapper">
-        <form class="form-signin" action="/" method="POST">
-            <img class="mb-4" src="../images/1.png" alt="" width="120" height="120">
-            <h1 class="mb-3 font-weight-normal">{{s1}}</h1>
-            <input type="text" id="inputUsername" class="form-control" v-bind:placeholder="s2" v-bind:style="placeholder"  required autofocus> </br>
-            <input type="password" id="inputPassword" class="form-control" v-bind:placeholder="s3" v-bind:style="placeholder" required> </br>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">{{s4}}</button>    
-        </form>
-        <button class="mt-5 mb-3 text-muted" v-on:click="changeLang"><b>{{lang}}</b></button>
+            <div class="h-100 d-md-flex align-items-center">
+                <div class="container my-3">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8" style="flex: 0 0 100%; max-width: 100%;">
+                            <div class="login-form p-4 rounded text-center">
+                                <h2><span>{{s0}}</span></h2>
+                                <div class="row align-items-center justify-content-center">
+                                    <div class="col-md-6">
+                                        <div class="card h-100" style="border: 0px; background-color: rgba(0,0,0,0)">
+                                            <div class="card-body p-1 d-flex align-items-center justify-content-center">
+                                                <img style="padding-bottom: 30px;" src="../images/1.png" width="80%" height="80%" class="img-responsive center-block">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form action="/" method="POST">
+                                        <h6 class="text-muted mb-3">{{s1}}</h6>
+                                        <div class="form-group ">
+                                            <input type="text" name="username" id="username" class="form-control" v-model="username" v-bind:placeholder="s2" v-bind:style="placeholder" required>
+                                        </div>
+                                        <div class="form-group ">
+                                            <input type="password" name="password" id="password" class="form-control" v-model="password" v-bind:placeholder="s3" v-bind:style="placeholder" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit"class="btn btn-primary btn-block">{{s4}}</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                    <button v-on:click="changeLang"><b>{{lang}}</b></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
     </div>
-  </body>
+</body>
 </html>
