@@ -13,34 +13,39 @@ import java.util.List;
 @RestController
 public class FrontController {
 
-
     @Autowired
     private OusRepo ousRepo;
 
-    @PostMapping("/ous/add-ou")
+    @PostMapping("/api/groups")
     public ResponseEntity<String> bindLdapPerson(@RequestBody OrganizationalUnit ou) {
         String result = ousRepo.create(ou);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    @PutMapping("/ous/update-ou")
 
-    public ResponseEntity<String> rebindLdapPerson(@RequestBody OrganizationalUnit ou) {
-        String result = ousRepo.update(ou);
+    @PutMapping("/api/groups/{name}")
+    public ResponseEntity<String> rebindLdapPerson(@RequestBody OrganizationalUnit ou, @PathVariable("name") String name) {
+        String result = ousRepo.update(name, ou);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/ous/retrieve-ous")
+    @GetMapping("/api/groups")
     public ResponseEntity<List<OrganizationalUnit>> retrieve() {
         return new ResponseEntity<List<OrganizationalUnit>>(ousRepo.retrieve(), HttpStatus.OK);
     }
 
-    @GetMapping("/ous/retrieve-ou")
-    public ResponseEntity <OrganizationalUnit> retrieveOU(@RequestParam(name = "name") String name) {
+    @GetMapping("/api/groups/{name}")
+    public ResponseEntity <OrganizationalUnit> retrieveOU(@PathVariable("id") String name) {
         return new ResponseEntity<OrganizationalUnit> (ousRepo.retrieveOu(name), HttpStatus.OK);
     }
 
-    @GetMapping("/ous/remove-ou")
-    public ResponseEntity<String> unbindLdapOU(@RequestParam(name = "name") String name) {
+    @DeleteMapping("/api/groups/{name}")
+    public ResponseEntity<String> unbindLdapOU(@PathVariable("name") String name) {
         return new ResponseEntity<>(ousRepo.remove(name), HttpStatus.OK);
     }
+
+    @DeleteMapping("/api/groups")
+    public ResponseEntity<String> unbindAllLdapOU() {
+        return new ResponseEntity<>(ousRepo.remove(), HttpStatus.OK);
+    }
+
 }

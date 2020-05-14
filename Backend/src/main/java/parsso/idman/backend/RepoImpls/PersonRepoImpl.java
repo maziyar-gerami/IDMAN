@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import parsso.idman.backend.Models.Person;
 import parsso.idman.backend.Repos.PersonRepo;
-
 
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -23,32 +25,54 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 public class PersonRepoImpl implements PersonRepo {
 
     public static final String BASE_DN = "";
+    String currentUserId;
 
     @Autowired
     private LdapTemplate ldapTemplate;
 
+    PersonRepoImpl(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            this.currentUserId = "admin";
+            //(null != authentication.getPrincipal() ? authentication.getName() : "admin");
+        }
+    }
+
     @Override
-    public String create(Person p) {
+    public String create(int ou, Person p) {
         Name dn = buildDn(p.getUserId());
-        ldapTemplate.bind(dn, null, buildAttributes(p));
+        ldapTemplate.bind(dn, null, buildAttributes(ou, p));
         return p.getUserId() + " created successfully";
     }
 
     @Override
-    public String update(Person p) {
+    public String update(String ou , Person p) {
         Name dn = buildDn(p.getUserId());
-        ldapTemplate.rebind(dn, null, buildAttributes(p));
+        ldapTemplate.rebind(dn, null, buildAttributes(p.getMemberOf(), p));
         return p.getUserId() + " updated successfully";
     }
 
+
     @Override
-    public String remove(String userId) {
-        Name dn = buildDn(userId);
+    public String remove(int userId) {
+        Name dn = buildDn(String.valueOf(userId));
         ldapTemplate.unbind(dn);
         return userId + " removed successfully";
     }
 
-    private Attributes buildAttributes(Person p) {
+    @Override
+    public String remove() {
+        int ou = retrieveOU(currentUserId);
+        List<Person> people = retrieveSubUsers(currentUserId);
+        for (Person person:people ) {
+            Name dn = buildDn(person.getUserId());
+            ldapTemplate.unbind(dn);
+        }
+
+        return "All users removed successfully";
+    }
+
+    private Attributes buildAttributes(int ou, Person p) {
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
         ocattr.add("top");
@@ -65,7 +89,8 @@ public class PersonRepoImpl implements PersonRepo {
         attrs.put("telephoneNumber", p.getTelephoneNumber());
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getNid());
-        //attrs.put("memberOf",p.getMemberOf());
+        //System.out.println(buildGroupDn("337").toString());
+        attrs.put("ou",String.valueOf(ou));
         attrs.put("userPassword", "{SSHA}" + "secret");
         attrs.put("description", p.getDescription());
         return attrs;
@@ -74,9 +99,14 @@ public class PersonRepoImpl implements PersonRepo {
     public Name buildDn(String userId) {
         return LdapNameBuilder.newInstance(BASE_DN).add("ou", "people").add("uid", userId).build();
     }
+
+    public Name buildGroupDn(String groupID) {
+        return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups" ).add("ou",groupID).build();
+    }
     public Name buildBaseDn() {
         return LdapNameBuilder.newInstance(BASE_DN).add("ou", "people").build();
     }
+
     @Override
     public List<Person> retrieve() {
         SearchControls searchControls = new SearchControls();
@@ -94,6 +124,25 @@ public class PersonRepoImpl implements PersonRepo {
         return person;
     }
 
+    @Override
+    public int retrieveOU(String userId) {
+        SearchControls searchControls = new SearchControls();
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        Person person = ldapTemplate.search(query().where("uid").is(userId), new PersonAttributeMapper()).get(0);
+        return person.getMemberOf();
+
+    }
+
+    @Override
+    public List<Person> retrieveSubUsers(String uId) {
+        SearchControls searchControls = new SearchControls();
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        int ou = retrieveOU(uId);
+        List<Person> people = ldapTemplate.search(query().where("ou").is(String.valueOf(ou)),
+                new PersonAttributeMapper());
+        return people;
+    }
+
     private class PersonAttributeMapper implements AttributesMapper<Person> {
 
         @Override
@@ -106,7 +155,7 @@ public class PersonRepoImpl implements PersonRepo {
             person.setTelephoneNumber(null != attributes.get("telephoneNumber") ? attributes.get("telephoneNumber").get().toString() : null);
             person.setMail(null != attributes.get("mail") ? attributes.get("mail").get().toString() : null);
             person.setNid(null != attributes.get("cn") ? attributes.get("cn").get().toString() : null);
-            person.setMemberOf(null != attributes.get("member") ? attributes.get("member").get().toString() : null);
+            person.setMemberOf(null != attributes.get("ou") ? Integer.valueOf(attributes.get("ou").get().toString()) : 0);
             person.setUserPassword(null != attributes.get("userPassword")? attributes.get("userPassword").get().toString():null);
             person.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
             return person;
