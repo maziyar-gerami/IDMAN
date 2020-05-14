@@ -84,6 +84,7 @@
             <artifactId>unboundid-ldapsdk</artifactId>
         </dependency>
 
+<<<<<<< HEAD
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-redis</artifactId>
@@ -99,6 +100,12 @@
 
 
     </dependencies>
+=======
+
+    </dependencies>
+
+
+>>>>>>> a0d0f3a5dec3208e6b55845dd55e395a072dce44
 
 
     <build>
