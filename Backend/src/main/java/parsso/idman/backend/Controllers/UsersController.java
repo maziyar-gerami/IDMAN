@@ -3,12 +3,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-<<<<<<< HEAD
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-=======
->>>>>>> a0d0f3a5dec3208e6b55845dd55e395a072dce44
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.backend.Models.Person;
 import parsso.idman.backend.Repos.PersonRepo;
@@ -21,7 +18,6 @@ public class UsersController {
     @Qualifier("personRepoImpl")
     @Autowired
     private PersonRepo personRepo;
-<<<<<<< HEAD
     // TODO: PTATCH
     // TODO: private String currentUserId ;
     private int parentOU ;
@@ -56,27 +52,10 @@ public class UsersController {
     }
 
     @GetMapping("/api/users")
-=======
-
-    @PostMapping("/add-user")
-    public ResponseEntity<String> bindLdapPerson(@RequestBody Person person) {
-        String result = personRepo.create(person);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-    @PutMapping("/update-user")
-
-    public ResponseEntity<String> rebindLdapPerson(@RequestBody Person person) {
-        String result = personRepo.update(person);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping("/retrieve-users")
->>>>>>> a0d0f3a5dec3208e6b55845dd55e395a072dce44
     public ResponseEntity<List<Person>> retrieve() {
         return new ResponseEntity<List<Person>>(personRepo.retrieve(), HttpStatus.OK);
     }
 
-<<<<<<< HEAD
     @GetMapping("/api/{mId}/users")
     public ResponseEntity<List<Person>> retrieveSubUsers(@PathVariable("mId") String mId){
         return new ResponseEntity<List<Person>>(personRepo.retrieveSubUsers(mId), HttpStatus.OK);
@@ -97,16 +76,4 @@ public class UsersController {
         return new ResponseEntity<>(personRepo.remove(), HttpStatus.OK);
     }
 
-=======
-    @GetMapping("/retrieve-user")
-    public ResponseEntity <Person> retrievePerson(@RequestParam(name = "userId") String userId) {
-        return new ResponseEntity<Person> (personRepo.retrievePerson(userId), HttpStatus.OK);
-    }
-
-    @GetMapping("/remove-user")
-    public ResponseEntity<String> unbindLdapPerson(@RequestParam(name = "userId") String userId) {
-        return new ResponseEntity<>(personRepo.remove(userId), HttpStatus.OK);
-    }
-
->>>>>>> a0d0f3a5dec3208e6b55845dd55e395a072dce44
 }

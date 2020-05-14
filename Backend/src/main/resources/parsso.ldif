@@ -1,0 +1,170 @@
+
+dn: uid=3370008835,ou=people,dc=example,dc=com
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+cn: 337000883444
+sn: Grami
+description: bad boy
+displayName:: 2YXZh9ix2KfZhiDar9ix2KfZhduMIA==
+givenName: Mehran khan
+mail: Mehran.Grami@gmai.com
+ou: 17
+telephoneNumber: 09354262934
+uid: 3370008835
+userPassword:: e1NTSEF9c2VjcmV0
+
+dn: uid=3370008834,ou=people,dc=example,dc=com
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+cn: 337000883444
+sn: Gramii
+description: bad boy
+displayName:: 2YXZh9ix2KfZhiDar9ix2KfZhduMIA==
+givenName: Mehran khan
+mail: Mehran.Grami@gmai.com
+ou: 17
+telephoneNumber: 09354262934
+uid: 3370008834
+userPassword:: e1NIQX01ZW42RzZNZXpScm9UM1hLcWtkUE9tWS9CZlE9
+userPassword:: e1NTSEF9c2VjcmV0
+
+dn: ou=Students,ou=Groups,dc=example,dc=com
+objectclass: extensibleObject
+objectclass: organizationalUnit
+objectclass: top
+ou: Students
+description: This Is a group for Students
+uid: 1
+
+dn: ou=Professors,ou=Groups,dc=example,dc=com
+objectClass: extensibleObject
+objectClass: organizationalUnit
+objectClass: top
+ou: Professors
+description: This Is a group for Professors
+uid: 2
+
+dn: uid=3370008831,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: 3370008831
+sn: administrator
+description: good admin
+displayName:: 2YXYp9iy24zYp9ixINqv2LHYp9mF24w=
+givenName: Maziyar
+mail: Maziyar.Grami@yahoo.com
+ou: 17
+telephoneNumber: 09183097717
+uid: 3370008831
+userPassword:: e1NIQX01ZW42RzZNZXpScm9UM1hLcWtkUE9tWS9CZlE9
+
+dn: uid=admin,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: 3370008831
+sn: administrator
+description: good admin
+displayName:: 2YXYp9iy24zYp9ixINqv2LHYp9mF24w=
+givenName: Maziyar
+mail: Maziyar.Grami@yahoo.com
+ou: 17
+telephoneNumber: 09183097717
+uid: admin
+userPassword:: e1NIQX01ZW42RzZNZXpScm9UM1hLcWtkUE9tWS9CZlE9
+
+dn: ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: people
+userPassword:: e1NIQX01ZW42RzZNZXpScm9UM1hLcWtkUE9tWS9CZlE9
+
+dn: dc=example,dc=com
+objectclass: domain
+objectclass: top
+dc: example
+
+dn: uid=3370008836,ou=people,dc=example,dc=com
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+cn: 337000883444
+sn: Grami
+description: bad boy
+displayName:: 2YXZh9ix2KfZhiDar9ix2KfZhduMIA==
+givenName: Mehran khan
+mail: Mehran.Grami@gmai.com
+ou: 18
+telephoneNumber: 09354262934
+uid: 3370008836
+userPassword:: e1NTSEF9c2VjcmV0
+
+dn: ou=Staff,ou=Groups,dc=example,dc=com
+objectclass: extensibleObject
+objectclass: organizationalUnit
+objectclass: top
+ou: Staff
+description: This Is a group
+uid: 221
+
+dn: ou=Managers,ou=Groups,dc=example,dc=com
+objectClass: extensibleObject
+objectClass: organizationalUnit
+objectClass: top
+ou: Managers
+description: This Is a group for Managers
+uid: 1
+
+dn: uid=3370008837,ou=people,dc=example,dc=com
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+cn: 337000883444
+sn: Grami
+description: bad boy
+displayName:: 2YXZh9ix2KfZhiDar9ix2KfZhduMIA==
+givenName: Mehran khan
+mail: Mehran.Grami@gmai.com
+ou: 19
+telephoneNumber: 09354262934
+uid: 3370008837
+userPassword:: e1NTSEF9c2VjcmV0
+
+dn: ou=Staff,ou=Groups,dc=example,dc=com
+objectClass: extensibleObject
+objectClass: organizationalUnit
+objectClass: top
+ou: Staff
+description: This Is a group for Staff
+uid: 3
+
+dn: uid=3370008839,ou=people,dc=example,dc=com
+objectclass: inetOrgPerson
+objectclass: organizationalPerson
+objectclass: person
+objectclass: top
+cn: 337000883444444444444444488888888888888444444444444444
+sn: Grami
+description: bad boy
+displayName:: 2YXZh9ix2KfZhiAnJyfar9ix2KfZhduMIA==
+givenName: Mehran khan
+mail: Mehran.Grami@gmai.com
+ou: 1
+telephoneNumber: 09354262934
+uid: 3370008839
+userPassword:: e1NTSEF9c2VjcmV0
+
+dn: ou=Groups,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
