@@ -48,7 +48,7 @@ function myFunction() {
         s4: "سرویس ها",
         s5: "گروه ها",
         s6: "رویداد ها",
-        s7: "تنظیمات",
+        s7: "پروفایل",
         s8: "سرویس های متصل",
         s9: "سرویس ها",
         s10: "قوانین",
@@ -332,7 +332,7 @@ function myFunction() {
             this.s4 = "Services";
             this.s5 = "Groups";
             this.s6 = "Events";
-            this.s7 = "Settings";
+            this.s7 = "Profile";
             this.s8 = "Connected Services";
             this.s9 = "Services";
             this.s10 = "Rules";
@@ -386,7 +386,7 @@ function myFunction() {
               this.s4 = "سرویس ها";
               this.s5 = "گروه ها";
               this.s6 = "رویداد ها";
-              this.s7 = "تنظیمات";
+              this.s7 = "پروفایل";
               this.s8 = "سرویس های متصل";
               this.s9 = "سرویس ها";
               this.s10 = "قوانین";

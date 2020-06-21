@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
             lang: "EN",
             isRtl: true,
             menuS: false,
+            activeItem: "password",
             eye: "right: 1%;",
             s0: "پارسو",
             s1: "",
@@ -62,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s4: "سرویس ها",
             s5: "گروه ها",
             s6: "رویداد ها",
-            s7: "تنظیمات",
+            s7: "پروفایل",
             s9: "fa fa-arrow-right",
             s10: "قوانین",
             s11: "حریم خصوصی",
@@ -94,12 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
             U13: "ویرایش",
             U14: "گروههای عضو",
             U15: "تکرار رمز عبور",
-            U16: "کاربر مورد نظر در گروههای زیر عضویت دارد. کاربر مورد نظر از چه گروههایی حذف شود؟",
-            U17: "حذف تمامی کاربران",
-            h1: "ترکیبی از حروف و اعداد. مثال: ali123",
-            p1: "خیلی ضعیف",
-            p2: "متوسط",
-            p3: "قوی"
+            U16: "تغییر رمز عبور",
+            U17: "تغییر اطلاعات کاربری"
         },
         created: function () {
             this.getUserInfo();
@@ -109,12 +106,18 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         methods: {
+            isActive (menuItem) {
+                return this.activeItem === menuItem
+            },
+            setActive (menuItem) {
+                this.activeItem = menuItem
+            },
             isAdmin: function () {
             var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
             var vm = this;
-            axios.get(url + "/idman/username")
+            axios.get(url + "/idman/username") // 
                 .then((res) => {
-                    axios.get(url + "/idman/api/users/isAdmin/" + res.data)
+                    axios.get(url + "/idman/api/users/isAdmin/" + res.data) // 
                     .then((resp) => {
                         if(resp.data){
                             vm.menuS = true;
@@ -125,10 +128,10 @@ document.addEventListener('DOMContentLoaded', function () {
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/username")
+                axios.get(url + "/idman/username") // 
                     .then((res) => {
                         vm.username = res.data;
-                        axios.get(url + "/idman/api/users/u/" + vm.username)
+                        axios.get(url + "/idman/api/users/u/" + vm.username) // 
                             .then((res) => {
                                 vm.userInfo = res.data;
                                 vm.name = vm.userInfo.displayName;
@@ -139,24 +142,41 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             editUser: function (id) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
                 var check = confirm("Are you sure you want to edit?");
                 if (check == true) {
                     axios({
                         method: 'put',
-                        url: url + '/idman/api/users/u/' + id,
+                        url: url + '/idman/api/users/u/' + id,   // 
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
-                            userId: id,
+                            /* userId: id, */
                             firstName: document.getElementById('userInfo.firstNameUpdate').value,
                             lastName: document.getElementById('userInfo.lastNameUpdate').value,
                             displayName: document.getElementById('userInfo.displayNameUpdate').value,
                             telephoneNumber: document.getElementById('userInfo.telephoneNumberUpdate').value,
                             mail: document.getElementById('userInfo.mailUpdate').value,
-                            userPassword: document.getElementById('password').value,
-                            description: document.getElementById('userInfo.descriptionUpdate').value,
+                            /* memberOf: vm.userInfo.memberOf, */
+                            description: document.getElementById('userInfo.descriptionUpdate').value
                         }),
                     });
-                    location.replace(url + "/idman/settings");
+                    location.replace(url + "/idman/settings"); // 
+                }
+            },
+            editPass: function (id) {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var check = confirm("Are you sure you want to edit?");
+                var vm = this;
+                if (check == true) {
+                    axios({
+                        method: 'put',
+                        url: url + '/idman/api/users/u/' + id,   // 
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                            userPassword: document.getElementById('password').value
+                        }),
+                    });
+                    location.replace(url + "/idman/settings"); // 
                 }
             },
             passwordCheck () {
@@ -164,19 +184,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.has_lowercase = /[a-z]/.test(this.password);
                 this.has_uppercase = /[A-Z]/.test(this.password);
                 this.has_char   = /.{8,}/.test(this.password);
-            },
-            resetPasswords () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var str = window.location.pathname;
-                var inf = str.split("/");
-                var vm = this;
-                axios.put(url + "/idman/api/users/u/" + inf[5] + "/" + this.password + "/" + inf[6], "New Password Here")
-                    .then((res) => {
-                        window.location.replace(window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/idman/login");                        
-                    })
-                    .catch(error => {
-                        console.log(error.message);
-                      });
             },
             changeLang: function () {
                 if(this.lang == "EN"){
@@ -193,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s4 = "Services";
                     this.s5 = "Groups";
                     this.s6 = "Events";
-                    this.s7 = "Settings";
+                    this.s7 = "Profile";
                     this.s9 = "fa fa-arrow-left";
                     this.s10 = "Rules";
                     this.s11 = "Privacy";
@@ -223,7 +230,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U11 = "Delete"
                     this.U12 = "Add New User";
                     this.U13 = "Edit";
-                    this.U17 = "Remove all user";
+                    this.U16 = "Edit Password";
+                    this.U17 = "Edit User Information";
                     this.rules[0].message = "- One Lowercase Letter Required.";
                     this.rules[1].message = "- One Uppercase Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
@@ -242,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s4 = "سرویس ها";
                     this.s5 = "گروه ها";
                     this.s6 = "رویداد ها";
-                    this.s7 = "تنظیمات";
+                    this.s7 = "پروفایل";
                     this.s9 = "fa fa-arrow-right";
                     this.s10 = "قوانین";
                     this.s11 = "حریم خصوصی";
@@ -272,7 +280,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U11 = "حذف"
                     this.U12 = "اضافه کردن کاربر جدید";
                     this.U13 = "ویرایش";
-                    this.U17 = "حذف تمامی کاربران";
+                    this.U16 = "تغییر رمز عبور";
+                    this.U17 = "تغییر اطلاعات کاربری";
                     this.rules[0].message = "حداقل شامل یک کاراکتر کوچک باشد. ";
                     this.rules[1].message = "حداقل شامل یک کاراکتر بزرگ باشد. ";
                     this.rules[2].message = "حداقل ۸ کاراکتر باشد. ";
@@ -291,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordsFilled () {
                 return (this.password !== '' && this.checkPassword !== '')
             },
-            setActive () {
+            setActivee () {
                 if(this.password !== '' && this.checkPassword !== ''){
                     let errors = []
                     for (let condition of this.rules) {

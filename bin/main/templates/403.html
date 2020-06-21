@@ -8,26 +8,42 @@
     
     <link href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="fonts/IranSans/font.css" rel="stylesheet">
-    <link href="css/Login/style.css" rel="stylesheet">
+    <link href="css/Users/style.css" rel="stylesheet">
 
     <script src="js/vue.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/Login/script.js"></script>
 </head>
 <body class="h-100">
-    <div id="app" class="wrapper">
-            <div class="h-100 d-md-flex align-items-center">
-                <div class="container my-3">
-                    <div class="row justify-content-center">
-                        <div class="col-md-8" style="flex: 0 0 100%; max-width: 100%;">
-                            <h2 class="error mb-4">{{s15}}</h2>
-                            <div class="text-center mt-4 text-decoration">
-                                    <a href="#" v-on:click="changeLang"><b>{{lang}}</b></a>
+    <div id="app">
+        <div v-bind:class="{rtl: isRtl}" class=" h-100">
+            <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
+                <div class="container">
+                    <a class="navbar-brand" href="./">{{s0}}</a>
+                    <div class="dropdown">
+                        <a id="langbtn" href="#" v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
+                    </div>
+                </div>
+            </nav>
+            <div class="container">
+                <div class="row justify-content-center align-items-center">
+                    <div class="col-lg-9 page-content">
+                        <div class="card">
+                            <div class="card-body pb-0">
+                                <h2 class="error mb-4">{{s15}}</h2>
+                                <div class="text-center mt-4 text-decoration">
+                                    <a href="../dashboard" class="text-center text-decoration btn btn-primary mb-4">{{s16}}</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
         </div>
+        <footer class="mb-3 mt-4">
+            <div class="container">
+            </div>
+        </footer>
     </div>
-</body>
+    </body>
 </html>

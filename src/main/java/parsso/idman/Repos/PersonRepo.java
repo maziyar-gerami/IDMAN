@@ -13,8 +13,9 @@ public interface PersonRepo {
     public String remove(String userId);
     public String remove();
     public Person retrievePerson(String userId);
-    public Person checkMail(String token);
+    public List<Person> checkMail(String token);
     public String sendEmail(String email);
+    public String sendEmail(String email, String uid);
     public Person checkToken(String userId, String token);
     public String updatePass(String userId, String pass, String token);
 }

@@ -25,16 +25,23 @@ document.addEventListener('DOMContentLoaded', function () {
         data: {
             userInfo: [],
             email: "",
+            emailE: "",
             username: "",
+            usernameE: "",
             name: "",
             nameEN: "",
             users: [],
+            emails: [],
             message: "",
             editInfo: {},
             placeholder: "text-align: right;",
             margin: "margin-right: 30px;",
             lang: "EN",
             isRtl: true,
+            sendE: true,
+            sendU: false,
+            Success: false,
+            Error: false,
             editS: "display:none",
             addS: "display:none",
             showS: "",
@@ -45,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s4: "سرویس ها",
             s5: "گروه ها",
             s6: "رویداد ها",
-            s7: "تنظیمات",
+            s7: "پروفایل",
             s9: "fa fa-arrow-right",
             s10: "قوانین",
             s11: "حریم خصوصی",
@@ -60,6 +67,13 @@ document.addEventListener('DOMContentLoaded', function () {
             s20: "داشبورد",
             s21: "./groups",
             s22: "./settings",
+            s23: "لطفا جهت بازنشانی رمز عبور، آدرس ایمیل خود را وارد کنید:",
+            s24: "ارسال موفقیت آمیز بود.",
+            s25: "لطفا به mailbox خود مراجعه نموده و طبق راهنما، باقی مراحل را انجام دهید.",
+            s26: "بازگشت به صفحه ورود",
+            s27: "ایمیل وارد شده در پایگاه داده ما وجود ندارد.",
+            s28: "لطفا با دقت بیشتری نسبت به ورود آدرس ایمیل اقدام نمایید:",
+            s29: "لطفا جهت تکمیل مراحل، شناسه خود را وارد نمایید:",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -91,6 +105,66 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         methods: {
+            sendEmail: function  (email) {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/idman/api/users/checkMail/" + email) // 
+                    .then((res) => {
+                        vm.emails = res.data;
+                        if(vm.emails.length == 0){
+                            vm.sendE = false;
+                            vm.sendU = false;
+                            vm.Success = false;
+                            vm.Error = true;
+                        } else if(vm.emails.length == 1){
+                            vm.sendE = false;
+                            vm.sendU = false;
+                            vm.Success = true;
+                            vm.Error = false;
+                            axios.get(url + "/idman/api/users/sendMail/" + email) // 
+                                .then((res) => {
+                                    
+                                });
+                        } else if(vm.emails.length > 1){
+                            vm.sendE = false;
+                            vm.sendU = true;
+                            vm.Success = false;
+                            vm.Error = false;
+                        }
+                    });
+            },
+        
+            sendEmailUser: function (email, username) {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                var flag = false;
+                axios.get(url + "/idman/api/users/checkMail/" + email) // 
+                    .then((res) => {
+                        vm.emails = res.data;
+                        if(vm.emails.length > 1){
+                            for(let i = 0; i < vm.emails.length; ++i){
+                                if(vm.emails[i].userId == username){
+                                    flag = true;
+                                    vm.sendE = false;
+                                    vm.sendU = false;
+                                    vm.Success = true;
+                                    vm.Error = false;
+                                    axios.get(url + "/idman/api/users/sendMail/" + email + "/" + username) // 
+                                        .then((res) => {
+                                            
+                                        });
+                                    break;
+                                }
+                            }
+                            if(!flag){
+                                vm.sendE = false;
+                                vm.sendU = false;
+                                vm.Success = false;
+                                vm.Error = true;
+                            }
+                        }
+                    });
+            },
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
@@ -326,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s4 = "Services";
                     this.s5 = "Groups";
                     this.s6 = "Events";
-                    this.s7 = "Settings";
+                    this.s7 = "Profile";
                     this.s9 = "fa fa-arrow-left";
                     this.s10 = "Rules";
                     this.s11 = "Privacy";
@@ -341,6 +415,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s20 = "Dashboard";
                     this.s21 = "./groups?en";
                     this.s22 = "./settings?en";
+                    this.s23 = "Please Enter Your Email Address To Reset Your Password:";
+                    this.s24 = "Submission Was Successful.";
+                    this.s25 = "Please Go To Your mailbox And Follow The Instructions.";
+                    this.s26 = "Return To The Login Page";
+                    this.s27 = "There Is No Such Email Address In Our Database.";
+                    this.s28 = "Please Enter Your Email Address More Carefully:";
+                    this.s29 = "Please Enter Your ID To Complete The Process:";
                     this.U0= "Password";
                     this.U1= "Users";
                     this.U2= "ID";
@@ -370,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s4 = "سرویس ها";
                     this.s5 = "گروه ها";
                     this.s6 = "رویداد ها";
-                    this.s7 = "تنظیمات";
+                    this.s7 = "پروفایل";
                     this.s9 = "fa fa-arrow-right";
                     this.s10 = "قوانین";
                     this.s11 = "حریم خصوصی";
@@ -385,6 +466,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s20 = "داشبورد";
                     this.s21 = "./groups";
                     this.s22 = "./settings";
+                    this.s23 = "لطفا جهت بازنشانی رمز عبور، آدرس ایمیل خود را وارد کنید:";
+                    this.s24 = "ارسال موفقیت آمیز بود.";
+                    this.s25 = "لطفا به mailbox خود مراجعه نموده و طبق راهنما، باقی مراحل را انجام دهید.";
+                    this.s26 = "بازگشت به صفحه ورود";
+                    this.s27 = "ایمیل وارد شده در پایگاه داده ما وجود ندارد.";
+                    this.s28 = "لطفا با دقت بیشتری نسبت به ورود آدرس ایمیل اقدام نمایید:";
+                    this.s29 = "لطفا جهت تکمیل مراحل، شناسه خود را وارد نمایید:";
                     this.U0= "رمز";
                     this.U1= "کاربران";
                     this.U2= "شناسه";

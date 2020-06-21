@@ -51,24 +51,24 @@ public class UsersController {
         return new ResponseEntity<Person> (personRepo.retrievePerson(userId), HttpStatus.OK);
     }
 
-    /*@GetMapping ("/api/users/validateIDToken/{uId}/{token}")
-    public ResponseEntity<Person> validateToken
-            (@PathVariable("uId") String uId, @PathVariable("token") String token){
-
-
-
-
-        return new ResponseEntity<Person> (personRepo.checkToken(uId,token), HttpStatus.OK);
-    }*/
+    @GetMapping("/api/users/u/{id}/{token}")
+    public ResponseEntity <Person> retrievePersonT(@PathVariable("id") String userId,@PathVariable("token") String token) {
+        return new ResponseEntity<Person> (personRepo.checkToken(userId, token), HttpStatus.OK);
+    }
 
     @GetMapping("/api/users/checkMail/{email}")
-    public ResponseEntity <Person> checkMail (@PathVariable("email") String email) {
-        return new ResponseEntity<Person> (personRepo.checkMail(email), HttpStatus.OK);
+    public ResponseEntity <List<Person>> checkMail (@PathVariable("email") String email) {
+        return new ResponseEntity<List<Person>> (personRepo.checkMail(email), HttpStatus.OK);
     }
 
     @GetMapping("/api/users/sendMail/{email}")
     public ResponseEntity <String> sendMail(@PathVariable("email") String email) {
         return new ResponseEntity<String> (personRepo.sendEmail(email), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/users/sendMail/{email}/{uid}")
+    public ResponseEntity <String> sendMail(@PathVariable("email") String email,@PathVariable ("uid") String uid) {
+        return new ResponseEntity<String> (personRepo.sendEmail(email, uid), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/users/u/{id}")
@@ -102,5 +102,4 @@ public class UsersController {
             return false;
         }
     }
-
 }

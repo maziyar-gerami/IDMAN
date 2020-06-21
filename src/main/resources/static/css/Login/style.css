@@ -67,16 +67,18 @@ button {
 .hints {
   max-width: 400px;
   padding: 1em;
-  background: whitesmoke;
-  margin: 1em 0;
+  background: white;
+  margin: .7em 0;
   color: #4d6567;
 }
 .hints h2 {
   margin: 0.5em 0 0.2em 0;
   font-size: 1.5em;
 }
-.hints p {
+#hintI {
   margin: 0;
+}
+.hints p {
   padding-left: 1em;
   font-size: 0.9em;
 }
@@ -101,13 +103,14 @@ button {
 	font-size: 1.5em;
 }
 .passed {
-  color:#99ff99;
+  color:#19aa19;
 }
 .form-group {
   position: relative;
 }
 .form-control {
   padding-right: 2rem;
+  padding-left: 2rem;
 }
 input:focus {
   outline: none;

@@ -34,18 +34,44 @@
                 <div class="col-lg-9 page-content">
                     <div class="card">
                         <div class="card-body pb-0">
-                            <div class="container" id="send">
-                                <h3>{{s3}}</h3>
+                            <h3>{{s3}}</h3>
+                            <div class="container" id="sendE" v-if="sendE">
                                 <div class="mt-3 form-group">
-                                    <input type="email" name="email" id="email" v-model="email" class="form-control"
+                                    <p>{{s23}}</p>
+                                    <input type="email" name="emailE" id="emailE" v-model="emailE" class="form-control"
                                     v-bind:placeholder="s19" v-bind:style="placeholder" required>
                                 </div>
-                                <button onclick="sendEmail(email.value);hide();" class="btn btn-primary">
+                                <button @click="sendEmail(emailE)" class="btn btn-primary mb-3">
                                     {{s18}}
                                 </button>        
                             </div>
-                            <div class="form-group mt-4" id="emailSent">
-                                <label type="text" name="username" id="u" class="form-control"> </label>
+                            <div class="container" id="sendU" v-if="sendU">
+                                <div class="mt-3 form-group">
+                                    <p>{{s29}}</p>
+                                    <input type="text" name="usernameE" id="usernameE" v-model="usernameE" class="form-control"
+                                    v-bind:placeholder="U2" v-bind:style="placeholder" required>
+                                </div>
+                                <button @click="sendEmailUser(emailE, usernameE)" class="btn btn-primary mb-3">
+                                    {{s18}}
+                                </button>
+                            </div>
+                            <div class="container" id="Success" v-if="Success">
+                                <div class="mt-3 mb-3 form-group">
+                                    <p><i style="padding-left: 0.25rem; padding-right: 0.25rem;" class="fa fa-check-circle"></i>{{s24}}</p>
+                                    <p class="mt-3">{{s25}}</p>
+                                    <a href="../login" class="btn btn-primary">{{s26}}</a>
+                                </div>
+                            </div>
+                            <div class="container" id="Error" v-if="Error">
+                                <div class="mt-3 form-group">
+                                    <p><i style="padding-left: 0.25rem; padding-right: 0.25rem;" class="fa fa-exclamation-triangle"></i>{{s27}}</p>
+                                    <p class="mt-3">{{s28}}</p>
+                                    <input type="email" name="emailEE" id="emailEE" v-model="emailE" class="form-control"
+                                    v-bind:placeholder="s19" v-bind:style="placeholder" required>
+                                </div>
+                                <button @click="sendEmail(emailE)" class="btn btn-primary mb-3">
+                                    {{s18}}
+                                </button>  
                             </div>
                         </div>
                     </div>
@@ -58,27 +84,5 @@
         </div>
     </footer>
 </div>
-
-<script>
-    function sendEmail(email) {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        axios.get(url + "/idman/api/users/sendMail/" + email)
-            .then((res) => {
-                //document.getElementById('send').addEventListener('click', hideshow, false);
-                
-            });
-    }
-
-    function hide() {
-        var x = document.getElementById("send");
-        if (x.style.display === "none") {
-            x.style.display = "block";
-        } else {
-            x.style.display = "none";
-        }
-    }
-
-</script>
 </body>
 </html>

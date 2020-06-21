@@ -27,6 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/users/validateToken/**").permitAll()
                 .antMatchers("/api/users/sendMail/**").permitAll()
                 .antMatchers("/api/users/checkMail/**").permitAll()
+                .antMatchers("/api/users/u/{id}/{token}").permitAll()
                 .antMatchers(HttpMethod.PUT,"/api/users/u/{uid}/{pass}/{token}").permitAll()
                 .anyRequest().fullyAuthenticated()
                 .and()

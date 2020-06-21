@@ -23,6 +23,11 @@ public class DashboardController{
     @Value("${administrator.ou.name}")
     private String adminOu;
 
+    @GetMapping("/")
+    public String Root(){
+        return "redirect:/dashboard";
+    }
+
     @GetMapping("/dashboard")
     public String Dashboard(){
         return "dashboard";

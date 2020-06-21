@@ -30,16 +30,6 @@ public class PersonRepoImpl implements PersonRepo {
     @Autowired
     private LdapTemplate ldapTemplate;
 
-    //PersonRepoImpl(){
-    //    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    //    if (principal instanceof UserDetails) {
-    //        String currentUserId = ((UserDetails)principal).getUsername();
-    //    } else {
-    //        String currentUserId = principal.toString();
-    //    }
-
-    //}
-
     @Override
     public String create(Person p) {
 
@@ -58,8 +48,9 @@ public class PersonRepoImpl implements PersonRepo {
     @Override
     public String update(Person p) {
         Name dn = buildDn(p.getUserId());
-        //TODO: see below. build attribute is 1
         ldapTemplate.rebind(dn, null, buildAttributes(p));
+
+
         return p.getUserId() + " updated successfully";
     }
 
@@ -99,12 +90,11 @@ public class PersonRepoImpl implements PersonRepo {
         attrs.put("telephoneNumber", p.getTelephoneNumber());
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
-        if (p.getUserPassword() != null)
+        if (p.getUserPassword() != null){
             attrs.put("userPassword", p.getUserPassword());
-        System.out.println("**************");
+        }
         if (p.getToken() != null) {
             attrs.put("l", p.getToken());
-            System.out.println(p.getToken());
 
         }
         if (p.getMemberOf() != null) {
@@ -151,25 +141,21 @@ public class PersonRepoImpl implements PersonRepo {
     }
 
     @Override
-    public Person checkMail(String email) {
+    public List<Person> checkMail(String email) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         Person person = new Person();
         List<Person> people = ldapTemplate.search(query().where("mail").is(email), new PersonAttributeMapper());
-        System.out.println(people.toArray());
-        if (people.toString() == "[]") {
-            return null;
-        }
-        else {
-            return (people.get(0));
-        }
+
+            return people;
+
 
     }
 
     @Override
     public String sendEmail(String email) {
         if (checkMail(email) != null) {
-            Person person = checkMail(email);
+            Person person = checkMail(email).get(0);
             String token = insertToken(person);
             EmailSend emailSend = new EmailSend();
 
@@ -182,9 +168,42 @@ public class PersonRepoImpl implements PersonRepo {
             return "Email Not found";
     }
 
-    private String createUrl(String BaseUrl, String controllerAddress, String userId, String token){
+    @Override
+    public String sendEmail(String email, String uid) {
 
-        return BaseUrl + "/idman" + controllerAddress + userId + "/" + token.toString();
+        if (checkMail(email) != null & retrievePerson(uid).getUserId()!=null) {
+            List<Person> people = checkMail(email);
+            Person person = retrievePerson(uid);
+            Boolean emailSent = false;
+
+            System.out.println(person.getUserId());
+
+            for (Person p:people) {
+
+                System.out.println(p.getUserId());
+
+                if (p.getUserId().equals(person.getUserId())) {
+
+                    String token = insertToken(person);
+                    EmailSend emailSend = new EmailSend();
+
+                    String fullUrl = createUrl(MyConstants.baseUrl, MyConstants.sendEmailController, person.getUserId(), person.getToken());
+                    emailSend.sendMail(email, "\n" + fullUrl);
+                    return "Email sent";
+
+                }
+            }
+
+        } else
+            return "Email Not found or userId not found";
+
+        return "Not a such user";
+    }
+
+
+    private String createUrl(String BaseUrl, String controllerAddress, String userId, String token){
+        //TODO: Need to uncomment for war file
+        return BaseUrl + /*"/idman" +*/ controllerAddress + userId + "/" + token.toString();
 
     }
 
@@ -195,8 +214,6 @@ public class PersonRepoImpl implements PersonRepo {
         Person person = new Person();
 
         person = ldapTemplate.search(query().where("uid").is(userId), new PersonAttributeMapper()).get(0);
-
-        //person = people.get(0);
 
         String tok = person.getToken().toString();
 
@@ -222,7 +239,10 @@ public class PersonRepoImpl implements PersonRepo {
         person.setToken(token);
         Name dn = buildDn(person.getUserId());
         ldapTemplate.rebind(dn, null, buildAttributes(person));
-
+        System.out.println("################################################################");
+        System.out.println(person.getUserId());
+        System.out.println(person.getToken());
+        System.out.println("################################################################");
         return "Token for " + person.getUserId() + " is created";
     }
 
@@ -236,7 +256,6 @@ public class PersonRepoImpl implements PersonRepo {
             person.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
             person.setFirstName(null != attributes.get("givenName") ? attributes.get("givenName").get().toString() : null);
             person.setLastName(null != attributes.get("sn") ? attributes.get("sn").get().toString() : null);
-
             person.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
             person.setTelephoneNumber(null != attributes.get("telephoneNumber") ? attributes.get("telephoneNumber").get().toString() : null);
             person.setMail(null != attributes.get("mail") ? attributes.get("mail").get().toString() : null);
@@ -260,8 +279,7 @@ public class PersonRepoImpl implements PersonRepo {
     public String updatePass(String userId, String pass, String token) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        Person person = new Person();
-        person = ldapTemplate.search(query().where("uid").is(userId), new PersonAttributeMapper()).get(0);
+        Person person = ldapTemplate.search(query().where("uid").is(userId), new PersonAttributeMapper()).get(0);
         
         if (token.equals(person.getToken())) {
             person.setUserPassword(pass);

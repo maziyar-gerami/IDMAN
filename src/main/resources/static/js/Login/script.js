@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				{ message:".حداقل ۸ کاراکتر باشد ", regex:/.{8,}/ },
 				{ message:".حداقل شامل یک عدد باشد ", regex:/[0-9]+/ }
             ],
+            userInfo: [],
             show: false,
             showR: false,
             has_number: false,
@@ -21,10 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
             has_char: false,
 			password: "",
 			checkPassword: "",
-			passwordVisible: true,
+            passwordVisible: true,
+            isRtl: true,
             submitted: false,
             btnDisable : true,
             placeholder: "text-align: right;",
+            marg: "margin-left: auto;",
             font: "font-size: 0.74em; text-align: right;",
             lang: "EN",
             rtl: "direction: rtl;",
@@ -43,18 +46,38 @@ document.addEventListener('DOMContentLoaded', function () {
             s11: "ارسال ایمیل باز نشانی",
             s12: "بازنشانی رمز عبور",
             s13: ":رمز عبور شما باید شامل موارد زیر باشد",
-            s14: ":رمز عبور جدید خود را وارد نمایید",
-            s15: "شما اجازه دسترسی به این صفحه را ندارید"
+            s14: ":جهت تکمیل فرآیند بازنشانی رمز عبور خود، با رعایت نکات زیر، رمز عبور جدید خود را وارد نمایید",
+            s15: "شما اجازه دسترسی به این صفحه را ندارید",
+            s16: "بازگشت",
+            s17: "",
+            s18: " عزیز",
+            s19: "،"
         },
-        mounted: function () {
+        created: function () {
+            this.getName();
             if (typeof this.$route.query.en !== 'undefined') {
-                this.changeLang()
+                this.changeLang();
             }
         },
         methods: {
+            getName: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var str = window.location.pathname;
+                var inf = str.split("/");
+                var vm = this;   
+                if(!inf.includes("login")){
+                    axios.get(url + "/idman/api/users/u/" + inf[5] + "/" + inf[6]) //  
+                        .then((res) => {
+                            vm.userInfo = res.data;
+                            vm.s17 = vm.userInfo.displayName;
+                        });
+                }
+            },
             changeLang: function () {
                 if (this.lang == "EN") {
                     this.placeholder = "text-align: left;"
+                    this.isRtl = false;
+                    this.marg = "margin-right: auto;";
                     this.font = "font-size: 0.9em; text-align: left;"
                     this.lang = "فارسی";
                     this.rtl = "direction: ltr;";
@@ -73,16 +96,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s11 = "Send emial";
                     this.s12 = "Reset Password";
                     this.s13 = "Your Password Must Meet All Of The Following Criteria:";
-                    this.s14 = "Enter Your New Password:";
+                    this.s14 = "For Resetting Your Password, Enter Your New Password By Following The Tips Below:";
                     this.s15 = "You Don't Have Permission To Access This Page";
+                    this.s16 = "Return";
+                    this.s17 = this.userInfo.firstName + " " + this.userInfo.lastName;
+                    this.s18 = ",";
+                    this.s19 = "Dear ";
                     this.rules[0].message = "- One Lowercase Letter Required.";
                     this.rules[1].message = "- One Uppercase Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
                     this.rules[3].message = "- One Number Required.";
 
                 } else {
-                    this.placeholder = "text-align: right;"
-                    this.font = "font-size: 0.74em; text-align: right;"
+                    this.placeholder = "text-align: right;";
+                    this.isRtl = true;
+                    this.marg = "margin-left: auto;";
+                    this.font = "font-size: 0.74em; text-align: right;";
                     this.lang = "EN";
                     this.rtl = "direction: rtl;";
                     this.eye = "right: 3%;";
@@ -100,8 +129,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s11 = "ارسال ایمیل";
                     this.s12 = "بازنشانی رمز عبور";
                     this.s13 = ":رمز عبور شما باید شامل موارد زیر باشد";
-                    this.s14 = ":رمز عبور جدید خود را وارد نمایید";
+                    this.s14 = ":جهت تکمیل فرآیند بازنشانی رمز عبور خود، با رعایت نکات زیر، رمز عبور جدید خود را وارد نمایید";
                     this.s15 = "شما اجازه دسترسی به این صفحه را ندارید";
+                    this.s16 = "بازگشت";
+                    this.s17 = this.userInfo.displayName;
+                    this.s18 = " عزیز";
+                    this.s19 = "،";
                     this.rules[0].message = ".حداقل شامل یک کاراکتر کوچک باشد ";
                     this.rules[1].message = ".حداقل شامل یک کاراکتر بزرگ باشد ";
                     this.rules[2].message = ".حداقل ۸ کاراکتر باشد ";
@@ -119,9 +152,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var str = window.location.pathname;
                 var inf = str.split("/");
-                var vm = this;
-                axios.put(url + "/idman/api/users/u/" + inf[5] + "/" + this.password + "/" + inf[6], "New Password Here")
-                    .then((res) => {
+                var vm = this; //
+                axios.put(url + "/idman/api/users/u/" + inf[5] + "/" + this.password + "/" + inf[6], "New Password Here") 
+                    .then((res) => {                                                                                         // 
                         window.location.replace(window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/idman/login");                        
                     })
                     .catch(error => {
@@ -130,6 +163,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         computed: {
+            infoError () {
+                if (typeof this.$route.query.error !== 'undefined') {
+                    return true
+                }
+            },
             notSamePasswords () {
                 if (this.passwordsFilled) {
                     return (this.password !== this.checkPassword)

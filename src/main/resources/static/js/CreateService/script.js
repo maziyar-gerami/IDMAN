@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s4: "سرویس ها",
       s5: "گروه ها",
       s6: "رویداد ها",
-      s7: "تنظیمات",
+      s7: "پروفایل",
       s8: "ایجاد سرویس جدید",
       s9: "fa fa-arrow-right",
       s10: "قوانین",
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s4 = "Services";
           this.s5 = "Groups";
           this.s6 = "Events";
-          this.s7 = "Settings";
+          this.s7 = "Profile";
           this.s8 = "Create New Service";
           this.s9 = "fa fa-arrow-left";
           this.s10 = "Rules";
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s4 = "سرویس ها";
             this.s5 = "گروه ها";
             this.s6 = "رویداد ها";
-            this.s7 = "تنظیمات";
+            this.s7 = "پروفایل";
             this.s8 = "ایجاد سرویس جدید";
             this.s9 = "fa fa-arrow-right";
             this.s10 = "قوانین";
