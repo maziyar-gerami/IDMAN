@@ -1,4 +1,4 @@
-package parsso.idman;
+package parsso.idman.Configs;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -16,6 +16,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/js/**").permitAll()
@@ -29,8 +30,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/users/checkMail/**").permitAll()
                 .antMatchers("/api/users/u/{id}/{token}").permitAll()
                 .antMatchers(HttpMethod.PUT,"/api/users/u/{uid}/{pass}/{token}").permitAll()
-                .anyRequest().fullyAuthenticated()
+                .antMatchers( "/secured", "/login")
+                .authenticated()
+                .and().exceptionHandling()
                 .and()
+
                 .formLogin()
                 .loginPage("/login")
                 .defaultSuccessUrl("/dashboard", true)
@@ -41,6 +45,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .logoutSuccessUrl("/login");
+
+
     }
 
     @Override

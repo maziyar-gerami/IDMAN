@@ -4,7 +4,7 @@
  * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-:root {
+ :root {
   --blue: #007bff;
   --indigo: #6610f2;
   --purple: #6f42c1;
@@ -51,6 +51,8 @@ html {
 article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
   display: block;
 }
+
+
 
 body {
   margin: 0;
@@ -2178,6 +2180,34 @@ textarea.form-control {
 .form-group {
   margin-bottom: 1rem;
 }
+
+
+.pass {
+  float: right;
+  height: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+  width: 70%;
+}
+
+.passRetype {
+  float: right;
+  height: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+  margin-top: 10px;
+  width: 70%;
+  margin-bottom: 1rem;
+}
+
+.info {
+  margin-right: 30px;
+  margin-top: 20px;
+  overflow: hidden;
+  background-color: #e8ffe7;
+  margin-bottom: 1rem;
+}
+
 
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: #e9ecef;

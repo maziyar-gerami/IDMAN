@@ -2,6 +2,72 @@ function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
 
+function BothFieldsIdentical (id1 , id2) {
+    var one = document.getElementById(id1).value;
+    var another = document.getElementById(id2).value;
+    if(one == another) { return true; }
+    alert("Both fields for password must be identical.");
+    return false;
+}
+
+
+
+
+function validatePassword(password) {
+
+    // Do not show anything when the length of password is zero.
+    if (password.length === 0) {
+        document.getElementById("msg").innerHTML = "";
+        return;
+    }
+    // Create an array and push all possible values that you want in password
+    var matchedCase = new Array();
+    matchedCase.push("[$@$!%*#?&]"); // Special Charector
+    matchedCase.push("[A-Z]");      // Uppercase Alpabates
+    matchedCase.push("[0-9]");      // Numbers
+    matchedCase.push("[a-z]");     // Lowercase Alphabates
+
+    // Check the conditions
+    var ctr = 0;
+    for (var i = 0; i < matchedCase.length; i++) {
+        if (new RegExp(matchedCase[i]).test(password)) {
+            ctr++;
+        }
+    }
+
+    var value = document.getElementById('ediInfo.userPasswordUpdate').value;
+    if (value.length > 7) {
+        console.log("No")
+    }
+
+    console.log(ctr)
+    // Display it
+    var color = "";
+    var strength = "";
+    switch (ctr) {
+        case 0:
+        case 1:
+        case 2:
+            strength = "خیلی ضعیف";
+            color = "red";
+            break;
+        case 3:
+            strength = "متوسط";
+            color = "orange";
+            break;
+        case 4:
+            strength = "قوی";
+            color = "lightgreen";
+            break;
+        case 5:
+            strength = "خیلی قوی";
+            color = "darkseagreen";
+            break;
+    }
+    document.getElementById("msg1").innerHTML = strength;
+    document.getElementById("msg1").style.color = color;
+}
+
 window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -25,23 +91,16 @@ document.addEventListener('DOMContentLoaded', function () {
         data: {
             userInfo: [],
             email: "",
-            emailE: "",
             username: "",
-            usernameE: "",
             name: "",
             nameEN: "",
             users: [],
-            emails: [],
             message: "",
             editInfo: {},
             placeholder: "text-align: right;",
             margin: "margin-right: 30px;",
             lang: "EN",
             isRtl: true,
-            sendE: true,
-            sendU: false,
-            Success: false,
-            Error: false,
             editS: "display:none",
             addS: "display:none",
             showS: "",
@@ -52,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s4: "سرویس ها",
             s5: "گروه ها",
             s6: "رویداد ها",
-            s7: "پروفایل",
+            s7: "تنظیمات",
             s9: "fa fa-arrow-right",
             s10: "قوانین",
             s11: "حریم خصوصی",
@@ -67,13 +126,6 @@ document.addEventListener('DOMContentLoaded', function () {
             s20: "داشبورد",
             s21: "./groups",
             s22: "./settings",
-            s23: "لطفا جهت بازنشانی رمز عبور، آدرس ایمیل خود را وارد کنید:",
-            s24: "ارسال موفقیت آمیز بود.",
-            s25: "لطفا به mailbox خود مراجعه نموده و طبق راهنما، باقی مراحل را انجام دهید.",
-            s26: "بازگشت به صفحه ورود",
-            s27: "ایمیل وارد شده در پایگاه داده ما وجود ندارد.",
-            s28: "لطفا با دقت بیشتری نسبت به ورود آدرس ایمیل اقدام نمایید:",
-            s29: "لطفا جهت تکمیل مراحل، شناسه خود را وارد نمایید:",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -92,10 +144,17 @@ document.addEventListener('DOMContentLoaded', function () {
             U15: "تکرار رمز عبور",
             U16: "کاربر مورد نظر در گروههای زیر عضویت دارد. کاربر مورد نظر از چه گروههایی حذف شود؟",
             U17: "حذف تمامی کاربران",
+            U18: "وارد کردن کاربران با فایل",
+            U19: "ذخیره سازی داده ها در فایل",
             h1: "ترکیبی از حروف و اعداد. مثال: ali123",
             p1: "خیلی ضعیف",
             p2: "متوسط",
-            p3: "قوی"
+            p3: "قوی",
+            p4: "- باید حداقل 8 کاراکتر باشد",
+            p5: "- باید ترکیبی از حرف و عدد باشد",
+            p6: "- باید شامل حروف بزرگ و کوچک باشد",
+            p7:"رمز در نظر گرفته شده باید:"
+
         },
         created: function () {
             this.getUserInfo();
@@ -105,66 +164,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         methods: {
-            sendEmail: function  (email) {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                axios.get(url + "/idman/api/users/checkMail/" + email) // 
-                    .then((res) => {
-                        vm.emails = res.data;
-                        if(vm.emails.length == 0){
-                            vm.sendE = false;
-                            vm.sendU = false;
-                            vm.Success = false;
-                            vm.Error = true;
-                        } else if(vm.emails.length == 1){
-                            vm.sendE = false;
-                            vm.sendU = false;
-                            vm.Success = true;
-                            vm.Error = false;
-                            axios.get(url + "/idman/api/users/sendMail/" + email) // 
-                                .then((res) => {
-                                    
-                                });
-                        } else if(vm.emails.length > 1){
-                            vm.sendE = false;
-                            vm.sendU = true;
-                            vm.Success = false;
-                            vm.Error = false;
-                        }
-                    });
-            },
-        
-            sendEmailUser: function (email, username) {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                var flag = false;
-                axios.get(url + "/idman/api/users/checkMail/" + email) // 
-                    .then((res) => {
-                        vm.emails = res.data;
-                        if(vm.emails.length > 1){
-                            for(let i = 0; i < vm.emails.length; ++i){
-                                if(vm.emails[i].userId == username){
-                                    flag = true;
-                                    vm.sendE = false;
-                                    vm.sendU = false;
-                                    vm.Success = true;
-                                    vm.Error = false;
-                                    axios.get(url + "/idman/api/users/sendMail/" + email + "/" + username) // 
-                                        .then((res) => {
-                                            
-                                        });
-                                    break;
-                                }
-                            }
-                            if(!flag){
-                                vm.sendE = false;
-                                vm.sendU = false;
-                                vm.Success = false;
-                                vm.Error = true;
-                            }
-                        }
-                    });
-            },
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
@@ -183,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
             refreshUsers: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                console.log("in refresh users")
+
                 axios.get(url + "/idman/api/users")
                     .then((res) => {
                         vm.users = res.data;
@@ -196,9 +195,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.addS = "display:none"
                 this.editS = "display:none"
             },
-            updateUser: function (id) {
+
+
+
+
+
+
+    updateUser: function (id) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+
+
+
                 axios.get(url + `/idman/api/users/u/${id}`)
                     .then((res) => {
                         for(i = 0; i < vm.users.length; ++i){
@@ -244,9 +252,10 @@ document.addEventListener('DOMContentLoaded', function () {
                             let iDiv = document.createElement('div');
                             iDiv.id = 'block' + i;
                             iDiv.className = 'block';
-                            document.getElementById('lsGroups').appendChild(iDiv);
+                            document.getElementById('lsGroupsUpdate').appendChild(iDiv);
                             var v = document.createElement('input');
                             v.setAttribute("id", "checkbox" + i);
+                            v.setAttribute("class","groupsCheckBox");
                             v.type = "checkbox";
                             console.log(v.getAttribute("id", "checkbox" + i));
                             v.value = allGroups[i].name;
@@ -260,8 +269,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             let l = document.createElement('label');
                             l.setAttribute("for", v.value);
                             l.innerHTML = v.value;
-                            document.getElementById('lsGroups').appendChild(v);
-                            document.getElementById('lsGroups').appendChild(l);
+                            document.getElementById('lsGroupsUpdate').appendChild(v);
+                            document.getElementById('lsGroupsUpdate').appendChild(l);
                             let innerDiv = document.createElement('div');
                             innerDiv.className = 'block-2';
                             iDiv.appendChild(innerDiv);
@@ -277,6 +286,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.editS = "display:none"
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var check = confirm("Are you sure you want to edit?");
+
+                var checkedValue = [];
+                var inputElements = document.getElementsByClassName('groupsCheckBox');
+
+
+                for(var i=0; i<inputElements.length; i++){
+                    console.log(inputElements[i].value)
+                    console.log(inputElements[i].checked)
+                    if(inputElements[i].checked ==true){
+                        checkedValue.push(inputElements[i].value);
+                    }
+                }
+
                 if (check == true) {
                     axios({
                         method: 'put',
@@ -288,6 +310,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             lastName: document.getElementById('editInfo.lastNameUpdate').value,
                             displayName: document.getElementById('editInfo.displayNameUpdate').value,
                             telephoneNumber: document.getElementById('editInfo.phoneUpdate').value,
+                            memberOf: checkedValue,
                             mail: document.getElementById('editInfo.mailUpdate').value,
                             userPassword: document.getElementById('editInfo.passwordRetypeUpdate').value,
                             description: document.getElementById('editInfo.descriptionUpdate').value,
@@ -296,9 +319,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 }
 
+            },
 
-            }
-            ,
+            exportUsers: function(){
+        url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+
+        axios.get(url + "/idman/api/users")
+            .then((res) => {
+                data = res.data;
+                var opts = [{sheetid:'Users',header:true}]
+                console.log("hi")
+                var result = alasql('SELECT * INTO XLSX("users.xlsx",?) FROM ?',
+                    [opts,[data]]);
+            });
+
+    },
+
+            importUsers: function() {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var data = e.target.result;
+                    var workbook = XLSX.read(data, {
+                        type: 'binary'
+                    });
+
+                    workbook.SheetNames.forEach(function(sheetName) {
+                        // Here is your object
+                        var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                        var json_object = JSON.stringify(XL_row_object);
+                        console.log(json_object);
+                    })
+                };
+
+                reader.onerror = function(ex) {
+                    console.log(ex);
+                };
+
+                reader.readAsBinaryString(file);
+
+            },
+
+
+
+
+
+
             addUserS: function () {
                 this.showS = "display:none"
                 this.addS = ""
@@ -319,6 +384,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.getElementById('lsGroupsAdd').appendChild(iDiv);
                         var v = document.createElement('input');
                         v.setAttribute("id", "checkboxaddpart" + i);
+                        v.setAttribute("class" , "groupsCheckBoxCreate")
                         v.type = "checkbox";
                         v.value = allGroups[i].name;
                         let l = document.createElement('label');
@@ -335,27 +401,60 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             },
-            addUser: function () {
+             checkedBoxes:function() {
+
+        var checkedValue = [];
+        var inputElements = document.getElementsByClassName('groupsCheckBox');
+
+
+
+        for(var i=0; inputElements.length; i++){
+            console.log(inputElements[i].value);
+            if(inputElements[i].checked){
+                console.log(inputElements[i].value);
+                checkedValue.push(inputElements[i].value);
+            }
+        }
+        return checkedValue;
+    },
+            addUser: function (id1,id2) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                //var vmt = BothFieldsIdentical(id1,id2);
 
-                axios({
-                    method: 'post',
-                    url: url + "/idman/api/users",
-                    headers: {'Content-Type': 'application/json'},
-                    data: JSON.stringify({
-                        userId: document.getElementById('editInfo.userIdCreate').value,
-                        firstName: document.getElementById('editInfo.firstNameCreate').value,
-                        lastName: document.getElementById('editInfo.lastNameCreate').value,
-                        displayName: document.getElementById('editInfo.displayNameCreate').value,
-                        telephoneNumber: document.getElementById('editInfo.phoneCreate').value,
-                        mail: document.getElementById('editInfo.mailCreate').value,
-                        userPassword: document.getElementById('editInfo.passwordRetypeCreate').value,
-                        description: document.getElementById('editInfo.descriptionCreate').value,
-                    }),
-                },);
+                var checkedValue = [];
+                var inputElements = document.getElementsByClassName('groupsCheckBoxCreate');
+                var check = confirm("Are you sure you want to add this user?");
 
+                console.log(inputElements.length);
 
+                for(var i=0; i<inputElements.length; i++){
+                    if(inputElements[i].checked ==true){
+                        checkedValue.push(inputElements[i].value);
+                    }
+                }
+
+if(check==true) {
+    axios({
+        method: 'post',
+        url: url + "/idman/api/users",
+        headers: {'Content-Type': 'application/json'},
+        data: JSON.stringify({
+                userId: document.getElementById('editInfo.userIdCreate').value,
+                firstName: document.getElementById('editInfo.firstNameCreate').value,
+                lastName: document.getElementById('editInfo.lastNameCreate').value,
+                displayName: document.getElementById('editInfo.displayNameCreate').value,
+                telephoneNumber: document.getElementById('editInfo.phoneCreate').value,
+                memberOf: checkedValue,
+                mail: document.getElementById('editInfo.mailCreate').value,
+                userPassword: document.getElementById('editInfo.passwordRetypeCreate').value,
+                description: document.getElementById('editInfo.descriptionCreate').value,
+
+            }
+        ),
+    },);
+
+}
 
             },
             deleteUser: function (id) {
@@ -400,7 +499,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s4 = "Services";
                     this.s5 = "Groups";
                     this.s6 = "Events";
-                    this.s7 = "Profile";
+                    this.s7 = "Settings";
                     this.s9 = "fa fa-arrow-left";
                     this.s10 = "Rules";
                     this.s11 = "Privacy";
@@ -415,13 +514,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s20 = "Dashboard";
                     this.s21 = "./groups?en";
                     this.s22 = "./settings?en";
-                    this.s23 = "Please Enter Your Email Address To Reset Your Password:";
-                    this.s24 = "Submission Was Successful.";
-                    this.s25 = "Please Go To Your mailbox And Follow The Instructions.";
-                    this.s26 = "Return To The Login Page";
-                    this.s27 = "There Is No Such Email Address In Our Database.";
-                    this.s28 = "Please Enter Your Email Address More Carefully:";
-                    this.s29 = "Please Enter Your ID To Complete The Process:";
                     this.U0= "Password";
                     this.U1= "Users";
                     this.U2= "ID";
@@ -436,9 +528,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U11 = "Delete"
                     this.U12 = "Add New User";
                     this.U13 = "Edit";
-                    this.U14 = "Member Of The Groups";
-                    this.U15 = "Repeat Password";
-                    this.U17 = "Remove all user";
+                    this.U17 = "Remove all user"
+                    this.U18= "وارد کردن کاربران با فایل"
+                    this.U19= "ذخیره سازی داده ها در فایل"
                 } else{
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
@@ -451,7 +543,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s4 = "سرویس ها";
                     this.s5 = "گروه ها";
                     this.s6 = "رویداد ها";
-                    this.s7 = "پروفایل";
+                    this.s7 = "تنظیمات";
                     this.s9 = "fa fa-arrow-right";
                     this.s10 = "قوانین";
                     this.s11 = "حریم خصوصی";
@@ -466,13 +558,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s20 = "داشبورد";
                     this.s21 = "./groups";
                     this.s22 = "./settings";
-                    this.s23 = "لطفا جهت بازنشانی رمز عبور، آدرس ایمیل خود را وارد کنید:";
-                    this.s24 = "ارسال موفقیت آمیز بود.";
-                    this.s25 = "لطفا به mailbox خود مراجعه نموده و طبق راهنما، باقی مراحل را انجام دهید.";
-                    this.s26 = "بازگشت به صفحه ورود";
-                    this.s27 = "ایمیل وارد شده در پایگاه داده ما وجود ندارد.";
-                    this.s28 = "لطفا با دقت بیشتری نسبت به ورود آدرس ایمیل اقدام نمایید:";
-                    this.s29 = "لطفا جهت تکمیل مراحل، شناسه خود را وارد نمایید:";
                     this.U0= "رمز";
                     this.U1= "کاربران";
                     this.U2= "شناسه";
@@ -487,9 +572,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U11 = "حذف"
                     this.U12 = "اضافه کردن کاربر جدید";
                     this.U13 = "ویرایش";
-                    this.U14 = "گروههای عضو";
-                    this.U15 = "تکرار رمز عبور";
                     this.U17 = "حذف تمامی کاربران";
+                    this.U18= "وارد کردن کاربران با فایل";
+                        this.U19= "ذخیره سازی داده ها در فایل";
                 }
             }
         }

@@ -9,10 +9,11 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.security.auth.Subject;
 
 public class EmailSend {
 
-    public  void sendMail(String to, String token) {
+    public  void sendMail(String to, String uid,String name, String token) {
 
         // Recipient's email ID needs to be mentioned.
 
@@ -23,6 +24,16 @@ public class EmailSend {
 
         // Assuming you are sending email from through gmails smtp
         String host = "smtp.gmail.com";
+
+
+        String subject = "بازنشانی رمز عبور";
+        String body = " عزیز \nشما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید.\n" +
+                "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n"+
+                "در غیر این صورت با کلیک بر روی  لینک زیر نسبت به بازنشانی و تغییر رمز عبور خود اقدام نمایید.\n";
+        String end = "\n\nاگر این لینک برای شما بصورت یک لینک قابل کلیک نشان داده نشد، آن را عینا در مرورگر خود کپی کنید";
+
+        String stringUid = "نام کاربری: ";
+        String stringLink = "لینک بازنشانی رمز عبور: ";
 
         // Get system properties
         Properties properties = System.getProperties();
@@ -58,15 +69,14 @@ public class EmailSend {
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 
             // Set Subject: header field
-            message.setSubject("This is the Subject Line!");
+            message.setSubject(subject);
 
             // Now set the actual message
-            message.setText("This is actual message"+token);
+            message.setText(name + body+stringUid+uid+"\n"+stringLink+token+end,"UTF8");
 
-            System.out.println("sending...");
             // Send message
             Transport.send(message);
-            System.out.println("Sent message successfully....");
+
         } catch (MessagingException mex) {
             mex.printStackTrace();
         }

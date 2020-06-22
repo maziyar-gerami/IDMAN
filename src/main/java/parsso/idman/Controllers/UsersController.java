@@ -34,10 +34,12 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/u/{uId}")
-    public ResponseEntity<String> rebindLdapPerson(@PathVariable("uId") String uid,@RequestBody Person person) {
-        String result = personRepo.update(person);
+    public ResponseEntity<String> rebindLdapPerson(@PathVariable("uId") String uid, @RequestBody Person person) {
+        String result = personRepo.update(uid,person);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+
 
 
     @GetMapping("/api/users")
@@ -49,11 +51,6 @@ public class UsersController {
     @GetMapping("/api/users/u/{id}")
     public ResponseEntity <Person> retrievePerson(@PathVariable("id") String userId) {
         return new ResponseEntity<Person> (personRepo.retrievePerson(userId), HttpStatus.OK);
-    }
-
-    @GetMapping("/api/users/u/{id}/{token}")
-    public ResponseEntity <Person> retrievePersonT(@PathVariable("id") String userId,@PathVariable("token") String token) {
-        return new ResponseEntity<Person> (personRepo.checkToken(userId, token), HttpStatus.OK);
     }
 
     @GetMapping("/api/users/checkMail/{email}")
