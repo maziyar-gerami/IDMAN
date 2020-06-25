@@ -146,6 +146,9 @@ document.addEventListener('DOMContentLoaded', function () {
             U17: "حذف تمامی کاربران",
             U18: "وارد کردن کاربران با فایل",
             U19: "ذخیره سازی داده ها در فایل",
+            U20: "وارد کردن کاربران با فایل",
+            U21: "بارگزاری",
+            U22: "بازنشانی رمز عبور",
             h1: "ترکیبی از حروف و اعداد. مثال: ali123",
             p1: "خیلی ضعیف",
             p2: "متوسط",
@@ -195,13 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.addS = "display:none"
                 this.editS = "display:none"
             },
-
-
-
-
-
-
-    updateUser: function (id) {
+            updateUser: function (id) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
 
@@ -221,6 +218,14 @@ document.addEventListener('DOMContentLoaded', function () {
                                 vm.users[i].description = res.data.description;
                             }
                         }
+                    });
+            },
+            sendEmail: function(email) {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/api/users/sendMail/" + email)
+                    .then((res) => {
+                        //document.getElementById('send').addEventListener('click', hideshow, false);
                     });
             },
             editUserS: function (id) {
@@ -320,21 +325,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
             },
-
             exportUsers: function(){
-        url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 
-        axios.get(url + "/idman/api/users")
-            .then((res) => {
-                data = res.data;
-                var opts = [{sheetid:'Users',header:true}]
-                console.log("hi")
-                var result = alasql('SELECT * INTO XLSX("users.xlsx",?) FROM ?',
-                    [opts,[data]]);
-            });
+                axios.get(url + "/idman/api/users")
+                    .then((res) => {
+                        data = res.data;
+                        var opts = [{sheetid:'Users',header:true}]
+                        console.log("hi")
+                        var result = alasql('SELECT * INTO XLSX("users.xlsx",?) FROM ?',
+                            [opts,[data]]);
+                    });
 
-    },
-
+            },
             importUsers: function() {
                 var reader = new FileReader();
                 reader.onload = function(e) {
@@ -358,12 +361,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 reader.readAsBinaryString(file);
 
             },
-
-
-
-
-
-
             addUserS: function () {
                 this.showS = "display:none"
                 this.addS = ""
@@ -401,22 +398,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             },
-             checkedBoxes:function() {
+            sendResetEmail(userId) {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                console.log(userId)
 
-        var checkedValue = [];
-        var inputElements = document.getElementsByClassName('groupsCheckBox');
+                axios.get(url + "/api/users/u/"+userId)
+                    .then((res) => {
+
+                        axios.get(url + "/api/users/sendMail/" + res.data.mail)
+                            .then((resFinal) => {
+                                //document.getElementById('send').addEventListener('click', hideshow, false);
+                            });
+                    })
+            },
+            checkedBoxes:function() {
+                var checkedValue = [];
+                var inputElements = document.getElementsByClassName('groupsCheckBox');
 
 
 
-        for(var i=0; inputElements.length; i++){
-            console.log(inputElements[i].value);
-            if(inputElements[i].checked){
-                console.log(inputElements[i].value);
-                checkedValue.push(inputElements[i].value);
-            }
-        }
-        return checkedValue;
-    },
+                for(var i=0; inputElements.length; i++){
+                    console.log(inputElements[i].value);
+                    if(inputElements[i].checked){
+                        console.log(inputElements[i].value);
+                        checkedValue.push(inputElements[i].value);
+                    }
+                }
+                return checkedValue;
+            },
             addUser: function (id1,id2) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
@@ -434,27 +444,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
 
-if(check==true) {
-    axios({
-        method: 'post',
-        url: url + "/idman/api/users",
-        headers: {'Content-Type': 'application/json'},
-        data: JSON.stringify({
-                userId: document.getElementById('editInfo.userIdCreate').value,
-                firstName: document.getElementById('editInfo.firstNameCreate').value,
-                lastName: document.getElementById('editInfo.lastNameCreate').value,
-                displayName: document.getElementById('editInfo.displayNameCreate').value,
-                telephoneNumber: document.getElementById('editInfo.phoneCreate').value,
-                memberOf: checkedValue,
-                mail: document.getElementById('editInfo.mailCreate').value,
-                userPassword: document.getElementById('editInfo.passwordRetypeCreate').value,
-                description: document.getElementById('editInfo.descriptionCreate').value,
+                if(check==true) {
+                    axios({
+                        method: 'post',
+                        url: url + "/idman/api/users",
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                                userId: document.getElementById('editInfo.userIdCreate').value,
+                                firstName: document.getElementById('editInfo.firstNameCreate').value,
+                                lastName: document.getElementById('editInfo.lastNameCreate').value,
+                                displayName: document.getElementById('editInfo.displayNameCreate').value,
+                                telephoneNumber: document.getElementById('editInfo.phoneCreate').value,
+                                memberOf: checkedValue,
+                                mail: document.getElementById('editInfo.mailCreate').value,
+                                userPassword: document.getElementById('editInfo.passwordRetypeCreate').value,
+                                description: document.getElementById('editInfo.descriptionCreate').value,
 
-            }
-        ),
-    },);
+                            }
+                        ),
+                    },);
 
-}
+                }
 
             },
             deleteUser: function (id) {
@@ -528,9 +538,12 @@ if(check==true) {
                     this.U11 = "Delete"
                     this.U12 = "Add New User";
                     this.U13 = "Edit";
-                    this.U17 = "Remove all user"
-                    this.U18= "وارد کردن کاربران با فایل"
-                    this.U19= "ذخیره سازی داده ها در فایل"
+                    this.U17 = "Remove all user";
+                    this.U18= "Export Users to a file";
+                    this.U19= "Save in file";
+                    this.U20= "Import users using file";
+                    this.U21= "Upload";
+                    this.U22= "بازنشانی رمز عبور";
                 } else{
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
@@ -574,7 +587,10 @@ if(check==true) {
                     this.U13 = "ویرایش";
                     this.U17 = "حذف تمامی کاربران";
                     this.U18= "وارد کردن کاربران با فایل";
-                        this.U19= "ذخیره سازی داده ها در فایل";
+                    this.U19= "ذخیره سازی داده ها در فایل";
+                    this.U20= "وارد کردن کاربران با فایل";
+                    this.U21= "بارگزاری";
+                    this.U22= "بازنشانی رمز عبور";
                 }
             }
         }

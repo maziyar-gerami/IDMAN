@@ -115,6 +115,8 @@
                         </div>
                     </div>
                 </div>
+
+
                 <div class="col-lg-9 page-content">
                     <div class="card">
                         <div class="card-body pb-0">
@@ -135,8 +137,8 @@
                                             <td>{{user.displayName}}</td>
                                             <td>{{user.memberOf}}</td>
                                             <td>
-                                                <button class="btn btn-success" v-on:click="updateUser(user.userId)">
-                                                    {{U10}}
+                                                <button class="btn btn-success" v-on:click="sendResetEmail(user.userId)">
+                                                    {{U22}}
                                                 </button>
                                             </td>
                                             <td>
@@ -154,30 +156,37 @@
                                         </tbody>
                                     </table>
                                     <div v-bind:style="showS" class="row">
-                                        <button class="btn btn-success" v-on:click="addUserS()">{{U12}}</button>
-                                        <button class="btn btn-success" v-on:click="exportUsers()">{{U19}}</button>
-
-                                        <button v-on:click="deleteAllUsers()" class="btn btn-danger">{{U17}}</button>
-
-                                        <form method="POST" enctype="multipart/form-data" action="/">
+                                        <div>
                                             <table>
-                                                <tr><td>انتخاب فایل کاربران</td><td><input type="file" name="file" /></td></tr>
-                                                <tr><td></td><td><input type="submit" value="Upload" /></td></tr>
+
+
+                                                <tr>
+                                                    <td><button class="btn btn-success" v-on:click="addUserS()">{{U12}}</button></td>
+                                                    <td><button v-on:click="deleteAllUsers()" class="btn btn-danger">{{U17}}</button></td>
+                                                </tr>
+                                                <tr>
+                                                    <button class="btn btn-success" v-on:click="exportUsers()">{{U19}}</button>
+                                                </tr>
+                                                <tr>
+
+                                                    <form method="POST" enctype="multipart/form-data" action="/">
+                                                        <table>
+
+                                                                <button class="btn btn-success"  name="file" /> {{U20}}
+                                                                <button class="btn btn-success" type="submit" value="Upload" disabled/> {{U21}}
+
+
+                                                    </form>
+
+
+                                                </tr>
+
                                             </table>
-                                        </form>
+
+                                        </div>
+
 
                                     </div>
-
-
-
-
-
-
-
-
-
-
-
 
                                     <form v-bind:style="editS">
                                         <div class="form-group">
@@ -185,9 +194,6 @@
                                             <input v-bind:value="editInfo.userId" id="editInfo.userIdU" type="text"
                                                    class="form-control" placeholder={{h1}} disabled>
                                         </div>
-
-
-
 
                                         <table>
                                             <tr>
@@ -306,13 +312,6 @@
 
                                         </table>
 
-
-
-
-
-
-
-
                                         <div class="form-group">
                                             <label>{{U3}}</label>
                                             <input v-bind:value="editInfo.firstName" id="editInfo.firstNameCreate" type="text"
@@ -335,7 +334,7 @@
                                             <label>{{U6}}</label>
                                             <input v-bind:value="editInfo.phone" id="editInfo.phoneCreate" type="number"
                                                    class="form-control" placeholder="09123456789" min="09000000000"
-                                                   max="o9999999999">
+                                                   max="09999999999">
                                         </div>
                                         <div class="form-group">
                                             <label>{{U7}}</label>
@@ -359,6 +358,9 @@
                         </div>
                     </div>
                 </div>
+
+
+
             </div>
         </div>
         <footer class="mb-3 mt-4">

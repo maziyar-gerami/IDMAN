@@ -1,12 +1,24 @@
 package parsso.idman.Configs;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 
 
 @Configuration
@@ -15,8 +27,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        LoginUrlAuthenticationEntryPoint entryPoint = new LoginUrlAuthenticationEntryPoint("https://parsso.razi.ac.ir/cas/login");
+
         http
 
+                .authorizeRequests().antMatchers( "/secured", "/login")
+                .authenticated()
+                .and().exceptionHandling()
+                .authenticationEntryPoint(entryPoint)
+                .and()
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/js/**").permitAll()
@@ -30,11 +50,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/users/checkMail/**").permitAll()
                 .antMatchers("/api/users/u/{id}/{token}").permitAll()
                 .antMatchers(HttpMethod.PUT,"/api/users/u/{uid}/{pass}/{token}").permitAll()
-                .antMatchers( "/secured", "/login")
-                .authenticated()
-                .and().exceptionHandling()
+                .anyRequest().fullyAuthenticated()
                 .and()
-
                 .formLogin()
                 .loginPage("/login")
                 .defaultSuccessUrl("/dashboard", true)
@@ -63,4 +80,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .passwordAttribute("userPassword");
     }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
 }
