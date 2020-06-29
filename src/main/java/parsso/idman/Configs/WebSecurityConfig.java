@@ -52,14 +52,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.casAuthenticationProvider = casAuthenticationProvider;
     }
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        //LoginUrlAuthenticationEntryPoint entryPoint = new LoginUrlAuthenticationEntryPoint("https://parsso.razi.ac.ir/cas/login");
         http
-
-                .authorizeRequests().antMatchers( "/login")
+                .authorizeRequests().antMatchers( "/dashboard", "/login")
                 .authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .and()
@@ -90,15 +87,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .logoutSuccessUrl("/login");
-
-
-
     }
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .authenticationProvider(casAuthenticationProvider)// cas;
+                .authenticationProvider(casAuthenticationProvider) // cas;
                 .ldapAuthentication()
                 .userDnPatterns("uid={0},ou=people")
                 .groupSearchBase("ou=people")
@@ -110,23 +104,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(new LdapShaPasswordEncoder() {
                 })
                 .passwordAttribute("userPassword");
-
-
     }
+
     @Bean
     @Override
     protected AuthenticationManager authenticationManager() throws Exception {
         return new ProviderManager(Collections.singletonList(casAuthenticationProvider));
     }
-    /*
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-     */
-
 
     public AuthenticationEntryPoint authenticationEntryPoint() {
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();

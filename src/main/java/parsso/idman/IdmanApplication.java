@@ -44,9 +44,10 @@ public class IdmanApplication implements CommandLineRunner {
 
     @Bean
     public ServiceProperties serviceProperties() {
-        //logger.info("service properties");
         ServiceProperties serviceProperties = new ServiceProperties();
-        serviceProperties.setService(BASE_URL + ":" + SERVER_PORT);
+        //serviceProperties.setService(BASE_URL + ":" + SERVER_PORT);
+        serviceProperties.setService("http://localhost:8080/login/cas"); // It should be exactly the same as Json ServiceID
+
         serviceProperties.setSendRenew(false);
         return serviceProperties;
     }
@@ -54,7 +55,7 @@ public class IdmanApplication implements CommandLineRunner {
     @Bean
     public TicketValidator ticketValidator() {
 
-        return new Cas30ServiceTicketValidator("https://parsso.razi.ac.ir/cas/p3/serviceValidate");
+        return new Cas30ServiceTicketValidator("https://parsso.razi.ac.ir/cas");
     }
 
     @Bean
@@ -86,7 +87,7 @@ public class IdmanApplication implements CommandLineRunner {
     @Bean
     public SingleSignOutFilter singleSignOutFilter() {
         SingleSignOutFilter singleSignOutFilter = new SingleSignOutFilter();
-        //singleSignOutFilter.setCasServerUrlPrefix("https://parssrazi.ac.ir/cas/");
+        singleSignOutFilter.setCasServerUrlPrefix("https://parssrazi.ac.ir/cas");
         singleSignOutFilter.setLogoutCallbackPath("/exit/cas");
         singleSignOutFilter.setIgnoreInitConfiguration(true);
         return singleSignOutFilter;
