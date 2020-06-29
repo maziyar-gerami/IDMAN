@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fa" class="h-100" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>پارسو</title>
+
+    <link href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/Users/style.css" rel="stylesheet">
+    <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="fonts/IranSans/font.css" rel="stylesheet">
+
+
+
+    <script src="js/vue.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/Users/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.12/xlsx.core.min.js"></script>
+    <script lang="javascript" src="dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
+
+</head>
+<body class="h-100">
+<div id="app">
+    <div v-bind:class="{rtl: isRtl}" class=" h-100">
+        <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
+            <div class="container">
+                <a class="navbar-brand" href="./">{{s0}}</a>
+                <div class="dropdown">
+                    <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span
+                            class="fa fa-caret-down"></span></a>
+                    <div id="myDropdown" class="dropdown-content">
+                        <a href="./logout">{{s2}}</a>
+                    </div>
+                    <a id="langbtn" href="#" v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 mb-3 mb-lg-0">
+                    <div class="card">
+                        <div class="card-body p-0 pt-3">
+                            <form id="upload-form" method="POST" action="#" accept-charset="UTF-8" role="form"
+                                  class="d-none" enctype="multipart/form-data">
+                                <input type="file" id="upload-image" name="upload-image"
+                                       onchange="document.getElementById('upload-form').submit()">
+                            </form>
+                            <div class="userpic mb-3">
+                                <img src="images/PlaceholderUser.png" class="img-responsive avatar" alt="Avatar">
+                                <a href="javascript:void(0)" ><!-- onclick="document.getElementById('upload-image').click()" -->
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <i class="fa fa-photo"></i>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </a>
+                            </div>
+
+                            <div class="text-center mb-3">
+                                <div>
+                                    <strong>{{s1}}</strong>
+                                </div>
+                                <div class="text-primary">
+                                    <small>{{username}}</small>
+                                </div>
+                            </div>
+
+                            <div class="text-center mb-3">
+                                <a href="./logout" class="btn btn-danger btn-sm">
+                                    <i class="fa fa-power-off"></i>
+                                    {{s2}}
+                                </a>
+                            </div>
+
+                            <div class="list-group list-group-flush">
+                                <a class="list-group-item list-group-item-action py-2 "
+                                   v-bind:href="s14">
+                                    <i class="fa fa-dashboard"></i>
+                                    <span>{{s20}}</span>
+                                </a>
+                                <a class="list-group-item list-group-item-action py-2 "
+                                   v-bind:href="s15">
+                                    <i class="fa fa-server"></i>
+                                    <span>{{s4}}</span>
+                                </a>
+                                <a class="list-group-item list-group-item-action py-2 "
+                                   v-bind:href="s16">
+                                    <i class="fa fa-user"></i>
+                                    <span>{{s13}}</span>
+                                </a>
+                                <a class="list-group-item list-group-item-action py-2 "
+                                   v-bind:href="s21">
+                                    <i class="fa fa-users"></i>
+                                    <span>{{s5}}</span>
+                                </a>
+                                <!-- <a class="list-group-item list-group-item-action py-2 "
+                                   href="#">
+                                    <i class="fa fa-calendar"></i>
+                                    <span>{{s6}}</span>
+                                </a> -->
+
+                                <a class="list-group-item list-group-item-action py-2 "
+                                   v-bind:href="s22">
+                                    <i class="fa fa-cogs"></i>
+                                    <span>{{s7}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-9 page-content">
+                    <div class="card">
+                        <div class="card-body pb-0">
+                            <div class="container">
+                                <h3 v-bind:style="showS">{{U1}}</h3>
+                                <div v-if="message" class="alert alert-success">{{this.message}}</div>
+                                <div class="container mb-5">
+                                    <table class="table" v-bind:style="showS">
+                                        <tr>
+                                            <th>{{U2}}</th>
+                                            <th>{{U5}}</th>
+                                            <th>{{U14}}</th>
+                                        </tr>
+                                        <tbody id="body">
+
+                                        <tr v-for="user in users" v-bind:key="user.userId">
+                                            <td>{{user.userId}}</td>
+                                            <td>{{user.displayName}}</td>
+                                            <td>{{user.memberOf}}</td>
+                                            <td>
+                                                <button class="btn btn-success" v-on:click="sendResetEmail(user.userId)">
+                                                    {{U22}}
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-warning" v-on:click="editUserS(user.userId)">
+                                                    {{U13}}
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-danger" v-on:click="deleteUser(user.userId)">
+                                                    {{U11}}
+                                                </button>
+                                            </td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                    <div v-bind:style="showS" class="row">
+                                        <div>
+                                            <table>
+
+
+                                                <tr>
+                                                    <td><button class="btn btn-success" v-on:click="addUserS()">{{U12}}</button></td>
+                                                    <td><button v-on:click="deleteAllUsers()" class="btn btn-danger">{{U17}}</button></td>
+                                                </tr>
+                                                <tr>
+                                                    <button class="btn btn-success" v-on:click="exportUsers()">{{U19}}</button>
+                                                </tr>
+                                                <tr>
+
+                                                    <form method="POST" enctype="multipart/form-data" action="/">
+                                                        <table>
+
+                                                                <button class="btn btn-success"  name="file" /> {{U20}}
+                                                                <button class="btn btn-success" type="submit" value="Upload" disabled/> {{U21}}
+
+
+                                                    </form>
+
+
+                                                </tr>
+
+                                            </table>
+
+                                        </div>
+
+
+                                    </div>
+
+                                    <form v-bind:style="editS">
+                                        <div class="form-group">
+                                            <label>{{U2}}</label>
+                                            <input v-bind:value="editInfo.userId" id="editInfo.userIdU" type="text"
+                                                   class="form-control" placeholder={{h1}} disabled>
+                                        </div>
+
+                                        <table>
+                                            <tr>
+                                                <td>
+
+                                                    <div class="pass">
+                                                        <label for="ediInfo.userPasswordUpdate" style="margin-right: 20px">{{U0}}</label><span id="msg1" style="margin-right: 20px" minlength="8"></span>
+                                                        <input v-bind:value="editInfo.userPassword"
+                                                               id="ediInfo.userPasswordUpdate" type="password"
+                                                               class="form-control" required
+                                                               onkeyup="validatePassword(this.value) "/>
+                                                    </div>
+                                                    <div class="passRetype">
+                                                        <label for="editInfo.passwordRetypeUpdate" minlength="8">{{U15}}</label>
+                                                        <input v-bind:value="editInfo.password"
+                                                               id="editInfo.passwordRetypeUpdate" type="password"
+                                                               class="form-control" required>
+                                                    </div>
+
+                                                </td>
+
+                                                <td >
+                                                    <div style="background-color: #f5fff6;margin-right: 20px; font-size: x-small; margin-top: 40px"  >
+
+                                                        <p>{{p7}}</p>
+                                                        <p>{{p4}}</p>
+                                                        <p>{{p5}}</p>
+                                                        <p>{{p6}}</p>
+                                                    </div>
+
+                                                </td>
+                                            </tr>
+
+                                        </table>
+
+                                        <div class="form-group">
+                                            <label>{{U3}}</label>
+                                            <input v-bind:value="editInfo.firstName" id="editInfo.firstNameUpdate"
+                                                   type="text" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{U4}}</label>
+                                            <input v-bind:value="editInfo.lastName" id="editInfo.lastNameUpdate"
+                                                   type="text" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{U5}}</label>
+                                            <input v-bind:value="editInfo.displayName" id="editInfo.displayNameUpdate"
+                                                   type="text" class="form-control" required>
+                                        </div>
+                                        <div id="lsGroupsUpdate" style="align-items: flex-end " align-items="left">
+                                            <label>{{U14}}</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{U6}}</label>
+                                            <input v-bind:value="editInfo.phone" id="editInfo.phoneUpdate" type="text"
+                                                   class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{U7}}</label>
+                                            <input v-bind:value="editInfo.mail" id="editInfo.mailUpdate" type="email"
+                                                   class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{U9}}</label>
+                                            <textarea v-bind:value="editInfo.description"
+                                                      id="editInfo.descriptionUpdate" rows="10" type="text"
+                                                      class="form-control">
+                                                </textarea>
+                                        </div>
+                                        <button v-on:click="editUser(editInfo.userId)" class="btn btn-primary">{{U13}}
+                                        </button>
+                                        <button v-on:click="showUsers()" class="btn btn-danger">{{s17}}</button>
+
+                                    </form>
+
+                                    <form v-bind:style="addS">
+                                        <div class="form-group">
+                                            <label>{{U2}}</label>
+                                            <input v-bind:value="editInfo.userId" id="editInfo.userIdCreate" type="text"
+                                                   class="form-control" required placeholder="John1234">
+                                        </div>
+
+
+                                        <table>
+                                            <tr>
+                                                <td>
+
+                                                    <div class="pass">
+                                                        <label for="ediInfo.userPasswordUpdate" style="margin-right: 20px">{{U0}}</label><span id="msg1" style="margin-right: 20px" minlength="8"></span>
+                                                        <input v-bind:value="editInfo.userPassword"
+                                                               id="ediInfo.userPasswordCreate" type="password"
+                                                               class="form-control" required
+                                                               onkeyup="validatePassword(this.value) "/>
+                                                    </div>
+                                                    <div class="passRetype">
+                                                        <label for="editInfo.passwordRetypeUpdate" minlength="8">{{U15}}</label>
+                                                        <input v-bind:value="editInfo.password"
+                                                               id="editInfo.passwordRetypeCreate" type="password"
+                                                               class="form-control" required>
+                                                    </div>
+
+                                                </td>
+
+                                                <td >
+                                                    <div style="background-color: #f5fff6;margin-right: 20px; font-size: x-small; margin-top: 40px"  >
+
+                                                        <p>{{p7}}</p>
+                                                        <p>{{p4}}</p>
+                                                        <p>{{p5}}</p>
+                                                        <p>{{p6}}</p>
+                                                    </div>
+
+                                                </td>
+                                            </tr>
+
+                                        </table>
+
+                                        <div class="form-group">
+                                            <label>{{U3}}</label>
+                                            <input v-bind:value="editInfo.firstName" id="editInfo.firstNameCreate" type="text"
+                                                   class="form-control" placeholder="John">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{U4}}</label>
+                                            <input v-bind:value="editInfo.lastName" id="editInfo.lastNameCreate" type="text"
+                                                   class="form-control" placeholder="Doe">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{U5}}</label>
+                                            <input v-bind:value="editInfo.displayName" id="editInfo.displayNameCreate"
+                                                   type="text" class="form-control" required placeholder="علی نظری">
+                                        </div>
+                                        <div id="lsGroupsAdd" style="align-items: flex-end">
+                                            <label>{{U14}}</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{U6}}</label>
+                                            <input v-bind:value="editInfo.phone" id="editInfo.phoneCreate" type="number"
+                                                   class="form-control" placeholder="09123456789" min="09000000000"
+                                                   max="09999999999">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{U7}}</label>
+                                            <input v-bind:value="editInfo.mail" id="editInfo.mailCreate" type="email"
+                                                   class="form-control" required placeholder="Jhon.Doe@example.com">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{U9}}</label>
+                                            <textarea v-bind:value="editInfo.description" id="editInfo.descriptionCreate"
+                                                      rows="10" type="text" class="form-control">
+                                                </textarea>
+                                        </div>
+                                        <button v-on:click='addUser("ediInfo.userPassword","editInfo.passwordRetypeCreate")' class="btn btn-primary">{{s18}}</button>
+                                        <button v-on:click="showUsers()" class="btn btn-danger">{{s17}}</button>
+
+                                    </form>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+        <footer class="mb-3 mt-4">
+            <div class="container">
+                <div class="d-flex justify-content-center">
+                    <a href="#" class="btn btn-link" style="text-decoration: none;">{{s10}}</a>
+                    <a href="#" class="btn btn-link" style="text-decoration: none;">{{s11}}</a>
+                    <a href="#" class="btn btn-link" style="text-decoration: none;">{{s12}}</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+</body>
+</html>
