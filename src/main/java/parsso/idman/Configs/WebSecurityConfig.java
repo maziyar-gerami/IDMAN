@@ -78,17 +78,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/users/checkMail/**").permitAll()
                 .antMatchers("/api/users/u/{id}/{token}").permitAll()
                 .antMatchers(HttpMethod.PUT,"/api/users/u/{uid}/{pass}/{token}").permitAll();
-                //.anyRequest().fullyAuthenticated()
-                //.and()
-                //.formLogin()
-                //.loginPage("/login")
-                //.defaultSuccessUrl("/dashboard", true)
-                //.permitAll()
-                //.and()
-                //.logout()
-                //.logoutUrl("/logout")
-                ////.invalidateHttpSession(true)
-                ////.deleteCookies("JSESSIONID")
+                .anyRequest().fullyAuthenticated()
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard", true)
+                .permitAll()
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                //.invalidateHttpSession(true)
+                //.deleteCookies("JSESSIONID")
                 //.logoutSuccessUrl("/login");
 
 
