@@ -1,4 +1,4 @@
-package parsso.idman.Configs;
+/*package parsso.idman.Configs;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.Ordered;
@@ -18,4 +18,4 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
     }
 }
-
+*/

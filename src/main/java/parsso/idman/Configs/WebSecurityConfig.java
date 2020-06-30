@@ -56,7 +56,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-                .authorizeRequests().antMatchers( "/dashboard", "/login")
+
+                .authorizeRequests().anyRequest().fullyAuthenticated()
+                .and()
+                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
+                .and()
+                .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
+                .addFilterBefore(logoutFilter, LogoutFilter.class)
+                .csrf().ignoringAntMatchers("/exit/cas");
+
+                /*.authorizeRequests().antMatchers( "/dashboard", "/login")
                 .authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .and()
@@ -74,7 +83,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/users/sendMail/**").permitAll()
                 .antMatchers("/api/users/checkMail/**").permitAll()
                 .antMatchers("/api/users/u/{id}/{token}").permitAll()
-                .antMatchers(HttpMethod.PUT,"/api/users/u/{uid}/{pass}/{token}").permitAll();
+                .antMatchers(HttpMethod.PUT,"/api/users/u/{uid}/{pass}/{token}").permitAll()
                 .anyRequest().fullyAuthenticated()
                 .and()
                 .formLogin()
@@ -86,14 +95,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
-                .logoutSuccessUrl("/login");
+                .logoutSuccessUrl("/login");*/
     }
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .authenticationProvider(casAuthenticationProvider) // cas;
-                .ldapAuthentication()
+                .authenticationProvider(casAuthenticationProvider); // cas;
+                /*.ldapAuthentication()
                 .userDnPatterns("uid={0},ou=people")
                 .groupSearchBase("ou=people")
                 .contextSource()
@@ -103,8 +112,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordCompare()
                 .passwordEncoder(new LdapShaPasswordEncoder() {
                 })
-                .passwordAttribute("userPassword");
+                .passwordAttribute("userPassword");*/
     }
+
+
 
     @Bean
     @Override
