@@ -85,16 +85,20 @@ document.addEventListener('DOMContentLoaded', function () {
         mode: 'history',
         routes: []
     });
+    Vue.component('v-pagination', window['vue-plain-pagination'])
     new Vue({
         router,
         el: '#app',
         data: {
+            currentSort:'id',
+            currentSortDir:'asc',
             userInfo: [],
             email: "",
             username: "",
             name: "",
             nameEN: "",
             users: [],
+            usersPage: [],
             message: "",
             editInfo: {},
             placeholder: "text-align: right;",
@@ -104,6 +108,23 @@ document.addEventListener('DOMContentLoaded', function () {
             editS: "display:none",
             addS: "display:none",
             showS: "",
+            currentPage: 1,
+            total: 1,
+            bootstrapPaginationClasses: {
+                ul: 'pagination',
+                li: 'page-item',
+                liActive: 'active',
+                liDisable: 'disabled',
+                button: 'page-link'  
+            },
+            paginationAnchorTexts: {
+                first: '<<',
+                prev: '<',
+                next: '>',
+                last: '>>'
+            },
+            margin1: "ml-1",
+            margin5: "ml-5",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -167,13 +188,27 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         methods: {
+            sort:function(s) {
+                //if s == current sort, reverse
+                console.log("fhoafho");
+                if(s === this.currentSort) {
+                  this.currentSortDir = this.currentSortDir === 'asc'?'desc':'asc';
+                }
+                this.currentSort = s;
+            },
+            nextPage:function() {
+                if((this.currentPage*this.pageSize) < this.cats.length) this.currentPage++;
+            },
+            prevPage:function() {
+                if(this.currentPage > 1) this.currentPage--;
+            },
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/username")
+                axios.get(url + "/username") // /idman
                     .then((res) => {
                         vm.username = res.data;
-                        axios.get(url + "/idman/api/users/u/" + vm.username)
+                        axios.get(url + "/api/users/u/" + vm.username) // /idman
                             .then((res) => {
                                 vm.userInfo = res.data;
                                 vm.name = vm.userInfo.displayName;
@@ -185,12 +220,10 @@ document.addEventListener('DOMContentLoaded', function () {
             refreshUsers: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-
-                axios.get(url + "/idman/api/users")
+                axios.get(url + "/api/users") // /idman
                     .then((res) => {
                         vm.users = res.data;
-
-
+                        vm.total = Math.ceil(vm.users.length / 2);
                     });
             },
             showUsers: function () {
@@ -201,10 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
             updateUser: function (id) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-
-
-
-                axios.get(url + `/idman/api/users/u/${id}`)
+                axios.get(url + `/api/users/u/${id}`) // /idman
                     .then((res) => {
                         for(i = 0; i < vm.users.length; ++i){
                             if(vm.users[i].userId == id){
@@ -223,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
             sendEmail: function(email) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/users/sendMail/" + email)
+                axios.get(url + "/api/users/sendMail/" + email) // idman
                     .then((res) => {
                         //document.getElementById('send').addEventListener('click', hideshow, false);
                     });
@@ -235,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 var res;
-                axios.get(url + `/idman/api/users/u/${id}`)
+                axios.get(url + `/api/users/u/${id}`) // /idman
                     .then((res) => {
                         vm.editInfo = res.data;
                         vm.editInfo = res.data;
@@ -247,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 function populate(checkedGroups) {
 
-                    axios.get(url + `/idman/api/groups`)
+                    axios.get(url + `/api/groups`) // /idman
                         .then((res) => {
                                 populateTwo(res.data, checkedGroups)
                             }
@@ -307,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (check == true) {
                     axios({
                         method: 'put',
-                        url: url + '/idman/api/users/u/' + id,
+                        url: url + '/api/users/u/' + id,  // /idman
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                             userId: id,
@@ -328,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
             exportUsers: function(){
                 url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 
-                axios.get(url + "/idman/api/users")
+                axios.get(url + "/api/users") // /idman
                     .then((res) => {
                         data = res.data;
                         var opts = [{sheetid:'Users',header:true}]
@@ -367,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.editS = "display:none"
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 
-                axios.get(url + `/idman/api/groups`)
+                axios.get(url + `/api/groups`) // /idman
                     .then((res) => {
                             populate(res.data);
                         }
@@ -403,10 +433,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 console.log(userId)
 
-                axios.get(url + "/api/users/u/"+userId)
+                axios.get(url + "/api/users/u/"+userId) // idman
                     .then((res) => {
 
-                        axios.get(url + "/api/users/sendMail/" + res.data.mail)
+                        axios.get(url + "/api/users/sendMail/" + res.data.mail) // idman
                             .then((resFinal) => {
                                 //document.getElementById('send').addEventListener('click', hideshow, false);
                             });
@@ -447,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(check==true) {
                     axios({
                         method: 'post',
-                        url: url + "/idman/api/users",
+                        url: url + "/api/users",  // /idman
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                                 userId: document.getElementById('editInfo.userIdCreate').value,
@@ -473,7 +503,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 var check = confirm("Are you sure you want to delete?");
                 if (check == true) {
-                    axios.delete(url + `/idman/api/users/u/${id}`)
+                    axios.delete(url + `/api/users/u/${id}`) // /idman
                         .then(() => {
                             vm.refreshUsers();
                         });
@@ -489,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 var check = confirm("Are you sure you want to delete all users?");
                 if (check == true) {
-                    axios.delete(url + `/idman/api/users`)
+                    axios.delete(url + `/api/users`) // /idman
                         .then(() => {
                             vm.refreshUsers();
                         });
@@ -502,6 +532,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.margin = "margin-left: 30px;";
                     this.lang = "فارسی";
                     this.isRtl = false;
+                    this.margin1 = "mr-1";
+                    this.margin5 = "mr-5";
                     this.s0 = "Parsso";
                     this.s1 = this.nameEN;
                     this.s2 = "Exit";
@@ -543,12 +575,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U19= "Save in file";
                     this.U20= "Import users using file";
                     this.U21= "Upload";
-                    this.U22= "بازنشانی رمز عبور";
+                    this.U22= "Password Reset";
                 } else{
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
                     this.lang = "EN";
                     this.isRtl = true;
+                    this.margin1 = "ml-1";
+                    this.margin5 = "ml-5";
                     this.s0 = "پارسو";
                     this.s1 = this.name;
                     this.s2 = "خروج";
@@ -593,6 +627,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U22= "بازنشانی رمز عبور";
                 }
             }
+        },
+        computed:{
+            sortedUsers:function() {
+                this.usersPage = [];
+                for(let i = 0; i < 2; ++i){
+                    if(i + ((this.currentPage - 1) * 2) <= this.users.length - 1){
+                        this.usersPage[i] = this.users[i + ((this.currentPage - 1) * 2)];
+                    }
+                }
+                return this.usersPage;
+            }
         }
-    })
+    });
 })

@@ -45,12 +45,12 @@ public class ServicesController {
 
     @GetMapping("/api/services")
     public ResponseEntity<List<Object>> ListServices() {
-        File folder = new File("/etc/cas/services/");
+        File folder = new File("./services/"); // /etc/cas/services/
         String[] files = folder.list();
         JSONParser jsonParser = new JSONParser();
         List<Object> services =  new ArrayList<Object>();
         for (String file : files){
-            try (FileReader reader = new FileReader("/etc/cas/services/" + file)){
+            try (FileReader reader = new FileReader("./services/" + file)){ // /etc/cas/services/
                 Object obj = jsonParser.parse(reader);
                 services.add(obj);
             } catch (FileNotFoundException e){

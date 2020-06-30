@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
         mode: 'history',
         routes: []
     });
+    Vue.component('v-pagination', window['vue-plain-pagination'])
     new Vue({
         router,
         el: '#app',
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
             nameEN: "",
             group: [],
             groups: [],
+            groupsPage: [],
             message: "",
             editInfo: {},
             placeholder: "text-align: right;",
@@ -39,6 +41,22 @@ document.addEventListener('DOMContentLoaded', function () {
             editS: "display:none",
             addS: "display:none",
             showS: "",
+            currentPage: 1,
+            total: 1,
+            bootstrapPaginationClasses: {
+                ul: 'pagination',
+                li: 'page-item',
+                liActive: 'active',
+                liDisable: 'disabled',
+                button: 'page-link'  
+            },
+            paginationAnchorTexts: {
+                first: '<<',
+                prev: '<',
+                next: '>',
+                last: '>>'
+            },
+            margin1: "ml-1",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -95,10 +113,10 @@ document.addEventListener('DOMContentLoaded', function () {
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/username")
+                axios.get(url + "/username") // /idman
                     .then((res) => {
                         vm.username = res.data;
-                        axios.get(url + "/idman/api/users/u/" + vm.username)
+                        axios.get(url + "/api/users/u/" + vm.username) // /idman
                             .then((res) => {
                                 vm.userInfo = res.data;
                                 vm.name = vm.userInfo.displayName;
@@ -110,9 +128,10 @@ document.addEventListener('DOMContentLoaded', function () {
             getGroups: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/groups")
+                axios.get(url + "/api/groups") // /idman
                     .then((res) => {
                         vm.groups = res.data;
+                        vm.total = Math.ceil(vm.groups.length / 2);
                     });
             },
             showGroups: function () {
@@ -126,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.editS = ""
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/groups/" + id)
+                axios.get(url + "/api/groups/" + id) // /idman
                     .then((res) => {
                         vm.group = res.data;
                     });
@@ -140,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (check == true) {
                     axios({
                         method: 'put',
-                        url: url + '/idman/api/groups/' + id,
+                        url: url + '/api/groups/' + id, // /idman
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                             id: document.getElementById('group.idUpdate').value,
@@ -160,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 axios({
                     method: 'post',
-                    url: url + "/idman/api/groups",
+                    url: url + "/api/groups", // /idman
                     headers: {'Content-Type': 'application/json'},
                     data: JSON.stringify({
                         id: document.getElementById('group.idCreate').value,
@@ -174,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 var check = confirm("Are you sure you want to delete?");
                 if (check == true) {
-                    axios.delete(url + `/idman/api/groups/${id}`)
+                    axios.delete(url + `/api/groups/${id}`) // /idman
                         .then(() => {
                             vm.getGroups();
                         });
@@ -185,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 var check = confirm("Are you sure you want to delete all groups?");
                 if (check == true) {
-                    axios.delete(url + `/idman/api/groups`)
+                    axios.delete(url + `/api/groups`) // /idman
                         .then(() => {
                             vm.getGroups();
                         });
@@ -197,6 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.margin = "margin-left: 30px;";
                     this.lang = "فارسی";
                     this.isRtl = false;
+                    this.margin1 = "mr-1";
                     this.s0 = "Parsso";
                     this.s1 = this.nameEN;
                     this.s2 = "Exit";
@@ -239,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.margin = "margin-right: 30px;";
                     this.lang = "EN";
                     this.isRtl = true;
+                    this.margin1 = "ml-1";
                     this.s0 = "پارسو";
                     this.s1 = this.name;
                     this.s2 = "خروج";
@@ -278,6 +299,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U17 = "حذف تمامی گروه ها"
                 }
             }
+        },
+        computed:{
+            sortedGroups:function() {
+                this.groupsPage = [];
+                for(let i = 0; i < 2; ++i){
+                    if(i + ((this.currentPage - 1) * 2) <= this.groups.length - 1){
+                        this.groupsPage[i] = this.groups[i + ((this.currentPage - 1) * 2)];
+                    }
+                }
+                return this.groupsPage;
+            }
         }
-    })
+    });
 })

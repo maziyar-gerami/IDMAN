@@ -18,6 +18,7 @@ function myFunction() {
       mode: 'history',
       routes: []
     });
+    Vue.component('v-pagination', window['vue-plain-pagination'])
     new Vue({
       router,
       el: '#app',
@@ -27,6 +28,7 @@ function myFunction() {
         name: "",
         nameEN: "",
         services: [],
+        servicesPage: [],
         message: "",
         editInfo: {},
         placeholder: "text-align: right;",
@@ -41,6 +43,21 @@ function myFunction() {
         editS2: "display: none;",
         showS: "",
         flag: false,
+        currentPage: 1,
+        total: 1,
+        bootstrapPaginationClasses: {
+            ul: 'pagination',
+            li: 'page-item',
+            liActive: 'active',
+            liDisable: 'disabled',
+            button: 'page-link'  
+        },
+        paginationAnchorTexts: {
+            first: '<<',
+            prev: '<',
+            next: '>',
+            last: '>>'
+        },
         s0: "پارسو",
         s1: "",
         s2: "خروج",
@@ -104,10 +121,10 @@ function myFunction() {
         getUserInfo: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/idman/username")
+          axios.get(url + "/username") // /idman
           .then((res) => {
             vm.username = res.data;
-            axios.get(url + "/idman/api/users/u/" + vm.username)
+            axios.get(url + "/api/users/u/" + vm.username) // /idman
             .then((res) => {
               vm.userInfo = res.data;
               vm.name = vm.userInfo.displayName;
@@ -119,9 +136,10 @@ function myFunction() {
         refreshServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/idman/api/services")
+          axios.get(url + "/api/services") // /idman
           .then((res) => {
             vm.services = res.data;
+            vm.total = Math.ceil(vm.services.length / 2);
           });
         },
         showServices: function () {
@@ -133,6 +151,7 @@ function myFunction() {
           document.getElementById("showS0").setAttribute("style", "display:none;");
           document.getElementById("showS1").setAttribute("style", "display:none;");
           document.getElementById("showS2").setAttribute("style", "display:none;");
+          document.getElementById("showS3").setAttribute("style", "display:none;");
           document.getElementById("showS4").setAttribute("style", "display:none;");
           document.getElementById("showS5").setAttribute("style", "display:none;");
           document.getElementById("editS").setAttribute("style", "");
@@ -140,7 +159,7 @@ function myFunction() {
           document.getElementById("editS2").setAttribute("style", "");
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + `/idman/api/services/${id}`)
+          axios.get(url + `/api/services/${id}`) // /idman
           .then((res) => {
             vm.flag = true;
             vm.editInfo = res.data;
@@ -269,6 +288,7 @@ function myFunction() {
           document.getElementById("showS0").setAttribute("style", "");
           document.getElementById("showS1").setAttribute("style", "");
           document.getElementById("showS2").setAttribute("style", "");
+          document.getElementById("showS3").setAttribute("style", "");
           document.getElementById("showS4").setAttribute("style", "");
           document.getElementById("showS5").setAttribute("style", "");
           document.getElementById("editS").setAttribute("style", "display:none;");
@@ -278,7 +298,7 @@ function myFunction() {
         deleteService: function (id) {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.delete(url + `/idman/api/services/${id}`)
+          axios.delete(url + `/api/services/${id}`) // /idman
           .then(() => {
             location.reload();
           });
@@ -286,13 +306,13 @@ function myFunction() {
         deleteAllServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.delete(url + "/idman/api/services")
+          axios.delete(url + "/api/services") // /idman
           .then(() => {
             location.reload();
           });
         },
         getGroups: function () {
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/idman/api/groups";
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/api/groups"; // /idman
           var vm = this;
           axios.get(url)
           .then((res) => {
@@ -475,6 +495,17 @@ function myFunction() {
           document.getElementById("requiredAuthenticationContextClass").removeAttribute("name");
           document.getElementById("assertionAudiences").removeAttribute("name");
           }
+      },
+      computed:{
+        sortedServices:function() {
+          this.servicesPage = [];
+          for(let i = 0; i < 2; ++i){
+              if(i + ((this.currentPage - 1) * 2) <= this.services.length - 1){
+                  this.servicesPage[i] = this.services[i + ((this.currentPage - 1) * 2)];
+              }
+          }
+          return this.servicesPage;
+        }
       }
-    })
+    });
   })

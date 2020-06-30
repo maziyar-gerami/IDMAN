@@ -19,9 +19,10 @@
     <script src="js/Users/script.js"></script>
     <script src="https://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.12/xlsx.core.min.js"></script>
-    <script lang="javascript" src="dist/xlsx.full.min.js"></script>
+    <script lang="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
+    <script src="//unpkg.com/vue-plain-pagination"></script>
 
 </head>
 <body class="h-100">
@@ -121,7 +122,28 @@
                     <div class="card">
                         <div class="card-body pb-0">
                             <div class="container">
-                                <h3 v-bind:style="showS">{{U1}}</h3>
+                                <h3 class="border-bottom pb-2" v-bind:style="showS">{{U1}}</h3>
+                                <div v-bind:style="showS" class="row mb-3 mt-3">
+                                    <table>
+                                        <tr class="mb-3">
+                                            <th><button class="btn btn-success" :class="margin1" v-on:click="addUserS()">{{U12}}</button></th>
+                                            <th><button v-on:click="deleteAllUsers()" class="btn btn-danger" :class="margin5">{{U17}}</button></th>
+                                            <th><form method="POST" enctype="multipart/form-data" action="/">
+                                                <button data-toggle="tooltip" data-placement="top" :title="U20" class="btn btn-success" :class="margin1"  name="file">
+                                                    <span class="fa-passwd-reset fa-stack">
+                                                        <i class="fa fa-cloud-upload fa-stack-2x"></i>
+                                                    </span>
+                                                </button>
+                                                <button class="btn btn-success" :class="margin5" type="submit" value="Upload" disabled>{{U21}}</button>
+                                            </form></th>
+                                            <th><button data-toggle="tooltip" data-placement="top" :title="U19" class="btn btn-success" v-on:click="exportUsers()">
+                                                <span class="fa-passwd-reset fa-stack">
+                                                    <i class="fa fa-cloud-download fa-stack-2x"></i>
+                                                </span>
+                                            </button></th>
+                                        </tr>
+                                    </table>
+                                </div>
                                 <div v-if="message" class="alert alert-success">{{this.message}}</div>
                                 <div class="container mb-5">
                                     <table class="table" v-bind:style="showS">
@@ -132,67 +154,46 @@
                                         </tr>
                                         <tbody id="body">
 
-                                        <tr v-for="user in users" v-bind:key="user.userId">
+                                        <tr v-for="user in sortedUsers" v-bind:key="user.userId">
                                             <td>{{user.userId}}</td>
                                             <td>{{user.displayName}}</td>
                                             <td>{{user.memberOf}}</td>
                                             <td>
-                                                <button class="btn btn-success" v-on:click="sendResetEmail(user.userId)">
-                                                    {{U22}}
+                                                <button style="padding: .2rem .2rem;" data-toggle="tooltip" data-placement="top" :title="U22" class="btn btn-success" v-on:click="sendResetEmail(user.userId)">
+                                                    <span class="fa-passwd-reset fa-stack">
+                                                        <i class="fa fa-undo fa-stack-2x"></i>
+                                                        <i class="fa fa-lock fa-stack-1x"></i>
+                                                    </span> 
                                                 </button>
                                             </td>
                                             <td>
-                                                <button class="btn btn-warning" v-on:click="editUserS(user.userId)">
-                                                    {{U13}}
+                                                <button style="padding: .2rem .2rem;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-warning" v-on:click="editUserS(user.userId)">
+                                                    <span class="fa-passwd-reset fa-stack">
+                                                        <i class="fa fa-pencil-square-o fa-stack-2x"></i>
+                                                    </span>
                                                 </button>
                                             </td>
                                             <td>
-                                                <button class="btn btn-danger" v-on:click="deleteUser(user.userId)">
-                                                    {{U11}}
+                                                <button style="padding: .2rem .2rem;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-danger" v-on:click="deleteUser(user.userId)">
+                                                    <span class="fa-passwd-reset fa-stack">
+                                                        <i class="fa fa-trash fa-stack-2x"></i>
+                                                    </span>
                                                 </button>
                                             </td>
                                         </tr>
 
                                         </tbody>
                                     </table>
-                                    <div v-bind:style="showS" class="row">
-                                        <div>
-                                            <table>
-
-
-                                                <tr>
-                                                    <td><button class="btn btn-success" v-on:click="addUserS()">{{U12}}</button></td>
-                                                    <td><button v-on:click="deleteAllUsers()" class="btn btn-danger">{{U17}}</button></td>
-                                                </tr>
-                                                <tr>
-                                                    <button class="btn btn-success" v-on:click="exportUsers()">{{U19}}</button>
-                                                </tr>
-                                                <tr>
-
-                                                    <form method="POST" enctype="multipart/form-data" action="/">
-                                                        <table>
-
-                                                                <button class="btn btn-success"  name="file" /> {{U20}}
-                                                                <button class="btn btn-success" type="submit" value="Upload" disabled/> {{U21}}
-
-
-                                                    </form>
-
-
-                                                </tr>
-
-                                            </table>
-
-                                        </div>
-
-
+                                    <div v-bind:style="showS">
+                                        <v-pagination v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                        :labels="paginationAnchorTexts"></v-pagination>
                                     </div>
 
                                     <form v-bind:style="editS">
                                         <div class="form-group">
                                             <label>{{U2}}</label>
                                             <input v-bind:value="editInfo.userId" id="editInfo.userIdU" type="text"
-                                                   class="form-control" placeholder={{h1}} disabled>
+                                                   class="form-control" :placeholder="h1" disabled>
                                         </div>
 
                                         <table>
@@ -374,5 +375,10 @@
         </footer>
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();   
+    });
+</script>
 </body>
 </html>
