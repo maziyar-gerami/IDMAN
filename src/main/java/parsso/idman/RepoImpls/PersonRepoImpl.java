@@ -1,19 +1,15 @@
 package parsso.idman.RepoImpls;
 
-import org.apache.poi.ss.extractor.ExcelExtractor;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.AttributesMapper;
+import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.utils.Email.EmailSend;
+import parsso.idman.Configs.MyConstants;
+import parsso.idman.Email.EmailSend;
 import parsso.idman.Models.Person;
 import parsso.idman.Repos.PersonRepo;
 
@@ -21,11 +17,10 @@ import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
@@ -33,13 +28,7 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 public class PersonRepoImpl implements PersonRepo {
 
     public static final String BASE_DN = "";
-
-    @Value("${base.url}")
-    private String BASE_URL;
-    @Value("${server.port}")
-    private String PORT;
-    @Value("${email.controller}")
-    private String EMAILCONTROLLER;
+    String currentUserId;
 
     @Autowired
     private LdapTemplate ldapTemplate;
@@ -82,7 +71,7 @@ public class PersonRepoImpl implements PersonRepo {
 
     @Override
     public String remove() {
-        List<Person> people = retrieveUsersMain();
+        List<Person> people = retrieve();
         for (Person person : people) {
             Name dn = buildDn(person.getUserId());
             ldapTemplate.unbind(dn);
@@ -105,9 +94,11 @@ public class PersonRepoImpl implements PersonRepo {
         attrs.put("givenName", p.getFirstName());
         attrs.put("sn", p.getLastName());
         attrs.put("displayName", p.getDisplayName());
-        attrs.put("mobile", p.getMobile());
+        attrs.put("telephoneNumber", p.getTelephoneNumber());
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
+        if (p.getUserPassword() != null)
+            attrs.put("userPassword", p.getUserPassword());
         System.out.println("**************");
         if (p.getToken() != null) {
             attrs.put("l", p.getToken());
@@ -122,19 +113,18 @@ public class PersonRepoImpl implements PersonRepo {
         }
 
         attrs.put("description", p.getDescription());
-        attrs.put("photo", p.getPhoto());
         return attrs;
     }
 
 
     private DirContextOperations buildAttributes(String uid, Person p, Name dn) {
 
-        DirContextOperations context = ldapTemplate.lookupContext(dn);
+        DirContextOperations context =  context = ldapTemplate.lookupContext(dn);
 
         if (p.getFirstName() != null) context.setAttributeValue("givenName", p.getFirstName());
         if (p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
         if (p.getDisplayName() != null) context.setAttributeValue("displayName", p.getDisplayName());
-        if (p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
+        if (p.getTelephoneNumber() != null) context.setAttributeValue("telephoneNumber", p.getTelephoneNumber());
         if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
         if ((p.getFirstName()) != null || (p.getLastName() != null)) {
             if (p.getFirstName() == null)
@@ -146,7 +136,7 @@ public class PersonRepoImpl implements PersonRepo {
             else
                 context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
         }
-
+        if (p.getUserPassword() != null) context.setAttributeValue("userPassword", p.getUserPassword());
 
         if (p.getToken() != null) context.setAttributeValue("l", p.getToken());
 
@@ -159,9 +149,16 @@ public class PersonRepoImpl implements PersonRepo {
         }
 
         if (p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
-        if (p.getPhoto() != null) context.setAttributeValue("photo", p.getPhoto());
         return context;
     }
+
+
+
+
+
+
+
+
 
     public Name buildDn(String userId) {
         return LdapNameBuilder.newInstance(BASE_DN).add("ou", "People").add("uid", userId).build();
@@ -175,18 +172,8 @@ public class PersonRepoImpl implements PersonRepo {
         return LdapNameBuilder.newInstance(BASE_DN).add("ou", "people").build();
     }
 
-
     @Override
-    public List<Person> retrieveUsersMain() {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        List<Person> people = ldapTemplate.search(query().attributes("uid","displayName","ou").where("objectClass").is("person"),
-                new PersonAttributeMapper());
-        return people;
-    }
-
-    @Override
-    public List<Person> retrieveUsersFull() {
+    public List<Person> retrieve() {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         List<Person> people = ldapTemplate.search(query().where("objectClass").is("person"),
@@ -225,7 +212,7 @@ public class PersonRepoImpl implements PersonRepo {
             EmailSend emailSend = new EmailSend();
 
 
-            String fullUrl = createUrl(BASE_URL, PORT, person.getUserId(), person.getToken());
+            String fullUrl = createUrl(MyConstants.baseUrl, MyConstants.sendEmailController, person.getUserId(), person.getToken());
 
             emailSend.sendMail(email, person.getUserId(), person.getDisplayName(), "\n" + fullUrl);
             return "Email sent";
@@ -252,7 +239,7 @@ public class PersonRepoImpl implements PersonRepo {
                     String token = insertToken(person);
                     EmailSend emailSend = new EmailSend();
 
-                    String fullUrl = createUrl(BASE_URL, PORT , person.getUserId(), person.getToken());
+                    String fullUrl = createUrl(MyConstants.baseUrl, MyConstants.sendEmailController, person.getUserId(), person.getToken());
                     emailSend.sendMail(email, person.getUserId(), person.getDisplayName(), "\n" + fullUrl);
                     return "Email sent";
 
@@ -266,9 +253,9 @@ public class PersonRepoImpl implements PersonRepo {
     }
 
 
-    private String createUrl(String BaseUrl, String Port,  String userId, String token) {
+    private String createUrl(String BaseUrl, String controllerAddress, String userId, String token) {
         //TODO: Need to uncomment for war file
-        return BaseUrl+":"+Port + /*"/idman" +*/ EMAILCONTROLLER + userId + "/" + token.toString();
+        return BaseUrl + /*"/idman" +*/ controllerAddress + userId + "/" + token.toString();
 
     }
 
@@ -320,18 +307,21 @@ public class PersonRepoImpl implements PersonRepo {
             person.setFirstName(null != attributes.get("givenName") ? attributes.get("givenName").get().toString() : null);
             person.setLastName(null != attributes.get("sn") ? attributes.get("sn").get().toString() : null);
             person.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
-            person.setMobile(null != attributes.get("mobile") ? attributes.get("mobile").get().toString() : null);
+            person.setTelephoneNumber(null != attributes.get("telephoneNumber") ? attributes.get("telephoneNumber").get().toString() : null);
             person.setMail(null != attributes.get("mail") ? attributes.get("mail").get().toString() : null);
+            int nGroups;
+            if (attributes.get("ou") == null)
+                nGroups = 0;
+            else
+                nGroups = attributes.get("ou").size();
 
-            int nGroups = (null == attributes.get("ou")? 0 : attributes.get("ou").size());
             List<String> ls = new LinkedList<>();
-            for (int i = 0; i < nGroups; i++)ls.add(attributes.get("ou").get(i).toString());
-
+            for (int i = 0; i < nGroups; i++)
+                ls.add(attributes.get("ou").get(i).toString());
             person.setToken(null != attributes.get("l") ? attributes.get("l").get().toString() : null);
             person.setMemberOf(null != attributes.get("ou") ? ls : null);
             person.setUserPassword(null != attributes.get("userPassword") ? attributes.get("userPassword").get().toString() : null);
             person.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
-            person.setPhoto(null != attributes.get("photo") ? attributes.get("photo").get().toString() : null);
             return person;
         }
     }
@@ -353,71 +343,5 @@ public class PersonRepoImpl implements PersonRepo {
         } else {
             return "userId or token was incorrect";
         }
-    }
-
-    @Override
-    public List<Person> retrieveFileUsers(MultipartFile file , int[] sequence, boolean hasHeader) {
-
-        try
-        {
-            InputStream insfile = file.getInputStream();
-            System.out.println(insfile);
-
-            List<Person> persons= new LinkedList<>();
-
-            //Create Workbook instance holding reference to .xlsx file
-            XSSFWorkbook workbook = new XSSFWorkbook(insfile);
-
-            //Get first/desired sheet from the workbook
-            XSSFSheet sheet = workbook.getSheetAt(0);
-
-            //Iterate through each rows one by one
-            Iterator<Row> rowIterator = sheet.iterator();
-
-            //if has header go to the nex row
-            if (hasHeader==true) rowIterator.next();
-
-            while (rowIterator.hasNext())
-            {
-                Row row = rowIterator.next();
-                //For each row, iterate through all the columns
-                Iterator<Cell> cellIterator = row.cellIterator();
-
-                Person person = new Person();
-
-
-                Cell cell = row.getCell(0);
-                //Check the cell type and format accordingly
-                Name dn = buildDn(cell.getStringCellValue());
-
-                person.setUserId(row.getCell(0).getStringCellValue());
-                person.setFirstName(row.getCell(1).getStringCellValue());
-                person.setLastName(row.getCell(2).getStringCellValue());
-                person.setDisplayName(row.getCell(3).getStringCellValue());
-                person.setMobile(row.getCell(4).getStringCellValue());
-                person.setMail(row.getCell(5).getStringCellValue());
-                person.setMemberOf(Collections.singletonList(row.getCell(6).getStringCellValue()));
-                person.setUserPassword(row.getCell(7).getStringCellValue());
-                person.setDescription(row.getCell(8).getStringCellValue());
-                person.setPhoto(row.getCell(9).getStringCellValue());
-
-
-                System.out.println(person);
-
-                create(person);
-
-
-                System.out.println("");
-            }
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-
-
-        return null;
     }
 }
