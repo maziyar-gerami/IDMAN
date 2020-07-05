@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         if(res.data == null){
                             vm.userPicture = "images/PlaceholderUser.png";
                         }else{
-                            vm.userPicture = /* url + */ "/api/user/photo"; // /idman
+                            vm.userPicture = /* url + */ "/idman/api/user/photo"; // 
                         }
                     });
             },

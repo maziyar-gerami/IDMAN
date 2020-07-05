@@ -46,7 +46,7 @@
                 <div class="col-lg-3 mb-3 mb-lg-0">
                     <div class="card">
                         <div class="card-body p-0 pt-3">
-                            <form id="upload-form" method="POST" action="/api/users/import" accept-charset="UTF-8" role="form"
+                            <form id="upload-form" method="POST" action="/idman/api/user/photo" accept-charset="UTF-8" role="form"
                                   class="d-none" enctype="multipart/form-data">
                                 <input type="file" id="upload-image" name="upload-image"
                                        onchange="document.getElementById('upload-form').submit()">
@@ -129,7 +129,7 @@
                                             <th><button class="btn btn-success" :class="margin1" v-on:click="addUserS()">{{U12}}</button></th>
                                             <th><button v-on:click="deleteAllUsers()" class="btn btn-danger" :class="margin5">{{U17}}</button></th>
                                             <th>
-                                                <form id="myForm" method="POST" enctype="multipart/form-data" action="/api/users/import">
+                                                <form id="myForm" method="POST" enctype="multipart/form-data" action="/idman/api/users/import">
                                                     <input type="file" accept=".xls, .xlsx, .csv" ref="file" @change="selectedFile"
                                                     data-toggle="tooltip" data-placement="top" :title="U20" class="btn btn-success" :class="margin1"  name="file" id="file">
                                                 </form>
