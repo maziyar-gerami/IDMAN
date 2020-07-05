@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
         router,
         el: '#app',
         data: {
+            recordsShownOnPage: 2,
             userInfo: [],
             email: "",
             username: "",
@@ -57,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 last: '>>'
             },
             margin1: "ml-1",
+            userPicture: "images/PlaceholderUser.png",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -79,6 +81,10 @@ document.addEventListener('DOMContentLoaded', function () {
             s20: "داشبورد",
             s21: "./groups",
             s22: "./settings",
+            s23: "آیا از اعمال این تغییرات اطمینان دارید؟",
+            s24: "آیا از حذف این گروه اطمینان دارید؟",
+            s25: "آیا از حذف تمامی گروه ها اطمینان دارید؟",
+            s26: "./privacy",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "شناسه",
@@ -104,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.getUserInfo();
+            this.getUserPic();
             this.getGroups();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
@@ -113,25 +120,34 @@ document.addEventListener('DOMContentLoaded', function () {
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/username") // /idman
+                axios.get(url + "/idman/api/user") // 
+                .then((res) => {
+                    vm.userInfo = res.data;
+                    vm.username = vm.userInfo.userId;
+                    vm.name = vm.userInfo.displayName;
+                    vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
+                    vm.s1 = vm.name;
+                });
+            },
+            getUserPic: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/idman/api/user/photo") // 
                     .then((res) => {
-                        vm.username = res.data;
-                        axios.get(url + "/api/users/u/" + vm.username) // /idman
-                            .then((res) => {
-                                vm.userInfo = res.data;
-                                vm.name = vm.userInfo.displayName;
-                                vm.nameEN = vm.userInfo.firstName;
-                                vm.s1 = vm.name;
-                            });
+                        if(res.data == null){
+                            vm.userPicture = "images/PlaceholderUser.png";
+                        }else{
+                            vm.userPicture = /* url + */ "/api/user/photo"; // /idman
+                        }
                     });
             },
             getGroups: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/groups") // /idman
+                axios.get(url + "/idman/api/groups") // 
                     .then((res) => {
                         vm.groups = res.data;
-                        vm.total = Math.ceil(vm.groups.length / 2);
+                        vm.total = Math.ceil(vm.groups.length / vm.recordsShownOnPage);
                     });
             },
             showGroups: function () {
@@ -145,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.editS = ""
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/groups/" + id) // /idman
+                axios.get(url + "/idman/api/groups/" + id) // 
                     .then((res) => {
                         vm.group = res.data;
                     });
@@ -155,11 +171,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.addS = "display:none"
                 this.editS = "display:none"
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var check = confirm("Are you sure you want to edit?");
+                var check = confirm(this.s23);
                 if (check == true) {
                     axios({
                         method: 'put',
-                        url: url + '/api/groups/' + id, // /idman
+                        url: url + '/idman/api/groups/' + id, // 
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                             id: document.getElementById('group.idUpdate').value,
@@ -179,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 axios({
                     method: 'post',
-                    url: url + "/api/groups", // /idman
+                    url: url + "/idman/api/groups", // 
                     headers: {'Content-Type': 'application/json'},
                     data: JSON.stringify({
                         id: document.getElementById('group.idCreate').value,
@@ -191,9 +207,9 @@ document.addEventListener('DOMContentLoaded', function () {
             deleteGroup: function (id) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                var check = confirm("Are you sure you want to delete?");
+                var check = confirm(this.s24);
                 if (check == true) {
-                    axios.delete(url + `/api/groups/${id}`) // /idman
+                    axios.delete(url + `/idman/api/groups/${id}`) // 
                         .then(() => {
                             vm.getGroups();
                         });
@@ -202,9 +218,9 @@ document.addEventListener('DOMContentLoaded', function () {
             deleteAllGroups: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                var check = confirm("Are you sure you want to delete all groups?");
+                var check = confirm(this.s25);
                 if (check == true) {
-                    axios.delete(url + `/api/groups`) // /idman
+                    axios.delete(url + `/idman/api/groups`) // 
                         .then(() => {
                             vm.getGroups();
                         });
@@ -239,6 +255,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s20 = "Dashboard";
                     this.s21 = "./groups?en";
                     this.s22 = "./settings?en";
+                    this.s23 = "Are You Sure You Want To Edit?";
+                    this.s24 = "Are You Sure You Want To Delete?";
+                    this.s25 = "Are You Sure You Want To Delete All Groups?";
+                    this.s26 = "./privacy?en";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "ID";
@@ -282,6 +302,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s20 = "داشبورد";
                     this.s21 = "./groups";
                     this.s22 = "./settings";
+                    this.s23 = "آیا از اعمال این تغییرات اطمینان دارید؟";
+                    this.s24 = "آیا از حذف این گروه اطمینان دارید؟";
+                    this.s25 = "آیا از حذف تمامی گروه ها اطمینان دارید؟";
+                    this.s26 = "./privacy";
                     this.U0= "رمز";
                     this.U1= "گروه ها";
                     this.U2= "شناسه";
@@ -303,9 +327,9 @@ document.addEventListener('DOMContentLoaded', function () {
         computed:{
             sortedGroups:function() {
                 this.groupsPage = [];
-                for(let i = 0; i < 2; ++i){
-                    if(i + ((this.currentPage - 1) * 2) <= this.groups.length - 1){
-                        this.groupsPage[i] = this.groups[i + ((this.currentPage - 1) * 2)];
+                for(let i = 0; i < this.recordsShownOnPage; ++i){
+                    if(i + ((this.currentPage - 1) * this.recordsShownOnPage) <= this.groups.length - 1){
+                        this.groupsPage[i] = this.groups[i + ((this.currentPage - 1) * this.recordsShownOnPage)];
                     }
                 }
                 return this.groupsPage;

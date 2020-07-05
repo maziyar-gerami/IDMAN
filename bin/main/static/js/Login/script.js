@@ -51,7 +51,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s16: "بازگشت",
             s17: "",
             s18: " عزیز",
-            s19: "،"
+            s19: "،",
+            s20: "متاسفانه درخواست شما با مشکل مواجه شده است"
         },
         created: function () {
             this.getName();
@@ -66,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var inf = str.split("/");
                 var vm = this;   
                 if(!inf.includes("login")){
-                    axios.get(url + "/idman/api/users/u/" + inf[5] + "/" + inf[6]) //  
+                    axios.get(url + "/idman/api/public/getName/" + inf[5] + "/" + inf[6]) // 
                         .then((res) => {
                             vm.userInfo = res.data;
                             vm.s17 = vm.userInfo.displayName;
@@ -102,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s17 = this.userInfo.firstName + " " + this.userInfo.lastName;
                     this.s18 = ",";
                     this.s19 = "Dear ";
+                    this.s20 = "Sorry, There Was a Problem With Your Request";
                     this.rules[0].message = "- One Lowercase Letter Required.";
                     this.rules[1].message = "- One Uppercase Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
@@ -135,6 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s17 = this.userInfo.displayName;
                     this.s18 = " عزیز";
                     this.s19 = "،";
+                    this.s20 = "متاسفانه درخواست شما با مشکل مواجه شده است";
                     this.rules[0].message = ".حداقل شامل یک کاراکتر کوچک باشد ";
                     this.rules[1].message = ".حداقل شامل یک کاراکتر بزرگ باشد ";
                     this.rules[2].message = ".حداقل ۸ کاراکتر باشد ";
@@ -152,14 +155,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var str = window.location.pathname;
                 var inf = str.split("/");
-                var vm = this; //
-                axios.put(url + "/idman/api/users/u/" + inf[5] + "/" + this.password + "/" + inf[6], "New Password Here") 
-                    .then((res) => {                                                                                         // 
-                        window.location.replace(window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/idman/login");                        
-                    })
-                    .catch(error => {
-                        console.log(error.message);
-                      });
+                var vm = this;
+                axios({
+                    method: 'put',
+                    url: url + '/idman/api/public/resetPass/' + inf[5] + "/" + inf[6],  // 
+                    headers: {'Content-Type': 'application/json'},
+                    data: JSON.stringify({
+                        newPassword: vm.password
+                    }),
+                }).then((res) => {
+                    location.replace(url + "/idman/login");                        
+                });
             }
         },
         computed: {

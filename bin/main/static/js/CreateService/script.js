@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
       lang: "EN",
       isRtl: true,
       samls: "display: none;",
+      userPicture: "images/PlaceholderUser.png",
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -71,11 +72,13 @@ document.addEventListener('DOMContentLoaded', function () {
       s36: "شناسه سرویس",
       s37: "./users",
       s38: "./groups",
-      s39: "./settings"
+      s39: "./settings",
+      s40: "./privacy"
     },
     created: function () {
       this.getGroups();
       this.getUserInfo();
+      this.getUserPic();
       if(typeof this.$route.query.en !== 'undefined'){
         this.changeLang();
       }
@@ -84,17 +87,26 @@ document.addEventListener('DOMContentLoaded', function () {
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/username")
-        .then((res) => {
-          vm.username = res.data;
-          axios.get(url + "/idman/api/users/u/" + vm.username)
+        axios.get(url + "/idman/api/user") // 
           .then((res) => {
-            vm.userInfo = res.data;
-            vm.name = vm.userInfo.displayName;
-            vm.nameEN = vm.userInfo.firstName;
-            vm.s1 = vm.name;
+              vm.userInfo = res.data;
+              vm.username = vm.userInfo.userId;
+              vm.name = vm.userInfo.displayName;
+              vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
+              vm.s1 = vm.name;
           });
-        });
+      },
+      getUserPic: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        axios.get(url + "/idman/api/user/photo") // 
+            .then((res) => {
+                if(res.data == null){
+                    vm.userPicture = "images/PlaceholderUser.png";
+                }else{
+                    vm.userPicture = /* url + */ "/api/user/photo"; // /idman
+                }
+            });
       },
       getGroups: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/idman/api/groups";
@@ -171,6 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s37 = "./users?en";
           this.s38 = "./groups?en";
           this.s39 = "./settings?en";
+          this.s40 = "./privacy?en";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -215,6 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s37 = "./users";
             this.s38 = "./groups";
             this.s39 = "./settings";
+            this.s40 = "./privacy";
         }
       },
       saml: function () {

@@ -99,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.getUserInfo();
-            this.refreshUsers();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
             }
@@ -108,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
             sendEmail: function  (email) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/users/checkMail/" + email) // 
+                axios.get(url + "/idman/api/public/checkMail/" + email) // 
                     .then((res) => {
                         vm.emails = res.data;
                         if(vm.emails.length == 0){
@@ -121,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             vm.sendU = false;
                             vm.Success = true;
                             vm.Error = false;
-                            axios.get(url + "/idman/api/users/sendMail/" + email) // 
+                            axios.get(url + "/idman/api/public/sendMail/" + email) // 
                                 .then((res) => {
                                     
                                 });
@@ -133,12 +132,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
             },
-        
             sendEmailUser: function (email, username) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 var flag = false;
-                axios.get(url + "/idman/api/users/checkMail/" + email) // 
+                axios.get(url + "/idman/api/public/checkMail/" + email) // 
                     .then((res) => {
                         vm.emails = res.data;
                         if(vm.emails.length > 1){
@@ -149,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     vm.sendU = false;
                                     vm.Success = true;
                                     vm.Error = false;
-                                    axios.get(url + "/idman/api/users/sendMail/" + email + "/" + username) // 
+                                    axios.get(url + "/idman/api/public/sendMail/" + email + "/" + username) // 
                                         .then((res) => {
                                             
                                         });
@@ -168,224 +166,14 @@ document.addEventListener('DOMContentLoaded', function () {
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/username")
-                    .then((res) => {
-                        vm.username = res.data;
-                        axios.get(url + "/idman/api/users/u/" + vm.username)
-                            .then((res) => {
-                                vm.userInfo = res.data;
-                                vm.name = vm.userInfo.displayName;
-                                vm.nameEN = vm.userInfo.firstName;
-                                vm.s1 = vm.name;
-                            });
-                    });
-            },
-            refreshUsers: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                console.log("in refresh users")
-                axios.get(url + "/idman/api/users")
-                    .then((res) => {
-                        vm.users = res.data;
-
-
-                    });
-            },
-            showUsers: function () {
-                this.showS = ""
-                this.addS = "display:none"
-                this.editS = "display:none"
-            },
-            updateUser: function (id) {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                axios.get(url + `/idman/api/users/u/${id}`)
-                    .then((res) => {
-                        for(i = 0; i < vm.users.length; ++i){
-                            if(vm.users[i].userId == id){
-                                vm.users[i].firstName = res.data.firstName;
-                                vm.users[i].lastName = res.data.lastName;
-                                vm.users[i].displayName = res.data.displayName;
-                                vm.users[i].telephoneNumber = res.data.telephoneNumber;
-                                vm.users[i].mail = res.data.mail;
-                                vm.users[i].memberOf = res.data.memberOf;
-                                vm.users[i].userPassword = res.data.userPassword;
-                                vm.users[i].description = res.data.description;
-                            }
-                        }
-                    });
-            },
-            editUserS: function (id) {
-                this.showS = "display:none"
-                this.addS = "display:none"
-                this.editS = ""
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                var res;
-                axios.get(url + `/idman/api/users/u/${id}`)
-                    .then((res) => {
-                        vm.editInfo = res.data;
-                        vm.editInfo = res.data;
-                        vm.editInfo.password = res.data.userPassword;
-                        vm.editInfo.phone = res.data.telephoneNumber;
-                        populate(res.data.memberOf);
-
-                    });
-
-                function populate(checkedGroups) {
-
-                    axios.get(url + `/idman/api/groups`)
-                        .then((res) => {
-                                populateTwo(res.data, checkedGroups)
-                            }
-                        );
-                    function populateTwo(allGroups, checkedGroups) {
-                        for (var i = 0; i < allGroups.length; i++) {
-                            let iDiv = document.createElement('div');
-                            iDiv.id = 'block' + i;
-                            iDiv.className = 'block';
-                            document.getElementById('lsGroups').appendChild(iDiv);
-                            var v = document.createElement('input');
-                            v.setAttribute("id", "checkbox" + i);
-                            v.type = "checkbox";
-                            console.log(v.getAttribute("id", "checkbox" + i));
-                            v.value = allGroups[i].name;
-                            if (checkedGroups!=null) {
-                                for (var j = 0; j < checkedGroups.length; j++) {
-                                    if ((allGroups[i].name).localeCompare(checkedGroups[j]) == 0) {
-                                        v.checked = true;
-                                    }
-                                }
-                            }
-                            let l = document.createElement('label');
-                            l.setAttribute("for", v.value);
-                            l.innerHTML = v.value;
-                            document.getElementById('lsGroups').appendChild(v);
-                            document.getElementById('lsGroups').appendChild(l);
-                            let innerDiv = document.createElement('div');
-                            innerDiv.className = 'block-2';
-                            iDiv.appendChild(innerDiv);
-                        }
-                    };
-                }
-
-
-            },
-            editUser: function (id) {
-                this.showS = ""
-                this.addS = "display:none"
-                this.editS = "display:none"
-                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var check = confirm("Are you sure you want to edit?");
-                if (check == true) {
-                    axios({
-                        method: 'put',
-                        url: url + '/idman/api/users/u/' + id,
-                        headers: {'Content-Type': 'application/json'},
-                        data: JSON.stringify({
-                            userId: id,
-                            firstName: document.getElementById('editInfo.firstNameUpdate').value,
-                            lastName: document.getElementById('editInfo.lastNameUpdate').value,
-                            displayName: document.getElementById('editInfo.displayNameUpdate').value,
-                            telephoneNumber: document.getElementById('editInfo.phoneUpdate').value,
-                            mail: document.getElementById('editInfo.mailUpdate').value,
-                            userPassword: document.getElementById('editInfo.passwordRetypeUpdate').value,
-                            description: document.getElementById('editInfo.descriptionUpdate').value,
-                        }),
-                    },);
-
-                }
-
-
-            }
-            ,
-            addUserS: function () {
-                this.showS = "display:none"
-                this.addS = ""
-                this.editS = "display:none"
-                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-
-                axios.get(url + `/idman/api/groups`)
-                    .then((res) => {
-                            populate(res.data);
-                        }
-                    );
-                function populate(allGroups) {
-                    console.log(allGroups)
-                    for (var i = 0; i < allGroups.length; i++) {
-                        let iDiv = document.createElement('div');
-                        iDiv.id = 'block' + i;
-                        iDiv.className = 'block';
-                        document.getElementById('lsGroupsAdd').appendChild(iDiv);
-                        var v = document.createElement('input');
-                        v.setAttribute("id", "checkboxaddpart" + i);
-                        v.type = "checkbox";
-                        v.value = allGroups[i].name;
-                        let l = document.createElement('label');
-                        l.setAttribute("for", v.value);
-                        l.innerHTML = v.value;
-                        document.getElementById('lsGroupsAdd').appendChild(v);
-                        document.getElementById('lsGroupsAdd').appendChild(l);
-                        let innerDiv = document.createElement('div');
-                        innerDiv.className = 'block-2';
-                        iDiv.appendChild(innerDiv);
-                    }
-                };
-
-
-
-            },
-            addUser: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-
-                axios({
-                    method: 'post',
-                    url: url + "/idman/api/users",
-                    headers: {'Content-Type': 'application/json'},
-                    data: JSON.stringify({
-                        userId: document.getElementById('editInfo.userIdCreate').value,
-                        firstName: document.getElementById('editInfo.firstNameCreate').value,
-                        lastName: document.getElementById('editInfo.lastNameCreate').value,
-                        displayName: document.getElementById('editInfo.displayNameCreate').value,
-                        telephoneNumber: document.getElementById('editInfo.phoneCreate').value,
-                        mail: document.getElementById('editInfo.mailCreate').value,
-                        userPassword: document.getElementById('editInfo.passwordRetypeCreate').value,
-                        description: document.getElementById('editInfo.descriptionCreate').value,
-                    }),
-                },);
-
-
-
-            },
-            deleteUser: function (id) {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-
-                var check = confirm("Are you sure you want to delete?");
-                if (check == true) {
-                    axios.delete(url + `/idman/api/users/u/${id}`)
-                        .then(() => {
-                            vm.refreshUsers();
-                        });
-                }
-
-
-
-
-            },
-            deleteAllUsers: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-
-                var check = confirm("Are you sure you want to delete all users?");
-                if (check == true) {
-                    axios.delete(url + `/idman/api/users`)
-                        .then(() => {
-                            vm.refreshUsers();
-                        });
-                }
-
+                axios.get(url + "/idman/api/user") // 
+                .then((res) => {
+                    vm.userInfo = res.data;
+                    vm.username = vm.userInfo.userId;
+                    vm.name = vm.userInfo.displayName;
+                    vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
+                    vm.s1 = vm.name;
+                });
             },
             changeLang: function () {
                 if(this.lang == "EN"){

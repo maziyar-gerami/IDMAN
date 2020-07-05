@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ],
             show: false,
             showR: false,
+            showC: false,
             has_number: false,
             has_lowercase: false,
             has_uppercase: false,
@@ -56,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
             menuS: false,
             activeItem: "password",
             eye: "right: 1%;",
+            userPicture: "images/PlaceholderUser.png",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -79,6 +81,9 @@ document.addEventListener('DOMContentLoaded', function () {
             s21: "رمز عبور های وارد شده یکسان نمی باشند",
             s22: "./groups",
             s23: "./settings",
+            s24: "آیا از اعمال این تغییرات اطمینان دارید؟",
+            s25: "./privacy",
+            s26: "رمز عبور فعلی",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -100,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.getUserInfo();
+            this.getUserPic();
             this.isAdmin();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
@@ -115,68 +121,74 @@ document.addEventListener('DOMContentLoaded', function () {
             isAdmin: function () {
             var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
             var vm = this;
-            axios.get(url + "/idman/username") // 
+            axios.get(url + "/idman/api/user/isAdmin") // 
                 .then((res) => {
-                    axios.get(url + "/idman/api/users/isAdmin/" + res.data) // 
-                    .then((resp) => {
-                        if(resp.data){
-                            vm.menuS = true;
-                        }
-                    });
+                    if(res.data){
+                        vm.menuS = true;
+                    }
                 });
             },
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/username") // 
+                axios.get(url + "/idman/api/user") // 
                     .then((res) => {
-                        vm.username = res.data;
-                        axios.get(url + "/idman/api/users/u/" + vm.username) // 
-                            .then((res) => {
-                                vm.userInfo = res.data;
-                                vm.name = vm.userInfo.displayName;
-                                vm.nameEN = vm.userInfo.firstName;
-                                vm.s1 = vm.name;
-                            });
+                        vm.userInfo = res.data;
+                        vm.username = vm.userInfo.userId;
+                        vm.name = vm.userInfo.displayName;
+                        vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
+                        vm.s1 = vm.name;
+                    });
+            },
+            getUserPic: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/idman/api/user/photo") // 
+                    .then((res) => {
+                        if(res.data == null){
+                            vm.userPicture = "images/PlaceholderUser.png";
+                        }else{
+                            vm.userPicture = /* url + */ "/api/user/photo"; // /idman
+                        }
                     });
             },
             editUser: function (id) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                var check = confirm("Are you sure you want to edit?");
+                var check = confirm(this.s24);
                 if (check == true) {
                     axios({
                         method: 'put',
-                        url: url + '/idman/api/users/u/' + id,   // 
+                        url: url + '/idman/api/user',   // 
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
-                            /* userId: id, */
                             firstName: document.getElementById('userInfo.firstNameUpdate').value,
                             lastName: document.getElementById('userInfo.lastNameUpdate').value,
                             displayName: document.getElementById('userInfo.displayNameUpdate').value,
                             telephoneNumber: document.getElementById('userInfo.telephoneNumberUpdate').value,
                             mail: document.getElementById('userInfo.mailUpdate').value,
-                            /* memberOf: vm.userInfo.memberOf, */
                             description: document.getElementById('userInfo.descriptionUpdate').value
                         }),
+                    }).then((res) => {
+                        location.replace(url + "/idman/settings"); // 
                     });
-                    location.replace(url + "/idman/settings"); // 
                 }
             },
             editPass: function (id) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var check = confirm("Are you sure you want to edit?");
-                var vm = this;
+                var check = confirm(this.s24);
                 if (check == true) {
                     axios({
                         method: 'put',
-                        url: url + '/idman/api/users/u/' + id,   // 
+                        url: url + '/idman/api/user/password',   // 
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
-                            userPassword: document.getElementById('password').value
+                            newPassword: document.getElementById('password').value,
+                            currentPassword: document.getElementById('currentPassword').value
                         }),
+                    }).then((res) => {
+                        location.replace(url + "/idman/settings"); // 
                     });
-                    location.replace(url + "/idman/settings"); // 
                 }
             },
             passwordCheck () {
@@ -216,6 +228,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s21 = "Passwords Don't Match";
                     this.s22 = "./groups?en";
                     this.s23 = "./settings?en";
+                    this.s24 = "Are You Sure You Want To Edit?";
+                    this.s25 = "./privacy?en";
+                    this.s26 = "Current Password";
                     this.U0= "Password";
                     this.U1= "Users";
                     this.U2= "ID";
@@ -266,6 +281,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s21 = "رمز عبور های وارد شده یکسان نمی باشند";
                     this.s22 = "./groups";
                     this.s23 = "./settings";
+                    this.s24 = "آیا از اعمال این تغییرات اطمینان دارید؟";
+                    this.s25 = "./privacy";
+                    this.s26 = "رمز عبور فعلی";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";

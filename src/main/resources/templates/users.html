@@ -46,14 +46,14 @@
                 <div class="col-lg-3 mb-3 mb-lg-0">
                     <div class="card">
                         <div class="card-body p-0 pt-3">
-                            <form id="upload-form" method="POST" action="#" accept-charset="UTF-8" role="form"
+                            <form id="upload-form" method="POST" action="/api/users/import" accept-charset="UTF-8" role="form"
                                   class="d-none" enctype="multipart/form-data">
                                 <input type="file" id="upload-image" name="upload-image"
                                        onchange="document.getElementById('upload-form').submit()">
                             </form>
                             <div class="userpic mb-3">
-                                <img src="images/PlaceholderUser.png" class="img-responsive avatar" alt="Avatar">
-                                <a href="javascript:void(0)" ><!-- onclick="document.getElementById('upload-image').click()" -->
+                                <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
+                                <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()"><!--  -->
                                     <table>
                                         <tr>
                                             <td>
@@ -128,14 +128,12 @@
                                         <tr class="mb-3">
                                             <th><button class="btn btn-success" :class="margin1" v-on:click="addUserS()">{{U12}}</button></th>
                                             <th><button v-on:click="deleteAllUsers()" class="btn btn-danger" :class="margin5">{{U17}}</button></th>
-                                            <th><form method="POST" enctype="multipart/form-data" action="/">
-                                                <button data-toggle="tooltip" data-placement="top" :title="U20" class="btn btn-success" :class="margin1"  name="file">
-                                                    <span class="fa-passwd-reset fa-stack">
-                                                        <i class="fa fa-cloud-upload fa-stack-2x"></i>
-                                                    </span>
-                                                </button>
-                                                <button class="btn btn-success" :class="margin5" type="submit" value="Upload" disabled>{{U21}}</button>
-                                            </form></th>
+                                            <th>
+                                                <form id="myForm" method="POST" enctype="multipart/form-data" action="/api/users/import">
+                                                    <input type="file" accept=".xls, .xlsx, .csv" ref="file" @change="selectedFile"
+                                                    data-toggle="tooltip" data-placement="top" :title="U20" class="btn btn-success" :class="margin1"  name="file" id="file">
+                                                </form>
+                                            </th>
                                             <th><button data-toggle="tooltip" data-placement="top" :title="U19" class="btn btn-success" v-on:click="exportUsers()">
                                                 <span class="fa-passwd-reset fa-stack">
                                                     <i class="fa fa-cloud-download fa-stack-2x"></i>
@@ -368,7 +366,7 @@
             <div class="container">
                 <div class="d-flex justify-content-center">
                     <a href="#" class="btn btn-link" style="text-decoration: none;">{{s10}}</a>
-                    <a href="#" class="btn btn-link" style="text-decoration: none;">{{s11}}</a>
+                    <a v-bind:href="s30" class="btn btn-link" style="text-decoration: none;">{{s11}}</a>
                     <a href="#" class="btn btn-link" style="text-decoration: none;">{{s12}}</a>
                 </div>
             </div>

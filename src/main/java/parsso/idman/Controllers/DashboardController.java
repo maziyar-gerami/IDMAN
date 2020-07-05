@@ -69,4 +69,14 @@ public class DashboardController{
     public String Settings(){
         return "settings";
     }
+
+    @GetMapping("/error")
+    public String Error(){
+        return "error";
+    }
+
+    @GetMapping("/privacy")
+    public String Privacy(){
+        return "privacy";
+    }
 }

@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
       groups: [],
       services: [],
       menuS: false,
+      userPicture: "images/PlaceholderUser.png",
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -55,10 +56,12 @@ document.addEventListener('DOMContentLoaded', function () {
       s19: "توضیحات",
       s20: "اتصال",
       s21: "./groups",
-      s22: "./settings"
+      s22: "./settings",
+      s23: "./privacy"
     },
     created: function () {
       this.getUserInfo();
+      this.getUserPic();
       this.getServices();
       this.getGroups();
       this.isAdmin();
@@ -79,72 +82,51 @@ document.addEventListener('DOMContentLoaded', function () {
       isAdmin: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/username")
-        .then((res) => {
-          axios.get(url + "/idman/api/users/isAdmin/" + res.data)
-          .then((resp) => {
-            if(resp.data){
-              vm.menuS = true;
+        axios.get(url + "/idman/api/user/isAdmin") // 
+          .then((res) => {
+            if(res.data){
+                vm.menuS = true;
             }
           });
-        });
       },
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/username")
-        .then((res) => {
-          vm.username = res.data;
-          axios.get(url + "/idman/api/users/u/" + vm.username)
+        axios.get(url + "/idman/api/user") // 
           .then((res) => {
             vm.userInfo = res.data;
+            vm.username = vm.userInfo.userId;
             vm.name = vm.userInfo.displayName;
-            vm.nameEN = vm.userInfo.firstName;
+            vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
             vm.s1 = vm.name;
           });
-        });
+      },
+      getUserPic: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        axios.get(url + "/idman/api/user/photo") // 
+            .then((res) => {
+                if(res.data == null){
+                    vm.userPicture = "images/PlaceholderUser.png";
+                }else{
+                    vm.userPicture = /* url + */ "/api/user/photo"; // /idman
+                }
+            });
       },
       getGroups: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/api/groups")
+        axios.get(url + "/idman/api/group") // 
         .then((res) => {
-          axios.get(url + "/idman/username")
-          .then((resp) => {
-            axios.get(url + "/idman/api/users/u/" + resp.data)
-            .then((respo) => {
-              for(let i = 0; i < respo.data.memberOf.length; ++i){
-                for(let j = 0; j < res.data.length; ++j){
-                  if(res.data[j].name === respo.data.memberOf[i]){
-                    vm.groups.push(res.data[j]);
-                  }
-                }
-              }
-            });
-          });
+          vm.groups = res.data;
         });
       },
       getServices: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/username")
+        axios.get(url + "/idman/api/service") // 
         .then((res) => {
-          axios.get(url + "/idman/api/users/u/" + res.data)
-          .then((resp) => {
-            axios.get(url + "/idman/api/services")
-            .then((respo) => {
-              for(let i = 0; i < resp.data.memberOf.length; ++i){
-                for(let j = 0; j < respo.data.length; ++j){
-                  for(let z = 0; z < respo.data[j].accessStrategy.requiredAttributes.member[1].length; ++z){
-                    if(respo.data[j].accessStrategy.requiredAttributes.member[1][z] === resp.data.memberOf[i] && !vm.services.includes(respo.data[j])){
-                      vm.services.push(respo.data[j]);
-                      break;
-                    }
-                  }
-                }
-              }
-            });
-          });
+          vm.services = res.data;
         });
       },
       changeLang: function () {
@@ -175,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s20 = "Connect";
           this.s21 = "./groups?en";
           this.s22 = "./settings?en";
+          this.s23 = "./privacy?en";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -202,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s20 = "اتصال";
             this.s21 = "./groups";
             this.s22 = "./settings";
+            this.s23 = "./privacy";
         }
       }
     }

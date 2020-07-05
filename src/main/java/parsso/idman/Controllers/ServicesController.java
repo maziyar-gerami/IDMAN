@@ -43,14 +43,59 @@ public class ServicesController {
     @Value("${administrator.ou.name}")
     private String adminOu;
 
-    @GetMapping("/api/services")
-    public ResponseEntity<List<Object>> ListServices() {
-        File folder = new File("./services/"); // /etc/cas/services/
+    @GetMapping("/api/service")
+    public ResponseEntity<List<Object>> ListUserServices(HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
+        Person person = personRepo.retrievePerson(principal.getName());
+        List<String> memberOf = person.getMemberOf();
+        File folder = new File("/etc/cas/services/"); // ./services/
         String[] files = folder.list();
         JSONParser jsonParser = new JSONParser();
         List<Object> services =  new ArrayList<Object>();
         for (String file : files){
-            try (FileReader reader = new FileReader("./services/" + file)){ // /etc/cas/services/
+            try (FileReader reader = new FileReader("/etc/cas/services/" + file)){ // 
+                Object obj = jsonParser.parse(reader);
+                JSONObject jo = (JSONObject) obj;
+                Map accessStrategy = ((Map)jo.get("accessStrategy")); 
+                Map requiredAttributes = ((Map)accessStrategy.get("requiredAttributes"));
+                JSONArray member = (JSONArray) requiredAttributes.get("member");
+                JSONArray groups = (JSONArray) member.get(1);
+                try{
+                    if(groups.size() == 0){
+                        continue;
+                    }
+                } catch (NullPointerException e){
+                    continue;
+                }
+                try{
+                    for(int i = 0; i < memberOf.size(); ++i){
+                        if(groups.toString().contains(memberOf.get(i))){
+                            services.add(obj);
+                            break;
+                        }
+                    } 
+                } catch (NullPointerException e){
+                    break;
+                }
+            } catch (FileNotFoundException e){
+                e.printStackTrace();
+            } catch (IOException e){
+                e.printStackTrace();
+            } catch (ParseException e){
+                e.printStackTrace();
+            }
+        }
+        return new ResponseEntity<List<Object>>(services, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/services")
+    public ResponseEntity<List<Object>> ListServices() {
+        File folder = new File("/etc/cas/services/"); // ./services/
+        String[] files = folder.list();
+        JSONParser jsonParser = new JSONParser();
+        List<Object> services =  new ArrayList<Object>();
+        for (String file : files){
+            try (FileReader reader = new FileReader("/etc/cas/services/" + file)){ // 
                 Object obj = jsonParser.parse(reader);
                 services.add(obj);
             } catch (FileNotFoundException e){

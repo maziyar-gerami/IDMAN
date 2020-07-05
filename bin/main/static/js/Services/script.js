@@ -23,6 +23,7 @@ function myFunction() {
       router,
       el: '#app',
       data: {
+        recordsShownOnPage: 2,
         userInfo: [],
         username: "",
         name: "",
@@ -58,6 +59,7 @@ function myFunction() {
             next: '>',
             last: '>>'
         },
+        userPicture: "images/PlaceholderUser.png",
         s0: "پارسو",
         s1: "",
         s2: "خروج",
@@ -107,10 +109,12 @@ function myFunction() {
         s46: "بازگشت",
         s47: "حذف تمامی سرویس ها",
         s48: "./groups",
-        s49: "./settings"
+        s49: "./settings",
+        s50: "./privacy"
       },
       created: function () {
         this.getUserInfo();
+        this.getUserPic();
         this.refreshServices();
         this.getGroups();
         if(typeof this.$route.query.en !== 'undefined'){
@@ -121,25 +125,34 @@ function myFunction() {
         getUserInfo: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/username") // /idman
-          .then((res) => {
-            vm.username = res.data;
-            axios.get(url + "/api/users/u/" + vm.username) // /idman
+          axios.get(url + "/idman/api/user") // 
             .then((res) => {
-              vm.userInfo = res.data;
-              vm.name = vm.userInfo.displayName;
-              vm.nameEN = vm.userInfo.firstName;
-              vm.s1 = vm.name;
+                vm.userInfo = res.data;
+                vm.username = vm.userInfo.userId;
+                vm.name = vm.userInfo.displayName;
+                vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
+                vm.s1 = vm.name;
             });
-          });
+        },
+        getUserPic: function () {
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          var vm = this;
+          axios.get(url + "/idman/api/user/photo") // 
+              .then((res) => {
+                  if(res.data == null){
+                      vm.userPicture = "images/PlaceholderUser.png";
+                  }else{
+                      vm.userPicture = /* url + */ "/api/user/photo"; // /idman
+                  }
+              });
         },
         refreshServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/api/services") // /idman
+          axios.get(url + "/idman/api/services") // 
           .then((res) => {
             vm.services = res.data;
-            vm.total = Math.ceil(vm.services.length / 2);
+            vm.total = Math.ceil(vm.services.length / vm.recordsShownOnPage);
           });
         },
         showServices: function () {
@@ -159,7 +172,7 @@ function myFunction() {
           document.getElementById("editS2").setAttribute("style", "");
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + `/api/services/${id}`) // /idman
+          axios.get(url + `/idman/api/services/${id}`) // 
           .then((res) => {
             vm.flag = true;
             vm.editInfo = res.data;
@@ -298,7 +311,7 @@ function myFunction() {
         deleteService: function (id) {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.delete(url + `/api/services/${id}`) // /idman
+          axios.delete(url + `/idman/api/services/${id}`) // 
           .then(() => {
             location.reload();
           });
@@ -306,13 +319,13 @@ function myFunction() {
         deleteAllServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.delete(url + "/api/services") // /idman
+          axios.delete(url + "/idman/api/services") // 
           .then(() => {
             location.reload();
           });
         },
         getGroups: function () {
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/api/groups"; // /idman
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/idman/api/groups"; // 
           var vm = this;
           axios.get(url)
           .then((res) => {
@@ -395,6 +408,7 @@ function myFunction() {
             this.s47 = "Remove All Services";
             this.s48 = "./groups?en";
             this.s49 = "./settings?en";
+            this.s50 = "./privacy?en";
           } else{
               this.margin = "margin-right: 30px;";
               this.lang = "EN";
@@ -449,6 +463,7 @@ function myFunction() {
               this.s47 = "حذف تمامی سرویس ها";
               this.s48 = "./groups";
               this.s49 = "./settings";
+              this.s50 = "./privacy";
           }
         },
         saml: function () {
@@ -499,9 +514,9 @@ function myFunction() {
       computed:{
         sortedServices:function() {
           this.servicesPage = [];
-          for(let i = 0; i < 2; ++i){
-              if(i + ((this.currentPage - 1) * 2) <= this.services.length - 1){
-                  this.servicesPage[i] = this.services[i + ((this.currentPage - 1) * 2)];
+          for(let i = 0; i < this.recordsShownOnPage; ++i){
+              if(i + ((this.currentPage - 1) * this.recordsShownOnPage) <= this.services.length - 1){
+                  this.servicesPage[i] = this.services[i + ((this.currentPage - 1) * this.recordsShownOnPage)];
               }
           }
           return this.servicesPage;

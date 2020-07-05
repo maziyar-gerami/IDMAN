@@ -90,6 +90,13 @@ html,body {
     border-radius: .25rem;
     text-align: center;
   }
+  .alertError {
+    color: #f1ee09;
+    position: relative;
+    padding: .35rem 1.25rem;
+    border: 1px solid #ffc1c5;
+    border-radius: .25rem;
+  }
   .dropdown-content a {
     color: black;
     padding: 12px 16px;

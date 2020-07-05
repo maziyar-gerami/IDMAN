@@ -10,9 +10,6 @@ function BothFieldsIdentical (id1 , id2) {
     return false;
 }
 
-
-
-
 function validatePassword(password) {
 
     // Do not show anything when the length of password is zero.
@@ -90,8 +87,9 @@ document.addEventListener('DOMContentLoaded', function () {
         router,
         el: '#app',
         data: {
-            currentSort:'id',
-            currentSortDir:'asc',
+            recordsShownOnPage: 2,
+            currentSort: "id",
+            currentSortDir: "asc",
             userInfo: [],
             email: "",
             username: "",
@@ -125,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             margin1: "ml-1",
             margin5: "ml-5",
+            userPicture: "images/PlaceholderUser.png",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -147,6 +146,14 @@ document.addEventListener('DOMContentLoaded', function () {
             s20: "داشبورد",
             s21: "./groups",
             s22: "./settings",
+            s23: "فایلی انتخاب نشده است.",
+            s24: "از فرمت فایل انتخابی پشتیبانی نمی شود.",
+            s25: "سایز فایل انتخابی بیش از 100M می باشد.",
+            s26: "آیا از اعمال این تغییرات اطمینان دارید؟",
+            s27: "آیا از افزودن این کاربر اطمینان دارید؟",
+            s28: "آیا از حذف این کاربر اطمینان دارید؟",
+            s29: "آیا از حذف تمامی کاربران اطمینان دارید؟",
+            s30: "./privacy",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -182,48 +189,74 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.getUserInfo();
+            this.getUserPic();
             this.refreshUsers();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
             }
         },
         methods: {
+            selectedFile() {
+                const file = this.$refs.file.files[0];
+                var re = /(\.xls|\.xlsx|\.csv)$/i;
+
+                if (!file) {
+                    alert(this.s23);
+                    return;
+                }else{
+                    var fup = document.getElementById('file');
+                    var fileName = fup.value;
+                    if(!re.exec(fileName)){
+                        alert(this.s24);
+                        return;
+                    }else{
+                        if(file.size > 1024 * 1024 * 100) {
+                            alert(this.s25);
+                            return;
+                        }else{
+                            document.getElementById("myForm").submit();
+                        }
+                    }
+                }
+            },
             sort:function(s) {
-                //if s == current sort, reverse
-                console.log("fhoafho");
+                console.log("sort");
                 if(s === this.currentSort) {
                   this.currentSortDir = this.currentSortDir === 'asc'?'desc':'asc';
                 }
                 this.currentSort = s;
             },
-            nextPage:function() {
-                if((this.currentPage*this.pageSize) < this.cats.length) this.currentPage++;
-            },
-            prevPage:function() {
-                if(this.currentPage > 1) this.currentPage--;
-            },
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/username") // /idman
+                axios.get(url + "/idman/api/user") // 
                     .then((res) => {
-                        vm.username = res.data;
-                        axios.get(url + "/api/users/u/" + vm.username) // /idman
-                            .then((res) => {
-                                vm.userInfo = res.data;
-                                vm.name = vm.userInfo.displayName;
-                                vm.nameEN = vm.userInfo.firstName;
-                                vm.s1 = vm.name;
-                            });
+                        vm.userInfo = res.data;
+                        vm.username = vm.userInfo.userId;
+                        vm.name = vm.userInfo.displayName;
+                        vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
+                        vm.s1 = vm.name;
+                    });
+            },
+            getUserPic: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/idman/api/user/photo") // 
+                    .then((res) => {
+                        if(res.data == null){
+                            vm.userPicture = "images/PlaceholderUser.png";
+                        }else{
+                            vm.userPicture = /* url + */ "/api/user/photo"; // /idman
+                        }
                     });
             },
             refreshUsers: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/users") // /idman
+                axios.get(url + "/idman/api/users") // 
                     .then((res) => {
                         vm.users = res.data;
-                        vm.total = Math.ceil(vm.users.length / 2);
+                        vm.total = Math.ceil(vm.users.length / vm.recordsShownOnPage);
                     });
             },
             showUsers: function () {
@@ -234,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function () {
             updateUser: function (id) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + `/api/users/u/${id}`) // /idman
+                axios.get(url + `/idman/api/users/u/${id}`) // 
                     .then((res) => {
                         for(i = 0; i < vm.users.length; ++i){
                             if(vm.users[i].userId == id){
@@ -250,14 +283,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
             },
-            sendEmail: function(email) {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                axios.get(url + "/api/users/sendMail/" + email) // idman
-                    .then((res) => {
-                        //document.getElementById('send').addEventListener('click', hideshow, false);
-                    });
-            },
             editUserS: function (id) {
                 this.showS = "display:none"
                 this.addS = "display:none"
@@ -265,9 +290,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 var res;
-                axios.get(url + `/api/users/u/${id}`) // /idman
+                axios.get(url + `/idman/api/users/u/${id}`) // 
                     .then((res) => {
-                        vm.editInfo = res.data;
                         vm.editInfo = res.data;
                         vm.editInfo.password = res.data.userPassword;
                         vm.editInfo.phone = res.data.telephoneNumber;
@@ -277,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 function populate(checkedGroups) {
 
-                    axios.get(url + `/api/groups`) // /idman
+                    axios.get(url + `/idman/api/groups`) // 
                         .then((res) => {
                                 populateTwo(res.data, checkedGroups)
                             }
@@ -320,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.addS = "display:none"
                 this.editS = "display:none"
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var check = confirm("Are you sure you want to edit?");
+                var check = confirm(this.s26);
 
                 var checkedValue = [];
                 var inputElements = document.getElementsByClassName('groupsCheckBox');
@@ -337,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (check == true) {
                     axios({
                         method: 'put',
-                        url: url + '/api/users/u/' + id,  // /idman
+                        url: url + '/idman/api/users/u/' + id,  // 
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                             userId: id,
@@ -351,44 +375,19 @@ document.addEventListener('DOMContentLoaded', function () {
                             description: document.getElementById('editInfo.descriptionUpdate').value,
                         }),
                     },);
-
                 }
 
             },
             exportUsers: function(){
                 url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 
-                axios.get(url + "/api/users") // /idman
+                axios.get(url + "/idman/api/users/full") // 
                     .then((res) => {
                         data = res.data;
                         var opts = [{sheetid:'Users',header:true}]
-                        console.log("hi")
                         var result = alasql('SELECT * INTO XLSX("users.xlsx",?) FROM ?',
                             [opts,[data]]);
                     });
-
-            },
-            importUsers: function() {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    var data = e.target.result;
-                    var workbook = XLSX.read(data, {
-                        type: 'binary'
-                    });
-
-                    workbook.SheetNames.forEach(function(sheetName) {
-                        // Here is your object
-                        var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-                        var json_object = JSON.stringify(XL_row_object);
-                        console.log(json_object);
-                    })
-                };
-
-                reader.onerror = function(ex) {
-                    console.log(ex);
-                };
-
-                reader.readAsBinaryString(file);
 
             },
             addUserS: function () {
@@ -397,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.editS = "display:none"
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 
-                axios.get(url + `/api/groups`) // /idman
+                axios.get(url + `/idman/api/groups`) // 
                     .then((res) => {
                             populate(res.data);
                         }
@@ -424,30 +423,20 @@ document.addEventListener('DOMContentLoaded', function () {
                         iDiv.appendChild(innerDiv);
                     }
                 };
-
-
-
             },
             sendResetEmail(userId) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                console.log(userId)
-
-                axios.get(url + "/api/users/u/"+userId) // idman
+                axios.get(url + "/idman/api/users/u/" + userId) // 
                     .then((res) => {
-
-                        axios.get(url + "/api/users/sendMail/" + res.data.mail) // idman
+                        axios.get(url + "/idman/api/public/sendMail/" + res.data.mail) // 
                             .then((resFinal) => {
-                                //document.getElementById('send').addEventListener('click', hideshow, false);
                             });
                     })
             },
             checkedBoxes:function() {
                 var checkedValue = [];
                 var inputElements = document.getElementsByClassName('groupsCheckBox');
-
-
-
                 for(var i=0; inputElements.length; i++){
                     console.log(inputElements[i].value);
                     if(inputElements[i].checked){
@@ -460,11 +449,9 @@ document.addEventListener('DOMContentLoaded', function () {
             addUser: function (id1,id2) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                //var vmt = BothFieldsIdentical(id1,id2);
-
                 var checkedValue = [];
                 var inputElements = document.getElementsByClassName('groupsCheckBoxCreate');
-                var check = confirm("Are you sure you want to add this user?");
+                var check = confirm(this.s27);
 
                 console.log(inputElements.length);
 
@@ -477,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(check==true) {
                     axios({
                         method: 'post',
-                        url: url + "/api/users",  // /idman
+                        url: url + "/idman/api/users",  // 
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                                 userId: document.getElementById('editInfo.userIdCreate').value,
@@ -493,33 +480,25 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         ),
                     },);
-
                 }
-
             },
             deleteUser: function (id) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-
-                var check = confirm("Are you sure you want to delete?");
+                var check = confirm(this.s28);
                 if (check == true) {
-                    axios.delete(url + `/api/users/u/${id}`) // /idman
+                    axios.delete(url + `/idman/api/users/u/${id}`) // 
                         .then(() => {
                             vm.refreshUsers();
                         });
                 }
-
-
-
-
             },
             deleteAllUsers: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-
-                var check = confirm("Are you sure you want to delete all users?");
+                var check = confirm(this.s29);
                 if (check == true) {
-                    axios.delete(url + `/api/users`) // /idman
+                    axios.delete(url + `/idman/api/users`) // 
                         .then(() => {
                             vm.refreshUsers();
                         });
@@ -556,6 +535,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s20 = "Dashboard";
                     this.s21 = "./groups?en";
                     this.s22 = "./settings?en";
+                    this.s23 = "No File Chosen.";
+                    this.s24 = "File extension not supported!";
+                    this.s25 = "File too big (> 100MB)";
+                    this.s26 = "Are You Sure You Want To Edit?";
+                    this.s27 = "Are You Sure You Want To Add This User?";
+                    this.s28 = "Are You Sure You Want To Delete?";
+                    this.s29 = "Are You Sure You Want To Delete All Users?";
+                    this.s30 = "./privacy?en";
                     this.U0= "Password";
                     this.U1= "Users";
                     this.U2= "ID";
@@ -605,6 +592,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s20 = "داشبورد";
                     this.s21 = "./groups";
                     this.s22 = "./settings";
+                    this.s23 = "فایلی انتخاب نشده است.";
+                    this.s24 = "از فرمت فایل انتخابی پشتیبانی نمی شود.";
+                    this.s25 = "سایز فایل انتخابی بیش از 100M می باشد.";
+                    this.s26 = "آیا از اعمال این تغییرات اطمینان دارید؟";
+                    this.s27 = "آیا از افزودن این کاربر اطمینان دارید؟";
+                    this.s28 = "آیا از حذف این کاربر اطمینان دارید؟";
+                    this.s29 = "آیا از حذف تمامی کاربران اطمینان دارید؟";
+                    this.s30 = "./privacy";
                     this.U0= "رمز";
                     this.U1= "کاربران";
                     this.U2= "شناسه";
@@ -631,9 +626,9 @@ document.addEventListener('DOMContentLoaded', function () {
         computed:{
             sortedUsers:function() {
                 this.usersPage = [];
-                for(let i = 0; i < 2; ++i){
-                    if(i + ((this.currentPage - 1) * 2) <= this.users.length - 1){
-                        this.usersPage[i] = this.users[i + ((this.currentPage - 1) * 2)];
+                for(let i = 0; i < this.recordsShownOnPage; ++i){
+                    if(i + ((this.currentPage - 1) * this.recordsShownOnPage) <= this.users.length - 1){
+                        this.usersPage[i] = this.users[i + ((this.currentPage - 1) * this.recordsShownOnPage)];
                     }
                 }
                 return this.usersPage;

@@ -38,12 +38,12 @@
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
                             <div class="card-body p-0 pt-3">
-                                <form id="upload-form" method="POST" action="#" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/data">
+                                <form id="upload-form" method="POST" action="/api/users/import" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/data">
                                     <input type="file" id="upload-image" name="upload-image" onchange="document.getElementById('upload-form').submit()">
                                 </form>
                                 <div class="userpic mb-3">
-                                    <img src="images/PlaceholderUser.png" class="img-responsive avatar" alt="Avatar">
-                                    <a href="javascript:void(0)" ><!-- onclick="document.getElementById('upload-image').click()" -->
+                                    <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
+                                    <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()"><!--  -->
                                         <table>
                                             <tr>
                                                 <td>
@@ -308,7 +308,7 @@
                 <div class="container">
                     <div class="d-flex justify-content-center">
                         <a href="#" class="btn btn-link" style="text-decoration: none;">{{s10}}</a>
-                        <a href="#" class="btn btn-link" style="text-decoration: none;">{{s11}}</a>
+                        <a v-bind:href="s40" class="btn btn-link" style="text-decoration: none;">{{s11}}</a>
                         <a href="#" class="btn btn-link" style="text-decoration: none;">{{s12}}</a>
                     </div>
                 </div>
