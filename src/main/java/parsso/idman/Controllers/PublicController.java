@@ -21,7 +21,6 @@ public class PublicController {
     private PersonRepo personRepo;
 
 
-
     @GetMapping("/api/public/sendMail/{email}")
     public ResponseEntity<String> sendMail(@PathVariable("email") String email) {
         return new ResponseEntity<String> (personRepo.sendEmail(email), HttpStatus.OK);
@@ -50,7 +49,7 @@ public class PublicController {
             return new ResponseEntity<>(personRepo.getName(uid), HttpStatus.OK);
     }
 
-    @GetMapping("/api/public/sendMail/{email}")
+    @GetMapping("/api/public/sendMail/{email}/{uid}")
     public ResponseEntity<String> sendMail(@PathVariable("email") String email, @PathVariable("uid") String uid) {
         return new ResponseEntity<>(personRepo.sendEmail(email, uid), HttpStatus.OK);
     }
