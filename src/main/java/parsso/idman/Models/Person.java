@@ -18,12 +18,13 @@ public class Person implements Serializable {
     private String firstName;
     private String lastName;
     private String displayName;
-    private String telephoneNumber;
+    private String mobile;
     private String mail;
     private List<String> memberOf;
     private String userPassword;
     private String description;
     private String token;
+    private byte[] photo;
 
     @Repository
     public interface PersonRepository extends CrudRepository<Person, String> {}

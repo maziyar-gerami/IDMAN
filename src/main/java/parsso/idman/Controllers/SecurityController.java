@@ -16,6 +16,9 @@ public class SecurityController {
     @ResponseBody
     public String currentUserNameSimple(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
+        System.out.println("********************************");
+        System.out.println(principal.getName().toString());
+        System.out.println("********************************");
         return principal.getName();
     }
 }

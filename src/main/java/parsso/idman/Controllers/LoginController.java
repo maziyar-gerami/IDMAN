@@ -2,6 +2,7 @@ package parsso.idman.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
@@ -10,15 +11,23 @@ import org.springframework.security.web.authentication.rememberme.AbstractRememb
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import parsso.idman.Models.Person;
 import parsso.idman.RepoImpls.PersonRepoImpl;
 import parsso.idman.Repos.PersonRepo;
 
+import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class LoginController {
+
+    @Value("${cas.url.logout.path}")
+    private String casLogout;
+
+    @Value("${cas.url.login.path}")
+    private String casLogin;
 
     @Qualifier("personRepoImpl")
     @Autowired
@@ -34,16 +43,17 @@ public class LoginController {
         return "resetPass";
     }
 
-
-    @GetMapping ("/api/users/validateToken/{uId}/{token}")
-    public String resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token)
+    @GetMapping ("/api/user/password")
+    public String changePassword(HttpServletRequest request,
+                                 @RequestParam("currentPassword") String currentPassword,
+                                 @RequestParam ("newPassword") String newPassword)
     {
-        Person person = personRepo.checkToken(uId,token);
-
-        if (person != null)
-            return "resetPassword";
-        else
-            return "resetPassWrongTAI";
+        try {
+            Principal principal = request.getUserPrincipal();
+            return personRepo.changePassword(principal.getName(),currentPassword,newPassword);
+        } catch (Exception e) {
+            return "error";
+        }
     }
 
     @GetMapping("/logout")
@@ -57,7 +67,7 @@ public class LoginController {
         new CookieClearingLogoutHandler(
                 AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY)
                 .logout(request, response, auth);
-        return "auth/logout";
+        return "redirect:"+casLogout;
     }
 
 
