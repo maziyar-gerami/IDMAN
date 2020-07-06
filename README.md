@@ -2,14 +2,12 @@
 
 IDMAN is a client for CAS system which is initialized based on CAS WAR overlay that is deployed for managing users using a central CAS system
 
-**Versions**
+**prerequisites**
 
-CAS 6.3.x
-JDK 11
+* CAS 6.3.x which is installed on a server and we called this server "CAS Server"
+* JDK 11
 
 
-
-> ./gradlew[.bat] clean build 
 
 **Configuration**
 
@@ -28,15 +26,16 @@ This settings is for setting information about the smtp server. This part is inc
 2.  IDMAN Settings
 
 this part of configurasion is for configuration about your client
-*  `base.url` : client address that connects to CAS server. Example: https://www.idamn.com
-*  `sever.port`: this the IDMAN server port the client port. Example:8080
+*  `base.url` : client address that connects to CAS server. `Example: https://www.idman.com`
+*  `sever.port`: this the IDMAN server port the client port. `Example: 8080`
 
-*NOTE 2*: if you don' specified any port for the IDMA, don't need to specify `sever.port` variable.
+*NOTE 1*: if you don't specified any ports for the IDMA, don't need to specify `sever.port` variable.
+
 *NOTE 2*: Don't miss `sever.port` variable with CAS server port. Actually this is defined port for IDMAN
 
 3.  CAS Server settings
-*  `cas.url.login.path`: CAS login url of the CAS server. Example: https://cas.server.com/cas/login
-*  `cas.url.logout.path` : CAS logout url of the CAS server. Example: https://cas.server.com/cas/logout
+*  `cas.url.login.path`: CAS login url of the CAS server. Example: `https://cas.server.com/cas/login`
+*  `cas.url.logout.path` : CAS logout url of the CAS server. Example: `https://cas.server.com/cas/logout`
 
 
 
