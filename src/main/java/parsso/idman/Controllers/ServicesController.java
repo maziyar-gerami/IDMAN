@@ -114,6 +114,7 @@ public class ServicesController {
         File folder = new File("/etc/cas/services/");
         String[] files = folder.list();
         JSONParser jsonParser = new JSONParser();
+        if(files!null)
         for (String file : files){
             if(file.contains(serviceId)){
                 try (FileReader reader = new FileReader("/etc/cas/services/" + file)){
@@ -371,6 +372,7 @@ public class ServicesController {
                 }else{
                     File folder = new File("/etc/cas/services/");
                     String[] files = folder.list();
+                    if(files!=null)
                     for (String file : files){
                         if(file.contains(allParams.get("id"))){
                             File serv = new File("/etc/cas/services/" + file);
