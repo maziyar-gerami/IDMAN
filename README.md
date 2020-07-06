@@ -1,23 +1,23 @@
 **IDMAN Overview**
 
-IDMAN is a client for CAS system which is initialized based on CAS WAR overlay that is deployed for managing users using a central CAS system
+IDMAN is a client for Parsso-core (a Centralized Authentication System) that is deployed for managing users and services connected to the Parsso-core. It also provides useful features like password policy management, self-service password management, user activity log reports, etc.
 
-**prerequisites**
+**Prerequisites**
 
-* CAS 6.3.x which is installed on a server and we called this server "CAS Server"
+* Parsso-core/CAS 6.1.x which is installed on a server and we called this server "CAS Server"
 * JDK 11
 
 
 
 **Configuration**
 
-You need to change a file, named `application.propperties` before deploying the project.
+You need to change a file, named `application.properties` before deploying the project.
 
 This file is in the `resources` directory which contains all configuration variables in the project. Now we discuss all variables that you have to change:
 
 1.  Email server configurations
 
-This settings is for setting information about the smtp server. This part is include of below mentioned variable:
+This settings is for setting information about the smtp server used in password recovery process. This part is include of below mentioned variable:
 *  `spring.mail.host` : SMTP server address
 *  `spring.mail.port` : SMTP server port
 *  `spring.mail.username` : Username or email address for entering the system
@@ -25,11 +25,11 @@ This settings is for setting information about the smtp server. This part is inc
 
 2.  IDMAN Settings
 
-this part of configurasion is for configuration about your client
+This part of configurasion is for configuration about your client
 *  `base.url` : client address that connects to CAS server. `Example: https://www.idman.com`
 *  `sever.port`: this the IDMAN server port the client port. `Example: 8080`
 
-*NOTE 1*: if you don't specified any ports for the IDMA, don't need to specify `sever.port` variable.
+*NOTE 1*: if you don't specified any ports for the IDMAN, don't need to specify `sever.port` variable.
 
 *NOTE 2*: Don't miss `sever.port` variable with CAS server port. Actually this is defined port for IDMAN
 
