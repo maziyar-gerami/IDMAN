@@ -169,7 +169,7 @@ public class UsersController {
 
         }
         System.out.println(message);
-        return new RedirectView("/dashboard");
+        return new RedirectView("/idman/dashboard");
     }
 
 }
