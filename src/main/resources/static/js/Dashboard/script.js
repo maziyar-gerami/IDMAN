@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/idman/api/user/photo") // 
             .then((res) => {
-                if(res.data == null){
+                if(res.data == null || typeof res.data == 'undefined' || res.data == ""){
                     vm.userPicture = "images/PlaceholderUser.png";
                 }else{
                     vm.userPicture = /* url + */ "/idman/api/user/photo"; // 

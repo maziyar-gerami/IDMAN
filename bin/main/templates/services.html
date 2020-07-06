@@ -40,7 +40,7 @@
                         <div class="card">
                             <div class="card-body p-0 pt-3">
                                 <form id="upload-form" method="POST" action="/idman/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
-                                    <input type="file" id="upload-image" name="upload-image" onchange="document.getElementById('upload-form').submit()">
+                                    <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
                                 </form>
                                 <div class="userpic mb-3">
                                     <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">

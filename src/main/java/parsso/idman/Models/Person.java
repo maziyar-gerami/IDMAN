@@ -25,6 +25,7 @@ public class Person implements Serializable {
     private String description;
     private String token;
     private byte[] photo;
+    private String photoPath;
 
     @Repository
     public interface PersonRepository extends CrudRepository<Person, String> {}

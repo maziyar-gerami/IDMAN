@@ -1,13 +1,16 @@
 package parsso.idman.Controllers;
 
+import org.apache.commons.compress.utils.IOUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Models.Person;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.PersonRepo;
@@ -17,9 +20,12 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.*;
 import java.security.Principal;
 import java.sql.SQLOutput;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -113,16 +119,31 @@ public class UsersController {
         }
     }
 
+
+
     @GetMapping("/api/user/photo")
-    public BufferedImage getCurrentUserPhoto (HttpServletRequest request) throws IOException {
+    public void getImage(HttpServletResponse response,HttpServletRequest request) throws IOException {
 
-            Principal principal = request.getUserPrincipal();
-            return personRepo.retrievePic(principal.getName());
+        Principal principal = request.getUserPrincipal();
+        Person person =  personRepo.retrievePerson(principal.getName());
 
+        File file = new File("uploadedFiles/"+person.getPhotoPath());
+        if(file.exists()) {
+            String contentType = "application/octet-stream";
+            response.setContentType(contentType);
+            OutputStream out = response.getOutputStream();
+            FileInputStream in = new FileInputStream(file);
+            // copy from in to out
+            IOUtils.copy(in, out);
+            out.close();
+            in.close();
+        }else {
+            throw new FileNotFoundException();
+        }
     }
 
     @PostMapping("/api/user/photo")
-    public String uploadProfilePic(@RequestParam("file") MultipartFile file,
+    public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file,
                                                              HttpServletRequest request) {
 
         Principal principal = request.getUserPrincipal();
@@ -131,13 +152,15 @@ public class UsersController {
         String message;
         try {
 
-            //storageService.save(file);
+            String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
+
+
+            storageService.save(file,timeStamp+file.getOriginalFilename());
 
             Person person = personRepo.retrievePerson(principal.getName());
-            String photo = file.toString();
-            byte[] photoBye = photo.getBytes();
-            person.setPhoto(photoBye);
-            personRepo.update(principal.getName(), person);
+            person.setPhotoPath(timeStamp+file.getOriginalFilename());
+
+            personRepo.update(person.getUserId(), person);
 
             message = "Uploaded the file successfully: " + file.getOriginalFilename();
 
@@ -145,7 +168,8 @@ public class UsersController {
             message = "Could not upload the file: " + file.getOriginalFilename() + "!";
 
         }
-        return "redirect:/dashboard";
+        System.out.println(message);
+        return new RedirectView("/dashboard");
     }
 
 }

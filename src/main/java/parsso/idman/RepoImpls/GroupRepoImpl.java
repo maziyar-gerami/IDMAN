@@ -53,8 +53,6 @@ public class GroupRepoImpl implements GroupRepo {
 
     @Override
     public Group retrieveOu(String name) {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println(name);
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
@@ -85,9 +83,6 @@ public class GroupRepoImpl implements GroupRepo {
 
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
-        System.out.println(group.getId());
-        System.out.println(group.getName());
-        System.out.println(group.getDescription());
         attrs.put("ou", group.getName());
         attrs.put("uid",String.valueOf(group.getId()));
         attrs.put("description" , group.getDescription());
@@ -117,7 +112,6 @@ public class GroupRepoImpl implements GroupRepo {
     @Override
     public String create(Group ou) {
         Name dn = buildDn(ou.getName());
-        System.out.println(dn);
         ldapTemplate.bind(dn, null, buildAttributes(ou));
         return ou.getName() + " created successfully";
     }

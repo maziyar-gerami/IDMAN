@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 vm.users[i].firstName = res.data.firstName;
                                 vm.users[i].lastName = res.data.lastName;
                                 vm.users[i].displayName = res.data.displayName;
-                                vm.users[i].telephoneNumber = res.data.telephoneNumber;
+                                vm.users[i].telephoneNumber = res.data.mobile;
                                 vm.users[i].mail = res.data.mail;
                                 vm.users[i].memberOf = res.data.memberOf;
                                 vm.users[i].userPassword = res.data.userPassword;
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then((res) => {
                         vm.editInfo = res.data;
                         vm.editInfo.password = res.data.userPassword;
-                        vm.editInfo.phone = res.data.telephoneNumber;
+                        vm.editInfo.phone = res.data.mobile;
                         populate(res.data.memberOf);
 
                     });
@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             firstName: document.getElementById('editInfo.firstNameUpdate').value,
                             lastName: document.getElementById('editInfo.lastNameUpdate').value,
                             displayName: document.getElementById('editInfo.displayNameUpdate').value,
-                            telephoneNumber: document.getElementById('editInfo.phoneUpdate').value,
+                            mobile: document.getElementById('editInfo.phoneUpdate').value,
                             memberOf: checkedValue,
                             mail: document.getElementById('editInfo.mailUpdate').value,
                             userPassword: document.getElementById('editInfo.passwordRetypeUpdate').value,

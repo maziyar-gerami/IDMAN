@@ -30,6 +30,7 @@ import javax.naming.directory.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
@@ -45,12 +46,14 @@ public class PersonRepoImpl implements PersonRepo {
     @Value("${email.controller}")
     private String EMAILCONTROLLER;
 
+    @Value("upload.pic.path")
+    private String uploadPath;
+
     @Autowired
     private LdapTemplate ldapTemplate;
 
     @Override
     public String create(Person p) {
-        System.out.println(p);
 
         Person person = retrievePerson(p.getUserId());
         DirContextOperations context;
@@ -70,6 +73,7 @@ public class PersonRepoImpl implements PersonRepo {
     public String update(String uid, Person p) {
         Name dn = buildDn(uid);
         DirContextOperations context = buildAttributes(uid, p, dn);
+
         ldapTemplate.modifyAttributes(context);
         return uid + " updated successfully";
     }
@@ -110,12 +114,8 @@ public class PersonRepoImpl implements PersonRepo {
         attrs.put("mobile", p.getMobile());
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
-        System.out.println("**************");
-        if (p.getToken() != null) {
+        if (p.getToken() != null)
             attrs.put("l", p.getToken());
-            System.out.println(p.getToken());
-
-        }
         if (p.getMemberOf() != null) {
             Attribute attr = new BasicAttribute("ou");
             for (int i = 0; i < p.getMemberOf().size(); i++)
@@ -125,6 +125,7 @@ public class PersonRepoImpl implements PersonRepo {
 
         attrs.put("description", p.getDescription());
         attrs.put("photo", p.getPhoto());
+        attrs.put("initials" , p.getPhotoPath());
         return attrs;
     }
 
@@ -139,14 +140,11 @@ public class PersonRepoImpl implements PersonRepo {
         if (p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
         if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
         if ((p.getFirstName()) != null || (p.getLastName() != null)) {
-            if (p.getFirstName() == null)
-                context.setAttributeValue("cn", retrievePerson(uid).getFirstName() + ' ' + p.getLastName());
+            if (p.getFirstName() == null)  context.setAttributeValue("cn", retrievePerson(uid).getFirstName() + ' ' + p.getLastName());
 
-            else if (p.getLastName() == null)
-                context.setAttributeValue("cn", p.getFirstName() + ' ' + retrievePerson(uid).getLastName());
+            else if (p.getLastName() == null) context.setAttributeValue("cn", p.getFirstName() + ' ' + retrievePerson(uid).getLastName());
 
-            else
-                context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
+            else  context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
         }
 
 
@@ -161,7 +159,8 @@ public class PersonRepoImpl implements PersonRepo {
         }
 
         if (p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
-        if (p.getPhoto() != null) context.setAttributeValue("photo", p.getPhoto());
+        if (p.getPhotoPath() != null) context.setAttributeValue("initials", p.getPhotoPath());
+
         return context;
     }
 
@@ -228,7 +227,7 @@ public class PersonRepoImpl implements PersonRepo {
         Person person = new Person();
         if (!((ldapTemplate.search(query().where("uid").is(userId), new PersonAttributeMapper())).toString() == "[]"))
             person = ldapTemplate.search(query().where("uid").is(userId), new PersonAttributeMapper()).get(0);
-        //System.out.println(byte(person.getPhoto().toString()));
+
         return person;
     }
 
@@ -265,11 +264,8 @@ public class PersonRepoImpl implements PersonRepo {
             Person person = retrievePerson(uid);
             Boolean emailSent = false;
 
-            System.out.println(person.getUserId());
-
             for (Person p : people) {
 
-                System.out.println(p.getUserId());
 
                 if (p.getUserId().equals(person.getUserId())) {
 
@@ -361,9 +357,25 @@ public class PersonRepoImpl implements PersonRepo {
             person.setMemberOf(null != attributes.get("ou") ? ls : null);
             person.setUserPassword(null != attributes.get("userPassword") ? attributes.get("userPassword").get().toString() : null);
             person.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
-            person.setPhoto(null != attributes.get("photo") ? attributes.get("photo").get().toString().getBytes() : null);
+            //person.setPhoto(null != attributes.get("photo") ? attributes.get("photo").get().toString().getBytes() : null);
+            person.setPhotoPath(null != attributes.get("initials") ? attributes.get("initials").get().toString() : null);
+            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+
+
+
+
+            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
             return person;
         }
+    }
+
+    String byteArrayToString(byte[] in) {
+        char out[] = new char[in.length * 2];
+        for (int i = 0; i < in.length; i++) {
+            out[i * 2] = "0123456789ABCDEF".charAt((in[i] >> 4) & 15);
+            out[i * 2 + 1] = "0123456789ABCDEF".charAt(in[i] & 15);
+        }
+        return new String(out);
     }
 
     public String updatePass(String userId, String pass, String token) {
@@ -413,11 +425,9 @@ public class PersonRepoImpl implements PersonRepo {
             person.setDescription(row.getCell(sequence[8]).getStringCellValue());
             person.setPhoto(row.getCell(sequence[9]).getStringCellValue().getBytes());
 
-            System.out.println(person);
 
             create(person);
 
-            System.out.println("");
         }
     }
 
@@ -433,7 +443,7 @@ public class PersonRepoImpl implements PersonRepo {
 
                 continue;
             }
-            System.out.println(row);
+
             String[] data = row.split(",");
             // do something with the data
 
@@ -450,13 +460,10 @@ public class PersonRepoImpl implements PersonRepo {
             person.setDescription((data[sequence[8]]));
             person.setPhoto((data[sequence[9]]).getBytes());
 
-            System.out.println(person);
-
             create(person);
 
             i++;
 
-            System.out.println("");
         }
     }
 
@@ -466,11 +473,9 @@ public class PersonRepoImpl implements PersonRepo {
         try {
             InputStream insfile = file.getInputStream();
             String format = file.getContentType();
-            System.out.println(format);
             switch (format){
 
                 case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-                    System.out.println("XLSX");
                     //Create Workbook instance holding reference to .xlsx file
                     XSSFWorkbook workbookXLSX = new XSSFWorkbook(insfile);
 
@@ -483,7 +488,6 @@ public class PersonRepoImpl implements PersonRepo {
 
                 case "application/vnd.ms-excel":
                     HSSFWorkbook workbookXLS = new HSSFWorkbook(insfile);
-                    System.out.println("XLS");
 
                     HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
@@ -504,8 +508,6 @@ public class PersonRepoImpl implements PersonRepo {
             }
 
 
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -517,8 +519,8 @@ public class PersonRepoImpl implements PersonRepo {
     @Override
     public BufferedImage retrievePic(String name) throws IOException {
         Person person = retrievePerson(name);
-        byte[] imageBytes = person.getPhoto();
-        ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
-        return ImageIO.read(bis);
+        String imagePath = person.getPhotoPath();
+        InputStream is = new FileInputStream("uploadedFiles/"+imagePath);
+        return ImageIO.read(is);
     }
 }

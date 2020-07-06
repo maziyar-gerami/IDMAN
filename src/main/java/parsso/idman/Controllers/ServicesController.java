@@ -52,6 +52,7 @@ public class ServicesController {
         String[] files = folder.list();
         JSONParser jsonParser = new JSONParser();
         List<Object> services =  new ArrayList<Object>();
+        if(files!=null)
         for (String file : files){
             try (FileReader reader = new FileReader("/etc/cas/services/" + file)){ // 
                 Object obj = jsonParser.parse(reader);
@@ -114,7 +115,7 @@ public class ServicesController {
         File folder = new File("/etc/cas/services/");
         String[] files = folder.list();
         JSONParser jsonParser = new JSONParser();
-        if(files!null)
+        if(files !=null)
         for (String file : files){
             if(file.contains(serviceId)){
                 try (FileReader reader = new FileReader("/etc/cas/services/" + file)){

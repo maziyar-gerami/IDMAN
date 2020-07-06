@@ -55,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
 
-                .authorizeRequests().antMatchers( "/dashboard", "/login").fullyAuthenticated()
+                .authorizeRequests().antMatchers( "/dashboard", "/login").authenticated()
                 //.antMatchers("")
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
