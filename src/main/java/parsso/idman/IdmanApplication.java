@@ -20,10 +20,15 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import parsso.idman.Configs.CasUserDetailService;
 import parsso.idman.Repos.FilesStorageService;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.annotation.Resource;
 
+/**
+ * The type Idman application.
+ */
 @SpringBootApplication
+
 public class IdmanApplication implements CommandLineRunner {
 
     @Value("${cas.url.logout.path}")
@@ -39,6 +44,9 @@ public class IdmanApplication implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
 
+    /**
+     * The Storage service.
+     */
     @Resource
     FilesStorageService storageService;
 
@@ -50,11 +58,23 @@ public class IdmanApplication implements CommandLineRunner {
     }
 
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         SpringApplication.run(IdmanApplication.class, args);
 
     }
 
+    /**
+     * Cas authentication filter cas authentication filter.
+     *
+     * @param authenticationManager the authentication manager
+     * @param serviceProperties     the service properties
+     * @return the cas authentication filter
+     */
     @Bean
     public CasAuthenticationFilter casAuthenticationFilter(
             AuthenticationManager authenticationManager,
@@ -65,6 +85,11 @@ public class IdmanApplication implements CommandLineRunner {
         return filter;
     }
 
+    /**
+     * Service properties service properties.
+     *
+     * @return the service properties
+     */
     @Bean
     public ServiceProperties serviceProperties() {
         logger.info("service properties");
@@ -74,11 +99,21 @@ public class IdmanApplication implements CommandLineRunner {
         return serviceProperties;
     }
 
+    /**
+     * Ticket validator ticket validator.
+     *
+     * @return the ticket validator
+     */
     @Bean
     public TicketValidator ticketValidator() {
         return new Cas30ServiceTicketValidator(ticketValidator);
     }
 
+    /**
+     * Cas authentication provider cas authentication provider.
+     *
+     * @return the cas authentication provider
+     */
     @Bean
     public CasAuthenticationProvider casAuthenticationProvider() {
         CasAuthenticationProvider provider = new CasAuthenticationProvider();
@@ -94,11 +129,21 @@ public class IdmanApplication implements CommandLineRunner {
     }
 
 
+    /**
+     * Security context logout handler security context logout handler.
+     *
+     * @return the security context logout handler
+     */
     @Bean
     public SecurityContextLogoutHandler securityContextLogoutHandler() {
         return new SecurityContextLogoutHandler();
     }
 
+    /**
+     * Logout filter logout filter.
+     *
+     * @return the logout filter
+     */
     @Bean
     public LogoutFilter logoutFilter() {
         LogoutFilter logoutFilter = new LogoutFilter(casLogout, securityContextLogoutHandler());
@@ -106,6 +151,11 @@ public class IdmanApplication implements CommandLineRunner {
         return logoutFilter;
     }
 
+    /**
+     * Single sign out filter single sign out filter.
+     *
+     * @return the single sign out filter
+     */
     @Bean
     public SingleSignOutFilter singleSignOutFilter() {
         SingleSignOutFilter singleSignOutFilter = new SingleSignOutFilter();

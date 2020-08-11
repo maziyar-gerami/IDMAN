@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
         router,
         el: '#app',
         data: {
-            recordsShownOnPage: 2,
+            recordsShownOnPage: 20,
             currentSort: "id",
             currentSortDir: "asc",
             userInfo: [],
@@ -97,6 +97,10 @@ document.addEventListener('DOMContentLoaded', function () {
             nameEN: "",
             users: [],
             usersPage: [],
+            usersConflictList: [],
+            usernameList: [],
+            usersCorrectList: [],
+            usersCorrectUserIdList: [],
             message: "",
             editInfo: {},
             placeholder: "text-align: right;",
@@ -106,8 +110,10 @@ document.addEventListener('DOMContentLoaded', function () {
             editS: "display:none",
             addS: "display:none",
             showS: "",
+            importConflictS: "display:none",
             currentPage: 1,
             total: 1,
+            ImportedFile: '',
             bootstrapPaginationClasses: {
                 ul: 'pagination',
                 li: 'page-item',
@@ -154,13 +160,22 @@ document.addEventListener('DOMContentLoaded', function () {
             s28: "آیا از حذف این کاربر اطمینان دارید؟",
             s29: "آیا از حذف تمامی کاربران اطمینان دارید؟",
             s30: "./privacy",
+            s31: "پیکربندی",
+            s32: "./configs",
+            s33: "رفع تناقض وارد کردن کاربران جدید",
+            s34: "کاربر قدیمی",
+            s35: "کاربر جدید",
+            s36: "اعمال تغییرات",
+            s37: "ویرایش کاربر",
+            s38: "ایجاد کاربر",
+            s39: "./events",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
             U3: "نام (به انگلیسی)",
             U4: "نام خانوادگی (به انگلیسی)",
             U5: "نام کامل (به فارسی)",
-            U6: "شماره تماس",
+            U6: "شماره تلفن",
             U7: "ایمیل",
             U8: "کد ملی",
             U9: "توضیحات",
@@ -197,8 +212,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         methods: {
             selectedFile() {
+                this.ImportedFile = this.$refs.file.files[0];
                 const file = this.$refs.file.files[0];
-                var re = /(\.xls|\.xlsx|\.csv)$/i;
+                var re = /(\.xls|\.xlsx|\.csv|\.ldif)$/i;
 
                 if (!file) {
                     alert(this.s23);
@@ -214,10 +230,144 @@ document.addEventListener('DOMContentLoaded', function () {
                             alert(this.s25);
                             return;
                         }else{
-                            document.getElementById("myForm").submit();
+                            var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                            var vm = this;
+                            var bodyFormData = new FormData();
+                            bodyFormData.append('file', this.ImportedFile);
+                            axios({
+                                method: 'post',
+                                url: url + "/api/users/import",  //
+                                headers: {'Content-Type': 'multipart/form-data'},
+                                data: bodyFormData,
+                            })
+                            .catch((error) => {
+                                if(error.response){
+                                    vm.usernameList = error.response.data;
+                                    for(var i = 0; i < error.response.data.length; ++i){
+                                        vm.usersCorrectList.push(error.response.data[i].old);
+                                        if(error.response.data[i].old.firstName != error.response.data[i].new.firstName){
+                                            vm.usersConflictList.push([{"userId":error.response.data[i].old.userId},
+                                            {"name":"firstName"},
+                                            {"oldValue":error.response.data[i].old.firstName},
+                                            {"newValue":error.response.data[i].new.firstName}]);
+                                        }
+                                        if(error.response.data[i].old.lastName != error.response.data[i].new.lastName){
+                                            vm.usersConflictList.push([{"userId":error.response.data[i].old.userId},
+                                            {"name":"lastName"},
+                                            {"oldValue":error.response.data[i].old.lastName},
+                                            {"newValue":error.response.data[i].new.lastName}]);
+                                        }
+                                        if(error.response.data[i].old.displayName != error.response.data[i].new.displayName){
+                                            vm.usersConflictList.push([{"userId":error.response.data[i].old.userId},
+                                            {"name":"displayName"},
+                                            {"oldValue":error.response.data[i].old.displayName},
+                                            {"newValue":error.response.data[i].new.displayName}]);
+                                        }
+                                        if(error.response.data[i].old.mobile != error.response.data[i].new.mobile){
+                                            vm.usersConflictList.push([{"userId":error.response.data[i].old.userId},
+                                            {"name":"mobile"},
+                                            {"oldValue":error.response.data[i].old.mobile},
+                                            {"newValue":error.response.data[i].new.mobile}]);
+                                        }
+                                        if(error.response.data[i].old.mail != error.response.data[i].new.mail){
+                                            vm.usersConflictList.push([{"userId":error.response.data[i].old.userId},
+                                            {"name":"mail"},
+                                            {"oldValue":error.response.data[i].old.mail},
+                                            {"newValue":error.response.data[i].new.mail}]);
+                                        }
+                                        if(error.response.data[i].old.memberOf.length != error.response.data[i].new.memberOf.length){
+                                            vm.usersConflictList.push([{"userId":error.response.data[i].old.userId},
+                                            {"name":"memberOf"},
+                                            {"oldValue":error.response.data[i].old.memberOf},
+                                            {"newValue":error.response.data[i].new.memberOf}]);
+                                        }else{
+                                            var flag = false;
+                                            for(var j = 0; j < error.response.data[i].old.memberOf.length; ++j){
+                                                if(error.response.data[i].old.memberOf[j] != error.response.data[i].new.memberOf[j]){
+                                                    flag = true;
+                                                    break;
+                                                }
+                                            }
+                                            if(flag){
+                                                vm.usersConflictList.push([{"userId":error.response.data[i].old.userId},
+                                                {"name":"memberOf"},
+                                                {"oldValue":error.response.data[i].old.memberOf},
+                                                {"newValue":error.response.data[i].new.memberOf}]);
+                                            }
+                                        }
+                                        if(error.response.data[i].old.description != error.response.data[i].new.description){
+                                            vm.usersConflictList.push([{"userId":error.response.data[i].old.userId},
+                                            {"name":"description"},
+                                            {"oldValue":error.response.data[i].old.description},
+                                            {"newValue":error.response.data[i].new.description}]);
+                                        }
+                                    }
+                                }
+                                vm.showS = "display:none";
+                                vm.addS = "display:none";
+                                vm.editS = "display:none";
+                                vm.importConflictS = "";
+                            });
                         }
                     }
                 }
+            },
+            selectConflict:function(s1, s2) {
+                document.getElementById(s1).className = "btn btn-success mb-2";
+                document.getElementById(s2).className = "btn btn-notSelected mb-2";
+                var res = s1.split("-");
+                this.usersCorrectUserIdList.push(res[0]);
+                for(var i = 0; i < this.usersCorrectList.length; ++i){
+                    if(this.usersCorrectList[i].userId == res[0]){
+                        if(res[1] == "firstName"){
+                            this.usersCorrectList[i].firstName = res[2];
+                        }else if(res[1] == "lastName"){
+                            this.usersCorrectList[i].lastName = res[2];
+                        }else if(res[1] == "displayName"){
+                            this.usersCorrectList[i].displayName = res[2];
+                        }else if(res[1] == "mobile"){
+                            this.usersCorrectList[i].mobile = res[2];
+                        }else if(res[1] == "mail"){
+                            this.usersCorrectList[i].mail = res[2];
+                        }else if(res[1] == "description"){
+                            this.usersCorrectList[i].description = res[2];
+                        }else if(res[1] == "memberOf"){
+                            this.usersCorrectList[i].memberOf = res[2];
+                        }
+                    }
+                }
+            },
+            unselectConflict:function(s) {
+                document.getElementById(s).className = "btn btn-notSelected mb-2";
+            },
+            resolveConflicts:function() {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                for(var i = 0; i < this.usersCorrectList.length; ++i){
+                    if(this.usersCorrectUserIdList.indexOf(this.usersCorrectList[i].userId) != -1){
+                        var groupsConflictList = [];
+                        var groupsList = this.usersCorrectList[i].memberOf.split(',');
+                        for(var j = 0; j < groupsList.length; ++j){
+                            groupsConflictList.push(groupsList[j]);
+                        }
+                        axios({
+                            method: 'put',
+                            url: url + '/api/users/u/' + vm.usersCorrectList[i].userId,  //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                userId: vm.usersCorrectList[i].userId,
+                                firstName: vm.usersCorrectList[i].firstName,
+                                lastName: vm.usersCorrectList[i].lastName,
+                                displayName: vm.usersCorrectList[i].displayName,
+                                mobile: vm.usersCorrectList[i].mobile,
+                                memberOf: groupsConflictList,
+                                mail: vm.usersCorrectList[i].mail,
+                                description: vm.usersCorrectList[i].description,
+                            }),
+                        });
+                    }
+                }
+                location.reload();
             },
             sort:function(s) {
                 console.log("sort");
@@ -229,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/user") // 
+                axios.get(url + "/api/user") //
                     .then((res) => {
                         vm.userInfo = res.data;
                         vm.username = vm.userInfo.userId;
@@ -241,19 +391,26 @@ document.addEventListener('DOMContentLoaded', function () {
             getUserPic: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/user/photo") // 
+                axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                        if(res.data == null){
+                      vm.userPicture = "/api/user/photo";
+                    })
+                    .catch((error) => {
+                        if (error.response) {
+                          if (error.response.status == 400 || error.response.status == 500) {
                             vm.userPicture = "images/PlaceholderUser.png";
+                          }else{
+                            vm.userPicture = "/api/user/photo";
+                          }
                         }else{
-                            vm.userPicture = /* url + */ "/idman/api/user/photo"; // 
+                          console.log("error.response is False")
                         }
                     });
-            },
+              },
             refreshUsers: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/users") // 
+                axios.get(url + "/api/users") //
                     .then((res) => {
                         vm.users = res.data;
                         vm.total = Math.ceil(vm.users.length / vm.recordsShownOnPage);
@@ -263,18 +420,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.showS = ""
                 this.addS = "display:none"
                 this.editS = "display:none"
+                this.importConflictS = "display:none"
+            },
+            showImportConflicts: function () {
+                this.showS = "display:none"
+                this.addS = "display:none"
+                this.editS = "display:none"
+                this.importConflictS = ""
             },
             updateUser: function (id) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + `/idman/api/users/u/${id}`) // 
+                axios.get(url + `/api/users/u/${id}`) //
                     .then((res) => {
                         for(i = 0; i < vm.users.length; ++i){
                             if(vm.users[i].userId == id){
                                 vm.users[i].firstName = res.data.firstName;
                                 vm.users[i].lastName = res.data.lastName;
                                 vm.users[i].displayName = res.data.displayName;
-                                vm.users[i].telephoneNumber = res.data.mobile;
+                                vm.users[i].mobile = res.data.mobile;
                                 vm.users[i].mail = res.data.mail;
                                 vm.users[i].memberOf = res.data.memberOf;
                                 vm.users[i].userPassword = res.data.userPassword;
@@ -287,21 +451,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.showS = "display:none"
                 this.addS = "display:none"
                 this.editS = ""
+                this.importConflictS = "display:none"
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                var res;
-                axios.get(url + `/idman/api/users/u/${id}`) // 
+                axios.get(url + `/api/users/u/${id}`) //
                     .then((res) => {
                         vm.editInfo = res.data;
                         vm.editInfo.password = res.data.userPassword;
-                        vm.editInfo.phone = res.data.mobile;
+                        vm.editInfo.mobile = res.data.mobile;
                         populate(res.data.memberOf);
 
                     });
 
                 function populate(checkedGroups) {
 
-                    axios.get(url + `/idman/api/groups`) // 
+                    axios.get(url + `/api/groups`) //
                         .then((res) => {
                                 populateTwo(res.data, checkedGroups)
                             }
@@ -343,6 +507,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.showS = ""
                 this.addS = "display:none"
                 this.editS = "display:none"
+                this.importConflictS = "display:none"
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var check = confirm(this.s26);
 
@@ -361,27 +526,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (check == true) {
                     axios({
                         method: 'put',
-                        url: url + '/idman/api/users/u/' + id,  // 
+                        url: url + '/api/users/u/' + id,  //
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                             userId: id,
                             firstName: document.getElementById('editInfo.firstNameUpdate').value,
                             lastName: document.getElementById('editInfo.lastNameUpdate').value,
                             displayName: document.getElementById('editInfo.displayNameUpdate').value,
-                            mobile: document.getElementById('editInfo.phoneUpdate').value,
+                            mobile: document.getElementById('editInfo.mobileUpdate').value,
                             memberOf: checkedValue,
                             mail: document.getElementById('editInfo.mailUpdate').value,
                             userPassword: document.getElementById('editInfo.passwordRetypeUpdate').value,
                             description: document.getElementById('editInfo.descriptionUpdate').value,
                         }),
-                    },);
+                    })
+                    .then((res) => {
+                        location.reload();
+                    });
                 }
 
             },
             exportUsers: function(){
                 url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 
-                axios.get(url + "/idman/api/users/full") // 
+                axios.get(url + "/api/users/full") //
                     .then((res) => {
                         data = res.data;
                         var opts = [{sheetid:'Users',header:true}]
@@ -394,9 +562,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.showS = "display:none"
                 this.addS = ""
                 this.editS = "display:none"
+                this.importConflictS = "display:none"
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 
-                axios.get(url + `/idman/api/groups`) // 
+                axios.get(url + `/api/groups`) //
                     .then((res) => {
                             populate(res.data);
                         }
@@ -427,10 +596,10 @@ document.addEventListener('DOMContentLoaded', function () {
             sendResetEmail(userId) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/users/u/" + userId) // 
+                axios.get(url + "/api/users/u/" + userId) //
                     .then((res) => {
-                        axios.get(url + "/idman/api/public/sendMail/" + res.data.mail) // 
-                            .then((resFinal) => {
+                        axios.get(url + "/api/public/sendMail/" + res.data.mail) //
+                            .then((res) => {
                             });
                     })
             },
@@ -464,14 +633,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(check==true) {
                     axios({
                         method: 'post',
-                        url: url + "/idman/api/users",  // 
+                        url: url + "/api/users",  //
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                                 userId: document.getElementById('editInfo.userIdCreate').value,
                                 firstName: document.getElementById('editInfo.firstNameCreate').value,
                                 lastName: document.getElementById('editInfo.lastNameCreate').value,
                                 displayName: document.getElementById('editInfo.displayNameCreate').value,
-                                telephoneNumber: document.getElementById('editInfo.phoneCreate').value,
+                                mobile: document.getElementById('editInfo.mobileCreate').value,
                                 memberOf: checkedValue,
                                 mail: document.getElementById('editInfo.mailCreate').value,
                                 userPassword: document.getElementById('editInfo.passwordRetypeCreate').value,
@@ -479,7 +648,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                             }
                         ),
-                    },);
+                    })
+                    .then((res) => {
+                        location.reload();
+                    });
                 }
             },
             deleteUser: function (id) {
@@ -487,7 +659,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 var check = confirm(this.s28);
                 if (check == true) {
-                    axios.delete(url + `/idman/api/users/u/${id}`) // 
+                    axios.delete(url + `/api/users/u/${id}`) //
                         .then(() => {
                             vm.refreshUsers();
                         });
@@ -498,7 +670,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 var check = confirm(this.s29);
                 if (check == true) {
-                    axios.delete(url + `/idman/api/users`) // 
+                    axios.delete(url + `/api/users`) //
                         .then(() => {
                             vm.refreshUsers();
                         });
@@ -543,6 +715,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s28 = "Are You Sure You Want To Delete?";
                     this.s29 = "Are You Sure You Want To Delete All Users?";
                     this.s30 = "./privacy?en";
+                    this.s31 = "Configs";
+                    this.s32 = "./configs?en";
+                    this.s33 = "Resolve Conflicts While Importing Users";
+                    this.s34 = "Old User";
+                    this.s35 = "New User";
+                    this.s36 = "Submit";
+                    this.s37 = "Edit User";
+                    this.s38 = "Add User";
+                    this.s39 = "./events?en";
                     this.U0= "Password";
                     this.U1= "Users";
                     this.U2= "ID";
@@ -600,13 +781,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s28 = "آیا از حذف این کاربر اطمینان دارید؟";
                     this.s29 = "آیا از حذف تمامی کاربران اطمینان دارید؟";
                     this.s30 = "./privacy";
+                    this.s31 = "پیکربندی";
+                    this.s32 = "./configs";
+                    this.s33 = "رفع تناقض وارد کردن کاربران جدید";
+                    this.s34 = "کاربر قدیمی";
+                    this.s35 = "کاربر جدید";
+                    this.s36 = "اعمال تغییرات";
+                    this.s37 = "ویرایش کاربر";
+                    this.s38 = "ایجاد کاربر";
+                    this.s39 = "./events";
                     this.U0= "رمز";
                     this.U1= "کاربران";
                     this.U2= "شناسه";
                     this.U3= "نام (به انگلیسی)";
                     this.U4= "نام خانوادگی (به انگلیسی)";
                     this.U5= "نام کامل (به فارسی)";
-                    this.U6= "شماره تماس";
+                    this.U6= "شماره تلفن";
                     this.U7= "ایمیل";
                     this.U8= "کد ملی";
                     this.U9= "توضیحات";

@@ -38,8 +38,8 @@
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
                             <div class="card-body p-0 pt-3">
-                                <form id="upload-form" method="POST" action="/idman/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
-                                    <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
+                                <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
+                                    <input type="file" id="upload-image" name="upload-image" onchange="document.getElementById('upload-form').submit()">
                                 </form>
                                 <div class="userpic mb-3">
                                     <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
@@ -91,16 +91,20 @@
                                         <i class="fa fa-users"></i>
                                         <span>{{s5}}</span>
                                     </a>
-                                    <!-- <a class="list-group-item list-group-item-action py-2 "
-                                    href="#">
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s29">
                                         <i class="fa fa-calendar"></i>
                                         <span>{{s6}}</span>
-                                    </a> -->
-
+                                    </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s23">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
+                                    </a>
+                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s28">
+                                        <i class="fa fa-cog"></i>
+                                        <span>{{s27}}</span>
                                     </a>
                                 </div>
                             </div>
@@ -129,7 +133,8 @@
                                             </div>
                                             <div class="form-group">
                                                 <input v-bind:value="userInfo.userPassword" :class='{valid:passwordValidation.valid}' @input="passwordCheck" :type="show === true ? 'text' : 'password'" class="form-control"
-                                                name="password" id="password" v-model="password" v-bind:placeholder="s17" v-bind:style="placeholder" required>
+                                                name="password" id="newPassword" v-model="password" v-bind:placeholder="s17" v-bind:style="placeholder" oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                                oninput="setCustomValidity('')" required >
 
                                                 <div class="strength" :class="'level_' + strengthLevel"></div>
                                                 <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="show" @click="show = !show"></i>
@@ -144,20 +149,20 @@
                                                 <transition name="hint" appear>
                                                     <div v-if='!submitted' class='hints'>
                                                         <p style="box-sizing: unset;">{{s19}}</p> <br>
-                                                        <p :class="{'passed' :has_number }" v-bind:style="font">{{rules[3].message}}<i :class="has_number ? 'fa fa-check' : 'fa fa-times'"></i></p>
-                                                        <p :class="{'passed' :has_lowercase }" v-bind:style="font">{{rules[0].message}}<i :class="has_lowercase ? 'fa fa-check' : 'fa fa-times'"></i></p>
-                                                        <p :class="{'passed' :has_uppercase }" v-bind:style="font">{{rules[1].message}}<i :class="has_uppercase ? 'fa fa-check' : 'fa fa-times'"></i></p>
-                                                        <p :class="{'passed' :has_char }" v-bind:style="font">{{rules[2].message}}<i :class="has_char ? 'fa fa-check' : 'fa fa-times'"></i></p>
+                                                        <p :class="{'passed' :has_number }" v-bind:style="font"><i :class="has_number ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
+                                                        <p :class="{'passed' :has_lowercase }" v-bind:style="font"><i :class="has_lowercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
+                                                        <p :class="{'passed' :has_uppercase }" v-bind:style="font"><i :class="has_uppercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
+                                                        <p :class="{'passed' :has_char }" v-bind:style="font"><i :class="has_char ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[2].message}}</p>
                                                     </div>
                                                 </transition>
                                             </div>
                                             <div class="form-group">
-                                                <button v-on:click="editPass(userInfo.userId)" :disabled="setActivee" class="btn btn-primary">
-                                                    {{U13}}
-                                                </button> <br> <br>
                                                 <div class="matches" v-bind:style="notSamePasswords ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                     <p class="error" style="font-size: .8rem;">{{s21}}</p>
-                                                </div>
+                                                </div> <br> <br>
+                                                <button v-on:click="editPass(userInfo.userId)" :disabled="setActivee" class="btn btn-primary">
+                                                    {{U13}}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -172,16 +177,18 @@
                                                 <input v-bind:value="userInfo.lastName" id="userInfo.lastNameUpdate" type="text" class="form-control">
                                             </div>
                                             <div class="form-group">
-                                                <label>{{U5}}</label>
-                                                <input v-bind:value="userInfo.displayName" id="userInfo.displayNameUpdate" type="text" class="form-control"  required>
+                                                <label>{{U5}}<span style="color: red;"> *</span></label>
+                                                <input v-bind:value="userInfo.displayName" id="userInfo.displayNameUpdate" type="text" class="form-control"  required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                                oninput="setCustomValidity('')">
                                             </div>
                                             <div class="form-group">
                                                 <label>{{U6}}</label>
-                                                <input v-bind:value="userInfo.mobile" id="userInfo.telephoneNumberUpdate" type="text" class="form-control">
+                                                <input v-bind:value="userInfo.mobile" id="userInfo.telephoneNumberUpdate" type="text" pattern="09\d{9}" class="form-control">
                                             </div>
                                             <div class="form-group">
-                                                <label>{{U7}}</label>
-                                                <input v-bind:value="userInfo.mail" id="userInfo.mailUpdate" type="email" class="form-control" required>
+                                                <label>{{U7}}<span style="color: red;"> *</span></label>
+                                                <input v-bind:value="userInfo.mail" id="userInfo.mailUpdate" type="email" class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                                oninput="setCustomValidity('')">
                                             </div>
                                             <div class="form-group">
                                                 <label>{{U9}}</label>

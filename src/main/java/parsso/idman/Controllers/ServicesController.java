@@ -1,20 +1,16 @@
 package parsso.idman.Controllers;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.*;
 import java.security.Principal;
 
-import parsso.idman.Models.Person;
-import parsso.idman.Repos.PersonRepo;
+import parsso.idman.Models.User;
+import parsso.idman.Repos.UserRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,54 +32,64 @@ import org.json.simple.parser.ParseException;
 @Controller
 public class ServicesController {
 
-    @Qualifier("personRepoImpl")
+    @Qualifier("userRepoImpl")
     @Autowired
-    private PersonRepo personRepo;
+    private UserRepo userRepo;
 
     @Value("${administrator.ou.name}")
     private String adminOu;
 
+    @Value("${services.folder.path}")
+    private String path;
+
     @GetMapping("/api/service")
     public ResponseEntity<List<Object>> ListUserServices(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        Person person = personRepo.retrievePerson(principal.getName());
-        List<String> memberOf = person.getMemberOf();
-        File folder = new File("/etc/cas/services/"); // ./services/
+        User user = userRepo.retrieveUser(principal.getName());
+        List<String> memberOf = user.getMemberOf();
+        File folder = new File(path); // ./services/
         String[] files = folder.list();
         JSONParser jsonParser = new JSONParser();
         List<Object> services =  new ArrayList<Object>();
         if(files!=null)
         for (String file : files){
-            try (FileReader reader = new FileReader("/etc/cas/services/" + file)){ // 
-                Object obj = jsonParser.parse(reader);
-                JSONObject jo = (JSONObject) obj;
-                Map accessStrategy = ((Map)jo.get("accessStrategy")); 
-                Map requiredAttributes = ((Map)accessStrategy.get("requiredAttributes"));
-                JSONArray member = (JSONArray) requiredAttributes.get("member");
-                JSONArray groups = (JSONArray) member.get(1);
-                try{
-                    if(groups.size() == 0){
-                        continue;
-                    }
-                } catch (NullPointerException e){
-                    continue;
-                }
-                try{
-                    for(int i = 0; i < memberOf.size(); ++i){
-                        if(groups.toString().contains(memberOf.get(i))){
-                            services.add(obj);
+            if (file.substring(file.length()-4).equals("json")) {
+                try (FileReader reader = new FileReader(path + file)) { //
+                    Object obj = jsonParser.parse(reader);
+                    JSONObject jo = (JSONObject) obj;
+                    if(jo.get("accessStrategy") == null){
+                        services.add(obj);
+                    }else{
+                        Map accessStrategy = ((Map) jo.get("accessStrategy"));
+                        Map requiredAttributes = ((Map) accessStrategy.get("requiredAttributes"));
+                        JSONArray member = (JSONArray) requiredAttributes.get("member");
+                        JSONArray groups = (JSONArray) member.get(1);
+                        try {
+                            if (groups.size() == 0) {
+                                continue;
+                            }
+                        } catch (NullPointerException e) {
+                            continue;
+                        }
+                        try {
+                            for (int i = 0; i < memberOf.size(); ++i) {
+                                if (groups.toString().contains(memberOf.get(i))) {
+                                    services.add(obj);
+                                    break;
+                                }
+                            }
+                        } catch (NullPointerException e) {
                             break;
                         }
-                    } 
-                } catch (NullPointerException e){
-                    break;
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-            } catch (FileNotFoundException e){
-                e.printStackTrace();
-            } catch (IOException e){
-                e.printStackTrace();
-            } catch (ParseException e){
-                e.printStackTrace();
             }
         }
         return new ResponseEntity<List<Object>>(services, HttpStatus.OK);
@@ -91,12 +97,12 @@ public class ServicesController {
 
     @GetMapping("/api/services")
     public ResponseEntity<List<Object>> ListServices() {
-        File folder = new File("/etc/cas/services/"); // ./services/
+        File folder = new File(path); // ./services/
         String[] files = folder.list();
         JSONParser jsonParser = new JSONParser();
         List<Object> services =  new ArrayList<Object>();
         for (String file : files){
-            try (FileReader reader = new FileReader("/etc/cas/services/" + file)){ // 
+            try (FileReader reader = new FileReader(path + file)){ // 
                 Object obj = jsonParser.parse(reader);
                 services.add(obj);
             } catch (FileNotFoundException e){
@@ -112,13 +118,13 @@ public class ServicesController {
 
     @GetMapping("/api/services/{id}")
     public ResponseEntity<Object> retrieveService(@PathVariable("id") String serviceId){
-        File folder = new File("/etc/cas/services/");
+        File folder = new File(path);
         String[] files = folder.list();
         JSONParser jsonParser = new JSONParser();
         if(files !=null)
         for (String file : files){
             if(file.contains(serviceId)){
-                try (FileReader reader = new FileReader("/etc/cas/services/" + file)){
+                try (FileReader reader = new FileReader(path + file)){
                     Object obj = jsonParser.parse(reader);
                     return new ResponseEntity<Object> (obj, HttpStatus.OK);
                 } catch (FileNotFoundException e){
@@ -135,11 +141,11 @@ public class ServicesController {
 
     @DeleteMapping("/api/services/{id}")
     public ResponseEntity<String> deleteService(@PathVariable("id") String serviceId){
-        File folder = new File("/etc/cas/services/");
+        File folder = new File(path);
         String[] files = folder.list();
         for (String file : files){
             if(file.contains(serviceId)){
-                File serv = new File("/etc/cas/services/" + file);
+                File serv = new File(path + file);
                 serv.delete();
                 return new ResponseEntity<>("Success", HttpStatus.OK);
             }
@@ -149,10 +155,10 @@ public class ServicesController {
 
     @DeleteMapping("/api/services")
     public ResponseEntity<String> deleteServices(){
-        File folder = new File("/etc/cas/services/");
+        File folder = new File(path);
         String[] files = folder.list();
         for (String file : files){
-                File serv = new File("/etc/cas/services/" + file);
+                File serv = new File(path + file);
                 serv.delete();
         }
         return new ResponseEntity<>("Success", HttpStatus.OK);
@@ -162,8 +168,8 @@ public class ServicesController {
     public String Services(HttpServletRequest request) {
         try {
             Principal principal = request.getUserPrincipal();
-            Person person = personRepo.retrievePerson(principal.getName());
-            List<String> memberOf = person.getMemberOf();
+            User user = userRepo.retrieveUser(principal.getName());
+            List<String> memberOf = user.getMemberOf();
             if(memberOf.contains(adminOu)){
                     return "services";
             }else{
@@ -178,8 +184,8 @@ public class ServicesController {
     public String CreateService(HttpServletRequest request) {
         try {
             Principal principal = request.getUserPrincipal();
-            Person person = personRepo.retrievePerson(principal.getName());
-            List<String> memberOf = person.getMemberOf();
+            User user = userRepo.retrieveUser(principal.getName());
+            List<String> memberOf = user.getMemberOf();
             if(memberOf.contains(adminOu)){
                     return "createservice";
             }else{
@@ -194,8 +200,8 @@ public class ServicesController {
     public String AddService(@RequestParam Map<String, String> allParams, HttpServletRequest request) {
         try {
             Principal principal = request.getUserPrincipal();
-            Person person = personRepo.retrievePerson(principal.getName());
-            List<String> memberOf = person.getMemberOf();
+            User user = userRepo.retrieveUser(principal.getName());
+            List<String> memberOf = user.getMemberOf();
             if(memberOf.contains(adminOu)){
                 JSONObject jsonObject = new JSONObject();
                 File service;
@@ -364,24 +370,24 @@ public class ServicesController {
 
                 if(allParams.get("id").equals("")){
                     try {
-                        FileWriter file = new FileWriter("/etc/cas/services/" + allParams.get("name") + "-" + id + ".json");
+                        FileWriter file = new FileWriter(path + allParams.get("name") + "-" + id + ".json");
                         file.write(jsonObject.toJSONString().replace("\\/", "/"));
                         file.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }else{
-                    File folder = new File("/etc/cas/services/");
+                    File folder = new File(path);
                     String[] files = folder.list();
                     if(files!=null)
                     for (String file : files){
                         if(file.contains(allParams.get("id"))){
-                            File serv = new File("/etc/cas/services/" + file);
+                            File serv = new File(path + file);
                             serv.delete();
                         }
                     }
                     try {
-                        FileWriter file = new FileWriter("/etc/cas/services/" + allParams.get("name") + "-" + allParams.get("id") + ".json");
+                        FileWriter file = new FileWriter(path + allParams.get("name") + "-" + allParams.get("id") + ".json");
                         file.write(jsonObject.toJSONString().replace("\\/", "/"));
                         file.close();
                     } catch (IOException e) {

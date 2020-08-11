@@ -23,7 +23,8 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 @Service
 public class GroupRepoImpl implements GroupRepo {
 
-    public static final String BASE_DN = "";
+    public static final String BASE_DN = "dc=example,dc=com";;
+
 
     @Autowired
     private LdapTemplate ldapTemplate;
@@ -131,7 +132,7 @@ public class GroupRepoImpl implements GroupRepo {
         public Group mapFromAttributes(Attributes attributes) throws NamingException {
             Group group = new Group();
 
-            group.setId(null != attributes.get("uid") ? Integer.valueOf(attributes.get("uid").get().toString()) : null);
+            group.setId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
             group.setName(null != attributes.get("ou") ? attributes.get("ou").get().toString() : null);
             group.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
             return group;

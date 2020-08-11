@@ -1,175 +1,149 @@
 package parsso.idman.Controllers;
 
-import org.apache.commons.compress.utils.IOUtils;
-import org.slf4j.LoggerFactory;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
-import parsso.idman.Models.Person;
+import parsso.idman.Models.SimpleUser;
+import parsso.idman.Models.User;
 import parsso.idman.Repos.FilesStorageService;
-import parsso.idman.Repos.PersonRepo;
-import parsso.idman.utils.FilesStorageService.ResponseMessage;
+import parsso.idman.Repos.UserRepo;
 
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.security.Principal;
-import java.sql.SQLOutput;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
-import java.util.logging.Logger;
 
+/**
+ * The type Users controller.
+ */
 @RestController
 public class UsersController {
 
 
-    @Qualifier("personRepoImpl")
-    @Autowired
-    private PersonRepo personRepo;
-
+    // default sequence of variables which can be changed using frontend
+    private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    /**
+     * The Storage service.
+     */
     @Autowired
     FilesStorageService storageService;
-
-    @Value("${administrator.ou.name}")
-    private String adminOu;
-
-    private int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    @Qualifier("userRepoImpl")
+    @Autowired
+    private UserRepo userRepo;
 
 
+    @Value("${api.get.users}")
+    private final  static String  apiAddress = null;
+
+
+    /**
+     * Retrieve user with provided uId
+     *
+     * @param userId the user uId
+     * @return the the user object with provided uId
+     */
     @GetMapping("/api/users/u/{uid}")
-    public ResponseEntity<Person> retrievePerson(@PathVariable("uid") String userId) {
-        return new ResponseEntity<>(personRepo.retrievePerson(userId), HttpStatus.OK);
+    public ResponseEntity<User> retrieveUser(@PathVariable("uid") String userId) {
+        User user = userRepo.retrieveUser(userId);
+        if (user == null) return new ResponseEntity<>(user, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @GetMapping("/api/user")
-    public ResponseEntity<Person> retrievePerson(HttpServletRequest request) {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(personRepo.retrievePerson(principal.getName()), HttpStatus.OK);
-    }
-
+    /**
+     * Retrieve all users user only with main attributes
+     * main attributes are as following: userId, displayName, OU
+     *
+     * @return the list of simpleUser object
+     */
     @GetMapping("/api/users")
-    public ResponseEntity<List<Person>> retrieveUsersMain() {
-        return new ResponseEntity<>(personRepo.retrieveUsersMain(), HttpStatus.OK);
+    public ResponseEntity<List<SimpleUser>> retrieveUsersMain() {
+        List<User> user = userRepo.retrieveUsersFull();
+        if (user.size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(userRepo.retrieveUsersMain(), HttpStatus.OK);
     }
 
+
+    /**
+     * Retrieve all users with all attributes
+     *
+     * @return the list of user object
+     */
+    @GetMapping("/api/users/full")
+    public ResponseEntity<List<User>> retrieveUsers() {
+        if (userRepo.retrieveUsersFull().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(userRepo.retrieveUsersFull(), HttpStatus.OK);
+    }
+
+    /**
+     * Create user
+     *
+     * @param user the user
+     * @return the response entity
+     */
     @PostMapping("/api/users")
-    public ResponseEntity<String> bindLdapPerson(@RequestBody Person person) {
-        String result = personRepo.create(person);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<JSONObject> bindLdapUser(@RequestBody User user) {
+        JSONObject user1 = userRepo.create(user);
+        if (user1.equals(new JSONObject())) return new ResponseEntity<>(user1, HttpStatus.OK);
+        else return new ResponseEntity<>(user1, HttpStatus.FOUND);
+
     }
 
+    /**
+     * Update user with provided uId and User object
+     *
+     * @param uid  the uid
+     * @param user the user
+     * @return the response entity
+     */
     @PutMapping("/api/users/u/{uId}")
-    public ResponseEntity<String> rebindLdapPerson(@PathVariable("uId") String uid, @RequestBody Person person) {
-        String result = personRepo.update(uid, person);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<String> rebindLdapUser(@PathVariable("uId") String uid, @RequestBody User user) {
+        return new ResponseEntity<>(userRepo.update(uid, user));
     }
 
+    /**
+     * Delete a User with provided uId.
+     *
+     * @param userId the user id
+     * @return the response entity
+     */
     @DeleteMapping("/api/users/u/{id}")
-    public ResponseEntity<String> unbindLdapPerson(@PathVariable("id") String userId) {
-        return new ResponseEntity<>(personRepo.remove(userId), HttpStatus.OK);
+    public ResponseEntity<String> unbindLdapUser(@PathVariable("id") String userId) {
+        return new ResponseEntity<>(userRepo.remove(userId), HttpStatus.OK);
     }
 
+    /**
+     * Delete all users
+     *
+     * @return the response entity
+     */
     @DeleteMapping("/api/users")
-    public ResponseEntity<String> unbindAllLdapPerson() {
-        return new ResponseEntity<>(personRepo.remove(), HttpStatus.OK);
+    public ResponseEntity<String> unbindAllLdapUser() {
+        return new ResponseEntity<>(userRepo.remove(), HttpStatus.OK);
     }
 
+    /**
+     * Upload file for importing users using following formats:
+     * LDIF,xlsx,xls,csv
+     *
+     * @param file the file
+     * @return the response entity
+     * @throws IOException the io exception
+     */
     @PostMapping("/api/users/import")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file
-                                                      //@RequestParam("sequence") int[] sequence,
-                                                      //@RequestParam("hasHeader") boolean hasHeader
-    ) {
-        String message;
-        try {
-            //storageService.save(file);
+    public ResponseEntity<JSONArray> uploadFile(@RequestParam("file") MultipartFile file
+                                                //@RequestParam(value= "sequence", defaultValue = defaultSequence) int[] sequence,
+                                                //@RequestParam("hasHeader") boolean hasHeader
+    ) throws IOException {
 
-            List<Person> users = personRepo.importFileUsers(file, defaultSequence, true);
+        //return new ResponseEntity<>(userRepo.importFileUsers(file, defaultSequence, true), HttpStatus.OK);
 
-            message = "Uploaded the file successfully: " + file.getOriginalFilename();
-
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
-        } catch (Exception e) {
-            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
-        }
-    }
-
-    @GetMapping("/api/user/isAdmin")
-    public boolean isAdmin (HttpServletRequest request) {
-        try {
-            Principal principal = request.getUserPrincipal();
-            Person person = personRepo.retrievePerson(principal.getName());
-            List<String> memberOf = person.getMemberOf();
-            if(memberOf.contains(adminOu)) return true;
-            else return false;
-
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-
-
-    @GetMapping("/api/user/photo")
-    public void getImage(HttpServletResponse response,HttpServletRequest request) throws IOException {
-
-        Principal principal = request.getUserPrincipal();
-        Person person =  personRepo.retrievePerson(principal.getName());
-
-        File file = new File("uploadedFiles/"+person.getPhotoPath());
-        if(file.exists()) {
-            String contentType = "application/octet-stream";
-            response.setContentType(contentType);
-            OutputStream out = response.getOutputStream();
-            FileInputStream in = new FileInputStream(file);
-            // copy from in to out
-            IOUtils.copy(in, out);
-            out.close();
-            in.close();
-        }else {
-            throw new FileNotFoundException();
-        }
-    }
-
-    @PostMapping("/api/user/photo")
-    public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file,
-                                                             HttpServletRequest request) {
-
-        Principal principal = request.getUserPrincipal();
-
-
-        String message;
-        try {
-
-            String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
-
-
-            storageService.save(file,timeStamp+file.getOriginalFilename());
-
-            Person person = personRepo.retrievePerson(principal.getName());
-            person.setPhotoPath(timeStamp+file.getOriginalFilename());
-
-            personRepo.update(person.getUserId(), person);
-
-            message = "Uploaded the file successfully: " + file.getOriginalFilename();
-
-        } catch (Exception e) {
-            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-
-        }
-        System.out.println(message);
-        return new RedirectView("/idman/dashboard");
+        JSONArray jsonArray = userRepo.importFileUsers(file, defaultSequence, true);
+        if (jsonArray.get(0).equals(new JSONObject())) return new ResponseEntity<>(jsonArray, HttpStatus.OK);
+        else return new ResponseEntity<>(jsonArray, HttpStatus.FOUND);
     }
 
 }

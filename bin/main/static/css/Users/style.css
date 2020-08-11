@@ -10,6 +10,10 @@ html,body {
     background-repeat: repeat-x;
     font-family: IRANSans;
   }
+  .btn-notSelected {
+    background-color: #4d4b4b;
+    color: #ffffff;
+  }
   .rtl {
     direction: rtl;
     text-align: right;

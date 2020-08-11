@@ -1,5 +1,6 @@
 package parsso.idman.RepoImpls;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -20,13 +21,12 @@ import parsso.idman.Repos.FilesStorageService;
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
 
-    @Value("upload.pic.path")
+    @Value("${upload.pic.path}")
     private String uploadPath;
 
 
+    private final Path root = Paths.get("/opt/tomcat/uploadedFiles");
 
-
-    private final Path root = Paths.get("uploadedFiles");
 
     @Override
     public void init() {
@@ -41,8 +41,10 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     public void save(MultipartFile file, String name) {
         try {
 
+            //File dest = new File(root);
             Files.copy(file.getInputStream(), this.root.resolve(name));
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
         }
     }

@@ -57,7 +57,10 @@ document.addEventListener('DOMContentLoaded', function () {
       s20: "اتصال",
       s21: "./groups",
       s22: "./settings",
-      s23: "./privacy"
+      s23: "./privacy",
+      s24: "پیکربندی",
+      s25: "./configs",
+      s26: "./events"
     },
     created: function () {
       this.getUserInfo();
@@ -82,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
       isAdmin: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/api/user/isAdmin") // 
+        axios.get(url + "/api/user/isAdmin") //
           .then((res) => {
             if(res.data){
                 vm.menuS = true;
@@ -92,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/api/user") // 
+        axios.get(url + "/api/user") //
           .then((res) => {
             vm.userInfo = res.data;
             vm.username = vm.userInfo.userId;
@@ -104,19 +107,26 @@ document.addEventListener('DOMContentLoaded', function () {
       getUserPic: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/api/user/photo") // 
+        axios.get(url + "/api/user/photo") //
             .then((res) => {
-                if(res.data == null || typeof res.data == 'undefined' || res.data == ""){
+              vm.userPicture = "/api/user/photo";
+            })
+            .catch((error) => {
+                if (error.response) {
+                  if (error.response.status == 400 || error.response.status == 500) {
                     vm.userPicture = "images/PlaceholderUser.png";
+                  }else{
+                    vm.userPicture = "/api/user/photo";
+                  }
                 }else{
-                    vm.userPicture = /* url + */ "/idman/api/user/photo"; // 
+                  console.log("error.response is False")
                 }
             });
       },
       getGroups: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/api/group") // 
+        axios.get(url + "/api/group") //
         .then((res) => {
           vm.groups = res.data;
         });
@@ -124,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
       getServices: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/api/service") // 
+        axios.get(url + "/api/service") //
         .then((res) => {
           vm.services = res.data;
         });
@@ -158,6 +168,9 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s21 = "./groups?en";
           this.s22 = "./settings?en";
           this.s23 = "./privacy?en";
+          this.s24 = "Configs";
+          this.s25 = "./configs?en";
+          this.s26 = "./events?en";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -186,6 +199,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s21 = "./groups";
             this.s22 = "./settings";
             this.s23 = "./privacy";
+            this.s24 = "پیکربندی";
+            this.s25 = "./configs";
+            this.s26 = "./events";
         }
       }
     }

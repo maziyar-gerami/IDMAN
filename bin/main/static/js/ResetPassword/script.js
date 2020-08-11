@@ -26,8 +26,12 @@ document.addEventListener('DOMContentLoaded', function () {
             userInfo: [],
             email: "",
             emailE: "",
+            mobile: "",
+            mobileS: "",
+            codeSMS: "",
             username: "",
             usernameE: "",
+            usernameS: "",
             name: "",
             nameEN: "",
             users: [],
@@ -42,9 +46,18 @@ document.addEventListener('DOMContentLoaded', function () {
             sendU: false,
             Success: false,
             Error: false,
+            sendS: true,
+            sendUS: false,
+            checkSMSCode: false,
+            SuccessS: false,
+            ErrorS: false,
+            ErrorSMSCode: false,
+            ErrorSMSCode403: false,
+            ErrorSMSCode408: false,
             editS: "display:none",
             addS: "display:none",
             showS: "",
+            activeItem: "email",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -74,6 +87,12 @@ document.addEventListener('DOMContentLoaded', function () {
             s27: "ایمیل وارد شده در پایگاه داده ما وجود ندارد.",
             s28: "لطفا با دقت بیشتری نسبت به ورود آدرس ایمیل اقدام نمایید:",
             s29: "لطفا جهت تکمیل مراحل، شناسه خود را وارد نمایید:",
+            s30: "لطفا جهت بازنشانی رمز عبور، شماره موبایل خود را وارد کنید:",
+            s31: "لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.",
+            s32: "شماره موبایل وارد شده در پایگاه داده ما وجود ندارد.",
+            s33: "لطفا با دقت بیشتری نسبت به ورود شماره موبایل اقدام نمایید:",
+            s34: "شماره موبایل",
+            s35: "شما در حال انتقال به صفحه بازنشانی رمز عبور هستید...",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -98,16 +117,22 @@ document.addEventListener('DOMContentLoaded', function () {
             p3: "قوی"
         },
         created: function () {
-            this.getUserInfo();
+            //this.getUserInfo();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
             }
         },
         methods: {
+            isActive (menuItem) {
+                return this.activeItem === menuItem;
+            },
+            setActive (menuItem) {
+                this.activeItem = menuItem;
+            },
             sendEmail: function  (email) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/public/checkMail/" + email) // 
+                axios.get(url + "/api/public/checkMail/" + email) //
                     .then((res) => {
                         vm.emails = res.data;
                         if(vm.emails.length == 0){
@@ -120,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             vm.sendU = false;
                             vm.Success = true;
                             vm.Error = false;
-                            axios.get(url + "/idman/api/public/sendMail/" + email) // 
+                            axios.get(url + "/api/public/sendMail/" + email) //
                                 .then((res) => {
                                     
                                 });
@@ -136,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 var flag = false;
-                axios.get(url + "/idman/api/public/checkMail/" + email) // 
+                axios.get(url + "/api/public/checkMail/" + email) //
                     .then((res) => {
                         vm.emails = res.data;
                         if(vm.emails.length > 1){
@@ -147,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     vm.sendU = false;
                                     vm.Success = true;
                                     vm.Error = false;
-                                    axios.get(url + "/idman/api/public/sendMail/" + email + "/" + username) // 
+                                    axios.get(url + "/api/public/sendMail/" + email + "/" + username) //
                                         .then((res) => {
                                             
                                         });
@@ -163,10 +188,114 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
             },
-            getUserInfo: function () {
+            checkSMS: function  (code) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/user") // 
+                axios.get(url + "/api/public/validateToken/" + this.usernameS + "/" + code) //
+                .catch((error) => {
+                    if (error.response) {
+                        if(error.response.status === 200){
+                            vm.sendS = false;
+                            vm.sendUS = false;
+                            vm.checkSMSCode = false;
+                            vm.SuccessS = true;
+                            vm.ErrorS = false;
+                            vm.ErrorSMSCode = false;
+                        }else if(error.response.status === 408){
+                            vm.ErrorSMSCode408 = true;
+                            vm.ErrorSMSCode403 = false;
+                            vm.sendS = false;
+                            vm.sendUS = false;
+                            vm.checkSMSCode = false;
+                            vm.SuccessS = false;
+                            vm.ErrorS = false;
+                            vm.ErrorSMSCode = true;
+                        }else if(error.response.status === 403){
+                            vm.ErrorSMSCode408 = false;
+                            vm.ErrorSMSCode403 = true;
+                            vm.sendS = false;
+                            vm.sendUS = false;
+                            vm.checkSMSCode = false;
+                            vm.SuccessS = false;
+                            vm.ErrorS = false;
+                            vm.ErrorSMSCode = true;
+                        }
+                    }
+                });
+            },
+            sendSMS: function  (mobile) {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/api/public/checkMobile/" + mobile) //
+                    .then((res) => {
+                        vm.mobiles = res.data;
+                        if(vm.mobiles.length == 0){
+                            vm.sendS = false;
+                            vm.sendUS = false;
+                            vm.checkSMSCode = false;
+                            vm.SuccessS = false;
+                            vm.ErrorS = true;
+                            vm.ErrorSMSCode = false;
+                        } else if(vm.mobiles.length == 1){
+                            vm.sendS = false;
+                            vm.sendUS = false;
+                            vm.checkSMSCode = true;
+                            vm.SuccessS = false;
+                            vm.ErrorS = false;
+                            vm.ErrorSMSCode = false;
+                            axios.get(url + "/api/public/sendSMS/" + mobile) //
+                                .then((res) => {
+                                    
+                                });
+                        } else if(vm.mobiles.length > 1){
+                            vm.sendS = false;
+                            vm.sendUS = true;
+                            vm.checkSMSCode = false;
+                            vm.SuccessS = false;
+                            vm.ErrorS = false;
+                            vm.ErrorSMSCode = false;
+                        }
+                    });
+            },
+            sendSMSUser: function (mobile, username) {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                var flag = false;
+                axios.get(url + "/api/public/checkMobile/" + mobile) //
+                    .then((res) => {
+                        vm.mobiles = res.data;
+                        if(vm.mobiles.length > 1){
+                            for(let i = 0; i < vm.mobiles.length; ++i){
+                                if(vm.mobiles[i].userId == username){
+                                    flag = true;
+                                    vm.sendS = false;
+                                    vm.sendUS = false;
+                                    vm.checkSMSCode = true;
+                                    vm.SuccessS = false;
+                                    vm.ErrorS = false;
+                                    vm.ErrorSMSCode = false;
+                                    axios.get(url + "/api/public/sendSMS/" + mobile + "/" + username) //
+                                        .then((res) => {
+                                            
+                                        });
+                                    break;
+                                }
+                            }
+                            if(!flag){
+                                vm.sendS = false;
+                                vm.sendUS = false;
+                                vm.checkSMSCode = false;
+                                vm.SuccessS = false;
+                                vm.ErrorS = true;
+                                vm.ErrorSMSCode = false;
+                            }
+                        }
+                    });
+            },
+            /* getUserInfo: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/api/user") //
                 .then((res) => {
                     vm.userInfo = res.data;
                     vm.username = vm.userInfo.userId;
@@ -174,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
                     vm.s1 = vm.name;
                 });
-            },
+            }, */
             changeLang: function () {
                 if(this.lang == "EN"){
                     this.placeholder = "text-align: left;"
@@ -210,6 +339,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s27 = "There Is No Such Email Address In Our Database.";
                     this.s28 = "Please Enter Your Email Address More Carefully:";
                     this.s29 = "Please Enter Your ID To Complete The Process:";
+                    this.s30 = "Please Enter Your Mobile Number To Reset Your Password:";
+                    this.s31 = "Please Go To Your SMS Inbox And Enter The Code We Sent You.";
+                    this.s32 = "There Is No Such Mobile Number In Our Database.";
+                    this.s33 = "Please Enter Your Mobile Number More Carefully:";
+                    this.s34 = "Mobile Number";
+                    this.s35 = "We Are Redirecting You To Password Reset Page...";
                     this.U0= "Password";
                     this.U1= "Users";
                     this.U2= "ID";
@@ -261,6 +396,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s27 = "ایمیل وارد شده در پایگاه داده ما وجود ندارد.";
                     this.s28 = "لطفا با دقت بیشتری نسبت به ورود آدرس ایمیل اقدام نمایید:";
                     this.s29 = "لطفا جهت تکمیل مراحل، شناسه خود را وارد نمایید:";
+                    this.s30 = "لطفا جهت بازنشانی رمز عبور، شماره موبایل خود را وارد کنید:";
+                    this.s31 = "لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.";
+                    this.s32 = "شماره موبایل وارد شده در پایگاه داده ما وجود ندارد.";
+                    this.s33 = "لطفا با دقت بیشتری نسبت به ورود شماره موبایل اقدام نمایید:";
+                    this.s34 = "شماره موبایل";
+                    this.s35 = "شما در حال انتقال به صفحه بازنشانی رمز عبور هستید...";
                     this.U0= "رمز";
                     this.U1= "کاربران";
                     this.U2= "شناسه";

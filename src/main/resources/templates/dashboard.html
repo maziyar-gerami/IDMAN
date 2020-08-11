@@ -38,7 +38,7 @@
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
                             <div class="card-body p-0 pt-3">
-                                <form id="upload-form" method="POST" action="/idman/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
+                                <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
                                     <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
                                 </form>
                                 <div class="userpic mb-3">
@@ -91,16 +91,20 @@
                                         <i class="fa fa-users"></i>
                                         <span>{{s5}}</span>
                                     </a>
-                                    <!-- <a class="list-group-item list-group-item-action py-2 "
-                                    href="#">
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s26">
                                         <i class="fa fa-calendar"></i>
                                         <span>{{s6}}</span>
-                                    </a> -->
-
+                                    </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s22">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
+                                    </a>
+                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s25">
+                                        <i class="fa fa-cog"></i>
+                                        <span>{{s24}}</span>
                                     </a>
                                 </div>
                             </div>
@@ -120,7 +124,7 @@
                                 </ul>
                                 <div class="tab-content py-3" id="myTabContent">
                                     <div class="tab-pane fade" :class="{ 'active show': isActive('services') }" id="services">
-                                        <table class="table">
+                                        <table class="table table-responsive">
                                             <tr>
                                                 <th>{{s17}}</th>
                                                 <th>{{s18}}</th>
@@ -129,13 +133,14 @@
                                                 <tr v-for="service in services" v-bind:key="service.id">
                                                     <td>{{service.id}}</td>
                                                     <td>{{service.name}}</td>
-                                                    <td><button class="btn btn-success" v-on:click="connect(service.accessStrategy.endpointUrl)">{{s20}}</button></td>
+                                                    <td>{{service.serviceId}}</td>
+                                                    <td><button class="btn btn-success" v-on:click="connect(service.serviceId)">{{s20}}</button></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                     <div class="tab-pane fade" :class="{ 'active show': isActive('groups') }" id="groups">
-                                        <table class="table">
+                                        <table class="table table-responsive">
                                             <tr>
                                                 <th>{{s17}}</th>
                                                 <th>{{s18}}</th>

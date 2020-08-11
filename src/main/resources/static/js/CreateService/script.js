@@ -73,7 +73,10 @@ document.addEventListener('DOMContentLoaded', function () {
       s37: "./users",
       s38: "./groups",
       s39: "./settings",
-      s40: "./privacy"
+      s40: "./privacy",
+      s41: "پیکربندی",
+      s42: "./configs",
+      s43: "./events"
     },
     created: function () {
       this.getGroups();
@@ -87,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/api/user") // 
+        axios.get(url + "/api/user") //
           .then((res) => {
               vm.userInfo = res.data;
               vm.username = vm.userInfo.userId;
@@ -99,17 +102,24 @@ document.addEventListener('DOMContentLoaded', function () {
       getUserPic: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/api/user/photo") // 
+        axios.get(url + "/api/user/photo") //
             .then((res) => {
-                if(res.data == null){
+              vm.userPicture = "/api/user/photo";
+            })
+            .catch((error) => {
+                if (error.response) {
+                  if (error.response.status == 400 || error.response.status == 500) {
                     vm.userPicture = "images/PlaceholderUser.png";
+                  }else{
+                    vm.userPicture = "/api/user/photo";
+                  }
                 }else{
-                    vm.userPicture = /* url + */ "/idman/api/user/photo"; // 
+                  console.log("error.response is False")
                 }
             });
       },
       getGroups: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/idman/api/groups";
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/api/groups";
         var vm = this;
         axios.get(url)
         .then((res) => {
@@ -184,6 +194,9 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s38 = "./groups?en";
           this.s39 = "./settings?en";
           this.s40 = "./privacy?en";
+          this.s41 = "Configs";
+          this.s42 = "./configs?en";
+          this.s43 = "./events?en";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -229,6 +242,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s38 = "./groups";
             this.s39 = "./settings";
             this.s40 = "./privacy";
+            this.s41 = "پیکربندی";
+            this.s42 = "./configs";
+            this.s43 = "./events";
         }
       },
       saml: function () {

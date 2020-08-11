@@ -23,7 +23,7 @@ function myFunction() {
       router,
       el: '#app',
       data: {
-        recordsShownOnPage: 2,
+        recordsShownOnPage: 20,
         userInfo: [],
         username: "",
         name: "",
@@ -110,7 +110,10 @@ function myFunction() {
         s47: "حذف تمامی سرویس ها",
         s48: "./groups",
         s49: "./settings",
-        s50: "./privacy"
+        s50: "./privacy",
+        s51: "پیکربندی",
+        s52: "./configs",
+        s53: "./events",
       },
       created: function () {
         this.getUserInfo();
@@ -125,7 +128,7 @@ function myFunction() {
         getUserInfo: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/idman/api/user") // 
+          axios.get(url + "/api/user") //
             .then((res) => {
                 vm.userInfo = res.data;
                 vm.username = vm.userInfo.userId;
@@ -137,19 +140,26 @@ function myFunction() {
         getUserPic: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/idman/api/user/photo") // 
+          axios.get(url + "/api/user/photo") //
               .then((res) => {
-                  if(res.data == null){
+                vm.userPicture = "/api/user/photo";
+              })
+              .catch((error) => {
+                  if (error.response) {
+                    if (error.response.status == 400 || error.response.status == 500) {
                       vm.userPicture = "images/PlaceholderUser.png";
+                    }else{
+                      vm.userPicture = "/api/user/photo";
+                    }
                   }else{
-                      vm.userPicture = /* url + */ "/idman/api/user/photo"; // 
+                    console.log("error.response is False")
                   }
               });
         },
         refreshServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/idman/api/services") // 
+          axios.get(url + "/api/services") //
           .then((res) => {
             vm.services = res.data;
             vm.total = Math.ceil(vm.services.length / vm.recordsShownOnPage);
@@ -172,15 +182,17 @@ function myFunction() {
           document.getElementById("editS2").setAttribute("style", "");
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + `/idman/api/services/${id}`) // 
+          axios.get(url + `/api/services/${id}`) //
           .then((res) => {
             vm.flag = true;
             vm.editInfo = res.data;
             document.getElementsByName("id")[0].setAttribute("value", vm.editInfo.id);
-            if(vm.editInfo.accessStrategy.enabled){
-              document.getElementsByName("enabled")[0].checked = true;
-            }else{
-              document.getElementsByName("enabled")[0].checked = false;
+            if(typeof vm.editInfo.accessStrategy.enabled !== 'undefined'){
+              if(vm.editInfo.accessStrategy.enabled){
+                document.getElementsByName("enabled")[0].checked = true;
+              }else{
+                document.getElementsByName("enabled")[0].checked = false;
+              }
             }
             if(typeof vm.editInfo.name !== 'undefined'){
               document.getElementsByName("name")[0].setAttribute("value", vm.editInfo.name);
@@ -218,44 +230,58 @@ function myFunction() {
             if(typeof vm.editInfo.metadataCriteriaPattern !== 'undefined'){
               document.getElementById("metadataCriteriaPattern").setAttribute("value", vm.editInfo.metadataCriteriaPattern);
             }
-            if(vm.editInfo.metadataCriteriaDirection == "INCLUDE"){
-                document.getElementById("option2").selected = false;
-                document.getElementById("option3").selected = true;
-            }else if(vm.editInfo.metadataCriteriaDirection == "EXCLUDE"){
-                document.getElementById("option2").selected = false;
-                document.getElementById("option4").selected = true;
+            if(typeof vm.editInfo.metadataCriteriaDirection !== 'undefined'){
+              if(vm.editInfo.metadataCriteriaDirection == "INCLUDE"){
+                  document.getElementById("option2").selected = false;
+                  document.getElementById("option3").selected = true;
+              }else if(vm.editInfo.metadataCriteriaDirection == "EXCLUDE"){
+                  document.getElementById("option2").selected = false;
+                  document.getElementById("option4").selected = true;
+              }
             }
             if(typeof vm.editInfo.metadataCriteriaRoles !== 'undefined'){
               document.getElementById("metadataCriteriaRoles").setAttribute("value", vm.editInfo.metadataCriteriaRoles);
             }
-            if(vm.editInfo.metadataCriteriaRemoveEmptyEntitiesDescriptors){
+            if(typeof vm.editInfo.metadataCriteriaRemoveEmptyEntitiesDescriptors !== 'undefined'){
+              if(vm.editInfo.metadataCriteriaRemoveEmptyEntitiesDescriptors){
                 document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors").checked = true;
-            }else{
+              }else{
                 document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors").checked = false;
+              }
             }
-            if(vm.editInfo.metadataCriteriaRemoveRolelessEntityDescriptors){
+            if(typeof vm.editInfo.metadataCriteriaRemoveRolelessEntityDescriptors !== 'undefined'){
+              if(vm.editInfo.metadataCriteriaRemoveRolelessEntityDescriptors){
                 document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors").checked = true;
-            }else{
+              }else{
                 document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors").checked = false;
+              }
             }
-            if(vm.editInfo.signAssertions){
+            if(typeof vm.editInfo.signAssertions !== 'undefined'){
+              if(vm.editInfo.signAssertions){
                 document.getElementById("signAssertions").checked = true;
-            }else{
+              }else{
                 document.getElementById("signAssertions").checked = false;
+              }
             }
-            if(vm.editInfo.signResponses){
+            if(typeof vm.editInfo.signResponses !== 'undefined'){
+              if(vm.editInfo.signResponses){
                 document.getElementById("signResponses").checked = true;
-            }else{
+              }else{
                 document.getElementById("signResponses").checked = false;
+              }
             }
-            if(vm.editInfo.encryptAssertions){
+            if(typeof vm.editInfo.encryptAssertions !== 'undefined'){
+              if(vm.editInfo.encryptAssertions){
                 document.getElementById("encryptAssertions").checked = true;
-            }else{
+              }else{
                 document.getElementById("encryptAssertions").checked = false;
+              }
             }
-            if(vm.editInfo.signingCredentialType == "X509"){
+            if(typeof vm.editInfo.signingCredentialType !== 'undefined'){
+              if(vm.editInfo.signingCredentialType == "X509"){
                 document.getElementById("option5").selected = false;
                 document.getElementById("option6").selected = true;
+              }
             }
             if(typeof vm.editInfo.requiredAuthenticationContextClass !== 'undefined'){
               document.getElementById("requiredAuthenticationContextClass").setAttribute("value", vm.editInfo.requiredAuthenticationContextClass);
@@ -278,21 +304,24 @@ function myFunction() {
             if(typeof vm.editInfo.logoutUrl !== 'undefined'){
               document.getElementsByName("logoutUrl")[0].setAttribute("value", vm.editInfo.logoutUrl);
             }
-            if(vm.editInfo.logoutType == "NONE"){
-                document.getElementById("option8").selected = false;
-                document.getElementById("option7").selected = true;
-            }else if(vm.editInfo.logoutType == "FRONT_CHANNEL"){
-                document.getElementById("option8").selected = false;
-                document.getElementById("option9").selected = true;
+            if(typeof vm.editInfo.logoutType !== 'undefined'){
+              if(vm.editInfo.logoutType == "NONE"){
+                  document.getElementById("option8").selected = false;
+                  document.getElementById("option7").selected = true;
+              }else if(vm.editInfo.logoutType == "FRONT_CHANNEL"){
+                  document.getElementById("option8").selected = false;
+                  document.getElementById("option9").selected = true;
+              }
             }
-
-            for(let i = 0; i < vm.editInfo.accessStrategy.requiredAttributes.member[1].length; ++i){
-              vm.editInfo.accessStrategy.requiredAttributes.member[1][i]
-              document.getElementById("groupNameId" + vm.editInfo.accessStrategy.requiredAttributes.member[1][i]).checked = true;
-              if(vm.groupList === ""){
-                vm.groupList += vm.editInfo.accessStrategy.requiredAttributes.member[1][i];
-              }else{
-                vm.groupList += ',' + vm.editInfo.accessStrategy.requiredAttributes.member[1][i];
+            if(typeof vm.editInfo.accessStrategy.requiredAttributes.member !== 'undefined'){
+              for(let i = 0; i < vm.editInfo.accessStrategy.requiredAttributes.member[1].length; ++i){
+                vm.editInfo.accessStrategy.requiredAttributes.member[1][i]
+                document.getElementById("groupNameId" + vm.editInfo.accessStrategy.requiredAttributes.member[1][i]).checked = true;
+                if(vm.groupList === ""){
+                  vm.groupList += vm.editInfo.accessStrategy.requiredAttributes.member[1][i];
+                }else{
+                  vm.groupList += ',' + vm.editInfo.accessStrategy.requiredAttributes.member[1][i];
+                }
               }
             }
           });
@@ -307,11 +336,12 @@ function myFunction() {
           document.getElementById("editS").setAttribute("style", "display:none;");
           document.getElementById("editS1").setAttribute("style", "display:none;");
           document.getElementById("editS2").setAttribute("style", "display:none;");
+          location.reload();
         },
         deleteService: function (id) {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.delete(url + `/idman/api/services/${id}`) // 
+          axios.delete(url + `/api/services/${id}`) //
           .then(() => {
             location.reload();
           });
@@ -319,13 +349,13 @@ function myFunction() {
         deleteAllServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.delete(url + "/idman/api/services") // 
+          axios.delete(url + "/api/services") //
           .then(() => {
             location.reload();
           });
         },
         getGroups: function () {
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/idman/api/groups"; // 
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/api/groups"; //
           var vm = this;
           axios.get(url)
           .then((res) => {
@@ -409,6 +439,9 @@ function myFunction() {
             this.s48 = "./groups?en";
             this.s49 = "./settings?en";
             this.s50 = "./privacy?en";
+            this.s51 = "Configs";
+            this.s52 = "./configs?en";
+            this.s53 = "./events?en";
           } else{
               this.margin = "margin-right: 30px;";
               this.lang = "EN";
@@ -464,6 +497,9 @@ function myFunction() {
               this.s48 = "./groups";
               this.s49 = "./settings";
               this.s50 = "./privacy";
+              this.s51 = "پیکربندی";
+              this.s52 = "./configs";
+              this.s53 = "./events";
           }
         },
         saml: function () {

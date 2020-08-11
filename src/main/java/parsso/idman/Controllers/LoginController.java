@@ -11,10 +11,11 @@ import org.springframework.security.web.authentication.rememberme.AbstractRememb
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import parsso.idman.Models.Person;
-import parsso.idman.RepoImpls.PersonRepoImpl;
-import parsso.idman.Repos.PersonRepo;
+import parsso.idman.Models.User;
+import parsso.idman.RepoImpls.UserRepoImpl;
+import parsso.idman.Repos.UserRepo;
 
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
@@ -29,9 +30,9 @@ public class LoginController {
     @Value("${cas.url.login.path}")
     private String casLogin;
 
-    @Qualifier("personRepoImpl")
+    @Qualifier("userRepoImpl")
     @Autowired
-    private PersonRepo personRepo;
+    private UserRepo userRepo;
 
     @GetMapping("/login")
     public String Login() {
@@ -43,14 +44,14 @@ public class LoginController {
         return "resetPass";
     }
 
-    @GetMapping ("/api/user/password")
+    @PutMapping("/api/user/password")
     public String changePassword(HttpServletRequest request,
                                  @RequestParam("currentPassword") String currentPassword,
                                  @RequestParam ("newPassword") String newPassword)
     {
         try {
             Principal principal = request.getUserPrincipal();
-            return personRepo.changePassword(principal.getName(),currentPassword,newPassword);
+            return userRepo.changePassword(principal.getName(),currentPassword,newPassword);
         } catch (Exception e) {
             return "error";
         }

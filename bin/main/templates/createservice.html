@@ -38,8 +38,8 @@
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
                             <div class="card-body p-0 pt-3">
-                                <form id="upload-form" method="POST" action="/idman/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/data">
-                                    <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
+                                <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/data">
+                                    <input type="file" id="upload-image" name="upload-image" onchange="document.getElementById('upload-form').submit()">
                                 </form>
                                 <div class="userpic mb-3">
                                     <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
@@ -91,16 +91,20 @@
                                         <i class="fa fa-users"></i>
                                         <span>{{s5}}</span>
                                     </a>
-                                    <!-- <a class="list-group-item list-group-item-action py-2 "
-                                    href="#">
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s43">
                                         <i class="fa fa-calendar"></i>
                                         <span>{{s6}}</span>
-                                    </a> -->
-                                    
+                                    </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s39">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s42">
+                                        <i class="fa fa-cog"></i>
+                                        <span>{{s41}}</span>
                                     </a>
                                 </div>
                             </div>
@@ -133,16 +137,19 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>{{s17}}</label>
-                                        <input name="name" class="form-control" type="text" maxlength="255" required>
+                                        <label>{{s17}}<span style="color: red;"> *</span></label>
+                                        <input name="name" class="form-control" type="text" maxlength="255" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                        oninput="setCustomValidity('')">
                                     </div>
                                     <div class="form-group">
-                                        <label>{{s18}}</label>
-                                        <input name="endpointUrl" id="enInput" class="form-control" type="text" placeholder="URL" required>
+                                        <label>{{s18}}<span style="color: red;"> *</span></label>
+                                        <input name="endpointUrl" id="enInput" class="form-control" type="text" placeholder="URL" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                        oninput="setCustomValidity('')">
                                     </div>
                                     <div class="form-group">
-                                        <label>{{s36}}</label>
-                                        <input name="serviceId" id="enInput" class="form-control" type="text" placeholder="URL" required>
+                                        <label>{{s36}}<span style="color: red;"> *</span></label>
+                                        <input name="serviceId" id="enInput" class="form-control" type="text" placeholder="URL" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                        oninput="setCustomValidity('')">
                                     </div>
                                     <div class="form-group mb-3">
                                         <label>{{s19}}</label>
@@ -266,12 +273,14 @@
 
                                     <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s24}}</span></h4>
                                     <div class="form-group">
-                                        <label>{{s25}}</label>
-                                        <input name="cname" class="form-control" type="text" required>
+                                        <label>{{s25}}<span style="color: red;"> *</span></label>
+                                        <input name="cname" class="form-control" type="text" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                        oninput="setCustomValidity('')">
                                     </div>
                                     <div class="form-group">
-                                        <label>{{s26}}</label>
-                                        <input name="email" id="enInput" class="form-control" type="email" required>
+                                        <label>{{s26}}<span style="color: red;"> *</span></label>
+                                        <input name="email" id="enInput" class="form-control" type="email" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                        oninput="setCustomValidity('')">
                                     </div>
                                     <div class="form-group">
                                         <label>{{s27}}</label>
@@ -283,8 +292,9 @@
                                     </div>
                                     <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s29}}</span></h4>
                                     <div class="form-group">
-                                            <label>{{s30}}</label>
-                                            <input name="logoutUrl" id="enInput" class="form-control" type="text" placeholder="URL" required>
+                                            <label>{{s30}}<span style="color: red;"> *</span></label>
+                                            <input name="logoutUrl" id="enInput" class="form-control" type="text" placeholder="URL" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                            oninput="setCustomValidity('')">
                                         </div>
                                     <div class="form-group">
                                         <label>{{s31}}</label>
