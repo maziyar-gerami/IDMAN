@@ -38,8 +38,8 @@
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
                             <div class="card-body p-0 pt-3">
-                                <form id="upload-form" method="POST" action="/api/users/import" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
-                                    <input type="file" id="upload-image" name="upload-image" onchange="document.getElementById('upload-form').submit()">
+                                <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
+                                    <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
                                 </form>
                                 <div class="userpic mb-3">
                                     <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
@@ -91,16 +91,20 @@
                                         <i class="fa fa-users"></i>
                                         <span>{{s5}}</span>
                                     </a>
-                                    <!-- <a class="list-group-item list-group-item-action py-2 "
-                                    href="#">
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s26">
                                         <i class="fa fa-calendar"></i>
                                         <span>{{s6}}</span>
-                                    </a> -->
-
+                                    </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s22">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
+                                    </a>
+                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s25">
+                                        <i class="fa fa-cog"></i>
+                                        <span>{{s24}}</span>
                                     </a>
                                 </div>
                             </div>
@@ -108,7 +112,7 @@
                     </div>
                     <div class="col-lg-9 page-content">
                         <div class="card">
-                            <div class="card-body">
+                            <div class="card-body" style="background-color: #f8f9fa!important;">
                                 <h3 class="border-bottom pb-3 mb-3"><span>{{s3}}</span></h3>
                                 <ul class="nav nav-tabs nav-justified">
                                     <li class="nav-item">
@@ -118,28 +122,29 @@
                                         <a class="nav-link" @click.prevent="setActive('groups')" :class="{ active: isActive('groups') }" href="#groups">{{s5}}</a>
                                     </li>
                                 </ul>
-                                <div class="tab-content py-3" id="myTabContent">
+                                <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
                                     <div class="tab-pane fade" :class="{ 'active show': isActive('services') }" id="services">
-                                        <table class="table">
+                                        <table class="table table-responsive">
                                             <tr>
-                                                <th>{{s17}}</th>
-                                                <th>{{s18}}</th>
+                                                <th style="border: none;">{{s17}}</th>
+                                                <th style="border: none;">{{s18}}</th>
                                             </tr>
                                             <tbody id="body">
                                                 <tr v-for="service in services" v-bind:key="service.id">
                                                     <td>{{service.id}}</td>
                                                     <td>{{service.name}}</td>
-                                                    <td><button class="btn btn-success" v-on:click="connect(service.accessStrategy.endpointUrl)">{{s20}}</button></td>
+                                                    <td>{{service.serviceId}}</td> <!-- service.accessStrategy.endpointUrl -->
+                                                    <td><button class="btn btn-success" v-on:click="connect(service.serviceId)">{{s20}}</button></td> <!-- service.accessStrategy.endpointUrl -->
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                     <div class="tab-pane fade" :class="{ 'active show': isActive('groups') }" id="groups">
-                                        <table class="table">
+                                        <table class="table table-responsive">
                                             <tr>
-                                                <th>{{s17}}</th>
-                                                <th>{{s18}}</th>
-                                                <th>{{s19}}</th>
+                                                <th style="border: none;">{{s17}}</th>
+                                                <th style="border: none;">{{s18}}</th>
+                                                <th style="border: none;">{{s19}}</th>
                                             </tr>
                                             <tbody id="body">
                                                 <tr v-for="group in groups" v-bind:key="group.id">

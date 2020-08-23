@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var inf = str.split("/");
                 var vm = this;   
                 if(!inf.includes("login")){
-                    axios.get(url + "/idman/api/public/getName/" + inf[5] + "/" + inf[6]) // 
+                    axios.get(url + "/api/public/getName/" + inf[5] + "/" + inf[6]) //
                         .then((res) => {
                             vm.userInfo = res.data;
                             vm.s17 = vm.userInfo.displayName;
@@ -158,13 +158,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 axios({
                     method: 'put',
-                    url: url + '/idman/api/public/resetPass/' + inf[5] + "/" + inf[6],  // 
+                    url: url + '/api/public/resetPass/' + inf[5] + "/" + inf[6],  //
                     headers: {'Content-Type': 'application/json'},
                     data: JSON.stringify({
                         newPassword: vm.password
                     }),
                 }).then((res) => {
-                    location.replace(url + "/idman/login");                        
+                    location.replace(url + "/login");
                 });
             }
         },

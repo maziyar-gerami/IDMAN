@@ -23,11 +23,12 @@ function myFunction() {
       router,
       el: '#app',
       data: {
-        recordsShownOnPage: 2,
+        recordsShownOnPage: 20,
         userInfo: [],
         username: "",
         name: "",
         nameEN: "",
+        service: {},
         services: [],
         servicesPage: [],
         message: "",
@@ -60,6 +61,13 @@ function myFunction() {
             last: '>>'
         },
         userPicture: "images/PlaceholderUser.png",
+        accessStrategy: {},
+        requiredAttributes: {},
+        member: [],
+        memberList: [],
+        contacts: [],
+        contactsList: [],
+        contactsObj: {},
         s0: "پارسو",
         s1: "",
         s2: "خروج",
@@ -107,10 +115,16 @@ function myFunction() {
         s44: "نوع خروج",
         s45: "تایید",
         s46: "بازگشت",
-        s47: "حذف تمامی سرویس ها",
+        s47: "حذف همه",
         s48: "./groups",
         s49: "./settings",
-        s50: "./privacy"
+        s50: "./privacy",
+        s51: "پیکربندی",
+        s52: "./configs",
+        s53: "./events",
+        s54: "استراتژی دسترسی",
+        s55: "فعال سازی SSO",
+        s56: "آدرس تغییر مسیر غیرمجاز"
       },
       created: function () {
         this.getUserInfo();
@@ -125,7 +139,7 @@ function myFunction() {
         getUserInfo: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/idman/api/user") // 
+          axios.get(url + "/api/user") //
             .then((res) => {
                 vm.userInfo = res.data;
                 vm.username = vm.userInfo.userId;
@@ -137,32 +151,46 @@ function myFunction() {
         getUserPic: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/idman/api/user/photo") // 
+          axios.get(url + "/api/user/photo") //
               .then((res) => {
-                  if(res.data == null){
+                vm.userPicture = "/api/user/photo";
+              })
+              .catch((error) => {
+                  if (error.response) {
+                    if (error.response.status == 400 || error.response.status == 500) {
                       vm.userPicture = "images/PlaceholderUser.png";
+                    }else{
+                      vm.userPicture = "/api/user/photo";
+                    }
                   }else{
-                      vm.userPicture = /* url + */ "/api/user/photo"; // /idman
+                    console.log("error.response is False")
                   }
               });
         },
         refreshServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/idman/api/services") // 
+          axios.get(url + "/api/services") //
           .then((res) => {
             vm.services = res.data;
             vm.total = Math.ceil(vm.services.length / vm.recordsShownOnPage);
           });
         },
         showServices: function () {
-          document.getElementById("editS").submit();
-          this.showS = ""
-          this.editS = "display:none"
+          /* this.groupList = "";
+          for(let i = 0; i < this.service.accessStrategy.requiredAttributes.member[1].length; ++i){
+            document.getElementById("groupNameId" + this.service.accessStrategy.requiredAttributes.member[1][i]).checked = false;
+          }
+          document.getElementById("showS2").setAttribute("style", "");
+          document.getElementById("showS3").setAttribute("style", "");
+          document.getElementById("showS4").setAttribute("style", "");
+          document.getElementById("showS5").setAttribute("style", "");
+          document.getElementById("editS").setAttribute("style", "display:none;");
+          document.getElementById("editS1").setAttribute("style", "display:none;");
+          document.getElementById("editS2").setAttribute("style", "display:none;"); */
+          location.reload();
         },
         editServiceS: function (id) {
-          document.getElementById("showS0").setAttribute("style", "display:none;");
-          document.getElementById("showS1").setAttribute("style", "display:none;");
           document.getElementById("showS2").setAttribute("style", "display:none;");
           document.getElementById("showS3").setAttribute("style", "display:none;");
           document.getElementById("showS4").setAttribute("style", "display:none;");
@@ -172,146 +200,216 @@ function myFunction() {
           document.getElementById("editS2").setAttribute("style", "");
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + `/idman/api/services/${id}`) // 
+          axios.get(url + `/api/services/${id}`) //
           .then((res) => {
-            vm.flag = true;
-            vm.editInfo = res.data;
-            document.getElementsByName("id")[0].setAttribute("value", vm.editInfo.id);
-            if(vm.editInfo.accessStrategy.enabled){
+            vm.service.id = res.data.id;
+            
+            if(res.data.accessStrategy.enabled){
               document.getElementsByName("enabled")[0].checked = true;
             }else{
               document.getElementsByName("enabled")[0].checked = false;
             }
-            if(typeof vm.editInfo.name !== 'undefined'){
-              document.getElementsByName("name")[0].setAttribute("value", vm.editInfo.name);
-            }
-            if(typeof vm.editInfo.accessStrategy.endpointUrl !== 'undefined'){
-              document.getElementsByName("endpointUrl")[0].setAttribute("value", vm.editInfo.accessStrategy.endpointUrl);
-            }
-            if(typeof vm.editInfo.serviceId !== 'undefined'){
-              document.getElementsByName("serviceId")[0].setAttribute("value", vm.editInfo.serviceId.replace(".+", "").replace("^", ""));
-            }
-            if(typeof vm.editInfo.description !== 'undefined'){
-              document.getElementsByName("description")[0].setAttribute("value", vm.editInfo.description);
-            }
-            if(typeof vm.editInfo.logo !== 'undefined'){
-              document.getElementsByName("logo")[0].setAttribute("value", vm.editInfo.logo);
-            }
-            if(typeof vm.editInfo.informationUrl !== 'undefined'){
-              document.getElementsByName("informationUrl")[0].setAttribute("value", vm.editInfo.informationUrl);
-            }
-            if(typeof vm.editInfo.privacyUrl !== 'undefined'){
-              document.getElementsByName("privacyUrl")[0].setAttribute("value", vm.editInfo.privacyUrl);
-            }
-            if(typeof vm.editInfo.metadataLocation !== 'undefined'){
-              document.getElementById("metadataLocation").setAttribute("value", vm.editInfo.metadataLocation);
-            }
-            if(typeof vm.editInfo.metadataMaxValidity !== 'undefined'){
-              document.getElementById("metadataMaxValidity").setAttribute("value", vm.editInfo.metadataMaxValidity);
-            }
-            if(typeof vm.editInfo.metadataSignatureLocation !== 'undefined'){
-              document.getElementById("metadataSignatureLocation").setAttribute("value", vm.editInfo.metadataSignatureLocation);
-            }
-            if(typeof vm.editInfo.metadataExpirationDuration !== 'undefined'){
-              document.getElementById("metadataExpirationDuration").setAttribute("value", vm.editInfo.metadataExpirationDuration);
-            }
-            if(typeof vm.editInfo.metadataCriteriaPattern !== 'undefined'){
-              document.getElementById("metadataCriteriaPattern").setAttribute("value", vm.editInfo.metadataCriteriaPattern);
-            }
-            if(vm.editInfo.metadataCriteriaDirection == "INCLUDE"){
-                document.getElementById("option2").selected = false;
-                document.getElementById("option3").selected = true;
-            }else if(vm.editInfo.metadataCriteriaDirection == "EXCLUDE"){
-                document.getElementById("option2").selected = false;
-                document.getElementById("option4").selected = true;
-            }
-            if(typeof vm.editInfo.metadataCriteriaRoles !== 'undefined'){
-              document.getElementById("metadataCriteriaRoles").setAttribute("value", vm.editInfo.metadataCriteriaRoles);
-            }
-            if(vm.editInfo.metadataCriteriaRemoveEmptyEntitiesDescriptors){
-                document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors").checked = true;
-            }else{
-                document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors").checked = false;
-            }
-            if(vm.editInfo.metadataCriteriaRemoveRolelessEntityDescriptors){
-                document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors").checked = true;
-            }else{
-                document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors").checked = false;
-            }
-            if(vm.editInfo.signAssertions){
-                document.getElementById("signAssertions").checked = true;
-            }else{
-                document.getElementById("signAssertions").checked = false;
-            }
-            if(vm.editInfo.signResponses){
-                document.getElementById("signResponses").checked = true;
-            }else{
-                document.getElementById("signResponses").checked = false;
-            }
-            if(vm.editInfo.encryptAssertions){
-                document.getElementById("encryptAssertions").checked = true;
-            }else{
-                document.getElementById("encryptAssertions").checked = false;
-            }
-            if(vm.editInfo.signingCredentialType == "X509"){
-                document.getElementById("option5").selected = false;
-                document.getElementById("option6").selected = true;
-            }
-            if(typeof vm.editInfo.requiredAuthenticationContextClass !== 'undefined'){
-              document.getElementById("requiredAuthenticationContextClass").setAttribute("value", vm.editInfo.requiredAuthenticationContextClass);
-            }
-            if(typeof vm.editInfo.assertionAudiences !== 'undefined'){
-              document.getElementById("assertionAudiences").setAttribute("value", vm.editInfo.assertionAudiences);
-            }
-            if(typeof vm.editInfo.contacts[1][0].name !== 'undefined'){
-              document.getElementsByName("cname")[0].setAttribute("value", vm.editInfo.contacts[1][0].name);
-            }
-            if(typeof vm.editInfo.contacts[1][0].email !== 'undefined'){
-              document.getElementsByName("email")[0].setAttribute("value", vm.editInfo.contacts[1][0].email);
-            }
-            if(typeof vm.editInfo.contacts[1][0].phone !== 'undefined'){
-              document.getElementsByName("phone")[0].setAttribute("value", vm.editInfo.contacts[1][0].phone);
-            }
-            if(typeof vm.editInfo.contacts[1][0].department !== 'undefined'){
-              document.getElementsByName("department")[0].setAttribute("value", vm.editInfo.contacts[1][0].department);
-            }
-            if(typeof vm.editInfo.logoutUrl !== 'undefined'){
-              document.getElementsByName("logoutUrl")[0].setAttribute("value", vm.editInfo.logoutUrl);
-            }
-            if(vm.editInfo.logoutType == "NONE"){
-                document.getElementById("option8").selected = false;
-                document.getElementById("option7").selected = true;
-            }else if(vm.editInfo.logoutType == "FRONT_CHANNEL"){
-                document.getElementById("option8").selected = false;
-                document.getElementById("option9").selected = true;
+
+            document.getElementsByName("id")[0].value = res.data.id;
+
+            document.getElementsByName("name")[0].value = res.data.name;
+
+            document.getElementsByName("serviceId")[0].value = res.data.serviceId;
+
+            if(typeof res.data.description !== 'undefined'){
+              document.getElementsByName("description")[0].value = res.data.description;
             }
 
-            for(let i = 0; i < vm.editInfo.accessStrategy.requiredAttributes.member[1].length; ++i){
-              vm.editInfo.accessStrategy.requiredAttributes.member[1][i]
-              document.getElementById("groupNameId" + vm.editInfo.accessStrategy.requiredAttributes.member[1][i]).checked = true;
-              if(vm.groupList === ""){
-                vm.groupList += vm.editInfo.accessStrategy.requiredAttributes.member[1][i];
-              }else{
-                vm.groupList += ',' + vm.editInfo.accessStrategy.requiredAttributes.member[1][i];
+            if(res.data.accessStrategy.ssoEnabled){
+              document.getElementsByName("ssoEnabled")[0].checked = true;
+            }else{
+              document.getElementsByName("ssoEnabled")[0].checked = false;
+            }
+
+            if(typeof res.data.accessStrategy.unauthorizedRedirectUrl !== 'undefined'){
+              document.getElementsByName("unauthorizedRedirectUrl")[0].value = res.data.accessStrategy.unauthorizedRedirectUrl;
+            }
+
+            if(typeof res.data.logo !== 'undefined'){
+              document.getElementsByName("logo")[0].value = res.data.logo;
+            }
+
+            if(typeof res.data.informationUrl !== 'undefined'){
+              document.getElementsByName("informationUrl")[0].value = res.data.informationUrl;
+            }
+
+            if(typeof res.data.privacyUrl !== 'undefined'){
+              document.getElementsByName("privacyUrl")[0].value = res.data.privacyUrl;
+            }
+
+            document.getElementsByName("cName")[0].value = res.data.contacts[1][0].name;
+
+            document.getElementsByName("cEmail")[0].value = res.data.contacts[1][0].email;
+
+            if(typeof res.data.contacts[1][0].phone !== 'undefined'){
+              document.getElementsByName("cPhone")[0].value = res.data.contacts[1][0].phone;
+            }
+            if(typeof res.data.contacts[1][0].department !== 'undefined'){
+              document.getElementsByName("cDepartment")[0].value = res.data.contacts[1][0].department;
+            }
+
+            if(res.data.logoutType == "NONE"){
+              document.getElementById("option9").selected = false;
+              document.getElementById("option8").selected = false;
+              document.getElementById("option7").selected = true;
+            }else if(res.data.logoutType == "FRONT_CHANNEL"){
+              document.getElementById("option9").selected = true;
+              document.getElementById("option8").selected = false;
+              document.getElementById("option7").selected = false;
+            }else if(res.data.logoutType == "BACK_CHANNEL"){
+              document.getElementById("option9").selected = false;
+              document.getElementById("option8").selected = true;
+              document.getElementById("option7").selected = false;
+            }
+
+            if(typeof res.data.logoutUrl !== 'undefined'){
+              document.getElementsByName("logoutUrl")[0].value = res.data.logoutUrl;
+            }
+
+            if(typeof res.data.accessStrategy.requiredAttributes.member !== 'undefined'){
+              for(let i = 0; i < res.data.accessStrategy.requiredAttributes.member[1].length; ++i){
+                document.getElementById("groupNameId" + res.data.accessStrategy.requiredAttributes.member[1][i]).checked = true;
+                if(vm.groupList === ""){
+                  vm.groupList += res.data.accessStrategy.requiredAttributes.member[1][i];
+                }else{
+                  vm.groupList += ',' + res.data.accessStrategy.requiredAttributes.member[1][i];
+                }
               }
+            }else{
+              console.log("ewfriooivjosdbvjveoihuerkhjrs9oghnrsklvuzdghzog0uowel");
             }
           });
         },
-        editService: function () {
-          document.getElementById("showS0").setAttribute("style", "");
-          document.getElementById("showS1").setAttribute("style", "");
-          document.getElementById("showS2").setAttribute("style", "");
-          document.getElementById("showS3").setAttribute("style", "");
-          document.getElementById("showS4").setAttribute("style", "");
-          document.getElementById("showS5").setAttribute("style", "");
-          document.getElementById("editS").setAttribute("style", "display:none;");
-          document.getElementById("editS1").setAttribute("style", "display:none;");
-          document.getElementById("editS2").setAttribute("style", "display:none;");
+        editService: function (id) {
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          var vm = this;
+
+          if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
+            document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == ""){
+            alert("لطفا قسمت های الزامی را پر کنید.");
+          }else{
+
+            this.service.name = document.getElementsByName('name')[0].value;
+
+            this.service.serviceId = document.getElementsByName('serviceId')[0].value;
+
+            if(document.getElementsByName('description')[0].value != ""){
+              this.service.description = document.getElementsByName('description')[0].value;
+            }else{
+              this.service.description = null;
+            }
+
+            if(document.getElementsByName('logo')[0].value != ""){
+              this.service.logo = document.getElementsByName('logo')[0].value;
+            }else{
+              this.service.logo = null;
+            }
+
+            if(document.getElementsByName('informationUrl')[0].value != ""){
+              this.service.informationUrl = document.getElementsByName('informationUrl')[0].value;
+            }else{
+              this.service.informationUrl = null;
+            }
+
+            if(document.getElementsByName('privacyUrl')[0].value != ""){
+              this.service.privacyUrl = document.getElementsByName('privacyUrl')[0].value;
+            }else{
+              this.service.privacyUrl = null;
+            }
+
+            if(document.getElementsByName('logoutType')[0].value != ""){
+              this.service.logoutType = document.getElementsByName('logoutType')[0].value;
+            }else{
+              this.service.logoutType = null;
+            }
+
+            if(document.getElementsByName('logoutUrl')[0].value != ""){
+              this.service.logoutUrl = document.getElementsByName('logoutUrl')[0].value;
+            }else{
+              this.service.logoutUrl = null;
+            }
+
+            if(document.getElementsByName('enabled')[0].checked){
+              this.accessStrategy.enabled = true;
+            }else{
+              this.accessStrategy.enabled = false;
+            }
+
+            if(document.getElementsByName('ssoEnabled')[0].checked){
+              this.accessStrategy.ssoEnabled = true;
+            }else{
+              this.accessStrategy.ssoEnabled = false;
+            }
+
+            if(document.getElementsByName('unauthorizedRedirectUrl')[0].value != ""){
+              this.accessStrategy.unauthorizedRedirectUrl = document.getElementsByName('unauthorizedRedirectUrl')[0].value;
+            }else{
+              this.accessStrategy.unauthorizedRedirectUrl = null;
+            }
+
+            if(document.getElementsByName('groups')[0].value != ""){
+              this.memberList = document.getElementsByName('groups')[0].value.split(',');
+              this.member[0] = "java.util.HashSet";
+              this.member[1] = this.memberList;
+              this.requiredAttributes.member = this.member;
+            }else{
+              this.requiredAttributes = {};
+            }
+
+            this.accessStrategy.requiredAttributes = this.requiredAttributes;
+            
+            
+            this.contactsObj.name = document.getElementsByName('cName')[0].value;
+            
+            this.contactsObj.email = document.getElementsByName('cEmail')[0].value;
+
+            if(document.getElementsByName('cPhone')[0].value != ""){
+              this.contactsObj.phone = document.getElementsByName('cPhone')[0].value;
+            }else{
+              this.contactsObj.phone = null;
+            }
+
+            if(document.getElementsByName('cDepartment')[0].value != ""){
+              this.contactsObj.department = document.getElementsByName('cDepartment')[0].value;
+            }else{
+              this.contactsObj.department = null;
+            }
+            
+            this.contactsList[0] = this.contactsObj;
+            this.contacts[0] = "java.util.ArrayList";
+            this.contacts[1] = this.contactsList;
+
+            axios({
+              method: 'put',
+              url: url + `/api/service/${id}`, //
+              headers: {'Content-Type': 'application/json'},
+              data: JSON.stringify({
+                name: vm.service.name,
+                serviceId: vm.service.serviceId,
+                description: vm.service.description,
+                logo: vm.service.logo,
+                informationUrl: vm.service.informationUrl,
+                privacyUrl: vm.service.privacyUrl,
+                logoutType: vm.service.logoutType,
+                logoutUrl: vm.service.logoutUrl,
+                accessStrategy: vm.accessStrategy,
+                contacts: vm.contacts
+              })
+            })
+            .then((res) => {
+              location.reload();
+            });
+          }
         },
         deleteService: function (id) {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.delete(url + `/idman/api/services/${id}`) // 
+          axios.delete(url + `/api/services/${id}`) //
           .then(() => {
             location.reload();
           });
@@ -319,13 +417,13 @@ function myFunction() {
         deleteAllServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.delete(url + "/idman/api/services") // 
+          axios.delete(url + "/api/services") //
           .then(() => {
             location.reload();
           });
         },
         getGroups: function () {
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/idman/api/groups"; // 
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/api/groups"; //
           var vm = this;
           axios.get(url)
           .then((res) => {
@@ -405,10 +503,16 @@ function myFunction() {
             this.s44 = "Logout Type";
             this.s45 = "Submit";
             this.s46 = "Go Back";
-            this.s47 = "Remove All Services";
+            this.s47 = "Remove All";
             this.s48 = "./groups?en";
             this.s49 = "./settings?en";
             this.s50 = "./privacy?en";
+            this.s51 = "Configs";
+            this.s52 = "./configs?en";
+            this.s53 = "./events?en";
+            this.s54 = "Access Strategy";
+            this.s55 = "Allow SSO";
+            this.s56 = "Unauthorized Redirect Url";
           } else{
               this.margin = "margin-right: 30px;";
               this.lang = "EN";
@@ -460,16 +564,22 @@ function myFunction() {
               this.s44 = "نوع خروج";
               this.s45 = "تایید";
               this.s46 = "بازگشت";
-              this.s47 = "حذف تمامی سرویس ها";
+              this.s47 = "حذف همه";
               this.s48 = "./groups";
               this.s49 = "./settings";
               this.s50 = "./privacy";
+              this.s51 = "پیکربندی";
+              this.s52 = "./configs";
+              this.s53 = "./events";
+              this.s54 = "استراتژی دسترسی";
+              this.s55 = "فعال سازی SSO";
+              this.s56 = "آدرس تغییر مسیر غیرمجاز";
           }
         },
         saml: function () {
           this.samls = "";
           this.s18 = "Entity ID";
-          document.getElementById("metadataLocation").required = true;
+          /* document.getElementById("metadataLocation").required = true;
           document.getElementById("metadataLocation").setAttribute("name", "metadataLocation");
           document.getElementById("metadataMaxValidity").setAttribute("name", "metadataMaxValidity");
           document.getElementById("metadataSignatureLocation").setAttribute("name", "metadataSignatureLocation");
@@ -484,7 +594,7 @@ function myFunction() {
           document.getElementById("encryptAssertions").setAttribute("name", "encryptAssertions");
           document.getElementById("signingCredentialType").setAttribute("name", "signingCredentialType");
           document.getElementById("requiredAuthenticationContextClass").setAttribute("name", "requiredAuthenticationContextClass");
-          document.getElementById("assertionAudiences").setAttribute("name", "assertionAudiences");
+          document.getElementById("assertionAudiences").setAttribute("name", "assertionAudiences"); */
           },
         cas: function () {
           this.samls = "display: none;";
@@ -493,7 +603,7 @@ function myFunction() {
           }else{
             this.s18 = "Service URL";
           }
-          document.getElementById("metadataLocation").removeAttribute("required");
+          /* document.getElementById("metadataLocation").removeAttribute("required");
           document.getElementById("metadataLocation").removeAttribute("name");
           document.getElementById("metadataMaxValidity").removeAttribute("name");
           document.getElementById("metadataSignatureLocation").removeAttribute("name");
@@ -508,7 +618,7 @@ function myFunction() {
           document.getElementById("encryptAssertions").removeAttribute("name");
           document.getElementById("signingCredentialType").removeAttribute("name");
           document.getElementById("requiredAuthenticationContextClass").removeAttribute("name");
-          document.getElementById("assertionAudiences").removeAttribute("name");
+          document.getElementById("assertionAudiences").removeAttribute("name"); */
           }
       },
       computed:{

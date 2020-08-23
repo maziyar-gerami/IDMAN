@@ -19,6 +19,15 @@ body {
   background-color: #ffffff;
   font-family: IRANSans;
 }
+button,.btn {
+  border-radius: 2rem;
+}
+textarea {
+  border-radius: 2rem;
+}
+input,.form-control {
+  border-radius: 2rem;
+}
 h1 {
   font-size: 16px;
 }

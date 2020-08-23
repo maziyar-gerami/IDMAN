@@ -8,6 +8,7 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Group;
+import parsso.idman.Models.User;
 import parsso.idman.Repos.GroupRepo;
 
 import javax.naming.Name;
@@ -16,6 +17,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.SearchControls;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
@@ -23,7 +25,8 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 @Service
 public class GroupRepoImpl implements GroupRepo {
 
-    public static final String BASE_DN = "";
+    public static final String BASE_DN = "dc=example,dc=com";;
+
 
     @Autowired
     private LdapTemplate ldapTemplate;
@@ -53,8 +56,6 @@ public class GroupRepoImpl implements GroupRepo {
 
     @Override
     public Group retrieveOu(String name) {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        System.out.println(name);
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
@@ -76,6 +77,20 @@ public class GroupRepoImpl implements GroupRepo {
         return groupList.get(0);
     }
 
+    @Override
+    public List<Group> retrieveCurrentUserGroup(User user) {
+        List<String> memberOf = user.getMemberOf();
+        List<Group> groups = new ArrayList<Group>();
+        try{
+            for(int i = 0; i < memberOf.size(); ++i){
+                groups.add(retrieveOu(memberOf.get(i)));
+            }
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
+        return groups;
+    }
+
     private Attributes buildAttributes(Group group) {
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
@@ -85,9 +100,6 @@ public class GroupRepoImpl implements GroupRepo {
 
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
-        System.out.println(group.getId());
-        System.out.println(group.getName());
-        System.out.println(group.getDescription());
         attrs.put("ou", group.getName());
         attrs.put("uid",String.valueOf(group.getId()));
         attrs.put("description" , group.getDescription());
@@ -117,7 +129,6 @@ public class GroupRepoImpl implements GroupRepo {
     @Override
     public String create(Group ou) {
         Name dn = buildDn(ou.getName());
-        System.out.println(dn);
         ldapTemplate.bind(dn, null, buildAttributes(ou));
         return ou.getName() + " created successfully";
     }
@@ -137,7 +148,7 @@ public class GroupRepoImpl implements GroupRepo {
         public Group mapFromAttributes(Attributes attributes) throws NamingException {
             Group group = new Group();
 
-            group.setId(null != attributes.get("uid") ? Integer.valueOf(attributes.get("uid").get().toString()) : null);
+            group.setId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
             group.setName(null != attributes.get("ou") ? attributes.get("ou").get().toString() : null);
             group.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
             return group;

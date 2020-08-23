@@ -33,6 +33,14 @@ document.addEventListener('DOMContentLoaded', function () {
       isRtl: true,
       samls: "display: none;",
       userPicture: "images/PlaceholderUser.png",
+      accessStrategy: {},
+      requiredAttributes: {},
+      member: [],
+      memberList: [],
+      contacts: [],
+      contactsList: [],
+      contactsObj: {},
+      service: {},
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -73,12 +81,18 @@ document.addEventListener('DOMContentLoaded', function () {
       s37: "./users",
       s38: "./groups",
       s39: "./settings",
-      s40: "./privacy"
+      s40: "./privacy",
+      s41: "پیکربندی",
+      s42: "./configs",
+      s43: "./events",
+      s44: "استراتژی دسترسی",
+      s45: "فعال سازی SSO",
+      s46: "آدرس تغییر مسیر غیرمجاز"
     },
     created: function () {
-      this.getGroups();
       this.getUserInfo();
       this.getUserPic();
+      this.getGroups();
       if(typeof this.$route.query.en !== 'undefined'){
         this.changeLang();
       }
@@ -87,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/api/user") // 
+        axios.get(url + "/api/user") //
           .then((res) => {
               vm.userInfo = res.data;
               vm.username = vm.userInfo.userId;
@@ -99,17 +113,24 @@ document.addEventListener('DOMContentLoaded', function () {
       getUserPic: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url + "/idman/api/user/photo") // 
+        axios.get(url + "/api/user/photo") //
             .then((res) => {
-                if(res.data == null){
+              vm.userPicture = "/api/user/photo";
+            })
+            .catch((error) => {
+                if (error.response) {
+                  if (error.response.status == 400 || error.response.status == 500) {
                     vm.userPicture = "images/PlaceholderUser.png";
+                  }else{
+                    vm.userPicture = "/api/user/photo";
+                  }
                 }else{
-                    vm.userPicture = /* url + */ "/api/user/photo"; // /idman
+                  console.log("error.response is False")
                 }
             });
       },
       getGroups: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/idman/api/groups";
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/api/groups";
         var vm = this;
         axios.get(url)
         .then((res) => {
@@ -136,6 +157,127 @@ document.addEventListener('DOMContentLoaded', function () {
             this.groupList += ',' + n;
           }
           
+        }
+      },
+      addService: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+
+        if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
+        document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == ""){
+          alert("لطفا قسمت های الزامی را پر کنید.");
+        }else{
+
+          this.service.name = document.getElementsByName('name')[0].value;
+
+          this.service.serviceId = document.getElementsByName('serviceId')[0].value;
+
+          if(document.getElementsByName('description')[0].value != ""){
+            this.service.description = document.getElementsByName('description')[0].value;
+          }else{
+            this.service.description = null;
+          }
+
+          if(document.getElementsByName('logo')[0].value != ""){
+            this.service.logo = document.getElementsByName('logo')[0].value;
+          }else{
+            this.service.logo = null;
+          }
+
+          if(document.getElementsByName('informationUrl')[0].value != ""){
+            this.service.informationUrl = document.getElementsByName('informationUrl')[0].value;
+          }else{
+            this.service.informationUrl = null;
+          }
+
+          if(document.getElementsByName('privacyUrl')[0].value != ""){
+            this.service.privacyUrl = document.getElementsByName('privacyUrl')[0].value;
+          }else{
+            this.service.privacyUrl = null;
+          }
+
+          if(document.getElementsByName('logoutType')[0].value != ""){
+            this.service.logoutType = document.getElementsByName('logoutType')[0].value;
+          }else{
+            this.service.logoutType = null;
+          }
+
+          if(document.getElementsByName('logoutUrl')[0].value != ""){
+            this.service.logoutUrl = document.getElementsByName('logoutUrl')[0].value;
+          }else{
+            this.service.logoutUrl = null;
+          }
+
+          if(document.getElementsByName('enabled')[0].checked){
+            this.accessStrategy.enabled = true;
+          }else{
+            this.accessStrategy.enabled = false;
+          }
+
+          if(document.getElementsByName('ssoEnabled')[0].checked){
+            this.accessStrategy.ssoEnabled = true;
+          }else{
+            this.accessStrategy.ssoEnabled = false;
+          }
+
+          if(document.getElementsByName('unauthorizedRedirectUrl')[0].value != ""){
+            this.accessStrategy.unauthorizedRedirectUrl = document.getElementsByName('unauthorizedRedirectUrl')[0].value;
+          }else{
+            this.accessStrategy.unauthorizedRedirectUrl = null;
+          }
+
+          if(document.getElementsByName('groups')[0].value != ""){
+            this.memberList = document.getElementsByName('groups')[0].value.split(',');
+            this.member[0] = "java.util.HashSet";
+            this.member[1] = this.memberList;
+            this.requiredAttributes.member = this.member;
+          }else{
+            this.requiredAttributes = {};
+          }
+
+          this.accessStrategy.requiredAttributes = this.requiredAttributes;
+          
+          
+          this.contactsObj.name = document.getElementsByName('cName')[0].value;
+          
+          this.contactsObj.email = document.getElementsByName('cEmail')[0].value;
+
+          if(document.getElementsByName('cPhone')[0].value != ""){
+            this.contactsObj.phone = document.getElementsByName('cPhone')[0].value;
+          }else{
+            this.contactsObj.phone = null;
+          }
+
+          if(document.getElementsByName('cDepartment')[0].value != ""){
+            this.contactsObj.department = document.getElementsByName('cDepartment')[0].value;
+          }else{
+            this.contactsObj.department = null;
+          }
+          
+          this.contactsList[0] = this.contactsObj;
+          this.contacts[0] = "java.util.ArrayList";
+          this.contacts[1] = this.contactsList;
+
+          axios({
+              method: 'post',
+              url: url + "/api/services", //
+              headers: {'Content-Type': 'application/json'},
+              data: JSON.stringify({
+                name: vm.service.name,
+                serviceId: vm.service.serviceId,
+                description: vm.service.description,
+                logo: vm.service.logo,
+                informationUrl: vm.service.informationUrl,
+                privacyUrl: vm.service.privacyUrl,
+                logoutType: vm.service.logoutType,
+                logoutUrl: vm.service.logoutUrl,
+                accessStrategy: vm.accessStrategy,
+                contacts: vm.contacts
+              })
+          })
+          .then((res) => {
+            window.location.replace(url + "/services");
+          });
         }
       },
       changeLang: function () {
@@ -184,6 +326,12 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s38 = "./groups?en";
           this.s39 = "./settings?en";
           this.s40 = "./privacy?en";
+          this.s41 = "Configs";
+          this.s42 = "./configs?en";
+          this.s43 = "./events?en";
+          this.s44 = "Access Strategy";
+          this.s45 = "Allow SSO";
+          this.s46 = "Unauthorized Redirect Url";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -229,27 +377,33 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s38 = "./groups";
             this.s39 = "./settings";
             this.s40 = "./privacy";
+            this.s41 = "پیکربندی";
+            this.s42 = "./configs";
+            this.s43 = "./events";
+            this.s44 = "استراتژی دسترسی";
+            this.s45 = "فعال سازی SSO";
+            this.s46 = "آدرس تغییر مسیر غیرمجاز";
         }
       },
       saml: function () {
         this.samls = "";
         this.s18 = "Entity ID";
-        document.getElementById("metadataLocation").required = true;
-        document.getElementById("metadataLocation").setAttribute("name", "metadataLocation");
-        document.getElementById("metadataMaxValidity").setAttribute("name", "metadataMaxValidity");
-        document.getElementById("metadataSignatureLocation").setAttribute("name", "metadataSignatureLocation");
-        document.getElementById("metadataExpirationDuration").setAttribute("name", "metadataExpirationDuration");
-        document.getElementById("metadataCriteriaPattern").setAttribute("name", "metadataCriteriaPattern");
-        document.getElementById("metadataCriteriaDirection").setAttribute("name", "metadataCriteriaDirection");
-        document.getElementById("metadataCriteriaRoles").setAttribute("name", "metadataCriteriaRoles");
-        document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors").setAttribute("name", "metadataCriteriaRemoveEmptyEntitiesDescriptors");
-        document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors").setAttribute("name", "metadataCriteriaRemoveRolelessEntityDescriptors");
-        document.getElementById("signAssertions").setAttribute("name", "signAssertions");
-        document.getElementById("signResponses").setAttribute("name", "signResponses");
-        document.getElementById("encryptAssertions").setAttribute("name", "encryptAssertions");
-        document.getElementById("signingCredentialType").setAttribute("name", "signingCredentialType");
+        /* document.getElementsByName("metadataLocation")[0].required = true;
+        document.getElementById("metadataLocation")[0].setAttribute("name", "metadataLocation");
+        document.getElementById("metadataMaxValidity")[0].setAttribute("name", "metadataMaxValidity");
+        document.getElementById("metadataSignatureLocation")[0].setAttribute("name", "metadataSignatureLocation");
+        document.getElementById("metadataExpirationDuration")[0].setAttribute("name", "metadataExpirationDuration");
+        document.getElementById("metadataCriteriaPattern")[0].setAttribute("name", "metadataCriteriaPattern");
+        document.getElementById("metadataCriteriaDirection")[0].setAttribute("name", "metadataCriteriaDirection");
+        document.getElementById("metadataCriteriaRoles")[0].setAttribute("name", "metadataCriteriaRoles");
+        document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors")[0].setAttribute("name", "metadataCriteriaRemoveEmptyEntitiesDescriptors");
+        document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors")[0].setAttribute("name", "metadataCriteriaRemoveRolelessEntityDescriptors");
+        document.getElementById("signAssertions")[0].setAttribute("name", "signAssertions");
+        document.getElementById("signResponses")[0].setAttribute("name", "signResponses");
+        document.getElementById("encryptAssertions")[0].setAttribute("name", "encryptAssertions");
+        document.getElementById("signingCredentialType")[0].setAttribute("name", "signingCredentialType");
         document.getElementById("requiredAuthenticationContextClass").setAttribute("name", "requiredAuthenticationContextClass");
-        document.getElementById("assertionAudiences").setAttribute("name", "assertionAudiences");
+        document.getElementById("assertionAudiences")[0].setAttribute("name", "assertionAudiences"); */
         },
       cas: function () {
         this.samls = "display: none;";
@@ -258,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }else{
           this.s18 = "Service URL";
         }
-        document.getElementById("metadataLocation").removeAttribute("required");
+        /* document.getElementById("metadataLocation").removeAttribute("required");
         document.getElementById("metadataLocation").removeAttribute("name");
         document.getElementById("metadataMaxValidity").removeAttribute("name");
         document.getElementById("metadataSignatureLocation").removeAttribute("name");
@@ -273,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("encryptAssertions").removeAttribute("name");
         document.getElementById("signingCredentialType").removeAttribute("name");
         document.getElementById("requiredAuthenticationContextClass").removeAttribute("name");
-        document.getElementById("assertionAudiences").removeAttribute("name");
+        document.getElementById("assertionAudiences").removeAttribute("name"); */
         }
       }
   })

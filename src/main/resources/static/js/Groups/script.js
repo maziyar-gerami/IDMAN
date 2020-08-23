@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
         router,
         el: '#app',
         data: {
-            recordsShownOnPage: 2,
+            recordsShownOnPage: 20,
             userInfo: [],
             email: "",
             username: "",
@@ -85,6 +85,11 @@ document.addEventListener('DOMContentLoaded', function () {
             s24: "آیا از حذف این گروه اطمینان دارید؟",
             s25: "آیا از حذف تمامی گروه ها اطمینان دارید؟",
             s26: "./privacy",
+            s27: "پیکربندی",
+            s28: "./configs",
+            s29: "افزودن گروه",
+            s30: "ویرایش گروه",
+            s31: "./events",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "شناسه",
@@ -97,12 +102,12 @@ document.addEventListener('DOMContentLoaded', function () {
             U9: "توضیحات",
             U10: "به روزرسانی",
             U11: "حذف",
-            U12: "اضافه کردن گروه جدید",
+            U12: "گروه جدید",
             U13: "ویرایش",
             U14: "گروههای عضو",
             U15: "تکرار رمز عبور",
             U16: "کاربر مورد نظر در گروههای زیر عضویت دارد. کاربر مورد نظر از چه گروههایی حذف شود؟",
-            U17: "حذف تمامی گروه ها",
+            U17: "حذف همه",
             h1: "ترکیبی از حروف و اعداد. مثال: ali123",
             p1: "خیلی ضعیف",
             p2: "متوسط",
@@ -120,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/user") // 
+                axios.get(url + "/api/user") //
                 .then((res) => {
                     vm.userInfo = res.data;
                     vm.username = vm.userInfo.userId;
@@ -132,19 +137,26 @@ document.addEventListener('DOMContentLoaded', function () {
             getUserPic: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/user/photo") // 
+                axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                        if(res.data == null){
+                      vm.userPicture = "/api/user/photo";
+                    })
+                    .catch((error) => {
+                        if (error.response) {
+                          if (error.response.status == 400 || error.response.status == 500) {
                             vm.userPicture = "images/PlaceholderUser.png";
+                          }else{
+                            vm.userPicture = "/api/user/photo";
+                          }
                         }else{
-                            vm.userPicture = /* url + */ "/api/user/photo"; // /idman
+                          console.log("error.response is False")
                         }
                     });
-            },
+              },
             getGroups: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/groups") // 
+                axios.get(url + "/api/groups") //
                     .then((res) => {
                         vm.groups = res.data;
                         vm.total = Math.ceil(vm.groups.length / vm.recordsShownOnPage);
@@ -161,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.editS = ""
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/groups/" + id) // 
+                axios.get(url + "/api/groups/" + id) //
                     .then((res) => {
                         vm.group = res.data;
                     });
@@ -175,14 +187,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (check == true) {
                     axios({
                         method: 'put',
-                        url: url + '/idman/api/groups/' + id, // 
+                        url: url + '/api/groups/' + id, //
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                             id: document.getElementById('group.idUpdate').value,
                             name: document.getElementById('group.nameUpdate').value,
                             description: document.getElementById('group.descriptionUpdate').value,
                         }),
-                    },);
+                    })
+                    .then((res) => {
+                        location.reload();
+                    });
                 }
             },
             addGroupS: function () {
@@ -195,21 +210,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 axios({
                     method: 'post',
-                    url: url + "/idman/api/groups", // 
+                    url: url + "/api/groups", //
                     headers: {'Content-Type': 'application/json'},
                     data: JSON.stringify({
                         id: document.getElementById('group.idCreate').value,
                         name: document.getElementById('group.nameCreate').value,
                         description: document.getElementById('group.descriptionCreate').value,
                     }),
-                },);
+                })
+                .then((res) => {
+                    location.reload();
+                });
             },
             deleteGroup: function (id) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 var check = confirm(this.s24);
                 if (check == true) {
-                    axios.delete(url + `/idman/api/groups/${id}`) // 
+                    axios.delete(url + `/api/groups/${id}`) //
                         .then(() => {
                             vm.getGroups();
                         });
@@ -220,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 var check = confirm(this.s25);
                 if (check == true) {
-                    axios.delete(url + `/idman/api/groups`) // 
+                    axios.delete(url + `/api/groups`) //
                         .then(() => {
                             vm.getGroups();
                         });
@@ -259,6 +277,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s24 = "Are You Sure You Want To Delete?";
                     this.s25 = "Are You Sure You Want To Delete All Groups?";
                     this.s26 = "./privacy?en";
+                    this.s27 = "Configs";
+                    this.s28 = "./configs?en";
+                    this.s29 = "Add Group";
+                    this.s30 = "Edit Group";
+                    this.s31 = "./events?en";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "ID";
@@ -271,9 +294,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U9 = "Description";
                     this.U10 = "Update";
                     this.U11 = "Delete"
-                    this.U12 = "Add New Group";
+                    this.U12 = "New Group";
                     this.U13 = "Edit";
-                    this.U17 = "Remove All Groups";
+                    this.U17 = "Remove All";
                 } else{
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
@@ -306,6 +329,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s24 = "آیا از حذف این گروه اطمینان دارید؟";
                     this.s25 = "آیا از حذف تمامی گروه ها اطمینان دارید؟";
                     this.s26 = "./privacy";
+                    this.s27 = "پیکربندی";
+                    this.s28 = "./configs";
+                    this.s29 = "افزودن گروه";
+                    this.s30 = "ویرایش گروه";
+                    this.s31 = "./events";
                     this.U0= "رمز";
                     this.U1= "گروه ها";
                     this.U2= "شناسه";
@@ -318,9 +346,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U9= "توضیحات";
                     this.U10 = "به روز رسانی";
                     this.U11 = "حذف"
-                    this.U12 = "اضافه کردن گروه جدید";
+                    this.U12 = "گروه جدید";
                     this.U13 = "ویرایش";
-                    this.U17 = "حذف تمامی گروه ها"
+                    this.U17 = "حذف همه"
                 }
             }
         },

@@ -84,6 +84,9 @@ document.addEventListener('DOMContentLoaded', function () {
             s24: "آیا از اعمال این تغییرات اطمینان دارید؟",
             s25: "./privacy",
             s26: "رمز عبور فعلی",
+            s27: "پیکربندی",
+            s28: "./configs",
+            s29: "./events",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -121,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
             isAdmin: function () {
             var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
             var vm = this;
-            axios.get(url + "/idman/api/user/isAdmin") // 
+            axios.get(url + "/api/user/isAdmin") //
                 .then((res) => {
                     if(res.data){
                         vm.menuS = true;
@@ -131,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/user") // 
+                axios.get(url + "/api/user") //
                     .then((res) => {
                         vm.userInfo = res.data;
                         vm.username = vm.userInfo.userId;
@@ -143,15 +146,22 @@ document.addEventListener('DOMContentLoaded', function () {
             getUserPic: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/idman/api/user/photo") // 
+                axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                        if(res.data == null){
+                      vm.userPicture = "/api/user/photo";
+                    })
+                    .catch((error) => {
+                        if (error.response) {
+                          if (error.response.status == 400 || error.response.status == 500) {
                             vm.userPicture = "images/PlaceholderUser.png";
+                          }else{
+                            vm.userPicture = "/api/user/photo";
+                          }
                         }else{
-                            vm.userPicture = /* url + */ "/api/user/photo"; // /idman
+                          console.log("error.response is False")
                         }
                     });
-            },
+              },
             editUser: function (id) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
@@ -159,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (check == true) {
                     axios({
                         method: 'put',
-                        url: url + '/idman/api/user',   // 
+                        url: url + '/api/user',   //
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                             firstName: document.getElementById('userInfo.firstNameUpdate').value,
@@ -170,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             description: document.getElementById('userInfo.descriptionUpdate').value
                         }),
                     }).then((res) => {
-                        location.replace(url + "/idman/settings"); // 
+                        location.replace(url + "/settings"); //
                     });
                 }
             },
@@ -180,14 +190,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (check == true) {
                     axios({
                         method: 'put',
-                        url: url + '/idman/api/user/password',   // 
+                        url: url + '/api/user/password',   //
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
-                            newPassword: document.getElementById('password').value,
+                            newPassword: document.getElementById('newPassword').value,
                             currentPassword: document.getElementById('currentPassword').value
                         }),
                     }).then((res) => {
-                        location.replace(url + "/idman/settings"); // 
+                        location.replace(url + "/settings"); //
                     });
                 }
             },
@@ -231,6 +241,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s24 = "Are You Sure You Want To Edit?";
                     this.s25 = "./privacy?en";
                     this.s26 = "Current Password";
+                    this.s27 = "Configs";
+                    this.s28 = "./configs?en";
+                    this.s29 = "./events?en";
                     this.U0= "Password";
                     this.U1= "Users";
                     this.U2= "ID";
@@ -284,6 +297,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s24 = "آیا از اعمال این تغییرات اطمینان دارید؟";
                     this.s25 = "./privacy";
                     this.s26 = "رمز عبور فعلی";
+                    this.s27 = "پیکربندی";
+                    this.s28 = "./configs";
+                    this.s29 = "./events";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";

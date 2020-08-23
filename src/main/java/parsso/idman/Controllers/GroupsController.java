@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.Group;
-import parsso.idman.Models.Person;
-import parsso.idman.Repos.PersonRepo;
+import parsso.idman.Models.User;
+import parsso.idman.Repos.UserRepo;
 import parsso.idman.Repos.GroupRepo;
 
 import java.security.Principal;
@@ -23,32 +23,24 @@ public class GroupsController {
     private GroupRepo groupRepo;
 
     @Autowired
-    private PersonRepo personRepo;
+    private UserRepo userRepo;
 
-    @GetMapping("/api/group")
+    @GetMapping("/api/groups/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        Person person = personRepo.retrievePerson(principal.getName());
-        List<String> memberOf = person.getMemberOf();
-        List<Group> groups = new ArrayList<Group>();
-        try{
-            for(int i = 0; i < memberOf.size(); ++i){
-                groups.add(groupRepo.retrieveOu(memberOf.get(i)));
-            }
-        } catch (NullPointerException e){
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(groups, HttpStatus.OK);
+        User user = userRepo.retrieveUser(principal.getName());
+
+        return new ResponseEntity<>(groupRepo.retrieveCurrentUserGroup(user), HttpStatus.OK);
     }
 
     @PostMapping("/api/groups")
-    public ResponseEntity<String> bindLdapPerson(@RequestBody Group ou) {
+    public ResponseEntity<String> bindLdapUser(@RequestBody Group ou) {
         String result = groupRepo.create(ou);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping("/api/groups/{name}")
-    public ResponseEntity<String> rebindLdapPerson(@RequestBody Group ou, @PathVariable("name") String name) {
+    public ResponseEntity<String> rebindLdapUser(@RequestBody Group ou, @PathVariable("name") String name) {
         String result = groupRepo.update(name, ou);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

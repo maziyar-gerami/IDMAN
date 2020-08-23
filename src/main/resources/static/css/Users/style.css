@@ -10,6 +10,22 @@ html,body {
     background-repeat: repeat-x;
     font-family: IRANSans;
   }
+  .btn-notSelected {
+    background-color: #4d4b4b;
+    color: #ffffff;
+  }
+  button,.btn {
+    border-radius: 2rem;
+  }
+  textarea {
+    border-radius: 2rem;
+  }
+  input,.form-control {
+    border-radius: 2rem;
+  }
+  .table td,.table th{
+    padding: .5rem;
+  }
   .rtl {
     direction: rtl;
     text-align: right;
@@ -198,6 +214,7 @@ html,body {
     overflow: hidden;
     z-index: 9;
     transition: all 0.5s linear;
+    margin-right: 3.5%;
   }
   .level_0 {
     bottom: 0;
@@ -221,7 +238,7 @@ html,body {
   }
   .level_4 {
     bottom: 0;
-    width: 100%;
+    width: 93%;
     background-color: #a5df41;
   }
   .level-icon {

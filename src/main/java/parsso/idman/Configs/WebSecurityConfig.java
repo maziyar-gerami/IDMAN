@@ -27,7 +27,6 @@ import java.util.Collections;
 
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    //private Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
 
     @Value("${cas.url.logout.path}")
     private String casLogout;
@@ -55,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
 
-                .authorizeRequests().antMatchers( "/dashboard", "/login").fullyAuthenticated()
+                .authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
                 //.antMatchers("")
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
@@ -110,19 +109,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .authenticationProvider(casAuthenticationProvider); // cas;
-                /*.ldapAuthentication()
-                .userDnPatterns("uid={0},ou=people")
-                .groupSearchBase("ou=people")
-                .contextSource()
-                .url("ldap://localhost:10389/dc=example,dc=com")
 
-                .and()
-                .passwordCompare()
-                .passwordEncoder(new LdapShaPasswordEncoder() {
-                })
-                .passwordAttribute("userPassword");*/
     }
-
 
 
     @Bean
