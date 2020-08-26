@@ -7,6 +7,18 @@ html,body {
     background-repeat: repeat-x;
     font-family: IRANSans;
   }
+  button,.btn {
+    border-radius: 2rem;
+  }
+  textarea {
+    border-radius: 2rem;
+  }
+  input,.form-control {
+    border-radius: 2rem;
+  }
+  .table td,.table th{
+    padding: .5rem;
+  }
   .rtl {
     direction: rtl;
     text-align: right;
@@ -89,4 +101,5 @@ html,body {
     background-color: #ddd;
     border-radius: .25rem;
   }
-  .show {display:block;} 
+  .show {display:block;}
+  

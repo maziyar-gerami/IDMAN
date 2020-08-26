@@ -1,6 +1,7 @@
 package parsso.idman.Repos;
 
 import parsso.idman.Models.Group;
+import parsso.idman.Models.User;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ public interface GroupRepo {
     String remove();
     Group retrieveOu(String name);
     Group retrieveOu();
+    List<Group> retrieveCurrentUserGroup(User user);
 
 
 }

@@ -39,7 +39,7 @@
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
                             <div class="card-body p-0 pt-3">
-                                <form id="upload-form" method="POST" action="/idman/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
+                                <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
                                     <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
                                 </form>
                                 <div class="userpic mb-3">
@@ -92,16 +92,20 @@
                                         <i class="fa fa-users"></i>
                                         <span>{{s5}}</span>
                                     </a>
-                                    <!-- <a class="list-group-item list-group-item-action py-2 "
-                                    href="#">
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s53">
                                         <i class="fa fa-calendar"></i>
                                         <span>{{s6}}</span>
-                                    </a> -->
-                                    
+                                    </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s49">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s52">
+                                        <i class="fa fa-cog"></i>
+                                        <span>{{s51}}</span>
                                     </a>
                                 </div>
                             </div>
@@ -109,39 +113,47 @@
                     </div>
                     <div class="col-lg-9 page-content">
                         <div class="card">
-                            <div class="card-body pb-0">
-                                <h4 class="mt-3 mb-3" id="showS0" v-bind:style="showS"><span>{{s13}}</span></h4>
+                            <div class="card-body pb-0" style="background-color: #f8f9fa!important;">
+                                <!-- <h4 class="mt-3 mb-3" id="showS0" v-bind:style="showS"><span>{{s13}}</span></h4>
                                 <div class="border rounded p-3 mb-5" id="showS1" v-bind:style="showS">
-                                    <a v-bind:href="s18" class="btn btn-success">
-                                        <i class="fa fa-plus"></i>
-                                        <span>{{s14}}</span>
-                                    </a>
-                                </div>
+                                    
+                                </div> -->
                                 <h4 class="mt-3 mb-3 border-bottom pb-2" id="showS4" v-bind:style="showS"><span>{{s9}}</span></h4>
-                                <div v-bind:style="showS" id="showS2" class="row mb-3">
-                                    <button v-on:click="deleteAllServices()" class="btn btn-danger">{{s47}}</button>
+                                <div v-bind:style="showS" id="showS2" class="row mb-3" style="padding: .5rem;">
+                                    <a v-bind:href="s18" class="btn btn-success btn-sm ml-1">
+                                        <span class="fa-stack">
+                                            <i class="fa fa-plus fa-stack-1x"></i>
+                                        </span>
+                                        {{s14}}
+                                    </a>
+                                    <button v-on:click="deleteAllServices()" class="btn btn-danger btn-sm">
+                                        <span class="fa-stack">
+                                            <i class="fa fa-trash fa-stack-1x"></i>
+                                        </span>
+                                        {{s47}}
+                                    </button>
                                 </div>
-                                <div class="mb-2">
-                                            <table class="table" id="showS5" v-bind:style="showS">
+                                <div class="mb-2" style="background-color: white; padding: .5rem;">
+                                            <table class="table table-responsive" id="showS5" v-bind:style="showS">
                                                 <tr>
-                                                    <th>{{s20}}</th>
-                                                    <th>{{s21}}</th>
-                                                    <th>{{s22}}</th>
+                                                    <th style="border: none;">{{s20}}</th>
+                                                    <th style="border: none;">{{s21}}</th>
+                                                    <th style="border: none;">{{s22}}</th>
                                                 </tr>
                                                 <tbody id="body">
                                                     <tr v-for="service in sortedServices" v-bind:key="service.id">
                                                         <td>{{service.id}}</td>
                                                         <td>{{service.name}}</td>
-                                                        <td><a v-bind:href="service.accessStrategy.endpointUrl">{{service.accessStrategy.endpointUrl}}</a></td>
+                                                        <td><a v-bind:href="service.serviceId">{{service.serviceId}}</a></td>
                                                         <td>
-                                                            <button style="padding: .2rem .2rem;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-warning" v-on:click="editServiceS(service.id)">
+                                                            <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-sm" v-on:click="editServiceS(service.id)">
                                                                 <span class="fa-passwd-reset fa-stack">
                                                                     <i class="fa fa-pencil-square-o fa-stack-2x"></i>
                                                                 </span>
                                                             </button>
                                                         </td>
                                                         <td>
-                                                            <button style="padding: .2rem .2rem;" data-toggle="tooltip" data-placement="top" :title="s24" class="btn btn-danger" v-on:click="deleteService(service.id)">
+                                                            <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s24" class="btn btn-sm" v-on:click="deleteService(service.id)">
                                                                 <span class="fa-passwd-reset fa-stack">
                                                                     <i class="fa fa-trash fa-stack-2x"></i>
                                                                 </span>
@@ -155,7 +167,7 @@
                                                 :labels="paginationAnchorTexts"></v-pagination>
                                             </div>
 
-                                            <form th:action="@{/createservice}" id="editS" v-bind:style="editS" method="POST">
+                                            <form id="editS" v-bind:style="editS">
                                                 <div class="form-group">
                                                     <label>{{s20}}</label>
                                                     <input name="id" class="form-control" type="text" readonly>
@@ -176,20 +188,29 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>{{s28}}</label>
-                                                    <input name="name" class="form-control" type="text" maxlength="255" required>
+                                                    <label>{{s28}}<span style="color: red;"> *</span></label>
+                                                    <input name="name" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>{{s29}}</label>
-                                                    <input name="endpointUrl" id="enInput" class="form-control" type="text" placeholder="URL" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>{{s30}}</label>
-                                                    <input name="serviceId" id="enInput" class="form-control" type="text" placeholder="URL" required>
+                                                    <label>{{s30}}<span style="color: red;"> *</span></label>
+                                                    <input name="serviceId" id="enInput" class="form-control" type="text" placeholder="URL" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 </div>
                                                 <div class="form-group mb-3">
                                                     <label>{{s31}}</label>
-                                                    <textarea name="description" class="form-control" rows="3" maxlength="255"></textarea>
+                                                    <textarea id="description" name="description" class="form-control" rows="3" maxlength="255"></textarea>
+                                                </div>
+
+                                                <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s54}}</span></h4>
+                                                <div class="form-group">
+                                                    <label class="form-check-label">{{s55}}</label>
+                                                    <label class="switch">
+                                                        <input name="ssoEnabled" type="checkbox" checked>
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{s56}}</label>
+                                                    <input name="unauthorizedRedirectUrl" id="enInput" class="form-control" type="text" placeholder="URL">
                                                 </div>
             
                                                 <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s32}}</span></h4>
@@ -309,37 +330,37 @@
             
                                                 <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s37}}</span></h4>
                                                 <div class="form-group">
-                                                    <label>{{s38}}</label>
-                                                    <input name="cname" class="form-control" type="text" required>
+                                                    <label>{{s38}}<span style="color: red;"> *</span></label>
+                                                    <input name="cName" class="form-control" type="text" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>{{s39}}</label>
-                                                    <input name="email" id="enInput" class="form-control" type="email" required>
+                                                    <label>{{s39}}<span style="color: red;"> *</span></label>
+                                                    <input name="cEmail" id="enInput" class="form-control" type="email" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 </div>
                                                 <div class="form-group">
                                                     <label>{{s40}}</label>
-                                                    <input name="phone" class="form-control" type="text">
+                                                    <input name="cPhone" class="form-control" type="text">
                                                 </div>
                                                 <div class="form-group">
                                                     <label>{{s41}}</label>
-                                                    <input name="department" class="form-control" type="text">
+                                                    <input name="cDepartment" class="form-control" type="text">
                                                 </div>
                                                 <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s42}}</span></h4>
                                                 <div class="form-group">
-                                                        <label>{{s43}}</label>
-                                                        <input name="logoutUrl" id="enInput" class="form-control" type="text" placeholder="URL" required>
-                                                    </div>
+                                                    <label>{{s43}}</label>
+                                                    <input name="logoutUrl" id="enInput" class="form-control" type="text" placeholder="URL">
+                                                </div>
                                                 <div class="form-group">
                                                     <label>{{s44}}</label>
                                                     <select name="logoutType" class="form-control">
                                                         <option id="option7" value="NONE">NONE</option>
-                                                        <option id="option8" selected value="BACK_CHANNEL">BACK_CHANNEL</option>
+                                                        <option id="option8" value="BACK_CHANNEL" selected>BACK_CHANNEL</option>
                                                         <option id="option9" value="FRONT_CHANNEL">FRONT_CHANNEL</option>
                                                     </select>
                                                 </div>
                                             </form>
-                                            <button id="editS1" v-bind:style="editS1" v-on:click="editService()" class="btn btn-danger">{{s46}}</button>
-                                            <button id="editS2" v-bind:style="editS2" v-on:click="showServices()" class="btn btn-primary">{{s45}}</button>
+                                            <button id="editS1" v-bind:style="editS1" v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
+                                            <button id="editS2" v-bind:style="editS2" v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
                                 </div>
                             </div>
                         </div>

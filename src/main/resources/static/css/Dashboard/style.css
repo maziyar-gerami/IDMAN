@@ -7,9 +7,29 @@ body {
   background-repeat: repeat-x;
   font-family: IRANSans;
 }
+button,.btn {
+  border-radius: 2rem;
+}
+textarea {
+  border-radius: 2rem;
+}
+input,.form-control {
+  border-radius: 2rem;
+}
+.table td,.table th{
+  padding: .5rem;
+}
 .rtl {
   direction: rtl;
   text-align: right;
+}
+.config-head{
+  padding-left: 5px;
+  text-align: center;
+  color: #444242;
+  background-color: #d1edf9;
+  padding-top: 5px;
+  border-radius: 2rem;
 }
 #btn {
   color: rgba(255, 255, 255, 0.5);

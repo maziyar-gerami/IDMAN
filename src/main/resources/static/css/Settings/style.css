@@ -7,6 +7,15 @@ html,body {
     background-repeat: repeat-x;
     font-family: IRANSans;
   }
+  button,.btn {
+    border-radius: 2rem;
+  }
+  textarea {
+    border-radius: 2rem;
+  }
+  input,.form-control {
+    border-radius: 2rem;
+  }
   .rtl {
     direction: rtl;
     text-align: right;
@@ -178,6 +187,7 @@ html,body {
     overflow: hidden;
     z-index: 9;
     transition: all 0.5s linear;
+    margin-right: 3.5%;
   }
   .level_0 {
     bottom: 0;
@@ -201,7 +211,7 @@ html,body {
   }
   .level_4 {
     bottom: 0;
-    width: 100%;
+    width: 93%;
     background-color: #a5df41;
   }
   .level-icon {
@@ -212,14 +222,12 @@ html,body {
   }
   .show-icon {
     position: absolute;
-    /* //right: 1%; */
     top: 25%;
     z-index: 11;
     cursor: pointer;
   }
   .hide-icon {
     position: absolute;
-    /* right: 1%; */
     top: 25%;
     z-index: 11;
     cursor: pointer;
