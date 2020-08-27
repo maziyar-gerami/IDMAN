@@ -188,6 +188,7 @@ html,body {
     z-index: 9;
     transition: all 0.5s linear;
     margin-right: 3.5%;
+    margin-left: 3.5%;
   }
   .level_0 {
     bottom: 0;

@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s4: "سرویس ها",
             s5: "گروه ها",
             s6: "رویداد ها",
-            s7: "تنظیمات",
+            s7: "پروفایل",
             s9: "fa fa-arrow-right",
             s10: "قوانین",
             s11: "حریم خصوصی",
@@ -193,6 +193,12 @@ document.addEventListener('DOMContentLoaded', function () {
             s41: "فعال",
             s42: "غیر فعال",
             s43: "قفل شده",
+            s44: "اطلاعات کاربر",
+            s45: "رمز عبور",
+            s46: "رمز عبور جدید",
+            s47: "تکرار رمز عبور جدید",
+            s48: "رمز عبور شما باید شامل موارد زیر باشد:",
+            s49: "رمز عبور های وارد شده یکسان نمی باشند",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -217,10 +223,6 @@ document.addEventListener('DOMContentLoaded', function () {
             U21: "بارگزاری",
             U22: "بازنشانی رمز عبور",
 
-            h1: "ترکیبی از حروف و اعداد. مثال: ali123",
-            p1: "خیلی ضعیف",
-            p2: "متوسط",
-            p3: "قوی",
             p4: "- باید حداقل 8 کاراکتر باشد",
             p5: "- باید ترکیبی از حرف و عدد باشد",
             p6: "- باید شامل حروف بزرگ و کوچک باشد",
@@ -725,6 +727,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.margin1 = "mr-1";
                     this.margin5 = "mr-5";
                     this.eye = "left: 1%;";
+                    this.font = "font-size: 0.9em; text-align: left;"
                     this.s0 = "Parsso";
                     this.s1 = this.nameEN;
                     this.s2 = "Exit";
@@ -732,7 +735,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s4 = "Services";
                     this.s5 = "Groups";
                     this.s6 = "Events";
-                    this.s7 = "Settings";
+                    this.s7 = "Profile";
                     this.s9 = "fa fa-arrow-left";
                     this.s10 = "Rules";
                     this.s11 = "Privacy";
@@ -768,6 +771,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s41 = "Active";
                     this.s42 = "Disabled";
                     this.s43 = "Locked";
+                    this.s44 = "Information";
+                    this.s45 = "Password";
+                    this.s46 = "New Password";
+                    this.s47 = "Repeat New Password";
+                    this.s48 = "Your Password Must Meet All Of The Following Criteria:";
+                    this.s49 = "Passwords Don't Match";
                     this.U0= "Password";
                     this.U1= "Users";
                     this.U2= "ID";
@@ -800,6 +809,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.margin1 = "ml-1";
                     this.margin5 = "ml-5";
                     this.eye = "right: 1%;";
+                    this.font = "font-size: 0.74em; text-align: right;"
                     this.s0 = "پارسو";
                     this.s1 = this.name;
                     this.s2 = "خروج";
@@ -807,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s4 = "سرویس ها";
                     this.s5 = "گروه ها";
                     this.s6 = "رویداد ها";
-                    this.s7 = "تنظیمات";
+                    this.s7 = "پروفایل";
                     this.s9 = "fa fa-arrow-right";
                     this.s10 = "قوانین";
                     this.s11 = "حریم خصوصی";
@@ -843,6 +853,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s41 = "فعال";
                     this.s42 = "غیر فعال";
                     this.s43 = "قفل شده";
+                    this.s44 = "اطلاعات کاربر";
+                    this.s45 = "رمز عبور";
+                    this.s46 = "رمز عبور جدید";
+                    this.s47 = "تکرار رمز عبور جدید";
+                    this.s48 = "رمز عبور شما باید شامل موارد زیر باشد:";
+                    this.s49 = "رمز عبور های وارد شده یکسان نمی باشند";
                     this.U0= "رمز";
                     this.U1= "کاربران";
                     this.U2= "شناسه";

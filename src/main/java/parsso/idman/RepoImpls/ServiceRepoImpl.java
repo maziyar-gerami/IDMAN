@@ -54,7 +54,9 @@ public class ServiceRepoImpl implements ServiceRepo {
             if (member !=null){
             LinkedList<String> s = (LinkedList) member[1];
 
-            for (int i = 0; i < user.getMemberOf().size(); i++)
+
+                if (user.getMemberOf()!=null&&s !=null)
+                    for (int i = 0; i < user.getMemberOf().size(); i++)
                 for (int j = 0; j < s.size(); j++) {
                     if (user.getMemberOf().get(i).equals(s.get(j)) && !relatedList.contains(service)) {
                         relatedList.add(service);
@@ -166,7 +168,12 @@ public class ServiceRepoImpl implements ServiceRepo {
 
         FileWriter file = null;
         try {
-            file = new FileWriter(path + service.getName()+"-"+service.getId() + ".json");
+            String fileName = service.getName();
+            String s1 = fileName.replaceAll("\\s+", "");
+            s1 = s1.replaceAll("[-,]", "");
+            String filePath = s1+"-"+service.getId();
+
+            file = new FileWriter(path+filePath + ".json");
             file.write(json);
             file.close();
             return HttpStatus.OK;
@@ -201,7 +208,12 @@ public class ServiceRepoImpl implements ServiceRepo {
 
             File oldFile = new File(path+oldService.getName()+"-"+service.getId()+".json");
             oldFile.delete();
-            file = new FileWriter(path + service.getName()+"-"+service.getId() + ".json");
+            String fileName = service.getName();
+            String s1 = fileName.replaceAll("\\s+", "");
+            s1 = s1.replaceAll("[-,]", "");
+            String filePath = s1+"-"+service.getId();
+
+            file = new FileWriter(path+filePath + ".json");
             file.write(json);
             file.close();
             return HttpStatus.OK;
@@ -497,9 +509,6 @@ public class ServiceRepoImpl implements ServiceRepo {
         } else
             accessStrategy.setEnabled(true);
 
-
-
-
         if (jsonObject.get("ssoEnabled") == (null) || (boolean) jsonObject.get("ssoEnabled") == false) {
 
             accessStrategy.setSsoEnabled(false);
@@ -508,7 +517,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 
         JSONObject tempreqiredattribute = null;
-        if (!jsonObject.get("requiredAttributes").equals(null))
+        if (jsonObject.get("requiredAttributes")!=(null))
             tempreqiredattribute = new JSONObject((Map) jsonObject.get("requiredAttributes"));
 
         RequiredAttributes requiredAttributes = new RequiredAttributes();
@@ -519,21 +528,20 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 
 
-
-            t0 = arrayList.get(0).toString();
-
             ArrayList t1 = (ArrayList) tempreqiredattribute.get("member");
+
+
             t1 = (ArrayList) t1.get(1);
             List t1list = new LinkedList();
 
 
+            if (t1!=null)
             for (int i = 0; i < t1.size(); i++) {
                 t1list.add(t1.get(i));
             }
 
-            Object[] members = new Object[2];
+            Object[] members = requiredAttributes.getMember();
 
-            members[0] = t0;
             members[1] = t1list;
             requiredAttributes.setMember(members);
         }

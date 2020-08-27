@@ -579,22 +579,6 @@ function myFunction() {
         saml: function () {
           this.samls = "";
           this.s18 = "Entity ID";
-          /* document.getElementById("metadataLocation").required = true;
-          document.getElementById("metadataLocation").setAttribute("name", "metadataLocation");
-          document.getElementById("metadataMaxValidity").setAttribute("name", "metadataMaxValidity");
-          document.getElementById("metadataSignatureLocation").setAttribute("name", "metadataSignatureLocation");
-          document.getElementById("metadataExpirationDuration").setAttribute("name", "metadataExpirationDuration");
-          document.getElementById("metadataCriteriaPattern").setAttribute("name", "metadataCriteriaPattern");
-          document.getElementById("metadataCriteriaDirection").setAttribute("name", "metadataCriteriaDirection");
-          document.getElementById("metadataCriteriaRoles").setAttribute("name", "metadataCriteriaRoles");
-          document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors").setAttribute("name", "metadataCriteriaRemoveEmptyEntitiesDescriptors");
-          document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors").setAttribute("name", "metadataCriteriaRemoveRolelessEntityDescriptors");
-          document.getElementById("signAssertions").setAttribute("name", "signAssertions");
-          document.getElementById("signResponses").setAttribute("name", "signResponses");
-          document.getElementById("encryptAssertions").setAttribute("name", "encryptAssertions");
-          document.getElementById("signingCredentialType").setAttribute("name", "signingCredentialType");
-          document.getElementById("requiredAuthenticationContextClass").setAttribute("name", "requiredAuthenticationContextClass");
-          document.getElementById("assertionAudiences").setAttribute("name", "assertionAudiences"); */
           },
         cas: function () {
           this.samls = "display: none;";
@@ -603,23 +587,7 @@ function myFunction() {
           }else{
             this.s18 = "Service URL";
           }
-          /* document.getElementById("metadataLocation").removeAttribute("required");
-          document.getElementById("metadataLocation").removeAttribute("name");
-          document.getElementById("metadataMaxValidity").removeAttribute("name");
-          document.getElementById("metadataSignatureLocation").removeAttribute("name");
-          document.getElementById("metadataExpirationDuration").removeAttribute("name");
-          document.getElementById("metadataCriteriaPattern").removeAttribute("name");
-          document.getElementById("metadataCriteriaDirection").removeAttribute("name");
-          document.getElementById("metadataCriteriaRoles").removeAttribute("name");
-          document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors").removeAttribute("name");
-          document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors").removeAttribute("name");
-          document.getElementById("signAssertions").removeAttribute("name");
-          document.getElementById("signResponses").removeAttribute("name");
-          document.getElementById("encryptAssertions").removeAttribute("name");
-          document.getElementById("signingCredentialType").removeAttribute("name");
-          document.getElementById("requiredAuthenticationContextClass").removeAttribute("name");
-          document.getElementById("assertionAudiences").removeAttribute("name"); */
-          }
+        }
       },
       computed:{
         sortedServices:function() {

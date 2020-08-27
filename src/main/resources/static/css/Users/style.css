@@ -129,13 +129,6 @@ html,body {
   .text-decoration a {
     text-decoration: none;
   }
-  .error {
-    color: #ef5662;
-    position: relative;
-    padding: .35rem 1.25rem;
-    border: 1px solid #ffc1c5;
-    border-radius: .25rem;
-  }
   .hint-enter {
     opacity: 0;
     transform: translate3d(-20px, 0, 0);
@@ -153,8 +146,8 @@ html,body {
   .hints {
     max-width: 400px;
     padding: 1em;
-    background: white;
-    margin: .7em 0;
+    background: whitesmoke;
+    margin: 1em 0;
     color: #4d6567;
   }
   .hints h2 {
@@ -215,6 +208,7 @@ html,body {
     z-index: 9;
     transition: all 0.5s linear;
     margin-right: 3.5%;
+    margin-left: 3.5%;
   }
   .level_0 {
     bottom: 0;

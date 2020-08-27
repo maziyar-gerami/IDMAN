@@ -88,6 +88,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s27: "پیکربندی",
             s28: "./configs",
             s29: "./events",
+            s30: "فعال سازی پارسو اپ",
+            s31: "لطفا کد QR را جهت فعال سازی پارسو اپ، اسکن کنید.",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -250,6 +252,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s27 = "Configs";
                     this.s28 = "./configs?en";
                     this.s29 = "./events?en";
+                    this.s30 = "Parsso App Activation";
+                    this.s31 = "Please Scan The QR Code To Activate Parsso App.";
                     this.U0= "Password";
                     this.U1= "Users";
                     this.U2= "ID";
@@ -306,6 +310,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s27 = "پیکربندی";
                     this.s28 = "./configs";
                     this.s29 = "./events";
+                    this.s30 = "فعال سازی پارسو اپ";
+                    this.s31 = "لطفا کد QR را جهت فعال سازی پارسو اپ، اسکن کنید.";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";

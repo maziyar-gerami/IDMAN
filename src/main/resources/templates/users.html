@@ -17,12 +17,12 @@
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Users/script.js"></script>
-    <script src="https://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.12/xlsx.core.min.js"></script>
-    <script lang="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-    <script src="//unpkg.com/vue-plain-pagination"></script>
+    <script src="js/alasql.min.js"></script>
+    <script src="js/xlsx.core.min.js"></script>
+    <script src="js/xlsx.full.min.js"></script>
+    <script src="js/jszip.js"></script>
+    <script src="js/xlsx.js"></script>
+    <script src="js/vue-plain-pagination.umd.min.js"></script>
 
 </head>
 <body class="h-100">
@@ -238,34 +238,34 @@
                                         <h3 class="mb-3 pb-2 border-bottom">{{s37}}</h3>
                                         <ul class="nav nav-tabs nav-justified" style="font-size: 15px;">
                                             <li class="nav-item">
-                                                <a class="nav-link" @click.prevent="setActive('info')" :class="{ active: isActive('info') }" href="#info">اطلاعات کاربر</a>
+                                                <a class="nav-link" @click.prevent="setActive('info')" :class="{ active: isActive('info') }" href="#info">{{s44}}</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" @click.prevent="setActive('password')" :class="{ active: isActive('password') }" href="#password">رمز عبور</a>
+                                                <a class="nav-link" @click.prevent="setActive('password')" :class="{ active: isActive('password') }" href="#password">{{s45}}</a>
                                             </li>
                                         </ul>
                                         <div class="tab-content py-3" id="myTabContent" style="background-color: white; padding: 2%; font-size: 15px;">
                                             <div class="tab-pane fade" :class="{ 'active show': isActive('password') }" id="password">
                                                 <div>    
-                                                    <label>رمز عبور</label>
+                                                    <label>{{s45}}</label>
                                                     <div class="form-group">
                                                         <input :class='{valid:passwordValidation.valid}' @input="passwordCheck" :type="show === true ? 'text' : 'password'" class="form-control"
-                                                        name="password" id="newPassword" v-model="password" placeholder="رمز عبور جدید" v-bind:style="placeholder" oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                        oninput="setCustomValidity('')" required > <!-- v-bind: -->
+                                                        name="password" id="newPassword" v-model="password" v-bind:placeholder="s46" v-bind:style="placeholder" oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                                        oninput="setCustomValidity('')" required >
     
                                                         <div class="strength" :class="'level_' + strengthLevel"></div>
                                                         <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="show" @click="show = !show"></i>
                                                         <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="show = !show"></i>
                                                     </div>
                                                     <div class="form-group">
-                                                        <input class="form-control" :type="showR === true ? 'text' : 'password'" v-model.lazy='checkPassword' placeholder="تکرار رمز عبور جدید" v-bind:style="placeholder"> 
-                                                        <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showR" @click="showR = !showR"></i> <!-- v-bind: -->
+                                                        <input class="form-control" :type="showR === true ? 'text' : 'password'" v-model.lazy='checkPassword' v-bind:placeholder="s47" v-bind:style="placeholder"> 
+                                                        <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showR" @click="showR = !showR"></i>
                                                         <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showR = !showR"></i>
                                                     </div>
                                                     <div class="form-group">
                                                         <transition name="hint" appear>
                                                             <div v-if='!submitted' class='hints'>
-                                                                <p style="box-sizing: unset;">رمز عبور شما باید شامل موارد زیر باشد:</p> <br>
+                                                                <p style="box-sizing: unset;">{{s48}}</p> <br>
                                                                 <p :class="{'passed' :has_number }" v-bind:style="font"><i :class="has_number ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
                                                                 <p :class="{'passed' :has_lowercase }" v-bind:style="font"><i :class="has_lowercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
                                                                 <p :class="{'passed' :has_uppercase }" v-bind:style="font"><i :class="has_uppercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
@@ -275,10 +275,10 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <div class="matches" v-bind:style="notSamePasswords ? 'visibility: visible;' : 'visibility: hidden;' ">
-                                                            <p class="error" style="font-size: .8rem;">رمز عبور های وارد شده یکسان نمی باشند</p>
+                                                            <p class="error" style="font-size: .8rem;">{{s49}}</p>
                                                         </div> <br> <br>
                                                         <button v-on:click="editPass(editInfo.userId)" :disabled="setActivee" class="btn btn-primary">
-                                                            ویرایش
+                                                            {{U13}}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -299,42 +299,6 @@
                                                             <option id="option3" value="locked">{{s43}}</option>
                                                         </select>
                                                     </div>
-
-                                                    <!-- <table class="table table-responsive">
-                                                        <tr>
-                                                            <td>
-
-                                                                <div class="pass">
-                                                                    <label for="ediInfo.userPasswordUpdate" style="margin-right: 20px">{{U0}}</label><span id="msg1" style="margin-right: 20px" minlength="8"></span>
-                                                                    <input v-bind:value="editInfo.userPassword"
-                                                                        id="ediInfo.userPasswordUpdate" type="password"
-                                                                        class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                                        oninput="setCustomValidity('')" onkeyup="validatePassword(this.value) "/>
-                                                                        
-                                                                </div>
-                                                                <div class="passRetype">
-                                                                    <label for="editInfo.passwordRetypeUpdate" minlength="8">{{U15}}</label>
-                                                                    <input v-bind:value="editInfo.userPassword"
-                                                                        id="editInfo.passwordRetypeUpdate" type="password"
-                                                                        class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                                        oninput="setCustomValidity('')">
-                                                                </div>
-
-                                                            </td>
-
-                                                            <td >
-                                                                <div style="background-color: #f5fff6;margin-right: 20px; font-size: x-small; margin-top: 40px"  >
-
-                                                                    <p>{{p7}}</p>
-                                                                    <p>{{p4}}</p>
-                                                                    <p>{{p5}}</p>
-                                                                    <p>{{p6}}</p>
-                                                                </div>
-
-                                                            </td>
-                                                        </tr>
-
-                                                    </table> -->
 
                                                     <div class="form-group">
                                                         <label>{{U3}}</label>
