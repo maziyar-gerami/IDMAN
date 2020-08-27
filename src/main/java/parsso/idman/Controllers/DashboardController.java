@@ -100,7 +100,7 @@ public class DashboardController{
         return "settings";
     }
 
-    @GetMapping("/error")
+    @GetMapping("/errorpage")
     public String Error(){
         return "error";
     }
@@ -108,6 +108,16 @@ public class DashboardController{
     @GetMapping("/privacy")
     public String Privacy(){
         return "privacy";
+    }
+
+    @GetMapping("/login")
+    public String Login() {
+        return "redirect:/login/cas";
+    }
+
+    @GetMapping("/resetPass")
+    public String resetPass() {
+        return "resetPass";
     }
 
     @GetMapping("/logout")
