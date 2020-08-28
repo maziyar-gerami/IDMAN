@@ -51,7 +51,7 @@ public class UserRepoImpl implements UserRepo {
     public static final String BASE_DN = "dc=example,dc=com";
 
     @Value("${sms.api.key}")
-    private String  SMSAPI;
+    private String  SMS_API_KEY;
 
     @Value("${sms.sender.number}")
     private String SENDER;
@@ -822,8 +822,6 @@ public class UserRepoImpl implements UserRepo {
 
         User user = new User();
 
-
-
             user.setUserId(entry.getAttributeValue("uid"));
             user.setFirstName(entry.getAttributeValue("givenName"));
             user.setLastName(entry.getAttributeValue("sn"));
@@ -841,12 +839,7 @@ public class UserRepoImpl implements UserRepo {
             user.setStatus(entry.getAttributeValue("userStatus"));
 
             //lsUserConflicts.add(create(user));
-
-
-
         return lsUserConflicts;
-
-
     }
 
 
@@ -858,9 +851,9 @@ public class UserRepoImpl implements UserRepo {
         insertMobileToken(user);
         try {
             String receptor = mobile;
-            String message = "کد اعتبارسنجی شما در پارسو Idman:\n"+user.getResetPassToken().substring(0,SMS_VALIDATION_DIGITS);
-            KavenegarApi api = new KavenegarApi(SMSAPI);
-            api.send(SENDER, receptor, message);
+            String message = user.getResetPassToken().substring(0,SMS_VALIDATION_DIGITS);
+            KavenegarApi api = new KavenegarApi(SMS_API_KEY);
+            api.verifyLookup(receptor, message, "", "", "mfa");
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
             System.out.print("HttpException  : " + ex.getMessage());
         } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
@@ -872,7 +865,6 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public String sendMessage(String mobile, String uId) {
-
 
         if (checkMobile(mobile) != null & retrieveUser(uId).getUserId() != null) {
             List<JSONObject> ids = checkMobile(mobile);
@@ -887,9 +879,9 @@ public class UserRepoImpl implements UserRepo {
 
                     try {
                         String receptor = mobile;
-                        String message = "کد اعتبارسنجی شما در پارسو Idman:\n"+user.getResetPassToken().substring(0,SMS_VALIDATION_DIGITS);
-                        KavenegarApi api = new KavenegarApi(SMSAPI);
-                        api.send(SENDER, receptor, message);
+                        String message = user.getResetPassToken().substring(0,SMS_VALIDATION_DIGITS);
+                        KavenegarApi api = new KavenegarApi(SMS_API_KEY);
+                        api.verifyLookup(receptor, message, "", "", "mfa");
                     } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
                         System.out.print("HttpException  : " + ex.getMessage());
                     } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
