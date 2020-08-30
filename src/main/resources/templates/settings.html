@@ -116,10 +116,13 @@
                                 <h3 class="border-bottom pb-3 mb-3"><span>{{s7}}</span></h3>
                                 <ul class="nav nav-tabs nav-justified" style="font-size: 15px;">
                                     <li class="nav-item">
+                                        <a class="nav-link" @click.prevent="setActive('info')" :class="{ active: isActive('info') }" href="#info">{{U17}}</a>
+                                    </li>
+                                    <li class="nav-item">
                                         <a class="nav-link" @click.prevent="setActive('password')" :class="{ active: isActive('password') }" href="#password">{{U16}}</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" @click.prevent="setActive('info')" :class="{ active: isActive('info') }" href="#info">{{U17}}</a>
+                                        <a class="nav-link" @click.prevent="setActive('app')" :class="{ active: isActive('app') }" href="#app">{{s30}}</a>
                                     </li>
                                 </ul>
                                 <div class="tab-content py-3" id="myTabContent" style="background-color: white; padding: 2%; font-size: 15px;">
@@ -201,6 +204,10 @@
                                                 </button>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="tab-pane fade" :class="{ 'active show': isActive('app') }" id="app">
+                                        <h6>{{s31}}</h6>
+                                        <img id="qr" v-bind:src="QR" class="img-responsive center-block" alt="qrCode" width="30%">
                                     </div>
                                 </div>
                             </div>

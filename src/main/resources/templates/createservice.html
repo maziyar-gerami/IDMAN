@@ -112,14 +112,14 @@
                     </div>
                     <div class="col-lg-9 page-content">
                         <div class="card">
-                            <div class="card-body pb-0"><!-- style="background-color: #f8f9fa!important;" -->
+                            <div class="card-body pb-0">
                                 <h4 class="border rounded p-3 mb-5">
                                         <a v-bind:href="s34" class="btn btn-dark">
                                             <i v-bind:class="s9"></i>
                                         </a>
                                     <span>{{s8}}</span>
                                 </h4>
-                                <forms>
+                                <div>
                                     <h4 class="border-bottom pb-3 mb-3"><span>{{s14}}</span></h4>
                                     <div class="form-group">
                                         <label class="form-check-label">{{s15}}</label>
@@ -136,8 +136,8 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>{{s17}}<span style="color: red;"> *</span></label>
-                                        <input name="name" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                        <label>{{s17}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s47}}</small></label>
+                                        <input name="name" @keypress="serviceNameValidate" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                     </div>
                                     <div class="form-group">
                                         <label>{{s36}}<span style="color: red;"> *</span></label>
@@ -166,10 +166,11 @@
                                         <input type="hidden" name="groups" v-bind:value="groupList">
                                         <ul>   
                                             <li v-for="group in groups" :key="group.name">
-                                                <label class="form-check-label">{{group.id}}</label>
+                                                <label class="form-check-label">{{group.name}}</label>
+                                                <label class="form-check-label" style="font-size: 80%; color: #0000008c;"> ( <small>{{group.id}}</small> ) </label>
                                                 <label class="switch">
                                                     <input type="checkbox">
-                                                    <span v-on:click="addGroup(group.name)" class="slider round"></span>  
+                                                    <span v-on:click="addGroup(group.id)" class="slider round"></span>  
                                                 </label>
                                             </li>
                                         </ul>
@@ -310,7 +311,7 @@
                                         <i class="fa fa-check"></i>
                                         {{s32}}
                                     </button>
-                                </form>    
+                                </div>    
                             </div>
                         </div>
                     </div>

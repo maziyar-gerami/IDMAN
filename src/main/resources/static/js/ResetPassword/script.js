@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
             userInfo: [],
             email: "",
             emailE: "",
+            emailEE: "",
             mobile: "",
             mobileS: "",
             codeSMS: "",
@@ -93,31 +94,16 @@ document.addEventListener('DOMContentLoaded', function () {
             s33: "لطفا با دقت بیشتری نسبت به ورود شماره موبایل اقدام نمایید:",
             s34: "شماره موبایل",
             s35: "شما در حال انتقال به صفحه بازنشانی رمز عبور هستید...",
-            U0: "رمز عبور",
-            U1: "کاربران",
-            U2: "شناسه",
-            U3: "نام (به انگلیسی)",
-            U4: "نام خانوادگی (به انگلیسی)",
-            U5: "نام کامل (به فارسی)",
-            U6: "شماره تماس",
-            U7: "ایمیل",
-            U8: "کد ملی",
-            U9: "توضیحات",
-            U10: "به روزرسانی",
-            U11: "حذف",
-            U12: "اضافه کردن کاربر جدید",
-            U13: "ویرایش",
-            U14: "گروههای عضو",
-            U15: "تکرار رمز عبور",
-            U16: "کاربر مورد نظر در گروههای زیر عضویت دارد. کاربر مورد نظر از چه گروههایی حذف شود؟",
-            U17: "حذف تمامی کاربران",
-            h1: "ترکیبی از حروف و اعداد. مثال: ali123",
-            p1: "خیلی ضعیف",
-            p2: "متوسط",
-            p3: "قوی"
+            s36: "شناسه",
+            s37: "آدرس ایمیل خود را وارد کنید",
+            s38: "فرمت آدرس ایمیل را به درستی وارد کنید",
+            s39: "کد وارد شده منقضی شده است، لطفا دوباره تلاش کنید.",
+            s40: "کد وارد شده اشتباه است.",
+            s41: "شناسه خود را وارد کنید",
+            s42: "شماره موبایل خود را وارد کنید",
+            s43: "کد پیامک شده خود را وارد کنید"
         },
         created: function () {
-            //this.getUserInfo();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
             }
@@ -132,178 +118,200 @@ document.addEventListener('DOMContentLoaded', function () {
             sendEmail: function  (email) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/public/checkMail/" + email) //
-                    .then((res) => {
-                        vm.emails = res.data;
-                        if(vm.emails.length == 0){
-                            vm.sendE = false;
-                            vm.sendU = false;
-                            vm.Success = false;
-                            vm.Error = true;
-                        } else if(vm.emails.length == 1){
-                            vm.sendE = false;
-                            vm.sendU = false;
-                            vm.Success = true;
-                            vm.Error = false;
-                            axios.get(url + "/api/public/sendMail/" + email) //
-                                .then((res) => {
-                                    
-                                });
-                        } else if(vm.emails.length > 1){
-                            vm.sendE = false;
-                            vm.sendU = true;
-                            vm.Success = false;
-                            vm.Error = false;
-                        }
-                    });
+                const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                console.log(emailRegex.test(email));
+                if(email != ""){
+                    if(emailRegex.test(email)){
+                        axios.get(url + "/api/public/checkMail/" + email) //
+                            .then((res) => {
+                                vm.emails = res.data;
+                                if(vm.emails.length == 0){
+                                    vm.emailEE = "";
+                                    vm.sendE = false;
+                                    vm.sendU = false;
+                                    vm.Success = false;
+                                    vm.Error = true;
+                                } else if(vm.emails.length == 1){
+                                    vm.sendE = false;
+                                    vm.sendU = false;
+                                    vm.Success = true;
+                                    vm.Error = false;
+                                    axios.get(url + "/api/public/sendMail/" + email) //
+                                        .then((res) => {
+                                            
+                                        });
+                                } else if(vm.emails.length > 1){
+                                    vm.usernameE = "";
+                                    vm.sendE = false;
+                                    vm.sendU = true;
+                                    vm.Success = false;
+                                    vm.Error = false;
+                                }
+                            });
+                    }else{
+                        alert(this.s38);
+                    }
+                }else{
+                    alert(this.s37);
+                }
             },
             sendEmailUser: function (email, username) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 var flag = false;
-                axios.get(url + "/api/public/checkMail/" + email) //
-                    .then((res) => {
-                        vm.emails = res.data;
-                        if(vm.emails.length > 1){
-                            for(let i = 0; i < vm.emails.length; ++i){
-                                if(vm.emails[i].userId == username){
-                                    flag = true;
+                if(username != ""){
+                    axios.get(url + "/api/public/checkMail/" + email) //
+                        .then((res) => {
+                            vm.emails = res.data;
+                            if(vm.emails.length > 1){
+                                for(let i = 0; i < vm.emails.length; ++i){
+                                    if(vm.emails[i].userId == username){
+                                        flag = true;
+                                        vm.sendE = false;
+                                        vm.sendU = false;
+                                        vm.Success = true;
+                                        vm.Error = false;
+                                        axios.get(url + "/api/public/sendMail/" + email + "/" + username) //
+                                            .then((res) => {
+                                                
+                                            });
+                                        break;
+                                    }
+                                }
+                                if(!flag){
+                                    vm.emailEE = "";
                                     vm.sendE = false;
                                     vm.sendU = false;
-                                    vm.Success = true;
-                                    vm.Error = false;
-                                    axios.get(url + "/api/public/sendMail/" + email + "/" + username) //
-                                        .then((res) => {
-                                            
-                                        });
-                                    break;
+                                    vm.Success = false;
+                                    vm.Error = true;
                                 }
                             }
-                            if(!flag){
-                                vm.sendE = false;
-                                vm.sendU = false;
-                                vm.Success = false;
-                                vm.Error = true;
-                            }
-                        }
-                    });
+                        });
+                }else{
+                    alert(this.s41);
+                }
             },
             checkSMS: function  (code) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/public/validateToken/" + this.usernameS + "/" + code) //
-                .catch((error) => {
-                    if (error.response) {
-                        if(error.response.status === 200){
-                            vm.sendS = false;
-                            vm.sendUS = false;
-                            vm.checkSMSCode = false;
-                            vm.SuccessS = true;
-                            vm.ErrorS = false;
-                            vm.ErrorSMSCode = false;
-                        }else if(error.response.status === 408){
-                            vm.ErrorSMSCode408 = true;
-                            vm.ErrorSMSCode403 = false;
-                            vm.sendS = false;
-                            vm.sendUS = false;
-                            vm.checkSMSCode = false;
-                            vm.SuccessS = false;
-                            vm.ErrorS = false;
-                            vm.ErrorSMSCode = true;
-                        }else if(error.response.status === 403){
-                            vm.ErrorSMSCode408 = false;
-                            vm.ErrorSMSCode403 = true;
-                            vm.sendS = false;
-                            vm.sendUS = false;
-                            vm.checkSMSCode = false;
-                            vm.SuccessS = false;
-                            vm.ErrorS = false;
-                            vm.ErrorSMSCode = true;
+                if(code != ""){
+                    axios.get(url + "/api/public/validateToken/" + this.usernameS + "/" + code) //
+                    .catch((error) => {
+                        if (error.response) {
+                            if(error.response.status === 200){
+                                vm.sendS = false;
+                                vm.sendUS = false;
+                                vm.checkSMSCode = false;
+                                vm.SuccessS = true;
+                                vm.ErrorS = false;
+                                vm.ErrorSMSCode = false;
+                            }else if(error.response.status === 408){
+                                vm.ErrorSMSCode408 = true;
+                                vm.ErrorSMSCode403 = false;
+                                vm.sendS = false;
+                                vm.sendUS = false;
+                                vm.checkSMSCode = false;
+                                vm.SuccessS = false;
+                                vm.ErrorS = false;
+                                vm.ErrorSMSCode = true;
+                            }else if(error.response.status === 403){
+                                vm.ErrorSMSCode408 = false;
+                                vm.ErrorSMSCode403 = true;
+                                vm.sendS = false;
+                                vm.sendUS = false;
+                                vm.checkSMSCode = false;
+                                vm.SuccessS = false;
+                                vm.ErrorS = false;
+                                vm.ErrorSMSCode = true;
+                            }
                         }
-                    }
-                });
+                    });
+                }else{
+                    alert(this.s43);
+                }
             },
             sendSMS: function  (mobile) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/public/checkMobile/" + mobile) //
-                    .then((res) => {
-                        vm.mobiles = res.data;
-                        if(vm.mobiles.length == 0){
-                            vm.sendS = false;
-                            vm.sendUS = false;
-                            vm.checkSMSCode = false;
-                            vm.SuccessS = false;
-                            vm.ErrorS = true;
-                            vm.ErrorSMSCode = false;
-                        } else if(vm.mobiles.length == 1){
-                            vm.sendS = false;
-                            vm.sendUS = false;
-                            vm.checkSMSCode = true;
-                            vm.SuccessS = false;
-                            vm.ErrorS = false;
-                            vm.ErrorSMSCode = false;
-                            axios.get(url + "/api/public/sendSMS/" + mobile) //
-                                .then((res) => {
-                                    
-                                });
-                        } else if(vm.mobiles.length > 1){
-                            vm.sendS = false;
-                            vm.sendUS = true;
-                            vm.checkSMSCode = false;
-                            vm.SuccessS = false;
-                            vm.ErrorS = false;
-                            vm.ErrorSMSCode = false;
-                        }
-                    });
-            },
-            sendSMSUser: function (mobile, username) {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                var flag = false;
-                axios.get(url + "/api/public/checkMobile/" + mobile) //
-                    .then((res) => {
-                        vm.mobiles = res.data;
-                        if(vm.mobiles.length > 1){
-                            for(let i = 0; i < vm.mobiles.length; ++i){
-                                if(vm.mobiles[i].userId == username){
-                                    flag = true;
-                                    vm.sendS = false;
-                                    vm.sendUS = false;
-                                    vm.checkSMSCode = true;
-                                    vm.SuccessS = false;
-                                    vm.ErrorS = false;
-                                    vm.ErrorSMSCode = false;
-                                    axios.get(url + "/api/public/sendSMS/" + mobile + "/" + username) //
-                                        .then((res) => {
-                                            
-                                        });
-                                    break;
-                                }
-                            }
-                            if(!flag){
+                if(mobile != ""){
+                    axios.get(url + "/api/public/checkMobile/" + mobile) //
+                        .then((res) => {
+                            vm.mobiles = res.data;
+                            if(vm.mobiles.length == 0){
+                                vm.mobileS = "";
                                 vm.sendS = false;
                                 vm.sendUS = false;
                                 vm.checkSMSCode = false;
                                 vm.SuccessS = false;
                                 vm.ErrorS = true;
                                 vm.ErrorSMSCode = false;
+                            } else if(vm.mobiles.length == 1){
+                                vm.codeSMS = "";
+                                vm.sendS = false;
+                                vm.sendUS = false;
+                                vm.checkSMSCode = true;
+                                vm.SuccessS = false;
+                                vm.ErrorS = false;
+                                vm.ErrorSMSCode = false;
+                                axios.get(url + "/api/public/sendSMS/" + mobile) //
+                                    .then((res) => {
+                                        
+                                    });
+                            } else if(vm.mobiles.length > 1){
+                                vm.usernameS = "";
+                                vm.sendS = false;
+                                vm.sendUS = true;
+                                vm.checkSMSCode = false;
+                                vm.SuccessS = false;
+                                vm.ErrorS = false;
+                                vm.ErrorSMSCode = false;
                             }
-                        }
-                    });
+                        });
+                }else{
+                    alert(this.s42);
+                }
             },
-            /* getUserInfo: function () {
+            sendSMSUser: function (mobile, username) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/user") //
-                .then((res) => {
-                    vm.userInfo = res.data;
-                    vm.username = vm.userInfo.userId;
-                    vm.name = vm.userInfo.displayName;
-                    vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
-                    vm.s1 = vm.name;
-                });
-            }, */
+                var flag = false;
+                if(username != ""){
+                    axios.get(url + "/api/public/checkMobile/" + mobile) //
+                        .then((res) => {
+                            vm.mobiles = res.data;
+                            if(vm.mobiles.length > 1){
+                                for(let i = 0; i < vm.mobiles.length; ++i){
+                                    if(vm.mobiles[i].userId == username){
+                                        vm.codeSMS = "";
+                                        flag = true;
+                                        vm.sendS = false;
+                                        vm.sendUS = false;
+                                        vm.checkSMSCode = true;
+                                        vm.SuccessS = false;
+                                        vm.ErrorS = false;
+                                        vm.ErrorSMSCode = false;
+                                        axios.get(url + "/api/public/sendSMS/" + mobile + "/" + username) //
+                                            .then((res) => {
+                                                
+                                            });
+                                        break;
+                                    }
+                                }
+                                if(!flag){
+                                    vm.mobileS = "";
+                                    vm.sendS = false;
+                                    vm.sendUS = false;
+                                    vm.checkSMSCode = false;
+                                    vm.SuccessS = false;
+                                    vm.ErrorS = true;
+                                    vm.ErrorSMSCode = false;
+                                }
+                            }
+                        });
+                }else{
+                    alert(this.s41);
+                }
+            },
             changeLang: function () {
                 if(this.lang == "EN"){
                     this.placeholder = "text-align: left;"
@@ -345,23 +353,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s33 = "Please Enter Your Mobile Number More Carefully:";
                     this.s34 = "Mobile Number";
                     this.s35 = "We Are Redirecting You To Password Reset Page...";
-                    this.U0= "Password";
-                    this.U1= "Users";
-                    this.U2= "ID";
-                    this.U3= "First Name (In English)";
-                    this.U4= "Last Name (In English)";
-                    this.U5= "FullName (In Persian)";
-                    this.U6= "Phone";
-                    this.U7= "Email";
-                    this.U8= "NID";
-                    this.U9 = "Description";
-                    this.U10 = "Update";
-                    this.U11 = "Delete"
-                    this.U12 = "Add New User";
-                    this.U13 = "Edit";
-                    this.U14 = "Member Of The Groups";
-                    this.U15 = "Repeat Password";
-                    this.U17 = "Remove all user";
+                    this.s36= "ID";
+                    this.s37 = "Enter Your Email Address";
+                    this.s38 = "Enter Email Address Format Correctly";
                 } else{
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
@@ -402,23 +396,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s33 = "لطفا با دقت بیشتری نسبت به ورود شماره موبایل اقدام نمایید:";
                     this.s34 = "شماره موبایل";
                     this.s35 = "شما در حال انتقال به صفحه بازنشانی رمز عبور هستید...";
-                    this.U0= "رمز";
-                    this.U1= "کاربران";
-                    this.U2= "شناسه";
-                    this.U3= "نام (به انگلیسی)";
-                    this.U4= "نام خانوادگی (به انگلیسی)";
-                    this.U5= "نام کامل (به فارسی)";
-                    this.U6= "شماره تماس";
-                    this.U7= "ایمیل";
-                    this.U8= "کد ملی";
-                    this.U9= "توضیحات";
-                    this.U10 = "به روز رسانی";
-                    this.U11 = "حذف"
-                    this.U12 = "اضافه کردن کاربر جدید";
-                    this.U13 = "ویرایش";
-                    this.U14 = "گروههای عضو";
-                    this.U15 = "تکرار رمز عبور";
-                    this.U17 = "حذف تمامی کاربران";
+                    this.s36 = "شناسه";
+                    this.s37 = "آدرس ایمیل خود را وارد کنید";
+                    this.s38 = "فرمت آدرس ایمیل را به درستی وارد کنید";
                 }
             }
         }
