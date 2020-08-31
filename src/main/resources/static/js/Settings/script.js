@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             firstName: document.getElementById('userInfo.firstNameUpdate').value,
                             lastName: document.getElementById('userInfo.lastNameUpdate').value,
                             displayName: document.getElementById('userInfo.displayNameUpdate').value,
-                            telephoneNumber: document.getElementById('userInfo.telephoneNumberUpdate').value,
+                            mobile: document.getElementById('userInfo.mobileUpdate').value,
                             mail: document.getElementById('userInfo.mailUpdate').value,
                             description: document.getElementById('userInfo.descriptionUpdate').value
                         }),

@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.Event;
 import parsso.idman.Repos.EventRepo;
-import parsso.idman.utils.Convertor.DateConverter;
 
 import java.io.*;
 import java.security.Principal;

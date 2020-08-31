@@ -1,5 +1,6 @@
 package parsso.idman.Controllers;
 
+import net.bytebuddy.asm.Advice;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.compress.utils.IOUtils;
@@ -11,7 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+import parsso.idman.Models.Group;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.FilesStorageService;
@@ -36,7 +40,7 @@ public class UserController {
     private UserRepo userRepo;
 
 
-    @Value("${administrator.ou.name}")
+    @Value("${administrator.ou.id}")
     private String adminOu;
 
     @Value("${profile.photo.path}")
@@ -88,11 +92,17 @@ public class UserController {
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUser(principal.getName());
             List<String> memberOf = user.getMemberOf();
-            return memberOf.contains(adminOu);
+
+
+            for (String group:memberOf) {
+                if (group.equals(adminOu))
+                    return true;
+            }
 
         } catch (Exception e) {
             return false;
         }
+        return false;
     }
 
 
@@ -156,6 +166,10 @@ public class UserController {
             storageService.save(file, StTime + file.getOriginalFilename());
 
             User user = userRepo.retrieveUser(principal.getName());
+
+
+
+
             user.setPhotoName(StTime + file.getOriginalFilename());
 
             userRepo.update(user.getUserId(), user);
@@ -176,6 +190,8 @@ public class UserController {
 
         Principal principal = request.getUserPrincipal();
 
+        File file1=null;
+
 
         String message;
         try {
@@ -192,6 +208,10 @@ public class UserController {
 
             User user = userRepo.retrieveUser(principal.getName());
 
+            //remove old pic
+            file1 = new File(uploadedFilesPath+user.getPhotoName());
+
+
 
 
             user.setPhotoName(s);
@@ -200,6 +220,7 @@ public class UserController {
         } catch (Exception e) {
 
         }
+        file1.delete();
 
         return new RedirectView("/dashboard");
     }
@@ -335,8 +356,13 @@ public class UserController {
     }
 
     @GetMapping("/api/public/sendSMS/{mobile}")
-    public ResponseEntity<String> sendMessage(@PathVariable("mobile") String mobile) {
-        return new ResponseEntity<>(userRepo.sendMessage(mobile), HttpStatus.OK);
+    public ResponseEntity<HttpStatus> sendMessage(@PathVariable("mobile") String mobile) {
+        return new ResponseEntity<>(null, userRepo.sendMessage(mobile));
+    }
+
+    @GetMapping("/api/public/sendSMS/{mobile}/{uid}")
+    public ResponseEntity<HttpStatus> sendMessage(@PathVariable("mobile") String mobile, @PathVariable("uid") String uid) {
+        return new ResponseEntity<>(null,userRepo.sendMessage(mobile,uid));
     }
 
     @GetMapping("/api/public/checkMail/{email}")
@@ -350,14 +376,17 @@ public class UserController {
     }
 
     @PutMapping("/api/public/resetPass/{uid}/{token}")
-    public ResponseEntity<String> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token, HttpServletRequest request) {
-        return new ResponseEntity<>(userRepo.updatePass(request.getUserPrincipal().getName(), newPassword, token), HttpStatus.OK);
+    public ResponseEntity<String> rebindLdapUser(@RequestParam("newPassword") String newPassword,@PathVariable("token") String token, @PathVariable("uid") String uid) {
+        return new ResponseEntity<>(userRepo.updatePass(uid, newPassword, token), HttpStatus.OK);
     }
 
 
-    @GetMapping("/api/public/getName/{uid}")
-    public ResponseEntity<User> getName (@PathVariable("uid") String uid) {
-        return new ResponseEntity<>(userRepo.getName(uid), HttpStatus.OK);
+    @GetMapping("/api/public/getName/{uid}/{token}")
+    public ResponseEntity<User> getName (@PathVariable("uid") String uid,@PathVariable("token") String token) {
+        User user = userRepo.getName(uid, token);
+        if (user!=null)
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/api/public/sendMail/{email}/{uid}")
@@ -365,14 +394,27 @@ public class UserController {
         return new ResponseEntity<>(userRepo.sendEmail(email, uid), HttpStatus.OK);
     }
 
-    @GetMapping("/api/public/sendSMS/{mobile}/{uid}")
-    public ResponseEntity<String> sendMessage(@PathVariable("mobile") String mobile, @PathVariable("uid") String uid) {
-        return new ResponseEntity<>(userRepo.sendMessage(mobile, uid), HttpStatus.OK);
+
+
+    @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
+    public RedirectView resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token, RedirectAttributes attributes) {
+        HttpStatus httpStatus = userRepo.checkToken(uId, token);
+
+        if (httpStatus==HttpStatus.OK) {
+            attributes.addAttribute("uid", uId);
+            attributes.addAttribute("token",token);
+
+
+            return new RedirectView("/resetPassword");
+        }
+        return null;
     }
 
-    @GetMapping("/api/public/validateToken/{uId}/{token}")
-    public ResponseEntity<HttpStatus> resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token) {
-        return new ResponseEntity<HttpStatus>(userRepo.checkToken(uId, token),userRepo.checkToken(uId,token));
+    @GetMapping("/api/public/validateMessageToken/{uId}/{token}")
+    public HttpStatus resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token) {
+        return userRepo.checkToken(uId, token);
+
+
     }
 
 

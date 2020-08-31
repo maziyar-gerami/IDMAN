@@ -16,7 +16,7 @@ public interface UserRepo {
 
     public HttpStatus changePassword(String uId, String currentPassword, String newPassword);
     public List<SimpleUser> retrieveUsersMain();
-    public User getName (String uid);
+    public User getName (String uid,String token);
     public List<User> retrieveUsersFull();
     public JSONObject create(User p);
     public HttpStatus update(String uid, User p);
@@ -29,8 +29,8 @@ public interface UserRepo {
     public HttpStatus checkToken(String userId, String token);
     public String updatePass(String userId, String pass, String token);
     public JSONArray importFileUsers(MultipartFile file , int[] sequence, boolean hasHeader) throws IOException;
-    public String sendMessage(String mobile);
-    public String sendMessage(String mobile,String uId);
+    public HttpStatus sendMessage(String mobile);
+    public HttpStatus sendMessage(String mobile,String uId);
     public List<JSONObject> checkMobile(String mobile);
     public JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException;
 }

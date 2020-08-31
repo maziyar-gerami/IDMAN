@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
+import org.springframework.web.bind.annotation.PathVariable;
+import parsso.idman.Models.Group;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
 
@@ -29,7 +31,7 @@ public class DashboardController{
     @Value("${cas.url.logout.path}")
     private String casLogout;
     
-    @Value("${administrator.ou.name}")
+    @Value("${administrator.ou.id}")
     private String adminOu;
 
     @GetMapping("/")
@@ -42,20 +44,28 @@ public class DashboardController{
         return "dashboard";
     }
 
+    @GetMapping("/resetPassword")
+    public String resetPassword(){
+        return "resetPassword" ;
+    }
+
     @GetMapping("/groups")
     public String Groups(HttpServletRequest request){
         try {
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUser(principal.getName());
             List<String> memberOf = user.getMemberOf();
-            if(memberOf.contains(adminOu)){
+
+
+            for (String group:memberOf) {
+                if (group.equals(adminOu))
                     return "groups";
-            }else{
-                    return "403";
             }
+
         } catch (Exception e) {
             return "403";
         }
+        return "403";
     }
 
     @GetMapping("/users")
@@ -64,14 +74,17 @@ public class DashboardController{
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUser(principal.getName());
             List<String> memberOf = user.getMemberOf();
-            if(memberOf.contains(adminOu)){
+
+
+            for (String group:memberOf) {
+                if (group.equals(adminOu))
                     return "users";
-            }else{
-                    return "403";
             }
+
         } catch (Exception e) {
             return "403";
         }
+        return "403";
     }
 
     @GetMapping("/events")
@@ -85,14 +98,17 @@ public class DashboardController{
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUser(principal.getName());
             List<String> memberOf = user.getMemberOf();
-            if(memberOf.contains(adminOu)){
+
+
+            for (String group:memberOf) {
+                if (group.equals(adminOu))
                     return "configs";
-            }else{
-                    return "403";
             }
+
         } catch (Exception e) {
             return "403";
         }
+        return "403";
     }
 
     @GetMapping("/settings")

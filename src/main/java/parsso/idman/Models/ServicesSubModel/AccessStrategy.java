@@ -2,8 +2,11 @@ package parsso.idman.Models.ServicesSubModel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.JsonArray;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 
@@ -21,6 +24,8 @@ public class AccessStrategy {
         rejectedAttributes = new RejectedAttributes();
         order = 0;
         delegatedAuthenticationPolicy = new DelegatedAuthenticationPolicy();
+        requiredAttributes = new JSONObject();
+
     }
     @JsonProperty("@class")
     private String atClass;
@@ -33,7 +38,7 @@ public class AccessStrategy {
     private DelegatedAuthenticationPolicy delegatedAuthenticationPolicy;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private RequiredAttributes requiredAttributes;
+    private JSONObject requiredAttributes;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private boolean requireAllAttributes;
     @JsonInclude(JsonInclude.Include.NON_NULL)

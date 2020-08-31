@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
       name: "",
       nameEN: "",
       margin: "margin-right: 30px;",
+      marginServiceBox: "ml-3",
       lang: "EN",
       isRtl: true,
       activeItem: "services",
@@ -34,6 +35,43 @@ document.addEventListener('DOMContentLoaded', function () {
       services: [],
       menuS: false,
       userPicture: "images/PlaceholderUser.png",
+      ActiveUsersChart: {
+        size: 80,
+        unit: "%",
+        total: 100,
+        sections: [
+        	{ value: 0, label: "فعال", color: '#8ad4eb'},
+          { value: 0, label: "غیرفعال", color: '#9467bd'},
+          { value: 0, label: "قفل شده", color: '#8c564b'}
+        ],
+        thickness: 25,
+        hasLegend: true,
+        legendPlacement: "bottom"
+      },
+      ActiveServicesChart: {
+        size: 80,
+        unit: "%",
+        total: 100,
+        sections: [
+        	{ value: 0, label: "فعال", color: '#2ca02c'},
+          { value: 0, label: "غیرفعال", color: '#d62728'}
+        ],
+        thickness: 25,
+        hasLegend: true,
+        legendPlacement: "bottom"
+      },
+      SuccessfulLoginsChart: {
+        size: 80,
+        unit: "%",
+        total: 100,
+        sections: [
+          { value: 0, label: "موفق", color: '#1f77b4'},
+          { value: 0, label: "ناموفق", color: '#ff7f0e'}
+        ],
+        thickness: 25,
+        hasLegend: true,
+        legendPlacement: "bottom"
+      },
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -60,11 +98,13 @@ document.addEventListener('DOMContentLoaded', function () {
       s23: "./privacy",
       s24: "پیکربندی",
       s25: "./configs",
-      s26: "./events"
+      s26: "./events",
+      s27: "لاگین های امروز"
     },
     created: function () {
       this.getUserInfo();
       this.getUserPic();
+      this.getDashboardInfo();
       this.getServices();
       this.getGroups();
       this.isAdmin();
@@ -90,6 +130,25 @@ document.addEventListener('DOMContentLoaded', function () {
             if(res.data){
                 vm.menuS = true;
             }
+          });
+      },
+      getDashboardInfo: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        axios.get(url + "/api/dashboard") //
+          .then((res) => {
+            vm.ActiveUsersChart.total = res.data.users.total;
+            vm.ActiveUsersChart.sections[0].value = res.data.users.active;
+            vm.ActiveUsersChart.sections[1].value = res.data.users.disabled;
+            vm.ActiveUsersChart.sections[2].value = res.data.users.locked;
+            
+            vm.ActiveServicesChart.total = res.data.services.total;
+            vm.ActiveServicesChart.sections[0].value = res.data.services.enabled;
+            vm.ActiveServicesChart.sections[1].value = res.data.services.disabled;
+
+            vm.SuccessfulLoginsChart.total = res.data.logins.total;
+            vm.SuccessfulLoginsChart.sections[0].value = res.data.logins.successful;
+            vm.SuccessfulLoginsChart.sections[1].value = res.data.logins.unsuccessful;
           });
       },
       getUserInfo: function () {
@@ -137,11 +196,29 @@ document.addEventListener('DOMContentLoaded', function () {
         axios.get(url + "/api/services/user") //
         .then((res) => {
           vm.services = res.data;
+          for(i = 0; i < vm.services.length; ++i){
+            if(typeof vm.services[i].logo !== 'undefined'){
+              if(vm.services[i].logo == ""){
+                vm.services[i].logo = "images/PlaceholderService.jpg";
+              }
+            }else{
+              vm.services[i].logo = "images/PlaceholderService.jpg";
+            }
+
+            if(typeof vm.services[i].description !== 'undefined'){
+              if(vm.services[i].description.length > 50){
+                vm.services[i].description = vm.services[i].description.substr(0, 50) + "...";
+              }
+            }else{
+              vm.services[i].description = "...";
+            }
+          }
         });
       },
       changeLang: function () {
         if(this.lang == "EN"){
           this.margin = "margin-left: 30px;";
+          this.marginServiceBox = "mr-3";
           this.lang = "فارسی";
           this.isRtl = false;
           this.s0 = "Parsso";
@@ -171,8 +248,17 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s24 = "Configs";
           this.s25 = "./configs?en";
           this.s26 = "./events?en";
+          this.s27 = "Today's Logins";
+          this.ActiveUsersChart.sections[0].label = "Active";
+          this.ActiveUsersChart.sections[1].label = "Disabled";
+          this.ActiveUsersChart.sections[2].label = "Locked";
+          this.ActiveServicesChart.sections[0].label = "Active";
+          this.ActiveServicesChart.sections[1].label = "Disabled";
+          this.SuccessfulLoginsChart.sections[0].label = "Successful";
+          this.SuccessfulLoginsChart.sections[1].label = "Unsuccessful";
         } else{
             this.margin = "margin-right: 30px;";
+            this.marginServiceBox = "ml-3";
             this.lang = "EN";
             this.isRtl = true;
             this.s0 = "پارسو";
@@ -202,6 +288,14 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s24 = "پیکربندی";
             this.s25 = "./configs";
             this.s26 = "./events";
+            this.s27 = "لاگین های امروز";
+            this.ActiveUsersChart.sections[0].label = "فعال";
+            this.ActiveUsersChart.sections[1].label = "غیرفعال";
+            this.ActiveUsersChart.sections[2].label = "قفل شده";
+            this.ActiveServicesChart.sections[0].label = "فعال";
+            this.ActiveServicesChart.sections[1].label = "غیرفعال";
+            this.SuccessfulLoginsChart.sections[0].label = "موفق";
+            this.SuccessfulLoginsChart.sections[1].label = "ناموفق";
         }
       }
     }

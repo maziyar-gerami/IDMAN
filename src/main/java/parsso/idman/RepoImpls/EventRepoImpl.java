@@ -140,17 +140,30 @@ public class EventRepoImpl implements EventRepo {
                 SimpleDateFormat parserSDF = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
                 Date date = parserSDF.parse(temp);
 
-                Time time = new Time();
-                time.setDay(date.getDay());
-                time.setMonth(date.getMonth());
-                time.setYear(date.getYear()+1900);
-                time.setHours(date.getHours());
-                time.setMinutes(date.getMinutes());
-                time.setSeconds(date.getSeconds());
+                Calendar myCal = new GregorianCalendar();
+                myCal.setTime(date);
+
+                Time time = new Time(
+                        myCal.get(Calendar.YEAR),
+                        myCal.get(Calendar.MONTH),
+                        myCal.get(Calendar.DAY_OF_MONTH),
+
+                        myCal.get(Calendar.HOUR_OF_DAY),
+                        myCal.get(Calendar.MINUTE),
+                        myCal.get(Calendar.SECOND)
+
+
+                );
 
 
 
                 event.setTime(time);
+
+
+
+
+
+
             } else if (line.contains("CLIENT IP ADDRESS: ")) {
                 temp = line.substring(line.indexOf(":") + 2);
                 event.setClientIP(temp);

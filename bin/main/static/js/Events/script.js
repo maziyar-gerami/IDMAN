@@ -18,10 +18,16 @@ document.addEventListener('DOMContentLoaded', function () {
     mode: 'history',
     routes: []
   });
+  Vue.component('v-pagination', window['vue-plain-pagination'])
   new Vue({
     router,
     el: '#app',
     data: {
+      recordsShownOnPage: 20,
+      currentPageEvents: 1,
+      totalEvents: 1,
+      currentPageEvent: 1,
+      totalEvent: 1,
       userInfo: [],
       username: "",
       name: "",
@@ -32,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
       activeItem: "myEvents",
       event: [],
       events: [],
+      eventPage: [],
+      eventsPage: [],
       menuS: false,
       userPicture: "images/PlaceholderUser.png",
       eventDate: "",
@@ -39,6 +47,19 @@ document.addEventListener('DOMContentLoaded', function () {
       tempEventDate: "",
       tempEventsDate: "",
       eventsUserId: "",
+      bootstrapPaginationClasses: {
+        ul: 'pagination',
+        li: 'page-item',
+        liActive: 'active',
+        liDisable: 'disabled',
+        button: 'page-link'  
+      },
+      paginationAnchorTexts: {
+          first: '<<',
+          prev: '<',
+          next: '>',
+          last: '>>'
+      },
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -77,7 +98,9 @@ document.addEventListener('DOMContentLoaded', function () {
       s35: " مثال: 1399/05/01",
       s36: "./events",
       s37: "شناسه",
-      s38: "تاریخ"
+      s38: "تاریخ",
+      s39: "ورود موفق",
+      s40: "ورود ناموفق"
     },
     created: function () {
       this.getUserInfo();
@@ -144,9 +167,18 @@ document.addEventListener('DOMContentLoaded', function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         this.events = [];
-        axios.get(url + "/api/events") //
+        axios.get(url + "/api/events")
         .then((res) => {
-          vm.events = res.data;
+          for(var i = 0; i < res.data.length; ++i){
+            if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+              res.data[i].action = vm.s39;
+              vm.events.push(res.data[i]);
+            }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+              res.data[i].action = vm.s40;
+              vm.events.push(res.data[i]);
+            }
+          }
+          vm.totalEvents = Math.ceil(vm.events.length / vm.recordsShownOnPage);
           for(let i = 0; i < vm.events.length; ++i){
             let dateArray = vm.gregorian_to_jalali(vm.events[i].time.year, vm.events[i].time.month, vm.events[i].time.day)
             vm.events[i].date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
@@ -160,7 +192,16 @@ document.addEventListener('DOMContentLoaded', function () {
         this.event = [];
         axios.get(url + "/api/events/user") //
         .then((res) => {
-          vm.event = res.data;
+          for(var i = 0; i < res.data.length; ++i){
+            if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+              res.data[i].action = vm.s39;
+              vm.event.push(res.data[i]);
+            }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+              res.data[i].action = vm.s40;
+              vm.event.push(res.data[i]);
+            }
+          }
+          vm.totalEvent = Math.ceil(vm.event.length / vm.recordsShownOnPage);
           for(let i = 0; i < vm.event.length; ++i){
             let dateArray = vm.gregorian_to_jalali(vm.event[i].time.year, vm.event[i].time.month, vm.event[i].time.day)
             vm.event[i].date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
@@ -189,7 +230,16 @@ document.addEventListener('DOMContentLoaded', function () {
             this.eventDate = date[2] + date[1] + date[0];
             axios.get(url + "/api/events/user/date/" + vm.eventDate) //
             .then((res) => {
-              vm.event = res.data;
+              for(var i = 0; i < res.data.length; ++i){
+                if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+                  res.data[i].action = vm.s39;
+                  vm.event.push(res.data[i]);
+                }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+                  res.data[i].action = vm.s40;
+                  vm.event.push(res.data[i]);
+                }
+              }
+              vm.totalEvent = Math.ceil(vm.event.length / vm.recordsShownOnPage);
               for(let i = 0; i < vm.event.length; ++i){
                 let dateArray = vm.gregorian_to_jalali(vm.event[i].time.year, vm.event[i].time.month, vm.event[i].time.day)
                 vm.event[i].date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
@@ -210,7 +260,16 @@ document.addEventListener('DOMContentLoaded', function () {
           this.events = [];
           axios.get(url + "/api/events/users/" + vm.eventsUserId) //
           .then((res) => {
-            vm.events = res.data;
+            for(var i = 0; i < res.data.length; ++i){
+              if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+                res.data[i].action = vm.s39;
+                vm.events.push(res.data[i]);
+              }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+                res.data[i].action = vm.s40;
+                vm.events.push(res.data[i]);
+              }
+            }
+            vm.totalEvents = Math.ceil(vm.events.length / vm.recordsShownOnPage);
             for(let i = 0; i < vm.events.length; ++i){
               let dateArray = vm.gregorian_to_jalali(vm.events[i].time.year, vm.events[i].time.month, vm.events[i].time.day)
               vm.events[i].date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
@@ -246,7 +305,16 @@ document.addEventListener('DOMContentLoaded', function () {
             this.eventsDate = date[2] + date[1] + date[0];
             axios.get(url + "/api/events/date/" + vm.eventsDate) //
             .then((res) => {
-              vm.events = res.data;
+              for(var i = 0; i < res.data.length; ++i){
+                if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+                  res.data[i].action = vm.s39;
+                  vm.events.push(res.data[i]);
+                }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+                  res.data[i].action = vm.s40;
+                  vm.events.push(res.data[i]);
+                }
+              }
+              vm.totalEvents = Math.ceil(vm.events.length / vm.recordsShownOnPage);
               for(let i = 0; i < vm.events.length; ++i){
                 let dateArray = vm.gregorian_to_jalali(vm.events[i].time.year, vm.events[i].time.month, vm.events[i].time.day)
                 vm.events[i].date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
@@ -278,7 +346,16 @@ document.addEventListener('DOMContentLoaded', function () {
             this.eventsDate = date[2] + date[1] + date[0];
             axios.get(url + "/api/events/users/" + vm.eventsUserId + "/date/" + vm.eventsDate) //
             .then((res) => {
-              vm.events = res.data;
+              for(var i = 0; i < res.data.length; ++i){
+                if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+                  res.data[i].action = vm.s39;
+                  vm.events.push(res.data[i]);
+                }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+                  res.data[i].action = vm.s40;
+                  vm.events.push(res.data[i]);
+                }
+              }
+              vm.totalEvents = Math.ceil(vm.events.length / vm.recordsShownOnPage);
               for(let i = 0; i < vm.events.length; ++i){
                 let dateArray = vm.gregorian_to_jalali(vm.events[i].time.year, vm.events[i].time.month, vm.events[i].time.day)
                 vm.events[i].date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
@@ -291,6 +368,8 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       changeLang: function () {
         if(this.lang == "EN"){
+          this.getEvents();
+          this.getEvent();
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
           this.isRtl = false;
@@ -333,7 +412,11 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s36 = "./events?en";
           this.s37 = "UserId";
           this.s38 = "Date";
+          this.s39 = "Successful Authentication";
+          this.s40 = "Failed Authentication";
         } else{
+            this.getEvents();
+            this.getEvent();
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
             this.isRtl = true;
@@ -376,6 +459,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s36 = "./events";
             this.s37 = "شناسه";
             this.s38 = "تاریخ";
+            this.s39 = "ورود موفق";
+            this.s40 = "ورود ناموفق";
         }
       },
 
@@ -419,6 +504,31 @@ document.addEventListener('DOMContentLoaded', function () {
         jalali[1] = jm;
         jalali[2] = jd;
         return jalali;
+      }
+    },
+
+    computed:{
+      sortedEvent:function() {
+          this.eventPage = [];
+          if(this.event.length != 0){
+            for(let i = 0; i < this.recordsShownOnPage; ++i){
+              if(i + ((this.currentPageEvent - 1) * this.recordsShownOnPage) <= this.event.length - 1){
+                  this.eventPage[i] = this.event[i + ((this.currentPageEvent - 1) * this.recordsShownOnPage)];
+              }
+            }
+          }
+          return this.eventPage;
+      },
+      sortedEvents:function() {
+        this.eventsPage = [];
+        if(this.events.length != 0){
+          for(let i = 0; i < this.recordsShownOnPage; ++i){
+              if(i + ((this.currentPageEvents - 1) * this.recordsShownOnPage) <= this.events.length - 1){
+                  this.eventsPage[i] = this.events[i + ((this.currentPageEvents - 1) * this.recordsShownOnPage)];
+              }
+          }
+        }
+        return this.eventsPage;
       }
     }
   })

@@ -3,6 +3,7 @@ package parsso.idman.RepoImpls;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldif.LDIFException;
 import com.unboundid.ldif.LDIFReader;
+import lombok.SneakyThrows;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -17,16 +18,20 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
+import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import parsso.idman.Models.Event;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.Models.Group;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Repos.EventRepo;
+import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.utils.Email.EmailSend;
 import parsso.idman.Models.User;
@@ -48,10 +53,14 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 @Service
 public class UserRepoImpl implements UserRepo {
 
-    public static final String BASE_DN = "dc=example,dc=com";
+    //public static final String BASE_DN = "dc=partition1,dc=com";
+
+    @Qualifier("groupRepoImpl")
+    @Autowired
+    private GroupRepo groupRepo;
 
     @Value("${sms.api.key}")
-    private String  SMS_API_KEY;
+    private String  SMSAPI;
 
     @Value("${sms.sender.number}")
     private String SENDER;
@@ -80,10 +89,30 @@ public class UserRepoImpl implements UserRepo {
 
     private final int apiMiliseconds = apiHours*60*60000;
 
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
+
     @Autowired
     private LdapTemplate ldapTemplate;
 
     Logger logger = LoggerFactory.getLogger(UserRepoImpl.class);
+
+
+    @Value("${pwd.expire.warning}")
+    private String pwdExpireWarning;
+    @Value("${pwd.failure.count.interval}")
+    private String pwdFaiilureCount;
+    @Value("${pwd.in.history}")
+    private String pwdInHistory;
+    @Value("${pwd.check.quality}")
+    private String pwdCheckQuality;
+
+
+
+
+
+
+
 
     @Override
     public JSONObject create(User p) {
@@ -168,40 +197,45 @@ public class UserRepoImpl implements UserRepo {
 
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
-        attrs.put("pwdExpireWarning","600");
-        attrs.put("pwdFailureCountInterval","5");
-        attrs.put("pwdInHistory","5");
-        attrs.put("pwdCheckQuality","2");
+        attrs.put("pwdExpireWarning",pwdExpireWarning);
+        attrs.put("pwdFailureCountInterval",pwdFaiilureCount);
+        attrs.put("pwdInHistory",pwdInHistory);
+        attrs.put("pwdCheckQuality",pwdCheckQuality);
 
 
 
         attrs.put("pwdAttribute", "userPassword");
         attrs.put("uid", p.getUserId());
-        attrs.put("givenName", p.getFirstName());
-        attrs.put("sn", p.getLastName());
+        attrs.put("givenName",p.getFirstName().equals("") ? " " :p.getDisplayName());
+        attrs.put("sn",p.getLastName().equals("") ? " " :p.getLastName());
+
+
+        //attrs.put("givenName", p.getFirstName());
+        //attrs.put("sn", p.getLastName());
         attrs.put("userPassword", p.getUserPassword());
         attrs.put("displayName", p.getDisplayName());
-        attrs.put("mobile", p.getMobile());
+        attrs.put("mobile",p.getMobile().equals("") ? " " :p.getMobile());
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
         if (p.getResetPassToken() != null)
             attrs.put("resetPassToken", p.getResetPassToken());
-        if (p.getMemberOf() != null) {
+        if (p.getMemberOf().size()!=0) {
             Attribute attr = new BasicAttribute("ou");
             for (int i = 0; i < p.getMemberOf().size(); i++)
                 attr.add(p.getMemberOf().get(i));
             attrs.put(attr);
         }
-        attrs.put("description", p.getDescription());
-        attrs.put("photoName" , p.getPhotoName());
+        if (p.getDescription()!=null&&!(p.getDescription().equals("")))
+            attrs.put("description", p.getDescription());
+        else
+            attrs.put("description", " ");
 
-
-        if (p.getStatus()!=null)
+        if (p.getPhotoName()!=null)
             attrs.put("photoName" , p.getPhotoName());
 
 
         if (p.getStatus()==null)
-            attrs.put("userStatus", "Activated");
+            attrs.put("userStatus", "active");
         else
             attrs.put("userStatus", p.getStatus());
         attrs.put("qrToken",UUID.randomUUID().toString());
@@ -210,16 +244,19 @@ public class UserRepoImpl implements UserRepo {
 
 
 
+    @SneakyThrows
     private DirContextOperations buildAttributes(String uid, User p, Name dn) {
+
+        User old = retrieveUser(uid);
 
         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
-        if (p.getFirstName() != null) context.setAttributeValue("givenName", p.getFirstName());
-        if (p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
-        if (p.getDisplayName() != null) context.setAttributeValue("displayName", p.getDisplayName());
-        if (p.getUserPassword() != null) context.setAttributeValue("userPassword", p.getUserPassword());
-        if (p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
-        if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
+        if (p.getFirstName() != "" && p.getFirstName()!=null) context.setAttributeValue("givenName", p.getFirstName());
+        if (p.getLastName() != ""&& p.getLastName()!=null) context.setAttributeValue("sn", p.getLastName());
+        if (p.getDisplayName() != ""&& p.getDisplayName()!=null) context.setAttributeValue("displayName", p.getDisplayName());
+        if (p.getUserPassword() != "" && p.getUserPassword()!=null) context.setAttributeValue("userPassword", p.getUserPassword());
+        if (p.getMobile() != ""&& p.getMobile()!=null) context.setAttributeValue("mobile", p.getMobile());
+        if (p.getMail() != ""&& p.getFirstName()!=null) context.setAttributeValue("mail", p.getMail());
         if ((p.getFirstName()) != null || (p.getLastName() != null)) {
             if (p.getFirstName() == null)  context.setAttributeValue("cn", retrieveUser(uid).getFirstName() + ' ' + p.getLastName());
 
@@ -229,19 +266,36 @@ public class UserRepoImpl implements UserRepo {
         }
         if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhotoName());
 
+        Attributes ls;
+
         if (p.getResetPassToken() != null) context.setAttributeValue("resetPassToken", p.getResetPassToken());
 
-        if (p.getMemberOf() != null) {
 
+
+        if (p.getMemberOf().size()!=0)
             for (int i = 0; i < p.getMemberOf().size(); i++) {
                 if (i == 0) context.setAttributeValue("ou", p.getMemberOf().get(i));
                 else context.addAttributeValue("ou", p.getMemberOf().get(i));
+
             }
+        else if(old.getMemberOf().size()!=0) {
+
+            for (String id:old.getMemberOf()) {
+                context.removeAttributeValue("ou",id);
+
+            }
+
         }
 
-        if (p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
-        if (p.getPhotoName() != null) context.setAttributeValue("photoName", p.getPhotoName());
-        if (p.getStatus() != null) context.setAttributeValue("userStatus", p.getStatus());
+
+
+        if (p.getDescription() != "" && p.getDescription()!=null) context.setAttributeValue("description", p.getDescription());
+        if (p.getPhotoName() != "" && p.getPhotoName() !=null)
+                context.setAttributeValue("photoName", p.getPhotoName());
+        else
+            context.setAttributeValue("photoName", old.getPhotoName());
+
+        if (p.getStatus() !=""&& p.getStatus() != null) context.setAttributeValue("userStatus", p.getStatus());
 
 
 
@@ -286,20 +340,22 @@ public class UserRepoImpl implements UserRepo {
                 new SimpleUserAttributeMapper());
         List relatedUsers = new LinkedList();
         for (SimpleUser user:people) {
-            if(!(user.getUserId().equals("admin")))
+            if(!(user.getUserId().equals("admin"))&& user.getDisplayName()!=null) {
                 relatedUsers.add(user);
+            }
         }
         return relatedUsers;
     }
 
     @Override
-    public User getName(String uid) {
+    public User getName(String uid, String token) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        User user = ldapTemplate.search(query().attributes("givenName", "sn", "displayName").where("uid").is(uid)
+        if(checkToken(uid,token) ==HttpStatus.OK)
+            return ldapTemplate.search(query().attributes("givenName", "sn", "displayName").where("uid").is(uid)
                 ,
                 new UserAttributeMapper(false)).get(0);
-        return user;
+        return null;
     }
 
     @Override
@@ -308,7 +364,12 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         List<User> people = ldapTemplate.search(query().where("objectClass").is("person"),
                 new UserAttributeMapper(false));
-        return people;
+        List<User> relatedPeople=new LinkedList<>();
+        for (User user:people) {
+            if (user.getDisplayName()!=null)
+                relatedPeople.add(user);
+        }
+        return relatedPeople;
     }
 
     @Override
@@ -457,7 +518,7 @@ public class UserRepoImpl implements UserRepo {
                     insertEmailToken(user);
                     EmailSend emailSend = new EmailSend();
 
-                    String fullUrl = createUrl(BASE_URL, user.getUserId(), user.getResetPassToken());
+                    String fullUrl = createUrl(BASE_URL, user.getUserId(), user.getResetPassToken().substring(0,36));
                     emailSend.sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
                     return "Email sent";
 
@@ -545,18 +606,15 @@ public class UserRepoImpl implements UserRepo {
         return "Email Token for " + user.getUserId() + " is created";
     }
 
-    public String insertMobileToken(User user) {
-
+    public void insertMobileToken(User user) {
 
         Random rnd = new Random();
         int token = (int) (Math.pow(10,(SMS_VALIDATION_DIGITS-1))+rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS-1)-1)));
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         long cTimeStamp = currentTimestamp.getTime();
         user.setResetPassToken(String.valueOf(token)+cTimeStamp);
-        Name dn = buildDn(user.getUserId());
-        Context context = buildAttributes(user.getUserId(), user, dn);
-        ldapTemplate.modifyAttributes((DirContextOperations) context);
-        return "Mobile Token for " + user.getUserId() + " is created";
+        update(user.getUserId(),user);
+        System.out.println("Mobile Token for " + user.getUserId() + " is created");
 
 
     }
@@ -599,11 +657,11 @@ public class UserRepoImpl implements UserRepo {
             int nGroups = (null == attributes.get("ou") ? 0 : attributes.get("ou").size());
             List<String> ls = new LinkedList<>();
             for (int i = 0; i < nGroups; i++) ls.add(attributes.get("ou").get(i).toString());
-            if(showToken)
-                user.setResetPassToken(null != attributes.get("resetPassToken") ? attributes.get("resetPassToken").get().toString() : null);
+
+            user.setResetPassToken(null != attributes.get("resetPassToken") ? attributes.get("resetPassToken").get().toString() : null);
             user.setMemberOf(null != attributes.get("ou") ? ls : null);
             user.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
-            user.setPhotoName(null != attributes.get("photoName") ? attributes.get("photoName").get().toString() : null);
+            user.setPhotoName(null != attributes.get("photoName") && "" != attributes.get("photoName").toString()  ? attributes.get("photoName").get().toString() : null);
             user.setStatus(null != attributes.get("userStatus") ? attributes.get("userStatus").get().toString() : "Activated");
             user.setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
             user.setQrToken(null != attributes.get("qrToken") ? attributes.get("qrToken").get().toString() : null);
@@ -618,7 +676,9 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = ldapTemplate.search(query().where("uid").is(userId), new UserAttributeMapper(false)).get(0);
 
-        if (token.equals(user.getResetPassToken())) {
+        HttpStatus httpStatus = checkToken(userId,token);
+
+        if (httpStatus == HttpStatus.OK) {
             user.setUserPassword(pass);
             Name dn = buildDn(user.getUserId());
 
@@ -657,7 +717,7 @@ public class UserRepoImpl implements UserRepo {
             user.setDisplayName(row.getCell(sequence[3]).getStringCellValue());
             user.setMobile(row.getCell(sequence[4]).getStringCellValue());
             user.setMail(row.getCell(sequence[5]).getStringCellValue());
-            user.setMemberOf(Collections.singletonList(row.getCell(sequence[6]).getStringCellValue()));
+            //user.setMemberOf(Collections.singletonList(row.getCell(sequence[6]).getStringCellValue()));
             user.setUserPassword(row.getCell(sequence[7]).getStringCellValue());
             user.setDescription(row.getCell(sequence[8]).getStringCellValue());
             user.setPhotoName(row.getCell(sequence[9]).getStringCellValue());
@@ -722,7 +782,7 @@ public class UserRepoImpl implements UserRepo {
             user.setDisplayName(data[sequence[3]]);
             user.setMobile(data[sequence[4]]);
             user.setMail(data[sequence[5]]);
-            user.setMemberOf(Collections.singletonList(data[sequence[6]]));
+            //user.setMemberOf(Collections.singletonList(data[sequence[6]]));
             user.setUserPassword((data[sequence[7]]));
             user.setDescription((data[sequence[8]]));
             user.setStatus(data[sequence[9]]);
@@ -831,40 +891,49 @@ public class UserRepoImpl implements UserRepo {
             int nGroups = (null == entry.getAttributeValue("ou") ? 0 : entry.getAttributeValue("ou").length());
             List<String> ls = new LinkedList<>();
             for (int i = 0; i < nGroups; i++) ls.add(entry.getAttributeValue("ou"));
-            user.setResetPassToken(entry.getAttributeValue("resetPassToken"));
             user.setMemberOf(null != entry.getAttributeValue("ou") ? ls : null);
+            user.setResetPassToken(entry.getAttributeValue("resetPassToken"));
+
             user.setUserPassword(entry.getAttributeValue("userPassword"));
             user.setDescription(entry.getAttributeValue("description"));
-            user.setPhotoName(entry.getAttributeValue("initials"));
+            user.setPhotoName(entry.getAttributeValue("photoName"));
             user.setStatus(entry.getAttributeValue("userStatus"));
 
             //lsUserConflicts.add(create(user));
+
+
+
         return lsUserConflicts;
+
+
     }
 
 
 
     @Override
-    public String sendMessage(String mobile) {
-        String s = checkMobile(mobile).get(0).getAsString("userId");
-        User user = retrieveUser(checkMobile(mobile).get(0).getAsString("userId"));
-        insertMobileToken(user);
-        try {
-            String receptor = mobile;
-            String message = user.getResetPassToken().substring(0,SMS_VALIDATION_DIGITS);
-            KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-            api.verifyLookup(receptor, message, "", "", "mfa");
-        } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-            System.out.print("HttpException  : " + ex.getMessage());
-        } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-            System.out.print("ApiException : " + ex.getMessage());
-        }
-        return "SMS Sent!";
+    public HttpStatus sendMessage(String mobile) {
+        if(checkMobile(mobile).size()>0) {
+            User user = retrieveUser(checkMobile(mobile).get(0).getAsString("userId"));
+            insertMobileToken(user);
+            try {
+                String receptor = mobile;
+                String message = "کد اعتبارسنجی شما در پارسو Idman:\n" + user.getResetPassToken().substring(0, SMS_VALIDATION_DIGITS);
+                KavenegarApi api = new KavenegarApi(SMSAPI);
+                api.send(SENDER, receptor, message);
+            } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                System.out.print("HttpException  : " + ex.getMessage());
+            } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                System.out.print("ApiException : " + ex.getMessage());
+            }
+            return HttpStatus.OK;
+        } else
+            return HttpStatus.FORBIDDEN;
     }
 
 
     @Override
-    public String sendMessage(String mobile, String uId) {
+    public HttpStatus sendMessage(String mobile, String uId) {
+
 
         if (checkMobile(mobile) != null & retrieveUser(uId).getUserId() != null) {
             List<JSONObject> ids = checkMobile(mobile);
@@ -879,9 +948,9 @@ public class UserRepoImpl implements UserRepo {
 
                     try {
                         String receptor = mobile;
-                        String message = user.getResetPassToken().substring(0,SMS_VALIDATION_DIGITS);
-                        KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-                        api.verifyLookup(receptor, message, "", "", "mfa");
+                        String message = "کد اعتبارسنجی شما در پارسو Idman:\n"+user.getResetPassToken().substring(0,SMS_VALIDATION_DIGITS);
+                        KavenegarApi api = new KavenegarApi(SMSAPI);
+                        api.send(SENDER, receptor, message);
                     } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
                         System.out.print("HttpException  : " + ex.getMessage());
                     } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
@@ -889,15 +958,15 @@ public class UserRepoImpl implements UserRepo {
                     }
 
 
-                    return "SMS sent";
+                    return HttpStatus.OK;
 
                 }
             }
 
         } else
-            return "Email Not found or userId not found";
+            return HttpStatus.NOT_FOUND;
 
-        return "Not a such user";
+        return HttpStatus.FORBIDDEN;
 
     }
 

@@ -17,12 +17,12 @@
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Users/script.js"></script>
-    <script src="https://cdn.jsdelivr.net/alasql/0.3/alasql.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.12/xlsx.core.min.js"></script>
-    <script lang="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-    <script src="//unpkg.com/vue-plain-pagination"></script>
+    <script src="js/alasql.min.js"></script>
+    <script src="js/xlsx.core.min.js"></script>
+    <script src="js/xlsx.full.min.js"></script>
+    <script src="js/jszip.js"></script>
+    <script src="js/xlsx.js"></script>
+    <script src="js/vue-plain-pagination.umd.min.js"></script>
 
 </head>
 <body class="h-100">
@@ -173,7 +173,16 @@
                                         <tr v-for="user in sortedUsers" v-bind:key="user.userId">
                                             <td>{{user.userId}}</td>
                                             <td>{{user.displayName}}</td>
-                                            <td>{{user.memberOf}}</td>
+                                            <td style="display: inline-flex;">
+                                                <div v-for="group in groups">
+                                                    <div v-for="member in user.memberOf" v-if="member == group.id">
+                                                        <button style="padding: .2rem .2rem; color: #000000; background-color: #a9a9a975; font-size: 60%; opacity: 1;"
+                                                        class="btn btn-sm" disabled>
+                                                            {{group.name}}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <button style="padding: .2rem .2rem; color: #28a745; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U22" class="btn btn-sm" v-on:click="sendResetEmail(user.userId)">
                                                     <span class="fa-passwd-reset fa-stack">
@@ -238,34 +247,34 @@
                                         <h3 class="mb-3 pb-2 border-bottom">{{s37}}</h3>
                                         <ul class="nav nav-tabs nav-justified" style="font-size: 15px;">
                                             <li class="nav-item">
-                                                <a class="nav-link" @click.prevent="setActive('info')" :class="{ active: isActive('info') }" href="#info">اطلاعات کاربر</a>
+                                                <a class="nav-link" @click.prevent="setActive('info')" :class="{ active: isActive('info') }" href="#info">{{s44}}</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" @click.prevent="setActive('password')" :class="{ active: isActive('password') }" href="#password">رمز عبور</a>
+                                                <a class="nav-link" @click.prevent="setActive('password')" :class="{ active: isActive('password') }" href="#password">{{s45}}</a>
                                             </li>
                                         </ul>
                                         <div class="tab-content py-3" id="myTabContent" style="background-color: white; padding: 2%; font-size: 15px;">
                                             <div class="tab-pane fade" :class="{ 'active show': isActive('password') }" id="password">
                                                 <div>    
-                                                    <label>رمز عبور</label>
+                                                    <label>{{s45}}</label>
                                                     <div class="form-group">
                                                         <input :class='{valid:passwordValidation.valid}' @input="passwordCheck" :type="show === true ? 'text' : 'password'" class="form-control"
-                                                        name="password" id="newPassword" v-model="password" placeholder="رمز عبور جدید" v-bind:style="placeholder" oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                        oninput="setCustomValidity('')" required > <!-- v-bind: -->
+                                                        name="password" id="newPassword" v-model="password" v-bind:placeholder="s46" v-bind:style="placeholder"
+                                                        required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
     
                                                         <div class="strength" :class="'level_' + strengthLevel"></div>
                                                         <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="show" @click="show = !show"></i>
                                                         <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="show = !show"></i>
                                                     </div>
                                                     <div class="form-group">
-                                                        <input class="form-control" :type="showR === true ? 'text' : 'password'" v-model.lazy='checkPassword' placeholder="تکرار رمز عبور جدید" v-bind:style="placeholder"> 
-                                                        <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showR" @click="showR = !showR"></i> <!-- v-bind: -->
+                                                        <input class="form-control" :type="showR === true ? 'text' : 'password'" v-model.lazy='checkPassword' v-bind:placeholder="s47" v-bind:style="placeholder"> 
+                                                        <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showR" @click="showR = !showR"></i>
                                                         <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showR = !showR"></i>
                                                     </div>
                                                     <div class="form-group">
                                                         <transition name="hint" appear>
                                                             <div v-if='!submitted' class='hints'>
-                                                                <p style="box-sizing: unset;">رمز عبور شما باید شامل موارد زیر باشد:</p> <br>
+                                                                <p style="box-sizing: unset;">{{s48}}</p> <br>
                                                                 <p :class="{'passed' :has_number }" v-bind:style="font"><i :class="has_number ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
                                                                 <p :class="{'passed' :has_lowercase }" v-bind:style="font"><i :class="has_lowercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
                                                                 <p :class="{'passed' :has_uppercase }" v-bind:style="font"><i :class="has_uppercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
@@ -275,11 +284,10 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <div class="matches" v-bind:style="notSamePasswords ? 'visibility: visible;' : 'visibility: hidden;' ">
-                                                            <p class="error" style="font-size: .8rem;">رمز عبور های وارد شده یکسان نمی باشند</p>
+                                                            <p class="error" style="font-size: .8rem;">{{s49}}</p>
                                                         </div> <br> <br>
-                                                        <button v-on:click="editPass(editInfo.userId)" :disabled="setActivee" class="btn btn-primary">
-                                                            ویرایش
-                                                        </button>
+                                                        <button v-on:click="editPass(editInfo.userId)" :disabled="isActiveUserPassUpdate" class="btn btn-primary">{{U13}}</button>
+                                                        <button v-on:click="showUsers()" class="btn btn-danger">{{s17}}</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -300,42 +308,6 @@
                                                         </select>
                                                     </div>
 
-                                                    <!-- <table class="table table-responsive">
-                                                        <tr>
-                                                            <td>
-
-                                                                <div class="pass">
-                                                                    <label for="ediInfo.userPasswordUpdate" style="margin-right: 20px">{{U0}}</label><span id="msg1" style="margin-right: 20px" minlength="8"></span>
-                                                                    <input v-bind:value="editInfo.userPassword"
-                                                                        id="ediInfo.userPasswordUpdate" type="password"
-                                                                        class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                                        oninput="setCustomValidity('')" onkeyup="validatePassword(this.value) "/>
-                                                                        
-                                                                </div>
-                                                                <div class="passRetype">
-                                                                    <label for="editInfo.passwordRetypeUpdate" minlength="8">{{U15}}</label>
-                                                                    <input v-bind:value="editInfo.userPassword"
-                                                                        id="editInfo.passwordRetypeUpdate" type="password"
-                                                                        class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                                        oninput="setCustomValidity('')">
-                                                                </div>
-
-                                                            </td>
-
-                                                            <td >
-                                                                <div style="background-color: #f5fff6;margin-right: 20px; font-size: x-small; margin-top: 40px"  >
-
-                                                                    <p>{{p7}}</p>
-                                                                    <p>{{p4}}</p>
-                                                                    <p>{{p5}}</p>
-                                                                    <p>{{p6}}</p>
-                                                                </div>
-
-                                                            </td>
-                                                        </tr>
-
-                                                    </table> -->
-
                                                     <div class="form-group">
                                                         <label>{{U3}}</label>
                                                         <input v-bind:value="editInfo.firstName" id="editInfo.firstNameUpdate"
@@ -349,12 +321,23 @@
                                                     <div class="form-group">
                                                         <label>{{U5}}<span style="color: red;"> *</span></label>
                                                         <input v-bind:value="editInfo.displayName" id="editInfo.displayNameUpdate"
-                                                            type="text" class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                            oninput="setCustomValidity('')">
+                                                            type="text" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                     </div>
-                                                    <div id="lsGroupsUpdate" style="align-items: flex-end " align-items="left">
-                                                        <label>{{U14}}</label>
+
+                                                    <div class="form-group">
+                                                        <input type="hidden" id="groupsUpdate" v-bind:value="groupListUpdate">
+                                                        <ul>   
+                                                            <li v-for="group in groups" :key="group.name">
+                                                                <label class="form-check-label">{{group.name}}</label>
+                                                                <label class="form-check-label" style="font-size: 80%; color: #0000008c;"> ( <small>{{group.id}}</small> ) </label>
+                                                                <label class="switch">
+                                                                    <input type="checkbox" v-bind:id="'groupNameId' + group.id">
+                                                                    <span v-on:click="addGroupUpdate(group.id)" class="slider round"></span>  
+                                                                </label>
+                                                            </li>
+                                                        </ul>
                                                     </div>
+
                                                     <div class="form-group">
                                                         <label>{{U6}}</label>
                                                         <input v-bind:value="editInfo.mobile" id="editInfo.mobileUpdate" type="text"
@@ -363,8 +346,7 @@
                                                     <div class="form-group">
                                                         <label>{{U7}}<span style="color: red;"> *</span></label>
                                                         <input v-bind:value="editInfo.mail" id="editInfo.mailUpdate" type="email"
-                                                            class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                            oninput="setCustomValidity('')">
+                                                            class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                     </div>
                                                     <div class="form-group">
                                                         <label>{{U9}}</label>
@@ -372,9 +354,8 @@
                                                                 id="editInfo.descriptionUpdate" rows="5" type="text"
                                                                 class="form-control">
                                                             </textarea>
-                                                    </div>
-                                                    <button v-on:click="editUser(editInfo.userId)" class="btn btn-primary">{{U13}}
-                                                    </button>
+                                                    </div><!-- :disabled="isActiveUserInfoUpdate" -->
+                                                    <button v-on:click="editUser(editInfo.userId)"  class="btn btn-primary">{{U13}}</button>
                                                     <button v-on:click="showUsers()" class="btn btn-danger">{{s17}}</button>
 
                                                 </form>
@@ -383,49 +364,50 @@
                                     </div>
 
 
-                                    <form v-bind:style="addS">
+                                    <div v-bind:style="addS">
                                         <h3 class="mb-3 pb-2 border-bottom">{{s38}}</h3>
                                         <div class="form-group">
                                             <label>{{U2}}<span style="color: red;"> *</span></label>
-                                            <input id="editInfo.userIdCreate" type="text"
-                                                   class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                   oninput="setCustomValidity('')">
+                                            <input id="editInfo.userIdCreate" type="text" v-on:keyup="removeError" class="form-control"
+                                            required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                            <div class="matches mt-2" v-bind:style="userCreateExists ? 'visibility: visible;' : 'visibility: hidden;' ">
+                                                <p class="error" style="font-size: .8rem;">{{s50}}</p>
+                                            </div>
                                         </div>
 
+                                        <div>    
+                                            <label>{{s45}}</label>
+                                            <div class="form-group">
+                                                <input :class='{valid:passwordValidationCreate.valid}' @input="passwordCheckCreate" :type="showCreate === true ? 'text' : 'password'" class="form-control"
+                                                name="passwordCreate" id="newPasswordCreate" v-model="passwordCreate" v-bind:placeholder="s46" v-bind:style="placeholder"
+                                                required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
 
-                                        <table class="table table-responsive">
-                                            <tr>
-                                                <td>
-
-                                                    <div class="pass">
-                                                        <label for="ediInfo.userPasswordUpdate">{{U0}}</label><span id="msg1" minlength="8"></span>
-                                                        <input id="ediInfo.userPasswordCreate" type="password"
-                                                               class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                               oninput="setCustomValidity('')" onkeyup="validatePassword(this.value) "/>
-                                                               
+                                                <div class="strength" :class="'level_' + strengthLevelCreate"></div>
+                                                <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showCreate" @click="showCreate = !showCreate"></i>
+                                                <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showCreate = !showCreate"></i>
+                                            </div>
+                                            <div class="form-group">
+                                                <input class="form-control" :type="showRCreate === true ? 'text' : 'password'" v-model.lazy='checkPasswordCreate' v-bind:placeholder="s47" v-bind:style="placeholder"> 
+                                                <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showRCreate" @click="showRCreate = !showRCreate"></i>
+                                                <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showRCreate = !showRCreate"></i>
+                                            </div>
+                                            <div class="form-group">
+                                                <transition name="hint" appear>
+                                                    <div v-if='!submittedCreate' class='hints'>
+                                                        <p style="box-sizing: unset;">{{s48}}</p> <br>
+                                                        <p :class="{'passed' :has_numberCreate }" v-bind:style="font"><i :class="has_numberCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
+                                                        <p :class="{'passed' :has_lowercaseCreate }" v-bind:style="font"><i :class="has_lowercaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
+                                                        <p :class="{'passed' :has_uppercaseCreate }" v-bind:style="font"><i :class="has_uppercaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
+                                                        <p :class="{'passed' :has_charCreate }" v-bind:style="font"><i :class="has_charCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[2].message}}</p>
                                                     </div>
-                                                    <div class="passRetype">
-                                                        <label for="editInfo.passwordRetypeUpdate" minlength="8">{{U15}}</label>
-                                                        <input id="editInfo.passwordRetypeCreate" type="password"
-                                                               class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                               oninput="setCustomValidity('')">
-                                                    </div>
-
-                                                </td>
-
-                                                <td >
-                                                    <div style="background-color: #f5fff6;margin-right: 20px; font-size: x-small; margin-top: 40px"  >
-
-                                                        <p>{{p7}}</p>
-                                                        <p>{{p4}}</p>
-                                                        <p>{{p5}}</p>
-                                                        <p>{{p6}}</p>
-                                                    </div>
-
-                                                </td>
-                                            </tr>
-
-                                        </table>
+                                                </transition>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="matches" v-bind:style="notSamePasswordsCreate ? 'visibility: visible;' : 'visibility: hidden;' ">
+                                                    <p class="error" style="font-size: .8rem;">{{s49}}</p>
+                                                </div> <br> <br>
+                                            </div>
+                                        </div>
 
                                         <div class="form-group">
                                             <label>{{U3}}</label>
@@ -439,14 +421,24 @@
                                         </div>
                                         <div class="form-group">
                                             <label>{{U5}}<span style="color: red;"> *</span></label>
-                                            <input id="editInfo.displayNameCreate"
-                                                   type="text" class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                   oninput="setCustomValidity('')" placeholder="علی امیری">
+                                            <input id="editInfo.displayNameCreate" type="text" class="form-control" required 
+                                            data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید" placeholder="علی امیری">
                                         </div>
-                                        <div id="lsGroupsAdd" style="align-items: flex-end">
-                                            <label>{{U14}}</label>
-                                            
+
+                                        <div class="form-group">
+                                            <input type="hidden" id="groupsCreate" v-bind:value="groupListCreate">
+                                            <ul>   
+                                                <li v-for="group in groups" :key="group.name">
+                                                    <label class="form-check-label">{{group.name}}</label>
+                                                    <label class="form-check-label" style="font-size: 80%; color: #0000008c;"> ( <small>{{group.id}}</small> ) </label>
+                                                    <label class="switch">
+                                                        <input type="checkbox">
+                                                        <span v-on:click="addGroupCreate(group.id)" class="slider round"></span>  
+                                                    </label>
+                                                </li>
+                                            </ul>
                                         </div>
+
                                         <div class="form-group">
                                             <label>{{U6}}</label>
                                             <input id="editInfo.mobileCreate" type="text"
@@ -454,9 +446,8 @@
                                         </div>
                                         <div class="form-group">
                                             <label>{{U7}}<span style="color: red;"> *</span></label>
-                                            <input id="editInfo.mailCreate" type="email"
-                                                   class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
-                                                   oninput="setCustomValidity('')" placeholder="Ali.Amiri@example.com">
+                                            <input id="editInfo.mailCreate" type="email" class="form-control" required data-toggle="tooltip" 
+                                            data-placement="top" title="لطفا این قسمت را تکمیل کنید" placeholder="Ali.Amiri@example.com">
                                         </div>
                                         <div class="form-group">
                                             <label>{{U9}}</label>
@@ -464,10 +455,10 @@
                                                       rows="5" type="text" class="form-control">
                                                 </textarea>
                                         </div>
-                                        <button v-on:click='addUser("ediInfo.userPassword","editInfo.passwordRetypeCreate")' class="btn btn-primary">{{s18}}</button>
+                                        <button v-on:click="addUser()" :disabled="isActiveUserPassCreate" class="btn btn-primary">{{s18}}</button>
                                         <button v-on:click="showUsers()" class="btn btn-danger">{{s17}}</button>
 
-                                    </form>
+                                    </div>
 
 
                                 </div>

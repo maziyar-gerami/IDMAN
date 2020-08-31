@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
@@ -18,6 +19,7 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.SearchControls;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
@@ -25,18 +27,20 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 @Service
 public class GroupRepoImpl implements GroupRepo {
 
-    public static final String BASE_DN = "dc=example,dc=com";;
+    //public static final String BASE_DN = "dc=partition1,dc=com";;
 
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
 
     @Autowired
     private LdapTemplate ldapTemplate;
 
     @Override
-    public String remove(String name) {
+    public String remove(String id) {
 
-        Name dn = buildDn(name);
+        Name dn = buildDn(id);
         ldapTemplate.unbind(dn);
-        return name + " removed successfully";
+        return id + " removed successfully";
     }
 
     @Override
@@ -44,7 +48,7 @@ public class GroupRepoImpl implements GroupRepo {
 
         List <Group> allous = retrieve();
         for (Group ou: allous) {
-            Name dn = buildDn(ou.getName());
+            Name dn = buildDn(ou.getId());
             ldapTemplate.unbind(dn);
 
         }
@@ -55,17 +59,17 @@ public class GroupRepoImpl implements GroupRepo {
 
 
     @Override
-    public Group retrieveOu(String name) {
+    public Group retrieveOu(String uid) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        AndFilter filter = new AndFilter();
-        filter.and(new EqualsFilter("objectClass", "extensibleObject"));
-        filter.and(new EqualsFilter("ou", name));
+        List<Group> groups= retrieve();
 
-        List<Group> groupList = ldapTemplate.search(BASE_DN , filter.encode(),
-                new GroupRepoImpl.OUAttributeMapper());
-        return groupList.get(0);
+        for (Group group:groups ) {
+            if (group.getId().equals(uid))
+                return group;
+        }
+        return null;
     }
 
     @Override
@@ -73,7 +77,7 @@ public class GroupRepoImpl implements GroupRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         List<Group> groupList = ldapTemplate.search(query().where("objectClass").is("extensibleObject"),
-                new GroupRepoImpl.OUAttributeMapper());
+                new OUAttributeMapper());
         return groupList.get(0);
     }
 
@@ -91,7 +95,9 @@ public class GroupRepoImpl implements GroupRepo {
         return groups;
     }
 
-    private Attributes buildAttributes(Group group) {
+    private Attributes buildAttributes(String uid, Group group) {
+
+        Date date = new Date();
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
         ocattr.add("extensibleObject");
@@ -100,14 +106,14 @@ public class GroupRepoImpl implements GroupRepo {
 
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
-        attrs.put("ou", group.getName());
-        attrs.put("uid",String.valueOf(group.getId()));
+        attrs.put("name", group.getName());
+        attrs.put("ou",uid);
         attrs.put("description" , group.getDescription());
         return attrs;
     }
 
-    public Name buildDn(String  name) {
-        return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").add("ou", name).build();
+    public Name buildDn(String  id) {
+        return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").add("ou", id).build();
     }
     public Name buildBaseDn() {
         return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").build();
@@ -122,22 +128,26 @@ public class GroupRepoImpl implements GroupRepo {
         filter.and(new EqualsFilter("objectclass", "extensibleObject"));
 
         return ldapTemplate.search(BASE_DN, filter.encode(),
-                new GroupRepoImpl.OUAttributeMapper());
+                new OUAttributeMapper());
 
     }
 
     @Override
     public String create(Group ou) {
-        Name dn = buildDn(ou.getName());
-        ldapTemplate.bind(dn, null, buildAttributes(ou));
+        Date date = new Date();
+        String timestamp = String.valueOf(date.getTime());
+        Name dn = buildDn(timestamp);
+        ldapTemplate.bind(dn, null, buildAttributes(timestamp, ou));
         return ou.getName() + " created successfully";
     }
 
     @Override
-    public String update(String name, Group ou) {
-        Name dn = buildDn(name);
+    public String update(String id, Group ou) {
+        Name dn = buildDn(id);
 
-        ldapTemplate.rebind(dn, null, buildAttributes(ou));
+        Group group = retrieveOu(id);
+
+        ldapTemplate.rebind(dn, null, buildAttributes(group.getId(),ou));
         return ou.getName() + " updated successfully";
     }
 
@@ -148,8 +158,8 @@ public class GroupRepoImpl implements GroupRepo {
         public Group mapFromAttributes(Attributes attributes) throws NamingException {
             Group group = new Group();
 
-            group.setId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
-            group.setName(null != attributes.get("ou") ? attributes.get("ou").get().toString() : null);
+            group.setId(null != attributes.get("ou") ? attributes.get("ou").get().toString() : null);
+            group.setName(null != attributes.get("name") ? attributes.get("name").get().toString() : null);
             group.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
             return group;
         }

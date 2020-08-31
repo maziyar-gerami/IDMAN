@@ -1,7 +1,6 @@
 function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
-
 window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -190,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         url: url + '/api/groups/' + id, //
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
-                            id: document.getElementById('group.idUpdate').value,
+                            id: id,
                             name: document.getElementById('group.nameUpdate').value,
                             description: document.getElementById('group.descriptionUpdate').value,
                         }),
@@ -213,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     url: url + "/api/groups", //
                     headers: {'Content-Type': 'application/json'},
                     data: JSON.stringify({
-                        id: document.getElementById('group.idCreate').value,
                         name: document.getElementById('group.nameCreate').value,
                         description: document.getElementById('group.descriptionCreate').value,
                     }),

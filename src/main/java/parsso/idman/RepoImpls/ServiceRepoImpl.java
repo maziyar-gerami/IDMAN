@@ -4,8 +4,9 @@ package parsso.idman.RepoImpls;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.google.gson.JsonObject;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
+import com.google.gson.JsonArray;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -50,15 +51,15 @@ public class ServiceRepoImpl implements ServiceRepo {
 
         for (Service service : services) {
 
-            Object[] member = service.getAccessStrategy().getRequiredAttributes().getMember();
+            Object member = service.getAccessStrategy().getRequiredAttributes().get("ou");
             if (member !=null){
-            LinkedList<String> s = (LinkedList) member[1];
+            JSONArray s = (JSONArray) member;
 
 
                 if (user.getMemberOf()!=null&&s !=null)
                     for (int i = 0; i < user.getMemberOf().size(); i++)
-                for (int j = 0; j < s.size(); j++) {
-                    if (user.getMemberOf().get(i).equals(s.get(j)) && !relatedList.contains(service)) {
+                for (int j = 0; j < ((JSONArray)s.get(1)).size(); j++) {
+                    if (user.getMemberOf().get(i).equals(((JSONArray) s.get(1)).get(j)) && !relatedList.contains(service)) {
                         relatedList.add(service);
                         break;
 
@@ -516,36 +517,89 @@ public class ServiceRepoImpl implements ServiceRepo {
             accessStrategy.setSsoEnabled(true);
 
 
-        JSONObject tempreqiredattribute = null;
-        if (jsonObject.get("requiredAttributes")!=(null))
-            tempreqiredattribute = new JSONObject((Map) jsonObject.get("requiredAttributes"));
+        JSONObject tempreqiredattribute = new JSONObject();
+        JSONArray obj  = null;
+        JSONObject t1;
+        if (jsonObject.get("requiredAttributes")!=(null)) {
+
+
+
+                Object ob1 =jsonObject.get("requiredAttributes");
+
+                if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
+                    obj = new JSONArray();
+                    obj = (JSONArray) jsonObject.get("requiredAttributes");
+                    t1 = (JSONObject) obj.get(0);
+                    tempreqiredattribute = t1;
+                    tempreqiredattribute.put("@class", "java.util.HashMap");
+
+                }
+                else {
+                    tempreqiredattribute = new JSONObject((Map) ob1);
+                    tempreqiredattribute.put("@class", "java.util.HashMap");
+                }
+
+                }
+
+        accessStrategy.setRequiredAttributes(tempreqiredattribute);
+
+        //Set keys = obj.keySet();
+
+        //JSONObject ja = new JSONObject();
+        //JSONObject nwq = new JSONObject();
+
+
+        /*for (Object object:keys) {
+            Object neobject = tempreqiredattribute.get(object.toString());
+
+            nwq.put(object.toString(),neobject);
+
+
+        }
+        nwq.put("@class" , "java.util.HashMap");
+
+
+        accessStrategy.setRequiredAttributes(nwq);*/
+
+
+
+
+
+/*
 
         RequiredAttributes requiredAttributes = new RequiredAttributes();
         //requiredAttributes.setAtClass(tempreqiredattribute.get("@class").toString());
         ArrayList jsonArray2 = null;
         String t0 = null;
-        if (tempreqiredattribute != null && tempreqiredattribute.get("member") != null) {
+        String memberName ="member";
+        if (tempreqiredattribute != null && tempreqiredattribute.get(memberName) != null) {
 
 
 
-            ArrayList t1 = (ArrayList) tempreqiredattribute.get("member");
+            ArrayList t1 = (ArrayList) tempreqiredattribute.get(memberName);
 
 
             t1 = (ArrayList) t1.get(1);
             List t1list = new LinkedList();
 
 
-            if (t1!=null)
-            for (int i = 0; i < t1.size(); i++) {
-                t1list.add(t1.get(i));
+            if (t1!=null) {
+                for (int i = 0; i < t1.size(); i++) {
+                    t1list.add(t1.get(i));
+                }
+
+
+                Object[] members = new Object[2];
+
+                members[0] = "java.util.HashSet";
+                members[1] = t1list;
+                requiredAttributes.setMember(members);
             }
-
-            Object[] members = requiredAttributes.getMember();
-
-            members[1] = t1list;
-            requiredAttributes.setMember(members);
         }
         accessStrategy.setRequiredAttributes(requiredAttributes);
+        service.setAccessStrategy(accessStrategy);
+*/
+
         service.setAccessStrategy(accessStrategy);
 
 

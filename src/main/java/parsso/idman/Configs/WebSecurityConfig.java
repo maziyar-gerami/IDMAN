@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -26,6 +27,7 @@ import java.util.Collections;
 @Order(99)
 
 @EnableWebSecurity
+//@PropertySource("file:D:\\app.properties")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${cas.url.logout.path}")
@@ -57,6 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         //.and()
 
+
                 .authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
                 //.antMatchers("")
                 .and()
@@ -76,23 +79,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
                 .csrf().disable()
-                /*
-                .authorizeRequests()
+
+                /*.authorizeRequests()
                 .antMatchers("/js/**").permitAll()
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/fonts/**").permitAll()
                 .antMatchers("/images/**").permitAll()
                 .antMatchers("/resetPass").permitAll()
                 .antMatchers("/resetPassword").permitAll()
-                .antMatchers("/api/users/validateToken/**").permitAll()
-                .antMatchers("/api/users/sendMail/**").permitAll()
-                .antMatchers("/api/users/checkMail/**").permitAll()
-                .antMatchers("/api/users/u/{id}/{token}").permitAll()
+                .antMatchers("/api/public/**").permitAll()
                 .antMatchers("/login/cas").permitAll()
-                .antMatchers(HttpMethod.PUT,"/api/users/u/{uid}/{pass}/{token}").permitAll()
+                .antMatchers("/api/users/u/{uid}/{pass}/{token}").permitAll()
                 .anyRequest().fullyAuthenticated()
-                .and()
-                */
+                .and()*/
+
                 .formLogin()
                 .loginPage("/login")
 

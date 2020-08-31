@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
       isRtl: true,
       activeItem: "",
       configsList: [],
+      configsDescription: [],
       configsGroupNames: [],
       menuS: false,
       userPicture: "images/PlaceholderUser.png",
@@ -123,10 +124,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
       },
+      groupSearchDescription: function (group, description) {
+        for(i = 0; i < this.configsList.length; ++i){
+          if(this.configsList[i].group == group && this.configsList[i].description == description){
+            return true;
+          }
+        }
+        return false;
+      },
       getConfigs: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         var j = 0;
+        var z = 0;
         axios.get(url + "/api/configs") //
         .then((res) => {
           vm.configsList = res.data;
@@ -137,6 +147,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 vm.activeItem = vm.configsList[i].group;
               }
               ++j;
+            }
+            if(vm.configsDescription.indexOf(vm.configsList[i].description) == -1){
+              vm.configsDescription[z] = vm.configsList[i].description;
+              ++z;
             }
           }
         });

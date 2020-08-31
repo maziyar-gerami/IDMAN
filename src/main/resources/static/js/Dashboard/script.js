@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
       name: "",
       nameEN: "",
       margin: "margin-right: 30px;",
+      marginServiceBox: "ml-3",
       lang: "EN",
       isRtl: true,
       activeItem: "services",
@@ -195,11 +196,29 @@ document.addEventListener('DOMContentLoaded', function () {
         axios.get(url + "/api/services/user") //
         .then((res) => {
           vm.services = res.data;
+          for(i = 0; i < vm.services.length; ++i){
+            if(typeof vm.services[i].logo !== 'undefined'){
+              if(vm.services[i].logo == ""){
+                vm.services[i].logo = "images/PlaceholderService.jpg";
+              }
+            }else{
+              vm.services[i].logo = "images/PlaceholderService.jpg";
+            }
+
+            if(typeof vm.services[i].description !== 'undefined'){
+              if(vm.services[i].description.length > 50){
+                vm.services[i].description = vm.services[i].description.substr(0, 50) + "...";
+              }
+            }else{
+              vm.services[i].description = "...";
+            }
+          }
         });
       },
       changeLang: function () {
         if(this.lang == "EN"){
           this.margin = "margin-left: 30px;";
+          this.marginServiceBox = "mr-3";
           this.lang = "فارسی";
           this.isRtl = false;
           this.s0 = "Parsso";
@@ -239,6 +258,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.SuccessfulLoginsChart.sections[1].label = "Unsuccessful";
         } else{
             this.margin = "margin-right: 30px;";
+            this.marginServiceBox = "ml-3";
             this.lang = "EN";
             this.isRtl = true;
             this.s0 = "پارسو";

@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
             submitted: false,
             btnDisable : true,
             placeholder: "text-align: right;",
+            margin: "margin-right: 30px;",
             marg: "margin-left: auto;",
             font: "font-size: 0.74em; text-align: right;",
             lang: "EN",
@@ -63,11 +64,12 @@ document.addEventListener('DOMContentLoaded', function () {
         methods: {
             getName: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                const redirectedUrl = new URL(location.href);
+                var vm = this;
                 var str = window.location.pathname;
                 var inf = str.split("/");
-                var vm = this;   
                 if(!inf.includes("login")){
-                    axios.get(url + "/api/public/getName/" + inf[5] + "/" + inf[6]) //
+                    axios.get(url + "/api/public/getName/" + redirectedUrl.searchParams.get('uid') + "/" + redirectedUrl.searchParams.get('token')) //
                         .then((res) => {
                             vm.userInfo = res.data;
                             vm.s17 = vm.userInfo.displayName;
@@ -78,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (this.lang == "EN") {
                     this.placeholder = "text-align: left;"
                     this.isRtl = false;
+                    this.margin = "margin-left: 30px;";
                     this.marg = "margin-right: auto;";
                     this.font = "font-size: 0.9em; text-align: left;"
                     this.lang = "فارسی";
@@ -112,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     this.placeholder = "text-align: right;";
                     this.isRtl = true;
+                    this.margin = "margin-right: 30px;";
                     this.marg = "margin-left: auto;";
                     this.font = "font-size: 0.74em; text-align: right;";
                     this.lang = "EN";
@@ -153,18 +157,17 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             resetPasswords () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var str = window.location.pathname;
-                var inf = str.split("/");
-                var vm = this;
+                const redirectedUrl = new URL(location.href); 
+                const formData = new FormData();
+                formData.append('newPassword', this.password);
+                var vm = this;               
                 axios({
                     method: 'put',
-                    url: url + '/api/public/resetPass/' + inf[5] + "/" + inf[6],  //
+                    url: url + '/api/public/resetPass/' + redirectedUrl.searchParams.get('uid') + "/" + redirectedUrl.searchParams.get('token'),  //
                     headers: {'Content-Type': 'application/json'},
-                    data: JSON.stringify({
-                        newPassword: vm.password
-                    }),
+                    data: formData
                 }).then((res) => {
-                    location.replace(url + "/login");
+                    location.replace(url);
                 });
             }
         },

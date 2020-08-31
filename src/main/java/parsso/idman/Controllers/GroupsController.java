@@ -29,19 +29,18 @@ public class GroupsController {
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUser(principal.getName());
-
         return new ResponseEntity<>(groupRepo.retrieveCurrentUserGroup(user), HttpStatus.OK);
     }
 
     @PostMapping("/api/groups")
-    public ResponseEntity<String> bindLdapUser(@RequestBody Group ou) {
+    public ResponseEntity<String> bindLdapGroup(@RequestBody Group ou) {
         String result = groupRepo.create(ou);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PutMapping("/api/groups/{name}")
-    public ResponseEntity<String> rebindLdapUser(@RequestBody Group ou, @PathVariable("name") String name) {
-        String result = groupRepo.update(name, ou);
+    @PutMapping("/api/groups/{id}")
+    public ResponseEntity<String> rebindLdapUser(@RequestBody Group ou, @PathVariable("id") String id) {
+        String result = groupRepo.update(id, ou);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -50,14 +49,14 @@ public class GroupsController {
         return new ResponseEntity<>(groupRepo.retrieve(), HttpStatus.OK);
     }
 
-    @GetMapping("/api/groups/{name}")
-    public ResponseEntity <Group> retrieveOU(@PathVariable("name") String name) {
-        return new ResponseEntity<> (groupRepo.retrieveOu(name), HttpStatus.OK);
+    @GetMapping("/api/groups/{id}")
+    public ResponseEntity <Group> retrieveOU(@PathVariable("id") String id) {
+        return new ResponseEntity<> (groupRepo.retrieveOu(id), HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/groups/{name}")
-    public ResponseEntity<String> unbindLdapOU(@PathVariable("name") String name) {
-        return new ResponseEntity<>(groupRepo.remove(name), HttpStatus.OK);
+    @DeleteMapping("/api/groups/{id}")
+    public ResponseEntity<String> unbindLdapOU(@PathVariable("id") String id) {
+        return new ResponseEntity<>(groupRepo.remove(id), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/groups")

@@ -63,8 +63,8 @@ function myFunction() {
         userPicture: "images/PlaceholderUser.png",
         accessStrategy: {},
         requiredAttributes: {},
-        member: [],
-        memberList: [],
+        ou: [],
+        ouList: [],
         contacts: [],
         contactsList: [],
         contactsObj: {},
@@ -124,7 +124,8 @@ function myFunction() {
         s53: "./events",
         s54: "استراتژی دسترسی",
         s55: "فعال سازی SSO",
-        s56: "آدرس تغییر مسیر غیرمجاز"
+        s56: "آدرس تغییر مسیر غیرمجاز",
+        s57: " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)"
       },
       created: function () {
         this.getUserInfo();
@@ -177,17 +178,6 @@ function myFunction() {
           });
         },
         showServices: function () {
-          /* this.groupList = "";
-          for(let i = 0; i < this.service.accessStrategy.requiredAttributes.member[1].length; ++i){
-            document.getElementById("groupNameId" + this.service.accessStrategy.requiredAttributes.member[1][i]).checked = false;
-          }
-          document.getElementById("showS2").setAttribute("style", "");
-          document.getElementById("showS3").setAttribute("style", "");
-          document.getElementById("showS4").setAttribute("style", "");
-          document.getElementById("showS5").setAttribute("style", "");
-          document.getElementById("editS").setAttribute("style", "display:none;");
-          document.getElementById("editS1").setAttribute("style", "display:none;");
-          document.getElementById("editS2").setAttribute("style", "display:none;"); */
           location.reload();
         },
         editServiceS: function (id) {
@@ -271,17 +261,17 @@ function myFunction() {
               document.getElementsByName("logoutUrl")[0].value = res.data.logoutUrl;
             }
 
-            if(typeof res.data.accessStrategy.requiredAttributes.member !== 'undefined'){
-              for(let i = 0; i < res.data.accessStrategy.requiredAttributes.member[1].length; ++i){
-                document.getElementById("groupNameId" + res.data.accessStrategy.requiredAttributes.member[1][i]).checked = true;
-                if(vm.groupList === ""){
-                  vm.groupList += res.data.accessStrategy.requiredAttributes.member[1][i];
-                }else{
-                  vm.groupList += ',' + res.data.accessStrategy.requiredAttributes.member[1][i];
+            if(typeof res.data.accessStrategy.requiredAttributes !== 'undefined'){
+              if(typeof res.data.accessStrategy.requiredAttributes.ou !== 'undefined'){
+                for(let i = 0; i < res.data.accessStrategy.requiredAttributes.ou[1].length; ++i){
+                  document.getElementById("groupNameId" + res.data.accessStrategy.requiredAttributes.ou[1][i]).checked = true;
+                  if(vm.groupList === ""){
+                    vm.groupList += res.data.accessStrategy.requiredAttributes.ou[1][i];
+                  }else{
+                    vm.groupList += ',' + res.data.accessStrategy.requiredAttributes.ou[1][i];
+                  }
                 }
               }
-            }else{
-              console.log("ewfriooivjosdbvjveoihuerkhjrs9oghnrsklvuzdghzog0uowel");
             }
           });
         },
@@ -290,7 +280,8 @@ function myFunction() {
           var vm = this;
 
           if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
-            document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == ""){
+            document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
+            document.getElementsByName('description')[0].value == ""){
             alert("لطفا قسمت های الزامی را پر کنید.");
           }else{
 
@@ -353,10 +344,10 @@ function myFunction() {
             }
 
             if(document.getElementsByName('groups')[0].value != ""){
-              this.memberList = document.getElementsByName('groups')[0].value.split(',');
-              this.member[0] = "java.util.HashSet";
-              this.member[1] = this.memberList;
-              this.requiredAttributes.member = this.member;
+              this.ouList = document.getElementsByName('groups')[0].value.split(',');
+              this.ou[0] = "java.util.HashSet";
+              this.ou[1] = this.ouList;
+              this.requiredAttributes.ou = this.ou;
             }else{
               this.requiredAttributes = {};
             }
@@ -423,14 +414,11 @@ function myFunction() {
           });
         },
         getGroups: function () {
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/api/groups"; //
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port; //
           var vm = this;
-          axios.get(url)
+          axios.get(url + "/api/groups")
           .then((res) => {
             vm.groups = res.data;
-            for(var i = 0; i < vm.groups.length; ++i){
-              vm.groups[i].id = vm.groups[i].name;
-            }
           });
         },
         addGroup: function (n) {
@@ -449,6 +437,12 @@ function myFunction() {
             }else{
               this.groupList += ',' + n;
             }
+          }
+        },
+        serviceNameValidate ($event) {
+          let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+          if (keyCode < 48 || keyCode > 122) {
+             $event.preventDefault();
           }
         },
         changeLang: function () {
@@ -513,6 +507,7 @@ function myFunction() {
             this.s54 = "Access Strategy";
             this.s55 = "Allow SSO";
             this.s56 = "Unauthorized Redirect Url";
+            this.s57 =  " (Only English Letters And Numbers Are Allowed For Service Name)";
           } else{
               this.margin = "margin-right: 30px;";
               this.lang = "EN";
@@ -574,6 +569,7 @@ function myFunction() {
               this.s54 = "استراتژی دسترسی";
               this.s55 = "فعال سازی SSO";
               this.s56 = "آدرس تغییر مسیر غیرمجاز";
+              this.s57 =  " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
           }
         },
         saml: function () {
