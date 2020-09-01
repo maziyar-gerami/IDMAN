@@ -102,6 +102,7 @@
                                         <span>{{s7}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
+                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s25">
                                         <i class="fa fa-cog"></i>
                                         <span>{{s24}}</span>
@@ -115,34 +116,28 @@
                             <div class="card-body" style="background-color: #f8f9fa!important;">
                                 <h3 class="border-bottom pb-3 mb-3"><span>{{s24}}</span></h3>
                                 <ul class="nav nav-tabs nav-justified" style="font-size: 15px;">
-                                    <li class="nav-item" v-for="configs in configsGroupNames" v-bind:key="configs">
-                                        <a class="nav-link" @click.prevent="setActive(configs)" :class="{ active: isActive(configs) }" v-bind:href="'#'+ configs"><p style="font-size: 15px;">{{configs}}</p></a>
+                                    <li class="nav-item" v-for="groups in configsGroupNames" v-bind:key="groups">
+                                        <a class="nav-link" @click.prevent="setActive(groups)" :class="{ active: isActive(groups) }" v-bind:href="'#'+ groups"><p style="font-size: 15px;">{{groups}}</p></a>
                                     </li>
                                 </ul>
-                                <div class="tab-content py-3" id="myTabContent" style="background-color: white; padding: 2%; font-size: 15px;">
-                                    <div class="tab-pane fade" v-for="configs in configsGroupNames" v-bind:key="configs" :class="{ 'active show': isActive(configs) }" v-bind:id="configs">
-                                        <div v-for="config in configsList" v-bind:key="config" class="form-group" v-if="config.group === configs">
-                                            
-                                                <!-- <tr>
-                                                    <th> -->
-                                                        <h5 class="border-bottom pb-1 pt-1 mb-3 mt-5 config-head" v-if="config.description != null"><span>{{config.description}}</span></h5>
-                                                    <!-- </th>
-                                                </tr> -->
-                                                <table class="table"><!-- table-responsive -->
-                                                <tbody id="body">
-                                                    <tr>
-                                                        <td>
-                                                            <input class="form-control" type="text" v-model="config.value" style="direction: ltr;">
-                                                        </td>
-                                                        <td>
-                                                            <p style="text-align: center; margin-top: 4%;">{{config.name}}</p>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <!-- <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{config.name}}</span></h4>
-                                            <label>{{config.value}}</label>
-                                            <input class="form-control" type="text" v-model="config.description" style="direction: ltr;"> -->
+                                <div class="tab-content py-3" id="myTabContent" style="background-color: white; padding: 2%; font-size: 15px; direction: rtl;">
+                                    <div class="tab-pane fade" v-for="groups in configsGroupNames" v-bind:key="groups" :class="{ 'active show': isActive(groups) }" v-bind:id="groups">
+                                        <div v-for="description in configsDescription" v-if="groupSearchDescription(groups,description)">
+                                            <h5 class="border-bottom pb-1 pt-1 mb-3 mt-5 config-head"><span>{{description}}</span></h5>
+                                            <div v-for="config in configsList" v-bind:key="config" class="form-group" v-if="config.description === description">
+                                                <table class="table">
+                                                    <tbody id="body">
+                                                        <tr>
+                                                            <td>
+                                                                <input class="form-control" type="text" v-model="config.value" style="direction: ltr;">
+                                                            </td>
+                                                            <td>
+                                                                <p style="text-align: center; margin-top: 4%;">{{config.name}}</p>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                         <button v-on:click="editConfigs()" class="btn btn-primary">{{s26}}</button>
                                     </div>

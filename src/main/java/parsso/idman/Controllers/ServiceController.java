@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 import org.springframework.web.bind.annotation.*;
+import parsso.idman.Models.Group;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.ServiceRepo;
@@ -38,7 +39,7 @@ public class ServiceController {
     @Autowired
     private ServiceRepo serviceRepo;
 
-    @Value("${administrator.ou.name}")
+    @Value("${administrator.ou.id}")
     private String adminOu;
 
     @Value("${services.folder.path}")
@@ -86,14 +87,17 @@ public class ServiceController {
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUser(principal.getName());
             List<String> memberOf = user.getMemberOf();
-            if(memberOf.contains(adminOu)){
+
+
+            for (String group:memberOf) {
+                if (group.equals(adminOu))
                     return "services";
-            }else{
-                    return "403";
             }
+
         } catch (Exception e) {
             return "403";
         }
+        return "403";
     }
 
     @GetMapping("/createservice")
@@ -101,15 +105,19 @@ public class ServiceController {
         try {
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUser(principal.getName());
+
             List<String> memberOf = user.getMemberOf();
-            if(memberOf.contains(adminOu)){
+
+
+            for (String group:memberOf) {
+                if (group.equals(adminOu))
                     return "createservice";
-            }else{
-                    return "403";
             }
+
         } catch (Exception e) {
             return "403";
         }
+        return "403";
     }
 
 

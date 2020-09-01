@@ -63,8 +63,8 @@ function myFunction() {
         userPicture: "images/PlaceholderUser.png",
         accessStrategy: {},
         requiredAttributes: {},
-        member: [],
-        memberList: [],
+        ou: [],
+        ouList: [],
         contacts: [],
         contactsList: [],
         contactsObj: {},
@@ -99,7 +99,7 @@ function myFunction() {
         s28: "نام سرویس",
         s29: "آدرس سرویس",
         s30: "شناسه سرویس",
-        s31: "معرفی سرویس",
+        s31: "نام فارسی سرویس",
         s32: "گروه ها",
         s33: "پیوندهای مرجع",
         s34: "آدرس لوگو",
@@ -124,7 +124,8 @@ function myFunction() {
         s53: "./events",
         s54: "استراتژی دسترسی",
         s55: "فعال سازی SSO",
-        s56: "آدرس تغییر مسیر غیرمجاز"
+        s56: "آدرس تغییر مسیر غیرمجاز",
+        s57: " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)"
       },
       created: function () {
         this.getUserInfo();
@@ -157,7 +158,7 @@ function myFunction() {
               })
               .catch((error) => {
                   if (error.response) {
-                    if (error.response.status == 400 || error.response.status == 500) {
+                    if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                       vm.userPicture = "images/PlaceholderUser.png";
                     }else{
                       vm.userPicture = "/api/user/photo";
@@ -177,17 +178,6 @@ function myFunction() {
           });
         },
         showServices: function () {
-          /* this.groupList = "";
-          for(let i = 0; i < this.service.accessStrategy.requiredAttributes.member[1].length; ++i){
-            document.getElementById("groupNameId" + this.service.accessStrategy.requiredAttributes.member[1][i]).checked = false;
-          }
-          document.getElementById("showS2").setAttribute("style", "");
-          document.getElementById("showS3").setAttribute("style", "");
-          document.getElementById("showS4").setAttribute("style", "");
-          document.getElementById("showS5").setAttribute("style", "");
-          document.getElementById("editS").setAttribute("style", "display:none;");
-          document.getElementById("editS1").setAttribute("style", "display:none;");
-          document.getElementById("editS2").setAttribute("style", "display:none;"); */
           location.reload();
         },
         editServiceS: function (id) {
@@ -271,17 +261,17 @@ function myFunction() {
               document.getElementsByName("logoutUrl")[0].value = res.data.logoutUrl;
             }
 
-            if(typeof res.data.accessStrategy.requiredAttributes.member !== 'undefined'){
-              for(let i = 0; i < res.data.accessStrategy.requiredAttributes.member[1].length; ++i){
-                document.getElementById("groupNameId" + res.data.accessStrategy.requiredAttributes.member[1][i]).checked = true;
-                if(vm.groupList === ""){
-                  vm.groupList += res.data.accessStrategy.requiredAttributes.member[1][i];
-                }else{
-                  vm.groupList += ',' + res.data.accessStrategy.requiredAttributes.member[1][i];
+            if(typeof res.data.accessStrategy.requiredAttributes !== 'undefined'){
+              if(typeof res.data.accessStrategy.requiredAttributes.ou !== 'undefined'){
+                for(let i = 0; i < res.data.accessStrategy.requiredAttributes.ou[1].length; ++i){
+                  document.getElementById("groupNameId" + res.data.accessStrategy.requiredAttributes.ou[1][i]).checked = true;
+                  if(vm.groupList === ""){
+                    vm.groupList += res.data.accessStrategy.requiredAttributes.ou[1][i];
+                  }else{
+                    vm.groupList += ',' + res.data.accessStrategy.requiredAttributes.ou[1][i];
+                  }
                 }
               }
-            }else{
-              console.log("ewfriooivjosdbvjveoihuerkhjrs9oghnrsklvuzdghzog0uowel");
             }
           });
         },
@@ -290,7 +280,8 @@ function myFunction() {
           var vm = this;
 
           if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
-            document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == ""){
+            document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
+            document.getElementsByName('description')[0].value == ""){
             alert("لطفا قسمت های الزامی را پر کنید.");
           }else{
 
@@ -353,10 +344,10 @@ function myFunction() {
             }
 
             if(document.getElementsByName('groups')[0].value != ""){
-              this.memberList = document.getElementsByName('groups')[0].value.split(',');
-              this.member[0] = "java.util.HashSet";
-              this.member[1] = this.memberList;
-              this.requiredAttributes.member = this.member;
+              this.ouList = document.getElementsByName('groups')[0].value.split(',');
+              this.ou[0] = "java.util.HashSet";
+              this.ou[1] = this.ouList;
+              this.requiredAttributes.ou = this.ou;
             }else{
               this.requiredAttributes = {};
             }
@@ -423,14 +414,11 @@ function myFunction() {
           });
         },
         getGroups: function () {
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/api/groups"; //
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port; //
           var vm = this;
-          axios.get(url)
+          axios.get(url + "/api/groups")
           .then((res) => {
             vm.groups = res.data;
-            for(var i = 0; i < vm.groups.length; ++i){
-              vm.groups[i].id = vm.groups[i].name;
-            }
           });
         },
         addGroup: function (n) {
@@ -449,6 +437,12 @@ function myFunction() {
             }else{
               this.groupList += ',' + n;
             }
+          }
+        },
+        serviceNameValidate ($event) {
+          let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+          if (keyCode < 48 || keyCode > 122) {
+             $event.preventDefault();
           }
         },
         changeLang: function () {
@@ -487,7 +481,7 @@ function myFunction() {
             this.s28 = "Service Name";
             this.s29 = "Service URL";
             this.s30 = "ServiceID";
-            this.s31 = "Description";
+            this.s31 = "Service Farsi Name";
             this.s32 = "Groups";
             this.s33 = "Reference Links";
             this.s34 = "Logo URL";
@@ -513,6 +507,7 @@ function myFunction() {
             this.s54 = "Access Strategy";
             this.s55 = "Allow SSO";
             this.s56 = "Unauthorized Redirect Url";
+            this.s57 =  " (Only English Letters And Numbers Are Allowed For Service Name)";
           } else{
               this.margin = "margin-right: 30px;";
               this.lang = "EN";
@@ -548,7 +543,7 @@ function myFunction() {
               this.s28 = "نام سرویس";
               this.s29 = "آدرس سرویس";
               this.s30 = "شناسه سرویس";
-              this.s31 = "معرفی سرویس";
+              this.s31 = "نام فارسی سرویس";
               this.s32 = "گروه ها";
               this.s33 = "پیوندهای مرجع";
               this.s34 = "آدرس لوگو";
@@ -574,27 +569,12 @@ function myFunction() {
               this.s54 = "استراتژی دسترسی";
               this.s55 = "فعال سازی SSO";
               this.s56 = "آدرس تغییر مسیر غیرمجاز";
+              this.s57 =  " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
           }
         },
         saml: function () {
           this.samls = "";
           this.s18 = "Entity ID";
-          /* document.getElementById("metadataLocation").required = true;
-          document.getElementById("metadataLocation").setAttribute("name", "metadataLocation");
-          document.getElementById("metadataMaxValidity").setAttribute("name", "metadataMaxValidity");
-          document.getElementById("metadataSignatureLocation").setAttribute("name", "metadataSignatureLocation");
-          document.getElementById("metadataExpirationDuration").setAttribute("name", "metadataExpirationDuration");
-          document.getElementById("metadataCriteriaPattern").setAttribute("name", "metadataCriteriaPattern");
-          document.getElementById("metadataCriteriaDirection").setAttribute("name", "metadataCriteriaDirection");
-          document.getElementById("metadataCriteriaRoles").setAttribute("name", "metadataCriteriaRoles");
-          document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors").setAttribute("name", "metadataCriteriaRemoveEmptyEntitiesDescriptors");
-          document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors").setAttribute("name", "metadataCriteriaRemoveRolelessEntityDescriptors");
-          document.getElementById("signAssertions").setAttribute("name", "signAssertions");
-          document.getElementById("signResponses").setAttribute("name", "signResponses");
-          document.getElementById("encryptAssertions").setAttribute("name", "encryptAssertions");
-          document.getElementById("signingCredentialType").setAttribute("name", "signingCredentialType");
-          document.getElementById("requiredAuthenticationContextClass").setAttribute("name", "requiredAuthenticationContextClass");
-          document.getElementById("assertionAudiences").setAttribute("name", "assertionAudiences"); */
           },
         cas: function () {
           this.samls = "display: none;";
@@ -603,23 +583,7 @@ function myFunction() {
           }else{
             this.s18 = "Service URL";
           }
-          /* document.getElementById("metadataLocation").removeAttribute("required");
-          document.getElementById("metadataLocation").removeAttribute("name");
-          document.getElementById("metadataMaxValidity").removeAttribute("name");
-          document.getElementById("metadataSignatureLocation").removeAttribute("name");
-          document.getElementById("metadataExpirationDuration").removeAttribute("name");
-          document.getElementById("metadataCriteriaPattern").removeAttribute("name");
-          document.getElementById("metadataCriteriaDirection").removeAttribute("name");
-          document.getElementById("metadataCriteriaRoles").removeAttribute("name");
-          document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors").removeAttribute("name");
-          document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors").removeAttribute("name");
-          document.getElementById("signAssertions").removeAttribute("name");
-          document.getElementById("signResponses").removeAttribute("name");
-          document.getElementById("encryptAssertions").removeAttribute("name");
-          document.getElementById("signingCredentialType").removeAttribute("name");
-          document.getElementById("requiredAuthenticationContextClass").removeAttribute("name");
-          document.getElementById("assertionAudiences").removeAttribute("name"); */
-          }
+        }
       },
       computed:{
         sortedServices:function() {

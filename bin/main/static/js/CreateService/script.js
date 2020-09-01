@@ -12,7 +12,7 @@ window.onclick = function(event) {
         }
       }
   }
-} 
+}
 document.addEventListener('DOMContentLoaded', function () {
   var router = new VueRouter({
     mode: 'history',
@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', function () {
       userPicture: "images/PlaceholderUser.png",
       accessStrategy: {},
       requiredAttributes: {},
-      member: [],
-      memberList: [],
+      ou: [],
+      ouList: [],
       contacts: [],
       contactsList: [],
       contactsObj: {},
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s16: "نوع سرویس",
       s17: "نام سرویس",
       s18: "آدرس سرویس",
-      s19: "معرفی سرویس",
+      s19: "نام فارسی سرویس",
       s20: "پیوندهای مرجع",
       s21: "آدرس لوگو",
       s22: "آدرس راهنما",
@@ -87,7 +87,8 @@ document.addEventListener('DOMContentLoaded', function () {
       s43: "./events",
       s44: "استراتژی دسترسی",
       s45: "فعال سازی SSO",
-      s46: "آدرس تغییر مسیر غیرمجاز"
+      s46: "آدرس تغییر مسیر غیرمجاز",
+      s47: " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)"
     },
     created: function () {
       this.getUserInfo();
@@ -119,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch((error) => {
                 if (error.response) {
-                  if (error.response.status == 400 || error.response.status == 500) {
+                  if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                     vm.userPicture = "images/PlaceholderUser.png";
                   }else{
                     vm.userPicture = "/api/user/photo";
@@ -130,14 +131,11 @@ document.addEventListener('DOMContentLoaded', function () {
             });
       },
       getGroups: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port  + "/api/groups";
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        axios.get(url)
+        axios.get(url + "/api/groups")
         .then((res) => {
           vm.groups = res.data;
-          for(var i = 0; i < vm.groups.length; ++i){
-            vm.groups[i].id = vm.groups[i].name;
-          }
         });
       },
       addGroup: function (n) {
@@ -156,7 +154,6 @@ document.addEventListener('DOMContentLoaded', function () {
           }else{
             this.groupList += ',' + n;
           }
-          
         }
       },
       addService: function () {
@@ -164,7 +161,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
 
         if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
-        document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == ""){
+        document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
+        document.getElementsByName('description')[0].value == ""){
           alert("لطفا قسمت های الزامی را پر کنید.");
         }else{
 
@@ -227,10 +225,10 @@ document.addEventListener('DOMContentLoaded', function () {
           }
 
           if(document.getElementsByName('groups')[0].value != ""){
-            this.memberList = document.getElementsByName('groups')[0].value.split(',');
-            this.member[0] = "java.util.HashSet";
-            this.member[1] = this.memberList;
-            this.requiredAttributes.member = this.member;
+            this.ouList = document.getElementsByName('groups')[0].value.split(',');
+            this.ou[0] = "java.util.HashSet";
+            this.ou[1] = this.ouList;
+            this.requiredAttributes.ou = this.ou;
           }else{
             this.requiredAttributes = {};
           }
@@ -280,6 +278,12 @@ document.addEventListener('DOMContentLoaded', function () {
           });
         }
       },
+      serviceNameValidate ($event) {
+        let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+        if (keyCode < 48 || keyCode > 122) {
+           $event.preventDefault();
+        }
+      },
       changeLang: function () {
         if(this.lang == "EN"){
           this.margin = "margin-left: 30px;";
@@ -304,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s16 = "Service Type";
           this.s17 = "Service Name";
           this.s18 = "Service URL";
-          this.s19 = "Description";
+          this.s19 = "Service Farsi Name";
           this.s20 = "Reference Links";
           this.s21 = "Logo URL";
           this.s22 = "Information URL";
@@ -332,6 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s44 = "Access Strategy";
           this.s45 = "Allow SSO";
           this.s46 = "Unauthorized Redirect Url";
+          this.s47 =  " (Only English Letters And Numbers Are Allowed For Service Name)";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -355,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s16 = "نوع سرویس";
             this.s17 = "نام سرویس";
             this.s18 = "آدرس سرویس";
-            this.s19 = "معرفی سرویس";
+            this.s19 = "نام فارسی سرویس";
             this.s20 = "پیوندهای مرجع";
             this.s21 = "آدرس لوگو";
             this.s22 = "آدرس راهنما";
@@ -383,28 +388,13 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s44 = "استراتژی دسترسی";
             this.s45 = "فعال سازی SSO";
             this.s46 = "آدرس تغییر مسیر غیرمجاز";
+            this.s47 =  " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
         }
       },
       saml: function () {
         this.samls = "";
         this.s18 = "Entity ID";
-        /* document.getElementsByName("metadataLocation")[0].required = true;
-        document.getElementById("metadataLocation")[0].setAttribute("name", "metadataLocation");
-        document.getElementById("metadataMaxValidity")[0].setAttribute("name", "metadataMaxValidity");
-        document.getElementById("metadataSignatureLocation")[0].setAttribute("name", "metadataSignatureLocation");
-        document.getElementById("metadataExpirationDuration")[0].setAttribute("name", "metadataExpirationDuration");
-        document.getElementById("metadataCriteriaPattern")[0].setAttribute("name", "metadataCriteriaPattern");
-        document.getElementById("metadataCriteriaDirection")[0].setAttribute("name", "metadataCriteriaDirection");
-        document.getElementById("metadataCriteriaRoles")[0].setAttribute("name", "metadataCriteriaRoles");
-        document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors")[0].setAttribute("name", "metadataCriteriaRemoveEmptyEntitiesDescriptors");
-        document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors")[0].setAttribute("name", "metadataCriteriaRemoveRolelessEntityDescriptors");
-        document.getElementById("signAssertions")[0].setAttribute("name", "signAssertions");
-        document.getElementById("signResponses")[0].setAttribute("name", "signResponses");
-        document.getElementById("encryptAssertions")[0].setAttribute("name", "encryptAssertions");
-        document.getElementById("signingCredentialType")[0].setAttribute("name", "signingCredentialType");
-        document.getElementById("requiredAuthenticationContextClass").setAttribute("name", "requiredAuthenticationContextClass");
-        document.getElementById("assertionAudiences")[0].setAttribute("name", "assertionAudiences"); */
-        },
+      },
       cas: function () {
         this.samls = "display: none;";
         if(this.lang == "EN"){
@@ -412,23 +402,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }else{
           this.s18 = "Service URL";
         }
-        /* document.getElementById("metadataLocation").removeAttribute("required");
-        document.getElementById("metadataLocation").removeAttribute("name");
-        document.getElementById("metadataMaxValidity").removeAttribute("name");
-        document.getElementById("metadataSignatureLocation").removeAttribute("name");
-        document.getElementById("metadataExpirationDuration").removeAttribute("name");
-        document.getElementById("metadataCriteriaPattern").removeAttribute("name");
-        document.getElementById("metadataCriteriaDirection").removeAttribute("name");
-        document.getElementById("metadataCriteriaRoles").removeAttribute("name");
-        document.getElementById("metadataCriteriaRemoveEmptyEntitiesDescriptors").removeAttribute("name");
-        document.getElementById("metadataCriteriaRemoveRolelessEntityDescriptors").removeAttribute("name");
-        document.getElementById("signAssertions").removeAttribute("name");
-        document.getElementById("signResponses").removeAttribute("name");
-        document.getElementById("encryptAssertions").removeAttribute("name");
-        document.getElementById("signingCredentialType").removeAttribute("name");
-        document.getElementById("requiredAuthenticationContextClass").removeAttribute("name");
-        document.getElementById("assertionAudiences").removeAttribute("name"); */
-        }
       }
+    }
   })
 })

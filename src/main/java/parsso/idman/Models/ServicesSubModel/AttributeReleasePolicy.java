@@ -18,6 +18,7 @@ public class AttributeReleasePolicy {
         authorizedToReleaseAuthenticationAttributes = false;
         consentPolicy = new ConsentPolicy();
         order=0;
+        principalAttributesRepository = new PrincipalAttributesRepository();
 
     }
     @JsonProperty("@class")

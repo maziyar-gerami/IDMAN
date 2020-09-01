@@ -92,6 +92,7 @@
                                     <span>{{s4}}</span>
                                 </a>
                                 <a class="list-group-item list-group-item-action py-2 "
+                                style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                    v-bind:href="s16">
                                     <i class="fa fa-user"></i>
                                     <span>{{s13}}</span>
@@ -147,16 +148,27 @@
                                                 </button>
                                             </th>
                                             <th>
+                                                <button data-toggle="tooltip" data-placement="top" :title="U19" class="btn btn-success btn-sm" :class="margin3" v-on:click="exportUsers()">
+                                                    <span class="fa-passwd-reset fa-stack">
+                                                        <i class="fa fa-cloud-download fa-stack-2x"></i>
+                                                    </span>
+                                                </button>
+                                            </th>
+                                            <th :style="padding0Left">
                                                 <form id="myForm" method="POST" enctype="multipart/form-data" action="/api/users/import">
                                                     <input type="file" accept=".xls, .xlsx, .csv, .ldif" ref="file" @change="selectedFile"
                                                     data-toggle="tooltip" data-placement="top" :title="U20" class="btn btn-success btn-sm" :class="margin1"  name="file" id="file">
                                                 </form>
                                             </th>
-                                            <th><button data-toggle="tooltip" data-placement="top" :title="U19" class="btn btn-success btn-sm" v-on:click="exportUsers()">
-                                                <span class="fa-passwd-reset fa-stack">
-                                                    <i class="fa fa-cloud-download fa-stack-2x"></i>
-                                                </span>
-                                            </button></th>
+                                            <th :style="padding0Right">
+                                                <form method="get" action="template/users.xlsx">
+                                                    <button type="submit" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" :title="U23">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-info-circle fa-stack-2x"></i>
+                                                        </span>
+                                                    </button>
+                                                </form>
+                                            </th>
                                         </tr>
                                     </table>
                                 </div>
@@ -176,7 +188,7 @@
                                             <td style="display: inline-flex;">
                                                 <div v-for="group in groups">
                                                     <div v-for="member in user.memberOf" v-if="member == group.id">
-                                                        <button style="padding: .2rem .2rem; color: #000000; background-color: darkgrey; font-size: 70%; opacity: 1;"
+                                                        <button style="padding: .2rem .2rem; color: #000000; background-color: #a9a9a975; font-size: 60%; opacity: 1;"
                                                         class="btn btn-sm" disabled>
                                                             {{group.name}}
                                                         </button>
@@ -375,38 +387,39 @@
                                             </div>
                                         </div>
 
+                                        <div>    
+                                            <label>{{s45}}</label>
+                                            <div class="form-group">
+                                                <input :class='{valid:passwordValidationCreate.valid}' @input="passwordCheckCreate" :type="showCreate === true ? 'text' : 'password'" class="form-control"
+                                                name="passwordCreate" id="newPasswordCreate" v-model="passwordCreate" v-bind:placeholder="s46" v-bind:style="placeholder"
+                                                required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
 
-                                        <table class="table table-responsive">
-                                            <tr>
-                                                <td>
-
-                                                    <div class="pass">
-                                                        <label for="ediInfo.userPasswordUpdate">{{U0}}</label><span id="msg1" minlength="8"></span>
-                                                        <input id="ediInfo.userPasswordCreate" type="password"
-                                                        class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"/>
-                                                               
+                                                <div class="strength" :class="'level_' + strengthLevelCreate"></div>
+                                                <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showCreate" @click="showCreate = !showCreate"></i>
+                                                <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showCreate = !showCreate"></i>
+                                            </div>
+                                            <div class="form-group">
+                                                <input class="form-control" :type="showRCreate === true ? 'text' : 'password'" v-model.lazy='checkPasswordCreate' v-bind:placeholder="s47" v-bind:style="placeholder"> 
+                                                <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showRCreate" @click="showRCreate = !showRCreate"></i>
+                                                <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showRCreate = !showRCreate"></i>
+                                            </div>
+                                            <div class="form-group">
+                                                <transition name="hint" appear>
+                                                    <div v-if='!submittedCreate' class='hints'>
+                                                        <p style="box-sizing: unset;">{{s48}}</p> <br>
+                                                        <p :class="{'passed' :has_numberCreate }" v-bind:style="font"><i :class="has_numberCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
+                                                        <p :class="{'passed' :has_lowercaseCreate }" v-bind:style="font"><i :class="has_lowercaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
+                                                        <p :class="{'passed' :has_uppercaseCreate }" v-bind:style="font"><i :class="has_uppercaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
+                                                        <p :class="{'passed' :has_charCreate }" v-bind:style="font"><i :class="has_charCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[2].message}}</p>
                                                     </div>
-                                                    <div class="passRetype">
-                                                        <label for="editInfo.passwordRetypeUpdate" minlength="8">{{U15}}</label>
-                                                        <input id="editInfo.passwordRetypeCreate" type="password"
-                                                               class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
-                                                    </div>
-
-                                                </td>
-
-                                                <td >
-                                                    <div style="background-color: #f5fff6;margin-right: 20px; font-size: x-small; margin-top: 40px"  >
-
-                                                        <p>{{p7}}</p>
-                                                        <p>{{p4}}</p>
-                                                        <p>{{p5}}</p>
-                                                        <p>{{p6}}</p>
-                                                    </div>
-
-                                                </td>
-                                            </tr>
-
-                                        </table>
+                                                </transition>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="matches" v-bind:style="notSamePasswordsCreate ? 'visibility: visible;' : 'visibility: hidden;' ">
+                                                    <p class="error" style="font-size: .8rem;">{{s49}}</p>
+                                                </div> <br> <br>
+                                            </div>
+                                        </div>
 
                                         <div class="form-group">
                                             <label>{{U3}}</label>
@@ -454,7 +467,7 @@
                                                       rows="5" type="text" class="form-control">
                                                 </textarea>
                                         </div>
-                                        <button v-on:click='addUser("ediInfo.userPassword","editInfo.passwordRetypeCreate")' class="btn btn-primary">{{s18}}</button>
+                                        <button v-on:click="addUser()" :disabled="isActiveUserPassCreate" class="btn btn-primary">{{s18}}</button>
                                         <button v-on:click="showUsers()" class="btn btn-danger">{{s17}}</button>
 
                                     </div>

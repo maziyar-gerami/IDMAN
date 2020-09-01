@@ -3,8 +3,10 @@ package parsso.idman.RepoImpls;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldif.LDIFException;
 import com.unboundid.ldif.LDIFReader;
+import lombok.SneakyThrows;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -12,22 +14,28 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.Models.Event;
 import parsso.idman.Models.SimpleUser;
-import parsso.idman.utils.Email.EmailSend;
 import parsso.idman.Models.User;
+import parsso.idman.Repos.EventRepo;
+import parsso.idman.Repos.FilesStorageService;
+import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
+import parsso.idman.utils.Email.EmailSend;
 import parsso.idman.utils.SMS.sdk.KavenegarApi;
 import parsso.idman.utils.SMS.sdk.excepctions.ApiException;
 import parsso.idman.utils.SMS.sdk.excepctions.HttpException;
@@ -36,8 +44,10 @@ import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.*;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
@@ -45,42 +55,50 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 @Service
 public class UserRepoImpl implements UserRepo {
 
-    public static final String BASE_DN = "dc=example,dc=com";
-
-    @Value("${sms.api.key}")
-    private String  SMSAPI;
-
-    @Value("${sms.sender.number}")
-    private String SENDER;
-
-    @Value("${base.url}")
-    private String BASE_URL;
-
-    @Value("${email.controller}")
-    private String EMAILCONTROLLER;
-
-
-    @Value("${token.valid.email}")
-    private int EMAIL_VALID_TIME;
-
-    @Value("${token.valid.SMS}")
-    private int SMS_VALID_TIME;
-
-    @Value("${sms.validation.digits}")
-    private int SMS_VALIDATION_DIGITS;
-
-    @Value("${api.get.users}")
-    private String apiAddress;
-
-    @Value("${get.users.time.interval}")
-    private int apiHours;
-
-    private final int apiMiliseconds = apiHours*60*60000;
-
-    @Autowired
-    private LdapTemplate ldapTemplate;
+    //public static final String BASE_DN = "dc=partition1,dc=com";
 
     Logger logger = LoggerFactory.getLogger(UserRepoImpl.class);
+    @Autowired
+    FilesStorageService storageService;
+    @Qualifier("groupRepoImpl")
+    @Autowired
+    private GroupRepo groupRepo;
+    @Value("${sms.api.key}")
+    private String SMS_API_KEY;
+    @Value("${sms.sender.number}")
+    private String SENDER;
+    @Value("${base.url}")
+    private String BASE_URL;
+    @Value("${email.controller}")
+    private String EMAILCONTROLLER;
+    @Value("${token.valid.email}")
+    private int EMAIL_VALID_TIME;
+    @Value("${token.valid.SMS}")
+    private int SMS_VALID_TIME;
+    @Value("${sms.validation.digits}")
+    private int SMS_VALIDATION_DIGITS;
+    @Value("${api.get.users}")
+    private String apiAddress;
+    @Value("${get.users.time.interval}")
+    private int apiHours;
+    private final int apiMiliseconds = apiHours * 60 * 60000;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
+    @Autowired
+    private LdapTemplate ldapTemplate;
+    @Value("${pwd.expire.warning}")
+    private String pwdExpireWarning;
+    @Value("${pwd.failure.count.interval}")
+    private String pwdFaiilureCount;
+    @Value("${pwd.in.history}")
+    private String pwdInHistory;
+    @Value("${pwd.check.quality}")
+    private String pwdCheckQuality;
+    @Value("${default.user.password}")
+    private String defaultPassword;
+    @Value("${profile.photo.path}")
+    private String uploadedFilesPath;
+
 
     @Override
     public JSONObject create(User p) {
@@ -96,7 +114,7 @@ public class UserRepoImpl implements UserRepo {
                 return new JSONObject();
             } else {
 
-                return compareUsers(user,p);
+                return compareUsers(user, p);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,9 +130,9 @@ public class UserRepoImpl implements UserRepo {
         try {
             ldapTemplate.modifyAttributes(context);
             return HttpStatus.OK;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            return HttpStatus.EXPECTATION_FAILED;
+            return HttpStatus.FORBIDDEN;
         }
     }
 
@@ -125,7 +143,7 @@ public class UserRepoImpl implements UserRepo {
         try {
             ldapTemplate.unbind(dn);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return userId + " removed successfully";
@@ -140,7 +158,7 @@ public class UserRepoImpl implements UserRepo {
             try {
                 ldapTemplate.unbind(dn);
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -151,8 +169,6 @@ public class UserRepoImpl implements UserRepo {
     }
 
 
-
-
     private Attributes buildAttributes(User p) {
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
@@ -160,79 +176,107 @@ public class UserRepoImpl implements UserRepo {
         ocattr.add("person");
         ocattr.add("inetOrgPerson");
         ocattr.add("organizationalPerson");
-        //ocattr.add("pwdPolicy");
+        ocattr.add("pwdPolicy");
 
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
-        //attrs.put("pwdExpireWarning","600");
-        //attrs.put("pwdFailureCountInterval","5");
-        //attrs.put("pwdInHistory","5");
-        //attrs.put("pwdCheckQuality","2");
+        attrs.put("pwdExpireWarning", pwdExpireWarning);
+        attrs.put("pwdFailureCountInterval", pwdFaiilureCount);
+        attrs.put("pwdInHistory", pwdInHistory);
+        attrs.put("pwdCheckQuality", pwdCheckQuality);
 
 
-
-        //attrs.put("pwdAttribute", "userPassword");
+        attrs.put("pwdAttribute", "userPassword");
         attrs.put("uid", p.getUserId());
-        attrs.put("givenName", p.getFirstName());
-        attrs.put("sn", p.getLastName());
-        attrs.put("userPassword", p.getUserPassword());
+        attrs.put("givenName", p.getFirstName().equals("") ? " " : p.getDisplayName());
+        attrs.put("sn", p.getLastName().equals("") ? " " : p.getLastName());
+        attrs.put("userPassword", p.getUserPassword() != null ? p.getUserPassword() : defaultPassword);
         attrs.put("displayName", p.getDisplayName());
-        attrs.put("mobile", p.getMobile());
+        attrs.put("mobile", p.getMobile().equals("") ? " " : p.getMobile());
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
-        if (p.getToken() != null)
-            attrs.put("l", p.getToken());
-        if (p.getMemberOf() != null) {
+        if (p.getResetPassToken() != null)
+            attrs.put("resetPassToken", p.getResetPassToken());
+        if (p.getMemberOf() != null && p.getMemberOf().size() != 0) {
             Attribute attr = new BasicAttribute("ou");
             for (int i = 0; i < p.getMemberOf().size(); i++)
                 attr.add(p.getMemberOf().get(i));
             attrs.put(attr);
         }
-        attrs.put("description", p.getDescription());
-        attrs.put("initials" , p.getPhotoPath());
-        if (p.getStatus()==null)
-            attrs.put("o", "Activated");
+        if (p.getDescription() != null && !(p.getDescription().equals("")))
+            attrs.put("description", p.getDescription());
         else
-            attrs.put("o", p.getStatus());
-        attrs.put("st",UUID.randomUUID().toString());
+            attrs.put("description", " ");
+
+        if (p.getPhotoName() != null)
+            attrs.put("photoName", p.getPhotoName());
+
+
+        if (p.getStatus() == null)
+            attrs.put("userStatus", "active");
+        else
+            attrs.put("userStatus", p.getStatus());
+        attrs.put("qrToken", UUID.randomUUID().toString());
         return attrs;
     }
 
 
-
+    @SneakyThrows
     private DirContextOperations buildAttributes(String uid, User p, Name dn) {
+
+        User old = retrieveUser(uid);
 
         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
-        if (p.getFirstName() != null) context.setAttributeValue("givenName", p.getFirstName());
-        if (p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
-        if (p.getDisplayName() != null) context.setAttributeValue("displayName", p.getDisplayName());
-        if (p.getUserPassword() != null) context.setAttributeValue("userPassword", p.getUserPassword());
-        if (p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
-        if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
+        if (p.getFirstName() != "" && p.getFirstName() != null)
+            context.setAttributeValue("givenName", p.getFirstName());
+        if (p.getLastName() != "" && p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
+        if (p.getDisplayName() != "" && p.getDisplayName() != null)
+            context.setAttributeValue("displayName", p.getDisplayName());
+        if (p.getUserPassword() != "" && p.getUserPassword() != null)
+            context.setAttributeValue("userPassword", p.getUserPassword());
+        if (p.getMobile() != "" && p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
+        if (p.getMail() != "" && p.getFirstName() != null) context.setAttributeValue("mail", p.getMail());
         if ((p.getFirstName()) != null || (p.getLastName() != null)) {
-            if (p.getFirstName() == null)  context.setAttributeValue("cn", retrieveUser(uid).getFirstName() + ' ' + p.getLastName());
+            if (p.getFirstName() == null)
+                context.setAttributeValue("cn", retrieveUser(uid).getFirstName() + ' ' + p.getLastName());
 
-            else if (p.getLastName() == null) context.setAttributeValue("cn", p.getFirstName() + ' ' + retrieveUser(uid).getLastName());
+            else if (p.getLastName() == null)
+                context.setAttributeValue("cn", p.getFirstName() + ' ' + retrieveUser(uid).getLastName());
 
-            else  context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
+            else context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
         }
-        if (p.getMail() != null) context.setAttributeValue("initials", p.getPhotoPath());
+        if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhotoName());
 
-        if (p.getToken() != null) context.setAttributeValue("l", p.getToken());
+        Attributes ls;
 
-        if (p.getMemberOf() != null) {
+        if (p.getResetPassToken() != null) context.setAttributeValue("resetPassToken", p.getResetPassToken());
 
+
+        if (p.getMemberOf()!=null&&p.getMemberOf().size() != 0)
             for (int i = 0; i < p.getMemberOf().size(); i++) {
                 if (i == 0) context.setAttributeValue("ou", p.getMemberOf().get(i));
                 else context.addAttributeValue("ou", p.getMemberOf().get(i));
+
             }
+        else if (old.getMemberOf().size() != 0) {
+
+            for (String id : old.getMemberOf()) {
+                context.removeAttributeValue("ou", id);
+
+            }
+
         }
 
-        if (p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
-        if (p.getPhotoPath() != null) context.setAttributeValue("initials", p.getPhotoPath());
-        if (p.getStatus() != null) context.setAttributeValue("o", p.getStatus());
 
+        if (p.getDescription() != "" && p.getDescription() != null)
+            context.setAttributeValue("description", p.getDescription());
+        if (p.getPhotoName() != "" && p.getPhotoName() != null)
+            context.setAttributeValue("photoName", p.getPhotoName());
+        else
+            context.setAttributeValue("photoName", old.getPhotoName());
+
+        if (p.getStatus() != "" && p.getStatus() != null) context.setAttributeValue("userStatus", p.getStatus());
 
 
         return context;
@@ -249,15 +293,67 @@ public class UserRepoImpl implements UserRepo {
         //TODO:check current pass
         User user = retrieveUser(uId);
 
-        if (true) {
+        if (true)
             user.setUserPassword(newPassword);
+
+
+        Name dn = buildDn(uId);
+        DirContextOperations context = buildAttributes(uId, user, dn);
+
+        try {
+            ldapTemplate.modifyAttributes(context);
             return HttpStatus.OK;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpStatus.EXPECTATION_FAILED;
         }
-        else
-            return HttpStatus.FORBIDDEN;
 
     }
+    @Override
+    public HttpStatus showProfilePic(HttpServletResponse response, User user){
+        File file = new File(uploadedFilesPath+user.getPhotoName());
 
+        if (file.exists()) {
+            try {
+                String contentType = "image/png";
+                response.setContentType(contentType);
+                OutputStream out = response.getOutputStream();
+                FileInputStream in = new FileInputStream(file);
+                // copy from in to out
+                IOUtils.copy(in, out);
+                out.close();
+                in.close();
+                return HttpStatus.OK;
+            } catch (Exception e) {
+                return HttpStatus.BAD_REQUEST;
+
+            }
+        }
+        return  HttpStatus.FORBIDDEN;
+    }
+
+    @Override
+    public HttpStatus uploadProfilePic(MultipartFile file, String name) {
+
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
+
+        String s = timeStamp + file.getOriginalFilename();
+
+        storageService.save(file, s);
+
+        User user = retrieveUser(name);
+
+        //remove old pic
+        File oldPic = new File(uploadedFilesPath + user.getPhotoName());
+
+        user.setPhotoName(s);
+        if(update(user.getUserId(), user)==HttpStatus.OK) {
+            oldPic.delete();
+            return  HttpStatus.OK;
+
+        }
+        return HttpStatus.BAD_REQUEST;
+    }
 
 
     @Override
@@ -266,17 +362,24 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou").where("objectClass").is("person"),
                 new SimpleUserAttributeMapper());
-        return people;
+        List relatedUsers = new LinkedList();
+        for (SimpleUser user : people) {
+            if (!(user.getUserId().equals("admin")) && user.getDisplayName() != null) {
+                relatedUsers.add(user);
+            }
+        }
+        return relatedUsers;
     }
 
     @Override
-    public User getName(String uid) {
+    public User getName(String uid, String token) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        User user = ldapTemplate.search(query().attributes("givenName", "sn", "displayName").where("uid").is(uid)
-                ,
-                new UserAttributeMapper(false)).get(0);
-        return user;
+        if (checkToken(uid, token) == HttpStatus.OK)
+            return ldapTemplate.search(query().attributes("givenName", "sn", "displayName").where("uid").is(uid)
+                    ,
+                    new UserAttributeMapper(false)).get(0);
+        return null;
     }
 
     @Override
@@ -285,7 +388,12 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         List<User> people = ldapTemplate.search(query().where("objectClass").is("person"),
                 new UserAttributeMapper(false));
-        return people;
+        List<User> relatedPeople = new LinkedList<>();
+        for (User user : people) {
+            if (user.getDisplayName() != null)
+                relatedPeople.add(user);
+        }
+        return relatedPeople;
     }
 
     @Override
@@ -295,8 +403,8 @@ public class UserRepoImpl implements UserRepo {
         User user = new User();
         if (!((ldapTemplate.search(query().where("uid").is(userId), new UserAttributeMapper(false))).toString() == "[]"))
             user = ldapTemplate.search(query().where("uid").is(userId), new UserAttributeMapper(true)).get(0);
-        if (user.getUserId()==null) return null;
-        else  return user;
+        if (user.getUserId() == null) return null;
+        else return user;
     }
 
     @Override
@@ -306,9 +414,9 @@ public class UserRepoImpl implements UserRepo {
         List<JSONObject> jsonArray = new LinkedList<>();
         List<User> people = ldapTemplate.search(query().where("mail").is(email), new UserAttributeMapper(false));
         JSONObject jsonObject;
-        for (User user:people ){
+        for (User user : people) {
             jsonObject = new JSONObject();
-            jsonObject.put("userId",user.getUserId());
+            jsonObject.put("userId", user.getUserId());
             jsonArray.add(jsonObject);
         }
         return jsonArray;
@@ -321,37 +429,108 @@ public class UserRepoImpl implements UserRepo {
         List<User> people = ldapTemplate.search(query().where("mobile").is(mobile), new UserAttributeMapper(false));
         List<JSONObject> jsonArray = new LinkedList<>();
         JSONObject jsonObject;
-        for (User user:people ) {
+        for (User user : people) {
             jsonObject = new JSONObject();
-            jsonObject.put("userId",user.getUserId());
+            jsonObject.put("userId", user.getUserId());
             jsonArray.add(jsonObject);
         }
         return jsonArray;
     }
 
     @Override
-    public String sendEmail(String email) {
+    public JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException {
+        JSONObject jsonObject = new JSONObject();
+
+        //________users data____________
+        JSONObject userJson = new JSONObject();
+        List<User> usersList = retrieveUsersFull();
+        int nUsers = retrieveUsersMain().size();
+        int nActive = 0;
+        int nLocked = 0;
+        int nDisabled = 0;
+
+        for (User user : usersList) {
+            if (user.getStatus().equals("active"))
+                nActive++;
+            else if (user.getStatus().equals("disabled"))
+                nDisabled++;
+            else if (user.getStatus().equals("locked"))
+                nLocked++;
+        }
+        userJson.put("total", nUsers);
+        userJson.put("active", nActive);
+        userJson.put("disabled", nDisabled);
+        userJson.put("locked", nLocked);
+
+        //________services data____________
+        JSONObject servicesJson = new JSONObject();
+        ServiceRepoImpl serviceRepo = new ServiceRepoImpl();
+        List<parsso.idman.Models.Service> services = serviceRepo.listServices();
+        int nServices = services.size();
+        int nEnabledServices = 0;
+
+        for (parsso.idman.Models.Service service : services) {
+            if (service.getAccessStrategy().isEnabled())
+                nEnabledServices++;
+        }
+
+        int nDisabledServices = nServices - nEnabledServices;
+
+        servicesJson.put("total", nServices);
+        servicesJson.put("enabled", nEnabledServices);
+        servicesJson.put("disabled", nDisabledServices);
+
+        //__________________login data____________
+        JSONObject loginJson = new JSONObject();
+        EventRepo eventRepo = new EventRepoImpl();
+        List<Event> events = eventRepo.analyze();
+        int nSuccessful = 0;
+        int nUnSucceful = 0;
+
+        for (Event event : events) {
+            if (event.getAction().equals("AUTHENTICATION_FAILED")) {
+                nUnSucceful++;
+
+            } else if (event.getAction().equals("AUTHENTICATION_SUCCESS"))
+                nSuccessful++;
+        }
+        loginJson.put("total", nSuccessful+nUnSucceful);
+        loginJson.put("unsuccessful", nUnSucceful);
+        loginJson.put("successful", nSuccessful);
+
+        //_________summary________________
+        jsonObject.put("users", userJson);
+        jsonObject.put("services", servicesJson);
+        jsonObject.put("logins", loginJson);
+
+        return jsonObject;
+
+
+    }
+
+    @Override
+    public HttpStatus sendEmail(String email) {
         if (checkMail(email) != null) {
             User user = retrieveUser(checkMail(email).get(0).getAsString("userId"));
             insertEmailToken(user);
             EmailSend emailSend = new EmailSend();
 
-            String fullUrl = createUrl(BASE_URL, user.getUserId(), user.getToken().substring(0,36));
+            String fullUrl = createUrl(BASE_URL, user.getUserId(), user.getResetPassToken().substring(0, 36));
 
             emailSend.sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
-            return "Email sent";
+            return HttpStatus.OK;
         } else
-            return "Email Not found";
+            return HttpStatus.FORBIDDEN;
     }
 
     @Override
-    public String sendEmail(String email, String uid) {
+    public HttpStatus sendEmail(String email, String uid) {
 
         if (checkMail(email) != null & retrieveUser(uid).getUserId() != null) {
             List<JSONObject> ids = checkMail(email);
             List<User> people = new LinkedList<>();
             User user = retrieveUser(uid);
-            for (JSONObject id:ids ) people.add(retrieveUser(id.getAsString("userId")));
+            for (JSONObject id : ids) people.add(retrieveUser(id.getAsString("userId")));
 
             Boolean emailSent = false;
 
@@ -362,23 +541,23 @@ public class UserRepoImpl implements UserRepo {
                     insertEmailToken(user);
                     EmailSend emailSend = new EmailSend();
 
-                    String fullUrl = createUrl(BASE_URL, user.getUserId(), user.getToken());
+                    String fullUrl = createUrl(BASE_URL, user.getUserId(), user.getResetPassToken().substring(0, 36));
                     emailSend.sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
-                    return "Email sent";
+                    return HttpStatus.OK;
 
                 }
             }
 
         } else
-            return "Email Not found or userId not found";
+            return HttpStatus.FORBIDDEN;
 
-        return "Not a such user";
+        return HttpStatus.BAD_REQUEST;
     }
 
 
     private String createUrl(String BaseUrl, String userId, String token) {
         //TODO: Need to uncomment for war file
-        return BaseUrl + /*"" +*/ EMAILCONTROLLER + userId + "/" + token.toString();
+        return BaseUrl + /*"" +*/ EMAILCONTROLLER + userId + "/" + token;
 
     }
 
@@ -390,12 +569,12 @@ public class UserRepoImpl implements UserRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        User user = ldapTemplate.search(query().where("uid").is(userId), new UserAttributeMapper(true)).get(0);
+        User user = retrieveUser(userId);
 
-        String mainDbToken = user.getToken();
+        String mainDbToken = user.getResetPassToken();
         String mainPartToken;
 
-        if (token.length()>30)
+        if (token.length() > 30)
             mainPartToken = mainDbToken.substring(0, 36);
         else
             mainPartToken = mainDbToken.substring(0, SMS_VALIDATION_DIGITS);
@@ -406,22 +585,20 @@ public class UserRepoImpl implements UserRepo {
             Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
             long cTimeStamp = currentTimestamp.getTime();
 
-            if (mainPartToken.length()>30){
+            if (mainPartToken.length() > 30) {
 
-                String timeStamp = mainDbToken.substring(mainDbToken.indexOf(user.getUserId())+user.getUserId().length());
+                String timeStamp = mainDbToken.substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
 
-                if ((cTimeStamp - Long.valueOf(timeStamp))<(60000*EMAIL_VALID_TIME))
+                if ((cTimeStamp - Long.valueOf(timeStamp)) < (60000 * EMAIL_VALID_TIME))
                     return HttpStatus.OK;
 
                 else
                     return HttpStatus.REQUEST_TIMEOUT;
-            }
-            else {
+            } else {
                 String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
-                if ((cTimeStamp - Long.valueOf(timeStamp))<(60000*SMS_VALID_TIME)) {
+                if ((cTimeStamp - Long.valueOf(timeStamp)) < (60000 * SMS_VALID_TIME)) {
                     return HttpStatus.OK;
-                }
-                else
+                } else
                     return HttpStatus.REQUEST_TIMEOUT;
 
             }
@@ -443,84 +620,38 @@ public class UserRepoImpl implements UserRepo {
 
     public String insertEmailToken(User user) {
         String token = passwordResetToken(user.getUserId());
-        user.setToken(token);
+        user.setResetPassToken(token);
         Name dn = buildDn(user.getUserId());
         Context context = buildAttributes(user.getUserId(), user, dn);
         ldapTemplate.modifyAttributes((DirContextOperations) context);
         return "Email Token for " + user.getUserId() + " is created";
     }
 
-    public String insertMobileToken(User user) {
-
+    public boolean insertMobileToken(User user) {
 
         Random rnd = new Random();
-        int token = (int) (Math.pow(10,(SMS_VALIDATION_DIGITS-1))+rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS-1)-1)));
+        int token = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)) + rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS - 1) - 1)));
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         long cTimeStamp = currentTimestamp.getTime();
-        user.setToken(String.valueOf(token)+cTimeStamp);
-        Name dn = buildDn(user.getUserId());
-        Context context = buildAttributes(user.getUserId(), user, dn);
-        ldapTemplate.modifyAttributes((DirContextOperations) context);
-        return "Mobile Token for " + user.getUserId() + " is created";
+        user.setResetPassToken(String.valueOf(token) + cTimeStamp);
 
-
-    }
-
-    private class SimpleUserAttributeMapper implements AttributesMapper<SimpleUser> {
-
-        @Override
-        public SimpleUser mapFromAttributes(Attributes attributes) throws NamingException {
-            SimpleUser user = new SimpleUser();
-
-            user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
-            user.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
-            int nGroups = (null == attributes.get("ou") ? 0 : attributes.get("ou").size());
-            List<String> ls = new LinkedList<>();
-            for (int i = 0; i < nGroups; i++) ls.add(attributes.get("ou").get(i).toString());
-            user.setMemberOf(ls);
-
-            return user;
-        }
-    }
-
-    private class UserAttributeMapper implements AttributesMapper<User> {
-        private boolean showToken;
-
-        private UserAttributeMapper(boolean showToken){
-            this.showToken = showToken;
+        try {
+            update(user.getUserId(), user);
+        } catch (Exception e) {
+            return false;
         }
 
-
-        @Override
-        public User mapFromAttributes(Attributes attributes) throws NamingException {
-            User user = new User();
-
-            user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
-            user.setFirstName(null != attributes.get("givenName") ? attributes.get("givenName").get().toString() : null);
-            user.setLastName(null != attributes.get("sn") ? attributes.get("sn").get().toString() : null);
-            user.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
-            user.setMobile(null != attributes.get("mobile") ? attributes.get("mobile").get().toString() : null);
-            user.setMail(null != attributes.get("mail") ? attributes.get("mail").get().toString() : null);
-            int nGroups = (null == attributes.get("ou") ? 0 : attributes.get("ou").size());
-            List<String> ls = new LinkedList<>();
-            for (int i = 0; i < nGroups; i++) ls.add(attributes.get("ou").get(i).toString());
-            if(showToken)
-                user.setToken(null != attributes.get("l") ? attributes.get("l").get().toString() : null);
-            user.setMemberOf(null != attributes.get("ou") ? ls : null);
-            user.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
-            user.setPhotoPath(null != attributes.get("initials") ? attributes.get("initials").get().toString() : null);
-            user.setStatus(null != attributes.get("o") ? attributes.get("o").get().toString() : "Activated");
-            return user;
-        }
+        return true;
     }
-
 
     public String updatePass(String userId, String pass, String token) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = ldapTemplate.search(query().where("uid").is(userId), new UserAttributeMapper(false)).get(0);
 
-        if (token.equals(user.getToken())) {
+        HttpStatus httpStatus = checkToken(userId, token);
+
+        if (httpStatus == HttpStatus.OK) {
             user.setUserPassword(pass);
             Name dn = buildDn(user.getUserId());
 
@@ -533,7 +664,7 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
-    public JSONArray excelSheetAnalyze(Sheet sheet, int[] sequence, boolean hasHeader){
+    public JSONArray excelSheetAnalyze(Sheet sheet, int[] sequence, boolean hasHeader) {
         JSONArray jsonArray = new JSONArray();
 
         Iterator<Row> rowIterator = sheet.iterator();
@@ -551,24 +682,23 @@ public class UserRepoImpl implements UserRepo {
             Cell cell = row.getCell(0);
             //Check the cell type and format accordingly
 
-            if (cell==null) break;
+            if (cell == null) break;
 
             user.setUserId(row.getCell(sequence[0]).getStringCellValue());
             user.setFirstName(row.getCell(sequence[1]).getStringCellValue());
             user.setLastName(row.getCell(sequence[2]).getStringCellValue());
             user.setDisplayName(row.getCell(sequence[3]).getStringCellValue());
-            user.setMobile(row.getCell(sequence[4]).getStringCellValue());
+            user.setMobile(String.valueOf(row.getCell(sequence[4]).getNumericCellValue()));
             user.setMail(row.getCell(sequence[5]).getStringCellValue());
-            user.setMemberOf(Collections.singletonList(row.getCell(sequence[6]).getStringCellValue()));
-            user.setUserPassword(row.getCell(sequence[7]).getStringCellValue());
-            user.setDescription(row.getCell(sequence[8]).getStringCellValue());
-            user.setPhotoPath(row.getCell(sequence[9]).getStringCellValue());
+            //user.setMemberOf(Collections.singletonList(row.getCell(sequence[6]).getStringCellValue()));
+            user.setDescription(row.getCell(sequence[7]).getStringCellValue());
+            user.setStatus(row.getCell(sequence[8]).getStringCellValue());
 
 
             temp = create(user);
 
 
-            if (!temp.equals(null))
+            if (temp != null)
                 jsonArray.add(temp);
 
 
@@ -576,7 +706,7 @@ public class UserRepoImpl implements UserRepo {
         return jsonArray;
     }
 
-    public JSONObject compareUsers(User oldUser , User newUser){
+    public JSONObject compareUsers(User oldUser, User newUser) {
 
         List<String> conflicts = new LinkedList<>();
 
@@ -603,11 +733,11 @@ public class UserRepoImpl implements UserRepo {
 
         String row;
         JSONArray jsonArray = new JSONArray();
-        int i=0;
+        int i = 0;
         List<User> lsUserConflicts = new LinkedList();
 
         while ((row = sheet.readLine()) != null) {
-            if (i==0  && hasHeader) {
+            if (i == 0 && hasHeader) {
                 i++;
 
                 continue;
@@ -624,7 +754,7 @@ public class UserRepoImpl implements UserRepo {
             user.setDisplayName(data[sequence[3]]);
             user.setMobile(data[sequence[4]]);
             user.setMail(data[sequence[5]]);
-            user.setMemberOf(Collections.singletonList(data[sequence[6]]));
+            //user.setMemberOf(Collections.singletonList(data[sequence[6]]));
             user.setUserPassword((data[sequence[7]]));
             user.setDescription((data[sequence[8]]));
             user.setStatus(data[sequence[9]]);
@@ -640,61 +770,55 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public JSONArray importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) {
+    public JSONArray importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
 
         JSONArray lsusers = new JSONArray();
 
-        try {
-            InputStream insfile = file.getInputStream();
-            String format = file.getContentType();
 
-            switch (format){
-
-                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-
-                    //Create Workbook instance holding reference to .xlsx file
-                    XSSFWorkbook workbookXLSX = new XSSFWorkbook(insfile);
-
-                    //Get first/desired sheet from the workbook
-                    XSSFSheet sheet = workbookXLSX.getSheetAt(0);
-
-                    lsusers = excelSheetAnalyze(sheet , sequence, hasHeader);
-
-                    break;
-
-                case "application/vnd.ms-excel":
-                    HSSFWorkbook workbookXLS = new HSSFWorkbook(insfile);
-
-                    HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
-
-                    lsusers = excelSheetAnalyze(xlssheet ,sequence, hasHeader);
-
-                case "text/csv":
-
-                    BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
-
-                    lsusers = csvSheetAnalyze(csvReader,sequence,hasHeader);
-
-                    csvReader.close();
-
-                    break;
-
-                case "application/octet-stream":
-
-                    final LDIFReader ldifReader = new LDIFReader(insfile);
-
-                    lsusers = ldifAnalayze(ldifReader, sequence,hasHeader);
-            }
+        InputStream insfile = file.getInputStream();
 
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (file.getOriginalFilename().endsWith(".xlsx")) {
+
+            //Create Workbook instance holding reference to .xlsx file
+            XSSFWorkbook workbookXLSX = null;
+            workbookXLSX = new XSSFWorkbook(insfile);
+
+
+            //Get first/desired sheet from the workbook
+            XSSFSheet sheet = workbookXLSX.getSheetAt(0);
+
+            lsusers = excelSheetAnalyze(sheet, sequence, hasHeader);
+
+        } else if (file.getOriginalFilename().endsWith(".xls")) {
+            HSSFWorkbook workbookXLS = null;
+
+            workbookXLS = new HSSFWorkbook(insfile);
+
+            HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
+
+            lsusers = excelSheetAnalyze(xlssheet, sequence, hasHeader);
+
+        } else if (file.getOriginalFilename().endsWith(".csv")) {
+
+
+            BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
+
+            lsusers = csvSheetAnalyze(csvReader, sequence, hasHeader);
+
+
+            csvReader.close();
+
+        } else if (file.getOriginalFilename().endsWith(".ldif")) {
+
+            final LDIFReader ldifReader = new LDIFReader(insfile);
+
+            lsusers = ldifAnalayze(ldifReader, sequence, hasHeader);
         }
 
 
         return lsusers;
     }
-
 
     private JSONArray ldifAnalayze(LDIFReader ldifReader, int[] sequence, boolean hasHeader) {
         Entry entry = null;
@@ -718,32 +842,29 @@ public class UserRepoImpl implements UserRepo {
         return null;
     }
 
-    private List<User> extractAttrEntry(Entry entry){
+    private List<User> extractAttrEntry(Entry entry) {
 
         List<User> lsUserConflicts = new LinkedList();
 
         User user = new User();
 
+        user.setUserId(entry.getAttributeValue("uid"));
+        user.setFirstName(entry.getAttributeValue("givenName"));
+        user.setLastName(entry.getAttributeValue("sn"));
+        user.setDisplayName(entry.getAttributeValue("displayName"));
+        user.setMobile(entry.getAttributeValue("mobile"));
+        user.setMail(entry.getAttributeValue("mail"));
+        int nGroups = (null == entry.getAttributeValue("ou") ? 0 : entry.getAttributeValue("ou").length());
+        List<String> ls = new LinkedList<>();
+        for (int i = 0; i < nGroups; i++) ls.add(entry.getAttributeValue("ou"));
+        user.setMemberOf(null != entry.getAttributeValue("ou") ? ls : null);
+        user.setResetPassToken(entry.getAttributeValue("resetPassToken"));
+        user.setUserPassword(entry.getAttributeValue("userPassword"));
+        user.setDescription(entry.getAttributeValue("description"));
+        user.setPhotoName(entry.getAttributeValue("photoName"));
+        user.setStatus(entry.getAttributeValue("userStatus"));
 
-
-            user.setUserId(entry.getAttributeValue("uid"));
-            user.setFirstName(entry.getAttributeValue("givenName"));
-            user.setLastName(entry.getAttributeValue("sn"));
-            user.setDisplayName(entry.getAttributeValue("displayName"));
-            user.setMobile(entry.getAttributeValue("mobile"));
-            user.setMail(entry.getAttributeValue("mail"));
-            int nGroups = (null == entry.getAttributeValue("ou") ? 0 : entry.getAttributeValue("ou").length());
-            List<String> ls = new LinkedList<>();
-            for (int i = 0; i < nGroups; i++) ls.add(entry.getAttributeValue("ou"));
-            user.setToken(entry.getAttributeValue("l"));
-            user.setMemberOf(null != entry.getAttributeValue("ou") ? ls : null);
-            user.setUserPassword(entry.getAttributeValue("userPassword"));
-            user.setDescription(entry.getAttributeValue("description"));
-            user.setPhotoPath(entry.getAttributeValue("initials"));
-            user.setStatus(entry.getAttributeValue("o"));
-
-            //lsUserConflicts.add(create(user));
-
+        //lsUserConflicts.add(create(user));
 
 
         return lsUserConflicts;
@@ -751,29 +872,36 @@ public class UserRepoImpl implements UserRepo {
 
     }
 
-
-
     @Override
-    public String sendMessage(String mobile) {
-        String s = checkMobile(mobile).get(0).getAsString("userId");
-        User user = retrieveUser(checkMobile(mobile).get(0).getAsString("userId"));
-        insertMobileToken(user);
-        try {
-            String receptor = mobile;
-            String message = "کد اعتبارسنجی شما در پارسو Idman:\n"+user.getToken().substring(0,SMS_VALIDATION_DIGITS);
-            KavenegarApi api = new KavenegarApi(SMSAPI);
-            api.send(SENDER, receptor, message);
-        } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-            System.out.print("HttpException  : " + ex.getMessage());
-        } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-            System.out.print("ApiException : " + ex.getMessage());
-        }
-        return "SMS Sent!";
+    public HttpStatus sendMessage(String mobile) {
+        if (checkMobile(mobile).size() > 0) {
+            User user = retrieveUser(checkMobile(mobile).get(0).getAsString("userId"));
+            if (insertMobileToken(user)) {
+                try {
+                    String receptor = mobile;
+                    String message = user.getResetPassToken().substring(0,SMS_VALIDATION_DIGITS);
+                    KavenegarApi api = new KavenegarApi(SMS_API_KEY);
+                    api.verifyLookup(receptor, message, "", "", "mfa");
+
+
+
+                } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                    System.out.print("HttpException  : " + ex.getMessage());
+                    return HttpStatus.BAD_REQUEST;
+                } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                    System.out.print("ApiException : " + ex.getMessage());
+                    return HttpStatus.BAD_REQUEST;
+                }
+                return HttpStatus.OK;
+            } else
+                return HttpStatus.FORBIDDEN;
+
+        } else
+            return HttpStatus.FORBIDDEN;
     }
 
-
     @Override
-    public String sendMessage(String mobile, String uId) {
+    public HttpStatus sendMessage(String mobile, String uId) {
 
 
         if (checkMobile(mobile) != null & retrieveUser(uId).getUserId() != null) {
@@ -785,30 +913,86 @@ public class UserRepoImpl implements UserRepo {
             for (User p : people) {
                 if (p.getUserId().equals(user.getUserId())) {
 
-                    insertMobileToken(user);
+                    if (insertMobileToken(user)) {
 
-                    try {
-                        String receptor = mobile;
-                        String message = "کد اعتبارسنجی شما در پارسو Idman:\n"+user.getToken().substring(0,SMS_VALIDATION_DIGITS);
-                        KavenegarApi api = new KavenegarApi(SMSAPI);
-                        api.send(SENDER, receptor, message);
-                    } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                        System.out.print("HttpException  : " + ex.getMessage());
-                    } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                        System.out.print("ApiException : " + ex.getMessage());
+                        try {
+                            String receptor = mobile;
+                            String message = user.getResetPassToken().substring(0,SMS_VALIDATION_DIGITS);
+                            KavenegarApi api = new KavenegarApi(SMS_API_KEY);
+                            api.verifyLookup(receptor, message, "", "", "mfa");
+                            return HttpStatus.OK;
+                        } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                            System.out.print("HttpException  : " + ex.getMessage());
+                            return HttpStatus.BAD_REQUEST;
+
+                        } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                            System.out.print("ApiException : " + ex.getMessage());
+                            return HttpStatus.BAD_REQUEST;
+
+                        }
+
                     }
 
-
-                    return "SMS sent";
 
                 }
             }
 
         } else
-            return "Email Not found or userId not found";
+            return HttpStatus.NOT_FOUND;
 
-        return "Not a such user";
+        return HttpStatus.FORBIDDEN;
 
+    }
+
+    private class SimpleUserAttributeMapper implements AttributesMapper<SimpleUser> {
+
+        @Override
+        public SimpleUser mapFromAttributes(Attributes attributes) throws NamingException {
+            SimpleUser user = new SimpleUser();
+
+            user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
+            user.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
+            int nGroups = (null == attributes.get("ou") ? 0 : attributes.get("ou").size());
+            List<String> ls = new LinkedList<>();
+            for (int i = 0; i < nGroups; i++) ls.add(attributes.get("ou").get(i).toString());
+            user.setMemberOf(ls);
+
+            return user;
+        }
+    }
+
+    private class UserAttributeMapper implements AttributesMapper<User> {
+        private final boolean showToken;
+
+        private UserAttributeMapper(boolean showToken) {
+            this.showToken = showToken;
+        }
+
+
+        @Override
+        public User mapFromAttributes(Attributes attributes) throws NamingException {
+            User user = new User();
+
+            user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
+            user.setFirstName(null != attributes.get("givenName") ? attributes.get("givenName").get().toString() : null);
+            user.setLastName(null != attributes.get("sn") ? attributes.get("sn").get().toString() : null);
+            user.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
+            user.setMobile(null != attributes.get("mobile") ? attributes.get("mobile").get().toString() : null);
+            user.setMail(null != attributes.get("mail") ? attributes.get("mail").get().toString() : null);
+            int nGroups = (null == attributes.get("ou") ? 0 : attributes.get("ou").size());
+            List<String> ls = new LinkedList<>();
+            for (int i = 0; i < nGroups; i++) ls.add(attributes.get("ou").get(i).toString());
+
+            user.setResetPassToken(null != attributes.get("resetPassToken") ? attributes.get("resetPassToken").get().toString() : null);
+            user.setMemberOf(null != attributes.get("ou") ? ls : null);
+            user.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
+            user.setPhotoName(null != attributes.get("photoName") && "" != attributes.get("photoName").toString() ? attributes.get("photoName").get().toString() : null);
+            user.setStatus(null != attributes.get("userStatus") ? attributes.get("userStatus").get().toString() : "Activated");
+            user.setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
+            user.setQrToken(null != attributes.get("qrToken") ? attributes.get("qrToken").get().toString() : null);
+
+            return user;
+        }
     }
 
 

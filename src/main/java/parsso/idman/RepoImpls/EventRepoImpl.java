@@ -16,8 +16,16 @@ import java.util.*;
 @Service
 public class EventRepoImpl implements EventRepo {
 
+
+
+    public static String path;
+
+
+
     @Value("${events.file.path}")
-    private String path;
+    public void setPath(String value){
+        path = value;
+    }
 
     public static Calendar toCalendar(Date date) {
         Calendar cal = Calendar.getInstance();
@@ -37,7 +45,7 @@ public class EventRepoImpl implements EventRepo {
         List<Event> events = analyze();
         List<Event> relatedEvents = new LinkedList<>();
         for (Event event : events)
-            if (event.getUserId().equals(userId)) relatedEvents.add(event);
+            if (event!=null && event.getUserId()!=null && (event.getUserId().equals(userId))) relatedEvents.add(event);
         return relatedEvents;
     }
 
@@ -112,7 +120,7 @@ public class EventRepoImpl implements EventRepo {
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             if (line.equals("=============================================================")) {
-                if (!(event == null)) events.add(event);
+                if (!(event == null) && event.getAction()!=null) events.add(event);
                 event = new Event();
             }
             if (line.contains("WHO: ")) {
@@ -130,19 +138,33 @@ public class EventRepoImpl implements EventRepo {
             } else if (line.contains("WHEN: ")) {
                 temp = line.substring(line.indexOf(":") + 2);
                 SimpleDateFormat parserSDF = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
+                parserSDF.setTimeZone(TimeZone.getDefault());
                 Date date = parserSDF.parse(temp);
 
-                Time time = new Time();
-                time.setDay(date.getDay());
-                time.setMonth(date.getMonth());
-                time.setYear(date.getYear()+1900);
-                time.setHours(date.getHours());
-                time.setMinutes(date.getMinutes());
-                time.setSeconds(date.getSeconds());
+                Calendar myCal = new GregorianCalendar();
+                myCal.setTime(date);
+
+                Time time = new Time(
+                        myCal.get(Calendar.YEAR),
+                        myCal.get(Calendar.MONTH)+1,
+                        myCal.get(Calendar.DAY_OF_MONTH),
+
+                        myCal.get(Calendar.HOUR_OF_DAY),
+                        myCal.get(Calendar.MINUTE),
+                        myCal.get(Calendar.SECOND)
+
+
+                );
 
 
 
                 event.setTime(time);
+
+
+
+
+
+
             } else if (line.contains("CLIENT IP ADDRESS: ")) {
                 temp = line.substring(line.indexOf(":") + 2);
                 event.setClientIP(temp);

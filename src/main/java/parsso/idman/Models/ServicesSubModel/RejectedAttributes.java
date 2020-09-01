@@ -13,7 +13,7 @@ import java.util.List;
 public class RejectedAttributes {
 
         public RejectedAttributes(){
-                atClass = "java.util.LinkedHashMap";
+                atClass = "java.util.HashMap";
         }
         @JsonProperty("@class")
         private String atClass;

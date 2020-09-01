@@ -188,6 +188,7 @@ html,body {
     z-index: 9;
     transition: all 0.5s linear;
     margin-right: 3.5%;
+    margin-left: 3.5%;
   }
   .level_0 {
     bottom: 0;
@@ -222,14 +223,12 @@ html,body {
   }
   .show-icon {
     position: absolute;
-    /* //right: 1%; */
     top: 25%;
     z-index: 11;
     cursor: pointer;
   }
   .hide-icon {
     position: absolute;
-    /* right: 1%; */
     top: 25%;
     z-index: 11;
     cursor: pointer;

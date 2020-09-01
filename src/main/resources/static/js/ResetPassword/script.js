@@ -194,18 +194,28 @@ document.addEventListener('DOMContentLoaded', function () {
             checkSMS: function  (code) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                var usernameCheck;
+
+                if(this.mobiles.length == 1){
+                    usernameCheck = this.mobiles[0].userId;
+                }else if(this.mobiles.length > 1){
+                    usernameCheck = this.usernameS;
+                }
+
                 if(code != ""){
-                    axios.get(url + "/api/public/validateToken/" + this.usernameS + "/" + code) //
+                    axios.get(url + "/api/public/validateMessageToken/" + usernameCheck + "/" + code) //
+                    .then((res) => {
+                        vm.sendS = false;
+                        vm.sendUS = false;
+                        vm.checkSMSCode = false;
+                        vm.SuccessS = true;
+                        vm.ErrorS = false;
+                        vm.ErrorSMSCode = false;
+                        window.location.replace(url + "/resetPassword?uid=" + usernameCheck + "&token=" + code);
+                    })
                     .catch((error) => {
                         if (error.response) {
-                            if(error.response.status === 200){
-                                vm.sendS = false;
-                                vm.sendUS = false;
-                                vm.checkSMSCode = false;
-                                vm.SuccessS = true;
-                                vm.ErrorS = false;
-                                vm.ErrorSMSCode = false;
-                            }else if(error.response.status === 408){
+                            if(error.response.status === 408){
                                 vm.ErrorSMSCode408 = true;
                                 vm.ErrorSMSCode403 = false;
                                 vm.sendS = false;

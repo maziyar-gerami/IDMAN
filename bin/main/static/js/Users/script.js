@@ -2,69 +2,6 @@ function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
 
-function BothFieldsIdentical (id1 , id2) {
-    var one = document.getElementById(id1).value;
-    var another = document.getElementById(id2).value;
-    if(one == another) { return true; }
-    alert("Both fields for password must be identical.");
-    return false;
-}
-
-function validatePassword(password) {
-
-    // Do not show anything when the length of password is zero.
-    if (password.length === 0) {
-        document.getElementById("msg").innerHTML = "";
-        return;
-    }
-    // Create an array and push all possible values that you want in password
-    var matchedCase = new Array();
-    matchedCase.push("[$@$!%*#?&]"); // Special Charector
-    matchedCase.push("[A-Z]");      // Uppercase Alpabates
-    matchedCase.push("[0-9]");      // Numbers
-    matchedCase.push("[a-z]");     // Lowercase Alphabates
-
-    // Check the conditions
-    var ctr = 0;
-    for (var i = 0; i < matchedCase.length; i++) {
-        if (new RegExp(matchedCase[i]).test(password)) {
-            ctr++;
-        }
-    }
-
-    var value = document.getElementById('ediInfo.userPasswordUpdate').value;
-    if (value.length > 7) {
-        console.log("No")
-    }
-
-    console.log(ctr)
-    // Display it
-    var color = "";
-    var strength = "";
-    switch (ctr) {
-        case 0:
-        case 1:
-        case 2:
-            strength = "خیلی ضعیف";
-            color = "red";
-            break;
-        case 3:
-            strength = "متوسط";
-            color = "orange";
-            break;
-        case 4:
-            strength = "قوی";
-            color = "lightgreen";
-            break;
-        case 5:
-            strength = "خیلی قوی";
-            color = "darkseagreen";
-            break;
-    }
-    document.getElementById("msg1").innerHTML = strength;
-    document.getElementById("msg1").style.color = color;
-}
-
 window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -102,6 +39,9 @@ document.addEventListener('DOMContentLoaded', function () {
             usersCorrectList: [],
             usersCorrectUserIdList: [],
             message: "",
+            groups: [],
+            groupListCreate: "",
+            groupListUpdate: "",
             editInfo: {},
             placeholder: "text-align: right;",
             margin: "margin-right: 30px;",
@@ -128,8 +68,43 @@ document.addEventListener('DOMContentLoaded', function () {
                 last: '>>'
             },
             margin1: "ml-1",
+            margin3: "ml-3",
             margin5: "ml-5",
+            padding0Left: "padding-left: 0rem;",
+            padding0Right: "padding-right: 0rem;",
             userPicture: "images/PlaceholderUser.png",
+            activeItem: "info",
+            eye: "right: 1%;",
+            font: "font-size: 0.74em; text-align: right;",
+            rules: [
+                { message:"حداقل شامل یک کاراکتر کوچک باشد. ", regex:/[a-z]+/ },
+				{ message:"حداقل شامل یک کاراکتر بزرگ باشد. ",  regex:/[A-Z]+/ },
+				{ message:"حداقل ۸ کاراکتر باشد. ", regex:/.{8,}/ },
+				{ message:"حداقل شامل یک عدد باشد. ", regex:/[0-9]+/ }
+            ],
+            show: false,
+            showR: false,
+            showC: false,
+            has_number: false,
+            has_lowercase: false,
+            has_uppercase: false,
+            has_char: false,
+            password: "",
+            checkPassword: "",
+			passwordVisible: true,
+            submitted: false,
+            userFound : false,
+            showCreate: false,
+            showRCreate: false,
+            showCCreate: false,
+            has_numberCreate: false,
+            has_lowercaseCreate: false,
+            has_uppercaseCreate: false,
+            has_charCreate: false,
+            passwordCreate: "",
+            checkPasswordCreate: "",
+			passwordVisibleCreate: true,
+            submittedCreate: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -137,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s4: "سرویس ها",
             s5: "گروه ها",
             s6: "رویداد ها",
-            s7: "تنظیمات",
+            s7: "پروفایل",
             s9: "fa fa-arrow-right",
             s10: "قوانین",
             s11: "حریم خصوصی",
@@ -173,6 +148,13 @@ document.addEventListener('DOMContentLoaded', function () {
             s41: "فعال",
             s42: "غیر فعال",
             s43: "قفل شده",
+            s44: "اطلاعات کاربر",
+            s45: "رمز عبور",
+            s46: "رمز عبور جدید",
+            s47: "تکرار رمز عبور جدید",
+            s48: "رمز عبور شما باید شامل موارد زیر باشد:",
+            s49: "رمز عبور های وارد شده یکسان نمی باشند",
+            s50: "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -187,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
             U11: "حذف",
             U12: "کاربر جدید",
             U13: "ویرایش",
-            U14: "گروههای عضو",
+            U14: "گروه های عضو",
             U15: "تکرار رمز عبور",
             U16: "کاربر مورد نظر در گروههای زیر عضویت دارد. کاربر مورد نظر از چه گروههایی حذف شود؟",
             U17: "حذف همه",
@@ -196,24 +178,24 @@ document.addEventListener('DOMContentLoaded', function () {
             U20: "وارد کردن کاربران با فایل",
             U21: "بارگزاری",
             U22: "بازنشانی رمز عبور",
-            h1: "ترکیبی از حروف و اعداد. مثال: ali123",
-            p1: "خیلی ضعیف",
-            p2: "متوسط",
-            p3: "قوی",
-            p4: "- باید حداقل 8 کاراکتر باشد",
-            p5: "- باید ترکیبی از حرف و عدد باشد",
-            p6: "- باید شامل حروف بزرگ و کوچک باشد",
-            p7:"رمز در نظر گرفته شده باید:"
+            U23: "فایل الگو"
         },
         created: function () {
             this.getUserInfo();
             this.getUserPic();
             this.refreshUsers();
+            this.getGroups();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
             }
         },
         methods: {
+            isActive (menuItem) {
+                return this.activeItem === menuItem
+            },
+            setActive (menuItem) {
+                this.activeItem = menuItem
+            },
             selectedFile() {
                 this.ImportedFile = this.$refs.file.files[0];
                 const file = this.$refs.file.files[0];
@@ -393,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
                     .catch((error) => {
                         if (error.response) {
-                          if (error.response.status == 400 || error.response.status == 500) {
+                          if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                             vm.userPicture = "images/PlaceholderUser.png";
                           }else{
                             vm.userPicture = "/api/user/photo";
@@ -402,7 +384,51 @@ document.addEventListener('DOMContentLoaded', function () {
                           console.log("error.response is False")
                         }
                     });
-              },
+            },
+            getGroups: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/api/groups")
+                .then((res) => {
+                  vm.groups = res.data;
+                });
+            },
+            addGroupCreate: function (n) {
+                n = n.split("'").join("");
+                if(this.groupListCreate.includes(n)){
+                  if(this.groupListCreate.includes(n + ',')){
+                    this.groupListCreate = this.groupListCreate.replace(n + ',', "");
+                  }else if(this.groupListCreate === n){
+                    this.groupListCreate = this.groupListCreate.replace(n, "");
+                  }else{
+                    this.groupListCreate = this.groupListCreate.replace(',' + n, "");
+                  }
+                }else{
+                  if(this.groupListCreate === ""){
+                    this.groupListCreate += n;
+                  }else{
+                    this.groupListCreate += ',' + n;
+                  }
+                }
+            },
+            addGroupUpdate: function (n) {
+                n = n.split("'").join("");
+                if(this.groupListUpdate.includes(n)){
+                  if(this.groupListUpdate.includes(n + ',')){
+                    this.groupListUpdate = this.groupListUpdate.replace(n + ',', "");
+                  }else if(this.groupListUpdate === n){
+                    this.groupListUpdate = this.groupListUpdate.replace(n, "");
+                  }else{
+                    this.groupListUpdate = this.groupListUpdate.replace(',' + n, "");
+                  }
+                }else{
+                  if(this.groupListUpdate === ""){
+                    this.groupListUpdate += n;
+                  }else{
+                    this.groupListUpdate += ',' + n;
+                  }
+                }
+            },
             refreshUsers: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
@@ -417,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.addS = "display:none"
                 this.editS = "display:none"
                 this.importConflictS = "display:none"
+                location.reload();
             },
             showImportConflicts: function () {
                 this.showS = "display:none"
@@ -431,11 +458,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.importConflictS = "display:none"
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                this.getGroups();
                 axios.get(url + `/api/users/u/${id}`) //
                     .then((res) => {
                         vm.editInfo = res.data;
-                        //vm.editInfo.password = res.data.userPassword;
-                        //vm.editInfo.mobile = res.data.mobile;
                         if(typeof res.data.status !== 'undefined'){
                             if(res.data.status == "active"){
                                 document.getElementById("option1").selected = true;
@@ -451,45 +477,18 @@ document.addEventListener('DOMContentLoaded', function () {
                                 document.getElementById("option3").selected = true;
                             }
                         }
-                        populate(res.data.memberOf);
-                    });
 
-                function populate(checkedGroups) {
-                    axios.get(url + `/api/groups`) //
-                        .then((res) => {
-                                populateTwo(res.data, checkedGroups)
-                            }
-                        );
-                    function populateTwo(allGroups, checkedGroups) {
-                        for (var i = 0; i < allGroups.length; i++) {
-                            let iDiv = document.createElement('div');
-                            iDiv.id = 'block' + i;
-                            iDiv.className = 'block';
-                            document.getElementById('lsGroupsUpdate').appendChild(iDiv);
-                            var v = document.createElement('input');
-                            v.setAttribute("id", "checkbox" + i);
-                            v.setAttribute("class","groupsCheckBox");
-                            v.type = "checkbox";
-                            console.log(v.getAttribute("id", "checkbox" + i));
-                            v.value = allGroups[i].name;
-                            if (checkedGroups!=null) {
-                                for (var j = 0; j < checkedGroups.length; j++) {
-                                    if ((allGroups[i].name).localeCompare(checkedGroups[j]) == 0) {
-                                        v.checked = true;
-                                    }
+                        if(typeof res.data.memberOf !== 'undefined'){
+                            for(let i = 0; i < res.data.memberOf.length; ++i){
+                                document.getElementById("groupNameId" + res.data.memberOf[i]).checked = true;
+                                if(vm.groupListUpdate === ""){
+                                    vm.groupListUpdate += res.data.memberOf[i];
+                                }else{
+                                    vm.groupListUpdate += ',' + res.data.memberOf[i];
                                 }
                             }
-                            let l = document.createElement('label');
-                            l.setAttribute("for", v.value);
-                            l.innerHTML = v.value;
-                            document.getElementById('lsGroupsUpdate').appendChild(v);
-                            document.getElementById('lsGroupsUpdate').appendChild(l);
-                            let innerDiv = document.createElement('div');
-                            innerDiv.className = 'block-2';
-                            iDiv.appendChild(innerDiv);
                         }
-                    };
-                }
+                    });
             },
             editUser: function (id) {
                 this.showS = ""
@@ -499,14 +498,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var check = confirm(this.s26);
 
-                var checkedValue = [];
-                var inputElements = document.getElementsByClassName('groupsCheckBox');
-
-
-                for(var i=0; i<inputElements.length; i++){
-                    if(inputElements[i].checked == true){
-                        checkedValue.push(inputElements[i].value);
-                    }
+                var checkedGroups = [];
+                if(document.getElementById('groupsUpdate').value != ""){
+                    checkedGroups = document.getElementById('groupsUpdate').value.split(',');
                 }
 
                 if (check == true) {
@@ -516,15 +510,38 @@ document.addEventListener('DOMContentLoaded', function () {
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                             userId: id,
-                            status: document.getElementById('status').value,
                             firstName: document.getElementById('editInfo.firstNameUpdate').value,
                             lastName: document.getElementById('editInfo.lastNameUpdate').value,
                             displayName: document.getElementById('editInfo.displayNameUpdate').value,
                             mobile: document.getElementById('editInfo.mobileUpdate').value,
-                            memberOf: checkedValue,
+                            memberOf: checkedGroups,
                             mail: document.getElementById('editInfo.mailUpdate').value,
-                            userPassword: document.getElementById('editInfo.passwordRetypeUpdate').value,
                             description: document.getElementById('editInfo.descriptionUpdate').value,
+                            status: document.getElementById('status').value
+                        }),
+                    })
+                    .then((res) => {
+                        location.reload();
+                    });
+                    
+                }
+
+            },
+            editPass: function (id) {
+                this.showS = ""
+                this.addS = "display:none"
+                this.editS = "display:none"
+                this.importConflictS = "display:none"
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var check = confirm(this.s26);
+
+                if (check == true) {
+                    axios({
+                        method: 'put',
+                        url: url + '/api/users/u/' + id,  //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                            userPassword: document.getElementById('newPassword').value
                         }),
                     })
                     .then((res) => {
@@ -550,35 +567,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.addS = ""
                 this.editS = "display:none"
                 this.importConflictS = "display:none"
-                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-
-                axios.get(url + `/api/groups`) //
-                    .then((res) => {
-                            populate(res.data);
-                        }
-                    );
-                function populate(allGroups) {
-                    console.log(allGroups)
-                    for (var i = 0; i < allGroups.length; i++) {
-                        let iDiv = document.createElement('div');
-                        iDiv.id = 'block' + i;
-                        iDiv.className = 'block';
-                        document.getElementById('lsGroupsAdd').appendChild(iDiv);
-                        var v = document.createElement('input');
-                        v.setAttribute("id", "checkboxaddpart" + i);
-                        v.setAttribute("class" , "groupsCheckBoxCreate")
-                        v.type = "checkbox";
-                        v.value = allGroups[i].name;
-                        let l = document.createElement('label');
-                        l.setAttribute("for", v.value);
-                        l.innerHTML = v.value;
-                        document.getElementById('lsGroupsAdd').appendChild(v);
-                        document.getElementById('lsGroupsAdd').appendChild(l);
-                        let innerDiv = document.createElement('div');
-                        innerDiv.className = 'block-2';
-                        iDiv.appendChild(innerDiv);
-                    }
-                };
+                this.getGroups();
             },
             sendResetEmail(userId) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -590,31 +579,17 @@ document.addEventListener('DOMContentLoaded', function () {
                             });
                     })
             },
-            checkedBoxes:function() {
-                var checkedValue = [];
-                var inputElements = document.getElementsByClassName('groupsCheckBox');
-                for(var i=0; inputElements.length; i++){
-                    console.log(inputElements[i].value);
-                    if(inputElements[i].checked){
-                        console.log(inputElements[i].value);
-                        checkedValue.push(inputElements[i].value);
-                    }
-                }
-                return checkedValue;
+            removeError() {
+                this.userFound = false;
             },
             addUser: function (id1,id2) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                var checkedValue = [];
-                var inputElements = document.getElementsByClassName('groupsCheckBoxCreate');
                 var check = confirm(this.s27);
 
-                console.log(inputElements.length);
-
-                for(var i=0; i<inputElements.length; i++){
-                    if(inputElements[i].checked ==true){
-                        checkedValue.push(inputElements[i].value);
-                    }
+                var checkedGroups = [];
+                if(document.getElementById('groupsCreate').value != ""){
+                    checkedGroups = document.getElementById('groupsCreate').value.split(',');
                 }
 
                 if(check==true) {
@@ -628,16 +603,23 @@ document.addEventListener('DOMContentLoaded', function () {
                                 lastName: document.getElementById('editInfo.lastNameCreate').value,
                                 displayName: document.getElementById('editInfo.displayNameCreate').value,
                                 mobile: document.getElementById('editInfo.mobileCreate').value,
-                                memberOf: checkedValue,
+                                memberOf: checkedGroups,
                                 mail: document.getElementById('editInfo.mailCreate').value,
-                                userPassword: document.getElementById('editInfo.passwordRetypeCreate').value,
+                                userPassword: document.getElementById('newPasswordCreate').value,
                                 description: document.getElementById('editInfo.descriptionCreate').value,
 
                             }
                         ),
                     })
-                    .then((res) => {
+                    .then(() => {
                         location.reload();
+                    })
+                    .catch((error) => {
+                        if (error.response) {
+                            if(error.response.status === 302){
+                                vm.userFound = true;
+                            }
+                        }
                     });
                 }
             },
@@ -664,6 +646,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
             },
+            passwordCheck () {
+                this.has_number    = /\d/.test(this.password);
+                this.has_lowercase = /[a-z]/.test(this.password);
+                this.has_uppercase = /[A-Z]/.test(this.password);
+                this.has_char   = /.{8,}/.test(this.password);
+            },
+            passwordCheckCreate () {
+                this.has_numberCreate    = /\d/.test(this.passwordCreate);
+                this.has_lowercaseCreate = /[a-z]/.test(this.passwordCreate);
+                this.has_uppercaseCreate = /[A-Z]/.test(this.passwordCreate);
+                this.has_charCreate   = /.{8,}/.test(this.passwordCreate);
+            },
             changeLang: function () {
                 if(this.lang == "EN"){
                     this.placeholder = "text-align: left;"
@@ -671,7 +665,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.lang = "فارسی";
                     this.isRtl = false;
                     this.margin1 = "mr-1";
+                    this.margin3 = "mr-3";
                     this.margin5 = "mr-5";
+                    this.padding0Left = "padding-right: 0rem;";
+                    this.padding0Right = "padding-left: 0rem;";
+                    this.eye = "left: 1%;";
+                    this.font = "font-size: 0.9em; text-align: left;"
                     this.s0 = "Parsso";
                     this.s1 = this.nameEN;
                     this.s2 = "Exit";
@@ -679,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s4 = "Services";
                     this.s5 = "Groups";
                     this.s6 = "Events";
-                    this.s7 = "Settings";
+                    this.s7 = "Profile";
                     this.s9 = "fa fa-arrow-left";
                     this.s10 = "Rules";
                     this.s11 = "Privacy";
@@ -715,33 +714,51 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s41 = "Active";
                     this.s42 = "Disabled";
                     this.s43 = "Locked";
-                    this.U0= "Password";
-                    this.U1= "Users";
-                    this.U2= "ID";
-                    this.U3= "First Name (In English)";
-                    this.U4= "Last Name (In English)";
-                    this.U5= "FullName (In Persian)";
-                    this.U6= "Phone";
-                    this.U7= "Email";
-                    this.U8= "NID";
+                    this.s44 = "Information";
+                    this.s45 = "Password";
+                    this.s46 = "New Password";
+                    this.s47 = "Repeat New Password";
+                    this.s48 = "Your Password Must Meet All Of The Following Criteria:";
+                    this.s49 = "Passwords Don't Match";
+                    this.s50 = "This UID Already Exists In Our Database, Please Choose Another.";
+                    this.U0 = "Password";
+                    this.U1 = "Users";
+                    this.U2 = "ID";
+                    this.U3 = "First Name (In English)";
+                    this.U4 = "Last Name (In English)";
+                    this.U5 = "FullName (In Persian)";
+                    this.U6 = "Phone";
+                    this.U7 = "Email";
+                    this.U8 = "NID";
                     this.U9 = "Description";
                     this.U10 = "Update";
                     this.U11 = "Delete"
                     this.U12 = "New User";
                     this.U13 = "Edit";
+                    this.U14 = "Groups";
                     this.U17 = "Remove All";
-                    this.U18= "Export Users to a file";
-                    this.U19= "Save in file";
-                    this.U20= "Import users using file";
-                    this.U21= "Upload";
-                    this.U22= "Password Reset";
+                    this.U18 = "Export Users to a file";
+                    this.U19 = "Save in file";
+                    this.U20 = "Import users using file";
+                    this.U21 = "Upload";
+                    this.U22 = "Password Reset";
+                    this.U23 = "Template File";
+                    this.rules[0].message = "- One Lowercase Letter Required.";
+                    this.rules[1].message = "- One Uppercase Letter Required.";
+                    this.rules[2].message = "- 8 Characters Minimum.";
+                    this.rules[3].message = "- One Number Required.";
                 } else{
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
                     this.lang = "EN";
                     this.isRtl = true;
                     this.margin1 = "ml-1";
+                    this.margin3 = "ml-3";
                     this.margin5 = "ml-5";
+                    this.padding0Left = "padding-left: 0rem;";
+                    this.padding0Right = "padding-right: 0rem;";
+                    this.eye = "right: 1%;";
+                    this.font = "font-size: 0.74em; text-align: right;"
                     this.s0 = "پارسو";
                     this.s1 = this.name;
                     this.s2 = "خروج";
@@ -749,7 +766,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s4 = "سرویس ها";
                     this.s5 = "گروه ها";
                     this.s6 = "رویداد ها";
-                    this.s7 = "تنظیمات";
+                    this.s7 = "پروفایل";
                     this.s9 = "fa fa-arrow-right";
                     this.s10 = "قوانین";
                     this.s11 = "حریم خصوصی";
@@ -785,30 +802,46 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s41 = "فعال";
                     this.s42 = "غیر فعال";
                     this.s43 = "قفل شده";
-                    this.U0= "رمز";
-                    this.U1= "کاربران";
-                    this.U2= "شناسه";
-                    this.U3= "نام (به انگلیسی)";
-                    this.U4= "نام خانوادگی (به انگلیسی)";
-                    this.U5= "نام کامل (به فارسی)";
-                    this.U6= "شماره تلفن";
-                    this.U7= "ایمیل";
-                    this.U8= "کد ملی";
-                    this.U9= "توضیحات";
+                    this.s44 = "اطلاعات کاربر";
+                    this.s45 = "رمز عبور";
+                    this.s46 = "رمز عبور جدید";
+                    this.s47 = "تکرار رمز عبور جدید";
+                    this.s48 = "رمز عبور شما باید شامل موارد زیر باشد:";
+                    this.s49 = "رمز عبور های وارد شده یکسان نمی باشند";
+                    this.s50 = "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.";
+                    this.U0 = "رمز";
+                    this.U1 = "کاربران";
+                    this.U2 = "شناسه";
+                    this.U3 = "نام (به انگلیسی)";
+                    this.U4 = "نام خانوادگی (به انگلیسی)";
+                    this.U5 = "نام کامل (به فارسی)";
+                    this.U6 = "شماره تلفن";
+                    this.U7 = "ایمیل";
+                    this.U8 = "کد ملی";
+                    this.U9 = "توضیحات";
                     this.U10 = "به روز رسانی";
                     this.U11 = "حذف"
                     this.U12 = "کاربر جدید";
                     this.U13 = "ویرایش";
+                    this.U14 = "گروه های عضو";
                     this.U17 = "حذف همه";
-                    this.U18= "وارد کردن کاربران با فایل";
-                    this.U19= "ذخیره سازی داده ها در فایل";
-                    this.U20= "وارد کردن کاربران با فایل";
-                    this.U21= "بارگزاری";
-                    this.U22= "بازنشانی رمز عبور";
+                    this.U18 = "وارد کردن کاربران با فایل";
+                    this.U19 = "ذخیره سازی داده ها در فایل";
+                    this.U20 = "وارد کردن کاربران با فایل";
+                    this.U21 = "بارگزاری";
+                    this.U22 = "بازنشانی رمز عبور";
+                    this.U23 = "فایل الگو";
+                    this.rules[0].message = "حداقل شامل یک کاراکتر کوچک باشد. ";
+                    this.rules[1].message = "حداقل شامل یک کاراکتر بزرگ باشد. ";
+                    this.rules[2].message = "حداقل ۸ کاراکتر باشد. ";
+                    this.rules[3].message = "حداقل شامل یک عدد باشد. ";
                 }
             }
         },
         computed:{
+            userCreateExists () {
+                return this.userFound;
+            },
             sortedUsers:function() {
                 this.usersPage = [];
                 for(let i = 0; i < this.recordsShownOnPage; ++i){
@@ -817,6 +850,128 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
                 return this.usersPage;
+            },
+            notSamePasswords () {
+                if (this.passwordsFilled) {
+                    return (this.password !== this.checkPassword)
+                } else {
+                    return false
+                }
+            },
+            passwordsFilled () {
+                return (this.password !== '' && this.checkPassword !== '')
+            },
+            /* isActiveUserInfoUpdate () {
+                if(this.editInfo.displayName == "" || this.editInfo.mail == ""){ Create
+                    return true;
+                }else{
+                    return false;
+                }
+            }, */
+            isActiveUserPassUpdate () {
+                if(this.password !== '' && this.checkPassword !== ''){
+                    let errors = []
+                    for (let condition of this.rules) {
+                        if (!condition.regex.test(this.password)) {
+                            errors.push(condition.message)
+                        }
+                    }
+                    if(errors.length === 0){
+                        if(this.password === this.checkPassword){
+                            return false
+                        }else{
+                            return true
+                        }
+                    }else{
+                        return true
+                    }
+                }else{
+                    return true
+                }
+            },
+            passwordValidation () {
+                let errors = []
+                for (let condition of this.rules) {
+                    if (!condition.regex.test(this.password)) {
+                        errors.push(condition.message)
+                    }
+                }
+                if (errors.length === 0) {
+                    return { valid:true, errors }
+                } else {
+                    return { valid:false, errors }
+                }
+            },
+            strengthLevel() {
+                let errors = []
+                for (let condition of this.rules) {
+                    if (!condition.regex.test(this.password)) {
+                        errors.push(condition.message)
+                    }
+                }
+                if(errors.length === 0) return 4;
+                if(errors.length === 1) return 3;
+                if(errors.length === 2) return 2;
+                if(errors.length === 3) return 1;
+                if(errors.length === 4) return 0;
+            },
+
+            notSamePasswordsCreate () {
+                if (this.passwordsFilledCreate) {
+                    return (this.passwordCreate !== this.checkPasswordCreate)
+                } else {
+                    return false
+                }
+            },
+            passwordsFilledCreate () {
+                return (this.passwordCreate !== '' && this.checkPasswordCreate !== '')
+            },
+            isActiveUserPassCreate () {
+                if(this.passwordCreate !== '' && this.checkPasswordCreate !== ''){
+                    let errors = []
+                    for (let condition of this.rules) {
+                        if (!condition.regex.test(this.passwordCreate)) {
+                            errors.push(condition.message)
+                        }
+                    }
+                    if(errors.length === 0){
+                        if(this.passwordCreate === this.checkPasswordCreate){
+                            return false
+                        }else{
+                            return true
+                        }
+                    }else{
+                        return true
+                    }
+                }else{
+                    return true
+                }
+            },
+            passwordValidationCreate () {
+                let errors = []
+                for (let condition of this.rules) {
+                    if (!condition.regex.test(this.passwordCreate)) {
+                        errors.push(condition.message)
+                    }
+                }
+                if (errors.length === 0) {
+                    return { valid:true, errors }
+                } else {
+                    return { valid:false, errors }
+                }
+            },
+            strengthLevelCreate() {
+                let errors = []
+                for (let condition of this.rules) {
+                    if (!condition.regex.test(this.passwordCreate)) {
+                        errors.push(condition.message)
+                    }
+                }
+                if(errors.length === 0) return 4;
+                if(errors.length === 1) return 3;
+                if(errors.length === 2) return 2;
+                if(errors.length === 3) return 1;
+                if(errors.length === 4) return 0;
             }
         }
     });

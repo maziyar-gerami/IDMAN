@@ -16,6 +16,7 @@
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Events/script.js"></script>
+    <script src="js/vue-plain-pagination.umd.min.js"></script>
 
 </head>
 
@@ -93,6 +94,7 @@
                                         <span>{{s5}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
+                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s36">
                                         <i class="fa fa-calendar"></i>
                                         <span>{{s6}}</span>
@@ -126,7 +128,6 @@
                                     <table class="table table-responsive">
                                         <tr>
                                             <th>{{s28}}</th>
-                                            <!-- <th>شناسه کاربر</th> -->
                                             <th>{{s29}}</th>
                                             <th>Client IP</th>
                                             <th>Server IP</th>
@@ -134,9 +135,8 @@
                                             <th>{{s30}}</th>
                                         </tr>
                                         <tbody id="body">
-                                            <tr v-for="eve in event" v-bind:key="eve.action">
+                                            <tr v-for="eve in sortedEvent" >
                                                 <td>{{eve.action}}</td>
-                                                <!-- <td>{{eve.userId}}</td> -->
                                                 <td>{{eve.application}}</td>
                                                 <td>{{eve.clientIP}}</td>
                                                 <td>{{eve.serverIP}}</td>
@@ -145,6 +145,10 @@
                                             </tr>
                                         </tbody>
                                     </table>
+                                    <div>
+                                        <v-pagination  v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
+                                        :labels="paginationAnchorTexts"></v-pagination>
+                                    </div>
                                 </div>
 
                                 <div v-if="menuS" style="font-size: 15px;">
@@ -181,7 +185,7 @@
                                                     <th>{{s30}}</th>
                                                 </tr>
                                                 <tbody id="body">
-                                                    <tr v-for="event in events" v-bind:key="event.action">
+                                                    <tr v-for="event in sortedEvents">
                                                         <td>{{event.action}}</td>
                                                         <td>{{event.userId}}</td>
                                                         <td>{{event.application}}</td>
@@ -192,6 +196,10 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
+                                            <div>
+                                                <v-pagination  v-model="currentPageEvents" :page-count="totalEvents" :classes="bootstrapPaginationClasses"
+                                                :labels="paginationAnchorTexts"></v-pagination>
+                                            </div>
                                         </div>
                                         <div class="tab-pane fade" :class="{ 'active show': isActive('myEvents') }" id="myEvents">
                                             <ul class="nav nav-tabs nav-justified">
@@ -204,7 +212,6 @@
                                             <table class="table table-responsive">
                                                 <tr>
                                                     <th>{{s28}}</th>
-                                                    <!-- <th>شناسه کاربر</th> -->
                                                     <th>{{s29}}</th>
                                                     <th>Client IP</th>
                                                     <th>Server IP</th>
@@ -212,9 +219,8 @@
                                                     <th>{{s30}}</th>
                                                 </tr>
                                                 <tbody id="body">
-                                                    <tr v-for="eve in event" v-bind:key="eve.action">
+                                                    <tr v-for="eve in sortedEvent" >
                                                         <td>{{eve.action}}</td>
-                                                        <!-- <td>{{eve.userId}}</td> -->
                                                         <td>{{eve.application}}</td>
                                                         <td>{{eve.clientIP}}</td>
                                                         <td>{{eve.serverIP}}</td>
@@ -223,6 +229,10 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
+                                            <div>
+                                                <v-pagination  v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
+                                                :labels="paginationAnchorTexts"></v-pagination>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

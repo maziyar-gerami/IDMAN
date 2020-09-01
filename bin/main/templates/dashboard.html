@@ -10,12 +10,16 @@
     <link href="css/Dashboard/style.css" rel="stylesheet">
     <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="fonts/IranSans/font.css" rel="stylesheet">
-
+    <link href="css/vcdonut.css" rel="stylesheet">
 
     <script src="js/vue.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Dashboard/script.js"></script>
+    <script src="js/vcdonut.umd.min.js"></script>
+    <script>
+    Vue.use(vcdonut.default);
+    </script>
 
 </head>
 <body class="h-100">
@@ -71,7 +75,8 @@
                                 </div>
 
                                 <div class="list-group list-group-flush">
-                                    <a class="list-group-item list-group-item-action py-2 "
+                                    <a class="list-group-item list-group-item-action py-2 " 
+                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s14">
                                         <i class="fa fa-dashboard"></i>
                                         <span>{{s3}}</span>
@@ -114,6 +119,28 @@
                         <div class="card">
                             <div class="card-body" style="background-color: #f8f9fa!important;">
                                 <h3 class="border-bottom pb-3 mb-3"><span>{{s3}}</span></h3>
+                                <div v-if="menuS" class="container mb-3">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <vc-donut v-bind="ActiveUsersChart">
+                                                <h1>{{ActiveUsersChart.total}}</h1>
+                                                <h5>{{s13}}</h5>
+                                            </vc-donut>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <vc-donut v-bind="ActiveServicesChart">
+                                                <h1>{{ActiveServicesChart.total}}</h1>
+                                                <h5>{{s4}}</h5>
+                                            </vc-donut>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <vc-donut v-bind="SuccessfulLoginsChart">
+                                                <h1>{{SuccessfulLoginsChart.total}}</h1>
+                                                <h6>{{s27}}</h6>
+                                            </vc-donut>
+                                        </div>
+                                    </div>
+                                </div>
                                 <ul class="nav nav-tabs nav-justified">
                                     <li class="nav-item">
                                         <a class="nav-link" @click.prevent="setActive('services')" :class="{ active: isActive('services') }" href="#services">{{s4}}</a>
@@ -123,21 +150,34 @@
                                     </li>
                                 </ul>
                                 <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
-                                    <div class="tab-pane fade" :class="{ 'active show': isActive('services') }" id="services">
-                                        <table class="table table-responsive">
-                                            <tr>
-                                                <th style="border: none;">{{s17}}</th>
-                                                <th style="border: none;">{{s18}}</th>
-                                            </tr>
-                                            <tbody id="body">
-                                                <tr v-for="service in services" v-bind:key="service.id">
-                                                    <td>{{service.id}}</td>
-                                                    <td>{{service.name}}</td>
-                                                    <td>{{service.serviceId}}</td> <!-- service.accessStrategy.endpointUrl -->
-                                                    <td><button class="btn btn-success" v-on:click="connect(service.serviceId)">{{s20}}</button></td> <!-- service.accessStrategy.endpointUrl -->
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('services') }" id="services">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3" v-for="service in services">
+                                                <div class="card">
+                                                    <div class="card-body bg-light pb-0">
+                                                        <div class="media">
+                                                            <div :class="marginServiceBox">
+                                                                    <img v-bind:src="service.logo" style="height: 60px; max-width: 60px;" class="img-responsive img-rounded">
+                                                            </div>
+                                                            <div class="media-body overflow-hidden">
+                                                                <h4 class="text-ellipsis mb-3">{{service.description}}</h4>
+                                                                <p class="text-muted mb-3">{{service.name}}</p>
+                                                                <div class="px-1">
+                                                                    <div class="mb-3">
+                                                                        <div class="btn-group btn-group-sm">
+                                                                            <button v-on:click="connect(service.serviceId)" class="btn btn-primary">
+                                                                            {{s20}}
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                     <div class="tab-pane fade" :class="{ 'active show': isActive('groups') }" id="groups">
                                         <table class="table table-responsive">

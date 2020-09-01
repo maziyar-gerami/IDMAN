@@ -31,7 +31,6 @@ public class Service {
         contacts = new Object[2];
         contacts[0] = "java.util.ArrayList";
         contacts[1] = new LinkedList<>();
-        principalAttributesRepository = new PrincipalAttributesRepository();
 
     }
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -41,8 +40,6 @@ public class Service {
     private String atClass;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String description;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private PrincipalAttributesRepository principalAttributesRepository;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ExpirationPolicy expirationPolicy;
     @JsonInclude(JsonInclude.Include.NON_NULL)

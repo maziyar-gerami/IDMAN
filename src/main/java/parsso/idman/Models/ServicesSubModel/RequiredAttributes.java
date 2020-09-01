@@ -10,6 +10,8 @@ import lombok.Setter;
 public class RequiredAttributes {
         public RequiredAttributes(){
                 atClass = "java.util.HashMap";
+                //member = new Object[2];
+                //member[0] = "java.util.HashSet";
         }
         @JsonProperty("@class")
         private String atClass;

@@ -16,7 +16,7 @@
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Services/script.js"></script>
-    <script src="//unpkg.com/vue-plain-pagination"></script>
+    <script src="js/vue-plain-pagination.umd.min.js"></script>
 
 </head>
 <body class="h-100">
@@ -78,6 +78,7 @@
                                         <span>{{s3}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
+                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s17">
                                         <i class="fa fa-server"></i>
                                         <span>{{s4}}</span>
@@ -114,10 +115,6 @@
                     <div class="col-lg-9 page-content">
                         <div class="card">
                             <div class="card-body pb-0" style="background-color: #f8f9fa!important;">
-                                <!-- <h4 class="mt-3 mb-3" id="showS0" v-bind:style="showS"><span>{{s13}}</span></h4>
-                                <div class="border rounded p-3 mb-5" id="showS1" v-bind:style="showS">
-                                    
-                                </div> -->
                                 <h4 class="mt-3 mb-3 border-bottom pb-2" id="showS4" v-bind:style="showS"><span>{{s9}}</span></h4>
                                 <div v-bind:style="showS" id="showS2" class="row mb-3" style="padding: .5rem;">
                                     <a v-bind:href="s18" class="btn btn-success btn-sm ml-1">
@@ -188,16 +185,16 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>{{s28}}<span style="color: red;"> *</span></label>
-                                                    <input name="name" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                    <label>{{s28}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s57}}</small></label>
+                                                    <input name="name" @keypress="serviceNameValidate" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 </div>
                                                 <div class="form-group">
                                                     <label>{{s30}}<span style="color: red;"> *</span></label>
                                                     <input name="serviceId" id="enInput" class="form-control" type="text" placeholder="URL" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 </div>
                                                 <div class="form-group mb-3">
-                                                    <label>{{s31}}</label>
-                                                    <textarea id="description" name="description" class="form-control" rows="3" maxlength="255"></textarea>
+                                                    <label>{{s31}}<span style="color: red;"> *</span></label>
+                                                    <input id="description" name="description" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"></input>
                                                 </div>
 
                                                 <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s54}}</span></h4>
@@ -218,10 +215,11 @@
                                                     <input type="hidden" name="groups" v-bind:value="groupList">
                                                     <ul>   
                                                         <li v-for="group in groups" :key="group.name">
-                                                            <label class="form-check-label">{{group.id}}</label>
+                                                            <label class="form-check-label">{{group.name}}</label>
+                                                            <label class="form-check-label" style="font-size: 80%; color: #0000008c;"> ( <small>{{group.id}}</small> ) </label>
                                                             <label class="switch">
-                                                                <input type="checkbox" v-bind:id="'groupNameId' + group.name">
-                                                                <span v-on:click="addGroup(group.name)" class="slider round"></span>  
+                                                                <input type="checkbox" v-bind:id="'groupNameId' + group.id">
+                                                                <span v-on:click="addGroup(group.id)" class="slider round"></span>  
                                                             </label>
                                                         </li>
                                                     </ul>
