@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
             showR: false,
             isRtl: true,
             placeholder: "text-align: right;",
+            margin: "margin-right: 30px;",
             marg: "margin-left: auto;",
             font: "font-size: 0.74em; text-align: right;",
             lang: "EN",
@@ -78,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (this.lang == "EN") {
                     this.placeholder = "text-align: left;"
                     this.isRtl = false;
+                    this.margin = "margin-left: 30px;";
                     this.marg = "margin-right: auto;";
                     this.font = "font-size: 0.9em; text-align: left;"
                     this.lang = "فارسی";
@@ -137,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     this.placeholder = "text-align: right;";
                     this.isRtl = true;
+                    this.margin = "margin-right: 30px;";
                     this.marg = "margin-left: auto;";
                     this.font = "font-size: 0.74em; text-align: right;";
                     this.lang = "EN";

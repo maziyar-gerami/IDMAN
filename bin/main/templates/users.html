@@ -13,7 +13,7 @@
 
 
 
-    <script src="js/vue.js"></script>
+    <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Users/script.js"></script>
@@ -92,6 +92,7 @@
                                     <span>{{s4}}</span>
                                 </a>
                                 <a class="list-group-item list-group-item-action py-2 "
+                                style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                    v-bind:href="s16">
                                     <i class="fa fa-user"></i>
                                     <span>{{s13}}</span>
@@ -147,16 +148,27 @@
                                                 </button>
                                             </th>
                                             <th>
+                                                <button data-toggle="tooltip" data-placement="top" :title="U19" class="btn btn-success btn-sm" :class="margin3" v-on:click="exportUsers()">
+                                                    <span class="fa-passwd-reset fa-stack">
+                                                        <i class="fa fa-cloud-download fa-stack-2x"></i>
+                                                    </span>
+                                                </button>
+                                            </th>
+                                            <th :style="padding0Left">
                                                 <form id="myForm" method="POST" enctype="multipart/form-data" action="/api/users/import">
                                                     <input type="file" accept=".xls, .xlsx, .csv, .ldif" ref="file" @change="selectedFile"
                                                     data-toggle="tooltip" data-placement="top" :title="U20" class="btn btn-success btn-sm" :class="margin1"  name="file" id="file">
                                                 </form>
                                             </th>
-                                            <th><button data-toggle="tooltip" data-placement="top" :title="U19" class="btn btn-success btn-sm" v-on:click="exportUsers()">
-                                                <span class="fa-passwd-reset fa-stack">
-                                                    <i class="fa fa-cloud-download fa-stack-2x"></i>
-                                                </span>
-                                            </button></th>
+                                            <th :style="padding0Right">
+                                                <form method="get" action="template/users.xlsx">
+                                                    <button type="submit" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" :title="U23">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-info-circle fa-stack-2x"></i>
+                                                        </span>
+                                                    </button>
+                                                </form>
+                                            </th>
                                         </tr>
                                     </table>
                                 </div>
@@ -482,10 +494,5 @@
         </footer>
     </div>
 </div>
-<script>
-    $(document).ready(function(){
-      $('[data-toggle="tooltip"]').tooltip();   
-    });
-</script>
 </body>
 </html>

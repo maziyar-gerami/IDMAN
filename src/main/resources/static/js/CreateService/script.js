@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s16: "نوع سرویس",
       s17: "نام سرویس",
       s18: "آدرس سرویس",
-      s19: "معرفی سرویس",
+      s19: "نام فارسی سرویس",
       s20: "پیوندهای مرجع",
       s21: "آدرس لوگو",
       s22: "آدرس راهنما",
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch((error) => {
                 if (error.response) {
-                  if (error.response.status == 400 || error.response.status == 500) {
+                  if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                     vm.userPicture = "images/PlaceholderUser.png";
                   }else{
                     vm.userPicture = "/api/user/photo";
@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s16 = "Service Type";
           this.s17 = "Service Name";
           this.s18 = "Service URL";
-          this.s19 = "Description";
+          this.s19 = "Service Farsi Name";
           this.s20 = "Reference Links";
           this.s21 = "Logo URL";
           this.s22 = "Information URL";
@@ -360,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s16 = "نوع سرویس";
             this.s17 = "نام سرویس";
             this.s18 = "آدرس سرویس";
-            this.s19 = "معرفی سرویس";
+            this.s19 = "نام فارسی سرویس";
             this.s20 = "پیوندهای مرجع";
             this.s21 = "آدرس لوگو";
             this.s22 = "آدرس راهنما";

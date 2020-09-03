@@ -12,7 +12,7 @@
     <link href="fonts/IranSans/font.css" rel="stylesheet">
     <link href="css/vcdonut.css" rel="stylesheet">
 
-    <script src="js/vue.js"></script>
+    <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Dashboard/script.js"></script>
@@ -47,7 +47,7 @@
                                 </form>
                                 <div class="userpic mb-3">
                                     <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
-                                    <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()"><!--  -->
+                                    <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()">
                                         <table>
                                             <tr>
                                                 <td>
@@ -75,7 +75,8 @@
                                 </div>
 
                                 <div class="list-group list-group-flush">
-                                    <a class="list-group-item list-group-item-action py-2 "
+                                    <a class="list-group-item list-group-item-action py-2 " 
+                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s14">
                                         <i class="fa fa-dashboard"></i>
                                         <span>{{s3}}</span>
@@ -159,8 +160,8 @@
                                                                     <img v-bind:src="service.logo" style="height: 60px; max-width: 60px;" class="img-responsive img-rounded">
                                                             </div>
                                                             <div class="media-body overflow-hidden">
-                                                                <h4 class="text-ellipsis mb-3">{{service.name}} <label style="font-size: 50%; color: #0000008c;"> ( {{service.id}} ) </label> </h4>
-                                                                <p class="text-muted mb-3">{{service.description}}</p>
+                                                                <h4 class="text-ellipsis mb-3">{{service.description}}</h4>
+                                                                <p class="text-muted mb-3">{{service.name}}</p>
                                                                 <div class="px-1">
                                                                     <div class="mb-3">
                                                                         <div class="btn-group btn-group-sm">
@@ -199,7 +200,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> <!-- B.A -->
             <footer class="mb-3 mt-4">
                 <div class="container">
                     <div class="d-flex justify-content-center">

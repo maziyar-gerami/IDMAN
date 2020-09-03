@@ -203,18 +203,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 if(code != ""){
-                    axios.get(url + "/api/public/validateToken/" + usernameCheck + "/" + code) //
+                    axios.get(url + "/api/public/validateMessageToken/" + usernameCheck + "/" + code) //
+                    .then((res) => {
+                        vm.sendS = false;
+                        vm.sendUS = false;
+                        vm.checkSMSCode = false;
+                        vm.SuccessS = true;
+                        vm.ErrorS = false;
+                        vm.ErrorSMSCode = false;
+                        window.location.replace(url + "/resetPassword?uid=" + usernameCheck + "&token=" + code);
+                    })
                     .catch((error) => {
                         if (error.response) {
-                            if(error.response.status === 200){
-                                vm.sendS = false;
-                                vm.sendUS = false;
-                                vm.checkSMSCode = false;
-                                vm.SuccessS = true;
-                                vm.ErrorS = false;
-                                vm.ErrorSMSCode = false;
-                                window.location.replace(url + "/resetPassword?uid=" + usernameCheck + "&token=" + code);
-                            }else if(error.response.status === 408){
+                            if(error.response.status === 408){
                                 vm.ErrorSMSCode408 = true;
                                 vm.ErrorSMSCode403 = false;
                                 vm.sendS = false;

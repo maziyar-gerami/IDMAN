@@ -1,9 +1,7 @@
 package parsso.idman.Controllers;
 
-import net.bytebuddy.asm.Advice;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.apache.commons.compress.utils.IOUtils;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,49 +10,37 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-import parsso.idman.Models.Group;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
-import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
 import java.security.Principal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @RestController
 public class UserController {
 
 
-
-    @Autowired
-    FilesStorageService storageService;
-    @Autowired
-    private UserRepo userRepo;
-
-
-    @Value("${administrator.ou.id}")
-    private String adminOu;
-
-    @Value("${profile.photo.path}")
-    private String uploadedFilesPath;
-
-    // default sequence of variables which can be changed using frontend
-    private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     /**
      * The Storage service.
      */
 
 
     @Value("${api.get.users}")
-    private final  static String  apiAddress = null;
+    private final static String apiAddress = null;
+    // default sequence of variables which can be changed using frontend
+    private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    @Autowired
+    private UserRepo userRepo;
+    @Value("${administrator.ou.id}")
+    private String adminOu;
+    @Value("${profile.photo.path}")
+    private String uploadedFilesPath;
 
 
     //*************************************** User Section ***************************************
@@ -94,7 +80,7 @@ public class UserController {
             List<String> memberOf = user.getMemberOf();
 
 
-            for (String group:memberOf) {
+            for (String group : memberOf) {
                 if (group.equals(adminOu))
                     return true;
             }
@@ -113,33 +99,9 @@ public class UserController {
      */
     @GetMapping("/api/user/photo")
     public ResponseEntity<HttpStatus> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException {
-
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUser(principal.getName());
-
-        File file = new File(uploadedFilesPath+user.getPhotoName());
-
-
-        if (file.exists()) {
-            try {
-                String contentType = "image/png";
-                response.setContentType(contentType);
-                OutputStream out = response.getOutputStream();
-                FileInputStream in = new FileInputStream(file);
-                // copy from in to out
-                IOUtils.copy(in, out);
-                out.close();
-                in.close();
-                return new ResponseEntity<HttpStatus>(HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<HttpStatus>(HttpStatus.BAD_REQUEST);
-
-            }
-        }
-
-        return new ResponseEntity<HttpStatus>(HttpStatus.BAD_REQUEST);
-
-
+        return new ResponseEntity<>(userRepo.showProfilePic(response, user));
     }
 
 
@@ -148,83 +110,11 @@ public class UserController {
      *
      * @return the response entity
      */
-    public RedirectView uploaduProfilePic(@RequestParam("file") MultipartFile file,
-                                         HttpServletRequest request) {
-
-        Principal principal = request.getUserPrincipal();
-
-
-        String message;
-        try {
-
-            Date date = new Date();
-
-            long timeStamp = date.getTime();
-            String StTime = String.valueOf(timeStamp);
-
-
-            storageService.save(file, StTime + file.getOriginalFilename());
-
-            User user = userRepo.retrieveUser(principal.getName());
-
-
-
-
-            user.setPhotoName(StTime + file.getOriginalFilename());
-
-            userRepo.update(user.getUserId(), user);
-
-            message = "Uploaded the file successfully: " + file.getOriginalFilename();
-
-        } catch (Exception e) {
-            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-
-        }
-        System.out.println(message);
-        return new RedirectView("/dashboard");
-    }
-
     @PostMapping("/api/user/photo")
-    public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file,
-                                         HttpServletRequest request) {
-
-        Principal principal = request.getUserPrincipal();
-
-        File file1=null;
-
-
-        String message;
-        try {
-
-            String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
-
-
-            String s =timeStamp + file.getOriginalFilename();
-
-            storageService.save(file, s);
-
-
-
-
-            User user = userRepo.retrieveUser(principal.getName());
-
-            //remove old pic
-            file1 = new File(uploadedFilesPath+user.getPhotoName());
-
-
-
-
-            user.setPhotoName(s);
-            userRepo.update(user.getUserId(), user);
-
-        } catch (Exception e) {
-
-        }
-        file1.delete();
-
+    public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        userRepo.uploadProfilePic(file, request.getUserPrincipal().getName());
         return new RedirectView("/dashboard");
     }
-
 
     //*************************************** Users Section ***************************************
 
@@ -272,7 +162,8 @@ public class UserController {
      */
     @PostMapping("/api/users")
     public ResponseEntity<JSONObject> bindLdapUser(@RequestBody User user) {
-        if (userRepo.create(user).equals(new JSONObject())) return new ResponseEntity<>(userRepo.create(user), HttpStatus.OK);
+        if (userRepo.create(user).equals(new JSONObject()))
+            return new ResponseEntity<>(userRepo.create(user), HttpStatus.OK);
         else return new ResponseEntity<>(userRepo.create(user), HttpStatus.FOUND);
 
     }
@@ -325,99 +216,155 @@ public class UserController {
                                                 //@RequestParam("hasHeader") boolean hasHeader
     ) throws IOException {
 
-        //return new ResponseEntity<>(userRepo.importFileUsers(file, defaultSequence, true), HttpStatus.OK);
-
         JSONArray jsonArray = userRepo.importFileUsers(file, defaultSequence, true);
         if (jsonArray.get(0).equals(new JSONObject())) return new ResponseEntity<>(jsonArray, HttpStatus.OK);
         else return new ResponseEntity<>(jsonArray, HttpStatus.FOUND);
     }
 
+    /**
+     * change the password of current user
+     *
+     * @param newPassword
+     * @return the http status code
+     */
     @PutMapping("/api/user/password")
     public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
-                                 @RequestParam("currentPassword") String currentPassword,
-                                 @RequestParam ("newPassword") String newPassword)
-    {
-        //Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<HttpStatus>(userRepo.changePassword("bardia",currentPassword,newPassword), HttpStatus.FOUND);
-
+                                                     @RequestParam("currentPassword") String currentPassword,
+                                                     @RequestParam("newPassword") String newPassword) {
+        return new ResponseEntity<>(userRepo.changePassword(request.getUserPrincipal().getName(), currentPassword, newPassword), HttpStatus.FOUND);
     }
 
+    /**
+     * get the information for dashboard
+     *
+     * @return a json file containing tha data
+     */
     @GetMapping("/api/dashboard")
     public ResponseEntity<JSONObject> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException {
-        return new ResponseEntity<JSONObject>(userRepo.retrieveDashboardData(), HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
     }
 
 
     //*************************************** Public Controllers ***************************************
-
+    /**
+     * send Email for reset password
+     *
+     * @param email
+     * @return the http status code
+     */
     @GetMapping("/api/public/sendMail/{email}")
-    public ResponseEntity<String> sendMail(@PathVariable("email") String email) {
-        return new ResponseEntity<String>(userRepo.sendEmail(email), HttpStatus.OK);
+    public ResponseEntity<HttpStatus> sendMail(@PathVariable("email") String email) {
+        return new ResponseEntity<>(userRepo.sendEmail(email), HttpStatus.OK);
     }
 
+    /**
+     * send SMS for reset password
+     *
+     * @param mobile
+     * @return the http status code
+     */
     @GetMapping("/api/public/sendSMS/{mobile}")
     public ResponseEntity<HttpStatus> sendMessage(@PathVariable("mobile") String mobile) {
         return new ResponseEntity<>(null, userRepo.sendMessage(mobile));
     }
 
+    /**
+     * send SMS for reset password
+     *
+     * @param mobile and userId
+     * @return the http status code
+     */
     @GetMapping("/api/public/sendSMS/{mobile}/{uid}")
     public ResponseEntity<HttpStatus> sendMessage(@PathVariable("mobile") String mobile, @PathVariable("uid") String uid) {
-        return new ResponseEntity<>(null,userRepo.sendMessage(mobile,uid));
+        return new ResponseEntity<>(null, userRepo.sendMessage(mobile, uid));
     }
 
+    /**
+     * check if an email exists in ldap
+     *
+     * @param email
+     * @return the user object if exists, or null if not exists
+     */
     @GetMapping("/api/public/checkMail/{email}")
     public HttpEntity<List<JSONObject>> checkMail(@PathVariable("email") String email) {
         return new ResponseEntity<List<JSONObject>>(userRepo.checkMail(email), HttpStatus.OK);
     }
 
+    /**
+     * check if a mobile exists in ldap
+     *
+     * @param mobile
+     * @return the user object if exists, or null if not exists
+     */
     @GetMapping("/api/public/checkMobile/{mobile}")
     public HttpEntity<List<JSONObject>> checkMobile(@PathVariable("mobile") String mobile) {
         return new ResponseEntity<List<JSONObject>>(userRepo.checkMobile(mobile), HttpStatus.OK);
     }
 
+    /**
+     * Gets the token and corresponds it with provided userID
+     *
+     * @param token and userId
+     * @return the user object if exists, or null if not exists
+     */
     @PutMapping("/api/public/resetPass/{uid}/{token}")
-    public ResponseEntity<String> rebindLdapUser(@RequestParam("newPassword") String newPassword,@PathVariable("token") String token, @PathVariable("uid") String uid) {
+    public ResponseEntity<String> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token, @PathVariable("uid") String uid) {
         return new ResponseEntity<>(userRepo.updatePass(uid, newPassword, token), HttpStatus.OK);
     }
 
-
+    /**
+     * Gets the name from userId for showing in the ressetPasseord page
+     *
+     * @param token and userId
+     * @return if token is correspond to provided userID, returns the user; else returns null
+     */
     @GetMapping("/api/public/getName/{uid}/{token}")
-    public ResponseEntity<User> getName (@PathVariable("uid") String uid,@PathVariable("token") String token) {
+    public ResponseEntity<User> getName(@PathVariable("uid") String uid, @PathVariable("token") String token) {
         User user = userRepo.getName(uid, token);
-        if (user!=null)
+        if (user != null)
             return new ResponseEntity<>(user, HttpStatus.OK);
         return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * sends email to specified user
+     *
+     * @param email and userId
+     * @return if token is correspond to provided email, returns httpStatus=ok
+     */
     @GetMapping("/api/public/sendMail/{email}/{uid}")
-    public ResponseEntity<String> sendMail(@PathVariable("email") String email, @PathVariable("uid") String uid) {
+    public ResponseEntity<HttpStatus> sendMail(@PathVariable("email") String email, @PathVariable("uid") String uid) {
         return new ResponseEntity<>(userRepo.sendEmail(email, uid), HttpStatus.OK);
     }
 
-
-
+    /**
+     * validate the token send via email provided for specified userId
+     *
+     * @param  uId and email
+     * @return if token is correspond to provided email, redirects to resetPassword page
+     */
     @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
     public RedirectView resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token, RedirectAttributes attributes) {
         HttpStatus httpStatus = userRepo.checkToken(uId, token);
 
-        if (httpStatus==HttpStatus.OK) {
+        if (httpStatus == HttpStatus.OK) {
             attributes.addAttribute("uid", uId);
-            attributes.addAttribute("token",token);
-
+            attributes.addAttribute("token", token);
 
             return new RedirectView("/resetPassword");
         }
         return null;
     }
 
+    /**
+     * validate the token provided for spcified userId
+     *
+     * @param  uId and email
+     * @return if token is correspond to provided userId, returns httpStatus=ok
+     */
     @GetMapping("/api/public/validateMessageToken/{uId}/{token}")
     public HttpStatus resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token) {
         return userRepo.checkToken(uId, token);
 
-
     }
-
-
-
-
 }

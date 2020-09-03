@@ -2,65 +2,6 @@ function myFunction() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
 
-function BothFieldsIdentical (id1 , id2) {
-    var one = document.getElementById(id1).value;
-    var another = document.getElementById(id2).value;
-    if(one == another) { return true; }
-    alert("Both fields for password must be identical.");
-    return false;
-}
-
-function validatePassword(password) {
-
-    // Do not show anything when the length of password is zero.
-    if (password.length === 0) {
-        document.getElementById("msg").innerHTML = "";
-        return;
-    }
-    // Create an array and push all possible values that you want in password
-    var matchedCase = new Array();
-    matchedCase.push("[$@$!%*#?&]"); // Special Charector
-    matchedCase.push("[A-Z]");      // Uppercase Alpabates
-    matchedCase.push("[0-9]");      // Numbers
-    matchedCase.push("[a-z]");     // Lowercase Alphabates
-
-    // Check the conditions
-    var ctr = 0;
-    for (var i = 0; i < matchedCase.length; i++) {
-        if (new RegExp(matchedCase[i]).test(password)) {
-            ctr++;
-        }
-    }
-
-    var value = document.getElementById('ediInfo.userPasswordUpdate').value;
-
-    // Display it
-    var color = "";
-    var strength = "";
-    switch (ctr) {
-        case 0:
-        case 1:
-        case 2:
-            strength = "خیلی ضعیف";
-            color = "red";
-            break;
-        case 3:
-            strength = "متوسط";
-            color = "orange";
-            break;
-        case 4:
-            strength = "قوی";
-            color = "lightgreen";
-            break;
-        case 5:
-            strength = "خیلی قوی";
-            color = "darkseagreen";
-            break;
-    }
-    document.getElementById("msg1").innerHTML = strength;
-    document.getElementById("msg1").style.color = color;
-}
-
 window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -127,7 +68,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 last: '>>'
             },
             margin1: "ml-1",
+            margin3: "ml-3",
             margin5: "ml-5",
+            padding0Left: "padding-left: 0rem;",
+            padding0Right: "padding-right: 0rem;",
             userPicture: "images/PlaceholderUser.png",
             activeItem: "info",
             eye: "right: 1%;",
@@ -234,11 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
             U20: "وارد کردن کاربران با فایل",
             U21: "بارگزاری",
             U22: "بازنشانی رمز عبور",
-
-            p4: "- باید حداقل 8 کاراکتر باشد",
-            p5: "- باید ترکیبی از حرف و عدد باشد",
-            p6: "- باید شامل حروف بزرگ و کوچک باشد",
-            p7:"رمز در نظر گرفته شده باید:"
+            U23: "فایل الگو"
         },
         created: function () {
             this.getUserInfo();
@@ -284,6 +224,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                 url: url + "/api/users/import",  //
                                 headers: {'Content-Type': 'multipart/form-data'},
                                 data: bodyFormData,
+                            })
+                            .then((res) => {
+                                location.reload();
                             })
                             .catch((error) => {
                                 if(error.response){
@@ -435,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
                     .catch((error) => {
                         if (error.response) {
-                          if (error.response.status == 400 || error.response.status == 500) {
+                          if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                             vm.userPicture = "images/PlaceholderUser.png";
                           }else{
                             vm.userPicture = "/api/user/photo";
@@ -725,7 +668,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.lang = "فارسی";
                     this.isRtl = false;
                     this.margin1 = "mr-1";
+                    this.margin3 = "mr-3";
                     this.margin5 = "mr-5";
+                    this.padding0Left = "padding-right: 0rem;";
+                    this.padding0Right = "padding-left: 0rem;";
                     this.eye = "left: 1%;";
                     this.font = "font-size: 0.9em; text-align: left;"
                     this.s0 = "Parsso";
@@ -778,15 +724,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s48 = "Your Password Must Meet All Of The Following Criteria:";
                     this.s49 = "Passwords Don't Match";
                     this.s50 = "This UID Already Exists In Our Database, Please Choose Another.";
-                    this.U0= "Password";
-                    this.U1= "Users";
-                    this.U2= "ID";
-                    this.U3= "First Name (In English)";
-                    this.U4= "Last Name (In English)";
-                    this.U5= "FullName (In Persian)";
-                    this.U6= "Phone";
-                    this.U7= "Email";
-                    this.U8= "NID";
+                    this.U0 = "Password";
+                    this.U1 = "Users";
+                    this.U2 = "ID";
+                    this.U3 = "First Name (In English)";
+                    this.U4 = "Last Name (In English)";
+                    this.U5 = "FullName (In Persian)";
+                    this.U6 = "Phone";
+                    this.U7 = "Email";
+                    this.U8 = "NID";
                     this.U9 = "Description";
                     this.U10 = "Update";
                     this.U11 = "Delete"
@@ -794,11 +740,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U13 = "Edit";
                     this.U14 = "Groups";
                     this.U17 = "Remove All";
-                    this.U18= "Export Users to a file";
-                    this.U19= "Save in file";
-                    this.U20= "Import users using file";
-                    this.U21= "Upload";
-                    this.U22= "Password Reset";
+                    this.U18 = "Export Users to a file";
+                    this.U19 = "Save in file";
+                    this.U20 = "Import users using file";
+                    this.U21 = "Upload";
+                    this.U22 = "Password Reset";
+                    this.U23 = "Template File";
                     this.rules[0].message = "- One Lowercase Letter Required.";
                     this.rules[1].message = "- One Uppercase Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
@@ -809,7 +756,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.lang = "EN";
                     this.isRtl = true;
                     this.margin1 = "ml-1";
+                    this.margin3 = "ml-3";
                     this.margin5 = "ml-5";
+                    this.padding0Left = "padding-left: 0rem;";
+                    this.padding0Right = "padding-right: 0rem;";
                     this.eye = "right: 1%;";
                     this.font = "font-size: 0.74em; text-align: right;"
                     this.s0 = "پارسو";
@@ -862,27 +812,28 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s48 = "رمز عبور شما باید شامل موارد زیر باشد:";
                     this.s49 = "رمز عبور های وارد شده یکسان نمی باشند";
                     this.s50 = "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.";
-                    this.U0= "رمز";
-                    this.U1= "کاربران";
-                    this.U2= "شناسه";
-                    this.U3= "نام (به انگلیسی)";
-                    this.U4= "نام خانوادگی (به انگلیسی)";
-                    this.U5= "نام کامل (به فارسی)";
-                    this.U6= "شماره تلفن";
-                    this.U7= "ایمیل";
-                    this.U8= "کد ملی";
-                    this.U9= "توضیحات";
+                    this.U0 = "رمز";
+                    this.U1 = "کاربران";
+                    this.U2 = "شناسه";
+                    this.U3 = "نام (به انگلیسی)";
+                    this.U4 = "نام خانوادگی (به انگلیسی)";
+                    this.U5 = "نام کامل (به فارسی)";
+                    this.U6 = "شماره تلفن";
+                    this.U7 = "ایمیل";
+                    this.U8 = "کد ملی";
+                    this.U9 = "توضیحات";
                     this.U10 = "به روز رسانی";
                     this.U11 = "حذف"
                     this.U12 = "کاربر جدید";
                     this.U13 = "ویرایش";
                     this.U14 = "گروه های عضو";
                     this.U17 = "حذف همه";
-                    this.U18= "وارد کردن کاربران با فایل";
-                    this.U19= "ذخیره سازی داده ها در فایل";
-                    this.U20= "وارد کردن کاربران با فایل";
-                    this.U21= "بارگزاری";
-                    this.U22= "بازنشانی رمز عبور";
+                    this.U18 = "وارد کردن کاربران با فایل";
+                    this.U19 = "ذخیره سازی داده ها در فایل";
+                    this.U20 = "وارد کردن کاربران با فایل";
+                    this.U21 = "بارگزاری";
+                    this.U22 = "بازنشانی رمز عبور";
+                    this.U23 = "فایل الگو";
                     this.rules[0].message = "حداقل شامل یک کاراکتر کوچک باشد. ";
                     this.rules[1].message = "حداقل شامل یک کاراکتر بزرگ باشد. ";
                     this.rules[2].message = "حداقل ۸ کاراکتر باشد. ";

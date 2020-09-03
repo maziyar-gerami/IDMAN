@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class EventRepoImpl implements EventRepo {
@@ -43,9 +44,8 @@ public class EventRepoImpl implements EventRepo {
     @Override
     public List<Event> getListUserEvents(String userId) throws FileNotFoundException, ParseException {
         List<Event> events = analyze();
-        List<Event> relatedEvents = new LinkedList<>();
-        for (Event event : events)
-            if (event!=null && event.getUserId()!=null && (event.getUserId().equals(userId))) relatedEvents.add(event);
+        List<Event> relatedEvents;
+        relatedEvents = events.stream().filter(p -> p.getUserId().equals(userId)).collect(Collectors.toList());
         return relatedEvents;
     }
 
@@ -138,6 +138,7 @@ public class EventRepoImpl implements EventRepo {
             } else if (line.contains("WHEN: ")) {
                 temp = line.substring(line.indexOf(":") + 2);
                 SimpleDateFormat parserSDF = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
+                parserSDF.setTimeZone(TimeZone.getDefault());
                 Date date = parserSDF.parse(temp);
 
                 Calendar myCal = new GregorianCalendar();
@@ -145,23 +146,16 @@ public class EventRepoImpl implements EventRepo {
 
                 Time time = new Time(
                         myCal.get(Calendar.YEAR),
-                        myCal.get(Calendar.MONTH),
+                        myCal.get(Calendar.MONTH)+1,
                         myCal.get(Calendar.DAY_OF_MONTH),
 
                         myCal.get(Calendar.HOUR_OF_DAY),
                         myCal.get(Calendar.MINUTE),
                         myCal.get(Calendar.SECOND)
 
-
                 );
 
-
-
                 event.setTime(time);
-
-
-
-
 
 
             } else if (line.contains("CLIENT IP ADDRESS: ")) {
@@ -172,6 +166,7 @@ public class EventRepoImpl implements EventRepo {
                 event.setServerIP(temp);
             }
         }
+        Collections.reverse(events);
         return events;
     }
 }

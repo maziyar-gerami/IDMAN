@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch((error) => {
                 if (error.response) {
-                  if (error.response.status == 400 || error.response.status == 500) {
+                  if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                     vm.userPicture = "images/PlaceholderUser.png";
                   }else{
                     vm.userPicture = "/api/user/photo";
@@ -338,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function () {
               date[0] = "13" + date[0];
             }
             if(date[1].length != 2){
-              date[1] = "0" + date[1];s
+              date[1] = "0" + date[1];
             }
             if(date[2].length != 2){
               date[2] = "0" + date[2];

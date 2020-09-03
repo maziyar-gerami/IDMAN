@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
                     .catch((error) => {
                         if (error.response) {
-                          if (error.response.status == 400 || error.response.status == 500) {
+                          if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                             vm.userPicture = "images/PlaceholderUser.png";
                           }else{
                             vm.userPicture = "/api/user/photo";

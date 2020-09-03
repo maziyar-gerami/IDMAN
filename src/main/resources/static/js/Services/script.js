@@ -99,7 +99,7 @@ function myFunction() {
         s28: "نام سرویس",
         s29: "آدرس سرویس",
         s30: "شناسه سرویس",
-        s31: "معرفی سرویس",
+        s31: "نام فارسی سرویس",
         s32: "گروه ها",
         s33: "پیوندهای مرجع",
         s34: "آدرس لوگو",
@@ -158,7 +158,7 @@ function myFunction() {
               })
               .catch((error) => {
                   if (error.response) {
-                    if (error.response.status == 400 || error.response.status == 500) {
+                    if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                       vm.userPicture = "images/PlaceholderUser.png";
                     }else{
                       vm.userPicture = "/api/user/photo";
@@ -481,7 +481,7 @@ function myFunction() {
             this.s28 = "Service Name";
             this.s29 = "Service URL";
             this.s30 = "ServiceID";
-            this.s31 = "Description";
+            this.s31 = "Service Farsi Name";
             this.s32 = "Groups";
             this.s33 = "Reference Links";
             this.s34 = "Logo URL";
@@ -543,7 +543,7 @@ function myFunction() {
               this.s28 = "نام سرویس";
               this.s29 = "آدرس سرویس";
               this.s30 = "شناسه سرویس";
-              this.s31 = "معرفی سرویس";
+              this.s31 = "نام فارسی سرویس";
               this.s32 = "گروه ها";
               this.s33 = "پیوندهای مرجع";
               this.s34 = "آدرس لوگو";

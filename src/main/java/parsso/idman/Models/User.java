@@ -2,6 +2,7 @@ package parsso.idman.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.repository.CrudRepository;
@@ -24,6 +25,7 @@ public class User implements Serializable {
     @JsonIgnore
     private String userPassword;
     private String description;
+    @JsonIgnore
     private String resetPassToken;
     private String photoName;
     private String status;
