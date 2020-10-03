@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fa" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>پارسو</title>
+
+    <link href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/Services/style.css" rel="stylesheet">
+    <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="fonts/IranSans/font.css" rel="stylesheet">
+
+
+    <script src="js/vue.min.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/Services/script.js"></script>
+    <script src="js/vue-plain-pagination.umd.min.js"></script>
+
+</head>
+<body class="h-100">
+    <div id="app">
+        <div  v-bind:class="{rtl: isRtl}" class=" h-100">
+                <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
+                    <div class="container">
+                        <a class="navbar-brand" href="./">{{s0}}</a>
+                        <div class="dropdown">
+                            <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span class="fa fa-caret-down"></span></a>
+                            <div id="myDropdown" class="dropdown-content">
+                                <a href="./logout">{{s2}}</a>
+                            </div>
+                            <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
+                        </div>  
+                    </div>
+                </nav>
+                <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 mb-3 mb-lg-0">
+                        <div class="card">
+                            <div class="card-body p-0 pt-3">
+                                <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
+                                    <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
+                                </form>
+                                <div class="userpic mb-3">
+                                    <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
+                                    <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()"><!--  -->
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <i class="fa fa-photo"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </a>
+                                </div>
+
+                                <div class="text-center mb-3">
+                                    <div>
+                                        <strong>{{s1}}</strong>
+                                    </div>
+                                    <div class="text-primary">
+                                        <small>{{username}}</small>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mb-3">
+                                    <a href="./logout" class="btn btn-danger btn-sm">
+                                        <i class="fa fa-power-off"></i>
+                                        {{s2}}                            
+                                    </a>
+                                </div>
+
+                                <div class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s16">
+                                        <i class="fa fa-dashboard"></i>
+                                        <span>{{s3}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
+                                    v-bind:href="s17">
+                                        <i class="fa fa-server"></i>
+                                        <span>{{s4}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s19">
+                                        <i class="fa fa-user"></i>
+                                        <span>{{s15}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s48">
+                                        <i class="fa fa-users"></i>
+                                        <span>{{s5}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s53">
+                                        <i class="fa fa-calendar"></i>
+                                        <span>{{s6}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s49">
+                                        <i class="fa fa-cogs"></i>
+                                        <span>{{s7}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s52">
+                                        <i class="fa fa-cog"></i>
+                                        <span>{{s51}}</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 page-content">
+                        <div class="card">
+                            <div class="card-body pb-0" style="background-color: #f8f9fa!important;">
+                                <h4 class="mt-3 mb-3 border-bottom pb-2" id="showS4" v-bind:style="showS"><span>{{s9}}</span></h4>
+                                <div v-bind:style="showS" id="showS2" class="row mb-3" style="padding: .5rem;">
+                                    <a v-bind:href="s18" class="btn btn-success btn-sm ml-1">
+                                        <span class="fa-stack">
+                                            <i class="fa fa-plus fa-stack-1x"></i>
+                                        </span>
+                                        {{s14}}
+                                    </a>
+                                    <button v-on:click="deleteAllServices()" class="btn btn-danger btn-sm">
+                                        <span class="fa-stack">
+                                            <i class="fa fa-trash fa-stack-1x"></i>
+                                        </span>
+                                        {{s47}}
+                                    </button>
+                                </div>
+                                <div class="mb-2" style="background-color: white; padding: .5rem;">
+                                            <table class="table table-responsive" id="showS5" v-bind:style="showS">
+                                                <tr>
+                                                    <th style="border: none;">{{s20}}</th>
+                                                    <th style="border: none;">{{s21}}</th>
+                                                    <th style="border: none;">{{s22}}</th>
+                                                </tr>
+                                                <tbody id="body">
+                                                    <tr v-for="service in sortedServices" v-bind:key="service.id">
+                                                        <td>{{service.id}}</td>
+                                                        <td>{{service.name}}</td>
+                                                        <td><a v-bind:href="service.serviceId">{{service.serviceId}}</a></td>
+                                                        <td>
+                                                            <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-sm" v-on:click="editServiceS(service.id)">
+                                                                <span class="fa-passwd-reset fa-stack">
+                                                                    <i class="fa fa-pencil-square-o fa-stack-2x"></i>
+                                                                </span>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s24" class="btn btn-sm" v-on:click="deleteService(service.id)">
+                                                                <span class="fa-passwd-reset fa-stack">
+                                                                    <i class="fa fa-trash fa-stack-2x"></i>
+                                                                </span>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div v-bind:style="showS" id="showS3">
+                                                <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                                :labels="paginationAnchorTexts"></v-pagination>
+                                            </div>
+
+                                            <form id="editS" v-bind:style="editS">
+                                                <div class="form-group">
+                                                    <label>{{s20}}</label>
+                                                    <input name="id" class="form-control" type="text" readonly>
+                                                </div>
+                                                <h4 class="border-bottom pb-3 mb-3"><span>{{s25}}</span></h4>
+                                                <div class="form-group">
+                                                    <label class="form-check-label">{{s26}}</label>
+                                                    <label class="switch">
+                                                        <input name="enabled" type="checkbox" checked>
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{s27}}</label>
+                                                    <select name="type" class="form-control">
+                                                        <option id="option0" value="CAS" v-on:click="cas" selected>CAS</option>
+                                                        <option id="option1" value="SAML" v-on:click="saml">SAML</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{s28}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s57}}</small></label>
+                                                    <input name="name" @keypress="serviceNameValidate" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{s30}}<span style="color: red;"> *</span></label>
+                                                    <input name="serviceId" id="enInput" class="form-control" type="text" placeholder="URL" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                </div>
+                                                <div class="form-group mb-3">
+                                                    <label>{{s31}}<span style="color: red;"> *</span></label>
+                                                    <input id="description" name="description" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"></input>
+                                                </div>
+
+                                                <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s54}}</span></h4>
+                                                <div class="form-group">
+                                                    <label class="form-check-label">{{s55}}</label>
+                                                    <label class="switch">
+                                                        <input name="ssoEnabled" type="checkbox" checked>
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{s56}}</label>
+                                                    <input name="unauthorizedRedirectUrl" id="enInput" class="form-control" type="text" placeholder="URL">
+                                                </div>
+            
+                                                <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s32}}</span></h4>
+                                                <div class="form-group">
+                                                    <input type="hidden" name="groups" v-bind:value="groupList">
+                                                    <ul>   
+                                                        <li v-for="group in groups" :key="group.name">
+                                                            <label class="form-check-label">{{group.name}}</label>
+                                                            <label class="form-check-label" style="font-size: 80%; color: #0000008c;"> ( <small>{{group.id}}</small> ) </label>
+                                                            <label class="switch">
+                                                                <input type="checkbox" v-bind:id="'groupNameId' + group.id">
+                                                                <span v-on:click="addGroup(group.id)" class="slider round"></span>  
+                                                            </label>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+            
+                                                <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s33}}</span></h4>
+                                                <div class="form-group">
+                                                    <label>{{s34}}</label>
+                                                    <input name="logo" id="enInput" class="form-control" type="text" placeholder="URL">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{s35}}</label>
+                                                    <input name="informationUrl" id="enInput" class="form-control" type="text" placeholder="URL">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{s36}}</label>
+                                                    <input name="privacyUrl" id="enInput" class="form-control" type="text" placeholder="URL">
+                                                </div>
+            
+                                                <div id="saml" v-bind:style="samls">
+                                                <h4 class="border-bottom pb-3 mb-3 mt-5"><span>Metadata</span></h4>
+                                                    <div class="form-group">
+                                                        <label>Metadata Location</label>
+                                                        <input id="metadataLocation" class="form-control" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Metadata Maximum Validity</label>
+                                                        <input id="metadataMaxValidity" class="form-control" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Metadata Public Key Location</label>
+                                                        <input id="metadataSignatureLocation" class="form-control" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Metadata Expiration Duration</label>
+                                                        <input id="metadataExpirationDuration" value="PT60M"  class="form-control" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Metadata Filter Regex</label>
+                                                        <input id="metadataCriteriaPattern" class="form-control" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Metadata Filter Criteria</label>
+                                                        <select id="metadataCriteriaDirection" class="form-control">
+                                                            <option id="option2" value="" selected></option>
+                                                            <option id="option3" value="INCLUDE">INCLUDE</option>
+                                                            <option id="option4" value="EXCLUDE">EXCLUDE</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Whitelisted Metadata Roles</label>
+                                                        <input id="metadataCriteriaRoles" class="form-control" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-check-label">Remove Empty Entities Descriptors</label>
+                                                        <label class="switch">
+                                                            <input id="metadataCriteriaRemoveEmptyEntitiesDescriptors" type="checkbox" checked>
+                                                            <span class="slider round"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-check-label">Remove Empty Roles</label>
+                                                        <label class="switch">
+                                                            <input id="metadataCriteriaRemoveRolelessEntityDescriptors" type="checkbox" checked>
+                                                            <span class="slider round"></span>
+                                                        </label>
+                                                    </div>
+                                                    <h4 class="border-bottom pb-3 mb-3 mt-5"><span>Security</span></h4>
+                                                    <div class="form-group">
+                                                        <label class="form-check-label">Sign Assertions</label>
+                                                        <label class="switch">
+                                                            <input id="signAssertions" type="checkbox">
+                                                            <span class="slider round"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-check-label">Sign Responses</label>
+                                                        <label class="switch">
+                                                            <input id="signResponses" type="checkbox" checked>
+                                                            <span class="slider round"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-check-label">Encrypt Assertions</label>
+                                                        <label class="switch">
+                                                            <input id="encryptAssertions" type="checkbox">
+                                                            <span class="slider round"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Signing Credential Type</label>
+                                                        <select id="signingCredentialType" class="form-control">
+                                                            <option id="option5" value="BASIC" selected>BASIC</option>
+                                                            <option id="option6" value="X509">X509</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Authentication Context Class</label>
+                                                        <input id="requiredAuthenticationContextClass" class="form-control" type="text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Assertion Audiences</label>
+                                                        <input id="assertionAudiences" class="form-control" type="text">
+                                                    </div>
+                                                </div>
+            
+                                                <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s37}}</span></h4>
+                                                <div class="form-group">
+                                                    <label>{{s38}}<span style="color: red;"> *</span></label>
+                                                    <input name="cName" class="form-control" type="text" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{s39}}<span style="color: red;"> *</span></label>
+                                                    <input name="cEmail" id="enInput" class="form-control" type="email" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{s40}}</label>
+                                                    <input name="cPhone" class="form-control" type="text">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{s41}}</label>
+                                                    <input name="cDepartment" class="form-control" type="text">
+                                                </div>
+                                                <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s42}}</span></h4>
+                                                <div class="form-group">
+                                                    <label>{{s43}}</label>
+                                                    <input name="logoutUrl" id="enInput" class="form-control" type="text" placeholder="URL">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{s44}}</label>
+                                                    <select name="logoutType" class="form-control">
+                                                        <option id="option7" value="NONE">NONE</option>
+                                                        <option id="option8" value="BACK_CHANNEL" selected>BACK_CHANNEL</option>
+                                                        <option id="option9" value="FRONT_CHANNEL">FRONT_CHANNEL</option>
+                                                    </select>
+                                                </div>
+                                            </form>
+                                            <button id="editS1" v-bind:style="editS1" v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
+                                            <button id="editS2" v-bind:style="editS2" v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="mb-3 mt-4">
+                <div class="container">
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="btn btn-link" style="text-decoration: none;">{{s10}}</a>
+                        <a v-bind:href="s50" class="btn btn-link" style="text-decoration: none;">{{s11}}</a>
+                        <a href="#" class="btn btn-link" style="text-decoration: none;">{{s12}}</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

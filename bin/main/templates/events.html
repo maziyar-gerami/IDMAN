@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fa" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>پارسو</title>
+
+    <link href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/Events/style.css" rel="stylesheet">
+    <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="fonts/IranSans/font.css" rel="stylesheet">
+    
+
+    <script src="js/vue.min.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/Events/script.js"></script>
+    <script src="js/vue-plain-pagination.umd.min.js"></script>
+
+</head>
+
+<body class="h-100">
+    <div id="app">
+        <div v-bind:class="{rtl: isRtl}" class=" h-100">
+                <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
+                    <div class="container">
+                        <a class="navbar-brand" href="./">{{s0}}</a>
+                        <div class="dropdown">
+                            <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span class="fa fa-caret-down"></span></a>
+                            <div id="myDropdown" class="dropdown-content">
+                                <a href="./logout">{{s2}}</a>
+                            </div>
+                            <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 mb-3 mb-lg-0">
+                        <div class="card">
+                            <div class="card-body p-0 pt-3">
+                                <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
+                                    <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
+                                </form>
+                                <div class="userpic mb-3">
+                                    <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
+                                    <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()"><!--  -->
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <i class="fa fa-photo"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </a>
+                                </div>
+
+                                <div class="text-center mb-3">
+                                    <div>
+                                        <strong>{{s1}}</strong>
+                                    </div>
+                                    <div class="text-primary">
+                                        <small>{{username}}</small>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mb-3">
+                                    <a href="./logout" class="btn btn-danger btn-sm">
+                                        <i class="fa fa-power-off"></i>
+                                        {{s2}}
+                                    </a>
+                                </div>
+
+                                <div class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s14">
+                                        <i class="fa fa-dashboard"></i>
+                                        <span>{{s3}}</span>
+                                    </a>
+                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s15">
+                                        <i class="fa fa-server"></i>
+                                        <span>{{s4}}</span>
+                                    </a>
+                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s16">
+                                        <i class="fa fa-user"></i>
+                                        <span>{{s13}}</span>
+                                    </a>
+                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s21">
+                                        <i class="fa fa-users"></i>
+                                        <span>{{s5}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
+                                    v-bind:href="s36">
+                                        <i class="fa fa-calendar"></i>
+                                        <span>{{s6}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s22">
+                                        <i class="fa fa-cogs"></i>
+                                        <span>{{s7}}</span>
+                                    </a>
+                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s25">
+                                        <i class="fa fa-cog"></i>
+                                        <span>{{s24}}</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 page-content">
+                        <div class="card">
+                            <div class="card-body" style="background-color: #f8f9fa!important;">
+                                <h3 class="border-bottom pb-3 mb-3"><span>{{s6}}</span></h3>
+                                <div v-if="!menuS" style="font-size: 15px;">
+                                    <ul class="nav nav-tabs nav-justified">
+                                        <li class="nav-item" style="margin: 0.25rem;">
+                                            <p style="display: inline-block;">{{s26}}</p>
+                                            <input v-model="tempEventDate" type="text" :placeholder="s35" style="direction: ltr; display: inline-block;">
+                                            <button class="btn btn-primary btn-sm" @click.prevent="getEventDate()" style="display: inline-block;">{{s27}}</button>
+                                        </li>
+                                    </ul>
+                                    <table class="table table-responsive">
+                                        <tr>
+                                            <th>{{s28}}</th>
+                                            <th>{{s29}}</th>
+                                            <th>Client IP</th>
+                                            <th>Server IP</th>
+                                            <th>{{s38}}</th>
+                                            <th>{{s30}}</th>
+                                        </tr>
+                                        <tbody id="body">
+                                            <tr v-for="eve in sortedEvent" >
+                                                <td>{{eve.action}}</td>
+                                                <td>{{eve.application}}</td>
+                                                <td>{{eve.clientIP}}</td>
+                                                <td>{{eve.serverIP}}</td>
+                                                <td>{{eve.date}}</td>
+                                                <td>{{eve.clock}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div>
+                                        <v-pagination  v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
+                                        :labels="paginationAnchorTexts"></v-pagination>
+                                    </div>
+                                </div>
+
+                                <div v-if="menuS" style="font-size: 15px;">
+                                    <ul class="nav nav-tabs nav-justified">
+                                        <li class="nav-item">
+                                            <a class="nav-link" @click.prevent="setActive('myEvents')" :class="{ active: isActive('myEvents') }" href="#myEvents">{{s31}}</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" @click.prevent="setActive('usersEvents')" :class="{ active: isActive('usersEvents') }" href="#usersEvents">{{s32}}</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
+                                        <div class="tab-pane fade" :class="{ 'active show': isActive('usersEvents') }" id="usersEvents">
+                                            <ul class="nav nav-tabs nav-justified">
+                                                <li class="nav-item" style="margin: 0.25rem;">
+                                                    <p style="display: inline-block;">{{s33}}</p>
+                                                    <input v-model="eventsUserId" type="text" :placeholder="s34" style="direction: ltr; display: inline-block;">
+                                                    <button class="btn btn-primary btn-sm" @click.prevent="getEventsUserId()" style="display: inline-block;">{{s27}}</button>
+                                                </li>
+                                                <li class="nav-item" style="margin: 0.25rem;">
+                                                    <p style="display: inline-block;">{{s26}}</p>
+                                                    <input v-model="tempEventsDate" type="text" :placeholder="s35" style="direction: ltr; display: inline-block;">
+                                                    <button class="btn btn-primary btn-sm" @click.prevent="getEventsDate()" style="display: inline-block;">{{s27}}</button>
+                                                </li>
+                                            </ul>
+                                            <table class="table table-responsive">
+                                                <tr>
+                                                    <th>{{s28}}</th>
+                                                    <th>{{s37}}</th>
+                                                    <th>{{s29}}</th>
+                                                    <th>Client IP</th>
+                                                    <th>Server IP</th>
+                                                    <th>{{s38}}</th>
+                                                    <th>{{s30}}</th>
+                                                </tr>
+                                                <tbody id="body">
+                                                    <tr v-for="event in sortedEvents">
+                                                        <td>{{event.action}}</td>
+                                                        <td>{{event.userId}}</td>
+                                                        <td>{{event.application}}</td>
+                                                        <td>{{event.clientIP}}</td>
+                                                        <td>{{event.serverIP}}</td>
+                                                        <td>{{event.date}}</td>
+                                                        <td>{{event.clock}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div>
+                                                <v-pagination  v-model="currentPageEvents" :page-count="totalEvents" :classes="bootstrapPaginationClasses"
+                                                :labels="paginationAnchorTexts"></v-pagination>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" :class="{ 'active show': isActive('myEvents') }" id="myEvents">
+                                            <ul class="nav nav-tabs nav-justified">
+                                                <li class="nav-item" style="margin: 0.25rem;">
+                                                    <p style="display: inline-block;">{{s26}}</p>
+                                                    <input v-model="tempEventDate" type="text" :placeholder="s35" style="direction: ltr; display: inline-block;">
+                                                    <button class="btn btn-primary btn-sm" @click.prevent="getEventDate()" style="display: inline-block;">{{s27}}</button>
+                                                </li>
+                                            </ul>
+                                            <table class="table table-responsive">
+                                                <tr>
+                                                    <th>{{s28}}</th>
+                                                    <th>{{s29}}</th>
+                                                    <th>Client IP</th>
+                                                    <th>Server IP</th>
+                                                    <th>{{s38}}</th>
+                                                    <th>{{s30}}</th>
+                                                </tr>
+                                                <tbody id="body">
+                                                    <tr v-for="eve in sortedEvent" >
+                                                        <td>{{eve.action}}</td>
+                                                        <td>{{eve.application}}</td>
+                                                        <td>{{eve.clientIP}}</td>
+                                                        <td>{{eve.serverIP}}</td>
+                                                        <td>{{eve.date}}</td>
+                                                        <td>{{eve.clock}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div>
+                                                <v-pagination  v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
+                                                :labels="paginationAnchorTexts"></v-pagination>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="mb-3 mt-4">
+                <div class="container">
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="btn btn-link" style="text-decoration: none;">{{s10}}</a>
+                        <a v-bind:href="s23" class="btn btn-link" style="text-decoration: none;">{{s11}}</a>
+                        <a href="#" class="btn btn-link" style="text-decoration: none;">{{s12}}</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+</body>
+</html>
