@@ -6,15 +6,22 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Getter
 @Setter
 @ToString
 public class User implements Serializable {
+
+    private static final String PREFIX = "ROLE_";
+
     private String userId;
     private String firstName;
     private String lastName;
@@ -36,5 +43,30 @@ public class User implements Serializable {
 
     @Repository
     public interface UserRepository extends CrudRepository<User, String> {}
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
+
+        if (this.memberOf==null)
+
+            list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
+
+
+        else {
+
+            if (this.memberOf.contains("1598656906150")) {
+                list.add(new SimpleGrantedAuthority(PREFIX + "ADMIN"));
+
+                list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
+
+
+            } else
+                list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
+
+        }
+
+
+        return list;
+    }
 }
 

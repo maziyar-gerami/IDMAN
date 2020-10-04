@@ -17,8 +17,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import parsso.idman.mobile.RepoImpls.JwtRequestFilter;
 
 import java.util.Collections;
 
@@ -35,6 +38,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${cas.url.login.path}")
     private String casLogin;
+
+    @Value("${base.selector}")
+    private String selector;
+
+    @Value("${spring.ldap.urls}")
+    private String ldapUrl;
+
+
+    @Value("${spring.ldap.base.dn}")
+    private String baseDn;
+
+
+    @Value("${spring.ldap.username}")
+    private String ldapUsername;
+
+    @Value("${spring.ldap.password}")
+    private String ldapPassword;
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
+
 
     private SingleSignOutFilter singleSignOutFilter;
     private LogoutFilter logoutFilter;
@@ -57,7 +80,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 //.authorizeRequests().antMatchers("/**").fullyAuthenticated()
 
-        //.and()
+                //.and()
 
 
                 .authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
@@ -93,6 +116,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().fullyAuthenticated()
                 .and()*/
 
+                .authorizeRequests()
+                .antMatchers("/api/mobile/qrlogin").permitAll()
+                .antMatchers("/api/mobile/login").permitAll()
+                .antMatchers("/webSocket").permitAll()
+                .antMatchers("/api/mobile/mobnumber").permitAll()
+
+
+                .and()
                 .formLogin()
                 .loginPage("/login")
 
@@ -105,13 +136,45 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID");
 
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
     }
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .authenticationProvider(casAuthenticationProvider); // cas;
+        if (selector.equals("cas")) {
+            auth
+                    .authenticationProvider(casAuthenticationProvider); // cas;
+        } else if (selector.equals("QR")) {
+            auth
+                    .ldapAuthentication()
+                    .userDnPatterns("uid={0},ou=people")
+                    .groupSearchBase("ou=people")
+                    .contextSource()
+                    .url(ldapUrl + "/" + baseDn)
+                    .managerDn(ldapUsername)
+                    .managerPassword(ldapPassword)
+                    .and()
+                    .passwordCompare()
+                    .passwordEncoder(new LdapShaPasswordEncoder() {
+                    })
+                    .passwordAttribute("mobileToken");
+        } else if (selector.equals("local")) {
+            auth
+                    .ldapAuthentication()
+                    .userDnPatterns("uid={0},ou=people")
+                    .groupSearchBase("ou=people")
+                    .contextSource()
+                    .url(ldapUrl + "/" + baseDn)
+                    .managerDn(ldapUsername)
+                    .managerPassword(ldapPassword)
+                    .and()
+                    .passwordCompare()
+                    .passwordEncoder(new LdapShaPasswordEncoder() {
+                    })
+                    .passwordAttribute("userPassword");
+        }
+
 
     }
 

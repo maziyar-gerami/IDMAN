@@ -13,7 +13,6 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.User;
-import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.mobile.Repos.ServicesRepo;
 import parsso.idman.utils.SMS.sdk.KavenegarApi;
@@ -25,6 +24,7 @@ import javax.naming.Name;
 import javax.naming.directory.SearchControls;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.Random;
 
@@ -40,6 +40,7 @@ public class ServicesRepoImpl implements ServicesRepo {
 
     @Value("${sms.api.key}")
     private String SMS_API_KEY;
+
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
 
@@ -52,9 +53,11 @@ public class ServicesRepoImpl implements ServicesRepo {
     @Autowired
     private UserRepo userRepo;
 
-    @Autowired
-    private UserRepoImpl userRepoImpl;
 
+
+
+    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static SecureRandom rnd = new SecureRandom();
 
     public byte[] getQRCodeImage(String text, int width, int height) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
@@ -70,10 +73,9 @@ public class ServicesRepoImpl implements ServicesRepo {
         User user = userRepo.retrieveUser(userRepo.checkMobile(mobile).get(0).getAsString("userId"));
         insertMobileToken1(user);
         try {
-            String receptor = mobile;
             String message = user.getMobileToken().substring(0, SMS_VALIDATION_DIGITS);
             KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-            api.verifyLookup(receptor, message, "", "", "mfa");
+            api.verifyLookup(mobile, message, "", "", "mfa");
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
             System.out.print("HttpException  : " + ex.getMessage());
         } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
@@ -111,21 +113,34 @@ public class ServicesRepoImpl implements ServicesRepo {
         String mainDbToken = user.getMobileToken();
         String mainPartToken;
 
-        mainPartToken = mainDbToken.substring(0, SMS_VALIDATION_DIGITS);
+        if (token.length() > 30)
+            mainPartToken = mainDbToken.substring(0, 36);
+        else
+            mainPartToken = mainDbToken.substring(0, SMS_VALIDATION_DIGITS);
 
 
         if (token.equals(mainPartToken)) {
+
             Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
             long cTimeStamp = currentTimestamp.getTime();
 
+            if (mainPartToken.length() > 30) {
 
-            String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
+                String timeStamp = mainDbToken.substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
 
-            if ((cTimeStamp - Long.valueOf(timeStamp)) < (60000 * SMS_VALID_TIME)) {
-                return HttpStatus.OK;
-            } else
-                return HttpStatus.REQUEST_TIMEOUT;
+                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000 * EMAIL_VALID_TIME))
+                    return HttpStatus.OK;
 
+                else
+                    return HttpStatus.REQUEST_TIMEOUT;
+            } else {
+                String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
+                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000 * SMS_VALID_TIME)) {
+                    return HttpStatus.OK;
+                } else
+                    return HttpStatus.REQUEST_TIMEOUT;
+
+            }
 
         } else
             return HttpStatus.FORBIDDEN;
@@ -171,4 +186,11 @@ public class ServicesRepoImpl implements ServicesRepo {
         return context;
     }
 
+
+    public String randomString(int len) {
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
+    }
 }

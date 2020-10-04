@@ -24,7 +24,7 @@ import java.text.ParseException;
 import java.util.List;
 
 @RestController
-public class MobileController {
+public class  MobileController {
 
     @Autowired
     private UserRepo userRepo;
@@ -60,7 +60,8 @@ public class MobileController {
     }
 
     @PostMapping("/api/mobile/sendsms")
-    public @ResponseBody ResponseEntity<HttpStatus> sendSMS(@RequestParam("uid") String uid, @RequestParam("qrToken") String QrToken) {
+    public @ResponseBody
+    ResponseEntity<HttpStatus> sendSMS(@RequestParam("uid") String uid, @RequestParam("qrToken") String QrToken) {
         User user = userRepo.retrieveUser(uid);
 
         if (QrToken.equals(user.getQrToken())) {
@@ -71,7 +72,8 @@ public class MobileController {
 
 
     @PostMapping("/api/mobile/active")
-    public @ResponseBody ResponseEntity<String> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) {
+    public @ResponseBody
+    ResponseEntity<String> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) {
         User user = userRepo.retrieveUser(uid);
 
         if (QrToken.equals(user.getQrToken()))
@@ -85,16 +87,18 @@ public class MobileController {
     //after activation
 
     @PostMapping("/api/mobile/services")
-    public @ResponseBody ResponseEntity<List<Service>> M_listServices(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
+    public @ResponseBody
+    ResponseEntity<List<Service>> M_listServices(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
         User user = userRepo.retrieveUser(uid);
         if (MobileToken.equals(user.getMobileToken()))
-            return new ResponseEntity<List<Service>>(serviceRepo.listServices(), HttpStatus.OK);
+            return new ResponseEntity<>(serviceRepo.listServices(), HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }
 
     @PostMapping("/api/mobile/events")
-    public @ResponseBody ResponseEntity<List<Event>> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws FileNotFoundException, ParseException {
+    public @ResponseBody
+    ResponseEntity<List<Event>> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws FileNotFoundException, ParseException {
         User user = userRepo.retrieveUser(uid);
         if (MobileToken.equals(user.getMobileToken()))
             return new ResponseEntity<>(eventRepo.getListUserEvents(), HttpStatus.OK);
@@ -103,7 +107,8 @@ public class MobileController {
     }
 
     @PostMapping("/api/mobile/user")
-    public @ResponseBody ResponseEntity<User> M_retrieveUser(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) {
+    public @ResponseBody
+    ResponseEntity<User> M_retrieveUser(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) {
         User user = userRepo.retrieveUser(uid);
         if (MobileToken.equals(user.getMobileToken()))
             return new ResponseEntity<>(user, HttpStatus.OK);
