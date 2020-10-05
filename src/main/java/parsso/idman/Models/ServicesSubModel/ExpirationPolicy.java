@@ -1,0 +1,21 @@
+package parsso.idman.Models.ServicesSubModel;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+
+public class ExpirationPolicy {
+    public ExpirationPolicy(){
+        atClass = "org.apereo.cas.services.DefaultRegisteredServiceExpirationPolicy";
+        deleteWhenExpired = false;
+        notifyWhenDeleted = false;
+
+    }
+    @JsonProperty("@class")
+    private String atClass;
+    private boolean deleteWhenExpired;
+    private boolean notifyWhenDeleted;
+}
