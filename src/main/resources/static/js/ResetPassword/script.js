@@ -216,6 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .catch((error) => {
                         if (error.response) {
                             if(error.response.status === 408){
+                                console.log("Code is Expired");
                                 vm.ErrorSMSCode408 = true;
                                 vm.ErrorSMSCode403 = false;
                                 vm.sendS = false;

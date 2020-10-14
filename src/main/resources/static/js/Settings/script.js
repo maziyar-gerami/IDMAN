@@ -59,6 +59,8 @@ document.addEventListener('DOMContentLoaded', function () {
             eye: "right: 1%;",
             userPicture: "images/PlaceholderUser.png",
             QR: "/api/mobile/qrcode",
+            token: "",
+            requestSent: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -90,6 +92,11 @@ document.addEventListener('DOMContentLoaded', function () {
             s29: "./events",
             s30: "فعال سازی پارسو اپ",
             s31: "لطفا کد QR را جهت فعال سازی پارسو اپ، اسکن کنید.",
+            s32: "کد تایید با موفقیت ارسال شد. لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.",
+            s33: "لطفا جهت تغییر رمز عبور خود، ابتدا درخواست کد تایید را داده و سپس کد ارسال شده را وارد نمایید.",
+            s34: "درخواست کد تایید",
+            s35: "تایید",
+            s36: "کد تایید را وارد نمایید",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -194,19 +201,24 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             editPass: function (id) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var check = confirm(this.s24);
-                if (check == true) {
-                    axios({
-                        method: 'put',
-                        url: url + '/api/user/password',   //
-                        headers: {'Content-Type': 'application/json'},
-                        data: JSON.stringify({
-                            newPassword: document.getElementById('newPassword').value,
-                            currentPassword: document.getElementById('currentPassword').value
-                        }),
-                    }).then((res) => {
-                        location.replace(url + "/settings"); //
-                    });
+                if(document.getElementById('token').value != ""){
+                    var check = confirm(this.s24);
+                    if (check == true) {
+                        axios({
+                            method: 'put',
+                            url: url + '/api/user/password',   //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                newPassword: document.getElementById('newPassword').value,
+                                currentPassword: document.getElementById('currentPassword').value,
+                                token: document.getElementById('token').value
+                            }),
+                        }).then((res) => {
+                            location.replace(url + "/settings"); //
+                        });
+                    }
+                }else{
+                    alert(this.s36);
                 }
             },
             passwordCheck () {
@@ -214,6 +226,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.has_lowercase = /[a-z]/.test(this.password);
                 this.has_uppercase = /[A-Z]/.test(this.password);
                 this.has_char   = /.{8,}/.test(this.password);
+            },
+            sendToken: function () {
+                this.requestSent = true;
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/api/user/password/request") //
+                    .then((res) => {
+                    });
             },
             changeLang: function () {
                 if(this.lang == "EN"){
@@ -254,6 +274,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s29 = "./events?en";
                     this.s30 = "Parsso App Activation";
                     this.s31 = "Please Scan The QR Code To Activate Parsso App.";
+                    this.s32 = "Verification Code Sent Successfully. Please Go To Your SMS Inbox And Enter The Code We Sent You.";
+                    this.s33 = "To Change Your Password, Please Request a Verification Code And Then Enter the Sent Code.";
+                    this.s34 = "Request Code";
+                    this.s35 = "Submit";
+                    this.s36 = "Enter The Verification Code";
                     this.U0= "Password";
                     this.U1= "Users";
                     this.U2= "ID";
@@ -312,6 +337,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s29 = "./events";
                     this.s30 = "فعال سازی پارسو اپ";
                     this.s31 = "لطفا کد QR را جهت فعال سازی پارسو اپ، اسکن کنید.";
+                    this.s32 = "کد تایید با موفقیت ارسال شد. لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.";
+                    this.s33 = "لطفا جهت تغییر رمز عبور خود، ابتدا درخواست کد تایید را داده و سپس کد ارسال شده را وارد نمایید.";
+                    this.s34 = "درخواست کد تایید";
+                    this.s35 = "تایید";
+                    this.s36 = "کد تایید را وارد نمایید";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";
@@ -336,6 +366,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         computed: {
+            requestSentFunc () {
+                return this.requestSent;
+            },
             notSamePasswords () {
                 if (this.passwordsFilled) {
                     return (this.password !== this.checkPassword)

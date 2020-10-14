@@ -18,4 +18,6 @@ public interface ServicesRepo {
     public HttpStatus verifySMS(String userId, String token);
 
     public DirContextOperations buildAttributes(String uid, User p, Name dn);
+
+    public String randomString( int len );
 }

@@ -3,9 +3,12 @@ package parsso.idman.Controllers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -70,6 +73,7 @@ public class DashboardController{
 
     @GetMapping("/users")
     public String Users(HttpServletRequest request) {
+
         try {
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUser(principal.getName());
@@ -89,6 +93,7 @@ public class DashboardController{
 
     @GetMapping("/events")
     public String Events(HttpServletRequest request) {
+        Collection<? extends GrantedAuthority> s = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         return "events";
     }
 

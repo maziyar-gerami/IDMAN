@@ -10,6 +10,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -21,11 +22,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.filter.AndFilter;
+import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Event;
@@ -35,6 +42,7 @@ import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
+import parsso.idman.utils.Convertor.DateConverter;
 import parsso.idman.utils.Email.EmailSend;
 import parsso.idman.utils.SMS.sdk.KavenegarApi;
 import parsso.idman.utils.SMS.sdk.excepctions.ApiException;
@@ -98,6 +106,12 @@ public class UserRepoImpl implements UserRepo {
     private String defaultPassword;
     @Value("${profile.photo.path}")
     private String uploadedFilesPath;
+    @Value("${administrator.ou.id}")
+    private String adminId;
+
+    public UserRepoImpl() {
+
+    }
 
 
     @Override
@@ -111,6 +125,15 @@ public class UserRepoImpl implements UserRepo {
                 Name dn = buildDn(p.getUserId());
                 ldapTemplate.bind(dn, null, buildAttributes(p));
                 //logger.info("User "+user.getUserId() + " created");
+                if (p.getEndTime() != null)
+                    addEndTime(p.getUserId(), p.getEndTime());
+
+                if (p.getCStatus() != null) {
+                    if (p.getCStatus().equals("disable"))
+                        disable(p.getUserId());
+                }
+
+
                 return new JSONObject();
             } else {
 
@@ -145,20 +168,70 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
+
+    public void setRole(String uid, User p) {
+        String role = null;
+        try {
+            List<String> lst = p.getMemberOf();
+            for (String id : lst) {
+                if (id.equals(adminId)) {
+                    role = "ADMIN";
+                    break;
+                }
+            }
+        } catch (Exception e) {
+
+            if (uid.equals(adminId))
+                role = "ADMIN";
+
+        }
+
+        if (role == null)
+            role = "USER";
+
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
+
+
+        updatedAuthorities.remove(0);
+
+        updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+
+
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
+
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+    }
+
     @Override
     public HttpStatus update(String uid, User p) {
         Name dn = buildDn(uid);
+
+        setRole(uid, p);
+
+        User user = retrieveUser(uid);
+
+        //remove current pwdEndTime
+        if (user.getEndTime()!=null)
+            if (removeCurrentEndTime(uid)!=HttpStatus.OK)
+                return HttpStatus.FORBIDDEN;
+
+        //add new pwdEndTime
         DirContextOperations context = buildAttributes(uid, p, dn);
 
         try {
             ldapTemplate.modifyAttributes(context);
+
+
             return HttpStatus.OK;
+
         } catch (Exception e) {
             e.printStackTrace();
             return HttpStatus.FORBIDDEN;
         }
     }
-
 
     @Override
     public String remove(String userId) {
@@ -199,23 +272,30 @@ public class UserRepoImpl implements UserRepo {
         ocattr.add("person");
         ocattr.add("inetOrgPerson");
         ocattr.add("organizationalPerson");
-        ocattr.add("pwdPolicy");
+
+        //ocattr.add("ads-passwordPolicy");
+
 
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
-        attrs.put("pwdExpireWarning", pwdExpireWarning);
-        attrs.put("pwdFailureCountInterval", pwdFaiilureCount);
-        attrs.put("pwdInHistory", pwdInHistory);
-        attrs.put("pwdCheckQuality", pwdCheckQuality);
+
+        //attrs.put("pwdExpireWarning", pwdExpireWarning);
+        //attrs.put("pwdFailureCountInterval", pwdFaiilureCount);
+        //attrs.put("pwdInHistory", pwdInHistory);
+        //attrs.put("pwdCheckQuality", pwdCheckQuality);
+
+        //attrs.put("ads-pwdId", "default");
+
+        //attrs.put("ads-pwdAttribute", "userPassword");
 
 
-        attrs.put("pwdAttribute", "userPassword");
+        //attrs.put("pwdAttribute", "userPassword");
         attrs.put("uid", p.getUserId());
         attrs.put("givenName", p.getFirstName().equals("") ? " " : p.getDisplayName());
         attrs.put("sn", p.getLastName().equals("") ? " " : p.getLastName());
         attrs.put("userPassword", p.getUserPassword() != null ? p.getUserPassword() : defaultPassword);
         attrs.put("displayName", p.getDisplayName());
-        attrs.put("mobile", p.getMobile().equals("") || p.getMobile()==null ? " " : Long.parseLong(p.getMobile()));
+        attrs.put("mobile", p.getMobile().equals("") || p.getMobile() == null ? " " : p.getMobile());
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
         if (p.getResetPassToken() != null)
@@ -233,14 +313,83 @@ public class UserRepoImpl implements UserRepo {
 
         if (p.getPhotoName() != null)
             attrs.put("photoName", p.getPhotoName());
-
-
-        if (p.getStatus() == null)
-            attrs.put("userStatus", "active");
         else
-            attrs.put("userStatus", p.getStatus());
+            attrs.put("photoName", " ");
+
+
         attrs.put("qrToken", UUID.randomUUID().toString());
+        if (p.isLocked())
+            attrs.put("pwdAccountLockedTime", p.isEnabled());
+        //if (p.getEndTime()!=null)
+        //attrs.put("pwdEndTime", "20201009130028.357Z");
+
+
         return attrs;
+    }
+
+    public String convertDateTimeJalali(String seTime) {
+
+        String year = seTime.substring(0, 4);
+        String month = seTime.substring(5, 7);
+        String day = seTime.substring(8, 10);
+
+        String hours = seTime.substring(11, 13);
+        String minutes = seTime.substring(14, 16);
+        String seconds = seTime.substring(17, 19);
+
+        String miliSeconds = seTime.substring(20, 23);
+
+        String date = convertDateJalaliToGeorgian(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day));
+
+        String time = String.format("%02d", Integer.valueOf(hours)) +
+                String.format("%02d", Integer.valueOf(minutes)) +
+                String.format("%02d", Integer.valueOf(seconds)) + "." +
+                String.format("%03d", Integer.valueOf(miliSeconds)) + "Z";
+
+        return date + time;
+
+
+    }
+
+    public String convertDateTimeGeorgian(String seTime) {
+
+        String year = seTime.substring(0, 4);
+        String month = seTime.substring(5, 7);
+        String day = seTime.substring(8, 10);
+
+        String hours = seTime.substring(11, 13);
+        String minutes = seTime.substring(14, 16);
+        String seconds = seTime.substring(17, 19);
+
+        String miliSeconds = seTime.substring(20, 23);
+
+        String date = convertDateGeorgianToJalali(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day));
+
+        String time = String.format("%02d", Integer.valueOf(hours)) + "-"+
+                String.format("%02d", Integer.valueOf(minutes)) +  "-"+
+                String.format("%02d", Integer.valueOf(seconds)) + "." +
+                String.format("%03d", Integer.valueOf(miliSeconds)) ;
+
+        return date.substring(0,4)+'-'+date.substring(4,6)+'-'+date.substring(6,8)+'T' + time;
+
+
+    }
+
+    String convertDateGeorgianToJalali(int Y, int M, int D) {
+
+        DateConverter dateConverter = new DateConverter();
+        dateConverter.gregorianToPersian(Y, M, D);
+
+        return dateConverter.getYear() + String.format("%02d", dateConverter.getMonth()) + String.format("%02d", dateConverter.getDay());
+    }
+
+
+    String convertDateJalaliToGeorgian(int Y, int M, int D) {
+
+        DateConverter dateConverter = new DateConverter();
+        dateConverter.persianToGregorian(Y, M, D);
+
+        return dateConverter.getYear() + String.format("%02d", dateConverter.getMonth()) + String.format("%02d", dateConverter.getDay());
     }
 
 
@@ -256,7 +405,7 @@ public class UserRepoImpl implements UserRepo {
         if (p.getLastName() != "" && p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
         if (p.getDisplayName() != "" && p.getDisplayName() != null)
             context.setAttributeValue("displayName", p.getDisplayName());
-        if (p.getUserPassword() != "" && p.getUserPassword() != null)
+        if (p.getUserPassword() != null && p.getUserPassword() != "")
             context.setAttributeValue("userPassword", p.getUserPassword());
         if (p.getMobile() != "" && p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
         if (p.getMail() != "" && p.getFirstName() != null) context.setAttributeValue("mail", p.getMail());
@@ -271,12 +420,23 @@ public class UserRepoImpl implements UserRepo {
         }
         if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhotoName());
 
+        if (p.getCStatus() != null) {
+
+            if (p.getCStatus().equals("enable"))
+                enable(uid);
+            else if (p.getCStatus().equals("disable"))
+                disable(uid);
+            else if (p.getCStatus().equals("unlock"))
+                unlock(uid);
+
+        }
+
         Attributes ls;
 
         if (p.getResetPassToken() != null) context.setAttributeValue("resetPassToken", p.getResetPassToken());
 
 
-        if (p.getMemberOf()!=null) {
+        if (p.getMemberOf() != null) {
             if (p.getMemberOf().size() != 0) {
                 for (int i = 0; i < p.getMemberOf().size(); i++) {
                     if (i == 0) context.setAttributeValue("ou", p.getMemberOf().get(i));
@@ -295,10 +455,72 @@ public class UserRepoImpl implements UserRepo {
         else
             context.setAttributeValue("photoName", old.getPhotoName());
 
-        if (p.getStatus() != "" && p.getStatus() != null) context.setAttributeValue("userStatus", p.getStatus());
+
+        if (p.getEndTime()!=null)
+
+            context.setAttributeValue("pwdEndTime", setEndTime(p.getEndTime()));
 
 
         return context;
+    }
+
+    private String convertDateNumber(String date){
+        String y = date.substring(0,4);
+        String M = date.substring(4,6);
+        String d = date.substring(6,8);
+
+        String h = date.substring(8,10);
+        String m = date.substring(10,12);
+        String s = date.substring(12,14);
+        String S = date.substring(15,18);
+
+        return y+"-"+M+"-"+d+"T"+h+":"+m+":"+s+"."+S;
+    }
+
+    private String setEndTime(String input){
+        //if is jalali
+        if (Integer.valueOf(input.substring(0,4))<2000){
+
+            if (!(input.contains("-"))){
+                int Y = Integer.valueOf(input.substring(0,4));
+                int M = Integer.valueOf(input.substring(4,6));
+                int D = Integer.valueOf(input.substring(6,8));
+
+                DateConverter dateConverter = new DateConverter();
+                dateConverter.persianToGregorian(Y, M, D);
+
+                return dateConverter.getYear()
+                        + String.format("%02d", dateConverter.getMonth())
+                        + String.format("%02d", dateConverter.getDay())
+                        + input.substring(8,10)
+                        + input.substring(10,12)
+                        + input.substring(12,14)
+                        + input.substring(15,17);
+            } else{
+                return convertDateTimeJalali(input);
+
+
+            }
+
+
+            //if is G
+        }else{
+
+            if (!(input.contains("-"))){
+
+                return convertDateNumber(input);
+
+
+
+            }else {
+
+                return input;
+
+            }
+
+
+        }
+
     }
 
     public Name buildDn(String userId) {
@@ -307,30 +529,51 @@ public class UserRepoImpl implements UserRepo {
 
 
     @Override
-    public HttpStatus changePassword(String uId, String currentPassword, String newPassword) {
+    public HttpStatus changePassword(String uId, String currentPassword, String newPassword, String token) {
 
         //TODO:check current pass
         User user = retrieveUser(uId);
 
-        if (true)
-            user.setUserPassword(newPassword);
+        if (true) {
+            if (token != null) {
+                if (checkToken(uId, token) == HttpStatus.OK) {
+                    user.setUserPassword(newPassword);
 
+                    Name dn = buildDn(uId);
+                    DirContextOperations context = buildAttributes(uId, user, dn);
 
-        Name dn = buildDn(uId);
-        DirContextOperations context = buildAttributes(uId, user, dn);
+                    try {
+                        ldapTemplate.modifyAttributes(context);
+                        return HttpStatus.OK;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return HttpStatus.EXPECTATION_FAILED;
+                    }
 
-        try {
-            ldapTemplate.modifyAttributes(context);
-            return HttpStatus.OK;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return HttpStatus.EXPECTATION_FAILED;
-        }
+                } else
+                    return HttpStatus.FORBIDDEN;
+            } else {
+                user.setUserPassword(newPassword);
+                Name dn = buildDn(uId);
+                DirContextOperations context = buildAttributes(uId, user, dn);
+
+                try {
+                    ldapTemplate.modifyAttributes(context);
+                    return HttpStatus.OK;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return HttpStatus.EXPECTATION_FAILED;
+                }
+            }
+        } else
+            return HttpStatus.FORBIDDEN;
+
 
     }
+
     @Override
-    public HttpStatus showProfilePic(HttpServletResponse response, User user){
-        File file = new File(uploadedFilesPath+user.getPhotoName());
+    public HttpStatus showProfilePic(HttpServletResponse response, User user) {
+        File file = new File(uploadedFilesPath + user.getPhotoName());
 
         if (file.exists()) {
             try {
@@ -348,7 +591,7 @@ public class UserRepoImpl implements UserRepo {
 
             }
         }
-        return  HttpStatus.FORBIDDEN;
+        return HttpStatus.FORBIDDEN;
     }
 
     @Override
@@ -366,9 +609,9 @@ public class UserRepoImpl implements UserRepo {
         File oldPic = new File(uploadedFilesPath + user.getPhotoName());
 
         user.setPhotoName(s);
-        if(update(user.getUserId(), user)==HttpStatus.OK) {
+        if (update(user.getUserId(), user) == HttpStatus.OK) {
             oldPic.delete();
-            return  HttpStatus.OK;
+            return HttpStatus.OK;
 
         }
         return HttpStatus.BAD_REQUEST;
@@ -404,14 +647,19 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public List<User> retrieveUsersFull() {
         SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        List<User> people = ldapTemplate.search(query().where("objectClass").is("person"),
-                new UserAttributeMapper(false));
+
+        final AndFilter andFilter = new AndFilter();
+        andFilter.and(new EqualsFilter("objectclass", "person"));
+
+        List<User> people = ldapTemplate.search(BASE_DN, andFilter.toString(), searchControls,
+                new UserAttributeMapper(true));
         List<User> relatedPeople = new LinkedList<>();
-        for (User user : people) {
+        for (User user : people)
             if (user.getDisplayName() != null)
                 relatedPeople.add(user);
-        }
+
         return relatedPeople;
     }
 
@@ -421,7 +669,7 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = new User();
         if (!((ldapTemplate.search(query().where("uid").is(userId), new UserAttributeMapper(false))).toString() == "[]"))
-            user = ldapTemplate.search(query().where("uid").is(userId), new UserAttributeMapper(true)).get(0);
+            user = ldapTemplate.lookup(buildDn(userId), new String[]{"*", "+"}, new UserAttributeMapper(true));
         if (user.getUserId() == null) return null;
         else return user;
     }
@@ -513,7 +761,7 @@ public class UserRepoImpl implements UserRepo {
             } else if (event.getAction().equals("AUTHENTICATION_SUCCESS"))
                 nSuccessful++;
         }
-        loginJson.put("total", nSuccessful+nUnSucceful);
+        loginJson.put("total", nSuccessful + nUnSucceful);
         loginJson.put("unsuccessful", nUnSucceful);
         loginJson.put("successful", nSuccessful);
 
@@ -525,6 +773,179 @@ public class UserRepoImpl implements UserRepo {
         return jsonObject;
 
 
+    }
+
+    @Override
+    public HttpStatus enable(String uid) {
+
+        Name dn = buildDn(uid);
+
+        ModificationItem[] modificationItems;
+        modificationItems = new ModificationItem[1];
+
+        User user = retrieveUser(uid);
+        Boolean status = user.isEnabled();
+
+        if (!status) {
+            modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
+
+            try {
+                ldapTemplate.modifyAttributes(dn, modificationItems);
+                return HttpStatus.OK;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return HttpStatus.BAD_REQUEST;
+            }
+        } else {
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
+
+    public HttpStatus removeCurrentEndTime(String uid) {
+
+        Name dn = buildDn(uid);
+
+        ModificationItem[] modificationItems;
+        modificationItems = new ModificationItem[1];
+
+        User user = retrieveUser(uid);
+
+        if (user.getEndTime()!=null) {
+            modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
+
+            try {
+                ldapTemplate.modifyAttributes(dn, modificationItems);
+                return HttpStatus.OK;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return HttpStatus.BAD_REQUEST;
+            }
+        } else {
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
+    @Override
+    public HttpStatus disable(String uid) {
+
+        Name dn = buildDn(uid);
+
+        ModificationItem[] modificationItems;
+        modificationItems = new ModificationItem[1];
+
+        User user = retrieveUser(uid);
+
+        if (user.isEnabled()) {
+            modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime", "40400404040404.950Z"));
+
+            try {
+                ldapTemplate.modifyAttributes(dn, modificationItems);
+                return HttpStatus.OK;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return HttpStatus.BAD_REQUEST;
+            }
+        } else {
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
+
+    public HttpStatus addEndTime(String uid, String date) {
+
+        Name dn = buildDn(uid);
+
+        ModificationItem[] modificationItems;
+        modificationItems = new ModificationItem[1];
+
+        User user = retrieveUser(uid);
+        Boolean status = user.isEnabled();
+
+
+        if (user.isEnabled()) {
+            modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime", convertDateTimeJalali(date)));
+
+            try {
+                ldapTemplate.modifyAttributes(dn, modificationItems);
+                return HttpStatus.OK;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return HttpStatus.BAD_REQUEST;
+            }
+        } else {
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
+
+    public HttpStatus expiryDate(String uid, String date) {
+
+        Name dn = buildDn(uid);
+
+        ModificationItem[] modificationItems;
+        modificationItems = new ModificationItem[1];
+
+        User user = retrieveUser(uid);
+        Boolean status = user.isEnabled();
+
+        if (status) {
+            modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime", "40400404040404.950Z"));
+
+            try {
+                ldapTemplate.modifyAttributes(dn, modificationItems);
+                return HttpStatus.OK;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return HttpStatus.BAD_REQUEST;
+            }
+        } else {
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
+    @Override
+    public HttpStatus unlock(String uid) {
+
+        Name dn = buildDn(uid);
+
+        ModificationItem[] modificationItems;
+        modificationItems = new ModificationItem[2];
+
+        User user = retrieveUser(uid);
+        Boolean locked = user.isLocked();
+
+        if (locked) {
+            modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
+            modificationItems[1] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
+
+
+            try {
+                ldapTemplate.modifyAttributes(dn, modificationItems);
+                return HttpStatus.OK;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return HttpStatus.BAD_REQUEST;
+            }
+        } else {
+            return HttpStatus.BAD_REQUEST;
+        }
+
+    }
+
+    @Override
+    public HttpStatus requestToken(User user) {
+        if (insertMobileToken(user))
+            return sendMessage(user.getMobile());
+
+        else
+            return HttpStatus.BAD_REQUEST;
     }
 
     @Override
@@ -663,10 +1084,12 @@ public class UserRepoImpl implements UserRepo {
         return true;
     }
 
-    public String updatePass(String userId, String pass, String token) {
+    public HttpStatus updatePass(String userId, String pass, String token) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = ldapTemplate.search(query().where("uid").is(userId), new UserAttributeMapper(false)).get(0);
+
+        setRole(userId, user);
 
         HttpStatus httpStatus = checkToken(userId, token);
 
@@ -677,11 +1100,12 @@ public class UserRepoImpl implements UserRepo {
             DirContextOperations context = buildAttributes(userId, user, dn);
             ldapTemplate.modifyAttributes(context);
 
-            return userId + " passwords was updated";
+            return HttpStatus.OK;
         } else {
-            return "userId or token was incorrect";
+            return HttpStatus.FORBIDDEN;
         }
     }
+
 
     public JSONArray excelSheetAnalyze(Sheet sheet, int[] sequence, boolean hasHeader) {
         JSONArray jsonArray = new JSONArray();
@@ -707,11 +1131,14 @@ public class UserRepoImpl implements UserRepo {
             user.setFirstName(row.getCell(sequence[1]).getStringCellValue());
             user.setLastName(row.getCell(sequence[2]).getStringCellValue());
             user.setDisplayName(row.getCell(sequence[3]).getStringCellValue());
-            //user.setMobile(String.valueOf(row.getCell(sequence[4]).getNumericCellValue()));
-            user.setMail(row.getCell(sequence[5]).getStringCellValue());
-            //user.setMemberOf(Collections.singletonList(row.getCell(sequence[6]).getStringCellValue()));
+            DataFormatter formatter = new DataFormatter(); //creating formatter using the default locale
+            user.setMobile(formatter.formatCellValue(row.getCell(sequence[4])));
+            user.setMail(formatter.formatCellValue(row.getCell(sequence[5])));
+            String tt1 = formatter.formatCellValue(row.getCell(sequence[6]));
+            List<String> lst = extractGroups(tt1);
+            user.setMemberOf(lst);
             user.setDescription(row.getCell(sequence[7]).getStringCellValue());
-            user.setStatus(row.getCell(sequence[8]).getStringCellValue());
+            //user.isEnabled(row.getCell(sequence[8]).get);
 
 
             temp = createUserImport(user);
@@ -725,6 +1152,15 @@ public class UserRepoImpl implements UserRepo {
         return jsonArray;
     }
 
+    List<String> extractGroups(String strMain) {
+        String[] arrSplit = (strMain.split(","));
+        List<String> ls = new LinkedList<>();
+        for (int i = 0; i < arrSplit.length; i++)
+            ls.add(arrSplit[i].trim());
+        return ls;
+    }
+
+
     public JSONObject compareUsers(User oldUser, User newUser) {
 
         List<String> conflicts = new LinkedList<>();
@@ -736,7 +1172,7 @@ public class UserRepoImpl implements UserRepo {
         if (oldUser.getMail().equals(newUser.getMail())) conflicts.add("mail");
         if (oldUser.getMobile().equals(newUser.getMobile())) conflicts.add("mobile");
         if (oldUser.getDescription().equals(newUser.getDescription())) conflicts.add("description");
-        if (oldUser.getStatus().equals(newUser.getStatus())) conflicts.add("status");
+        if (oldUser.isEnabled() == (newUser.isEnabled())) conflicts.add("status");
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("old", oldUser);
@@ -771,12 +1207,10 @@ public class UserRepoImpl implements UserRepo {
             user.setFirstName(data[sequence[1]]);
             user.setLastName(data[sequence[2]]);
             user.setDisplayName(data[sequence[3]]);
-            user.setMobile(data[sequence[4]]);
-            user.setMail(data[sequence[5]]);
-            //user.setMemberOf(Collections.singletonList(data[sequence[6]]));
+
             user.setUserPassword((data[sequence[7]]));
             user.setDescription((data[sequence[8]]));
-            user.setStatus(data[sequence[9]]);
+            //user.setStatus(data[sequence[9]]);
 
 
             i++;
@@ -881,7 +1315,7 @@ public class UserRepoImpl implements UserRepo {
         user.setUserPassword(entry.getAttributeValue("userPassword"));
         user.setDescription(entry.getAttributeValue("description"));
         user.setPhotoName(entry.getAttributeValue("photoName"));
-        user.setStatus(entry.getAttributeValue("userStatus"));
+        //user.setStatus(entry.getAttributeValue("userStatus"));
 
         //lsUserConflicts.add(create(user));
 
@@ -898,10 +1332,9 @@ public class UserRepoImpl implements UserRepo {
             if (insertMobileToken(user)) {
                 try {
                     String receptor = mobile;
-                    String message = user.getResetPassToken().substring(0,SMS_VALIDATION_DIGITS);
+                    String message = user.getResetPassToken().substring(0, SMS_VALIDATION_DIGITS);
                     KavenegarApi api = new KavenegarApi(SMS_API_KEY);
                     api.verifyLookup(receptor, message, "", "", "mfa");
-
 
 
                 } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
@@ -936,7 +1369,7 @@ public class UserRepoImpl implements UserRepo {
 
                         try {
                             String receptor = mobile;
-                            String message = user.getResetPassToken().substring(0,SMS_VALIDATION_DIGITS);
+                            String message = user.getResetPassToken().substring(0, SMS_VALIDATION_DIGITS);
                             KavenegarApi api = new KavenegarApi(SMS_API_KEY);
                             api.verifyLookup(receptor, message, "", "", "mfa");
                             return HttpStatus.OK;
@@ -1006,13 +1439,33 @@ public class UserRepoImpl implements UserRepo {
             user.setMemberOf(null != attributes.get("ou") ? ls : null);
             user.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
             user.setPhotoName(null != attributes.get("photoName") && "" != attributes.get("photoName").toString() ? attributes.get("photoName").get().toString() : null);
-            user.setStatus(null != attributes.get("userStatus") ? attributes.get("userStatus").get().toString() : "Activated");
             user.setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
             user.setQrToken(null != attributes.get("qrToken") ? attributes.get("qrToken").get().toString() : null);
+            user.setEndTime(null != attributes.get("pwdEndTime") ? setEndTime(attributes.get("pwdEndTime").get().toString()) : null);
+
+
+                if (null != attributes.get("pwdAccountLockedTime")) {
+
+                if (attributes.get("pwdAccountLockedTime").get().toString().equals("40400404040404.950Z")) {
+                    user.setEnabled(false);
+                    user.setLocked(false);
+                    user.setStatus("disabled");
+
+                } else {
+                    user.setEnabled(true);
+                    user.setLocked(true);
+                    user.setStatus("locked");
+
+                }
+            } else {
+                user.setEnabled(true);
+                user.setLocked(false);
+                user.setStatus("active");
+
+            }
 
             return user;
         }
     }
-
 
 }

@@ -87,7 +87,6 @@ public class ServiceRepoImpl implements ServiceRepo {
                 }
         }
         return services;
-
     }
 
     @Override
@@ -95,7 +94,6 @@ public class ServiceRepoImpl implements ServiceRepo {
         List allServices = new LinkedList();
 
         allServices = listServices();
-
 
         for (int i = 0; i < allServices.size(); i++) {
             Service service = (Service) allServices.get(i);
@@ -414,6 +412,7 @@ public class ServiceRepoImpl implements ServiceRepo {
             MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
             multifactorPolicy.setFailureMode((String) jsonObject.get("failureMode"));
             multifactorPolicy.setBypassEnabled((Boolean) jsonObject.get("bypassEnabled"));
+            multifactorPolicy.setMultifactorAuthenticationProviders((ArrayList) jsonObject.get("multifactorAuthenticationProviders"));
             service.setMultifactorPolicy(multifactorPolicy);
 
 
@@ -500,6 +499,27 @@ public class ServiceRepoImpl implements ServiceRepo {
             accessStrategy.setUnauthorizedRedirectUrl(jsonObject.get("unauthorizedRedirectUrl").toString());
 
 
+        if (jsonObject.get("startingDateTime") != null) {
+            String s = jsonObject.get("startingDateTime").toString();
+
+            if (Integer.valueOf(s.substring(0,4)) >2000 )
+                accessStrategy.setStartingDateTimeForGet(jsonObject.get("startingDateTime").toString());
+            if (Integer.valueOf(s.substring(0,4)) <2000 )
+                accessStrategy.setStartingDateTimeForPost(jsonObject.get("startingDateTime").toString());
+        }
+
+        if (jsonObject.get("endingDateTime") != null) {
+            String s = jsonObject.get("endingDateTime").toString();
+
+            accessStrategy.setEndingDateTimeForGet(jsonObject.get("endingDateTime").toString());
+
+            if (Integer.valueOf(s.substring(0, 4)) > 2000)
+                accessStrategy.setEndingDateTimeForGet(jsonObject.get("endingDateTime").toString());
+            if (Integer.valueOf(s.substring(0, 4)) < 2000)
+                accessStrategy.setEndingDateTimeForPost(jsonObject.get("endingDateTime").toString());
+
+        }
+
 
         //accessStrategy.setAtClass(jsonObject.get("@class").toString()););
         if (jsonObject.get("endpointUrl") != null)
@@ -522,8 +542,6 @@ public class ServiceRepoImpl implements ServiceRepo {
         JSONObject t1;
         if (jsonObject.get("requiredAttributes")!=(null)) {
 
-
-
                 Object ob1 =jsonObject.get("requiredAttributes");
 
                 if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
@@ -542,6 +560,30 @@ public class ServiceRepoImpl implements ServiceRepo {
                 }
 
         accessStrategy.setRequiredAttributes(tempreqiredattribute);
+
+
+        JSONObject temprejecteddattribute = new JSONObject();
+
+        if (jsonObject.get("rejectedAttributes")!=(null)) {
+
+            Object ob1 =jsonObject.get("rejectedAttributes");
+
+            if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
+                obj = new JSONArray();
+                obj = (JSONArray) jsonObject.get("rejectedAttributes");
+                t1 = (JSONObject) obj.get(0);
+                temprejecteddattribute = t1;
+                temprejecteddattribute.put("@class", "java.util.HashMap");
+
+            }
+            else {
+                temprejecteddattribute = new JSONObject((Map) ob1);
+                temprejecteddattribute.put("@class", "java.util.HashMap");
+            }
+
+        }
+
+        accessStrategy.setRejectedAttributes(temprejecteddattribute);
 
         //Set keys = obj.keySet();
 

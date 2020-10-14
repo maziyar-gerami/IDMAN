@@ -15,7 +15,8 @@ import java.util.List;
 
 public interface UserRepo {
 
-    public HttpStatus changePassword(String uId, String currentPassword, String newPassword);
+    HttpStatus changePassword(String uId, String currentPassword, String newPassword, String token);
+
 
     HttpStatus showProfilePic(HttpServletResponse response, User user);
 
@@ -25,9 +26,7 @@ public interface UserRepo {
     public User getName (String uid,String token);
     public List<User> retrieveUsersFull();
     public JSONObject create(User p);
-
-    JSONObject createUserImport(User p);
-
+    public JSONObject createUserImport(User p);
     public HttpStatus update(String uid, User p);
     public String remove(String userId);
     public String remove();
@@ -36,10 +35,16 @@ public interface UserRepo {
     public HttpStatus sendEmail(String email);
     public HttpStatus sendEmail(String email, String uid);
     public HttpStatus checkToken(String userId, String token);
-    public String updatePass(String userId, String pass, String token);
+    public HttpStatus updatePass(String userId, String pass, String token);
     public JSONArray importFileUsers(MultipartFile file , int[] sequence, boolean hasHeader) throws IOException;
     public HttpStatus sendMessage(String mobile);
     public HttpStatus sendMessage(String mobile,String uId);
     public List<JSONObject> checkMobile(String mobile);
     public JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException;
+    public HttpStatus enable(String uid);
+    public HttpStatus disable(String uid);
+    public HttpStatus unlock(String uid);
+
+    HttpStatus requestToken(User user);
+
 }

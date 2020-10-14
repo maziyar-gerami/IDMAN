@@ -27,6 +27,18 @@ document.addEventListener('DOMContentLoaded', function () {
       name: "",
       nameEN: "",
       groups: [],
+      users:[],
+      searchQuery: "",
+      searchQueryAllowedList: "",
+      searchQueryBlockedList: "",
+      userSearch:[],
+      userAllowed:[],
+      userBlocked:[],
+      userAllowedId:[],
+      userBlockedId:[],
+      flagList: [true],
+      indexList: [0],
+      attributeList: [],
       groupList: "",
       margin: "margin-right: 30px;",
       lang: "EN",
@@ -35,12 +47,17 @@ document.addEventListener('DOMContentLoaded', function () {
       userPicture: "images/PlaceholderUser.png",
       accessStrategy: {},
       requiredAttributes: {},
+      rejectedAttributes: {},
+      multifactorPolicy: {},
       ou: [],
       ouList: [],
+      userIdAllowed: [],
+      userIdBlocked: [],
       contacts: [],
       contactsList: [],
       contactsObj: {},
       service: {},
+      activeItem: "main",
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -76,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s32: "تایید",
       s33: "./dashboard",
       s34: "./services",
-      s35: "گروه ها",
+      s35: "دسترسی گروه ها",
       s36: "شناسه سرویس",
       s37: "./users",
       s38: "./groups",
@@ -88,17 +105,49 @@ document.addEventListener('DOMContentLoaded', function () {
       s44: "استراتژی دسترسی",
       s45: "فعال سازی SSO",
       s46: "آدرس تغییر مسیر غیرمجاز",
-      s47: " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)"
+      s47: " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)",
+      s48: "تنطیمات پایه",
+      s49: "استراتژی دسترسی",
+      s50: "دسترسی بر اساس زمان",
+      s51: "تاریخ شروع",
+      s52: "زمان شروع",
+      s53: "تاریخ پایان",
+      s54: "زمان پایان",
+      s55: "احراز هویت چند مرحله ای",
+      s56: "فعال سازی MFA",
+      s57: " مثال: 1399/05/01 ",
+      s58: " مثال: 20:30 ",
+      s59: "دسترسی کاربران",
+      s60: "لیست کاربران",
+      s61: "جستجو...",
+      s62: "اعطا دسترسی",
+      s63: "منع دسترسی",
+      s64: "کاربری یافت نشد",
+      s65: "جستجو کنید",
+      s66: "کاربران دارای دسترسی",
+      s67: "حذف",
+      s68: "لیست خالی است",
+      s69: "کاربران منع شده",
+      s70: "دسترسی بر اساس پارامتر",
+      s71: "نام پارامتر",
+      s72: "مقدار پارامتر"
     },
     created: function () {
       this.getUserInfo();
       this.getUserPic();
       this.getGroups();
+      this.getUsersList();
       if(typeof this.$route.query.en !== 'undefined'){
         this.changeLang();
       }
     },
     methods: {
+      isActive (menuItem) {
+        return this.activeItem === menuItem
+      },
+      setActive (menuItem) {
+        this.activeItem = menuItem
+      },
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
@@ -136,6 +185,14 @@ document.addEventListener('DOMContentLoaded', function () {
         axios.get(url + "/api/groups")
         .then((res) => {
           vm.groups = res.data;
+        });
+      },
+      getUsersList: function (){
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        axios.get(url + "/api/users")
+        .then((res) => {
+          vm.userSearch = res.data;
         });
       },
       addGroup: function (n) {
@@ -224,16 +281,201 @@ document.addEventListener('DOMContentLoaded', function () {
             this.accessStrategy.unauthorizedRedirectUrl = null;
           }
 
+
+          if(document.getElementsByName('dateStart')[0].value != "" && 
+          document.getElementsByName('dateEnd')[0].value != ""){
+                let dateStartTemp = document.getElementsByName('dateStart')[0].value.split("  ");
+                let dateStart = dateStartTemp[0].split(' ');
+                let dateStartFinal;
+                dateStart[dateStart.length-1] = this.FaNumToEnNum(dateStart[dateStart.length-1]);
+                dateStart[dateStart.length-3] = this.FaNumToEnNum(dateStart[dateStart.length-3]);
+
+                switch(dateStart[dateStart.length-2]) {
+                  case "فروردین":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-01-" + dateStart[dateStart.length-3];
+                    break;
+                  case "اردیبهشت":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-02-" + dateStart[dateStart.length-3];
+                    break;
+                  case "خرداد":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-03-" + dateStart[dateStart.length-3];
+                    break;
+                  case "تیر":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-04-" + dateStart[dateStart.length-3];
+                    break;
+                  case "مرداد":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-05-" + dateStart[dateStart.length-3];
+                    break;
+                  case "شهریور":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-06-" + dateStart[dateStart.length-3];
+                    break;
+                  case "مهر":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-07-" + dateStart[dateStart.length-3];
+                    break;
+                  case "آبان":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-08-" + dateStart[dateStart.length-3];
+                    break;
+                  case "آذر":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-09-" + dateStart[dateStart.length-3];
+                    break;
+                  case "دی":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-10-" + dateStart[dateStart.length-3];
+                    break;
+                  case "بهمن":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-11-" + dateStart[dateStart.length-3];
+                    break;
+                  case "اسفند":
+                    dateStartFinal = dateStart[dateStart.length-1] + "-12-" + dateStart[dateStart.length-3];
+                    break;
+                  default:
+                    console.log("Wrong Input for Month");
+                }
+
+                let dateEndTemp = document.getElementsByName('dateEnd')[0].value.split("  ");
+                let dateEnd = dateEndTemp[0].split(' ');
+                let dateEndFinal;
+                dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
+                dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
+
+                switch(dateEnd[dateEnd.length-2]) {
+                  case "فروردین":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "اردیبهشت":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "خرداد":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "تیر":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "مرداد":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "شهریور":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "مهر":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "آبان":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "آذر":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "دی":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "بهمن":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "اسفند":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
+                    break;
+                  default:
+                    console.log("Wrong Input for Month");
+                }
+
+                let timeStart = dateStartTemp[1].split(':');
+                let timeEnd = dateEndTemp[1].split(':');
+
+                timeStart = this.FaNumToEnNum(timeStart[0]) + ':' + this.FaNumToEnNum(timeStart[1]);
+                timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
+                
+                let dateS = dateStartFinal.split('-');
+                let dateE = dateEndFinal.split('-');
+
+                if(parseInt(dateS[1]) < 7){
+                  timeStart = timeStart + ":00.000+4:30";
+                }else{
+                  timeStart = timeStart + ":00.000+3:30";
+                }
+
+                if(parseInt(dateE[1]) < 7){
+                  timeEnd = timeEnd + ":00.000+4:30";
+                }else{
+                  timeEnd = timeEnd + ":00.000+3:30";
+                }
+
+                let TempS = timeStart.split(':');
+                let TempE = timeEnd.split(':');
+                if(TempS[0].length == 1){
+                  TempS[0] = '0' + TempS[0];
+                  timeStart = "";
+                  for(i = 0; i < TempS.length; ++i){
+                    timeStart = timeStart + TempS[i] + ':';
+                  }
+                  timeStart = timeStart.substring(0,timeStart.length-1);
+                }
+                if(TempE[0].length == 1){
+                  TempE[0] = '0' + TempE[0];
+                  timeEnd = "";
+                  for(i = 0; i < TempE.length; ++i){
+                    timeEnd = timeEnd + TempE[i] + ':';
+                  }
+                  timeEnd = timeEnd.substring(0,timeEnd.length-1);
+                }
+
+                TempS = dateStartFinal.split('-');
+                TempE = dateEndFinal.split('-');
+                if(TempS[1].length == 1){
+                  TempS[1] = '0' + TempS[1];
+                }
+                if(TempS[2].length == 1){
+                  TempS[2] = '0' + TempS[2];
+                }
+                if(TempE[1].length == 1){
+                  TempE[1] = '0' + TempE[1];
+                }
+                if(TempE[2].length == 1){
+                  TempE[2] = '0' + TempE[2];
+                }
+                
+                dateStartFinal = TempS[0] + '-' + TempS[1] + '-' + TempS[2];
+                dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
+
+                this.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart;
+                this.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd;
+          }
+
+
           if(document.getElementsByName('groups')[0].value != ""){
             this.ouList = document.getElementsByName('groups')[0].value.split(',');
             this.ou[0] = "java.util.HashSet";
             this.ou[1] = this.ouList;
             this.requiredAttributes.ou = this.ou;
-          }else{
-            this.requiredAttributes = {};
           }
 
+          if(this.userAllowedId.length != 0){
+            this.userIdAllowed[0] = "java.util.HashSet";
+            this.userIdAllowed[1] = this.userAllowedId;
+            this.requiredAttributes.userId = this.userIdAllowed;
+          }
+          
+          if(this.userBlockedId.length != 0){
+            this.userIdBlocked[0] = "java.util.HashSet";
+            this.userIdBlocked[1] = this.userBlockedId;
+            this.rejectedAttributes.userId = this.userIdBlocked;
+          }
+
+          for(i = 0; i < this.indexList.length; ++i){
+            if(this.flagList[i]){
+              if(document.getElementById("attributeKey" + this.indexList[i]).value != "" &&
+              document.getElementById("attributeValue" + this.indexList[i]).value != ""){
+                if(document.getElementById("attributeKey" + this.indexList[i]).value != "@class" &&
+                document.getElementById("attributeKey" + this.indexList[i]).value != "userId" &&
+                document.getElementById("attributeKey" + this.indexList[i]).value != "ou"){
+                  this.requiredAttributes[document.getElementById("attributeKey" + this.indexList[i]).value] = ["java.util.HashSet", document.getElementById("attributeValue" + this.indexList[i]).value.split(',')];
+                }
+              }
+            }
+          }
+
+
           this.accessStrategy.requiredAttributes = this.requiredAttributes;
+          this.accessStrategy.rejectedAttributes = this.rejectedAttributes;
           
           
           this.contactsObj.name = document.getElementsByName('cName')[0].value;
@@ -256,6 +498,25 @@ document.addEventListener('DOMContentLoaded', function () {
           this.contacts[0] = "java.util.ArrayList";
           this.contacts[1] = this.contactsList;
 
+          
+          if(document.getElementsByName('mfaEnabled')[0].checked){
+            this.multifactorPolicy.multifactorAuthenticationProviders = [ "java.util.LinkedHashSet", [ "mfa-simple" ] ];
+          }else{
+            this.multifactorPolicy.multifactorAuthenticationProviders = [ "java.util.LinkedHashSet", [ ] ];
+          }
+
+          if(document.getElementsByName('bypassEnabled')[0].checked){
+            this.multifactorPolicy.bypassEnabled = true;
+          }else{
+            this.multifactorPolicy.bypassEnabled = false;
+          }
+
+          if(document.getElementsByName('failureMode')[0].value != ""){
+            this.multifactorPolicy.failureMode = document.getElementsByName('failureMode')[0].value;
+          }else{
+            this.multifactorPolicy.failureMode = null;
+          }
+
           axios({
               method: 'post',
               url: url + "/api/services", //
@@ -263,6 +524,7 @@ document.addEventListener('DOMContentLoaded', function () {
               data: JSON.stringify({
                 name: vm.service.name,
                 serviceId: vm.service.serviceId,
+                multifactorPolicy: vm.multifactorPolicy,
                 description: vm.service.description,
                 logo: vm.service.logo,
                 informationUrl: vm.service.informationUrl,
@@ -283,6 +545,78 @@ document.addEventListener('DOMContentLoaded', function () {
         if (keyCode < 48 || keyCode > 122) {
            $event.preventDefault();
         }
+      },
+      FaNumToEnNum: function (str) {
+        let s = str.split("");
+        let sEn = "";
+        for(i = 0; i < s.length; ++i){
+          if(s[i] == '۰'){
+            sEn = sEn + '0';
+          }else if(s[i] == '۱'){
+            sEn = sEn + '1';
+          }else if(s[i] == '۲'){
+            sEn = sEn + '2';
+          }else if(s[i] == '۳'){
+            sEn = sEn + '3';
+          }else if(s[i] == '۴'){
+            sEn = sEn + '4';
+          }else if(s[i] == '۵'){
+            sEn = sEn + '5';
+          }else if(s[i] == '۶'){
+            sEn = sEn + '6';
+          }else if(s[i] == '۷'){
+            sEn = sEn + '7';
+          }else if(s[i] == '۸'){
+            sEn = sEn + '8';
+          }else if(s[i] == '۹'){
+            sEn = sEn + '9';
+          }
+        }
+        return sEn;
+      },
+      allowUserAccess: function (user) {
+        if(this.userAllowedId.indexOf(user.userId) == -1){
+          this.userAllowedId.push(user.userId);
+          this.userAllowed.push(user);
+        }else{
+          alert("کاربر پیش از این به لیست اضافه شده است.")
+        }
+      },
+      blockUserAccess: function (user) {
+        if(this.userBlockedId.indexOf(user.userId) == -1){
+          this.userBlockedId.push(user.userId);
+          this.userBlocked.push(user);
+        }else{
+          alert("کاربر پیش از این به لیست اضافه شده است.")
+        }
+      },
+      deleteFromAllowedList: function (user) {
+        let index = this.userAllowed.indexOf(user);
+        if (index > -1) {
+          this.userAllowed.splice(index, 1);
+        }
+        index = this.userAllowedId.indexOf(user.userId);
+        if (index > -1) {
+          this.userAllowedId.splice(index, 1);
+        }
+      },
+      deleteFromBlockedList: function (user) {
+        let index = this.userBlocked.indexOf(user);
+        if (index > -1) {
+          this.userBlocked.splice(index, 1);
+        }
+        index = this.userBlockedId.indexOf(user.userId);
+        if (index > -1) {
+          this.userBlockedId.splice(index, 1);
+        }
+      },
+      addAttribute: function () {
+        this.indexList.push(this.indexList[this.indexList.length-1] + 1);
+        this.flagList.push(true);
+      },
+      deleteAttribute: function (index) {
+        this.flagList[index] = false;
+        document.getElementById("attribute" + index).remove();
       },
       changeLang: function () {
         if(this.lang == "EN"){
@@ -324,7 +658,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s32 = "Submit";
           this.s33 = "./dashboard?en";
           this.s34 = "./services?en";
-          this.s35 = "Groups";
+          this.s35 = "Groups Access";
           this.s36 = "ServiceID";
           this.s37 = "./users?en";
           this.s38 = "./groups?en";
@@ -336,7 +670,32 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s44 = "Access Strategy";
           this.s45 = "Allow SSO";
           this.s46 = "Unauthorized Redirect Url";
-          this.s47 =  " (Only English Letters And Numbers Are Allowed For Service Name)";
+          this.s47 = " (Only English Letters And Numbers Are Allowed For Service Name)";
+          this.s48 = "Basics";
+          this.s49 = "Access Strategy";
+          this.s50 = "Time Based Access";
+          this.s51 = "Start Date";
+          this.s52 = "Start Time";
+          this.s53 = "End Date";
+          this.s54 = "End Time";
+          this.s55 = "Multi Factor Authentication";
+          this.s56 = "MFA Enabled";
+          this.s57 = " Example: 1399/05/01 ";
+          this.s58 = " Example: 15:30 ";
+          this.s59 = "Users Access";
+          this.s60 = "Users List";
+          this.s61 = "Search...";
+          this.s62 = "Grant Access";
+          this.s63 = "Revoke Access";
+          this.s64 = "No User Found";
+          this.s65 = "Search";
+          this.s66 = "Authorized Users";
+          this.s67 = "Remove";
+          this.s68 = "List is Empty";
+          this.s69 = "Banned Users";
+          this.s70 = "Attribute Based Access";
+          this.s71 = "Attribute Name";
+          this.s72 = "Attribute Value";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -376,7 +735,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s32 = "تایید";
             this.s33 = "./dashboard";
             this.s34 = "./services";
-            this.s35 = "گروه ها";
+            this.s35 = "دسترسی گروه ها";
             this.s36 = "شناسه سرویس";
             this.s37 = "./users";
             this.s38 = "./groups";
@@ -389,6 +748,31 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s45 = "فعال سازی SSO";
             this.s46 = "آدرس تغییر مسیر غیرمجاز";
             this.s47 =  " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
+            this.s48 = "تنطیمات پایه";
+            this.s49 = "استراتژی دسترسی";
+            this.s50 = "دسترسی بر اساس زمان";
+            this.s51 = "تاریخ شروع";
+            this.s52 = "زمان شروع";
+            this.s53 = "تاریخ پایان";
+            this.s54 = "زمان پایان";
+            this.s55 = "احراز هویت چند مرحله ای";
+            this.s56 = "فعال سازی MFA";
+            this.s57 = " مثال: 1399/05/01 ";
+            this.s58 = " مثال: 20:30 ";
+            this.s59 = "دسترسی کاربران";
+            this.s60 = "لیست کاربران";
+            this.s61 = "جستجو...";
+            this.s62 = "اعطا دسترسی";
+            this.s63 = "منع دسترسی";
+            this.s64 = "کاربری یافت نشد";
+            this.s65 = "جستجو کنید";
+            this.s66 = "کاربران دارای دسترسی";
+            this.s67 = "حذف";
+            this.s68 = "لیست خالی است";
+            this.s69 = "کاربران منع شده";
+            this.s70 = "دسترسی بر اساس پارامتر";
+            this.s71 = "نام پارامتر";
+            this.s72 = "مقدار پارامتر";
         }
       },
       saml: function () {
@@ -403,6 +787,45 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s18 = "Service URL";
         }
       }
-    }
+    },
+    computed: {
+      resultQuery(){
+        if(this.searchQuery){
+          let buffer = [];
+          buffer = buffer.concat(this.userSearch.filter((item)=>{
+            return this.searchQuery.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
+          }));
+          buffer = buffer.concat(this.userSearch.filter((item)=>{
+            return this.searchQuery.split(' ').every(v => item.displayName.includes(v))
+          }));
+          let uniqueBuffer = [...new Set(buffer)];
+          return uniqueBuffer;
+        }else{
+          return [];
+        }
+      },
+      allowedResultQuery(){
+        let buffer = [];
+        buffer = buffer.concat(this.userAllowed.filter((item)=>{
+          return this.searchQueryAllowedList.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
+        }));
+        buffer = buffer.concat(this.userAllowed.filter((item)=>{
+          return this.searchQueryAllowedList.split(' ').every(v => item.displayName.includes(v))
+        }));
+        let uniqueBuffer = [...new Set(buffer)];
+        return uniqueBuffer;
+      },
+      blockedResultQuery(){
+        let buffer = [];
+        buffer = buffer.concat(this.userBlocked.filter((item)=>{
+          return this.searchQueryBlockedList.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
+        }));
+        buffer = buffer.concat(this.userBlocked.filter((item)=>{
+          return this.searchQueryBlockedList.split(' ').every(v => item.displayName.includes(v))
+        }));
+        let uniqueBuffer = [...new Set(buffer)];
+        return uniqueBuffer;
+      }
+    } 
   })
 })

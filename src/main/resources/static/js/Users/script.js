@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
             checkPasswordCreate: "",
 			passwordVisibleCreate: true,
             submittedCreate: false,
+            userStatus: "",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -155,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s48: "رمز عبور شما باید شامل موارد زیر باشد:",
             s49: "رمز عبور های وارد شده یکسان نمی باشند",
             s50: "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.",
+            s51: "زمان انقضا کاربر",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -466,6 +468,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then((res) => {
                         vm.editInfo = res.data;
                         if(typeof res.data.status !== 'undefined'){
+                            vm.userStatus = res.data.status;
                             if(res.data.status == "active"){
                                 document.getElementById("option1").selected = true;
                                 document.getElementById("option2").selected = false;
@@ -479,6 +482,14 @@ document.addEventListener('DOMContentLoaded', function () {
                                 document.getElementById("option2").selected = false;
                                 document.getElementById("option3").selected = true;
                             }
+                        }
+
+                        if(typeof res.data.endTime !== 'undefined'){
+                            let seTime = res.data.endTime;
+                            persianDate.toCalendar('gregorian');
+                            let dayWrapper = new persianDate([seTime.substring(0,4), seTime.substring(5,7), seTime.substring(8,10),
+                              seTime.substring(11,13), seTime.substring(14,16), seTime.substring(17,19), seTime.substring(20,23)]);
+                            document.getElementById("endTime").value = dayWrapper.toCalendar('persian').format("dddd DD MMMM YYYY  HH:mm  a");
                         }
 
                         if(typeof res.data.memberOf !== 'undefined'){
@@ -506,7 +517,111 @@ document.addEventListener('DOMContentLoaded', function () {
                     checkedGroups = document.getElementById('groupsUpdate').value.split(',');
                 }
 
+                let dateEndTemp = document.getElementById('endTime').value.split("  ");
+                let dateEnd = dateEndTemp[0].split(' ');
+                let dateEndFinal;
+                dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
+                dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
+
+                switch(dateEnd[dateEnd.length-2]) {
+                  case "فروردین":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "اردیبهشت":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "خرداد":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "تیر":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "مرداد":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "شهریور":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "مهر":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "آبان":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "آذر":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "دی":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "بهمن":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "اسفند":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
+                    break;
+                  default:
+                    console.log("Wrong Input for Month");
+                }
+
+                let timeEnd = dateEndTemp[1].split(':');
+
+                timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
+                
+                let dateE = dateEndFinal.split('-');
+
+                if(parseInt(dateE[1]) < 7){
+                  timeEnd = timeEnd + ":00.000+4:30";
+                }else{
+                  timeEnd = timeEnd + ":00.000+3:30";
+                }
+
+                let TempE = timeEnd.split(':');
+                if(TempE[0].length == 1){
+                  TempE[0] = '0' + TempE[0];
+                  timeEnd = "";
+                  for(i = 0; i < TempE.length; ++i){
+                    timeEnd = timeEnd + TempE[i] + ':';
+                  }
+                  timeEnd = timeEnd.substring(0,timeEnd.length-1);
+                }
+
+                TempE = dateEndFinal.split('-');
+                if(TempE[1].length == 1){
+                  TempE[1] = '0' + TempE[1];
+                }
+                if(TempE[2].length == 1){
+                  TempE[2] = '0' + TempE[2];
+                }
+                
+                dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
+
+                let endTimeFinal = dateEndFinal + "T" + timeEnd;
+
                 if (check == true) {
+                    let statusValue;
+                    if(document.getElementById('status').value != "locked"){
+                        if(document.getElementById('status').value == "active"){
+                            if(this.userStatus == "active"){
+                                statusValue = "";
+                            }else if(this.userStatus == "disabled"){
+                                statusValue = "enable";
+                            }else if(this.userStatus == "locked"){
+                                statusValue = "unlock";
+                            }
+                        }else if(document.getElementById('status').value == "disabled"){
+                            if(this.userStatus == "active"){
+                                statusValue = "disable";
+                            }else if(this.userStatus == "disabled"){
+                                statusValue = "";
+                            }else if(this.userStatus == "locked"){
+                                statusValue = "disable";
+                            }
+                        }
+                    }else{
+                        statusValue = "";
+                    }
+
                     axios({
                         method: 'put',
                         url: url + '/api/users/u/' + id,  //
@@ -520,8 +635,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             memberOf: checkedGroups,
                             mail: document.getElementById('editInfo.mailUpdate').value,
                             description: document.getElementById('editInfo.descriptionUpdate').value,
-                            status: document.getElementById('status').value
-                        }),
+                            cStatus: statusValue,
+                            endTime: endTimeFinal
+                        })
                     })
                     .then((res) => {
                         location.reload();
@@ -595,6 +711,88 @@ document.addEventListener('DOMContentLoaded', function () {
                     checkedGroups = document.getElementById('groupsCreate').value.split(',');
                 }
 
+
+                let dateEndTemp = document.getElementById('endTimeCreate').value.split("  ");
+                let dateEnd = dateEndTemp[0].split(' ');
+                let dateEndFinal;
+                dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
+                dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
+
+                switch(dateEnd[dateEnd.length-2]) {
+                  case "فروردین":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "اردیبهشت":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "خرداد":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "تیر":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "مرداد":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "شهریور":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "مهر":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "آبان":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "آذر":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "دی":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "بهمن":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
+                    break;
+                  case "اسفند":
+                    dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
+                    break;
+                  default:
+                    console.log("Wrong Input for Month");
+                }
+
+                let timeEnd = dateEndTemp[1].split(':');
+
+                timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
+                
+                let dateE = dateEndFinal.split('-');
+
+                if(parseInt(dateE[1]) < 7){
+                  timeEnd = timeEnd + ":00.000+4:30";
+                }else{
+                  timeEnd = timeEnd + ":00.000+3:30";
+                }
+
+                let TempE = timeEnd.split(':');
+                if(TempE[0].length == 1){
+                  TempE[0] = '0' + TempE[0];
+                  timeEnd = "";
+                  for(i = 0; i < TempE.length; ++i){
+                    timeEnd = timeEnd + TempE[i] + ':';
+                  }
+                  timeEnd = timeEnd.substring(0,timeEnd.length-1);
+                }
+
+                TempE = dateEndFinal.split('-');
+                if(TempE[1].length == 1){
+                  TempE[1] = '0' + TempE[1];
+                }
+                if(TempE[2].length == 1){
+                  TempE[2] = '0' + TempE[2];
+                }
+                
+                dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
+
+                let endTimeFinal = dateEndFinal + "T" + timeEnd;
+
                 if(check==true) {
                     axios({
                         method: 'post',
@@ -610,7 +808,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 mail: document.getElementById('editInfo.mailCreate').value,
                                 userPassword: document.getElementById('newPasswordCreate').value,
                                 description: document.getElementById('editInfo.descriptionCreate').value,
-
+                                cStatus: document.getElementById('statusCreate').value,
+                                endTime: endTimeFinal
                             }
                         ),
                     })
@@ -660,6 +859,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.has_lowercaseCreate = /[a-z]/.test(this.passwordCreate);
                 this.has_uppercaseCreate = /[A-Z]/.test(this.passwordCreate);
                 this.has_charCreate   = /.{8,}/.test(this.passwordCreate);
+            },
+            FaNumToEnNum: function (str) {
+                let s = str.split("");
+                let sEn = "";
+                for(i = 0; i < s.length; ++i){
+                  if(s[i] == '۰'){
+                    sEn = sEn + '0';
+                  }else if(s[i] == '۱'){
+                    sEn = sEn + '1';
+                  }else if(s[i] == '۲'){
+                    sEn = sEn + '2';
+                  }else if(s[i] == '۳'){
+                    sEn = sEn + '3';
+                  }else if(s[i] == '۴'){
+                    sEn = sEn + '4';
+                  }else if(s[i] == '۵'){
+                    sEn = sEn + '5';
+                  }else if(s[i] == '۶'){
+                    sEn = sEn + '6';
+                  }else if(s[i] == '۷'){
+                    sEn = sEn + '7';
+                  }else if(s[i] == '۸'){
+                    sEn = sEn + '8';
+                  }else if(s[i] == '۹'){
+                    sEn = sEn + '9';
+                  }
+                }
+                return sEn;
             },
             changeLang: function () {
                 if(this.lang == "EN"){
@@ -724,6 +951,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s48 = "Your Password Must Meet All Of The Following Criteria:";
                     this.s49 = "Passwords Don't Match";
                     this.s50 = "This UID Already Exists In Our Database, Please Choose Another.";
+                    this.s51 = "User Expiration Date";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -812,6 +1040,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s48 = "رمز عبور شما باید شامل موارد زیر باشد:";
                     this.s49 = "رمز عبور های وارد شده یکسان نمی باشند";
                     this.s50 = "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.";
+                    this.s51 = "زمان انقضا کاربر";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه";

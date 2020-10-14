@@ -10,14 +10,114 @@
     <link href="css/CreateService/style.css" rel="stylesheet">
     <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="fonts/IranSans/font.css" rel="stylesheet">
+    <link href="css/persian-datepicker.min.css" rel="stylesheet"/>
 
 
     <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/CreateService/script.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/persian-date.min.js"></script>
+    <script src="js/persian-datepicker.min.js"></script>
 
 </head>
+<script type="text/javascript">
+    $(document).ready(function() {
+      $(".datePickerFa").pDatepicker({
+        format: "LLLL",
+        viewMode: "day",
+        initialValue: false,
+        initialValueType: "persian",
+        autoClose: false,
+        position: "auto",
+        altFormat: "lll",
+        altField: ".alt-field",
+        onlyTimePicker: false,
+        onlySelectOnDate: false,
+        calendarType: "persian",
+        inputDelay: 800,
+        observer: false,
+        calendar: {
+            persian: {
+            locale: "fa",
+            showHint: true,
+            leapYearMode: "algorithmic"
+            },
+            gregorian: {
+            locale: "en",
+            showHint: true
+            }
+        },
+        navigator: {
+            enabled: true,
+            scroll: {
+            enabled: true
+            },
+            text: {
+            btnNextText: "<",
+            btnPrevText: ">"
+            }
+        },
+        toolbox: {
+            enabled: true,
+            calendarSwitch: {
+            enabled: true,
+            format: "MMMM"
+            },
+            todayButton: {
+            enabled: true,
+            text: {
+                fa: "امروز",
+                en: "Today"
+            }
+            },
+            submitButton: {
+            enabled: true,
+            text: {
+                fa: "تایید",
+                en: "Submit"
+            }
+            },
+            text: {
+            btnToday: "امروز"
+            }
+        },
+        timePicker: {
+            enabled: true,
+            step: 1,
+            hour: {
+            enabled: true,
+            step: null
+            },
+            minute: {
+            enabled: true,
+            step: null
+            },
+            second: {
+            enabled: false,
+            step: null
+            },
+            meridian: {
+            enabled: true
+            }
+        },
+        dayPicker: {
+            enabled: true,
+            titleFormat: "YYYY MMMM"
+        },
+        monthPicker: {
+            enabled: true,
+            titleFormat: "YYYY"
+        },
+        yearPicker: {
+            enabled: true,
+            titleFormat: "YYYY"
+        },
+        responsive: true
+        });
+    });
+</script>
 <body class="h-100">
     <div id="app">
         <div  v-bind:class="{rtl: isRtl}" class=" h-100">
@@ -120,199 +220,461 @@
                                         </a>
                                     <span>{{s8}}</span>
                                 </h4>
-                                <div>
-                                    <h4 class="border-bottom pb-3 mb-3"><span>{{s14}}</span></h4>
-                                    <div class="form-group">
-                                        <label class="form-check-label">{{s15}}</label>
-                                        <label class="switch">
-                                            <input name="enabled" type="checkbox" checked>
-                                            <span class="slider round"></span>
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{s16}}</label>
-                                        <select name="type" class="form-control">
-                                            <option value="CAS" v-on:click="cas" selected>CAS</option>
-                                            <option value="SAML" v-on:click="saml">SAML</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{s17}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s47}}</small></label>
-                                        <input name="name" @keypress="serviceNameValidate" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{s36}}<span style="color: red;"> *</span></label>
-                                        <input name="serviceId" id="enInput" class="form-control" type="text" placeholder="URL" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <label>{{s19}}<span style="color: red;"> *</span></label>
-                                        <input name="description" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"></input>
-                                    </div>
 
-                                    <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s44}}</span></h4>
-                                    <div class="form-group">
-                                        <label class="form-check-label">{{s45}}</label>
-                                        <label class="switch">
-                                            <input name="ssoEnabled" type="checkbox" checked>
-                                            <span class="slider round"></span>
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{s46}}</label>
-                                        <input name="unauthorizedRedirectUrl" id="enInput" class="form-control" type="text" placeholder="URL">
-                                    </div>
+                                <ul class="nav nav-tabs nav-justified">
+                                    <li class="nav-item">
+                                        <a class="nav-link" @click.prevent="setActive('main')" :class="{ active: isActive('main') }" href="#main">{{s48}}</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" @click.prevent="setActive('accessStrategy')" :class="{ active: isActive('accessStrategy') }" href="#accessStrategy">{{s49}}</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" @click.prevent="setActive('mfa')" :class="{ active: isActive('mfa') }" href="#mfa">MFA</a>
+                                    </li>
+                                </ul>
 
-                                    <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s35}}</span></h4>
-                                    <div class="form-group">
-                                        <input type="hidden" name="groups" v-bind:value="groupList">
-                                        <ul>   
-                                            <li v-for="group in groups" :key="group.name">
-                                                <label class="form-check-label">{{group.name}}</label>
-                                                <label class="form-check-label" style="font-size: 80%; color: #0000008c;"> ( <small>{{group.id}}</small> ) </label>
+                                <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
+                                    <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('main') }" id="main">
+                                        <div>
+                                            <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s14}}</span></h4>
+                                            <div class="form-group">
+                                                <label class="form-check-label">{{s15}}</label>
                                                 <label class="switch">
-                                                    <input type="checkbox">
-                                                    <span v-on:click="addGroup(group.id)" class="slider round"></span>  
+                                                    <input name="enabled" type="checkbox" checked>
+                                                    <span class="slider round"></span>
                                                 </label>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-check-label">{{s45}}</label>
+                                                <label class="switch">
+                                                    <input name="ssoEnabled" type="checkbox" checked>
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{s16}}</label>
+                                                <select name="type" class="form-control">
+                                                    <option value="CAS" v-on:click="cas" selected>CAS</option>
+                                                    <option value="SAML" v-on:click="saml">SAML</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{s17}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s47}}</small></label>
+                                                <input name="name" @keypress="serviceNameValidate" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{s36}}<span style="color: red;"> *</span></label>
+                                                <input name="serviceId" id="enInput" class="form-control" type="text" placeholder="URL" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label>{{s19}}<span style="color: red;"> *</span></label>
+                                                <input name="description" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"></input>
+                                            </div>
 
-                                    <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s20}}</span></h4>
-                                    <div class="form-group">
-                                        <label>{{s21}}</label>
-                                        <input name="logo" id="enInput" class="form-control" type="text" placeholder="URL">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{s22}}</label>
-                                        <input name="informationUrl" id="enInput" class="form-control" type="text" placeholder="URL">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{s23}}</label>
-                                        <input name="privacyUrl" id="enInput" class="form-control" type="text" placeholder="URL">
-                                    </div>
+                                            <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s20}}</span></h4>
+                                            <div class="form-group">
+                                                <label>{{s21}}</label>
+                                                <input name="logo" id="enInput" class="form-control" type="text" placeholder="URL">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{s22}}</label>
+                                                <input name="informationUrl" id="enInput" class="form-control" type="text" placeholder="URL">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{s23}}</label>
+                                                <input name="privacyUrl" id="enInput" class="form-control" type="text" placeholder="URL">
+                                            </div>
 
-                                    <div id="saml" v-bind:style="samls">
-                                    <h4 class="border-bottom pb-3 mb-3 mt-5"><span>Metadata</span></h4>
+                                            <div id="saml" v-bind:style="samls">
+                                            <h4 class="border-bottom pb-3 mb-3 mt-5"><span>Metadata</span></h4>
+                                                <div class="form-group">
+                                                    <label>Metadata Location</label>
+                                                    <input name="metadataLocation" class="form-control" type="text">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Metadata Maximum Validity</label>
+                                                    <input name="metadataMaxValidity" class="form-control" type="text">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Metadata Public Key Location</label>
+                                                    <input name="metadataSignatureLocation" class="form-control" type="text">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Metadata Expiration Duration</label>
+                                                    <input name="metadataExpirationDuration" value="PT60M"  class="form-control" type="text">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Metadata Filter Regex</label>
+                                                    <input name="metadataCriteriaPattern" class="form-control" type="text">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Metadata Filter Criteria</label>
+                                                    <select name="metadataCriteriaDirection" class="form-control">
+                                                        <option value="" selected></option>
+                                                        <option value="INCLUDE">INCLUDE</option>
+                                                        <option value="EXCLUDE">EXCLUDE</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Whitelisted Metadata Roles</label>
+                                                    <input name="metadataCriteriaRoles" class="form-control" type="text">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-check-label">Remove Empty Entities Descriptors</label>
+                                                    <label class="switch">
+                                                        <input name="metadataCriteriaRemoveEmptyEntitiesDescriptors" type="checkbox" checked>
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-check-label">Remove Empty Roles</label>
+                                                    <label class="switch">
+                                                        <input name="metadataCriteriaRemoveRolelessEntityDescriptors" type="checkbox" checked>
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <h4 class="border-bottom pb-3 mb-3 mt-5"><span>Security</span></h4>
+                                                <div class="form-group">
+                                                    <label class="form-check-label">Sign Assertions</label>
+                                                    <label class="switch">
+                                                        <input name="signAssertions" type="checkbox">
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-check-label">Sign Responses</label>
+                                                    <label class="switch">
+                                                        <input name="signResponses" type="checkbox" checked>
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-check-label">Encrypt Assertions</label>
+                                                    <label class="switch">
+                                                        <input name="encryptAssertions" type="checkbox">
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Signing Credential Type</label>
+                                                    <select name="signingCredentialType" class="form-control">
+                                                        <option value="BASIC" selected>BASIC</option>
+                                                        <option value="X509">X509</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Authentication Context Class</label>
+                                                    <input name="requiredAuthenticationContextClass" class="form-control" type="text">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Assertion Audiences</label>
+                                                    <input name="assertionAudiences" class="form-control" type="text">
+                                                </div>
+                                            </div>
+
+                                            <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s24}}</span></h4>
+                                            <div class="form-group">
+                                                <label>{{s25}}<span style="color: red;"> *</span></label>
+                                                <input name="cName" class="form-control" type="text" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{s26}}<span style="color: red;"> *</span></label>
+                                                <input name="cEmail" id="enInput" class="form-control" type="email" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{s27}}</label>
+                                                <input name="cPhone" class="form-control" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{s28}}</label>
+                                                <input name="cDepartment" class="form-control" type="text">
+                                            </div>
+                                            <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s29}}</span></h4>
+                                            <div class="form-group">
+                                                    <label>{{s30}}</label>
+                                                    <input name="logoutUrl" id="enInput" class="form-control" type="text" placeholder="URL">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{s31}}</label>
+                                                <select name="logoutType" class="form-control">
+                                                    <option value="NONE">NONE</option>
+                                                    <option value="BACK_CHANNEL" selected>BACK_CHANNEL</option>
+                                                    <option value="FRONT_CHANNEL">FRONT_CHANNEL</option>
+                                                </select>
+                                            </div>
+                                            <button v-on:click="addService" class="btn btn-primary mb-3 mt-5">
+                                                <i class="fa fa-check"></i>
+                                                {{s32}}
+                                            </button>
+                                        </div> 
+                                    </div> 
+                                    <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('accessStrategy') }" id="accessStrategy">
+                                        <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s44}}</span></h4>
+                                            
                                         <div class="form-group">
-                                            <label>Metadata Location</label>
-                                            <input name="metadataLocation" class="form-control" type="text">
+                                            <label>{{s46}}</label>
+                                            <input name="unauthorizedRedirectUrl" id="enInput" class="form-control" type="text" placeholder="URL">
+                                        </div>
+
+                                        <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s35}}</span></h5>
+                                        <div class="form-group">
+                                            <input type="hidden" name="groups" v-bind:value="groupList">
+                                            <ul>   
+                                                <li v-for="group in groups" :key="group.name">
+                                                    <label class="form-check-label">{{group.name}}</label>
+                                                    <label class="form-check-label" style="font-size: 80%; color: #0000008c;"> ( <small>{{group.id}}</small> ) </label>
+                                                    <label class="switch">
+                                                        <input type="checkbox">
+                                                        <span v-on:click="addGroup(group.id)" class="slider round"></span>  
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s59}}</span></h5>
+                                        <div class="form-group">
+                                            <div class="card mb-3">
+                                                <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <span>{{s60}}</span>
+                                                    </div> 
+                                                    <div class="d-flex">
+                                                        <div style="width: 250px;">
+                                                            <div class="input-group input-group-sm">
+                                                                <input type="text" :placeholder="s61" class="form-control" v-model="searchQuery">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                                <div class="list-group list-group-flush">
+                                                    <div class="list-group-item" v-if="resultQuery.length > 0">
+                                                        <div class="row align-items-start">
+                                                            <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in resultQuery" >
+                                                                <div>
+                                                                    <label>{{user.userId}}</label>
+                                                                    <div class="text-muted text-ellipsis">
+                                                                        <small>{{user.displayName}}</small>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-6">
+                                                                            <button @click="allowUserAccess(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s62">
+                                                                                <i class="fa fa-plus" style="color: green;"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="col-6">
+                                                                            <button @click="blockUserAccess(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s63">
+                                                                                <i class="fa fa-ban" style="color: red;"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div v-if="resultQuery.length == 0 && searchQuery.length != 0" class="list-group-item text-center">
+                                                        <div>
+                                                            <i class="fa fa-times fa-2x"></i>
+                                                        </div> 
+                                                        <div>
+                                                            <span>{{s64}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div v-if="resultQuery.length == 0 && searchQuery.length == 0" class="list-group-item text-center">
+                                                        <div>
+                                                            <i class="fa fa-search fa-2x"></i>
+                                                        </div> 
+                                                        <div>
+                                                            <span>{{s65}}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="card mb-3">
+                                                <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <span>{{s66}}</span>
+                                                    </div> 
+                                                    <div class="d-flex">
+                                                        <div style="width: 250px;">
+                                                            <div class="input-group input-group-sm">
+                                                                <input type="text" :placeholder="s61" class="form-control" v-model="searchQueryAllowedList"> 
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                                <div class="list-group list-group-flush">
+                                                    <div class="list-group-item" v-if="allowedResultQuery.length > 0">
+                                                        <div class="row align-items-start">
+                                                            <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in allowedResultQuery" >
+                                                                <div>
+                                                                    <label>{{user.userId}}</label>
+                                                                    <div class="text-muted text-ellipsis">
+                                                                        <small>{{user.displayName}}</small>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-12">
+                                                                            <button @click="deleteFromAllowedList(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s67">
+                                                                                <i class="fa fa-times" style="color: red;"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div v-if="allowedResultQuery.length == 0 && searchQueryAllowedList.length != 0" class="list-group-item text-center">
+                                                        <div>
+                                                            <i class="fa fa-times fa-2x"></i>
+                                                        </div> 
+                                                        <div>
+                                                            <span>{{s64}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div v-if="allowedResultQuery.length == 0 && searchQueryAllowedList.length == 0" class="list-group-item list-group-item-warning text-center">
+                                                        <div>
+                                                            <i class="fa fa-signing fa-2x"></i>
+                                                        </div> 
+                                                        <div>
+                                                            <span>{{s68}}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="card mb-3">
+                                                    <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <span>{{s69}}</span>
+                                                        </div> 
+                                                        <div class="d-flex">
+                                                            <div style="width: 250px;">
+                                                                <div class="input-group input-group-sm">
+                                                                    <input type="text" :placeholder="s61" class="form-control" v-model="searchQueryBlockedList"> 
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div> 
+                                                    <div class="list-group list-group-flush">
+                                                        <div class="list-group-item" v-if="blockedResultQuery.length > 0">
+                                                            <div class="row align-items-start">
+                                                                <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in blockedResultQuery" >
+                                                                    <div>
+                                                                        <label>{{user.userId}}</label>
+                                                                        <div class="text-muted text-ellipsis">
+                                                                            <small>{{user.displayName}}</small>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <button @click="deleteFromBlockedList(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s67">
+                                                                                    <i class="fa fa-times" style="color: red;"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div v-if="blockedResultQuery.length == 0 && searchQueryBlockedList.length != 0" class="list-group-item text-center">
+                                                            <div>
+                                                                <i class="fa fa-times fa-2x"></i>
+                                                            </div> 
+                                                            <div>
+                                                                <span>{{s64}}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div v-if="blockedResultQuery.length == 0 && searchQueryBlockedList.length == 0" class="list-group-item list-group-item-warning text-center">
+                                                            <div>
+                                                                <i class="fa fa-signing fa-2x"></i>
+                                                            </div> 
+                                                            <div>
+                                                                <span>{{s68}}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                        </div>
+
+                                        <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s50}}</span></h5>
+                                        <div class="form-group">
+                                            <ul class="nav nav-tabs nav-justified" style="padding-right: 0; border-bottom: 0;">
+                                                <li class="nav-item" style="padding-left: .5rem;">
+                                                    <label>{{s51}}</label>
+                                                    <input name="dateStart" type="text" class="datePickerFa form-control"/>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <label>{{s53}}</label>
+                                                    <input name="dateEnd" type="text" class="datePickerFa form-control" />
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s70}}</span></h5>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-3" style="text-align: center;">
+                                                    <label>{{s71}}</label>
+                                                </div>
+                                                <div class="col-8" style="text-align: center;">
+                                                    <label>{{s72}}</label>
+                                                </div>
+                                                <div class="col-1">
+                                                </div>
+                                            </div>
+                                             <div class="row mt-2" v-for="index in indexList" v-bind:id="'attribute' + index">
+                                                <div class="col-3">
+                                                    <input v-bind:id="'attributeKey' + index" class="form-control" type="text" placeholder="name">
+                                                </div>
+                                                <div class="col-8">
+                                                    <input v-bind:id="'attributeValue' + index" class="form-control" type="text" placeholder="value1,value2,value3">
+                                                </div>
+                                                <div class="col-1">
+                                                    <button v-on:click="deleteAttribute(index)" class="btn btn-danger btn-circle" v-if="index != 0">
+                                                        <i class="fa fa-minus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <button v-on:click="addAttribute()" class="btn btn-success btn-circle mt-2">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        <button v-on:click="addService" class="btn btn-primary mb-3 mt-5">
+                                            <i class="fa fa-check"></i>
+                                            {{s32}}
+                                        </button>
+                                    </div>
+                                    <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('mfa') }" id="mfa">
+                                        <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s55}}</span></h4>
+                                        <div class="form-group">
+                                            <label class="form-check-label">{{s56}}</label>
+                                            <label class="switch">
+                                                <input name="mfaEnabled" type="checkbox">
+                                                <span class="slider round"></span>
+                                            </label>
                                         </div>
                                         <div class="form-group">
-                                            <label>Metadata Maximum Validity</label>
-                                            <input name="metadataMaxValidity" class="form-control" type="text">
+                                            <label class="form-check-label">Bypass Enabled</label>
+                                            <label class="switch">
+                                                <input name="bypassEnabled" type="checkbox">
+                                                <span class="slider round"></span>
+                                            </label>
                                         </div>
+
                                         <div class="form-group">
-                                            <label>Metadata Public Key Location</label>
-                                            <input name="metadataSignatureLocation" class="form-control" type="text">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Metadata Expiration Duration</label>
-                                            <input name="metadataExpirationDuration" value="PT60M"  class="form-control" type="text">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Metadata Filter Regex</label>
-                                            <input name="metadataCriteriaPattern" class="form-control" type="text">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Metadata Filter Criteria</label>
-                                            <select name="metadataCriteriaDirection" class="form-control">
-                                                <option value="" selected></option>
-                                                <option value="INCLUDE">INCLUDE</option>
-                                                <option value="EXCLUDE">EXCLUDE</option>
+                                            <label>Failure Mode</label>
+                                            <select name="failureMode" class="form-control">
+                                                <option value="NONE">NONE</option>
+                                                <option value="CLOSED" selected>CLOSED</option>
+                                                <option value="OPEN">OPEN</option>
+                                                <option value="PHANTOM">PHANTOM</option>
                                             </select>
                                         </div>
-                                        <div class="form-group">
-                                            <label>Whitelisted Metadata Roles</label>
-                                            <input name="metadataCriteriaRoles" class="form-control" type="text">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-check-label">Remove Empty Entities Descriptors</label>
-                                            <label class="switch">
-                                                <input name="metadataCriteriaRemoveEmptyEntitiesDescriptors" type="checkbox" checked>
-                                                <span class="slider round"></span>
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-check-label">Remove Empty Roles</label>
-                                            <label class="switch">
-                                                <input name="metadataCriteriaRemoveRolelessEntityDescriptors" type="checkbox" checked>
-                                                <span class="slider round"></span>
-                                            </label>
-                                        </div>
-                                        <h4 class="border-bottom pb-3 mb-3 mt-5"><span>Security</span></h4>
-                                        <div class="form-group">
-                                            <label class="form-check-label">Sign Assertions</label>
-                                            <label class="switch">
-                                                <input name="signAssertions" type="checkbox">
-                                                <span class="slider round"></span>
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-check-label">Sign Responses</label>
-                                            <label class="switch">
-                                                <input name="signResponses" type="checkbox" checked>
-                                                <span class="slider round"></span>
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-check-label">Encrypt Assertions</label>
-                                            <label class="switch">
-                                                <input name="encryptAssertions" type="checkbox">
-                                                <span class="slider round"></span>
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Signing Credential Type</label>
-                                            <select name="signingCredentialType" class="form-control">
-                                                <option value="BASIC" selected>BASIC</option>
-                                                <option value="X509">X509</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Authentication Context Class</label>
-                                            <input name="requiredAuthenticationContextClass" class="form-control" type="text">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Assertion Audiences</label>
-                                            <input name="assertionAudiences" class="form-control" type="text">
-                                        </div>
-                                    </div>
 
-                                    <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s24}}</span></h4>
-                                    <div class="form-group">
-                                        <label>{{s25}}<span style="color: red;"> *</span></label>
-                                        <input name="cName" class="form-control" type="text" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                        <button v-on:click="addService" class="btn btn-primary mb-3 mt-5">
+                                            <i class="fa fa-check"></i>
+                                            {{s32}}
+                                        </button>
                                     </div>
-                                    <div class="form-group">
-                                        <label>{{s26}}<span style="color: red;"> *</span></label>
-                                        <input name="cEmail" id="enInput" class="form-control" type="email" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{s27}}</label>
-                                        <input name="cPhone" class="form-control" type="text">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{s28}}</label>
-                                        <input name="cDepartment" class="form-control" type="text">
-                                    </div>
-                                    <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s29}}</span></h4>
-                                    <div class="form-group">
-                                            <label>{{s30}}</label>
-                                            <input name="logoutUrl" id="enInput" class="form-control" type="text" placeholder="URL">
-                                        </div>
-                                    <div class="form-group">
-                                        <label>{{s31}}</label>
-                                        <select name="logoutType" class="form-control">
-                                            <option value="NONE">NONE</option>
-                                            <option value="BACK_CHANNEL" selected>BACK_CHANNEL</option>
-                                            <option value="FRONT_CHANNEL">FRONT_CHANNEL</option>
-                                        </select>
-                                    </div>
-                                    <button v-on:click="addService" class="btn btn-primary mb-3 mt-5">
-                                        <i class="fa fa-check"></i>
-                                        {{s32}}
-                                    </button>
-                                </div>    
+                                </div>
                             </div>
                         </div>
                     </div>

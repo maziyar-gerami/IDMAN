@@ -134,10 +134,19 @@ public class GroupRepoImpl implements GroupRepo {
 
     @Override
     public String create(Group ou) {
-        Date date = new Date();
-        String timestamp = String.valueOf(date.getTime());
-        Name dn = buildDn(timestamp);
-        ldapTemplate.bind(dn, null, buildAttributes(timestamp, ou));
+
+        List<Group> groups = retrieve();
+        int max=0;
+
+        for (Group group:groups) {
+            if (Integer.valueOf(group.getId())>max)
+                max = Integer.valueOf(group.getId());
+
+        }
+
+
+        Name dn = buildDn(String.valueOf(max+1));
+        ldapTemplate.bind(dn, null, buildAttributes(String.valueOf(max+1), ou));
         return ou.getName() + " created successfully";
     }
 

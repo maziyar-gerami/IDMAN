@@ -14,6 +14,8 @@ public class Time {
         int hours;
         int minutes;
         int seconds;
+        int miliseconds;
+
 
         public Time(int year, int month, int day, int hours, int minutes, int seconds) {
                 this.year = year;
@@ -22,5 +24,6 @@ public class Time {
                 this.hours = hours;
                 this.minutes = minutes;
                 this.seconds = seconds;
+                this.miliseconds = 0;
         }
 }

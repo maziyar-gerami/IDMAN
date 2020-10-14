@@ -1,5 +1,6 @@
 package parsso.idman;
 
+import org.apache.commons.io.FileUtils;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator;
 import org.jasig.cas.client.validation.TicketValidator;
@@ -9,7 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
@@ -23,6 +26,8 @@ import parsso.idman.Repos.FilesStorageService;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.annotation.Resource;
+import java.io.*;
+import java.nio.channels.FileChannel;
 
 /**
  * The type Idman application.
@@ -40,6 +45,8 @@ public class IdmanApplication implements CommandLineRunner {
 
     @Value("${base.url}")
     private String baseurl;
+
+
 
 
     private static final Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
@@ -63,8 +70,20 @@ public class IdmanApplication implements CommandLineRunner {
      *
      * @param args the input arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+
+
+
         SpringApplication.run(IdmanApplication.class, args);
+
+    }
+
+    private static void copyFileUsingApacheCommonsIO(File s, File d) throws IOException {
+        FileUtils.copyFile(s, d);
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void doSomethingAfterStartup() throws IOException {
 
     }
 
@@ -121,7 +140,7 @@ public class IdmanApplication implements CommandLineRunner {
         provider.setTicketValidator(ticketValidator());
         /*provider.setUserDetailsService(
                 s -> new User("test@test.com", "Mellon", true, true, true, true,
-                        AuthorityUtils.createAuthorityList("ROLE_ADMIN")));*/
+                        AuthorityUtils.createAuthorityList("ADMIN")));*/
         CasUserDetailService casUserDetailService = new CasUserDetailService();
         provider.setAuthenticationUserDetailsService(casUserDetailService);
         provider.setKey("CAS_PROVIDER_LOCALHOST_8900");

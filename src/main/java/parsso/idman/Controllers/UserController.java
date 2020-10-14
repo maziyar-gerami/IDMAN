@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -41,6 +43,9 @@ public class UserController {
     private String adminOu;
     @Value("${profile.photo.path}")
     private String uploadedFilesPath;
+
+    @Value("${pass.api.containg.token}")
+    private String tokenExist;
 
 
     //*************************************** User Section ***************************************
@@ -116,6 +121,34 @@ public class UserController {
         return new RedirectView("/dashboard");
     }
 
+    /**
+     * change the password of current user
+     *
+     * @param jsonObject
+     * @return the http status code
+     */
+    @PutMapping("/api/user/password")
+    public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
+                                                     @RequestBody JSONObject jsonObject) {
+
+
+        Principal principal = request.getUserPrincipal();
+        String currentPassword = jsonObject.getAsString("currentPassword");
+        String newPassword = jsonObject.getAsString("newPassword");
+        String token = jsonObject.getAsString("token");
+        if (jsonObject.getAsString("token")!=null) token = jsonObject.getAsString("token");
+        return new ResponseEntity<>(userRepo.changePassword(principal.getName(), currentPassword, newPassword, token));
+
+    }
+
+    @GetMapping("/api/user/password/request")
+    public HttpStatus requestSMS(HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
+        User user = userRepo.retrieveUser(principal.getName());
+
+        return userRepo.requestToken(user);
+
+    }
     //*************************************** Users Section ***************************************
 
     /**
@@ -162,9 +195,9 @@ public class UserController {
      */
     @PostMapping("/api/users")
     public ResponseEntity<JSONObject> bindLdapUser(@RequestBody User user) {
-        if (userRepo.create(user).equals(new JSONObject()))
-            return new ResponseEntity<>(userRepo.create(user), HttpStatus.OK);
-        else return new ResponseEntity<>(userRepo.create(user), HttpStatus.FOUND);
+        if (userRepo.create(user).size()==0)
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        else return new ResponseEntity<>(null, HttpStatus.FOUND);
 
     }
 
@@ -203,6 +236,39 @@ public class UserController {
     }
 
     /**
+     * Enable users
+     *
+     * @return the response entity
+     */
+    @PutMapping("/api/users/enable/u/{id}")
+    public ResponseEntity<HttpStatus> enable(@PathVariable("id") String uid) {
+        return new ResponseEntity<>(userRepo.enable(uid));
+    }
+
+    /**
+     * Disable users
+     *
+     * @return the response entity
+     */
+    @PutMapping("/api/users/disable/u/{id}")
+    public ResponseEntity<HttpStatus> disable(@PathVariable("id") String uid) {
+        return new ResponseEntity<>(userRepo.disable(uid));
+    }
+
+
+
+
+    /**
+     * lock/unlock users
+     *
+     * @return the response entity
+     */
+    @PutMapping("/api/users/unlock/u/{id}")
+    public ResponseEntity<HttpStatus> lockUnlock(@PathVariable("id") String uid) {
+        return new ResponseEntity<>(userRepo.unlock(uid));
+    }
+
+    /**
      * Upload file for importing users using following formats:
      * LDIF,xlsx,xls,csv
      *
@@ -221,18 +287,7 @@ public class UserController {
         else return new ResponseEntity<>(jsonArray, HttpStatus.FOUND);
     }
 
-    /**
-     * change the password of current user
-     *
-     * @param newPassword
-     * @return the http status code
-     */
-    @PutMapping("/api/user/password")
-    public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
-                                                     @RequestParam("currentPassword") String currentPassword,
-                                                     @RequestParam("newPassword") String newPassword) {
-        return new ResponseEntity<>(userRepo.changePassword(request.getUserPrincipal().getName(), currentPassword, newPassword), HttpStatus.FOUND);
-    }
+
 
     /**
      * get the information for dashboard
@@ -308,8 +363,8 @@ public class UserController {
      * @return the user object if exists, or null if not exists
      */
     @PutMapping("/api/public/resetPass/{uid}/{token}")
-    public ResponseEntity<String> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token, @PathVariable("uid") String uid) {
-        return new ResponseEntity<>(userRepo.updatePass(uid, newPassword, token), HttpStatus.OK);
+    public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token, @PathVariable("uid") String uid) {
+        return new ResponseEntity<>(userRepo.updatePass(uid, newPassword, token));
     }
 
     /**
@@ -363,8 +418,8 @@ public class UserController {
      * @return if token is correspond to provided userId, returns httpStatus=ok
      */
     @GetMapping("/api/public/validateMessageToken/{uId}/{token}")
-    public HttpStatus resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token) {
-        return userRepo.checkToken(uId, token);
+    public ResponseEntity<HttpStatus> resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token) {
+        return new ResponseEntity<>(userRepo.checkToken(uId, token));
 
     }
 }
