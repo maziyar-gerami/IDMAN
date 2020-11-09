@@ -1,32 +1,23 @@
 package parsso.idman.Controllers;
 
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
-
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Models.Group;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-
-import java.io.File;
-import java.io.FileWriter;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.time.LocalTime;
-import java.util.*;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.security.Principal;
+import java.util.List;
 
 @Controller
 public class ServiceController {
@@ -58,26 +49,26 @@ public class ServiceController {
 
     @GetMapping("/api/services/{id}")
     public ResponseEntity<Service> retrieveService(@PathVariable("id") long serviceId) throws IOException, ParseException {
-        return  new ResponseEntity<Service>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
+        return new ResponseEntity<Service>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/services/{id}")
     public ResponseEntity<String> deleteService(@PathVariable("id") long serviceId) throws IOException, ParseException {
-        return  new ResponseEntity<>(serviceRepo.deleteService(serviceId));
+        return new ResponseEntity<>(serviceRepo.deleteService(serviceId));
     }
 
     @DeleteMapping("/api/services")
-    public ResponseEntity<String> deleteServices(){
+    public ResponseEntity<String> deleteServices() {
         return new ResponseEntity<>(serviceRepo.deleteServices());
     }
 
     @PostMapping("/api/services")
-    public ResponseEntity<String> createService(@RequestBody JSONObject jsonObject){
+    public ResponseEntity<String> createService(@RequestBody JSONObject jsonObject) {
         return new ResponseEntity<>(serviceRepo.createService(jsonObject));
     }
 
     @PutMapping("/api/service/{id}")
-    public ResponseEntity<String> updateService(@PathVariable("id") long id ,@RequestBody JSONObject jsonObject) throws IOException, ParseException {
+    public ResponseEntity<String> updateService(@PathVariable("id") long id, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
         return new ResponseEntity<>(serviceRepo.updateService(id, jsonObject));
     }
 
@@ -89,7 +80,7 @@ public class ServiceController {
             List<String> memberOf = user.getMemberOf();
 
 
-            for (String group:memberOf) {
+            for (String group : memberOf) {
                 if (group.equals(adminOu))
                     return "services";
             }
@@ -109,7 +100,7 @@ public class ServiceController {
             List<String> memberOf = user.getMemberOf();
 
 
-            for (String group:memberOf) {
+            for (String group : memberOf) {
                 if (group.equals(adminOu))
                     return "createservice";
             }

@@ -27,7 +27,7 @@ import java.util.Collections;
 @Order(99)
 
 @EnableWebSecurity
-//@PropertySource("file:D:\\app.properties")
+@PropertySource(value = "file:${external.config}", ignoreResourceNotFound = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${cas.url.logout.path}")
@@ -36,10 +36,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${cas.url.login.path}")
     private String casLogin;
 
-    private SingleSignOutFilter singleSignOutFilter;
-    private LogoutFilter logoutFilter;
-    private CasAuthenticationProvider casAuthenticationProvider;
-    private ServiceProperties serviceProperties;
+    @Value("${spring.ldap.urls}")
+    private String ldapUrl;
+
+    private final SingleSignOutFilter singleSignOutFilter;
+    private final LogoutFilter logoutFilter;
+    private final CasAuthenticationProvider casAuthenticationProvider;
+    private final ServiceProperties serviceProperties;
 
     @Autowired
     public WebSecurityConfig(SingleSignOutFilter singleSignOutFilter, LogoutFilter logoutFilter,
@@ -54,11 +57,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
+
         http
-                //.authorizeRequests().antMatchers("/**").fullyAuthenticated()
-
-        //.and()
-
 
                 .authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
                 //.antMatchers("")
@@ -67,31 +67,79 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .addFilterBefore(logoutFilter, LogoutFilter.class)
-                //////.csrf().ignoringAntMatchers("/exit/cas")
-                /*
 
-                .authorizeRequests().antMatchers( "/dashboard", "/login")
+                .authorizeRequests().antMatchers("/dashboard", "/login")
                 .authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .and()
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
-                */
-
-
                 .csrf().disable()
+/*
 
-                /*.authorizeRequests()
+                .authorizeRequests()
+
+                //****************Public Objects*********************
+                //resources
                 .antMatchers("/js/**").permitAll()
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/fonts/**").permitAll()
                 .antMatchers("/images/**").permitAll()
+                //pages
                 .antMatchers("/resetPass").permitAll()
                 .antMatchers("/resetPassword").permitAll()
-                .antMatchers("/api/public/**").permitAll()
                 .antMatchers("/login/cas").permitAll()
-                .antMatchers("/api/users/u/{uid}/{pass}/{token}").permitAll()
-                .anyRequest().fullyAuthenticated()
-                .and()*/
+                .antMatchers("/403").permitAll()
+                .antMatchers("/error").permitAll()
+                .antMatchers("/privacy").permitAll()
+
+
+                //APIs
+                .antMatchers("/api/public/**").permitAll()
+                .antMatchers("/api/mobile/qrCode").permitAll()
+                .antMatchers("/api/mobile/sendSms").permitAll()
+                .antMatchers("/api/mobile/activate").permitAll()
+
+
+                //******************ADMIN Objects************************
+                //pages
+                .antMatchers("/configs/**").hasRole("ADMIN")
+                .antMatchers("/createservice").hasRole("ADMIN")
+                .antMatchers("/dashboard").hasRole("ADMIN")
+                .antMatchers("/dashboard").hasRole("ADMIN")
+                .antMatchers("/events").hasRole("ADMIN")
+                .antMatchers("/groups").hasRole("ADMIN")
+                .antMatchers("/privacy").hasRole("ADMIN")
+                .antMatchers("/services").hasRole("ADMIN")
+                .antMatchers("/users").hasRole("ADMIN")
+
+                //APIs
+                .antMatchers("/api/users/**").hasRole("ADMIN")
+                .antMatchers("/api/groups").hasRole("ADMIN")
+                //.antMatchers("/api/services/**").hasRole("ADMIN")
+                .antMatchers("/api/groups/user").hasRole("ADMIN")
+                .antMatchers("/api/groups/**").hasRole("ADMIN")
+
+
+                //******************User Objects************************
+                //pages
+                .antMatchers("/dashboard").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/events").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/services").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/events").hasAnyRole("USER", "ADMIN")
+
+                .antMatchers("/privacy").hasAnyRole("USER", "ADMIN")
+                //APIs
+                .antMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/api/events/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/api/groups/user").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/api/services/user").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/api/mobile/profile").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/api/mobile/services").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/api/mobile/events").hasAnyRole("USER", "ADMIN")
+                .anyRequest().authenticated()
+                .and()
+
+*/
 
                 .formLogin()
                 .loginPage("/login")
@@ -111,7 +159,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .authenticationProvider(casAuthenticationProvider); // cas;
+                .authenticationProvider(casAuthenticationProvider);
+
 
     }
 
@@ -126,7 +175,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
         entryPoint.setLoginUrl(casLogin);
         entryPoint.setServiceProperties(serviceProperties);
+
+
         return entryPoint;
     }
+
 
 }

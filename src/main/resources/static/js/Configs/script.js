@@ -33,7 +33,9 @@ document.addEventListener('DOMContentLoaded', function () {
       configsList: [],
       configsDescription: [],
       configsGroupNames: [],
+      restorePoints: [],
       menuS: false,
+      configsLoaded: false,
       userPicture: "images/PlaceholderUser.png",
       s0: "پارسو",
       s1: "",
@@ -62,13 +64,18 @@ document.addEventListener('DOMContentLoaded', function () {
       s24: "پیکربندی",
       s25: "./configs",
       s26: "ویرایش",
-      s27: "./events"
+      s27: "./events",
+      s28: "ذخیره پیکربندی کنونی",
+      s29: "بازگردانی پیکربندی اولیه",
+      s30: "نقطه بازگردانی قبلی وجود ندارد",
+      s31: "بازگردانی"
     },
     created: function () {
       this.getConfigs();
       this.getUserInfo();
       this.getUserPic();
       this.isAdmin();
+      this.getRestorePoints();
       if(typeof this.$route.query.en !== 'undefined'){
         this.changeLang()
       }
@@ -137,6 +144,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         var j = 0;
         var z = 0;
+        this.configsLoaded = false;
+        this.configsList = [];
+        this.configsDescription = [];
+        this.configsGroupNames = [];
         axios.get(url + "/api/configs") //
         .then((res) => {
           vm.configsList = res.data;
@@ -153,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
               ++z;
             }
           }
+          this.configsLoaded = true;
         });
       },
       editConfigs: function () {
@@ -165,8 +177,48 @@ document.addEventListener('DOMContentLoaded', function () {
           data: JSON.stringify(vm.configsList)
         })
         .then((res) => {
-          location.reload();
+          vm.getConfigs();
         });
+      },
+      getRestorePoints: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        this.restorePoints = [];
+        axios.get(url + "/api/configs/list") //
+          .then((res) => {
+            for(let i = 0; i < res.data.length; ++i){
+              vm.restorePoints.push(res.data[i].name);
+            }
+          });
+      },
+      saveRestorePoint: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        axios.get(url + "/api/configs/backup") //
+          .then((res) => {
+            vm.getRestorePoints();
+          });
+      },
+      restoreInitialPoint: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        axios.get(url + "/api/configs/reset") //
+          .then((res) => {
+            vm.getConfigs();
+          });
+      },
+      restorePoint: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        let name = document.getElementById("restorePointID").value;
+        if(this.restorePoints.length != 0){
+          axios.get(url + "/api/configs/restore/" + name) //
+          .then((res) => {
+            vm.getConfigs();
+          });
+        }else{
+          alert(this.s30);
+        }
       },
       changeLang: function () {
         if(this.lang == "EN"){
@@ -200,7 +252,11 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s24 = "Configs";
           this.s25 = "./configs?en";
           this.s26 = "Edit";
-          this.s27 = "./events?en"
+          this.s27 = "./events?en";
+          this.s28 = "Backup Current Configs";
+          this.s29 = "Restore Initial Configs";
+          this.s30 = "There Are No Restore Points";
+          this.s31 = "Restore";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -232,7 +288,20 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s24 = "پیکربندی";
             this.s25 = "./configs";
             this.s26 = "ویرایش";
-            this.s27 = "./events"
+            this.s27 = "./events";
+            this.s28 = "ذخیره پیکربندی کنونی";
+            this.s29 = "بازگردانی پیکربندی اولیه";
+            this.s30 = "نقطه بازگردانی قبلی وجود ندارد";
+            this.s31 = "بازگردانی";
+        }
+      }
+    },
+    computed: {
+      storePointsExists () {
+        if(this.restorePoints.length == 0){
+          return true;
+        }else{
+          return false;
         }
       }
     }

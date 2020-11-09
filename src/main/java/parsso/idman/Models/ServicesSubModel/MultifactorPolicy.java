@@ -4,27 +4,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 @Setter
 @Getter
 
 public class MultifactorPolicy {
 
-    public  MultifactorPolicy(){
-        atClass = "org.apereo.cas.services.DefaultRegisteredServiceMultifactorPolicy";
-        multifactorAuthenticationProviders = new Object[2];
-        failureMode ="UNDEFINED";
-        bypassEnabled = false;
-        multifactorAuthenticationProviders[0] =  "java.util.HashSet";
-        multifactorAuthenticationProviders[1] =  new LinkedList<>();
-
-    }
-
-    @JsonProperty("@class")
-    private String atClass;
-    Object[] multifactorAuthenticationProviders;
+    ArrayList multifactorAuthenticationProviders;
     String failureMode;
     Boolean bypassEnabled;
+    @JsonProperty("@class")
+    private String atClass;
+    public MultifactorPolicy() {
+        atClass = "org.apereo.cas.services.DefaultRegisteredServiceMultifactorPolicy";
+        failureMode = "UNDEFINED";
+        bypassEnabled = false;
+    }
 
 }

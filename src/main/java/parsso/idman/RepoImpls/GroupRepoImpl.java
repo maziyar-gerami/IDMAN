@@ -46,8 +46,8 @@ public class GroupRepoImpl implements GroupRepo {
     @Override
     public String remove() {
 
-        List <Group> allous = retrieve();
-        for (Group ou: allous) {
+        List<Group> allous = retrieve();
+        for (Group ou : allous) {
             Name dn = buildDn(ou.getId());
             ldapTemplate.unbind(dn);
 
@@ -57,15 +57,14 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
 
-
     @Override
     public Group retrieveOu(String uid) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        List<Group> groups= retrieve();
+        List<Group> groups = retrieve();
 
-        for (Group group:groups ) {
+        for (Group group : groups) {
             if (group.getId().equals(uid))
                 return group;
         }
@@ -85,12 +84,12 @@ public class GroupRepoImpl implements GroupRepo {
     public List<Group> retrieveCurrentUserGroup(User user) {
         List<String> memberOf = user.getMemberOf();
         List<Group> groups = new ArrayList<Group>();
-        try{
-            for(int i = 0; i < memberOf.size(); ++i){
+        try {
+            for (int i = 0; i < memberOf.size(); ++i) {
                 groups.add(retrieveOu(memberOf.get(i)));
             }
-        } catch (NullPointerException e){
-            e.printStackTrace();
+        } catch (NullPointerException e) {
+
         }
         return groups;
     }
@@ -107,14 +106,15 @@ public class GroupRepoImpl implements GroupRepo {
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
         attrs.put("name", group.getName());
-        attrs.put("ou",uid);
-        attrs.put("description" , group.getDescription());
+        attrs.put("ou", uid);
+        attrs.put("description", group.getDescription());
         return attrs;
     }
 
-    public Name buildDn(String  id) {
+    public Name buildDn(String id) {
         return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").add("ou", id).build();
     }
+
     public Name buildBaseDn() {
         return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").build();
     }
@@ -134,10 +134,19 @@ public class GroupRepoImpl implements GroupRepo {
 
     @Override
     public String create(Group ou) {
-        Date date = new Date();
-        String timestamp = String.valueOf(date.getTime());
-        Name dn = buildDn(timestamp);
-        ldapTemplate.bind(dn, null, buildAttributes(timestamp, ou));
+
+        List<Group> groups = retrieve();
+        long max = 0;
+
+        for (Group group : groups) {
+            if (Long.valueOf(group.getId()) > max)
+                max = Long.valueOf(group.getId());
+
+        }
+
+
+        Name dn = buildDn(String.valueOf(max + 1));
+        ldapTemplate.bind(dn, null, buildAttributes(String.valueOf(max + 1), ou));
         return ou.getName() + " created successfully";
     }
 
@@ -147,7 +156,7 @@ public class GroupRepoImpl implements GroupRepo {
 
         Group group = retrieveOu(id);
 
-        ldapTemplate.rebind(dn, null, buildAttributes(group.getId(),ou));
+        ldapTemplate.rebind(dn, null, buildAttributes(group.getId(), ou));
         return ou.getName() + " updated successfully";
     }
 

@@ -1,28 +1,27 @@
 package parsso.idman.Controllers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.security.Principal;
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
-import org.springframework.web.bind.annotation.PathVariable;
-import parsso.idman.Models.Group;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
+import java.util.Collection;
+import java.util.List;
 
 @Controller
-public class DashboardController{
+public class DashboardController {
 
     @Qualifier("userRepoImpl")
     @Autowired
@@ -30,34 +29,34 @@ public class DashboardController{
 
     @Value("${cas.url.logout.path}")
     private String casLogout;
-    
+
     @Value("${administrator.ou.id}")
     private String adminOu;
 
     @GetMapping("/")
-    public String Root(){
+    public String Root() {
         return "redirect:/dashboard";
     }
 
     @GetMapping("/dashboard")
-    public String Dashboard(){
+    public String Dashboard() {
         return "dashboard";
     }
 
     @GetMapping("/resetPassword")
-    public String resetPassword(){
-        return "resetPassword" ;
+    public String resetPassword() {
+        return "resetPassword";
     }
 
     @GetMapping("/groups")
-    public String Groups(HttpServletRequest request){
+    public String Groups(HttpServletRequest request) {
         try {
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUser(principal.getName());
             List<String> memberOf = user.getMemberOf();
 
 
-            for (String group:memberOf) {
+            for (String group : memberOf) {
                 if (group.equals(adminOu))
                     return "groups";
             }
@@ -70,13 +69,14 @@ public class DashboardController{
 
     @GetMapping("/users")
     public String Users(HttpServletRequest request) {
+
         try {
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUser(principal.getName());
             List<String> memberOf = user.getMemberOf();
 
 
-            for (String group:memberOf) {
+            for (String group : memberOf) {
                 if (group.equals(adminOu))
                     return "users";
             }
@@ -89,6 +89,7 @@ public class DashboardController{
 
     @GetMapping("/events")
     public String Events(HttpServletRequest request) {
+        Collection<? extends GrantedAuthority> s = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         return "events";
     }
 
@@ -100,7 +101,7 @@ public class DashboardController{
             List<String> memberOf = user.getMemberOf();
 
 
-            for (String group:memberOf) {
+            for (String group : memberOf) {
                 if (group.equals(adminOu))
                     return "configs";
             }
@@ -112,17 +113,17 @@ public class DashboardController{
     }
 
     @GetMapping("/settings")
-    public String Settings(){
+    public String Settings() {
         return "settings";
     }
 
     @GetMapping("/errorpage")
-    public String Error(){
+    public String Error() {
         return "error";
     }
 
     @GetMapping("/privacy")
-    public String Privacy(){
+    public String Privacy() {
         return "privacy";
     }
 
@@ -143,11 +144,11 @@ public class DashboardController{
             SecurityContextLogoutHandler logoutHandler) {
         Authentication auth = SecurityContextHolder
                 .getContext().getAuthentication();
-        logoutHandler.logout(request, response, auth );
+        logoutHandler.logout(request, response, auth);
         new CookieClearingLogoutHandler(
                 AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY)
                 .logout(request, response, auth);
-        return "redirect:"+casLogout;
+        return "redirect:" + casLogout;
     }
 
 

@@ -10,10 +10,11 @@
     <link href="css/Users/style.css" rel="stylesheet">
     <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="fonts/IranSans/font.css" rel="stylesheet">
+    <link href="css/persian-datepicker.min.css" rel="stylesheet"/>
 
 
 
-    <script src="js/vue.js"></script>
+    <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Users/script.js"></script>
@@ -23,8 +24,107 @@
     <script src="js/jszip.js"></script>
     <script src="js/xlsx.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/persian-date.min.js"></script>
+    <script src="js/persian-datepicker.min.js"></script>
 
 </head>
+<script type="text/javascript">
+    $(document).ready(function() {
+      $(".datePickerFa").pDatepicker({
+        format: "LLLL",
+        viewMode: "day",
+        initialValue: false,
+        initialValueType: "persian",
+        autoClose: false,
+        position: "auto",
+        altFormat: "lll",
+        altField: ".alt-field",
+        onlyTimePicker: false,
+        onlySelectOnDate: false,
+        calendarType: "persian",
+        inputDelay: 800,
+        observer: false,
+        calendar: {
+            persian: {
+            locale: "fa",
+            showHint: true,
+            leapYearMode: "algorithmic"
+            },
+            gregorian: {
+            locale: "en",
+            showHint: true
+            }
+        },
+        navigator: {
+            enabled: true,
+            scroll: {
+            enabled: true
+            },
+            text: {
+            btnNextText: "<",
+            btnPrevText: ">"
+            }
+        },
+        toolbox: {
+            enabled: true,
+            calendarSwitch: {
+            enabled: true,
+            format: "MMMM"
+            },
+            todayButton: {
+            enabled: true,
+            text: {
+                fa: "امروز",
+                en: "Today"
+            }
+            },
+            submitButton: {
+            enabled: true,
+            text: {
+                fa: "تایید",
+                en: "Submit"
+            }
+            },
+            text: {
+            btnToday: "امروز"
+            }
+        },
+        timePicker: {
+            enabled: true,
+            step: 1,
+            hour: {
+            enabled: true,
+            step: null
+            },
+            minute: {
+            enabled: true,
+            step: null
+            },
+            second: {
+            enabled: false,
+            step: null
+            },
+            meridian: {
+            enabled: true
+            }
+        },
+        dayPicker: {
+            enabled: true,
+            titleFormat: "YYYY MMMM"
+        },
+        monthPicker: {
+            enabled: true,
+            titleFormat: "YYYY"
+        },
+        yearPicker: {
+            enabled: true,
+            titleFormat: "YYYY"
+        },
+        responsive: true
+        });
+    });
+</script>
 <body class="h-100">
 <div id="app">
     <div v-bind:class="{rtl: isRtl}" class=" h-100">
@@ -185,15 +285,15 @@
                                         <tr v-for="user in sortedUsers" v-bind:key="user.userId">
                                             <td>{{user.userId}}</td>
                                             <td>{{user.displayName}}</td>
-                                            <td style="display: inline-flex;">
-                                                <div v-for="group in groups">
-                                                    <div v-for="member in user.memberOf" v-if="member == group.id">
+                                            <td>
+                                                <span v-for="group in groups">
+                                                    <span v-for="member in user.memberOf" v-if="member == group.id">
                                                         <button style="padding: .2rem .2rem; color: #000000; background-color: #a9a9a975; font-size: 60%; opacity: 1;"
                                                         class="btn btn-sm" disabled>
                                                             {{group.name}}
                                                         </button>
-                                                    </div>
-                                                </div>
+                                                    </span>
+                                                </span>
                                             </td>
                                             <td>
                                                 <button style="padding: .2rem .2rem; color: #28a745; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U22" class="btn btn-sm" v-on:click="sendResetEmail(user.userId)">
@@ -220,7 +320,7 @@
 
                                         </tbody>
                                     </table>
-                                    <div v-bind:style="showS">
+                                    <div v-bind:style="showS"  style="direction: rtl;">
                                         <v-pagination v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
                                         :labels="paginationAnchorTexts"></v-pagination>
                                     </div>
@@ -271,15 +371,15 @@
                                                     <label>{{s45}}</label>
                                                     <div class="form-group">
                                                         <input :class='{valid:passwordValidation.valid}' @input="passwordCheck" :type="show === true ? 'text' : 'password'" class="form-control"
-                                                        name="password" id="newPassword" v-model="password" v-bind:placeholder="s46" v-bind:style="placeholder"
-                                                        required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                        name="newPasswordIdman" id="newPassword" v-model="password" v-bind:placeholder="s46" v-bind:style="placeholder"
+                                                        required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید" autocomplete="off">
     
                                                         <div class="strength" :class="'level_' + strengthLevel"></div>
                                                         <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="show" @click="show = !show"></i>
                                                         <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="show = !show"></i>
                                                     </div>
                                                     <div class="form-group">
-                                                        <input class="form-control" :type="showR === true ? 'text' : 'password'" v-model.lazy='checkPassword' v-bind:placeholder="s47" v-bind:style="placeholder"> 
+                                                        <input class="form-control" :type="showR === true ? 'text' : 'password'" v-model.lazy='checkPassword' v-bind:placeholder="s47" v-bind:style="placeholder" autocomplete="off"> 
                                                         <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showR" @click="showR = !showR"></i>
                                                         <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showR = !showR"></i>
                                                     </div>
@@ -304,7 +404,7 @@
                                                 </div>
                                             </div>
                                             <div class="tab-pane fade" :class="{ 'active show': isActive('info') }" id="info">
-                                                <form>
+                                                <div>
                                                     <div class="form-group">
                                                         <label>{{U2}}</label>
                                                         <input v-bind:value="editInfo.userId" id="editInfo.userIdU" type="text"
@@ -314,10 +414,15 @@
                                                     <div class="form-group">
                                                         <label>{{s40}}</label>
                                                         <select id="status" class="form-control">
-                                                            <option id="option1" selected value="active">{{s41}}</option>
+                                                            <option id="option1" value="active">{{s41}}</option>
                                                             <option id="option2" value="disabled">{{s42}}</option>
-                                                            <option id="option3" value="locked">{{s43}}</option>
+                                                            <option id="option3" disabled value="locked">{{s43}}</option>
                                                         </select>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>{{s51}}</label>
+                                                        <input id="endTime" type="text" class="datePickerFa form-control"/>
                                                     </div>
 
                                                     <div class="form-group">
@@ -366,11 +471,11 @@
                                                                 id="editInfo.descriptionUpdate" rows="5" type="text"
                                                                 class="form-control">
                                                             </textarea>
-                                                    </div><!-- :disabled="isActiveUserInfoUpdate" -->
+                                                    </div>
                                                     <button v-on:click="editUser(editInfo.userId)"  class="btn btn-primary">{{U13}}</button>
                                                     <button v-on:click="showUsers()" class="btn btn-danger">{{s17}}</button>
 
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -387,19 +492,27 @@
                                             </div>
                                         </div>
 
+                                        <div class="form-group">
+                                            <label>{{s40}}</label>
+                                            <select id="statusCreate" class="form-control">
+                                                <option id="option4" selected value="enable">{{s41}}</option>
+                                                <option id="option5" value="disable">{{s42}}</option>
+                                            </select>
+                                        </div>
+
                                         <div>    
                                             <label>{{s45}}</label>
                                             <div class="form-group">
                                                 <input :class='{valid:passwordValidationCreate.valid}' @input="passwordCheckCreate" :type="showCreate === true ? 'text' : 'password'" class="form-control"
-                                                name="passwordCreate" id="newPasswordCreate" v-model="passwordCreate" v-bind:placeholder="s46" v-bind:style="placeholder"
-                                                required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                name="passwordCreateIdman" id="newPasswordCreate" v-model="passwordCreate" v-bind:placeholder="s46" v-bind:style="placeholder"
+                                                required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید" autocomplete="off">
 
                                                 <div class="strength" :class="'level_' + strengthLevelCreate"></div>
                                                 <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showCreate" @click="showCreate = !showCreate"></i>
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showCreate = !showCreate"></i>
                                             </div>
                                             <div class="form-group">
-                                                <input class="form-control" :type="showRCreate === true ? 'text' : 'password'" v-model.lazy='checkPasswordCreate' v-bind:placeholder="s47" v-bind:style="placeholder"> 
+                                                <input class="form-control" :type="showRCreate === true ? 'text' : 'password'" v-model.lazy='checkPasswordCreate' v-bind:placeholder="s47" v-bind:style="placeholder" autocomplete="off"> 
                                                 <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showRCreate" @click="showRCreate = !showRCreate"></i>
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showRCreate = !showRCreate"></i>
                                             </div>
@@ -417,8 +530,13 @@
                                             <div class="form-group">
                                                 <div class="matches" v-bind:style="notSamePasswordsCreate ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                     <p class="error" style="font-size: .8rem;">{{s49}}</p>
-                                                </div> <br> <br>
+                                                </div>
                                             </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>{{s51}}</label>
+                                            <input id="endTimeCreate" type="text" class="datePickerFa form-control"/>
                                         </div>
 
                                         <div class="form-group">
@@ -494,10 +612,5 @@
         </footer>
     </div>
 </div>
-<script>
-    $(document).ready(function(){
-      $('[data-toggle="tooltip"]').tooltip();   
-    });
-</script>
 </body>
 </html>

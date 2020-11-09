@@ -14,8 +14,8 @@ public interface EventRepo {
 
     List<Event> getListUserEvents(String userId) throws FileNotFoundException, ParseException;
 
-    List<Event> getEventsByDate (String date) throws FileNotFoundException, ParseException;
+    List<Event> getEventsByDate(String date) throws FileNotFoundException, ParseException;
 
-    List<Event> getListUserEventByDate (String date, String userId) throws FileNotFoundException, ParseException;
+    List<Event> getListUserEventByDate(String date, String userId) throws FileNotFoundException, ParseException;
 
 }

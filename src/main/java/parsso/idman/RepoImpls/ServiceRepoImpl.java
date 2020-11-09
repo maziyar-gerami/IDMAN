@@ -4,14 +4,18 @@ package parsso.idman.RepoImpls;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.google.gson.JsonArray;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import parsso.idman.Helpers.Service.Trim;
+import parsso.idman.Models.MicroService;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.ServicesSubModel.*;
 import parsso.idman.Models.User;
@@ -21,6 +25,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.*;
 
 
@@ -29,14 +34,15 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     public static String path;
 
+    private final String collection = "IDMAN_Services";
 
 
     @Value("${services.folder.path}")
-    public void setPath(String value){
+    public void setPath(String value) {
         path = value;
     }
-
-
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Override
     public List<Service> listUserServices(User user) throws IOException, ParseException {
@@ -46,26 +52,25 @@ public class ServiceRepoImpl implements ServiceRepo {
         List<Service> services = listServices();
 
 
-
         List<Service> relatedList = new LinkedList();
 
         for (Service service : services) {
 
             Object member = service.getAccessStrategy().getRequiredAttributes().get("ou");
-            if (member !=null){
-            JSONArray s = (JSONArray) member;
+            if (member != null) {
+                JSONArray s = (JSONArray) member;
 
 
-                if (user.getMemberOf()!=null&&s !=null)
+                if (user.getMemberOf() != null && s != null)
                     for (int i = 0; i < user.getMemberOf().size(); i++)
-                for (int j = 0; j < ((JSONArray)s.get(1)).size(); j++) {
-                    if (user.getMemberOf().get(i).equals(((JSONArray) s.get(1)).get(j)) && !relatedList.contains(service)) {
-                        relatedList.add(service);
-                        break;
+                        for (int j = 0; j < ((JSONArray) s.get(1)).size(); j++) {
+                            if (user.getMemberOf().get(i).equals(((JSONArray) s.get(1)).get(j)) && !relatedList.contains(service)) {
+                                relatedList.add(service);
+                                break;
 
-                    }
-                }
-        }
+                            }
+                        }
+            }
         }
 
         return relatedList;
@@ -79,7 +84,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         JSONParser jsonParser = new JSONParser();
         List<Service> services = new LinkedList<>();
         for (String file : files) {
-            if(file.endsWith(".json"))
+            if (file.endsWith(".json"))
                 try {
                     services.add(analyze(file));
                 } catch (ParseException e) {
@@ -87,7 +92,6 @@ public class ServiceRepoImpl implements ServiceRepo {
                 }
         }
         return services;
-
     }
 
     @Override
@@ -95,7 +99,6 @@ public class ServiceRepoImpl implements ServiceRepo {
         List allServices = new LinkedList();
 
         allServices = listServices();
-
 
         for (int i = 0; i < allServices.size(); i++) {
             Service service = (Service) allServices.get(i);
@@ -108,19 +111,19 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     @Override
     public HttpStatus deleteService(long serviceId) throws IOException, ParseException {
-        List<Service> services = listServices();
         File folder = new File(path);
         String[] files = folder.list();
         for (String file : files) {
             File serv = new File((path + file));
-            if(file.endsWith(".json")) {
+            if (file.endsWith(".json")) {
 
                 Service service = analyze(file);
                 if (serviceId == service.getId()) {
                     try {
-
                         if (serv.delete())
+
                             return HttpStatus.OK;
+
                         else if (!serv.exists())
                             return HttpStatus.NOT_EXTENDED;
                         else
@@ -162,6 +165,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         try {
+            mongoTemplate.save(service,"Services");
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -172,28 +176,34 @@ public class ServiceRepoImpl implements ServiceRepo {
             String fileName = service.getName();
             String s1 = fileName.replaceAll("\\s+", "");
             s1 = s1.replaceAll("[-,]", "");
-            String filePath = s1+"-"+service.getId();
+            String filePath = s1 + "-" + service.getId();
 
-            file = new FileWriter(path+filePath + ".json");
+            file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
+            Trim trim = new Trim(service);
+            InetAddress[] machines = InetAddress.getAllByName(trim.trimServiceId());
+            List<String> IPaddresses = new LinkedList<>();
+
+            for (InetAddress machine:machines)
+                IPaddresses.add(machine.getHostAddress());
+            MicroService microService = new MicroService(service.getServiceId(), IPaddresses);
+
+            mongoTemplate.save(microService,collection);
             return HttpStatus.OK;
         } catch (IOException e) {
             e.printStackTrace();
             return HttpStatus.FORBIDDEN;
         }
 
+
     }
 
     @Override
     public HttpStatus updateService(long id, JSONObject jsonObject) throws IOException, ParseException {
 
-        Service oldService = retrieveService(id);
-
-
         Service service = buildService(jsonObject);
         service.setId(id);
-
 
         String json = null;
 
@@ -207,14 +217,15 @@ public class ServiceRepoImpl implements ServiceRepo {
         FileWriter file = null;
         try {
 
-            File oldFile = new File(path+oldService.getName()+"-"+service.getId()+".json");
+            File oldFile = new File(path + service.getName() + "-" + service.getId() + ".json");
             oldFile.delete();
             String fileName = service.getName();
             String s1 = fileName.replaceAll("\\s+", "");
             s1 = s1.replaceAll("[-,]", "");
-            String filePath = s1+"-"+service.getId();
+            String filePath = s1 + "-" + service.getId();
 
-            file = new FileWriter(path+filePath + ".json");
+            file = new FileWriter(path + filePath + ".json");
+
             file.write(json);
             file.close();
             return HttpStatus.OK;
@@ -231,7 +242,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         JSONParser jsonParser = new JSONParser();
         Object obj = null;
 
-            obj = jsonParser.parse(reader);
+        obj = jsonParser.parse(reader);
 
         reader.close();
         return buildService((JSONObject) obj);
@@ -253,8 +264,6 @@ public class ServiceRepoImpl implements ServiceRepo {
         if (jo.get("privacyUrl") != null) service.setPrivacyUrl(jo.get("privacyUrl").toString());
         if (jo.get("logo") != null) service.setLogo(jo.get("logo").toString());
         if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
-
-
 
 
         if (jo.get("expirationPolicy") == null) {
@@ -283,7 +292,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         if (jo.get("proxyPolicy") == null) {
             ProxyPolicy proxyPolicy = new ProxyPolicy();
             service.setProxyPolicy(proxyPolicy);
-        }else {
+        } else {
 
             JSONObject jsonObject = null;
             String s = jo.get("proxyPolicy").getClass().toString();
@@ -294,7 +303,6 @@ public class ServiceRepoImpl implements ServiceRepo {
             if (jo.get("proxyPolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
                 jsonObject = new JSONObject((Map) jo.get("proxyPolicy"));
             }
-
 
 
             ProxyPolicy proxyPolicy = new ProxyPolicy();
@@ -351,10 +359,10 @@ public class ServiceRepoImpl implements ServiceRepo {
             attributeReleasePolicy.setAuthorizedToReleaseProxyGrantingTicket((boolean) jsonObject.get("authorizedToReleaseProxyGrantingTicket"));
 
             LinkedHashMap jsonConcentPolicy = (LinkedHashMap) jo.get("ConsentPolicy");
-            if (jsonConcentPolicy==null) {
+            if (jsonConcentPolicy == null) {
                 ConsentPolicy consentPolicy = new ConsentPolicy();
                 attributeReleasePolicy.setConsentPolicy(consentPolicy);
-            }else{
+            } else {
 
 
                 if (jo.get("ConsentPolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
@@ -373,7 +381,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
                 JSONObject jsonPrincipalAttributesRepository = (JSONObject) jo.get("principalAttributesRepository");
                 PrincipalAttributesRepository principalAttributesRepository = new PrincipalAttributesRepository();
-                if (jsonPrincipalAttributesRepository == null){
+                if (jsonPrincipalAttributesRepository == null) {
                     attributeReleasePolicy.setPrincipalAttributesRepository(principalAttributesRepository);
 
                 } else {
@@ -387,12 +395,6 @@ public class ServiceRepoImpl implements ServiceRepo {
             }
 
 
-
-
-
-
-
-
         }
 
         if (jo.get("multifactorPolicy") == null) {
@@ -401,7 +403,7 @@ public class ServiceRepoImpl implements ServiceRepo {
             service.setMultifactorPolicy(multifactorPolicy);
         } else {
 
-            JSONObject jsonObject = null ;
+            JSONObject jsonObject = null;
 
             if (jo.get("multifactorPolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
                 jsonObject = new JSONObject();
@@ -414,8 +416,8 @@ public class ServiceRepoImpl implements ServiceRepo {
             MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
             multifactorPolicy.setFailureMode((String) jsonObject.get("failureMode"));
             multifactorPolicy.setBypassEnabled((Boolean) jsonObject.get("bypassEnabled"));
+            multifactorPolicy.setMultifactorAuthenticationProviders((ArrayList) jsonObject.get("multifactorAuthenticationProviders"));
             service.setMultifactorPolicy(multifactorPolicy);
-
 
 
         }
@@ -429,33 +431,29 @@ public class ServiceRepoImpl implements ServiceRepo {
 
             List contacts = new LinkedList<Contact>();
 
-            if (arrayList!=null && arrayList != null) {
+            if (arrayList != null && arrayList != null) {
                 ArrayList temp1 = (ArrayList) arrayList.get(1);
                 for (int i = 0; i < temp1.size(); i++) {
 
 
-                    JSONObject jsonObject = null ;
+                    JSONObject jsonObject = null;
 
 
-
-                    if ( temp1.get(i)!=null &&
+                    if (temp1.get(i) != null &&
                             temp1.get(i).getClass().toString().equals("class org.json.simple.JSONObject")) {
                         jsonObject = new JSONObject();
                         jsonObject = (JSONObject) temp1.get(i);
                     }
-                    if (temp1.get(i)!=null &&
+                    if (temp1.get(i) != null &&
                             temp1.get(i).getClass().toString().equals("class java.util.LinkedHashMap")) {
                         jsonObject = new JSONObject((Map) temp1.get(i));
                     }
-
-
 
 
                     Contact contact = new Contact();
                     if (jsonObject.get("name") != null) contact.setName(jsonObject.get("name").toString());
                     Email email = new Email();
                     if (jsonObject.get("email") != null) {
-
 
 
                         contact.setEmail((String) jsonObject.get("email"));
@@ -468,7 +466,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
                 }
             }
-            JSONObject jsonObject = null ;
+            JSONObject jsonObject = null;
 
 
             Object[] tempObj = new Object[2];
@@ -477,15 +475,15 @@ public class ServiceRepoImpl implements ServiceRepo {
             service.setContacts(tempObj);
         }
 
-        JSONObject jsonObject = null ;
+        JSONObject jsonObject = null;
 
 
-        if ( jo.get("multifactorPolicy")!=null &&
+        if (jo.get("multifactorPolicy") != null &&
                 jo.get("multifactorPolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
             jsonObject = new JSONObject();
             jsonObject = (JSONObject) jo.get("multifactorPolicy");
         }
-        if (jo.get("multifactorPolicy")!=null &&
+        if (jo.get("multifactorPolicy") != null &&
                 jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
             jsonObject = new JSONObject((Map) jo.get("multifactorPolicy"));
         }
@@ -500,48 +498,81 @@ public class ServiceRepoImpl implements ServiceRepo {
             accessStrategy.setUnauthorizedRedirectUrl(jsonObject.get("unauthorizedRedirectUrl").toString());
 
 
+        if (jsonObject.get("startingDateTime") != null) {
+            String s = jsonObject.get("startingDateTime").toString();
+
+            if (Integer.valueOf(s.substring(0, 4)) > 2000)
+                accessStrategy.setStartingDateTimeForGet(jsonObject.get("startingDateTime").toString());
+            if (Integer.valueOf(s.substring(0, 4)) < 2000)
+                accessStrategy.setStartingDateTimeForPost(jsonObject.get("startingDateTime").toString());
+        }
+
+        if (jsonObject.get("endingDateTime") != null) {
+            String s = jsonObject.get("endingDateTime").toString();
+
+            accessStrategy.setEndingDateTimeForGet(jsonObject.get("endingDateTime").toString());
+
+            if (Integer.valueOf(s.substring(0, 4)) > 2000)
+                accessStrategy.setEndingDateTimeForGet(jsonObject.get("endingDateTime").toString());
+            if (Integer.valueOf(s.substring(0, 4)) < 2000)
+                accessStrategy.setEndingDateTimeForPost(jsonObject.get("endingDateTime").toString());
+
+        }
+
 
         //accessStrategy.setAtClass(jsonObject.get("@class").toString()););
         if (jsonObject.get("endpointUrl") != null)
             accessStrategy.setEndpointUrl(jsonObject.get("endpointUrl").toString());
-        if (jsonObject.get("enabled") == (null) || (boolean) jsonObject.get("enabled") == false) {
+        accessStrategy.setEnabled(jsonObject.get("enabled") != (null) && (boolean) jsonObject.get("enabled") != false);
 
-            accessStrategy.setEnabled(false);
-        } else
-            accessStrategy.setEnabled(true);
-
-        if (jsonObject.get("ssoEnabled") == (null) || (boolean) jsonObject.get("ssoEnabled") == false) {
-
-            accessStrategy.setSsoEnabled(false);
-        } else
-            accessStrategy.setSsoEnabled(true);
+        accessStrategy.setSsoEnabled(jsonObject.get("ssoEnabled") != (null) && (boolean) jsonObject.get("ssoEnabled") != false);
 
 
         JSONObject tempreqiredattribute = new JSONObject();
-        JSONArray obj  = null;
+        JSONArray obj = null;
         JSONObject t1;
-        if (jsonObject.get("requiredAttributes")!=(null)) {
+        if (jsonObject.get("requiredAttributes") != (null)) {
 
+            Object ob1 = jsonObject.get("requiredAttributes");
 
+            if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
+                obj = new JSONArray();
+                obj = (JSONArray) jsonObject.get("requiredAttributes");
+                t1 = (JSONObject) obj.get(0);
+                tempreqiredattribute = t1;
+                tempreqiredattribute.put("@class", "java.util.HashMap");
 
-                Object ob1 =jsonObject.get("requiredAttributes");
+            } else {
+                tempreqiredattribute = new JSONObject((Map) ob1);
+                tempreqiredattribute.put("@class", "java.util.HashMap");
+            }
 
-                if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
-                    obj = new JSONArray();
-                    obj = (JSONArray) jsonObject.get("requiredAttributes");
-                    t1 = (JSONObject) obj.get(0);
-                    tempreqiredattribute = t1;
-                    tempreqiredattribute.put("@class", "java.util.HashMap");
-
-                }
-                else {
-                    tempreqiredattribute = new JSONObject((Map) ob1);
-                    tempreqiredattribute.put("@class", "java.util.HashMap");
-                }
-
-                }
+        }
 
         accessStrategy.setRequiredAttributes(tempreqiredattribute);
+
+
+        JSONObject temprejecteddattribute = new JSONObject();
+
+        if (jsonObject.get("rejectedAttributes") != (null)) {
+
+            Object ob1 = jsonObject.get("rejectedAttributes");
+
+            if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
+                obj = new JSONArray();
+                obj = (JSONArray) jsonObject.get("rejectedAttributes");
+                t1 = (JSONObject) obj.get(0);
+                temprejecteddattribute = t1;
+                temprejecteddattribute.put("@class", "java.util.HashMap");
+
+            } else {
+                temprejecteddattribute = new JSONObject((Map) ob1);
+                temprejecteddattribute.put("@class", "java.util.HashMap");
+            }
+
+        }
+
+        accessStrategy.setRejectedAttributes(temprejecteddattribute);
 
         //Set keys = obj.keySet();
 

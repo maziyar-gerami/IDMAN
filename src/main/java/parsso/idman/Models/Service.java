@@ -7,32 +7,12 @@ import lombok.Setter;
 import parsso.idman.Models.ServicesSubModel.*;
 
 import java.util.LinkedList;
-import java.util.List;
 
 @Setter
 @Getter
 
 public class Service {
 
-    public Service(){
-
-        atClass = "org.apereo.cas.services.RegexRegisteredService";
-        properties = new Property();
-        evaluationOrder = 1;
-
-        requiredHandlers = new Object[2];
-        requiredHandlers[0] = "java.util.HashSet";
-        requiredHandlers[1] = new LinkedList<>();
-
-        environments = new Object[2];
-        environments[0] = "java.util.HashSet";
-        environments[1] = new LinkedList<>();
-
-        contacts = new Object[2];
-        contacts[0] = "java.util.ArrayList";
-        contacts[1] = new LinkedList<>();
-
-    }
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private long id;
     private String name;
@@ -78,5 +58,24 @@ public class Service {
     private MultifactorPolicy multifactorPolicy;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Object[] contacts;
+    public Service() {
+
+        atClass = "org.apereo.cas.services.RegexRegisteredService";
+        properties = new Property();
+        evaluationOrder = 1;
+
+        requiredHandlers = new Object[2];
+        requiredHandlers[0] = "java.util.HashSet";
+        requiredHandlers[1] = new LinkedList<>();
+
+        environments = new Object[2];
+        environments[0] = "java.util.HashSet";
+        environments[1] = new LinkedList<>();
+
+        contacts = new Object[2];
+        contacts[0] = "java.util.ArrayList";
+        contacts[1] = new LinkedList<>();
+
     }
+}
 

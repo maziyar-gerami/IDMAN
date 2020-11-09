@@ -1,18 +1,20 @@
 package parsso.idman.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 import parsso.idman.Models.Event;
 import parsso.idman.Repos.EventRepo;
 
-import java.io.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class EventController {
@@ -59,9 +61,9 @@ public class EventController {
     }
 
     @GetMapping("/api/events/user/date/{date}")
-    public ResponseEntity<List<Event>> retrieveCurrentUserEventsByDate(HttpServletRequest request,@PathVariable String date) throws IOException, ParseException {
+    public ResponseEntity<List<Event>> retrieveCurrentUserEventsByDate(HttpServletRequest request, @PathVariable String date) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(eventRepo.getListUserEventByDate(date,principal.getName()), HttpStatus.OK);
+        return new ResponseEntity<>(eventRepo.getListUserEventByDate(date, principal.getName()), HttpStatus.OK);
     }
 
 }

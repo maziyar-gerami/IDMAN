@@ -10,16 +10,16 @@ import lombok.Setter;
 
 public class UsernameAttributeProvider {
 
-    public UsernameAttributeProvider(){
+    @JsonProperty("@class")
+    private String atClass;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String canonicalizationMode;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private boolean encryptUsername;
+    public UsernameAttributeProvider() {
         atClass = "org.apereo.cas.services.DefaultRegisteredServiceUsernameProvider";
         canonicalizationMode = "NONE";
         encryptUsername = false;
 
     }
-    @JsonProperty("@class")
-    private String atClass;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  String canonicalizationMode;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private boolean encryptUsername;
 }

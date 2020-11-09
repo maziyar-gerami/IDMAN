@@ -59,6 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
             addS: "display:none",
             showS: "",
             activeItem: "email",
+            captcha: "",
+            captchaId: "",
+            capAnswer: "",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -101,53 +104,79 @@ document.addEventListener('DOMContentLoaded', function () {
             s40: "کد وارد شده اشتباه است.",
             s41: "شناسه خود را وارد کنید",
             s42: "شماره موبایل خود را وارد کنید",
-            s43: "کد پیامک شده خود را وارد کنید"
+            s43: "کد پیامک شده خود را وارد کنید",
+            s44: "جواب CAPTCHA نمی تواند خالی باشد.",
+            s45: "جواب CAPTCHA اشتباه است، دوباره تلاش کنید."
         },
         created: function () {
+            this.getCaptcha();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
             }
         },
         methods: {
+            getCaptcha: function  () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                
+                axios.get(url + "/api/captcha/request") //
+                .then((res) => {
+                    vm.captcha = "data:image/png;base64," + res.data.img;
+                    vm.captchaId = res.data.id;
+                    vm.capAnswer = "";
+                })
+            },
             isActive (menuItem) {
                 return this.activeItem === menuItem;
             },
             setActive (menuItem) {
                 this.activeItem = menuItem;
+                this.getCaptcha();
             },
             sendEmail: function  (email) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                console.log(emailRegex.test(email));
                 if(email != ""){
                     if(emailRegex.test(email)){
-                        axios.get(url + "/api/public/checkMail/" + email) //
-                            .then((res) => {
-                                vm.emails = res.data;
-                                if(vm.emails.length == 0){
-                                    vm.emailEE = "";
-                                    vm.sendE = false;
-                                    vm.sendU = false;
-                                    vm.Success = false;
-                                    vm.Error = true;
-                                } else if(vm.emails.length == 1){
-                                    vm.sendE = false;
-                                    vm.sendU = false;
-                                    vm.Success = true;
-                                    vm.Error = false;
-                                    axios.get(url + "/api/public/sendMail/" + email) //
-                                        .then((res) => {
-                                            
-                                        });
-                                } else if(vm.emails.length > 1){
-                                    vm.usernameE = "";
-                                    vm.sendE = false;
-                                    vm.sendU = true;
-                                    vm.Success = false;
-                                    vm.Error = false;
-                                }
-                            });
+                        if(vm.capAnswer != ""){
+                            axios.get(url + "/api/public/checkMail/" + email) //
+                                .then((res) => {
+                                    vm.emails = res.data;
+                                    if(vm.emails.length == 0){
+                                        vm.emailEE = "";
+                                        vm.sendE = false;
+                                        vm.sendU = false;
+                                        vm.Success = false;
+                                        vm.Error = true;
+                                        vm.getCaptcha();
+                                    } else if(vm.emails.length == 1){
+                                         axios.get(url + "/api/public/sendMail/" + email + "/" + vm.captchaId + "/" + vm.capAnswer) //
+                                            .then((res) => {
+                                                vm.sendE = false;
+                                                vm.sendU = false;
+                                                vm.Success = true;
+                                                vm.Error = false;
+                                            })
+                                            .catch((error) => {
+                                                if (error.response) {
+                                                    if(error.response.status === 403){
+                                                        alert(vm.s45);
+                                                        vm.getCaptcha();
+                                                    }
+                                                }
+                                            });
+                                    } else if(vm.emails.length > 1){
+                                        vm.usernameE = "";
+                                        vm.sendE = false;
+                                        vm.sendU = true;
+                                        vm.Success = false;
+                                        vm.Error = false;
+                                    }
+                                });
+                            }else{
+                                alert(this.s44);
+                            }
                     }else{
                         alert(this.s38);
                     }
@@ -167,14 +196,28 @@ document.addEventListener('DOMContentLoaded', function () {
                                 for(let i = 0; i < vm.emails.length; ++i){
                                     if(vm.emails[i].userId == username){
                                         flag = true;
-                                        vm.sendE = false;
-                                        vm.sendU = false;
-                                        vm.Success = true;
-                                        vm.Error = false;
-                                        axios.get(url + "/api/public/sendMail/" + email + "/" + username) //
+                                        
+                                        axios.get(url + "/api/public/sendMail/" + email + "/" + username + "/" + vm.captchaId + "/" + vm.capAnswer) //
                                             .then((res) => {
-                                                
+                                                vm.sendE = false;
+                                                vm.sendU = false;
+                                                vm.Success = true;
+                                                vm.Error = false;
+                                            }).catch((error) => {
+                                                if (error.response) {
+                                                    if(error.response.status === 403){
+                                                        vm.emailE = "";
+                                                        vm.emailEE = "";
+                                                        vm.sendE = true;
+                                                        vm.sendU = false;
+                                                        vm.Success = false;
+                                                        vm.Error = false;
+                                                        alert(vm.s45);
+                                                        vm.getCaptcha();
+                                                    }
+                                                }
                                             });
+
                                         break;
                                     }
                                 }
@@ -184,6 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     vm.sendU = false;
                                     vm.Success = false;
                                     vm.Error = true;
+                                    vm.getCaptcha();
                                 }
                             }
                         });
@@ -216,6 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .catch((error) => {
                         if (error.response) {
                             if(error.response.status === 408){
+                                console.log("Code is Expired");
                                 vm.ErrorSMSCode408 = true;
                                 vm.ErrorSMSCode403 = false;
                                 vm.sendS = false;
@@ -244,39 +289,50 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 if(mobile != ""){
-                    axios.get(url + "/api/public/checkMobile/" + mobile) //
-                        .then((res) => {
-                            vm.mobiles = res.data;
-                            if(vm.mobiles.length == 0){
-                                vm.mobileS = "";
-                                vm.sendS = false;
-                                vm.sendUS = false;
-                                vm.checkSMSCode = false;
-                                vm.SuccessS = false;
-                                vm.ErrorS = true;
-                                vm.ErrorSMSCode = false;
-                            } else if(vm.mobiles.length == 1){
-                                vm.codeSMS = "";
-                                vm.sendS = false;
-                                vm.sendUS = false;
-                                vm.checkSMSCode = true;
-                                vm.SuccessS = false;
-                                vm.ErrorS = false;
-                                vm.ErrorSMSCode = false;
-                                axios.get(url + "/api/public/sendSMS/" + mobile) //
-                                    .then((res) => {
-                                        
-                                    });
-                            } else if(vm.mobiles.length > 1){
-                                vm.usernameS = "";
-                                vm.sendS = false;
-                                vm.sendUS = true;
-                                vm.checkSMSCode = false;
-                                vm.SuccessS = false;
-                                vm.ErrorS = false;
-                                vm.ErrorSMSCode = false;
-                            }
-                        });
+                    if(vm.capAnswer != ""){
+                        axios.get(url + "/api/public/checkMobile/" + mobile) //
+                            .then((res) => {
+                                vm.mobiles = res.data;
+                                if(vm.mobiles.length == 0){
+                                    vm.mobileS = "";
+                                    vm.sendS = false;
+                                    vm.sendUS = false;
+                                    vm.checkSMSCode = false;
+                                    vm.SuccessS = false;
+                                    vm.ErrorS = true;
+                                    vm.ErrorSMSCode = false;
+                                    vm.getCaptcha();
+                                } else if(vm.mobiles.length == 1){
+                                    axios.get(url + "/api/public/sendSMS/" + mobile + "/" + vm.captchaId + "/" + vm.capAnswer) //
+                                        .then((res) => {
+                                            vm.codeSMS = "";
+                                            vm.sendS = false;
+                                            vm.sendUS = false;
+                                            vm.checkSMSCode = true;
+                                            vm.SuccessS = false;
+                                            vm.ErrorS = false;
+                                            vm.ErrorSMSCode = false;
+                                        }).catch((error) => {
+                                            if (error.response) {
+                                                if(error.response.status === 403){
+                                                    alert(vm.s45);
+                                                    vm.getCaptcha();
+                                                }
+                                            }
+                                        });
+                                } else if(vm.mobiles.length > 1){
+                                    vm.usernameS = "";
+                                    vm.sendS = false;
+                                    vm.sendUS = true;
+                                    vm.checkSMSCode = false;
+                                    vm.SuccessS = false;
+                                    vm.ErrorS = false;
+                                    vm.ErrorSMSCode = false;
+                                }
+                            });
+                        }else{
+                            alert(this.s44);
+                        }
                 }else{
                     alert(this.s42);
                 }
@@ -292,18 +348,33 @@ document.addEventListener('DOMContentLoaded', function () {
                             if(vm.mobiles.length > 1){
                                 for(let i = 0; i < vm.mobiles.length; ++i){
                                     if(vm.mobiles[i].userId == username){
-                                        vm.codeSMS = "";
                                         flag = true;
-                                        vm.sendS = false;
-                                        vm.sendUS = false;
-                                        vm.checkSMSCode = true;
-                                        vm.SuccessS = false;
-                                        vm.ErrorS = false;
-                                        vm.ErrorSMSCode = false;
-                                        axios.get(url + "/api/public/sendSMS/" + mobile + "/" + username) //
+                                        axios.get(url + "/api/public/sendSMS/" + mobile + "/" + username + "/" + vm.captchaId + "/" + vm.capAnswer) //
                                             .then((res) => {
-                                                
+                                                vm.codeSMS = "";
+                                                vm.sendS = false;
+                                                vm.sendUS = false;
+                                                vm.checkSMSCode = true;
+                                                vm.SuccessS = false;
+                                                vm.ErrorS = false;
+                                                vm.ErrorSMSCode = false;
+                                            }).catch((error) => {
+                                                if (error.response) {
+                                                    if(error.response.status === 403){
+                                                        vm.mobile = "";
+                                                        vm.mobileS = "";
+                                                        vm.sendS = true;
+                                                        vm.sendUS = false;
+                                                        vm.checkSMSCode = false;
+                                                        vm.SuccessS = false;
+                                                        vm.ErrorS = false;
+                                                        vm.ErrorSMSCode = false;
+                                                        alert(vm.s45);
+                                                        vm.getCaptcha();
+                                                    }
+                                                }
                                             });
+
                                         break;
                                     }
                                 }
@@ -315,6 +386,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     vm.SuccessS = false;
                                     vm.ErrorS = true;
                                     vm.ErrorSMSCode = false;
+                                    vm.getCaptcha();
                                 }
                             }
                         });
@@ -366,6 +438,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s36= "ID";
                     this.s37 = "Enter Your Email Address";
                     this.s38 = "Enter Email Address Format Correctly";
+                    this.s44 = "The Answer To CAPTCHA Cannot Be Empty.";
+                    this.s45 = "The Answer To CAPTCHA Is Incorrect, Try Again.";
                 } else{
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
@@ -409,6 +483,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s36 = "شناسه";
                     this.s37 = "آدرس ایمیل خود را وارد کنید";
                     this.s38 = "فرمت آدرس ایمیل را به درستی وارد کنید";
+                    this.s44 = "جواب CAPTCHA نمی تواند خالی باشد.";
+                    this.s45 = "جواب CAPTCHA اشتباه است، دوباره تلاش کنید.";
                 }
             }
         }

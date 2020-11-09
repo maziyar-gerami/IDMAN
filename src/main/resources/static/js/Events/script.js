@@ -94,8 +94,8 @@ document.addEventListener('DOMContentLoaded', function () {
       s31: "رویداد های من",
       s32: "رویداد های کاربران",
       s33: "شناسه: ",
-      s34: "مثال: admin",
-      s35: " مثال: 1399/05/01",
+      s34: " مثال: admin ",
+      s35: " مثال: 1399/05/01 ",
       s36: "./events",
       s37: "شناسه",
       s38: "تاریخ",
@@ -338,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function () {
               date[0] = "13" + date[0];
             }
             if(date[1].length != 2){
-              date[1] = "0" + date[1];s
+              date[1] = "0" + date[1];
             }
             if(date[2].length != 2){
               date[2] = "0" + date[2];

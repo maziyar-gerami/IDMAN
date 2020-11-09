@@ -8,7 +8,6 @@ package parsso.idman.utils.SMS.sdk.excepctions;
 import parsso.idman.utils.SMS.sdk.enums.MetaData;
 
 /**
- *
  * @author mohsen
  */
 public class ApiException extends BaseException {

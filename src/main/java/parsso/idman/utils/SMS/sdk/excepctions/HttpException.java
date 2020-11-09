@@ -5,7 +5,6 @@
 package parsso.idman.utils.SMS.sdk.excepctions;
 
 /**
- *
  * @author mohsen
  */
 public class HttpException extends BaseException {

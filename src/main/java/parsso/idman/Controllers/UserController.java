@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+import parsso.idman.Captcha.RepoImp.CaptchaRepoImp;
+import parsso.idman.Helpers.Communicate.Message;
+import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
@@ -36,11 +39,20 @@ public class UserController {
     // default sequence of variables which can be changed using frontend
     private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     @Autowired
+    Token tokenClass;
+    @Autowired
+    private Message message;
+    @Autowired
     private UserRepo userRepo;
     @Value("${administrator.ou.id}")
     private String adminOu;
-    @Value("${profile.photo.path}")
-    private String uploadedFilesPath;
+    @Value("${token.valid.email}")
+    private String tokenValidEmail;
+    @Value("${token.valid.SMS}")
+    private String tokenValidMessage;
+
+    @Autowired
+    private CaptchaRepoImp captchaRepoImp;
 
 
     //*************************************** User Section ***************************************
@@ -116,6 +128,29 @@ public class UserController {
         return new RedirectView("/dashboard");
     }
 
+    /**
+     * change the password of current user
+     *
+     * @param jsonObject
+     * @return the http status code
+     */
+    @PutMapping("/api/user/password")
+    public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
+                                                     @RequestBody JSONObject jsonObject) {
+        Principal principal = request.getUserPrincipal();
+        String newPassword = jsonObject.getAsString("newPassword");
+        String token = jsonObject.getAsString("token");
+        if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
+        return new ResponseEntity<>(userRepo.changePassword(principal.getName(), newPassword, token));
+
+    }
+
+    @GetMapping("/api/user/password/request")
+    public HttpStatus requestSMS(HttpServletRequest request) {
+        //Principal principal = request.getUserPrincipal();
+        User user = userRepo.retrieveUser("maziyar");
+        return userRepo.requestToken(user);
+    }
     //*************************************** Users Section ***************************************
 
     /**
@@ -162,9 +197,9 @@ public class UserController {
      */
     @PostMapping("/api/users")
     public ResponseEntity<JSONObject> bindLdapUser(@RequestBody User user) {
-        if (userRepo.create(user).equals(new JSONObject()))
-            return new ResponseEntity<>(userRepo.create(user), HttpStatus.OK);
-        else return new ResponseEntity<>(userRepo.create(user), HttpStatus.FOUND);
+        if (userRepo.create(user).size() == 0)
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        else return new ResponseEntity<>(null, HttpStatus.FOUND);
 
     }
 
@@ -203,6 +238,37 @@ public class UserController {
     }
 
     /**
+     * Enable users
+     *
+     * @return the response entity
+     */
+    @PutMapping("/api/users/enable/u/{id}")
+    public ResponseEntity<HttpStatus> enable(@PathVariable("id") String uid) {
+        return new ResponseEntity<>(userRepo.enable(uid));
+    }
+
+    /**
+     * Disable users
+     *
+     * @return the response entity
+     */
+    @PutMapping("/api/users/disable/u/{id}")
+    public ResponseEntity<HttpStatus> disable(@PathVariable("id") String uid) {
+        return new ResponseEntity<>(userRepo.disable(uid));
+    }
+
+
+    /**
+     * lock/unlock users
+     *
+     * @return the response entity
+     */
+    @PutMapping("/api/users/unlock/u/{id}")
+    public ResponseEntity<HttpStatus> lockUnlock(@PathVariable("id") String uid) {
+        return new ResponseEntity<>(userRepo.unlock(uid));
+    }
+
+    /**
      * Upload file for importing users using following formats:
      * LDIF,xlsx,xls,csv
      *
@@ -221,18 +287,6 @@ public class UserController {
         else return new ResponseEntity<>(jsonArray, HttpStatus.FOUND);
     }
 
-    /**
-     * change the password of current user
-     *
-     * @param newPassword
-     * @return the http status code
-     */
-    @PutMapping("/api/user/password")
-    public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
-                                                     @RequestParam("currentPassword") String currentPassword,
-                                                     @RequestParam("newPassword") String newPassword) {
-        return new ResponseEntity<>(userRepo.changePassword(request.getUserPrincipal().getName(), currentPassword, newPassword), HttpStatus.FOUND);
-    }
 
     /**
      * get the information for dashboard
@@ -240,21 +294,52 @@ public class UserController {
      * @return a json file containing tha data
      */
     @GetMapping("/api/dashboard")
-    public ResponseEntity<JSONObject> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException {
-        return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
+    public ResponseEntity<org.json.simple.JSONObject> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException {
+        return new ResponseEntity<org.json.simple.JSONObject>(userRepo.retrieveDashboardData(), HttpStatus.OK);
+    }
+
+    //*************************************** Public Controllers ***************************************
+
+    /**
+     * sends email to specified user
+     *
+     * @param email and userId
+     * @return if token is correspond to provided email, returns httpStatus=ok
+     */
+    @GetMapping("/api/public/sendMail/{email}/{uid}/{cid}/{answer}")
+    public ResponseEntity<Integer> sendMail(@PathVariable("email") String email,
+                                           @PathVariable("uid") String uid,
+                                           @PathVariable("cid") String cid,
+                                           @PathVariable("answer") String answer) {
+        int time = userRepo.sendEmail(email, uid, cid, answer);
+        if (time>0)
+            return new ResponseEntity<>(time, HttpStatus.OK);
+        else if (time == -1)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else
+            return new ResponseEntity<>(time, HttpStatus.BAD_REQUEST);
     }
 
 
-    //*************************************** Public Controllers ***************************************
     /**
      * send Email for reset password
      *
      * @param email
      * @return the http status code
      */
-    @GetMapping("/api/public/sendMail/{email}")
-    public ResponseEntity<HttpStatus> sendMail(@PathVariable("email") String email) {
-        return new ResponseEntity<>(userRepo.sendEmail(email), HttpStatus.OK);
+    @GetMapping("/api/public/sendMail/{email}/{cid}/{answer}")
+    public ResponseEntity<Integer> sendMail(@PathVariable("email") String email,
+                                           @PathVariable("cid") String cid,
+                                           @PathVariable("answer") String answer) {
+
+        int time = userRepo.sendEmail(email, cid, answer);
+        if (time>0)
+            return new ResponseEntity<>(time, HttpStatus.OK);
+        else if (time == -1)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
     }
 
     /**
@@ -263,9 +348,17 @@ public class UserController {
      * @param mobile
      * @return the http status code
      */
-    @GetMapping("/api/public/sendSMS/{mobile}")
-    public ResponseEntity<HttpStatus> sendMessage(@PathVariable("mobile") String mobile) {
-        return new ResponseEntity<>(null, userRepo.sendMessage(mobile));
+    @GetMapping("/api/public/sendSMS/{mobile}/{cid}/{answer}")
+    public ResponseEntity<Integer> sendMessage(@PathVariable("mobile") String mobile,
+                                               @PathVariable("cid") String cid,
+                                                @PathVariable("answer") String answer) {
+        int time = message.sendMessage(mobile,cid, answer);
+        if (time > 0)
+            return new ResponseEntity<>(time, HttpStatus.OK);
+        else if (time == -1)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -274,10 +367,33 @@ public class UserController {
      * @param mobile and userId
      * @return the http status code
      */
-    @GetMapping("/api/public/sendSMS/{mobile}/{uid}")
-    public ResponseEntity<HttpStatus> sendMessage(@PathVariable("mobile") String mobile, @PathVariable("uid") String uid) {
-        return new ResponseEntity<>(null, userRepo.sendMessage(mobile, uid));
+    @GetMapping("/api/public/sendSMS/{mobile}/{uid}/{cid}/{answer}")
+    public ResponseEntity<Integer> sendMessage(@PathVariable("mobile") String mobile,
+                                                @PathVariable("uid") String uid,
+                                               @PathVariable ("cid") String cid,
+                                               @PathVariable("answer") String answer) {
+        int time = message.sendMessage(mobile, uid,cid, answer);
+        if (time > 0)
+            return new ResponseEntity<>(time, HttpStatus.OK);
+        else if (time == -1)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
+
+    /**
+     * Gets the token and corresponds it with provided userID
+     *
+     * @param token and userId
+     * @return the user object if exists, or null if not exists
+     */
+    @PutMapping("/api/public/resetPass/{uid}")
+    public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
+                                                     @PathVariable("uid") String uid) {
+        return new ResponseEntity<>(userRepo.updatePass(uid, newPassword, token));
+    }
+
 
     /**
      * check if an email exists in ldap
@@ -298,19 +414,10 @@ public class UserController {
      */
     @GetMapping("/api/public/checkMobile/{mobile}")
     public HttpEntity<List<JSONObject>> checkMobile(@PathVariable("mobile") String mobile) {
-        return new ResponseEntity<List<JSONObject>>(userRepo.checkMobile(mobile), HttpStatus.OK);
+        return new ResponseEntity<List<JSONObject>>(message.checkMobile(mobile), HttpStatus.OK);
     }
 
-    /**
-     * Gets the token and corresponds it with provided userID
-     *
-     * @param token and userId
-     * @return the user object if exists, or null if not exists
-     */
-    @PutMapping("/api/public/resetPass/{uid}/{token}")
-    public ResponseEntity<String> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token, @PathVariable("uid") String uid) {
-        return new ResponseEntity<>(userRepo.updatePass(uid, newPassword, token), HttpStatus.OK);
-    }
+
 
     /**
      * Gets the name from userId for showing in the ressetPasseord page
@@ -326,26 +433,17 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
     }
 
-    /**
-     * sends email to specified user
-     *
-     * @param email and userId
-     * @return if token is correspond to provided email, returns httpStatus=ok
-     */
-    @GetMapping("/api/public/sendMail/{email}/{uid}")
-    public ResponseEntity<HttpStatus> sendMail(@PathVariable("email") String email, @PathVariable("uid") String uid) {
-        return new ResponseEntity<>(userRepo.sendEmail(email, uid), HttpStatus.OK);
-    }
+
 
     /**
      * validate the token send via email provided for specified userId
      *
-     * @param  uId and email
+     * @param uId and email
      * @return if token is correspond to provided email, redirects to resetPassword page
      */
     @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
     public RedirectView resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token, RedirectAttributes attributes) {
-        HttpStatus httpStatus = userRepo.checkToken(uId, token);
+        HttpStatus httpStatus = tokenClass.checkToken(uId, token);
 
         if (httpStatus == HttpStatus.OK) {
             attributes.addAttribute("uid", uId);
@@ -356,15 +454,15 @@ public class UserController {
         return null;
     }
 
+
     /**
      * validate the token provided for spcified userId
      *
-     * @param  uId and email
+     * @param uId and email
      * @return if token is correspond to provided userId, returns httpStatus=ok
      */
     @GetMapping("/api/public/validateMessageToken/{uId}/{token}")
-    public HttpStatus resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token) {
-        return userRepo.checkToken(uId, token);
-
+    public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) {
+        return new ResponseEntity<>(tokenClass.checkToken(uId, token));
     }
 }

@@ -8,12 +8,19 @@ import java.util.List;
 public interface GroupRepo {
 
     List<Group> retrieve();
+
     String create(Group ou);
+
     String update(String name, Group ou);
+
     String remove(String ou);
+
     String remove();
+
     Group retrieveOu(String name);
+
     Group retrieveOu();
+
     List<Group> retrieveCurrentUserGroup(User user);
 
 

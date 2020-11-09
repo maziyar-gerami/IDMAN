@@ -5,7 +5,6 @@
 package parsso.idman.utils.SMS.sdk.enums;
 
 /**
- *
  * @author mohsen
  */
 public enum MessageStatus {
@@ -20,12 +19,8 @@ public enum MessageStatus {
     Incorrect(100);
     private final int value;
 
-    private MessageStatus(int type) {
+    MessageStatus(int type) {
         this.value = type;
-    }
-
-    public int getValue() {
-        return value;
     }
 
     public static MessageStatus valueOf(int type) {
@@ -35,5 +30,9 @@ public enum MessageStatus {
             }
         }
         return null;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

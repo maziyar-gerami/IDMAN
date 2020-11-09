@@ -12,10 +12,16 @@ import java.util.List;
 public interface ServiceRepo {
 
     List<Service> listUserServices(User user) throws IOException, ParseException;
+
     List<Service> listServices() throws IOException, ParseException;
+
     Service retrieveService(long id) throws IOException, ParseException;
+
     HttpStatus deleteService(long id) throws IOException, ParseException;
+
     HttpStatus deleteServices();
+
     HttpStatus createService(JSONObject jsonObject);
+
     HttpStatus updateService(long id, JSONObject jsonObject) throws IOException, ParseException;
 }

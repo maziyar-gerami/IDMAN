@@ -6,15 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.Group;
 import parsso.idman.Models.User;
-import parsso.idman.Repos.UserRepo;
 import parsso.idman.Repos.GroupRepo;
-
-import java.security.Principal;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.List;
+import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.List;
 
 @RestController
 public class GroupsController {
@@ -50,8 +47,8 @@ public class GroupsController {
     }
 
     @GetMapping("/api/groups/{id}")
-    public ResponseEntity <Group> retrieveOU(@PathVariable("id") String id) {
-        return new ResponseEntity<> (groupRepo.retrieveOu(id), HttpStatus.OK);
+    public ResponseEntity<Group> retrieveOU(@PathVariable("id") String id) {
+        return new ResponseEntity<>(groupRepo.retrieveOu(id), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/groups/{id}")
