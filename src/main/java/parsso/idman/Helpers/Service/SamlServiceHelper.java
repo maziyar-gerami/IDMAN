@@ -1,0 +1,253 @@
+package parsso.idman.Helpers.Service;
+
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import parsso.idman.Models.Service;
+import parsso.idman.Models.ServiceType.MicroService;
+import parsso.idman.Models.ServiceType.SamlService;
+import parsso.idman.Models.ServicesSubModel.AccessStrategy;
+import parsso.idman.Models.ServicesSubModel.AttributeReleasePolicy;
+import parsso.idman.Models.ServicesSubModel.ConsentPolicy;
+import parsso.idman.Models.ServicesSubModel.PrincipalAttributesRepository;
+import parsso.idman.Repos.ServiceRepo;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.*;
+
+@Component
+public class SamlServiceHelper {
+
+    @Value("${services.folder.path}")
+    String path;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
+
+    @Autowired
+    ServiceRepo serviceRepo;
+
+    private final String collection = "IDMAN_Services";
+
+
+
+    public List<Service> listServices() throws IOException {
+        File folder = new File(path); // ./services/
+        String[] files = folder.list();
+        JSONParser jsonParser = new JSONParser();
+        List<Service> services = new LinkedList<>();
+        for (String file : files) {
+            if (file.endsWith(".json"))
+                try {
+                    Service service = analyze(file);
+                    if (service.getAtClass().toLowerCase().contains("saml"))
+                        services.add(analyze(file));
+                } catch (ParseException e) {
+                    continue;
+                }
+        }
+        return services;
+    }
+
+    public SamlService buildSamlService(JSONObject jo) {
+
+        SamlService service = new SamlService();
+        if (jo.get("id") != null)
+            service.setId(Long.valueOf(jo.get("id").toString()));
+
+        if (jo.get("serviceId") != null) service.setServiceId(jo.get("serviceId").toString());
+        if (jo.get("@class") != null) service.setAtClass(jo.get("@class").toString());
+        if (jo.get("name") != null) service.setName(jo.get("name").toString());
+        if (jo.get("id") != null) service.setId(Long.valueOf(jo.get("id").toString()));
+        if (jo.get("evaluationOrder") != null) service.setEvaluationOrder(Integer.valueOf(jo.get("evaluationOrder").toString()));
+        if (jo.get("metadataLocation") != null) service.setMetadataLocation(jo.get("metadataLocation").toString());
+
+        if (jo.get("attributeReleasePolicy") == null) {
+
+            AttributeReleasePolicy attributeReleasePolicy = new AttributeReleasePolicy();
+            service.setAttributeReleasePolicy(attributeReleasePolicy);
+        } else {
+            JSONObject jsonObject = null;
+            String s = jo.get("attributeReleasePolicy").getClass().toString();
+            if (jo.get("attributeReleasePolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
+                jsonObject = new JSONObject();
+                jsonObject = (JSONObject) jo.get("attributeReleasePolicy");
+            }
+            if (jo.get("attributeReleasePolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
+                jsonObject = new JSONObject((Map) jo.get("attributeReleasePolicy"));
+            }
+            AttributeReleasePolicy attributeReleasePolicy = new AttributeReleasePolicy();
+            attributeReleasePolicy.setAtClass((String) jsonObject.get("@class"));
+            attributeReleasePolicy.setAuthorizedToReleaseAuthenticationAttributes((boolean) jsonObject.get("authorizedToReleaseAuthenticationAttributes"));
+            attributeReleasePolicy.setAuthorizedToReleaseCredentialPassword((Boolean) jsonObject.get("authorizedToReleaseCredentialPassword"));
+            attributeReleasePolicy.setOrder((long) jsonObject.get("order"));
+            attributeReleasePolicy.setExcludeDefaultAttributes((boolean) jsonObject.get("excludeDefaultAttributes"));
+            attributeReleasePolicy.setAuthorizedToReleaseProxyGrantingTicket((boolean) jsonObject.get("authorizedToReleaseProxyGrantingTicket"));
+
+            LinkedHashMap jsonConcentPolicy = (LinkedHashMap) jo.get("ConsentPolicy");
+            if (jsonConcentPolicy == null) {
+                ConsentPolicy consentPolicy = new ConsentPolicy();
+                attributeReleasePolicy.setConsentPolicy(consentPolicy);
+            } else {
+
+                if (jo.get("ConsentPolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
+                    jsonObject = new JSONObject();
+                    jsonObject = (JSONObject) jo.get("ConsentPolicy");
+                }
+                if (jo.get("ConsentPolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
+                    jsonObject = new JSONObject((Map) jo.get("ConsentPolicy"));
+                }
+
+                ConsentPolicy consentPolicy = new ConsentPolicy();
+                consentPolicy.setAtClass((String) jsonConcentPolicy.get("@class"));
+                consentPolicy.setEnabled((boolean) jsonConcentPolicy.get("enabled"));
+                consentPolicy.setOrder((int) jsonConcentPolicy.get("order"));
+                attributeReleasePolicy.setConsentPolicy(consentPolicy);
+
+                JSONObject jsonPrincipalAttributesRepository = (JSONObject) jo.get("principalAttributesRepository");
+                PrincipalAttributesRepository principalAttributesRepository = new PrincipalAttributesRepository();
+                if (jsonPrincipalAttributesRepository == null) {
+                    attributeReleasePolicy.setPrincipalAttributesRepository(principalAttributesRepository);
+
+                } else {
+                    principalAttributesRepository.setAtClass((String) jsonPrincipalAttributesRepository.get("@class"));
+                    principalAttributesRepository.setIgnoreResolvedAttributes((boolean) jsonPrincipalAttributesRepository.get("ignoreResolvedAttributes"));
+                    principalAttributesRepository.setMergingStrategy((String) jsonPrincipalAttributesRepository.get("mergingStrategy"));
+                    attributeReleasePolicy.setPrincipalAttributesRepository(principalAttributesRepository);
+                    service.setAttributeReleasePolicy(attributeReleasePolicy);
+
+                }
+            }
+
+        }
+        // AccessStrategy
+        JSONObject jsonObject;
+        if (jo.get("accessStrategy")!=null) {
+            jsonObject = new JSONObject((Map) jo.get("accessStrategy"));
+            AccessStrategy accessStrategy = new AccessStrategy();
+
+            AccessStrategy ac = accessStrategy.parse(jsonObject);
+
+            service.setAccessStrategy(ac);
+        }
+
+        return service;
+
+    }
+
+    public HttpStatus create(JSONObject jo){
+        SamlService service = buildSamlService(jo);
+        service.setId(new Date().getTime());
+        String json = null;
+        if (service!=null){
+
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            try {
+                mongoTemplate.save(service,"Services");
+                json = ow.writeValueAsString(service);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            FileWriter file = null;
+            try {
+                String fileName = service.getName();
+                String s1 = fileName.replaceAll("\\s+", "");
+                s1 = s1.replaceAll("[-,]", "");
+                String filePath = s1 + "-" + service.getId();
+
+                file = new FileWriter(path + filePath + ".json");
+                file.write(json);
+                file.close();
+                InetAddress[] machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
+                List<String> IPaddresses = new LinkedList<>();
+
+                for (InetAddress machine:machines)
+                    IPaddresses.add(machine.getHostAddress());
+                MicroService microService = new MicroService(service.getServiceId(), IPaddresses);
+
+                mongoTemplate.save(microService,collection);
+                return HttpStatus.OK;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return HttpStatus.FORBIDDEN;
+            }
+
+
+        }
+
+        return HttpStatus.OK;
+    }
+
+    public HttpStatus update(long id, JSONObject jsonObject) throws IOException, ParseException {
+        Service oldService = serviceRepo.retrieveService(id);
+
+
+        Service service = buildSamlService(jsonObject);
+        service.setId(id);
+
+
+        String json = null;
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        try {
+            json = ow.writeValueAsString(service);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        FileWriter file = null;
+        try {
+
+            File oldFile = new File(path+oldService.getName()+"-"+service.getId()+".json");
+            oldFile.delete();
+            String fileName = service.getName();
+            String s1 = fileName.replaceAll("\\s+", "");
+            s1 = s1.replaceAll("[-,]", "");
+            String filePath = s1+"-"+service.getId();
+
+            file = new FileWriter(path+filePath + ".json");
+            file.write(json);
+            file.close();
+            return HttpStatus.OK;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return HttpStatus.FORBIDDEN;
+        }
+
+    }
+
+    boolean isSamlService (JSONObject jo) {
+
+        if (jo.get("@class").toString().contains("saml"))
+            return true;
+        return false;
+
+    }
+
+    public SamlService analyze(String file) throws IOException, ParseException {
+
+        FileReader reader = new FileReader(path + file);
+        JSONParser jsonParser = new JSONParser();
+        Object obj = jsonParser.parse(reader);
+
+        reader.close();
+        return buildSamlService((JSONObject) obj);
+
+    }
+
+
+}

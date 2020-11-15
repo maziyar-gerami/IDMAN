@@ -266,6 +266,10 @@
                                                 <label>{{s36}}<span style="color: red;"> *</span></label>
                                                 <input name="serviceId" id="enInput" class="form-control" type="text" placeholder="URL" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                             </div>
+                                            <div v-if="samls" class="form-group">
+                                                <label>Metadata Location<span style="color: red;"> *</span></label>
+                                                <input name="metadataLocation" id="enInput" class="form-control" type="text" placeholder="URL" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                            </div>
                                             <div class="form-group mb-3">
                                                 <label>{{s19}}<span style="color: red;"> *</span></label>
                                                 <input name="description" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"></input>
@@ -283,93 +287,6 @@
                                             <div class="form-group">
                                                 <label>{{s23}}</label>
                                                 <input name="privacyUrl" id="enInput" class="form-control" type="text" placeholder="URL">
-                                            </div>
-
-                                            <div id="saml" v-bind:style="samls">
-                                            <h4 class="border-bottom pb-3 mb-3 mt-5"><span>Metadata</span></h4>
-                                                <div class="form-group">
-                                                    <label>Metadata Location</label>
-                                                    <input name="metadataLocation" class="form-control" type="text">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Metadata Maximum Validity</label>
-                                                    <input name="metadataMaxValidity" class="form-control" type="text">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Metadata Public Key Location</label>
-                                                    <input name="metadataSignatureLocation" class="form-control" type="text">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Metadata Expiration Duration</label>
-                                                    <input name="metadataExpirationDuration" value="PT60M"  class="form-control" type="text">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Metadata Filter Regex</label>
-                                                    <input name="metadataCriteriaPattern" class="form-control" type="text">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Metadata Filter Criteria</label>
-                                                    <select name="metadataCriteriaDirection" class="form-control">
-                                                        <option value="" selected></option>
-                                                        <option value="INCLUDE">INCLUDE</option>
-                                                        <option value="EXCLUDE">EXCLUDE</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Whitelisted Metadata Roles</label>
-                                                    <input name="metadataCriteriaRoles" class="form-control" type="text">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="form-check-label">Remove Empty Entities Descriptors</label>
-                                                    <label class="switch">
-                                                        <input name="metadataCriteriaRemoveEmptyEntitiesDescriptors" type="checkbox" checked>
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="form-check-label">Remove Empty Roles</label>
-                                                    <label class="switch">
-                                                        <input name="metadataCriteriaRemoveRolelessEntityDescriptors" type="checkbox" checked>
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </div>
-                                                <h4 class="border-bottom pb-3 mb-3 mt-5"><span>Security</span></h4>
-                                                <div class="form-group">
-                                                    <label class="form-check-label">Sign Assertions</label>
-                                                    <label class="switch">
-                                                        <input name="signAssertions" type="checkbox">
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="form-check-label">Sign Responses</label>
-                                                    <label class="switch">
-                                                        <input name="signResponses" type="checkbox" checked>
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="form-check-label">Encrypt Assertions</label>
-                                                    <label class="switch">
-                                                        <input name="encryptAssertions" type="checkbox">
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Signing Credential Type</label>
-                                                    <select name="signingCredentialType" class="form-control">
-                                                        <option value="BASIC" selected>BASIC</option>
-                                                        <option value="X509">X509</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Authentication Context Class</label>
-                                                    <input name="requiredAuthenticationContextClass" class="form-control" type="text">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Assertion Audiences</label>
-                                                    <input name="assertionAudiences" class="form-control" type="text">
-                                                </div>
                                             </div>
 
                                             <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s24}}</span></h4>

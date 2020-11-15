@@ -3,12 +3,14 @@ package parsso.idman.Repos;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 
 import javax.servlet.http.HttpServletResponse;
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.util.List;
 
@@ -50,6 +52,8 @@ public interface UserRepo {
 
     org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException;
 
+    String createUrl(String userId, String token);
+
     HttpStatus enable(String uid);
 
     HttpStatus disable(String uid);
@@ -58,4 +62,5 @@ public interface UserRepo {
 
     HttpStatus requestToken(User user);
 
+    List<SimpleUser> retrieveUsersPagination(int page, int n);
 }

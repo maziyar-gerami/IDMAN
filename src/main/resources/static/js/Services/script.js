@@ -52,7 +52,7 @@ function myFunction() {
         isRtl: true,
         groups: [],
         groupList: "",
-        samls: "display: none;",
+        samls: true,
         editS: "display: none;",
         showS: "",
         flag: false,
@@ -261,6 +261,13 @@ function myFunction() {
 
             document.getElementsByName("serviceId")[0].value = res.data.serviceId;
 
+            if(typeof res.data.metadataLocation !== 'undefined'){
+              vm.samls = true;
+              document.getElementsByName("metadataLocation")[0].value = res.data.metadataLocation;
+            }else{
+              vm.samls = false;
+            }
+
             if(typeof res.data.description !== 'undefined'){
               document.getElementsByName("description")[0].value = res.data.description;
             }
@@ -454,6 +461,8 @@ function myFunction() {
           if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
             document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
             document.getElementsByName('description')[0].value == ""){
+            alert("لطفا قسمت های الزامی را پر کنید.");
+          }else if (this.samls && document.getElementsByName('metadataLocation')[0].value == "") {
             alert("لطفا قسمت های الزامی را پر کنید.");
           }else{
 
@@ -747,27 +756,57 @@ function myFunction() {
               this.multifactorPolicy.failureMode = null;
             }
 
-            axios({
-              method: 'put',
-              url: url + `/api/service/${id}`, //
-              headers: {'Content-Type': 'application/json'},
-              data: JSON.stringify({
-                name: vm.service.name,
-                serviceId: vm.service.serviceId,
-                multifactorPolicy: vm.multifactorPolicy,
-                description: vm.service.description,
-                logo: vm.service.logo,
-                informationUrl: vm.service.informationUrl,
-                privacyUrl: vm.service.privacyUrl,
-                logoutType: vm.service.logoutType,
-                logoutUrl: vm.service.logoutUrl,
-                accessStrategy: vm.accessStrategy,
-                contacts: vm.contacts
+            if(this.samls){
+              if(document.getElementsByName('metadataLocation')[0].value != ""){
+                this.service.metadataLocation = document.getElementsByName('metadataLocation')[0].value;
+
+                axios({
+                  method: 'put',
+                  url: url + `/api/service/${id}/saml`, //
+                  headers: {'Content-Type': 'application/json'},
+                  data: JSON.stringify({
+                    name: vm.service.name,
+                    serviceId: vm.service.serviceId,
+                    metadataLocation: vm.service.metadataLocation,
+                    multifactorPolicy: vm.multifactorPolicy,
+                    description: vm.service.description,
+                    logo: vm.service.logo,
+                    informationUrl: vm.service.informationUrl,
+                    privacyUrl: vm.service.privacyUrl,
+                    logoutType: vm.service.logoutType,
+                    logoutUrl: vm.service.logoutUrl,
+                    accessStrategy: vm.accessStrategy,
+                    contacts: vm.contacts
+                  })
+                })
+                .then((res) => {
+                  location.reload();
+                });
+              }
+            }else{
+
+              axios({
+                method: 'put',
+                url: url + `/api/service/${id}/cas`, //
+                headers: {'Content-Type': 'application/json'},
+                data: JSON.stringify({
+                  name: vm.service.name,
+                  serviceId: vm.service.serviceId,
+                  multifactorPolicy: vm.multifactorPolicy,
+                  description: vm.service.description,
+                  logo: vm.service.logo,
+                  informationUrl: vm.service.informationUrl,
+                  privacyUrl: vm.service.privacyUrl,
+                  logoutType: vm.service.logoutType,
+                  logoutUrl: vm.service.logoutUrl,
+                  accessStrategy: vm.accessStrategy,
+                  contacts: vm.contacts
+                })
               })
-            })
-            .then((res) => {
-              location.reload();
-            });
+              .then((res) => {
+                location.reload();
+              });
+            }
           }
         },
         deleteService: function (id) {
@@ -1069,18 +1108,12 @@ function myFunction() {
               this.s82 = "مقدار پارامتر";
           }
         },
-        saml: function () {
-          this.samls = "";
-          this.s18 = "Entity ID";
-          },
-        cas: function () {
-          this.samls = "display: none;";
-          if(this.lang == "EN"){
-            this.s18 = "آدرس سرویس";
-          }else{
-            this.s18 = "Service URL";
-          }
+        /* saml: function () {
+          this.samls = true;
         },
+        cas: function () {
+          this.samls = false;
+        }, */
 
         div: function (a, b) {
           return parseInt((a / b));

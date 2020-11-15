@@ -39,17 +39,17 @@ public class ServiceController {
     @GetMapping("/api/services/user")
     public ResponseEntity<List<Service>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<List<Service>>(serviceRepo.listUserServices(userRepo.retrieveUser(principal.getName())), HttpStatus.OK);
+        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUser("maziyar")), HttpStatus.OK);
     }
 
     @GetMapping("/api/services")
     public ResponseEntity<List<Service>> listServices() throws IOException, ParseException {
-        return new ResponseEntity<List<Service>>(serviceRepo.listServices(), HttpStatus.OK);
+        return new ResponseEntity<>(serviceRepo.listServices(), HttpStatus.OK);
     }
 
     @GetMapping("/api/services/{id}")
     public ResponseEntity<Service> retrieveService(@PathVariable("id") long serviceId) throws IOException, ParseException {
-        return new ResponseEntity<Service>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
+        return new ResponseEntity<>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/services/{id}")
@@ -62,14 +62,15 @@ public class ServiceController {
         return new ResponseEntity<>(serviceRepo.deleteServices());
     }
 
-    @PostMapping("/api/services")
-    public ResponseEntity<String> createService(@RequestBody JSONObject jsonObject) {
-        return new ResponseEntity<>(serviceRepo.createService(jsonObject));
+    @PostMapping("/api/services/{system}")
+    public ResponseEntity<String> createService(@RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException {
+        return new ResponseEntity<>(serviceRepo.createService(jsonObject, system));
     }
 
-    @PutMapping("/api/service/{id}")
-    public ResponseEntity<String> updateService(@PathVariable("id") long id, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
-        return new ResponseEntity<>(serviceRepo.updateService(id, jsonObject));
+    @PutMapping("/api/service/{id}/{system}")
+    public ResponseEntity<String> updateService(@PathVariable("id") long id,
+                                                @RequestBody JSONObject jsonObject,@PathVariable("system") String system) throws IOException, ParseException {
+        return new ResponseEntity<>(serviceRepo.updateService(id, jsonObject, system));
     }
 
     @GetMapping("/services")
@@ -77,13 +78,9 @@ public class ServiceController {
         try {
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUser(principal.getName());
-            List<String> memberOf = user.getMemberOf();
 
-
-            for (String group : memberOf) {
-                if (group.equals(adminOu))
-                    return "services";
-            }
+            if (user.getMemberOf().contains(adminOu))
+                return "services";
 
         } catch (Exception e) {
             return "403";

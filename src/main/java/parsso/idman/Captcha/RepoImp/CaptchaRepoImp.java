@@ -128,7 +128,7 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         g2d.dispose();
 
         try {
-            ImageIO.write(img, "png", new File("B:\\\\App\\Textooo.png"));
+            //ImageIO.write(img, "png", new File("D:\\\\app\\Textooo.png"));
             CAPTCHAimage captchaImage = new CAPTCHAimage();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ImageIO.write(img, "png", out);
@@ -152,7 +152,12 @@ public class CaptchaRepoImp implements CAPTCHARepo {
 
         for (int i=0;i<organization.length;i++){
             if (organization[i]==0){
-                phrase += (char) (rand.nextInt(123-97)+97);
+                if (rand.nextInt(2)==1)
+                    phrase += (char) (rand.nextInt(123-97)+97);
+                else
+                    phrase += (char) (rand.nextInt(123-97)+97-32);
+
+
             }else {
                 phrase += rand.nextInt(10);
             }

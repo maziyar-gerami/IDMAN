@@ -29,6 +29,11 @@ public class EventController {
         return new ResponseEntity<>(eventRepo.getListUserEvents(), HttpStatus.OK);
     }
 
+    @GetMapping("/api/events/{page}/{n}")
+    public ResponseEntity<List<Event>> retrieveAllEvents(@PathVariable("page") int page, @PathVariable("n") int n) throws FileNotFoundException, ParseException {
+        return new ResponseEntity<>(eventRepo.getListUserEvents(page,n), HttpStatus.OK);
+    }
+
     @GetMapping("/api/events/users/")
     public ResponseEntity<List<Event>> retrieveAllEventsWithEmptyUserName() throws FileNotFoundException, ParseException {
         return new ResponseEntity<>(eventRepo.getListUserEvents(), HttpStatus.OK);

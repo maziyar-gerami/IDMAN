@@ -1,24 +1,30 @@
 package parsso.idman.utils.Email;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+@Component
 public class EmailSend {
 
+    // Recipient's email ID needs to be mentioned.
+
+    // Sender's email ID needs to be mentioned
+    @Value("${address.email.sender}")
+    String from;
+    @Value("${password.email.sender}")
+    String password;
+
+    // Assuming you are sending email from through gmails
+    @Value("${host.email.sender}")
+    String host;
+
     public void sendMail(String to, String uid, String name, String token) {
-
-        // Recipient's email ID needs to be mentioned.
-
-        // Sender's email ID needs to be mentioned
-        String from = "Parsso.Idman@gmail.com";
-
-        String password = "Parsso2020";
-
-        // Assuming you are sending email from through gmails smtp
-        String host = "smtp.gmail.com";
-
 
         String subject = "بازنشانی رمز عبور";
         String body = " عزیز \nشما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید.\n" +

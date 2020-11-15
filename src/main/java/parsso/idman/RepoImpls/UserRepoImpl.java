@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -34,9 +36,11 @@ import parsso.idman.Models.*;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.UserRepo;
 
+import javax.jws.soap.SOAPBinding;
 import javax.naming.Name;
 import javax.naming.directory.*;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.print.Pageable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -592,6 +596,25 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
+    public List<SimpleUser> retrieveUsersPagination(int page, int number) {
+        List<SimpleUser> allUsers = retrieveUsersMain();
+
+        int n = (page)*number;
+
+        if (n>allUsers.size())
+            n = allUsers.size();
+
+        List<SimpleUser> relativeUsers= new LinkedList<SimpleUser>();
+
+        int start = (page-1)*number;
+
+        for (int i=start; i<n; i++)
+            relativeUsers.add(allUsers.get(i));
+
+        return relativeUsers;
+    }
+
+    @Override
     public int sendEmail(String email, String cid, String answer) {
             return emailClass.sendEmail(email,cid,answer);
     }
@@ -639,5 +662,5 @@ public class UserRepoImpl implements UserRepo {
     public PasswordEncoder passwordEncoder() {
         return new LdapShaPasswordEncoder();
     }
-
 }
+

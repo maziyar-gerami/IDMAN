@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Event;
+import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.Time;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.utils.Convertor.DateConverter;
@@ -29,6 +30,25 @@ public class EventRepoImpl implements EventRepo {
     public List<Event> getListUserEvents()  {
         List<Event> events = analyze();
         return events;
+    }
+
+    @Override
+    public List<Event> getListUserEvents(int page, int number) throws FileNotFoundException, ParseException {
+        List<Event> allUsers = getListUserEvents();
+
+        int n = (page)*number;
+
+        if (n>allUsers.size())
+            n = allUsers.size();
+
+        List<Event> relativeEvents= new LinkedList<>();
+
+        int start = (page-1)*number;
+
+        for (int i=start; i<n; i++)
+            relativeEvents.add(allUsers.get(i));
+
+        return relativeEvents;
     }
 
     @Override

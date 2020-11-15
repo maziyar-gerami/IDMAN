@@ -4,14 +4,14 @@ import io.jsonwebtoken.io.IOException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import parsso.idman.Models.ServiceType.CasService;
 import parsso.idman.Models.Event;
 import parsso.idman.Models.User;
-import parsso.idman.RepoImpls.EventRepoImpl;
 import parsso.idman.RepoImpls.ServiceRepoImpl;
 import parsso.idman.Repos.EventRepo;
+import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 
-import java.text.ParseException;
 import java.util.List;
 
 
@@ -21,6 +21,8 @@ public  class DashboardData {
     UserRepo userRepo;
     @Autowired
     EventRepo eventRepo;
+    @Autowired
+    ServiceRepo serviceRepo;
 
     public JSONObject retrieveDashboardData() throws IOException, java.text.ParseException, java.io.IOException, org.json.simple.parser.ParseException {
         JSONObject jsonObject = new JSONObject();
@@ -48,12 +50,12 @@ public  class DashboardData {
 
         //________services data____________
         JSONObject servicesJson = new JSONObject();
-        ServiceRepoImpl serviceRepo = new ServiceRepoImpl();
         List<parsso.idman.Models.Service> services = serviceRepo.listServices();
         int nServices = services.size();
         int nEnabledServices = 0;
 
         for (parsso.idman.Models.Service service : services) {
+            if (service instanceof CasService)
             if (service.getAccessStrategy().isEnabled())
                 nEnabledServices++;
         }

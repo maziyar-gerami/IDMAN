@@ -170,10 +170,10 @@ document.addEventListener('DOMContentLoaded', function () {
         axios.get(url + "/api/events")
         .then((res) => {
           for(var i = 0; i < res.data.length; ++i){
-            if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+            if(res.data[i].action == "Successful Login"){
               res.data[i].action = vm.s39;
               vm.events.push(res.data[i]);
-            }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+            }else if(res.data[i].action == "Unsuccessful Login"){
               res.data[i].action = vm.s40;
               vm.events.push(res.data[i]);
             }
@@ -193,10 +193,10 @@ document.addEventListener('DOMContentLoaded', function () {
         axios.get(url + "/api/events/user") //
         .then((res) => {
           for(var i = 0; i < res.data.length; ++i){
-            if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+            if(res.data[i].action == "Successful Login"){
               res.data[i].action = vm.s39;
               vm.event.push(res.data[i]);
-            }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+            }else if(res.data[i].action == "Unsuccessful Login"){
               res.data[i].action = vm.s40;
               vm.event.push(res.data[i]);
             }
@@ -231,10 +231,10 @@ document.addEventListener('DOMContentLoaded', function () {
             axios.get(url + "/api/events/user/date/" + vm.eventDate) //
             .then((res) => {
               for(var i = 0; i < res.data.length; ++i){
-                if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+                if(res.data[i].action == "Successful Login"){
                   res.data[i].action = vm.s39;
                   vm.event.push(res.data[i]);
-                }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+                }else if(res.data[i].action == "Unsuccessful Login"){
                   res.data[i].action = vm.s40;
                   vm.event.push(res.data[i]);
                 }
@@ -261,10 +261,10 @@ document.addEventListener('DOMContentLoaded', function () {
           axios.get(url + "/api/events/users/" + vm.eventsUserId) //
           .then((res) => {
             for(var i = 0; i < res.data.length; ++i){
-              if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+              if(res.data[i].action == "Successful Login"){
                 res.data[i].action = vm.s39;
                 vm.events.push(res.data[i]);
-              }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+              }else if(res.data[i].action == "Unsuccessful Login"){
                 res.data[i].action = vm.s40;
                 vm.events.push(res.data[i]);
               }
@@ -306,10 +306,10 @@ document.addEventListener('DOMContentLoaded', function () {
             axios.get(url + "/api/events/date/" + vm.eventsDate) //
             .then((res) => {
               for(var i = 0; i < res.data.length; ++i){
-                if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+                if(res.data[i].action == "Successful Login"){
                   res.data[i].action = vm.s39;
                   vm.events.push(res.data[i]);
-                }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+                }else if(res.data[i].action == "Unsuccessful Login"){
                   res.data[i].action = vm.s40;
                   vm.events.push(res.data[i]);
                 }
@@ -347,10 +347,10 @@ document.addEventListener('DOMContentLoaded', function () {
             axios.get(url + "/api/events/users/" + vm.eventsUserId + "/date/" + vm.eventsDate) //
             .then((res) => {
               for(var i = 0; i < res.data.length; ++i){
-                if(res.data[i].action == "AUTHENTICATION_SUCCESS"){
+                if(res.data[i].action == "Successful Login"){
                   res.data[i].action = vm.s39;
                   vm.events.push(res.data[i]);
-                }else if(res.data[i].action == "AUTHENTICATION_FAILED"){
+                }else if(res.data[i].action == "Unsuccessful Login"){
                   res.data[i].action = vm.s40;
                   vm.events.push(res.data[i]);
                 }

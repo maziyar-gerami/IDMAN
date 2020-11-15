@@ -1,4 +1,4 @@
-package parsso.idman.Models;
+package parsso.idman.Models.ServiceType;
 
 import lombok.Getter;
 import lombok.Setter;

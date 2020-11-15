@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
       margin: "margin-right: 30px;",
       lang: "EN",
       isRtl: true,
-      samls: "display: none;",
+      samls: false,
       userPicture: "images/PlaceholderUser.png",
       accessStrategy: {},
       requiredAttributes: {},
@@ -517,27 +517,57 @@ document.addEventListener('DOMContentLoaded', function () {
             this.multifactorPolicy.failureMode = null;
           }
 
-          axios({
-              method: 'post',
-              url: url + "/api/services", //
-              headers: {'Content-Type': 'application/json'},
-              data: JSON.stringify({
-                name: vm.service.name,
-                serviceId: vm.service.serviceId,
-                multifactorPolicy: vm.multifactorPolicy,
-                description: vm.service.description,
-                logo: vm.service.logo,
-                informationUrl: vm.service.informationUrl,
-                privacyUrl: vm.service.privacyUrl,
-                logoutType: vm.service.logoutType,
-                logoutUrl: vm.service.logoutUrl,
-                accessStrategy: vm.accessStrategy,
-                contacts: vm.contacts
+          if(this.samls){
+            if(document.getElementsByName('metadataLocation')[0].value != ""){
+              this.service.metadataLocation = document.getElementsByName('metadataLocation')[0].value;
+
+              axios({
+                method: 'post',
+                url: url + "/api/services/saml", //
+                headers: {'Content-Type': 'application/json'},
+                data: JSON.stringify({
+                  name: vm.service.name,
+                  serviceId: vm.service.serviceId,
+                  metadataLocation: vm.service.metadataLocation,
+                  multifactorPolicy: vm.multifactorPolicy,
+                  description: vm.service.description,
+                  logo: vm.service.logo,
+                  informationUrl: vm.service.informationUrl,
+                  privacyUrl: vm.service.privacyUrl,
+                  logoutType: vm.service.logoutType,
+                  logoutUrl: vm.service.logoutUrl,
+                  accessStrategy: vm.accessStrategy,
+                  contacts: vm.contacts
+                })
               })
-          })
-          .then((res) => {
-            window.location.replace(url + "/services");
-          });
+              .then((res) => {
+                window.location.replace(url + "/services");
+              });
+            }
+          }else{
+
+            axios({
+                method: 'post',
+                url: url + "/api/services/cas", //
+                headers: {'Content-Type': 'application/json'},
+                data: JSON.stringify({
+                  name: vm.service.name,
+                  serviceId: vm.service.serviceId,
+                  multifactorPolicy: vm.multifactorPolicy,
+                  description: vm.service.description,
+                  logo: vm.service.logo,
+                  informationUrl: vm.service.informationUrl,
+                  privacyUrl: vm.service.privacyUrl,
+                  logoutType: vm.service.logoutType,
+                  logoutUrl: vm.service.logoutUrl,
+                  accessStrategy: vm.accessStrategy,
+                  contacts: vm.contacts
+                })
+            })
+            .then((res) => {
+              window.location.replace(url + "/services");
+            });
+          }
         }
       },
       serviceNameValidate ($event) {
@@ -776,16 +806,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       },
       saml: function () {
-        this.samls = "";
-        this.s18 = "Entity ID";
+        this.samls = true;
       },
       cas: function () {
-        this.samls = "display: none;";
-        if(this.lang == "EN"){
-          this.s18 = "آدرس سرویس";
-        }else{
-          this.s18 = "Service URL";
-        }
+        this.samls = false;
       }
     },
     computed: {

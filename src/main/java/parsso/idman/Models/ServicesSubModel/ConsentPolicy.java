@@ -18,5 +18,4 @@ public class ConsentPolicy {
         order = 0;
     }
 
-
 }

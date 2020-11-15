@@ -5,6 +5,8 @@ import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
@@ -147,8 +150,8 @@ public class UserController {
 
     @GetMapping("/api/user/password/request")
     public HttpStatus requestSMS(HttpServletRequest request) {
-        //Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser("maziyar");
+        Principal principal = request.getUserPrincipal();
+        User user = userRepo.retrieveUser(principal.getName());
         return userRepo.requestToken(user);
     }
     //*************************************** Users Section ***************************************
@@ -189,6 +192,16 @@ public class UserController {
         else return new ResponseEntity<>(userRepo.retrieveUsersFull(), HttpStatus.OK);
     }
 
+    /**
+     * Retrieve all users with all attributes with pagination
+     *
+     * @return the list of user object
+     */
+    @GetMapping("/api/users/{page}/{n}")
+    public ResponseEntity<List<SimpleUser>> retrieveUsersPagination(@PathVariable("page") int page, @PathVariable("n") int n) {
+        if (userRepo.retrieveUsersMain().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(userRepo.retrieveUsersPagination(page, n), HttpStatus.OK);
+    }
     /**
      * Create user
      *

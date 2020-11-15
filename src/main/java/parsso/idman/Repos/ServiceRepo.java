@@ -21,7 +21,7 @@ public interface ServiceRepo {
 
     HttpStatus deleteServices();
 
-    HttpStatus createService(JSONObject jsonObject);
+    HttpStatus createService(JSONObject jsonObject, String system) throws IOException;
 
-    HttpStatus updateService(long id, JSONObject jsonObject) throws IOException, ParseException;
+    HttpStatus updateService(long id, JSONObject jsonObject, String system) throws IOException, ParseException;
 }

@@ -10,6 +10,8 @@ public interface EventRepo {
 
     List<Event> getListUserEvents() throws FileNotFoundException, ParseException;
 
+    List<Event> getListUserEvents(int psge, int n) throws FileNotFoundException, ParseException;
+
     List<Event> analyze() throws FileNotFoundException, ParseException;
 
     List<Event> getListUserEvents(String userId) throws FileNotFoundException, ParseException;

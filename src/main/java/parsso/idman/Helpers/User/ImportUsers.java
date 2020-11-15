@@ -62,7 +62,7 @@ public class ImportUsers {
             List<String> lst = extractGroups(tt1);
             user.setMemberOf(lst);
             user.setDescription(row.getCell(sequence[7]).getStringCellValue());
-            //user.isEnabled(row.getCell(sequence[8]).get);
+            user.setUserPassword(row.getCell(sequence[8]).getStringCellValue());
 
 
             temp = userRepo.createUserImport(user);
@@ -239,6 +239,7 @@ public class ImportUsers {
         user.setDescription(entry.getAttributeValue("description"));
         user.setPhotoName(entry.getAttributeValue("photoName"));
         //user.setStatus(entry.getAttributeValue("userStatus"));
+        user.setPhotoName(entry.getAttributeValue("userPassword"));
 
         //lsUserConflicts.add(create(user));
 

@@ -39,11 +39,13 @@ public class Email {
     @Autowired
     MongoTemplate mongoTemplate;
 
+    @Autowired
+    EmailSend emailSend;
+
     private final String collection = "IDMAN_Captchas";
 
     @Value("${token.valid.email}")
     private String EMAIL_VALID_TIME;
-
 
     public List<JSONObject> checkMail(String email) {
         SearchControls searchControls = new SearchControls();
@@ -66,7 +68,7 @@ public class Email {
             tokenClass.insertEmailToken(user);
             EmailSend emailSend = new EmailSend();
 
-            String fullUrl = new UserRepoImpl().createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
+            String fullUrl = userRepo.createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
 
             emailSend.sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
             return HttpStatus.OK;
@@ -91,7 +93,7 @@ public class Email {
             tokenClass.insertEmailToken(user);
             EmailSend emailSend = new EmailSend();
 
-            String fullUrl = new UserRepoImpl().createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
+            String fullUrl = userRepo.createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
 
             Thread thread = new Thread(){
                 public void run(){
@@ -128,7 +130,6 @@ public class Email {
                 if (user.equals(p)) {
 
                     tokenClass.insertEmailToken(user);
-                    EmailSend emailSend = new EmailSend();
 
                     String fullUrl = userRepoImp.createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
                     Thread thread = new Thread(){

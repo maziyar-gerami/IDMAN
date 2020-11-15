@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import parsso.idman.utils.Convertor.DateConverter;
+
+import java.util.Map;
 
 @Setter
 @Getter
@@ -108,5 +111,106 @@ public class AccessStrategy {
 
         return dateConverter.getYear() + "-" + String.format("%02d", dateConverter.getMonth()) + "-" + String.format("%02d", dateConverter.getDay());
     }
+
+    public AccessStrategy parse(JSONObject jsonObject){
+
+        AccessStrategy accessStrategy = new AccessStrategy();
+        if (jsonObject.get("acceptableResponseCodes") != (null))
+            accessStrategy.setAcceptableResponseCodes(jsonObject.get("acceptableResponseCodes").toString());
+
+        if (jsonObject.get("unauthorizedRedirectUrl") != (null))
+            accessStrategy.setUnauthorizedRedirectUrl(jsonObject.get("unauthorizedRedirectUrl").toString());
+
+
+        if (jsonObject.get("startingDateTime") != null) {
+            String s = jsonObject.get("startingDateTime").toString();
+
+            if (Integer.valueOf(s.substring(0,4)) >2000 )
+                accessStrategy.setStartingDateTimeForGet(jsonObject.get("startingDateTime").toString());
+            if (Integer.valueOf(s.substring(0,4)) <2000 )
+                accessStrategy.setStartingDateTimeForPost(jsonObject.get("startingDateTime").toString());
+        }
+
+        if (jsonObject.get("endingDateTime") != null) {
+            String s = jsonObject.get("endingDateTime").toString();
+
+            accessStrategy.setEndingDateTimeForGet(jsonObject.get("endingDateTime").toString());
+
+            if (Integer.valueOf(s.substring(0, 4)) > 2000)
+                accessStrategy.setEndingDateTimeForGet(jsonObject.get("endingDateTime").toString());
+            if (Integer.valueOf(s.substring(0, 4)) < 2000)
+                accessStrategy.setEndingDateTimeForPost(jsonObject.get("endingDateTime").toString());
+
+        }
+
+
+        //accessStrategy.setAtClass(jsonObject.get("@class").toString()););
+        if (jsonObject.get("endpointUrl") != null)
+            accessStrategy.setEndpointUrl(jsonObject.get("endpointUrl").toString());
+        if (jsonObject.get("enabled") == (null) || (boolean) jsonObject.get("enabled") == false) {
+
+            accessStrategy.setEnabled(false);
+        } else
+            accessStrategy.setEnabled(true);
+
+        if (jsonObject.get("ssoEnabled") == (null) || (boolean) jsonObject.get("ssoEnabled") == false) {
+
+            accessStrategy.setSsoEnabled(false);
+        } else
+            accessStrategy.setSsoEnabled(true);
+
+
+        JSONObject tempreqiredattribute = new JSONObject();
+        JSONArray obj  = null;
+        JSONObject t1;
+        if (jsonObject.get("requiredAttributes")!=(null)) {
+
+            Object ob1 =jsonObject.get("requiredAttributes");
+
+            if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
+                obj = new JSONArray();
+                obj = (JSONArray) jsonObject.get("requiredAttributes");
+                t1 = (JSONObject) obj.get(0);
+                tempreqiredattribute = t1;
+                tempreqiredattribute.put("@class", "java.util.HashMap");
+
+            }
+            else {
+                tempreqiredattribute = new JSONObject((Map) ob1);
+                tempreqiredattribute.put("@class", "java.util.HashMap");
+            }
+
+        }
+
+        accessStrategy.setRequiredAttributes(tempreqiredattribute);
+
+
+        JSONObject temprejecteddattribute = new JSONObject();
+
+        if (jsonObject.get("rejectedAttributes")!=(null)) {
+
+            Object ob1 =jsonObject.get("rejectedAttributes");
+
+            if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
+                obj = new JSONArray();
+                obj = (JSONArray) jsonObject.get("rejectedAttributes");
+                t1 = (JSONObject) obj.get(0);
+                temprejecteddattribute = t1;
+                temprejecteddattribute.put("@class", "java.util.HashMap");
+
+            }
+            else {
+                temprejecteddattribute = new JSONObject((Map) ob1);
+                temprejecteddattribute.put("@class", "java.util.HashMap");
+            }
+
+        }
+
+        accessStrategy.setRejectedAttributes(temprejecteddattribute);
+
+        return accessStrategy;
+
+    }
+
 
 }

@@ -3,6 +3,7 @@ package parsso.idman.Models;
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import parsso.idman.Models.ServiceType.CasService;
 import parsso.idman.RepoImpls.EventRepoImpl;
 import parsso.idman.RepoImpls.ServiceRepoImpl;
 import parsso.idman.Repos.EventRepo;
@@ -56,12 +57,12 @@ public class Dashboard {
         //________services data____________
         JSONObject servicesJson = new JSONObject();
         ServiceRepoImpl serviceRepo = new ServiceRepoImpl();
-        List<parsso.idman.Models.Service> services = serviceRepo.listServices();
+        List<Service> services = serviceRepo.listServices();
         int nServices = services.size();
         int nEnabledServices = 0;
 
-        for (parsso.idman.Models.Service service : services) {
-            if (service.getAccessStrategy().isEnabled())
+        for (Service service : services) {
+            if (((CasService) service).getAccessStrategy().isEnabled())
                 nEnabledServices++;
         }
 
