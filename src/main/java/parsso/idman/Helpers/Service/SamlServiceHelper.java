@@ -15,10 +15,7 @@ import org.springframework.stereotype.Component;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.ServiceType.MicroService;
 import parsso.idman.Models.ServiceType.SamlService;
-import parsso.idman.Models.ServicesSubModel.AccessStrategy;
-import parsso.idman.Models.ServicesSubModel.AttributeReleasePolicy;
-import parsso.idman.Models.ServicesSubModel.ConsentPolicy;
-import parsso.idman.Models.ServicesSubModel.PrincipalAttributesRepository;
+import parsso.idman.Models.ServicesSubModel.*;
 import parsso.idman.Repos.ServiceRepo;
 
 import java.io.File;
@@ -74,6 +71,15 @@ public class SamlServiceHelper {
         if (jo.get("id") != null) service.setId(Long.valueOf(jo.get("id").toString()));
         if (jo.get("evaluationOrder") != null) service.setEvaluationOrder(Integer.valueOf(jo.get("evaluationOrder").toString()));
         if (jo.get("metadataLocation") != null) service.setMetadataLocation(jo.get("metadataLocation").toString());
+
+        if (jo.get("logoutType") != null) service.setLogoutType(jo.get("logoutType").toString());
+        if (jo.get("logoutUrl") != null) service.setLogoutUrl(jo.get("logoutUrl").toString());
+        if (jo.get("privacyUrl") != null) service.setPrivacyUrl(jo.get("privacyUrl").toString());
+        if (jo.get("logo") != null) service.setLogo(jo.get("logo").toString());
+        if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
+        if (jo.get("description") != null) service.setDescription(jo.get("description").toString());
+
+
 
         if (jo.get("attributeReleasePolicy") == null) {
 
@@ -134,7 +140,7 @@ public class SamlServiceHelper {
 
         }
         // AccessStrategy
-        JSONObject jsonObject;
+        JSONObject jsonObject = null;
         if (jo.get("accessStrategy")!=null) {
             jsonObject = new JSONObject((Map) jo.get("accessStrategy"));
             AccessStrategy accessStrategy = new AccessStrategy();
@@ -142,6 +148,87 @@ public class SamlServiceHelper {
             AccessStrategy ac = accessStrategy.parse(jsonObject);
 
             service.setAccessStrategy(ac);
+        }
+
+        MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
+
+        if (jo.get("multifactorPolicy") == null) {
+
+            service.setMultifactorPolicy(multifactorPolicy);
+        } else {
+
+            JSONObject jsonObjectm = null;
+
+            if (jo.get("multifactorPolicy")!=null && jo.get("multifactorPolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
+                jsonObjectm = (JSONObject) jo.get("multifactorPolicy");
+            }
+            if (jo.get("multifactorPolicy")!=null && jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
+                jsonObjectm = new JSONObject((Map) jo.get("multifactorPolicy"));
+            }
+
+            if(jsonObjectm.get("failureMode")!=null)
+                multifactorPolicy.setFailureMode((String) jsonObjectm.get("failureMode"));
+            if(jsonObjectm.get("bypassEnabled")!=null)
+                multifactorPolicy.setBypassEnabled((Boolean) jsonObjectm.get("bypassEnabled"));
+            if(jsonObjectm.get("multifactorAuthenticationProviders")!=null)
+                multifactorPolicy.setMultifactorAuthenticationProviders(jsonObjectm.get("multifactorAuthenticationProviders").toString());
+            service.setMultifactorPolicy(multifactorPolicy);
+
+
+        }
+
+        //contacts
+        if (jo.get("contacts")!= null) {
+
+            ArrayList arrayList = (ArrayList) jo.get("contacts");
+
+            if (arrayList != null) {
+
+                String temp0 = (String) arrayList.get(0);
+
+                List contacts = new LinkedList<Contact>();
+
+                if (arrayList != null && arrayList != null) {
+                    ArrayList temp1 = (ArrayList) arrayList.get(1);
+                    for (int i = 0; i < temp1.size(); i++) {
+
+
+                        JSONObject jsonObject1 = null;
+
+
+                        if (temp1.get(i) != null &&
+                                temp1.get(i).getClass().toString().equals("class org.json.simple.JSONObject")) {
+                            jsonObject1 = (JSONObject) temp1.get(i);
+                        }
+                        if (temp1.get(i) != null &&
+                                temp1.get(i).getClass().toString().equals("class java.util.LinkedHashMap")) {
+                            jsonObject1 = new JSONObject((Map) temp1.get(i));
+                        }
+
+
+                        Contact contact = new Contact();
+                        if (jsonObject1.get("name") != null) contact.setName(jsonObject1.get("name").toString());
+                        Email email = new Email();
+                        if (jsonObject1.get("email") != null) {
+
+
+                            contact.setEmail((String) jsonObject1.get("email"));
+
+                            if (jsonObject1.get("phone") != (null)) contact.setPhone(jsonObject1.get("phone").toString());
+                            if (jsonObject1.get("department") != (null))
+                                contact.setDepartment(jsonObject1.get("department").toString());
+                            contacts.add(contact);
+                        }
+
+                    }
+                }
+
+
+                Object[] tempObj = new Object[2];
+                tempObj[0] = temp0;
+                tempObj[1] = contacts;
+                service.setContacts(tempObj);
+            }
         }
 
         return service;
@@ -156,7 +243,7 @@ public class SamlServiceHelper {
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             try {
-                mongoTemplate.save(service,"Services");
+                mongoTemplate.save(service,collection);
                 json = ow.writeValueAsString(service);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
@@ -169,20 +256,22 @@ public class SamlServiceHelper {
                 s1 = s1.replaceAll("[-,]", "");
                 String filePath = s1 + "-" + service.getId();
 
-                file = new FileWriter(path + filePath + ".json");
-                file.write(json);
-                file.close();
+
                 InetAddress[] machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
                 List<String> IPaddresses = new LinkedList<>();
 
                 for (InetAddress machine:machines)
                     IPaddresses.add(machine.getHostAddress());
+
+                file = new FileWriter(path + filePath + ".json");
+                file.write(json);
+                file.close();
+
                 MicroService microService = new MicroService(service.getServiceId(), IPaddresses);
 
                 mongoTemplate.save(microService,collection);
                 return HttpStatus.OK;
             } catch (IOException e) {
-                e.printStackTrace();
                 return HttpStatus.FORBIDDEN;
             }
 

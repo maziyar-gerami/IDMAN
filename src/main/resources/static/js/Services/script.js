@@ -28,6 +28,7 @@ function myFunction() {
         username: "",
         name: "",
         nameEN: "",
+        menuSA: false,
         service: {},
         services: [],
         servicesPage: [],
@@ -110,7 +111,7 @@ function myFunction() {
         s22: "آدرس",
         s23: "ویرایش",
         s24: "حذف",
-        s25: "تنطیمات پایه",
+        s25: "تنظیمات پایه",
         s26: "فعال سازی سرویس",
         s27: "نوع سرویس",
         s28: "نام سرویس",
@@ -127,7 +128,7 @@ function myFunction() {
         s39: "ایمیل",
         s40: "شماره تماس",
         s41: "دپارتمان",
-        s42: "تنطیمات خروج",
+        s42: "تنظیمات خروج",
         s43: "آدرس خروج",
         s44: "نوع خروج",
         s45: "تایید",
@@ -143,7 +144,7 @@ function myFunction() {
         s55: "فعال سازی SSO",
         s56: "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی",
         s57: " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)",
-        s58: "تنطیمات پایه",
+        s58: "تنظیمات پایه",
         s59: "استراتژی دسترسی",
         s60: "دسترسی بر اساس زمان",
         s61: "تاریخ شروع",
@@ -171,6 +172,7 @@ function myFunction() {
       },
       created: function () {
         this.getUserInfo();
+        this.isAdmin();
         this.getUserPic();
         this.refreshServices();
         this.getGroups();
@@ -198,24 +200,36 @@ function myFunction() {
                 vm.s1 = vm.name;
             });
         },
+        isAdmin: function () {
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          var vm = this;
+          axios.get(url + "/api/user/isAdmin") //
+            .then((res) => {
+              if(res.data == "0"){
+                vm.menuSA = true;
+              }
+            });
+        },
         getUserPic: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
           axios.get(url + "/api/user/photo") //
-              .then((res) => {
+            .then((res) => {
+              if(res.data == "Problem" || res.data == "NotExist"){
+                vm.userPicture = "images/PlaceholderUser.png";
+              }else{
                 vm.userPicture = "/api/user/photo";
-              })
-              .catch((error) => {
-                  if (error.response) {
-                    if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
-                      vm.userPicture = "images/PlaceholderUser.png";
-                    }else{
-                      vm.userPicture = "/api/user/photo";
-                    }
+              }
+            })
+            .catch((error) => {
+                if (error.response) {
+                  if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
+                    vm.userPicture = "images/PlaceholderUser.png";
                   }else{
-                    console.log("error.response is False")
+                    vm.userPicture = "/api/user/photo";
                   }
-              });
+                }
+            });
         },
         getUsersList: function (){
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -346,7 +360,7 @@ function myFunction() {
             if(typeof res.data.multifactorPolicy !== 'undefined'){
 
               if(typeof res.data.multifactorPolicy.multifactorAuthenticationProviders !== 'undefined'){
-                if(res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] == "mfa-simple"){
+                if(res.data.multifactorPolicy.multifactorAuthenticationProviders == "mfa-simple"){
                   document.getElementsByName("mfaEnabled")[0].checked = true;
                 }else{
                   document.getElementsByName("mfaEnabled")[0].checked = false;
@@ -739,9 +753,9 @@ function myFunction() {
             this.contacts[1] = this.contactsList;
 
             if(document.getElementsByName('mfaEnabled')[0].checked){
-              this.multifactorPolicy.multifactorAuthenticationProviders = [ "java.util.LinkedHashSet", [ "mfa-simple" ] ];
+              this.multifactorPolicy.multifactorAuthenticationProviders = "mfa-simple";
             }else{
-              this.multifactorPolicy.multifactorAuthenticationProviders = [ "java.util.LinkedHashSet", [ ] ];
+              this.multifactorPolicy.multifactorAuthenticationProviders = null;
             }
 
             if(document.getElementsByName('bypassEnabled')[0].checked){
@@ -1048,7 +1062,7 @@ function myFunction() {
               this.s22 = "آدرس";
               this.s23 = "ویرایش";
               this.s24 = "حذف";
-              this.s25 = "تنطیمات پایه";
+              this.s25 = "تنظیمات پایه";
               this.s26 = "فعال سازی سرویس";
               this.s27 = "نوع سرویس";
               this.s28 = "نام سرویس";
@@ -1065,7 +1079,7 @@ function myFunction() {
               this.s39 = "ایمیل";
               this.s40 = "شماره تماس";
               this.s41 = "دپارتمان";
-              this.s42 = "تنطیمات خروج";
+              this.s42 = "تنظیمات خروج";
               this.s43 = "آدرس خروج";
               this.s44 = "نوع خروج";
               this.s45 = "تایید";
@@ -1081,7 +1095,7 @@ function myFunction() {
               this.s55 = "فعال سازی SSO";
               this.s56 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
               this.s57 = " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
-              this.s58 = "تنطیمات پایه";
+              this.s58 = "تنظیمات پایه";
               this.s59 = "استراتژی دسترسی";
               this.s60 = "دسترسی بر اساس زمان";
               this.s61 = "تاریخ شروع";

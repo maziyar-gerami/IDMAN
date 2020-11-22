@@ -1,6 +1,7 @@
 package parsso.idman.Repos;
 
 import parsso.idman.Models.Event;
+import parsso.idman.Models.ListEvents;
 
 import java.io.FileNotFoundException;
 import java.text.ParseException;
@@ -8,16 +9,16 @@ import java.util.List;
 
 public interface EventRepo {
 
-    List<Event> getListUserEvents() throws FileNotFoundException, ParseException;
+    List<Event> getListEvents() throws FileNotFoundException, ParseException;
 
-    List<Event> getListUserEvents(int psge, int n) throws FileNotFoundException, ParseException;
+    ListEvents getListSizeEvents(int page, int n) ;
 
-    List<Event> analyze() throws FileNotFoundException, ParseException;
+    List<Event> getListEvents(int page, int n) ;
 
-    List<Event> getListUserEvents(String userId) throws FileNotFoundException, ParseException;
+    ListEvents getListUserEvents(String userId, int page, int n) ;
 
-    List<Event> getEventsByDate(String date) throws FileNotFoundException, ParseException;
+    ListEvents getEventsByDate(String date, int page, int n) throws ParseException;
 
-    List<Event> getListUserEventByDate(String date, String userId) throws FileNotFoundException, ParseException;
+    ListEvents getListUserEventByDate(String date, String userId, int page, int n) throws ParseException;
 
 }

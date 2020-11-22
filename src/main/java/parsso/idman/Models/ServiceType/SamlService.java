@@ -7,6 +7,8 @@ import lombok.Setter;
 import parsso.idman.Models.ServicesSubModel.AttributeReleasePolicy;
 import parsso.idman.Models.Service;
 
+import java.util.LinkedList;
+
 @Setter
 @Getter
 public class SamlService extends Service {
@@ -100,5 +102,11 @@ public class SamlService extends Service {
 
     public SamlService(){
         super.setAtClass("org.apereo.cas.support.saml.services.SamlRegisteredService");
+
+        Object[] contacts = new Object[2];
+        contacts[0] = "java.util.ArrayList";
+        contacts[1] = new LinkedList<>();
+        super.setContacts(contacts);
+
     }
 }

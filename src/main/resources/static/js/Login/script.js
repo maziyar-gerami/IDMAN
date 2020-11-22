@@ -8,17 +8,17 @@ document.addEventListener('DOMContentLoaded', function () {
         el: '#app',
         data: {
             rules: [
-                { message:".حداقل شامل یک کاراکتر کوچک باشد ", regex:/[a-z]+/ },
-				{ message:".حداقل شامل یک کاراکتر بزرگ باشد ",  regex:/[A-Z]+/ },
-				{ message:".حداقل ۸ کاراکتر باشد ", regex:/.{8,}/ },
-				{ message:".حداقل شامل یک عدد باشد ", regex:/[0-9]+/ }
+                { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ", regex:/[a-zA-Z]+/, fa:false},
+                { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ",  regex:/[!@#\$%\^\&*\)\(+=\[\]._-]+/, fa:true},
+				{ message:"حداقل ۸ کاراکتر باشد. ", regex:/.{8,}/, fa:false},
+				{ message:"حداقل شامل یک عدد باشد. ", regex:/[0-9]+/, fa:false}
             ],
             userInfo: [],
             show: false,
             showR: false,
             has_number: false,
-            has_lowercase: false,
-            has_uppercase: false,
+            has_lowerUPPERcase: false,
+            has_specialchar: false,
             has_char: false,
 			password: "",
 			checkPassword: "",
@@ -107,8 +107,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s18 = ",";
                     this.s19 = "Dear ";
                     this.s20 = "Sorry, There Was a Problem With Your Request";
-                    this.rules[0].message = "- One Lowercase Letter Required.";
-                    this.rules[1].message = "- One Uppercase Letter Required.";
+                    this.rules[0].message = "- One Lowercase or Uppercase English Letter Required.";
+                    this.rules[1].message = "- One special Character or Persian Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
                     this.rules[3].message = "- One Number Required.";
 
@@ -142,18 +142,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s18 = " عزیز";
                     this.s19 = "،";
                     this.s20 = "متاسفانه درخواست شما با مشکل مواجه شده است";
-                    this.rules[0].message = ".حداقل شامل یک کاراکتر کوچک باشد ";
-                    this.rules[1].message = ".حداقل شامل یک کاراکتر بزرگ باشد ";
-                    this.rules[2].message = ".حداقل ۸ کاراکتر باشد ";
-                    this.rules[3].message = ".حداقل شامل یک عدد باشد ";
+                    this.rules[0].message = "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ";
+                    this.rules[1].message = "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ";
+                    this.rules[2].message = "حداقل ۸ کاراکتر باشد. ";
+                    this.rules[3].message = "حداقل شامل یک عدد باشد. ";
 
                 }
             },
             passwordCheck () {
-                this.has_number    = /\d/.test(this.password);
-                this.has_lowercase = /[a-z]/.test(this.password);
-                this.has_uppercase = /[A-Z]/.test(this.password);
+                this.has_number    = /[0-9]+/.test(this.password);
+                this.has_lowerUPPERcase = /[a-zA-Z]/.test(this.password);
+                this.has_specialchar = /[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password);
                 this.has_char   = /.{8,}/.test(this.password);
+            },
+            persianTextCheck (s) {
+                for (let i = 0; i < s.length; ++i) {
+                    if(persianRex.text.test(s.charAt(i))){
+                        return true;
+                    }
+                }
+                return false;
             },
             resetPasswords () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -211,8 +219,14 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordValidation () {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.password)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.password)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if (errors.length === 0) {
@@ -224,8 +238,14 @@ document.addEventListener('DOMContentLoaded', function () {
             strengthLevel() {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.password)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.password)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if(errors.length === 0) return 4;

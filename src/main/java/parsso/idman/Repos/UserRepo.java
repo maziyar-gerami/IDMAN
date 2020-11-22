@@ -3,14 +3,12 @@ package parsso.idman.Repos;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 
 import javax.servlet.http.HttpServletResponse;
-import java.awt.print.Pageable;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,7 +16,7 @@ public interface UserRepo {
 
     HttpStatus changePassword(String uId, String newPassword, String token);
 
-    HttpStatus showProfilePic(HttpServletResponse response, User user);
+    String showProfilePic(HttpServletResponse response, User user);
 
     HttpStatus uploadProfilePic(MultipartFile file, String name);
 
@@ -42,9 +40,11 @@ public interface UserRepo {
 
     List<JSONObject> checkMail(String token);
 
+    HttpStatus sendEmail(String email, String uid);
+
     int sendEmail(String email, String cid, String answer);
 
-    int sendEmail(String email, String cid, String uid, String answer);
+    int sendEmail(String email, String uid, String cid, String answer);
 
     HttpStatus updatePass(String userId, String pass, String token);
 
@@ -60,7 +60,7 @@ public interface UserRepo {
 
     HttpStatus unlock(String uid);
 
-    HttpStatus requestToken(User user);
+    int requestToken(User user);
 
     List<SimpleUser> retrieveUsersPagination(int page, int n);
 }

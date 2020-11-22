@@ -134,14 +134,18 @@ public class Token {
 
     }
 
+    public int createRandomNum(){
+        Random rnd = new Random();
+        return  (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)) + rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS - 1) - 1)));
+    }
+
     public boolean insertMobileToken(User user) {
 
         Query query = new Query(Criteria.where("userId").is(user.getUserId()));
 
         Tokens tokens = mongoTemplate.findOne(query, Tokens.class,collection);
 
-        Random rnd = new Random();
-        int token = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)) + rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS - 1) - 1)));
+        int token = createRandomNum();
 
         tokens.setResetPassToken(String.valueOf(token)+new Date().getTime());
         tokens.setUserId(user.getUserId());
@@ -170,15 +174,7 @@ public class Token {
 
 
 
-    public HttpStatus requestToken(User user) {
-        if (insertMobileToken(user)) {
-            int messageSend = message.sendMessage(user.getMobile());
-            if (messageSend > 0)
-                return HttpStatus.OK;
-            else
-                return HttpStatus.BAD_REQUEST;
-        } else
-            return HttpStatus.BAD_REQUEST;
+    public int requestToken(User user) {
+        return message.sendMessage(user.getMobile());
     }
-
 }

@@ -253,9 +253,9 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>{{s16}}</label>
-                                                <select name="type" class="form-control">
-                                                    <option value="CAS" v-on:click="cas" selected>CAS</option>
-                                                    <option value="SAML" v-on:click="saml">SAML</option>
+                                                <select name="type" class="form-control" @change="setServiceType()" v-model="serviceType">
+                                                    <option value="CAS" selected>CAS</option>
+                                                    <option value="SAML">SAML</option>
                                                 </select>
                                             </div>
                                             <div class="form-group">

@@ -11,12 +11,13 @@ import java.util.ArrayList;
 
 public class MultifactorPolicy {
 
-    ArrayList multifactorAuthenticationProviders;
+    String multifactorAuthenticationProviders;
     String failureMode;
     Boolean bypassEnabled;
     @JsonProperty("@class")
     private String atClass;
     public MultifactorPolicy() {
+        multifactorAuthenticationProviders = null;
         atClass = "org.apereo.cas.services.DefaultRegisteredServiceMultifactorPolicy";
         failureMode = "UNDEFINED";
         bypassEnabled = false;

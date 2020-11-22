@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
             username: "",
             name: "",
             nameEN: "",
+            menuSA: false,
             users: [],
             usersPage: [],
             usersConflictList: [],
@@ -77,17 +78,17 @@ document.addEventListener('DOMContentLoaded', function () {
             eye: "right: 1%;",
             font: "font-size: 0.74em; text-align: right;",
             rules: [
-                { message:"حداقل شامل یک کاراکتر کوچک باشد. ", regex:/[a-z]+/ },
-				{ message:"حداقل شامل یک کاراکتر بزرگ باشد. ",  regex:/[A-Z]+/ },
-				{ message:"حداقل ۸ کاراکتر باشد. ", regex:/.{8,}/ },
-				{ message:"حداقل شامل یک عدد باشد. ", regex:/[0-9]+/ }
+                { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ", regex:/[a-zA-Z]+/, fa:false},
+                { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ",  regex:/[!@#\$%\^\&*\)\(+=\[\]._-]+/, fa:true},
+				{ message:"حداقل ۸ کاراکتر باشد. ", regex:/.{8,}/, fa:false},
+				{ message:"حداقل شامل یک عدد باشد. ", regex:/[0-9]+/, fa:false}
             ],
             show: false,
             showR: false,
             showC: false,
             has_number: false,
-            has_lowercase: false,
-            has_uppercase: false,
+            has_lowerUPPERcase: false,
+            has_specialchar: false,
             has_char: false,
             password: "",
             checkPassword: "",
@@ -98,14 +99,15 @@ document.addEventListener('DOMContentLoaded', function () {
             showRCreate: false,
             showCCreate: false,
             has_numberCreate: false,
-            has_lowercaseCreate: false,
-            has_uppercaseCreate: false,
+            has_lowerUPPERcaseCreate: false,
+            has_specialcharCreate: false,
             has_charCreate: false,
             passwordCreate: "",
             checkPasswordCreate: "",
 			passwordVisibleCreate: true,
             submittedCreate: false,
             userStatus: "",
+            resetPassEmailSent: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -157,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s49: "رمز عبور های وارد شده یکسان نمی باشند",
             s50: "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.",
             s51: "زمان انقضا کاربر",
+            s52: "ایمیل بازنشانی رمز عبور با موفقیت ارسال شد.",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -184,8 +187,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.getUserInfo();
+            this.isAdmin();
             this.getUserPic();
-            this.refreshUsers();
+            this.getUsers();
             this.getGroups();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
@@ -371,22 +375,34 @@ document.addEventListener('DOMContentLoaded', function () {
                         vm.s1 = vm.name;
                     });
             },
+            isAdmin: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/api/user/isAdmin") //
+                  .then((res) => {
+                    if(res.data == "0"){
+                      vm.menuSA = true;
+                    }
+                  });
+            },
             getUserPic: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                      vm.userPicture = "/api/user/photo";
+                        if(res.data == "Problem" || res.data == "NotExist"){
+                            vm.userPicture = "images/PlaceholderUser.png";
+                        }else{
+                            vm.userPicture = "/api/user/photo";
+                        }
                     })
                     .catch((error) => {
                         if (error.response) {
-                          if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
-                            vm.userPicture = "images/PlaceholderUser.png";
-                          }else{
-                            vm.userPicture = "/api/user/photo";
-                          }
-                        }else{
-                          console.log("error.response is False")
+                            if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
+                                vm.userPicture = "images/PlaceholderUser.png";
+                            }else{
+                                vm.userPicture = "/api/user/photo";
+                            }
                         }
                     });
             },
@@ -434,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   }
                 }
             },
-            refreshUsers: function () {
+            getUsers: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 axios.get(url + "/api/users") //
@@ -505,149 +521,156 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
             },
             editUser: function (id) {
-                this.showS = ""
-                this.addS = "display:none"
-                this.editS = "display:none"
-                this.importConflictS = "display:none"
-                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var check = confirm(this.s26);
 
-                var checkedGroups = [];
-                if(document.getElementById('groupsUpdate').value != ""){
-                    checkedGroups = document.getElementById('groupsUpdate').value.split(',');
-                }
+                if(id == "" ||
+                document.getElementById('editInfo.displayNameUpdate').value == "" ||
+                document.getElementById('editInfo.mobileUpdate').value == "" ||
+                document.getElementById('editInfo.mailUpdate').value == ""){
+                    alert("لطفا قسمت های الزامی را پر کنید.");
+                }else{
+                    this.showS = ""
+                    this.addS = "display:none"
+                    this.editS = "display:none"
+                    this.importConflictS = "display:none"
+                    let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                    var check = confirm(this.s26);
 
-                let endTimeFinal = "";
-                if(document.getElementById('endTime').value != ""){
-                    let dateEndTemp = document.getElementById('endTime').value.split("  ");
-                    let dateEnd = dateEndTemp[0].split(' ');
-                    let dateEndFinal;
-                    dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
-                    dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
-
-                    switch(dateEnd[dateEnd.length-2]) {
-                    case "فروردین":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "اردیبهشت":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "خرداد":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "تیر":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "مرداد":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "شهریور":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "مهر":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "آبان":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "آذر":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "دی":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "بهمن":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "اسفند":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
-                        break;
-                    default:
-                        console.log("Wrong Input for Month");
+                    var checkedGroups = [];
+                    if(document.getElementById('groupsUpdate').value != ""){
+                        checkedGroups = document.getElementById('groupsUpdate').value.split(',');
                     }
 
-                    let timeEnd = dateEndTemp[1].split(':');
+                    let endTimeFinal = null;
+                    if(document.getElementById('endTime').value != ""){
+                        let dateEndTemp = document.getElementById('endTime').value.split("  ");
+                        let dateEnd = dateEndTemp[0].split(' ');
+                        let dateEndFinal;
+                        dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
+                        dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
 
-                    timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
-                    
-                    let dateE = dateEndFinal.split('-');
-
-                    if(parseInt(dateE[1]) < 7){
-                    timeEnd = timeEnd + ":00.000+4:30";
-                    }else{
-                    timeEnd = timeEnd + ":00.000+3:30";
-                    }
-
-                    let TempE = timeEnd.split(':');
-                    if(TempE[0].length == 1){
-                    TempE[0] = '0' + TempE[0];
-                    timeEnd = "";
-                    for(i = 0; i < TempE.length; ++i){
-                        timeEnd = timeEnd + TempE[i] + ':';
-                    }
-                    timeEnd = timeEnd.substring(0,timeEnd.length-1);
-                    }
-
-                    TempE = dateEndFinal.split('-');
-                    if(TempE[1].length == 1){
-                    TempE[1] = '0' + TempE[1];
-                    }
-                    if(TempE[2].length == 1){
-                    TempE[2] = '0' + TempE[2];
-                    }
-                    
-                    dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
-
-                    endTimeFinal = dateEndFinal + "T" + timeEnd;
-                }
-
-                if (check == true) {
-                    let statusValue;
-                    if(document.getElementById('status').value != "locked"){
-                        if(document.getElementById('status').value == "active"){
-                            if(this.userStatus == "active"){
-                                statusValue = "";
-                            }else if(this.userStatus == "disabled"){
-                                statusValue = "enable";
-                            }else if(this.userStatus == "locked"){
-                                statusValue = "unlock";
-                            }
-                        }else if(document.getElementById('status').value == "disabled"){
-                            if(this.userStatus == "active"){
-                                statusValue = "disable";
-                            }else if(this.userStatus == "disabled"){
-                                statusValue = "";
-                            }else if(this.userStatus == "locked"){
-                                statusValue = "disable";
-                            }
+                        switch(dateEnd[dateEnd.length-2]) {
+                        case "فروردین":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "اردیبهشت":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "خرداد":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "تیر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "مرداد":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "شهریور":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "مهر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "آبان":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "آذر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "دی":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "بهمن":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "اسفند":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
+                            break;
+                        default:
+                            console.log("Wrong Input for Month");
                         }
-                    }else{
-                        statusValue = "";
+
+                        let timeEnd = dateEndTemp[1].split(':');
+
+                        timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
+                        
+                        let dateE = dateEndFinal.split('-');
+
+                        if(parseInt(dateE[1]) < 7){
+                        timeEnd = timeEnd + ":00.000+4:30";
+                        }else{
+                        timeEnd = timeEnd + ":00.000+3:30";
+                        }
+
+                        let TempE = timeEnd.split(':');
+                        if(TempE[0].length == 1){
+                        TempE[0] = '0' + TempE[0];
+                        timeEnd = "";
+                        for(i = 0; i < TempE.length; ++i){
+                            timeEnd = timeEnd + TempE[i] + ':';
+                        }
+                        timeEnd = timeEnd.substring(0,timeEnd.length-1);
+                        }
+
+                        TempE = dateEndFinal.split('-');
+                        if(TempE[1].length == 1){
+                        TempE[1] = '0' + TempE[1];
+                        }
+                        if(TempE[2].length == 1){
+                        TempE[2] = '0' + TempE[2];
+                        }
+                        
+                        dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
+
+                        endTimeFinal = dateEndFinal + "T" + timeEnd;
                     }
 
-                    axios({
-                        method: 'put',
-                        url: url + '/api/users/u/' + id,  //
-                        headers: {'Content-Type': 'application/json'},
-                        data: JSON.stringify({
-                            userId: id,
-                            firstName: document.getElementById('editInfo.firstNameUpdate').value,
-                            lastName: document.getElementById('editInfo.lastNameUpdate').value,
-                            displayName: document.getElementById('editInfo.displayNameUpdate').value,
-                            mobile: document.getElementById('editInfo.mobileUpdate').value,
-                            memberOf: checkedGroups,
-                            mail: document.getElementById('editInfo.mailUpdate').value,
-                            description: document.getElementById('editInfo.descriptionUpdate').value,
-                            cStatus: statusValue,
-                            endTime: endTimeFinal
-                        })
-                    })
-                    .then((res) => {
-                        location.reload();
-                    });
-                    
-                }
+                    if (check == true) {
+                        let statusValue;
+                        if(document.getElementById('status').value != "locked"){
+                            if(document.getElementById('status').value == "active"){
+                                if(this.userStatus == "active"){
+                                    statusValue = "";
+                                }else if(this.userStatus == "disabled"){
+                                    statusValue = "enable";
+                                }else if(this.userStatus == "locked"){
+                                    statusValue = "unlock";
+                                }
+                            }else if(document.getElementById('status').value == "disabled"){
+                                if(this.userStatus == "active"){
+                                    statusValue = "disable";
+                                }else if(this.userStatus == "disabled"){
+                                    statusValue = "";
+                                }else if(this.userStatus == "locked"){
+                                    statusValue = "disable";
+                                }
+                            }
+                        }else{
+                            statusValue = "";
+                        }
 
+                        axios({
+                            method: 'put',
+                            url: url + '/api/users/u/' + id,  //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                userId: id,
+                                firstName: document.getElementById('editInfo.firstNameUpdate').value,
+                                lastName: document.getElementById('editInfo.lastNameUpdate').value,
+                                displayName: document.getElementById('editInfo.displayNameUpdate').value,
+                                mobile: document.getElementById('editInfo.mobileUpdate').value,
+                                memberOf: checkedGroups,
+                                mail: document.getElementById('editInfo.mailUpdate').value,
+                                description: document.getElementById('editInfo.descriptionUpdate').value,
+                                cStatus: statusValue,
+                                endTime: endTimeFinal
+                            })
+                        })
+                        .then((res) => {
+                            location.reload();
+                        });
+                        
+                    }
+                }
             },
             editPass: function (id) {
                 this.showS = ""
@@ -696,139 +719,150 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 axios.get(url + "/api/users/u/" + userId) //
                     .then((res) => {
-                        axios.get(url + "/api/public/sendMail/" + res.data.mail) //
+                        axios.get(url + "/api/users/sendMail/" + res.data.mail + "/" + userId) //
                             .then((res) => {
+                                vm.resetPassEmailSent = true;
+                                setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
                             });
                     })
             },
             removeError() {
                 this.userFound = false;
             },
-            addUser: function (id1,id2) {
+            addUser: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                var check = confirm(this.s27);
 
-                var checkedGroups = [];
-                if(document.getElementById('groupsCreate').value != ""){
-                    checkedGroups = document.getElementById('groupsCreate').value.split(',');
-                }
+                if(document.getElementById('editInfo.userIdCreate').value == "" ||
+                document.getElementById('editInfo.displayNameCreate').value == "" ||
+                document.getElementById('editInfo.mailCreate').value == "" ||
+                document.getElementById('editInfo.mobileCreate').value == ""){
+                    alert("لطفا قسمت های الزامی را پر کنید.");
+                }else{
 
-                let endTimeFinal = null;
-                if(document.getElementById('endTimeCreate').value != ""){
-                    let dateEndTemp = document.getElementById('endTimeCreate').value.split("  ");
-                    let dateEnd = dateEndTemp[0].split(' ');
-                    let dateEndFinal;
-                    dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
-                    dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
-                
+                    var check = confirm(this.s27);
 
-                    switch(dateEnd[dateEnd.length-2]) {
-                    case "فروردین":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "اردیبهشت":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "خرداد":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "تیر":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "مرداد":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "شهریور":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "مهر":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "آبان":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "آذر":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "دی":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "بهمن":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
-                        break;
-                    case "اسفند":
-                        dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
-                        break;
-                    default:
-                        console.log("Wrong Input for Month");
+                    var checkedGroups = [];
+                    if(document.getElementById('groupsCreate').value != ""){
+                        checkedGroups = document.getElementById('groupsCreate').value.split(',');
                     }
 
-                    let timeEnd = dateEndTemp[1].split(':');
-
-                    timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
+                    let endTimeFinal = null;
+                    if(document.getElementById('endTimeCreate').value != ""){
+                        let dateEndTemp = document.getElementById('endTimeCreate').value.split("  ");
+                        let dateEnd = dateEndTemp[0].split(' ');
+                        let dateEndFinal;
+                        dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
+                        dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
                     
-                    let dateE = dateEndFinal.split('-');
 
-                    if(parseInt(dateE[1]) < 7){
-                    timeEnd = timeEnd + ":00.000+4:30";
-                    }else{
-                    timeEnd = timeEnd + ":00.000+3:30";
-                    }
-
-                    let TempE = timeEnd.split(':');
-                    if(TempE[0].length == 1){
-                    TempE[0] = '0' + TempE[0];
-                    timeEnd = "";
-                    for(i = 0; i < TempE.length; ++i){
-                        timeEnd = timeEnd + TempE[i] + ':';
-                    }
-                    timeEnd = timeEnd.substring(0,timeEnd.length-1);
-                    }
-
-                    TempE = dateEndFinal.split('-');
-                    if(TempE[1].length == 1){
-                    TempE[1] = '0' + TempE[1];
-                    }
-                    if(TempE[2].length == 1){
-                    TempE[2] = '0' + TempE[2];
-                    }
-                    
-                    dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
-
-                    endTimeFinal = dateEndFinal + "T" + timeEnd;
-                }
-
-                if(check==true) {
-                    axios({
-                        method: 'post',
-                        url: url + "/api/users",  //
-                        headers: {'Content-Type': 'application/json'},
-                        data: JSON.stringify({
-                                userId: document.getElementById('editInfo.userIdCreate').value,
-                                firstName: document.getElementById('editInfo.firstNameCreate').value,
-                                lastName: document.getElementById('editInfo.lastNameCreate').value,
-                                displayName: document.getElementById('editInfo.displayNameCreate').value,
-                                mobile: document.getElementById('editInfo.mobileCreate').value,
-                                memberOf: checkedGroups,
-                                mail: document.getElementById('editInfo.mailCreate').value,
-                                userPassword: document.getElementById('newPasswordCreate').value,
-                                description: document.getElementById('editInfo.descriptionCreate').value,
-                                cStatus: document.getElementById('statusCreate').value,
-                                endTime: endTimeFinal
-                            }
-                        ),
-                    })
-                    .then(() => {
-                        location.reload();
-                    })
-                    .catch((error) => {
-                        if (error.response) {
-                            if(error.response.status === 302){
-                                vm.userFound = true;
-                            }
+                        switch(dateEnd[dateEnd.length-2]) {
+                        case "فروردین":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "اردیبهشت":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "خرداد":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "تیر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "مرداد":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "شهریور":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "مهر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "آبان":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "آذر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "دی":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "بهمن":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "اسفند":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
+                            break;
+                        default:
+                            console.log("Wrong Input for Month");
                         }
-                    });
+
+                        let timeEnd = dateEndTemp[1].split(':');
+
+                        timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
+                        
+                        let dateE = dateEndFinal.split('-');
+
+                        if(parseInt(dateE[1]) < 7){
+                        timeEnd = timeEnd + ":00.000+4:30";
+                        }else{
+                        timeEnd = timeEnd + ":00.000+3:30";
+                        }
+
+                        let TempE = timeEnd.split(':');
+                        if(TempE[0].length == 1){
+                        TempE[0] = '0' + TempE[0];
+                        timeEnd = "";
+                        for(i = 0; i < TempE.length; ++i){
+                            timeEnd = timeEnd + TempE[i] + ':';
+                        }
+                        timeEnd = timeEnd.substring(0,timeEnd.length-1);
+                        }
+
+                        TempE = dateEndFinal.split('-');
+                        if(TempE[1].length == 1){
+                        TempE[1] = '0' + TempE[1];
+                        }
+                        if(TempE[2].length == 1){
+                        TempE[2] = '0' + TempE[2];
+                        }
+                        
+                        dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
+
+                        endTimeFinal = dateEndFinal + "T" + timeEnd;
+                    }
+
+                    if(check==true) {
+                        axios({
+                            method: 'post',
+                            url: url + "/api/users",  //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                    userId: document.getElementById('editInfo.userIdCreate').value,
+                                    firstName: document.getElementById('editInfo.firstNameCreate').value,
+                                    lastName: document.getElementById('editInfo.lastNameCreate').value,
+                                    displayName: document.getElementById('editInfo.displayNameCreate').value,
+                                    mobile: document.getElementById('editInfo.mobileCreate').value,
+                                    memberOf: checkedGroups,
+                                    mail: document.getElementById('editInfo.mailCreate').value,
+                                    userPassword: document.getElementById('newPasswordCreate').value,
+                                    description: document.getElementById('editInfo.descriptionCreate').value,
+                                    cStatus: document.getElementById('statusCreate').value,
+                                    endTime: endTimeFinal
+                                }
+                            ),
+                        })
+                        .then(() => {
+                            location.reload();
+                        })
+                        .catch((error) => {
+                            if (error.response) {
+                                if(error.response.status === 302){
+                                    vm.userFound = true;
+                                }
+                            }
+                        });
+                    }
                 }
             },
             deleteUser: function (id) {
@@ -838,7 +872,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (check == true) {
                     axios.delete(url + `/api/users/u/${id}`) //
                         .then(() => {
-                            vm.refreshUsers();
+                            vm.getUsers();
                         });
                 }
             },
@@ -849,22 +883,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (check == true) {
                     axios.delete(url + `/api/users`) //
                         .then(() => {
-                            vm.refreshUsers();
+                            vm.getUsers();
                         });
                 }
 
             },
             passwordCheck () {
-                this.has_number    = /\d/.test(this.password);
-                this.has_lowercase = /[a-z]/.test(this.password);
-                this.has_uppercase = /[A-Z]/.test(this.password);
+                this.has_number    = /[0-9]+/.test(this.password);
+                this.has_lowerUPPERcase = /[a-zA-Z]/.test(this.password);
+                this.has_specialchar = /[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password);
                 this.has_char   = /.{8,}/.test(this.password);
             },
+            persianTextCheck (s) {
+                for (let i = 0; i < s.length; ++i) {
+                    if(persianRex.text.test(s.charAt(i))){
+                        return true;
+                    }
+                }
+                return false;
+            },
             passwordCheckCreate () {
-                this.has_numberCreate    = /\d/.test(this.passwordCreate);
-                this.has_lowercaseCreate = /[a-z]/.test(this.passwordCreate);
-                this.has_uppercaseCreate = /[A-Z]/.test(this.passwordCreate);
-                this.has_charCreate   = /.{8,}/.test(this.passwordCreate);
+                this.has_numberCreate    = /[0-9]+/.test(this.passwordCreate);
+                this.has_lowerUPPERcaseCreate = /[a-zA-Z]/.test(this.passwordCreate);
+                this.has_specialcharCreate = /[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.passwordCreate) || this.persianTextCheck(this.passwordCreate);
+                this.has_charCreate  = /.{8,}/.test(this.passwordCreate);
             },
             FaNumToEnNum: function (str) {
                 let s = str.split("");
@@ -893,6 +935,14 @@ document.addEventListener('DOMContentLoaded', function () {
                   }
                 }
                 return sEn;
+            },
+            userIdValidate ($event) {
+                let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+                if (keyCode < 48 || keyCode > 122) {
+                   $event.preventDefault();
+                }else if (keyCode == 58 || keyCode == 62) {
+                  $event.preventDefault();
+                }
             },
             changeLang: function () {
                 if(this.lang == "EN"){
@@ -958,6 +1008,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s49 = "Passwords Don't Match";
                     this.s50 = "This UID Already Exists In Our Database, Please Choose Another.";
                     this.s51 = "User Expiration Date";
+                    this.s52 = "Password Reset Email Sent Successfully.";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -980,8 +1031,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U21 = "Upload";
                     this.U22 = "Password Reset";
                     this.U23 = "Template File";
-                    this.rules[0].message = "- One Lowercase Letter Required.";
-                    this.rules[1].message = "- One Uppercase Letter Required.";
+                    this.rules[0].message = "- One Lowercase or Uppercase English Letter Required.";
+                    this.rules[1].message = "- One special Character or Persian Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
                     this.rules[3].message = "- One Number Required.";
                 } else{
@@ -1047,6 +1098,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s49 = "رمز عبور های وارد شده یکسان نمی باشند";
                     this.s50 = "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.";
                     this.s51 = "زمان انقضا کاربر";
+                    this.s52 = "ایمیل بازنشانی رمز عبور با موفقیت ارسال شد.";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه";
@@ -1069,8 +1121,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U21 = "بارگزاری";
                     this.U22 = "بازنشانی رمز عبور";
                     this.U23 = "فایل الگو";
-                    this.rules[0].message = "حداقل شامل یک کاراکتر کوچک باشد. ";
-                    this.rules[1].message = "حداقل شامل یک کاراکتر بزرگ باشد. ";
+                    this.rules[0].message = "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ";
+                    this.rules[1].message = "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ";
                     this.rules[2].message = "حداقل ۸ کاراکتر باشد. ";
                     this.rules[3].message = "حداقل شامل یک عدد باشد. ";
                 }
@@ -1123,8 +1175,14 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordValidation () {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.password)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.password)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if (errors.length === 0) {
@@ -1136,8 +1194,14 @@ document.addEventListener('DOMContentLoaded', function () {
             strengthLevel() {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.password)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.password)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if(errors.length === 0) return 4;
@@ -1181,8 +1245,14 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordValidationCreate () {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.passwordCreate)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.passwordCreate) && !this.persianTextCheck(this.passwordCreate)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.passwordCreate)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if (errors.length === 0) {
@@ -1194,8 +1264,14 @@ document.addEventListener('DOMContentLoaded', function () {
             strengthLevelCreate() {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.passwordCreate)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.passwordCreate) && !this.persianTextCheck(this.passwordCreate)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.passwordCreate)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if(errors.length === 0) return 4;

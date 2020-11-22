@@ -55,8 +55,7 @@ public  class DashboardData {
         int nEnabledServices = 0;
 
         for (parsso.idman.Models.Service service : services) {
-            if (service instanceof CasService)
-            if (service.getAccessStrategy().isEnabled())
+            if (service.getAccessStrategy()!=null&& service.getAccessStrategy().isEnabled())
                 nEnabledServices++;
         }
 
@@ -68,7 +67,7 @@ public  class DashboardData {
 
         //__________________login data____________
         JSONObject loginJson = new JSONObject();
-        List<Event> events = eventRepo.getListUserEvents();
+        List<Event> events = eventRepo.getListEvents();
         int nSuccessful = 0;
         int nUnSucceful = 0;
 

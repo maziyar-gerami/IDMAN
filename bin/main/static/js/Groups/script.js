@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
             username: "",
             name: "",
             nameEN: "",
+            menuSA: false,
             group: [],
             groups: [],
             groupsPage: [],
@@ -114,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.getUserInfo();
+            this.isAdmin();
             this.getUserPic();
             this.getGroups();
             if(typeof this.$route.query.en !== 'undefined'){
@@ -133,25 +135,37 @@ document.addEventListener('DOMContentLoaded', function () {
                     vm.s1 = vm.name;
                 });
             },
+            isAdmin: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/api/user/isAdmin") //
+                  .then((res) => {
+                    if(res.data == "0"){
+                      vm.menuSA = true;
+                    }
+                  });
+            },
             getUserPic: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                      vm.userPicture = "/api/user/photo";
+                        if(res.data == "Problem" || res.data == "NotExist"){
+                            vm.userPicture = "images/PlaceholderUser.png";
+                        }else{
+                            vm.userPicture = "/api/user/photo";
+                        }
                     })
                     .catch((error) => {
                         if (error.response) {
-                          if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
-                            vm.userPicture = "images/PlaceholderUser.png";
-                          }else{
-                            vm.userPicture = "/api/user/photo";
-                          }
-                        }else{
-                          console.log("error.response is False")
+                            if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
+                                vm.userPicture = "images/PlaceholderUser.png";
+                            }else{
+                                vm.userPicture = "/api/user/photo";
+                            }
                         }
                     });
-              },
+            },
             getGroups: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;

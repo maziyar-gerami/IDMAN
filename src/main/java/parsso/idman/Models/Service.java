@@ -25,4 +25,18 @@ public class Service {
     private MultifactorPolicy multifactorPolicy;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private AttributeReleasePolicy attributeReleasePolicy;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Object[] contacts;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String description;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String logoutUrl;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String logoutType;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String informationUrl;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String privacyUrl;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String logo;
 }

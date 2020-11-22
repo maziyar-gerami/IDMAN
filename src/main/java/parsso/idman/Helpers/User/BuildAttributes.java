@@ -41,7 +41,7 @@ public class BuildAttributes {
         attrs.put(ocattr);
 
         attrs.put("uid", p.getUserId());
-        attrs.put("givenName", p.getFirstName().equals("") ? " " : p.getDisplayName());
+        attrs.put("givenName", p.getFirstName().equals("") ? " " : p.getFirstName());
         attrs.put("sn", p.getLastName().equals("") ? " " : p.getLastName());
         attrs.put("userPassword", p.getUserPassword() != null ? p.getUserPassword() : defaultPassword);
         attrs.put("displayName", p.getDisplayName());
@@ -68,6 +68,11 @@ public class BuildAttributes {
 
         if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
+
+        if (p.getEndTime()!=null) {
+            attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime()));
+        }
+
 
 
 
@@ -137,7 +142,7 @@ public class BuildAttributes {
             context.setAttributeValue("photoName", old.getPhotoName());
 
 
-        if (p.getEndTime() != null && p.getEndTime() != null && !(p.getEndTime().equals(old.getEndTime())))
+        if (p.getEndTime() != "" && old.getEndTime() != null)
             context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()));
 
 

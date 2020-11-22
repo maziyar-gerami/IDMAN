@@ -8,6 +8,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpStatus;
 import parsso.idman.Helpers.Service.CasServiceHelper;
 import parsso.idman.Helpers.Service.SamlServiceHelper;
@@ -16,7 +17,9 @@ import parsso.idman.Models.ServiceType.CasService;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.ServiceRepo;
 
+import javax.management.Query;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -106,29 +109,23 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Override
     public HttpStatus deleteService(long serviceId) throws IOException, ParseException {
         File folder = new File(path);
-        String[] files = folder.list();
-        for (String file : files) {
-            File serv = new File((path + file));
-            if (file.endsWith(".json")) {
 
-                Service service = analyze(file);
-                if (serviceId == service.getId()) {
-                    try {
-                        if (serv.delete())
 
-                            return HttpStatus.OK;
+        for (String file : folder.list()) {
+            if (file.contains(String.valueOf(serviceId))) {
+                File oFile = new File(path+file);
 
-                        else if (!serv.exists())
-                            return HttpStatus.NOT_EXTENDED;
-                        else
-                            return HttpStatus.FORBIDDEN;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                if (!oFile.exists())
+                    return HttpStatus.BAD_REQUEST;
+
+                if (oFile.delete())
+                    return HttpStatus.OK;
+
+                else
+                    return HttpStatus.FORBIDDEN;
 
                 }
             }
-        }
         return HttpStatus.NOT_FOUND;
     }
 
@@ -169,7 +166,15 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
     private Service analyze(String file) throws IOException, ParseException {
-        return casServiceHelper.analyze(file);
+        FileReader reader = new FileReader(path + file);
+        JSONParser jsonParser = new JSONParser();
+        Object obj = jsonParser.parse(reader);
+        reader.close();
+
+        if (isCasService((JSONObject)obj))
+            return casServiceHelper.analyze(file);
+        else
+            return samlServiceHelper.analyze(file);
     }
 
     boolean isCasService(JSONObject jo) {

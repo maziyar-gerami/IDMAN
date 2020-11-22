@@ -104,7 +104,7 @@
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    <a v-if="menuSA" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s25">
                                         <i class="fa fa-cog"></i>
                                         <span>{{s24}}</span>
@@ -130,23 +130,27 @@
                                             <th>{{s28}}</th>
                                             <th>{{s29}}</th>
                                             <th>Client IP</th>
-                                            <th>Server IP</th>
                                             <th>{{s38}}</th>
                                             <th>{{s30}}</th>
+                                            <!-- <th>{{s41}}</th> -->
+                                            <th>{{s42}}</th>
+                                            <th>{{s43}}</th>
                                         </tr>
                                         <tbody id="body">
                                             <tr v-for="eve in sortedEvent" >
                                                 <td>{{eve.action}}</td>
                                                 <td>{{eve.application}}</td>
                                                 <td>{{eve.clientIP}}</td>
-                                                <td>{{eve.serverIP}}</td>
                                                 <td>{{eve.date}}</td>
                                                 <td>{{eve.clock}}</td>
+                                                <!-- <td>{{eve.service}}</td> -->
+                                                <td>{{eve.os}}</td>
+                                                <td>{{eve.browser}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                     <div style="direction: rtl;">
-                                        <v-pagination  v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
+                                        <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
                                         :labels="paginationAnchorTexts"></v-pagination>
                                     </div>
                                 </div>
@@ -183,6 +187,9 @@
                                                     <th>Server IP</th>
                                                     <th>{{s38}}</th>
                                                     <th>{{s30}}</th>
+                                                    <!-- <th>{{s41}}</th> -->
+                                                    <th>{{s42}}</th>
+                                                    <th>{{s43}}</th>
                                                 </tr>
                                                 <tbody id="body">
                                                     <tr v-for="event in sortedEvents">
@@ -193,6 +200,9 @@
                                                         <td>{{event.serverIP}}</td>
                                                         <td>{{event.date}}</td>
                                                         <td>{{event.clock}}</td>
+                                                        <!-- <td>{{event.service}}</td> -->
+                                                        <td>{{event.os}}</td>
+                                                        <td>{{event.browser}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -214,23 +224,27 @@
                                                     <th>{{s28}}</th>
                                                     <th>{{s29}}</th>
                                                     <th>Client IP</th>
-                                                    <th>Server IP</th>
                                                     <th>{{s38}}</th>
                                                     <th>{{s30}}</th>
+                                                    <!-- <th>{{s41}}</th> -->
+                                                    <th>{{s42}}</th>
+                                                    <th>{{s43}}</th>
                                                 </tr>
                                                 <tbody id="body">
                                                     <tr v-for="eve in sortedEvent" >
                                                         <td>{{eve.action}}</td>
                                                         <td>{{eve.application}}</td>
                                                         <td>{{eve.clientIP}}</td>
-                                                        <td>{{eve.serverIP}}</td>
                                                         <td>{{eve.date}}</td>
                                                         <td>{{eve.clock}}</td>
+                                                        <!-- <td>{{eve.service}}</td> -->
+                                                        <td>{{eve.os}}</td>
+                                                        <td>{{eve.browser}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                             <div style="direction: rtl;">
-                                                <v-pagination  v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
+                                                <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
                                                 :labels="paginationAnchorTexts"></v-pagination>
                                             </div>
                                         </div>

@@ -152,5 +152,39 @@ public class Email {
         return 0;
     }
 
+    public HttpStatus sendEmail(String email, String uid) {
+
+        if (checkMail(email) != null & userRepo.retrieveUser(uid).getUserId() != null) {
+            List<JSONObject> ids = checkMail(email);
+            List<User> people = new LinkedList<>();
+            User user = userRepo.retrieveUser(uid);
+            for (JSONObject id : ids) people.add(userRepo.retrieveUser(id.getAsString("userId")));
+
+            for (User p : people) {
+
+                if (user.equals(p)) {
+
+                    tokenClass.insertEmailToken(user);
+
+                    String fullUrl = userRepoImp.createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
+                    Thread thread = new Thread(){
+                        public void run(){
+                            emailSend.sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
+                        }
+                    };
+
+                    thread.start();
+                    return HttpStatus.OK;
+
+
+                }
+            }
+
+        } else
+            return HttpStatus.FORBIDDEN;
+
+        return HttpStatus.BAD_REQUEST;
+    }
+
 
 }

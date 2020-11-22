@@ -39,7 +39,10 @@ public class DashboardController {
     }
 
     @GetMapping("/dashboard")
-    public String Dashboard() {
+    public String Dashboard(HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
+        User user = userRepo.retrieveUser(principal.getName());
+
         return "dashboard";
     }
 
@@ -50,11 +53,15 @@ public class DashboardController {
 
     @GetMapping("/groups")
     public String Groups(HttpServletRequest request) {
-        try {
-            Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUser(principal.getName());
-            List<String> memberOf = user.getMemberOf();
 
+        Principal principal = request.getUserPrincipal();
+        User user = userRepo.retrieveUser(principal.getName());
+        if (user.getUserId().equals("su"))
+            return  "groups";
+
+        try {
+
+            List<String> memberOf = user.getMemberOf();
 
             for (String group : memberOf) {
                 if (group.equals(adminOu))
@@ -67,14 +74,35 @@ public class DashboardController {
         return "403";
     }
 
+    @GetMapping("/services")
+    public String Services(HttpServletRequest request) {
+
+        Principal principal = request.getUserPrincipal();
+        User user = userRepo.retrieveUser(principal.getName());
+        if (user.getUserId().equals("su"))
+            return  "services";
+
+        try {
+            if (user.getMemberOf().contains(adminOu))
+                return "services";
+
+        } catch (Exception e) {
+            return "403";
+        }
+        return "403";
+    }
+
     @GetMapping("/users")
     public String Users(HttpServletRequest request) {
 
-        try {
-            Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUser(principal.getName());
-            List<String> memberOf = user.getMemberOf();
+        Principal principal = request.getUserPrincipal();
+        User user = userRepo.retrieveUser(principal.getName());
+        if (user.getUserId().equals("su"))
+            return  "users";
 
+        try {
+
+            List<String> memberOf = user.getMemberOf();
 
             for (String group : memberOf) {
                 if (group.equals(adminOu))
@@ -96,15 +124,13 @@ public class DashboardController {
     @GetMapping("/configs")
     public String Configs(HttpServletRequest request) {
         try {
-            Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUser(principal.getName());
-            List<String> memberOf = user.getMemberOf();
 
 
-            for (String group : memberOf) {
-                if (group.equals(adminOu))
+
+
+                if (request.getUserPrincipal().getName().equals("su"))
                     return "configs";
-            }
+
 
         } catch (Exception e) {
             return "403";

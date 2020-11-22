@@ -39,7 +39,7 @@ public class ServiceController {
     @GetMapping("/api/services/user")
     public ResponseEntity<List<Service>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUser("maziyar")), HttpStatus.OK);
+        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUser(principal.getName())), HttpStatus.OK);
     }
 
     @GetMapping("/api/services")
@@ -73,20 +73,7 @@ public class ServiceController {
         return new ResponseEntity<>(serviceRepo.updateService(id, jsonObject, system));
     }
 
-    @GetMapping("/services")
-    public String Services(HttpServletRequest request) {
-        try {
-            Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUser(principal.getName());
 
-            if (user.getMemberOf().contains(adminOu))
-                return "services";
-
-        } catch (Exception e) {
-            return "403";
-        }
-        return "403";
-    }
 
     @GetMapping("/createservice")
     public String CreateService(HttpServletRequest request) {
@@ -96,6 +83,9 @@ public class ServiceController {
 
             List<String> memberOf = user.getMemberOf();
 
+
+            if (user.getUserId().equals("su"))
+                return "createservice";
 
             for (String group : memberOf) {
                 if (group.equals(adminOu))

@@ -28,33 +28,33 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
     public UserDetails loadUserDetails(Authentication token) throws UsernameNotFoundException {
         CasAssertionAuthenticationToken casAssertionAuthenticationToken = (CasAssertionAuthenticationToken) token;
         AttributePrincipal principal = casAssertionAuthenticationToken.getAssertion().getPrincipal();
+        Collection<SimpleGrantedAuthority> collection = new ArrayList<SimpleGrantedAuthority>();
         Map attributes = principal.getAttributes();
         String role = null;
-        try {
-            List<String> lst = (List) attributes.get("ou");
-            for (String id : lst) {
-                if (id.equals(adminId)) {
-                    role = "ADMIN";
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            String id = (String) attributes.get("ou");
-
-            if (id != null && id.equals(adminId))
-                role = "ADMIN";
-
+        if (principal.getName().equals("su")) {
+            collection.add(new SimpleGrantedAuthority("ROLE_" + "SUPERADMIN"));
         }
 
+            try {
+                List<String> lst = (List) attributes.get("ou");
+                for (String id : lst) {
+
+                    if (id.equals(adminId)) {
+                        collection.add(new SimpleGrantedAuthority("ROLE_" + "ADMIN"));
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                String id = (String) attributes.get("ou");
+
+                if (id != null && id.equals(adminId))
+                    collection.add(new SimpleGrantedAuthority("ROLE_" + "ADMIN"));
+
+            }
+
         if (role == null)
-            role = "USER";
+            collection.add(new SimpleGrantedAuthority("ROLE_" + "USER"));
 
-
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-
-        Collection<SimpleGrantedAuthority> collection = new ArrayList<SimpleGrantedAuthority>();
-        collection.add(new SimpleGrantedAuthority("ROLE_" + role));
         return new User(principal.getName(), "", collection);
     }
 

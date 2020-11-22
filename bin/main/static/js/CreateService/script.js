@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
       lang: "EN",
       isRtl: true,
       samls: false,
+      serviceType: "CAS",
       userPicture: "images/PlaceholderUser.png",
       accessStrategy: {},
       requiredAttributes: {},
@@ -72,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s11: "حریم خصوصی",
       s12: "راهنما",
       s13: "کاربران",
-      s14: "تنطیمات پایه",
+      s14: "تنظیمات پایه",
       s15: "فعال سازی سرویس",
       s16: "نوع سرویس",
       s17: "نام سرویس",
@@ -87,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s26: "ایمیل",
       s27: "شماره تماس",
       s28: "دپارتمان",
-      s29: "تنطیمات خروج",
+      s29: "تنظیمات خروج",
       s30: "آدرس خروج",
       s31: "نوع خروج",
       s32: "تایید",
@@ -106,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s45: "فعال سازی SSO",
       s46: "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی",
       s47: " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)",
-      s48: "تنطیمات پایه",
+      s48: "تنظیمات پایه",
       s49: "استراتژی دسترسی",
       s50: "دسترسی بر اساس زمان",
       s51: "تاریخ شروع",
@@ -165,7 +166,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/api/user/photo") //
             .then((res) => {
-              vm.userPicture = "/api/user/photo";
+              if(res.data == "Problem" || res.data == "NotExist"){
+                vm.userPicture = "images/PlaceholderUser.png";
+              }else{
+                vm.userPicture = "/api/user/photo";
+              }
             })
             .catch((error) => {
                 if (error.response) {
@@ -174,8 +179,6 @@ document.addEventListener('DOMContentLoaded', function () {
                   }else{
                     vm.userPicture = "/api/user/photo";
                   }
-                }else{
-                  console.log("error.response is False")
                 }
             });
       },
@@ -500,9 +503,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
           
           if(document.getElementsByName('mfaEnabled')[0].checked){
-            this.multifactorPolicy.multifactorAuthenticationProviders = [ "java.util.LinkedHashSet", [ "mfa-simple" ] ];
+            this.multifactorPolicy.multifactorAuthenticationProviders = "mfa-simple";
           }else{
-            this.multifactorPolicy.multifactorAuthenticationProviders = [ "java.util.LinkedHashSet", [ ] ];
+            this.multifactorPolicy.multifactorAuthenticationProviders = null;
           }
 
           if(document.getElementsByName('bypassEnabled')[0].checked){
@@ -574,6 +577,8 @@ document.addEventListener('DOMContentLoaded', function () {
         let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
         if (keyCode < 48 || keyCode > 122) {
            $event.preventDefault();
+        }else if (keyCode == 58 || keyCode == 62) {
+          $event.preventDefault();
         }
       },
       FaNumToEnNum: function (str) {
@@ -744,7 +749,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s11 = "حریم خصوصی";
             this.s12 = "راهنما";
             this.s13 = "کاربران";
-            this.s14 = "تنطیمات پایه";
+            this.s14 = "تنظیمات پایه";
             this.s15 = "فعال سازی سرویس";
             this.s16 = "نوع سرویس";
             this.s17 = "نام سرویس";
@@ -759,7 +764,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s26 = "ایمیل";
             this.s27 = "شماره تماس";
             this.s28 = "دپارتمان";
-            this.s29 = "تنطیمات خروج";
+            this.s29 = "تنظیمات خروج";
             this.s30 = "آدرس خروج";
             this.s31 = "نوع خروج";
             this.s32 = "تایید";
@@ -778,7 +783,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s45 = "فعال سازی SSO";
             this.s46 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
             this.s47 =  " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
-            this.s48 = "تنطیمات پایه";
+            this.s48 = "تنظیمات پایه";
             this.s49 = "استراتژی دسترسی";
             this.s50 = "دسترسی بر اساس زمان";
             this.s51 = "تاریخ شروع";
@@ -805,11 +810,19 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s72 = "مقدار پارامتر";
         }
       },
+      setServiceType: function () {
+        console.log(this.serviceType);
+        if(this.serviceType == "CAS"){
+          this.samls = false;
+        }else{
+          this.samls = true;
+        }
+      },
       saml: function () {
         this.samls = true;
       },
       cas: function () {
-        this.samls = false;
+        
       }
     },
     computed: {

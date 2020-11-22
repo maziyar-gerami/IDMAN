@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -36,11 +34,9 @@ import parsso.idman.Models.*;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.UserRepo;
 
-import javax.jws.soap.SOAPBinding;
 import javax.naming.Name;
 import javax.naming.directory.*;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.print.Pageable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -120,8 +116,7 @@ public class UserRepoImpl implements UserRepo {
                 tokens.setUserId(p.getUserId());
                 tokens.setQrToken(UUID.randomUUID().toString());
                 mongoTemplate.save(tokens,Token.collection);
-                if (p.getEndTime() != null)
-                    addEndTime(p.getUserId(), p.getEndTime());
+
 
                 if (p.getCStatus() != null) {
                     if (p.getCStatus().equals("disable"))
@@ -173,13 +168,15 @@ public class UserRepoImpl implements UserRepo {
 
         User user = retrieveUser(uid);
 
-        //remove current pwdEndTime
-        if (user.getEndTime() != null)
-            if (removeCurrentEndTime(uid) != HttpStatus.OK)
-                return HttpStatus.FORBIDDEN;
+        DirContextOperations context;
 
-        //add new pwdEndTime
-        DirContextOperations context = buildAttributes.buildAttributes(uid, p, dn);
+        //remove current pwdEndTime
+        if (user.getEndTime()!=null&&p.getEndTime()==null)
+            removeCurrentEndTime(uid);
+
+
+        context = buildAttributes.buildAttributes(uid, p, dn);
+
 
         try {
             ldapTemplate.modifyAttributes(context);
@@ -235,18 +232,29 @@ public class UserRepoImpl implements UserRepo {
 
     public void setRole(String uid, User p) {
         String role = null;
-        try {
-            List<String> lst = p.getMemberOf();
-            for (String id : lst) {
-                if (id.equals(adminId)) {
-                    role = "ADMIN";
-                    break;
-                }
-            }
-        } catch (Exception e) {
 
-            if (uid.equals(adminId))
-                role = "ADMIN";
+        if (uid.equals("su")) {
+            role = "SUPERADMIN";
+
+
+        }
+        else {
+            try {
+                List<String> lst = p.getMemberOf();
+                for (String id : lst) {
+
+                if (id.equals(adminId)) {
+                        role = "ADMIN";
+                        break;
+
+                    }
+
+                }
+            } catch (Exception e) {
+
+                if (uid.equals(adminId))
+                    role = "ADMIN";
+            }
         }
 
         if (role == null)
@@ -316,7 +324,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus showProfilePic(HttpServletResponse response, User user) {
+    public String showProfilePic(HttpServletResponse response, User user) {
         File file = new File(uploadedFilesPath + user.getPhotoName());
 
         if (file.exists()) {
@@ -329,13 +337,13 @@ public class UserRepoImpl implements UserRepo {
                 IOUtils.copy(in, out);
                 out.close();
                 in.close();
-                return HttpStatus.OK;
+                return "OK";
             } catch (Exception e) {
-                return HttpStatus.BAD_REQUEST;
+                return "Problem";
 
             }
         }
-        return HttpStatus.FORBIDDEN;
+        return "NotExist";
     }
 
     @Override
@@ -371,7 +379,7 @@ public class UserRepoImpl implements UserRepo {
                 new SimpleUserAttributeMapper());
         List relatedUsers = new LinkedList();
         for (SimpleUser user : people) {
-            if (!(user.getUserId().equals("admin")) && user.getDisplayName() != null) {
+            if (!(user.getUserId().equals("admin")) && user.getDisplayName() != null&& !user.getUserId().equals("su")) {
                 relatedUsers.add(user);
             }
         }
@@ -404,7 +412,7 @@ public class UserRepoImpl implements UserRepo {
 
 
         for (User user : people) {
-            if (user.getDisplayName() != null) {
+            if (user.getDisplayName() != null&& !user.getUserId().equals("su")) {
                 relatedPeople.add(user);
             }
 
@@ -427,6 +435,7 @@ public class UserRepoImpl implements UserRepo {
             tokens = mongoTemplate.findOne(query,Tokens.class, Token.collection);
             user.setTokens(tokens);
         }
+        setRole(userId,user);
         if (user.getUserId() == null) return null;
         else return user;
     }
@@ -434,6 +443,11 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public List<JSONObject> checkMail(String email) {
         return emailClass.checkMail(email);
+    }
+
+    @Override
+    public HttpStatus sendEmail(String email, String uid) {
+        return emailClass.sendEmail(email,uid);
     }
 
 
@@ -591,7 +605,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus requestToken(User user) {
+    public int requestToken(User user) {
             return tokenClass.requestToken(user);
     }
 

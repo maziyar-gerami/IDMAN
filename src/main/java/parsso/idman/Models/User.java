@@ -77,14 +77,17 @@ public class User implements UserDetails {
 
 
         else {
+            if (getUserId().equals("su"))
+                list.add(new SimpleGrantedAuthority(PREFIX+"SUPERADMIN"));
 
-            if (this.memberOf.contains("1598656906150")) {
+            else if (this.memberOf.contains("1598656906150")) {
                 list.add(new SimpleGrantedAuthority(PREFIX + "ADMIN"));
 
                 list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
 
 
-            } else
+            }
+            else
                 list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
 
         }

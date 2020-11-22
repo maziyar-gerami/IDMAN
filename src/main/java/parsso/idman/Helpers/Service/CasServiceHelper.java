@@ -55,9 +55,9 @@ public class CasServiceHelper {
         return services;
     }
 
-    public parsso.idman.Models.ServiceType.CasService buildCasService(JSONObject jo) {
+    public CasService buildCasService(JSONObject jo) {
 
-        parsso.idman.Models.ServiceType.CasService service = new parsso.idman.Models.ServiceType.CasService();
+        CasService service = new parsso.idman.Models.ServiceType.CasService();
         if (jo.get("id") != null)
             service.setId(Long.valueOf(jo.get("id").toString()));
 
@@ -142,7 +142,7 @@ public class CasServiceHelper {
             service.setUsernameAttributeProvider(usernameAttributeProvider);
 
         }
-        if (jo.get("attributeReleasePolicy") == null) {
+        if (jo.get("attributeReleasePolicy") == null && jo.get("accessStrategy")!=null) {
 
             AttributeReleasePolicy attributeReleasePolicy = new AttributeReleasePolicy();
             service.setAttributeReleasePolicy(attributeReleasePolicy);
@@ -202,9 +202,10 @@ public class CasServiceHelper {
 
         }
 
+        MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
+
         if (jo.get("multifactorPolicy") == null) {
 
-            MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
             service.setMultifactorPolicy(multifactorPolicy);
         } else {
 
@@ -216,87 +217,96 @@ public class CasServiceHelper {
             if (jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
                 jsonObject = new JSONObject((Map) jo.get("multifactorPolicy"));
             }
-
-            MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
+            if(jsonObject.get("failureMode")!=null)
             multifactorPolicy.setFailureMode((String) jsonObject.get("failureMode"));
-            multifactorPolicy.setBypassEnabled((Boolean) jsonObject.get("bypassEnabled"));
-            multifactorPolicy.setMultifactorAuthenticationProviders((ArrayList) jsonObject.get("multifactorAuthenticationProviders"));
+            if(jsonObject.get("bypassEnabled")!=null)
+                multifactorPolicy.setBypassEnabled((Boolean) jsonObject.get("bypassEnabled"));
+            if(jsonObject.get("multifactorAuthenticationProviders")!=null)
+                multifactorPolicy.setMultifactorAuthenticationProviders(jsonObject.get("multifactorAuthenticationProviders").toString());
             service.setMultifactorPolicy(multifactorPolicy);
 
 
         }
 
-        //contacts
-        ArrayList arrayList = (ArrayList) jo.get("contacts");
+        // AccessStrategy
+        JSONObject jsonObject = null;
+        if (jo.get("accessStrategy")!=null) {
+            jsonObject = new JSONObject((Map) jo.get("accessStrategy"));
+            AccessStrategy accessStrategy = new AccessStrategy();
 
-        if (arrayList != null) {
+            AccessStrategy ac = accessStrategy.parse(jsonObject);
 
-            String temp0 = (String) arrayList.get(0);
-
-            List contacts = new LinkedList<Contact>();
-
-            if (arrayList != null && arrayList != null) {
-                ArrayList temp1 = (ArrayList) arrayList.get(1);
-                for (int i = 0; i < temp1.size(); i++) {
-
-
-                    JSONObject jsonObject = null;
-
-
-                    if (temp1.get(i) != null &&
-                            temp1.get(i).getClass().toString().equals("class org.json.simple.JSONObject")) {
-                        jsonObject = (JSONObject) temp1.get(i);
-                    }
-                    if (temp1.get(i) != null &&
-                            temp1.get(i).getClass().toString().equals("class java.util.LinkedHashMap")) {
-                        jsonObject = new JSONObject((Map) temp1.get(i));
-                    }
-
-
-                    Contact contact = new Contact();
-                    if (jsonObject.get("name") != null) contact.setName(jsonObject.get("name").toString());
-                    Email email = new Email();
-                    if (jsonObject.get("email") != null) {
-
-
-                        contact.setEmail((String) jsonObject.get("email"));
-
-                        if (jsonObject.get("phone") != (null)) contact.setPhone(jsonObject.get("phone").toString());
-                        if (jsonObject.get("department") != (null))
-                            contact.setDepartment(jsonObject.get("department").toString());
-                        contacts.add(contact);
-                    }
-
-                }
-            }
-
-
-            Object[] tempObj = new Object[2];
-            tempObj[0] = temp0;
-            tempObj[1] = contacts;
-            service.setContacts(tempObj);
+            service.setAccessStrategy(ac);
         }
 
-        JSONObject jsonObject = null;
+        //contacts
+        if (jo.get("contacts")!= null) {
+
+            ArrayList arrayList = (ArrayList) jo.get("contacts");
+
+            if (arrayList != null) {
+
+                String temp0 = (String) arrayList.get(0);
+
+                List contacts = new LinkedList<Contact>();
+
+                if (arrayList != null && arrayList != null) {
+                    ArrayList temp1 = (ArrayList) arrayList.get(1);
+                    for (int i = 0; i < temp1.size(); i++) {
+
+
+                        JSONObject jsonObject1 = null;
+
+
+                        if (temp1.get(i) != null &&
+                                temp1.get(i).getClass().toString().equals("class org.json.simple.JSONObject")) {
+                            jsonObject1 = (JSONObject) temp1.get(i);
+                        }
+                        if (temp1.get(i) != null &&
+                                temp1.get(i).getClass().toString().equals("class java.util.LinkedHashMap")) {
+                            jsonObject1 = new JSONObject((Map) temp1.get(i));
+                        }
+
+
+                        Contact contact = new Contact();
+                        if (jsonObject1.get("name") != null) contact.setName(jsonObject1.get("name").toString());
+                        Email email = new Email();
+                        if (jsonObject1.get("email") != null) {
+
+
+                            contact.setEmail((String) jsonObject1.get("email"));
+
+                            if (jsonObject1.get("phone") != (null)) contact.setPhone(jsonObject1.get("phone").toString());
+                            if (jsonObject1.get("department") != (null))
+                                contact.setDepartment(jsonObject1.get("department").toString());
+                            contacts.add(contact);
+                        }
+
+                    }
+                }
+
+
+                Object[] tempObj = new Object[2];
+                tempObj[0] = temp0;
+                tempObj[1] = contacts;
+                service.setContacts(tempObj);
+            }
+        }
+
+        JSONObject jsonObject1 = null;
 
 
         if (jo.get("multifactorPolicy") != null &&
                 jo.get("multifactorPolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
-            jsonObject = new JSONObject();
-            jsonObject = (JSONObject) jo.get("multifactorPolicy");
+            jsonObject1 = new JSONObject();
+            jsonObject1 = (JSONObject) jo.get("multifactorPolicy");
         }
         if (jo.get("multifactorPolicy") != null &&
                 jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
-            jsonObject = new JSONObject((Map) jo.get("multifactorPolicy"));
+            jsonObject1 = new JSONObject((Map) jo.get("multifactorPolicy"));
         }
 
-        // AccessStrategy
-        jsonObject = new JSONObject((Map) jo.get("accessStrategy"));
-        AccessStrategy accessStrategy = new AccessStrategy();
 
-        AccessStrategy ac = accessStrategy.parse(jsonObject);
-
-        service.setAccessStrategy(ac);
 
         return service;
 
@@ -378,7 +388,7 @@ public class CasServiceHelper {
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             try {
-                mongoTemplate.save(service,"Services");
+                mongoTemplate.save(service,collection);
                 json = ow.writeValueAsString(service);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
@@ -391,24 +401,29 @@ public class CasServiceHelper {
                 s1 = s1.replaceAll("[-,]", "");
                 String filePath = s1 + "-" + service.getId();
 
-                file = new FileWriter(path + filePath + ".json");
-                file.write(json);
-                file.close();
+
                 InetAddress[] machines = null;
                 if(!(service.getServiceId().contains("localhost")))
+                    try{
                     machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
+                    }catch (Exception e){
+                        machines = null;
+                    }
 
                 List<String> IPaddresses = new LinkedList<>();
 
                 if(machines!=null)
                 for (InetAddress machine:machines)
                     IPaddresses.add(machine.getHostAddress());
-                MicroService microService = new MicroService(((CasService)service).getServiceId(), IPaddresses);
+                MicroService microService = new MicroService((service).getServiceId(), IPaddresses);
+
+                file = new FileWriter(path + filePath + ".json");
+                file.write(json);
+                file.close();
 
                 mongoTemplate.save(microService,collection);
                 return HttpStatus.OK;
             } catch (IOException e) {
-                e.printStackTrace();
                 return HttpStatus.FORBIDDEN;
             }
 

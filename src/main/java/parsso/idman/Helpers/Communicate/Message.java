@@ -205,6 +205,7 @@ public class Message {
             user.setMemberOf(null != attributes.get("ou") ? ls : null);
             user.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
             user.setPhotoName(null != attributes.get("photoName") && "" != attributes.get("photoName").toString() ? attributes.get("photoName").get().toString() : null);
+
             if (user.getTokens()!=null)
                 user.getTokens().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
 

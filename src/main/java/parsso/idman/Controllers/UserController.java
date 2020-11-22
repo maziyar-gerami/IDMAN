@@ -88,22 +88,25 @@ public class UserController {
      * @return whether logged-in user is admin or not
      */
     @GetMapping("/api/user/isAdmin")
-    public boolean isAdmin(HttpServletRequest request) {
+    public int isAdmin(HttpServletRequest request) {
         try {
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUser(principal.getName());
             List<String> memberOf = user.getMemberOf();
 
 
-            for (String group : memberOf) {
-                if (group.equals(adminOu))
-                    return true;
-            }
+            if (user.getUserId().equals("su"))
+                return 0;
+
+            else if (memberOf.contains(adminOu))
+                return 1;
+
+            else
+                return 2;
 
         } catch (Exception e) {
-            return false;
+            return 400;
         }
-        return false;
     }
 
 
@@ -113,10 +116,10 @@ public class UserController {
      * @return the photo of logged in user
      */
     @GetMapping("/api/user/photo")
-    public ResponseEntity<HttpStatus> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException {
+    public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException {
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUser(principal.getName());
-        return new ResponseEntity<>(userRepo.showProfilePic(response, user));
+        return new ResponseEntity<>(userRepo.showProfilePic(response, user),HttpStatus.OK);
     }
 
 
@@ -149,10 +152,15 @@ public class UserController {
     }
 
     @GetMapping("/api/user/password/request")
-    public HttpStatus requestSMS(HttpServletRequest request) {
+    public ResponseEntity<Integer> requestSMS(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUser(principal.getName());
-        return userRepo.requestToken(user);
+        int status = userRepo.requestToken(user);
+
+        if (status>0)
+        return new ResponseEntity<>(status, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(status, HttpStatus.FORBIDDEN);
     }
     //*************************************** Users Section ***************************************
 
@@ -308,7 +316,19 @@ public class UserController {
      */
     @GetMapping("/api/dashboard")
     public ResponseEntity<org.json.simple.JSONObject> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException {
-        return new ResponseEntity<org.json.simple.JSONObject>(userRepo.retrieveDashboardData(), HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
+    }
+
+    /**
+     * sends email to specified user
+     *
+     * @param email and userId
+     * @return if token is correspond to provided email, returns httpStatus=ok
+     */
+    @GetMapping("/api/users/sendMail/{email}/{uid}")
+    public ResponseEntity<Integer> sendMailByAdmin(@PathVariable("email") String email,
+                                            @PathVariable("uid") String uid) {
+            return new ResponseEntity<>(userRepo.sendEmail(email, uid));
     }
 
     //*************************************** Public Controllers ***************************************
@@ -401,7 +421,7 @@ public class UserController {
      * @param token and userId
      * @return the user object if exists, or null if not exists
      */
-    @PutMapping("/api/public/resetPass/{uid}")
+    @PutMapping("/api/public/resetPass/{uid}/{token}")
     public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
                                                      @PathVariable("uid") String uid) {
         return new ResponseEntity<>(userRepo.updatePass(uid, newPassword, token));

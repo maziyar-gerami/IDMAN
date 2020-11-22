@@ -27,6 +27,7 @@
     <script src="js/jquery.js"></script>
     <script src="js/persian-date.min.js"></script>
     <script src="js/persian-datepicker.min.js"></script>
+    <script src="js/persian-rex.min.js"></script>
 
 </head>
 <script type="text/javascript">
@@ -132,8 +133,7 @@
             <div class="container">
                 <a class="navbar-brand" href="./">{{s0}}</a>
                 <div class="dropdown">
-                    <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span
-                            class="fa fa-caret-down"></span></a>
+                    <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span onclick="myFunction()" class="fa fa-caret-down"></span></a>
                     <div id="myDropdown" class="dropdown-content">
                         <a href="./logout">{{s2}}</a>
                     </div>
@@ -212,7 +212,7 @@
                                     <i class="fa fa-cogs"></i>
                                     <span>{{s7}}</span>
                                 </a>
-                                <a class="list-group-item list-group-item-action py-2 "
+                                <a v-if="menuSA" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s32">
                                     <i class="fa fa-cog"></i>
                                     <span>{{s31}}</span>
@@ -228,8 +228,8 @@
                         <div class="card-body pb-0" style="background-color: #f8f9fa!important;">
                             <div class="container">
                                 <h3 class="pb-2" v-bind:style="showS">{{U1}}</h3>
-                                <div v-bind:style="showS" class="row mb-3 mt-3" style="font-size: 15px;">
-                                    <table class="table table-responsive" style="padding: .5rem;">
+                                <div v-bind:style="showS" class="row mb-1 mt-3" style="font-size: 15px;">
+                                    <table class="table table-responsive" style="padding: .5rem; margin-bottom: 0;">
                                         <tr class="mb-3">
                                             <th>
                                                 <button class="btn btn-success btn-sm" :class="margin1" v-on:click="addUserS()">
@@ -272,7 +272,11 @@
                                         </tr>
                                     </table>
                                 </div>
-                                <div v-if="message" class="alert alert-success">{{this.message}}</div>
+                                <div v-bind:style="showS">
+                                    <div  v-bind:style="resetPassEmailSent ? 'visibility: visible;' : 'visibility: hidden;' ">
+                                        <p class="rounded" style="background-color:rgba(144, 238, 144, 0.521); padding: 1%;">{{s52}}</p>
+                                    </div>
+                                </div>
                                 <div class="container mb-5" style="background-color: white; font-size: 15px;">
                                     <table class="table table-responsive" v-bind:style="showS" style="padding: .5rem;">
                                         <tr>
@@ -388,8 +392,8 @@
                                                             <div v-if='!submitted' class='hints'>
                                                                 <p style="box-sizing: unset;">{{s48}}</p> <br>
                                                                 <p :class="{'passed' :has_number }" v-bind:style="font"><i :class="has_number ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
-                                                                <p :class="{'passed' :has_lowercase }" v-bind:style="font"><i :class="has_lowercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
-                                                                <p :class="{'passed' :has_uppercase }" v-bind:style="font"><i :class="has_uppercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
+                                                                <p :class="{'passed' :has_lowerUPPERcase }" v-bind:style="font"><i :class="has_lowerUPPERcase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
+                                                                <p :class="{'passed' :has_specialchar }" v-bind:style="font"><i :class="has_specialchar ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
                                                                 <p :class="{'passed' :has_char }" v-bind:style="font"><i :class="has_char ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[2].message}}</p>
                                                             </div>
                                                         </transition>
@@ -456,7 +460,7 @@
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label>{{U6}}</label>
+                                                        <label>{{U6}}<span style="color: red;"> *</span></label>
                                                         <input v-bind:value="editInfo.mobile" id="editInfo.mobileUpdate" type="text"
                                                                 pattern="09\d{9}" class="form-control">
                                                     </div>
@@ -485,7 +489,7 @@
                                         <h3 class="mb-3 pb-2 border-bottom">{{s38}}</h3>
                                         <div class="form-group">
                                             <label>{{U2}}<span style="color: red;"> *</span></label>
-                                            <input id="editInfo.userIdCreate" type="text" v-on:keyup="removeError" class="form-control"
+                                            <input id="editInfo.userIdCreate" @keypress="userIdValidate" type="text" v-on:keyup="removeError" class="form-control"
                                             required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                             <div class="matches mt-2" v-bind:style="userCreateExists ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                 <p class="error" style="font-size: .8rem;">{{s50}}</p>
@@ -521,8 +525,8 @@
                                                     <div v-if='!submittedCreate' class='hints'>
                                                         <p style="box-sizing: unset;">{{s48}}</p> <br>
                                                         <p :class="{'passed' :has_numberCreate }" v-bind:style="font"><i :class="has_numberCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
-                                                        <p :class="{'passed' :has_lowercaseCreate }" v-bind:style="font"><i :class="has_lowercaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
-                                                        <p :class="{'passed' :has_uppercaseCreate }" v-bind:style="font"><i :class="has_uppercaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
+                                                        <p :class="{'passed' :has_lowerUPPERcaseCreate }" v-bind:style="font"><i :class="has_lowerUPPERcaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
+                                                        <p :class="{'passed' :has_specialcharCreate }" v-bind:style="font"><i :class="has_specialcharCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
                                                         <p :class="{'passed' :has_charCreate }" v-bind:style="font"><i :class="has_charCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[2].message}}</p>
                                                     </div>
                                                 </transition>
@@ -570,7 +574,7 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label>{{U6}}</label>
+                                            <label>{{U6}}<span style="color: red;"> *</span></label>
                                             <input id="editInfo.mobileCreate" type="text"
                                                    class="form-control" placeholder="09xxxxxxxxx" pattern="09\d{9}">
                                         </div>
