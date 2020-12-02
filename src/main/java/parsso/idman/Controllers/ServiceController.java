@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.Service;
+import parsso.idman.Models.ServiceType.MicroService;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
@@ -17,6 +18,7 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.LinkedList;
 import java.util.List;
 
 @Controller
@@ -37,7 +39,7 @@ public class ServiceController {
     private String path;
 
     @GetMapping("/api/services/user")
-    public ResponseEntity<List<Service>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
+    public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUser(principal.getName())), HttpStatus.OK);
     }
@@ -58,8 +60,10 @@ public class ServiceController {
     }
 
     @DeleteMapping("/api/services")
-    public ResponseEntity<String> deleteServices() {
-        return new ResponseEntity<>(serviceRepo.deleteServices());
+    public ResponseEntity<LinkedList<String>> deleteServices(@RequestBody JSONObject jsonObject) throws IOException {
+        LinkedList ls = serviceRepo.deleteServices(jsonObject);
+        if (ls==null) return new ResponseEntity<>(ls,HttpStatus.OK);
+        else return new ResponseEntity<>(ls,HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/api/services/{system}")

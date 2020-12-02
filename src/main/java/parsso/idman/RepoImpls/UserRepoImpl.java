@@ -1,6 +1,6 @@
 package parsso.idman.RepoImpls;
 
-import net.minidev.json.JSONArray;
+
 import net.minidev.json.JSONObject;
 import org.apache.commons.compress.utils.IOUtils;
 import org.json.simple.parser.ParseException;
@@ -30,12 +30,18 @@ import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.Message;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
-import parsso.idman.Models.*;
+import parsso.idman.Models.SimpleUser;
+import parsso.idman.Models.Time;
+import parsso.idman.Models.Tokens;
+import parsso.idman.Models.User;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
-import javax.naming.directory.*;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
+import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
@@ -115,7 +121,7 @@ public class UserRepoImpl implements UserRepo {
                 Tokens tokens = new Tokens();
                 tokens.setUserId(p.getUserId());
                 tokens.setQrToken(UUID.randomUUID().toString());
-                mongoTemplate.save(tokens,Token.collection);
+                mongoTemplate.save(tokens, Token.collection);
 
 
                 if (p.getCStatus() != null) {
@@ -123,15 +129,15 @@ public class UserRepoImpl implements UserRepo {
                         disable(p.getUserId());
                 }
 
-                logger.info("User "+"\""+p.getUserId()+"\""+" in "+new  Date()+" created");
+                logger.info("User " + "\"" + p.getUserId() + "\"" + " in " + new Date() + " created successfully");
                 return new JSONObject();
             } else {
-                logger.warn("User "+"\""+p.getUserId()+"\""+" is exist. So it cannot be created");
+                logger.warn("User " + "\"" + p.getUserId() + "\"" + " is exist. So it cannot be created");
 
                 return new ImportUsers().compareUsers(user, p);
             }
         } catch (Exception e) {
-            logger.warn("Creating user "+"\""+p.getUserId()+"\""+" faced a problem");
+            logger.warn("Creating user " + "\"" + p.getUserId() + "\"" + " was unsuccessful");
             e.printStackTrace();
             return null;
         }
@@ -143,12 +149,10 @@ public class UserRepoImpl implements UserRepo {
         User user = retrieveUser(p.getUserId());
         p.setUserPassword(defaultPassword);
 
-
         try {
             if (user == null) {
                 Name dn = buildDn.buildDn(p.getUserId());
                 ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
-                //logger.info("User "+user.getUserId() + " created");
                 return new JSONObject();
             } else {
 
@@ -171,7 +175,7 @@ public class UserRepoImpl implements UserRepo {
         DirContextOperations context;
 
         //remove current pwdEndTime
-        if (user.getEndTime()!=null&&p.getEndTime()==null)
+        if (user.getEndTime() != null && p.getEndTime() == null)
             removeCurrentEndTime(uid);
 
 
@@ -181,53 +185,56 @@ public class UserRepoImpl implements UserRepo {
         try {
             ldapTemplate.modifyAttributes(context);
 
-            logger.info("User "+"\""+p.getUserId()+"\"" + "in "+new  Date()+"updated");
+            logger.info("User " + "\"" + p.getUserId() + "\"" + "in " + new Date() + "updated successfully");
             return HttpStatus.OK;
 
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("User "+"\""+p.getUserId()+"\"" + "faced a problem");
+            logger.warn("Updating user " + "\"" + p.getUserId() + "\"" + "was unsuccessful");
             return HttpStatus.FORBIDDEN;
         }
     }
 
     @Override
-    public String remove(String userId) {
-        Name dn = buildDn.buildDn(String.valueOf(userId));
-        try {
-            ldapTemplate.unbind(dn);
-            Query query = new Query(Criteria.where("userId").is(userId));
-            mongoTemplate.remove(query,Token.collection);
-            logger.info("User "+userId+" in "+new  Date()+" removed");
+    public HttpStatus remove(JSONObject jsonObject) {
+        List<User> people = new LinkedList<>();
+        if (jsonObject.size() == 0)
+            people = retrieveUsersFull();
+        else {
 
-        } catch (Exception e) {
-            logger.info("Removing user "+"\""+userId+"\""+" faced a problem");
-
-            e.printStackTrace();
+            ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+            Iterator<String> iterator = jsonArray.iterator();
+            while (iterator.hasNext()) {
+                User user = retrieveUser(iterator.next());
+                if (user != null)
+                    people.add(user);
+            }
         }
-        return userId + " removed successfully";
-    }
 
-    @Override
-    public String remove() {
-        List<User> people = retrieveUsersFull();
-        for (User user : people) {
-            Name dn = buildDn.buildDn(user.getUserId());
+        if (people != null)
+            for (User user : people) {
+                Name dn = buildDn.buildDn(user.getUserId());
 
-            try {
-                logger.info("All users removed");
+                try {
 
-                ldapTemplate.unbind(dn);
+                    ldapTemplate.unbind(dn);
 
-            } catch (Exception e) {
-                logger.info("Removing all users faced a problem");
-                e.printStackTrace();
+                } catch (Exception e) {
+                    logger.warn("Deleting User "+user.getUserId()+ " was unsuccessfully");
+                    e.printStackTrace();
+                }
+
             }
 
+        if (people.size()==0)
+            logger.info("All users removed successfully");
+        if (people.size()==1)
+            logger.info("User "+people.get(0).getUserId()+" removed successfully");
+        else
+            logger.info("Selected users removed successfully");
 
-        }
 
-        return "All users removed successfully";
+        return HttpStatus.OK;
     }
 
     public void setRole(String uid, User p) {
@@ -236,19 +243,15 @@ public class UserRepoImpl implements UserRepo {
         if (uid.equals("su")) {
             role = "SUPERADMIN";
 
-
-        }
-        else {
+        } else {
             try {
                 List<String> lst = p.getMemberOf();
                 for (String id : lst) {
 
-                if (id.equals(adminId)) {
+                    if (id.equals(adminId)) {
                         role = "ADMIN";
                         break;
-
                     }
-
                 }
             } catch (Exception e) {
 
@@ -267,7 +270,6 @@ public class UserRepoImpl implements UserRepo {
             updatedAuthorities.remove(0);
 
             updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role));
-
 
             Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
 
@@ -293,34 +295,22 @@ public class UserRepoImpl implements UserRepo {
 
                     try {
                         ldapTemplate.modifyAttributes(context);
-                        logger.info("Password for"+ uId+ " changed");
+                        logger.info("Password for" + uId + " changed successfully");
                         return HttpStatus.OK;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        logger.warn("Changing password for "+"\""+ uId+"\""+ " faced a problem");
+                        logger.warn("Changing password for " + "\"" + uId + "\"" + " was unsuccessfully");
 
-                        return HttpStatus.EXPECTATION_FAILED;
+                        return HttpStatus.BAD_REQUEST;
                     }
 
                 } else
                     return HttpStatus.FORBIDDEN;
             } else {
-                user.setUserPassword(newPassword);
-                Name dn = buildDn.buildDn(uId);
-                DirContextOperations context = buildAttributes.buildAttributes(uId, user, dn);
-
-                try {
-                    ldapTemplate.modifyAttributes(context);
-                    return HttpStatus.OK;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return HttpStatus.EXPECTATION_FAILED;
-                }
+                return HttpStatus.BAD_REQUEST;
             }
         } else
             return HttpStatus.FORBIDDEN;
-
-
     }
 
     @Override
@@ -363,7 +353,7 @@ public class UserRepoImpl implements UserRepo {
         user.setPhotoName(s);
         if (update(user.getUserId(), user) == HttpStatus.OK) {
             oldPic.delete();
-            logger.info("profile pic for"+name+" is set");
+            logger.info("Setting profile pic for" + name + " was successful");
             return HttpStatus.OK;
 
         }
@@ -379,7 +369,7 @@ public class UserRepoImpl implements UserRepo {
                 new SimpleUserAttributeMapper());
         List relatedUsers = new LinkedList();
         for (SimpleUser user : people) {
-            if (!(user.getUserId().equals("admin")) && user.getDisplayName() != null&& !user.getUserId().equals("su")) {
+            if (!(user.getUserId().equals("admin")) && user.getDisplayName() != null && !user.getUserId().equals("su")) {
                 relatedUsers.add(user);
             }
         }
@@ -391,8 +381,7 @@ public class UserRepoImpl implements UserRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         if (tokenClass.checkToken(uid, token) == HttpStatus.OK)
-            return ldapTemplate.search(query().attributes("givenName", "sn", "displayName").where("uid").is(uid)
-                    ,
+            return ldapTemplate.search(query().attributes("givenName", "sn", "displayName").where("uid").is(uid),
                     userAttributeMapper).get(0);
         return null;
     }
@@ -410,14 +399,12 @@ public class UserRepoImpl implements UserRepo {
                 userAttributeMapper);
         List<User> relatedPeople = new LinkedList<>();
 
-
         for (User user : people) {
-            if (user.getDisplayName() != null&& !user.getUserId().equals("su")) {
+            if (user.getDisplayName() != null && !user.getUserId().equals("su")) {
                 relatedPeople.add(user);
             }
 
         }
-
 
         return relatedPeople;
     }
@@ -432,10 +419,10 @@ public class UserRepoImpl implements UserRepo {
         if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
             user = ldapTemplate.lookup(buildDn.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
-            tokens = mongoTemplate.findOne(query,Tokens.class, Token.collection);
+            tokens = mongoTemplate.findOne(query, Tokens.class, Token.collection);
             user.setTokens(tokens);
         }
-        setRole(userId,user);
+        setRole(userId, user);
         if (user.getUserId() == null) return null;
         else return user;
     }
@@ -446,16 +433,13 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus sendEmail(String email, String uid) {
-        return emailClass.sendEmail(email,uid);
+    public HttpStatus sendEmail(JSONObject jsonObject) {
+        return emailClass.sendEmail(jsonObject);
     }
-
 
     @Override
     public org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException {
-
         return dashboardData.retrieveDashboardData();
-
     }
 
     @Override
@@ -474,12 +458,12 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.info(uid + " is enabled");
+                logger.info("Enabling "+uid + " was successful");
                 return HttpStatus.OK;
 
             } catch (Exception e) {
                 e.printStackTrace();
-                logger.warn("A problem occurred for enabling "+uid);
+                logger.warn("Enabling " + uid+ " was unsuccessful");
                 return HttpStatus.BAD_REQUEST;
             }
         } else {
@@ -528,48 +512,18 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.info(uid + " is disabled");
+                logger.info("Disabling "+uid + " was successful");
                 return HttpStatus.OK;
 
             } catch (Exception e) {
                 e.printStackTrace();
-                logger.warn("A problem occurred while disabling "+uid);
+                logger.warn("Disabling " + uid +" was unsuccessful");
                 return HttpStatus.BAD_REQUEST;
             }
         } else {
             return HttpStatus.BAD_REQUEST;
         }
     }
-
-
-    public HttpStatus addEndTime(String uid, String date) {
-
-        Name dn = buildDn.buildDn(uid);
-
-        ModificationItem[] modificationItems;
-        modificationItems = new ModificationItem[1];
-
-        User user = retrieveUser(uid);
-
-
-        if (user.isEnabled()) {
-            modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime", Time.convertDateTimeJalali(date)));
-
-            try {
-                ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.info("EndTime for "+ uid + " set");
-                return HttpStatus.OK;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.warn("Adding EndTime for "+ uid + " faced a problem");
-                return HttpStatus.BAD_REQUEST;
-            }
-        } else {
-            return HttpStatus.BAD_REQUEST;
-        }
-    }
-
 
     @Override
     public HttpStatus unlock(String uid) {
@@ -589,12 +543,12 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.warn(uid + "unlocking faced a problem");
+                logger.warn("Unlocking"+uid + "was successful");
                 return HttpStatus.OK;
 
             } catch (Exception e) {
                 e.printStackTrace();
-                logger.warn("Unlocking user"+ uid + " faced a problem");
+                logger.warn("Unlocking user" + uid + " was successful");
 
                 return HttpStatus.BAD_REQUEST;
             }
@@ -606,23 +560,24 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public int requestToken(User user) {
-            return tokenClass.requestToken(user);
+        return tokenClass.requestToken(user);
     }
 
     @Override
     public List<SimpleUser> retrieveUsersPagination(int page, int number) {
         List<SimpleUser> allUsers = retrieveUsersMain();
 
-        int n = (page)*number;
+        int n = (page) * number;
 
-        if (n>allUsers.size())
+        if (n > allUsers.size())
             n = allUsers.size();
 
-        List<SimpleUser> relativeUsers= new LinkedList<SimpleUser>();
+        List<SimpleUser> relativeUsers = new LinkedList<SimpleUser>();
 
-        int start = (page-1)*number;
+        int start = (page - 1) * number;
 
-        for (int i=start; i<n; i++)
+
+        for (int i = start; i < n; i++)
             relativeUsers.add(allUsers.get(i));
 
         return relativeUsers;
@@ -630,12 +585,12 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public int sendEmail(String email, String cid, String answer) {
-            return emailClass.sendEmail(email,cid,answer);
+        return emailClass.sendEmail(email, cid, answer);
     }
 
     @Override
     public int sendEmail(String email, String uid, String cid, String answer) {
-        return emailClass.sendEmail(email,uid,cid,answer);
+        return emailClass.sendEmail(email, uid, cid, answer);
     }
 
 
@@ -667,7 +622,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public JSONArray importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
+    public net.minidev.json.JSONArray importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
         return new ImportUsers().importFileUsers(file, sequence, hasHeader);
     }
 

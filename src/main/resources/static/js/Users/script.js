@@ -160,12 +160,17 @@ document.addEventListener('DOMContentLoaded', function () {
             s50: "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.",
             s51: "زمان انقضا کاربر",
             s52: "ایمیل بازنشانی رمز عبور با موفقیت ارسال شد.",
+            s53: "حذف کاربر",
+            s54: "اعمال",
+            s55: "آیا از حذف کاربران انتخاب شده اطمینان دارید؟",
+            s56: "هیچ کاربری انتخاب نشده است.",
+            s57: "بازنشانی رمزعبور همه",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
             U3: "نام (به انگلیسی)",
             U4: "نام خانوادگی (به انگلیسی)",
-            U5: "نام",
+            U5: "نام کامل (به فارسی)",
             U6: "شماره تلفن",
             U7: "ایمیل",
             U8: "کد ملی",
@@ -456,6 +461,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 axios.get(url + "/api/users") //
                     .then((res) => {
                         vm.users = res.data;
+                        for(let i = 0; i < vm.users.length; ++i){
+                            vm.users[i].orderOfRecords = i + 1;
+                        }
                         vm.total = Math.ceil(vm.users.length / vm.recordsShownOnPage);
                     });
             },
@@ -717,14 +725,35 @@ document.addEventListener('DOMContentLoaded', function () {
             sendResetEmail(userId) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/users/u/" + userId) //
-                    .then((res) => {
-                        axios.get(url + "/api/users/sendMail/" + res.data.mail + "/" + userId) //
-                            .then((res) => {
-                                vm.resetPassEmailSent = true;
-                                setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
-                            });
-                    })
+                let selectedUsers = [];
+                selectedUsers.push(userId.toString());
+                axios({
+                    method: 'post',
+                    url: url + "/api/users/sendMail", //
+                    headers: {'Content-Type': 'application/json'},
+                    data: JSON.stringify({
+                        names: selectedUsers
+                    }),
+                })
+                .then((res) => {
+                    vm.resetPassEmailSent = true;
+                    setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
+                });
+            },
+            sendAllResetEmail() {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios({
+                    method: 'post',
+                    url: url + "/api/users/sendMail", //
+                    headers: {'Content-Type': 'application/json'},
+                    data: JSON.stringify({
+                    }),
+                })
+                .then((res) => {
+                    vm.resetPassEmailSent = true;
+                    setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
+                });
             },
             removeError() {
                 this.userFound = false;
@@ -865,15 +894,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
-            deleteUser: function (id) {
+            deleteUser: function (userId) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                let selectedUsers = [];
+                selectedUsers.push(userId.toString());
                 var check = confirm(this.s28);
                 if (check == true) {
-                    axios.delete(url + `/api/users/u/${id}`) //
-                        .then(() => {
-                            vm.getUsers();
-                        });
+                    axios({
+                        method: 'delete',
+                        url: url + "/api/users", //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                            names: selectedUsers
+                        }),
+                    })
+                    .then((res) => {
+                        vm.getUsers();
+                    });
                 }
             },
             deleteAllUsers: function () {
@@ -881,12 +919,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 var check = confirm(this.s29);
                 if (check == true) {
-                    axios.delete(url + `/api/users`) //
-                        .then(() => {
-                            vm.getUsers();
-                        });
+                    axios({
+                        method: 'delete',
+                        url: url + "/api/users", //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                        }),
+                    })
+                    .then((res) => {
+                        vm.getUsers();
+                    });
                 }
-
             },
             passwordCheck () {
                 this.has_number    = /[0-9]+/.test(this.password);
@@ -942,6 +985,69 @@ document.addEventListener('DOMContentLoaded', function () {
                    $event.preventDefault();
                 }else if (keyCode == 58 || keyCode == 62) {
                   $event.preventDefault();
+                }
+            },
+            changeSelected: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                let selectedUsers = [];
+                let action = document.getElementById("selectedAction").value;
+                if(action == "delete"){
+                    selectedUsers = [];
+                    for(let i = 0; i < vm.users.length; ++i){
+                        if(document.getElementById("checkbox-" + vm.users[i].userId).checked){
+                            selectedUsers.push(vm.users[i].userId.toString());
+                        }
+                    }
+                    if(selectedUsers.length != 0){
+                        var check = confirm(this.s55);
+                        if (check == true) {
+                            axios({
+                                method: 'delete',
+                                url: url + "/api/users", //
+                                headers: {'Content-Type': 'application/json'},
+                                data: JSON.stringify({
+                                    names: selectedUsers
+                                }),
+                            })
+                            .then((res) => {
+                                vm.getUsers();
+                            });
+                        }
+                    }else{
+                        alert(this.s56);
+                    }
+                }else if(action == "resetEmail"){
+                    selectedUsers = [];
+                    for(let i = 0; i < vm.users.length; ++i){
+                        if(document.getElementById("checkbox-" + vm.users[i].userId).checked){
+                            selectedUsers.push(vm.users[i].userId.toString());
+                        }
+                    }
+                    if(selectedUsers.length != 0){
+                        axios({
+                            method: 'post',
+                            url: url + "/api/users/sendMail", //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                names: selectedUsers
+                            }),
+                        })
+                        .then((res) => {
+                            vm.resetPassEmailSent = true;
+                            setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
+                        });
+                    }else{
+                        alert(this.s56);
+                    }
+                }
+            },
+            rowSelected:function(id) {
+                let row = document.getElementById("row-" + id);
+                if(row.style.background == ""){
+                    row.style.background = "#c2dbff";
+                }else{
+                    row.style.background = "";
                 }
             },
             changeLang: function () {
@@ -1009,6 +1115,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s50 = "This UID Already Exists In Our Database, Please Choose Another.";
                     this.s51 = "User Expiration Date";
                     this.s52 = "Password Reset Email Sent Successfully.";
+                    this.s53 = "Delete User";
+                    this.s54 = "Action";
+                    this.s55 = "Are You Sure You Want To Delete Selected Users?";
+                    this.s56 = "No User is Selected.";
+                    this.s57 = "Reset Password All";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1029,7 +1140,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U19 = "Save in file";
                     this.U20 = "Import users using file";
                     this.U21 = "Upload";
-                    this.U22 = "Password Reset";
+                    this.U22 = "Reset Password";
                     this.U23 = "Template File";
                     this.rules[0].message = "- One Lowercase or Uppercase English Letter Required.";
                     this.rules[1].message = "- One special Character or Persian Letter Required.";
@@ -1099,6 +1210,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s50 = "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.";
                     this.s51 = "زمان انقضا کاربر";
                     this.s52 = "ایمیل بازنشانی رمز عبور با موفقیت ارسال شد.";
+                    this.s53 = "حذف کاربر";
+                    this.s54 = "اعمال";
+                    this.s55 = "آیا از حذف کاربران انتخاب شده اطمینان دارید؟";
+                    this.s56 = "هیچ کاربری انتخاب نشده است.";
+                    this.s57 = "بازنشانی رمزعبور همه";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه";

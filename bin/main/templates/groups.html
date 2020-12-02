@@ -118,28 +118,48 @@
                                 <div class="container">
                                     <h3 class="border-bottom pb-2" v-bind:style="showS">{{U1}}</h3>
                                     <div v-bind:style="showS" class="row mb-3 mt-3" style="font-size: 15px;">
-                                        <button class="btn btn-success btn-sm" :class="margin1" v-on:click="addGroupS()">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-plus fa-stack-1x"></i>
-                                            </span>
-                                            {{U12}}
-                                        </button>
-                                        <button v-on:click="deleteAllGroups()" class="btn btn-danger btn-sm">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-trash fa-stack-1x"></i>
-                                            </span>
-                                            {{U17}}
-                                        </button>
+                                        <div class="col-5">
+                                            <button class="btn btn-success btn-sm" :class="margin1" v-on:click="addGroupS()">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-plus fa-stack-1x"></i>
+                                                </span>
+                                                {{U12}}
+                                            </button>
+                                            <button v-on:click="deleteAllGroups()" class="btn btn-danger btn-sm">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-trash fa-stack-1x"></i>
+                                                </span>
+                                                {{U17}}
+                                            </button>
+                                        </div>
+                                        <div class="col-2"></div>
+                                        <div class="col-5" style="text-align: center; display: inline-flex;">
+                                            <select id="selectedAction" name="type" class="form-control mr-2 ml-2">
+                                                <option value="delete" selected>{{s32}}</option>
+                                            </select>
+                                            <button v-on:click="changeSelected()" class="btn btn-primary btn-sm">
+                                                {{s33}}
+                                            </button>
+                                        </div>
                                     </div>
                                     <div v-if="message" class="alert alert-success">{{this.message}}</div>
                                     <div class="container mb-5" style="background-color: white; font-size: 15px;">
                                         <table class="table table-responsive" v-bind:style="showS" style="padding: .5rem;">
                                             <tr>
+                                                <th style="border: none;">#</th>
+                                                <th style="border: none;"></th>
                                                 <th style="border: none;">{{U2}}</th>
                                                 <th style="border: none;">{{U3}}</th>
                                             </tr>
                                             <tbody id="body">
-                                                    <tr v-for="group in sortedGroups" v-bind:key="group.id">
+                                                    <tr v-for="group in sortedGroups" v-bind:key="group.id" :id="'row-' + group.id">
+                                                        <td>{{group.orderOfRecords}}</td>
+                                                        <td>
+                                                            <label class="checkboxclass">
+                                                                <input :id="'checkbox-' + group.id" type="checkbox">
+                                                                <span v-on:click="rowSelected(group.id)" class="checkmark"></span>
+                                                            </label>                                                                      
+                                                        </td>
                                                         <td>{{group.id}}</td>
                                                         <td>{{group.name}}</td>
                                                         <td>
@@ -164,7 +184,7 @@
                                             :labels="paginationAnchorTexts"></v-pagination>
                                         </div>
                                         
-                                        <form v-bind:style="editS">
+                                        <div v-bind:style="editS">
                                             <h3 class="mb-3 pb-2 border-bottom">{{s30}}</h3>
                                             <div class="form-group">
                                               <label>{{U2}}</label>
@@ -181,8 +201,8 @@
                                             </div>
                                             <button v-on:click="editGroup(group.id)" class="btn btn-primary">{{U13}}</button>
                                             <button v-on:click="showGroups()" class="btn btn-danger">{{s17}}</button>
-                                        </form>
-                                        <form v-bind:style="addS">
+                                        </div>
+                                        <div v-bind:style="addS">
                                             <h3 class="mb-3 pb-2 border-bottom">{{s29}}</h3>
                                             <div class="form-group">
                                                 <label>{{U3}}<span style="color: red;"> *</span></label>
@@ -195,7 +215,7 @@
                                             </div>
                                             <button v-on:click="addGroup()" class="btn btn-primary">{{s18}}</button>
                                             <button v-on:click="showGroups()" class="btn btn-danger">{{s17}}</button>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

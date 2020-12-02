@@ -4,14 +4,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import parsso.idman.Models.Service;
+import parsso.idman.Models.ServiceType.MicroService;
 import parsso.idman.Models.User;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 public interface ServiceRepo {
 
-    List<Service> listUserServices(User user) throws IOException, ParseException;
+    List<MicroService> listUserServices(User user) throws IOException, ParseException;
 
     List<Service> listServices() throws IOException, ParseException;
 
@@ -19,7 +21,7 @@ public interface ServiceRepo {
 
     HttpStatus deleteService(long id) throws IOException, ParseException;
 
-    HttpStatus deleteServices();
+    LinkedList<String> deleteServices(JSONObject files) throws IOException;
 
     HttpStatus createService(JSONObject jsonObject, String system) throws IOException;
 

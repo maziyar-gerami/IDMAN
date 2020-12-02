@@ -18,8 +18,6 @@ public class Trim {
             serviceId = serviceId.substring(7);
 
         }
-        if (!(serviceId.contains("www.")))
-            serviceId = "www."+serviceId;
 
         int index = serviceId.indexOf("/");
         if (index>0)
@@ -27,4 +25,5 @@ public class Trim {
 
         return serviceId;
     }
+
 }

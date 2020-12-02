@@ -1,5 +1,7 @@
 package parsso.idman.Repos;
 
+import net.minidev.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import parsso.idman.Models.Group;
 import parsso.idman.Models.User;
 
@@ -9,17 +11,13 @@ public interface GroupRepo {
 
     List<Group> retrieve();
 
-    String create(Group ou);
+    HttpStatus create(Group ou);
 
-    String update(String name, Group ou);
+    HttpStatus update(String name, Group ou);
 
-    String remove(String ou);
-
-    String remove();
+    HttpStatus remove(JSONObject jsonObject);
 
     Group retrieveOu(String name);
-
-    Group retrieveOu();
 
     List<Group> retrieveCurrentUserGroup(User user);
 

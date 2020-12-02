@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.Event;
+import parsso.idman.Models.ListEvents;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.EventRepo;
@@ -86,7 +87,7 @@ public class  MobileController {
 
     //after activation
 
-    @GetMapping("/api/mobile/services")
+    @PostMapping("/api/mobile/services")
     public @ResponseBody
     ResponseEntity<List<Service>> M_listServices(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
         User user = userRepo.retrieveUser(uid);
@@ -96,24 +97,25 @@ public class  MobileController {
 
     }
 
-    @GetMapping("/api/mobile/events")
+    @PostMapping("/api/mobile/events")
     public @ResponseBody
-    ResponseEntity<List<Event>> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws FileNotFoundException, ParseException {
+    ResponseEntity<List<Event>> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, ParseException, org.json.simple.parser.ParseException {
         User user = userRepo.retrieveUser(uid);
         if (MobileToken.equals(user.getTokens().getMobileToken()))
-            return new ResponseEntity<>(eventRepo.getListEvents(), HttpStatus.OK);
+            return new ResponseEntity<>(eventRepo.getMainListEvents(), HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }
 
-    @GetMapping("/api/mobile/events/{page}/{n}")
+    @PostMapping("/api/mobile/events/{page}/{n}")
     public @ResponseBody
-    ResponseEntity<List<Event>> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken,
-                                                    @PathVariable("page") String page,@PathVariable("n") String n,
-                                                    @RequestParam("uid") String uid) throws FileNotFoundException, ParseException {
+    ResponseEntity<ListEvents> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken,
+                                                   @PathVariable("page") String page, @PathVariable("n") String n,
+                                                   @RequestParam("uid") String uid) throws IOException, ParseException, org.json.simple.parser.ParseException {
+
         User user = userRepo.retrieveUser(uid);
         if (MobileToken.equals(user.getTokens().getMobileToken()))
-            return new ResponseEntity<>(eventRepo.getListEvents(Integer.valueOf(page),Integer.valueOf(n)), HttpStatus.OK);
+            return new ResponseEntity<>(eventRepo.getListSizeEvents(Integer.valueOf(page),Integer.valueOf(n)), HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }

@@ -67,7 +67,7 @@ public  class DashboardData {
 
         //__________________login data____________
         JSONObject loginJson = new JSONObject();
-        List<Event> events = eventRepo.getListEvents();
+        List<Event> events = eventRepo.getMainListEvents();
         int nSuccessful = 0;
         int nUnSucceful = 0;
 

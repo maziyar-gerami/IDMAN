@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Captcha.Models.CAPTCHA;
+import parsso.idman.Models.Group;
 import parsso.idman.Models.User;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.RepoImpls.UserRepoImpl;
@@ -17,6 +18,8 @@ import parsso.idman.Repos.UserRepo;
 import parsso.idman.utils.Email.EmailSend;
 
 import javax.naming.directory.SearchControls;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -66,7 +69,6 @@ public class Email {
             User user = userRepo.retrieveUser(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
-            EmailSend emailSend = new EmailSend();
 
             String fullUrl = userRepo.createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
 
@@ -74,6 +76,27 @@ public class Email {
             return HttpStatus.OK;
         } else
             return HttpStatus.FORBIDDEN;
+    }
+
+    public HttpStatus sendEmail(JSONObject jsonObject) {
+        if(jsonObject.size()==0){
+            List<User> users = userRepo.retrieveUsersFull();
+
+            for (User user:users)
+                sendEmail(user.getMail());
+
+        }
+        else {
+            ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+            for (Object temp : jsonArray) {
+
+                User user = userRepo.retrieveUser(temp.toString());
+                if (checkMail(user.getMail()) != null)
+                    sendEmail(user.getMail());
+            }
+        }
+
+        return HttpStatus.OK;
     }
 
     public int sendEmail(String email, String cid, String answer) {

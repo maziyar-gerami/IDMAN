@@ -1,5 +1,6 @@
 package parsso.idman;
 
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator;
@@ -22,11 +23,17 @@ import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import parsso.idman.Configs.CasUserDetailService;
+import parsso.idman.Helpers.Events.Pulling;
 import parsso.idman.Repos.FilesStorageService;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * The type Idman application.
@@ -34,6 +41,9 @@ import java.io.IOException;
 @SpringBootApplication
 
 public class IdmanApplication implements CommandLineRunner {
+
+
+
 
     private static final Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
     /**
@@ -51,31 +61,33 @@ public class IdmanApplication implements CommandLineRunner {
     static MongoTemplate mongoTemplate;
 
 
+
+
+
     /**
      * The entry point of application.
      *
      * @param args the input arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException, org.json.simple.parser.ParseException {
 
 
 
-   /*     Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
 
-            @SneakyThrows
-            @Override
-            public void run() {
-                System.out.print(new Date() + "\n");
-            }
-        }, 0, 1000);
 
-*/
+
+
 
         SpringApplication.run(IdmanApplication.class, args);
 
 
+
+
+
+
+
     }
+
 
 
 

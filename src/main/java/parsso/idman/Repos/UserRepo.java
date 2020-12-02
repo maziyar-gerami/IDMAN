@@ -3,6 +3,7 @@ package parsso.idman.Repos;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.SimpleUser;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.util.List;
 
 public interface UserRepo {
+
+    HttpStatus remove(JSONObject jsonObject);
 
     HttpStatus changePassword(String uId, String newPassword, String token);
 
@@ -32,15 +35,11 @@ public interface UserRepo {
 
     HttpStatus update(String uid, User p);
 
-    String remove(String userId);
-
-    String remove();
-
     User retrieveUser(String userId);
 
     List<JSONObject> checkMail(String token);
 
-    HttpStatus sendEmail(String email, String uid);
+    HttpStatus sendEmail(JSONObject jsonObject);
 
     int sendEmail(String email, String cid, String answer);
 
@@ -52,9 +51,9 @@ public interface UserRepo {
 
     org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException;
 
-    String createUrl(String userId, String token);
-
     HttpStatus enable(String uid);
+
+    String createUrl(String userId, String token);
 
     HttpStatus disable(String uid);
 

@@ -271,6 +271,23 @@
                                             </th>
                                         </tr>
                                     </table>
+                                    <div class="col-7 mb-3" style="text-align: center; display: inline-flex;">
+                                        <select id="selectedAction" name="type" class="form-control mr-2 ml-2">
+                                            <option value="delete" selected>{{s53}}</option>
+                                            <option value="resetEmail">{{s3}}</option>
+                                        </select>
+                                        <button v-on:click="changeSelected()" class="btn btn-primary btn-sm">
+                                            {{s54}}
+                                        </button>
+                                    </div>
+                                    <div class="col-5 mb-3">
+                                        <button v-on:click="sendAllResetEmail()" class="btn btn-primary btn-sm mr-2 ml-2">
+                                            <span class="fa-stack">
+                                                <i class="fa fa-undo fa-stack-1x"></i>
+                                            </span>
+                                            {{s57}}
+                                        </button>
+                                    </div>
                                 </div>
                                 <div v-bind:style="showS">
                                     <div  v-bind:style="resetPassEmailSent ? 'visibility: visible;' : 'visibility: hidden;' ">
@@ -280,13 +297,22 @@
                                 <div class="container mb-5" style="background-color: white; font-size: 15px;">
                                     <table class="table table-responsive" v-bind:style="showS" style="padding: .5rem;">
                                         <tr>
+                                            <th style="border: none;">#</th>
+                                            <th style="border: none;"></th>
                                             <th style="border: none;">{{U2}}</th>
                                             <th style="border: none;">{{U5}}</th>
                                             <th style="border: none;">{{U14}}</th>
                                         </tr>
                                         <tbody id="body">
 
-                                        <tr v-for="user in sortedUsers" v-bind:key="user.userId">
+                                        <tr v-for="user in sortedUsers" v-bind:key="user.userId" :id="'row-' + user.userId">
+                                            <td>{{user.orderOfRecords}}</td>
+                                            <td>
+                                                <label class="checkboxclass">
+                                                    <input :id="'checkbox-' + user.userId" type="checkbox">
+                                                    <span v-on:click="rowSelected(user.userId)" class="checkmark"></span>
+                                                </label>                                                                      
+                                            </td>
                                             <td>{{user.userId}}</td>
                                             <td>{{user.displayName}}</td>
                                             <td>

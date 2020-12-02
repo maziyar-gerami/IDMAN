@@ -13,6 +13,7 @@ public class AgentInfo {
     String browser;
 
     public AgentInfo(Client client) {
+
         try {
             this.os = client.os.family + " " + client.os.major;
         } catch (Exception e){

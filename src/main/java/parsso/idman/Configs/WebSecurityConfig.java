@@ -77,11 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
 
 
-
-
-
-
-                ///*
+                
 
                 .authorizeRequests()
                 //****************Public Objects*********************
@@ -104,20 +100,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/resetPass**").permitAll()
 
                 .antMatchers("/api/captcha/request").permitAll()
-                .antMatchers("/api/mobile/qrCode").permitAll()
-                .antMatchers("/api/mobile/sendSms").permitAll()
-                .antMatchers("/api/mobile/activate").permitAll()
+                //.antMatchers("/api/mobile/qrCode").anonymous()
+                //.antMatchers("/api/mobile/sendsms").anonymous()
+                //.antMatchers("/api/mobile/active").anonymous()
                 .antMatchers("/api/resetPass/**").permitAll()
 
                 //******************SUPERADMIN Objects************************
                 //pages
                 .antMatchers("/configs/**").hasRole("SUPERADMIN")
 
-
                 //APIs
                 .antMatchers("/api/configs/*").hasRole("SUPERADMIN")
-
-
+                
                 //******************ADMIN Objects************************
                 //pages
                 .antMatchers("/createservice").hasAnyRole("ADMIN","SUPERADMIN")
@@ -131,7 +125,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //APIs
                 .antMatchers("/api/users/**").hasAnyRole("ADMIN","SUPERADMIN")
                 .antMatchers("/api/groups").hasAnyRole("ADMIN","SUPERADMIN")
-                .antMatchers("/api/services/**").hasAnyRole("ADMIN","SUPERADMIN")
+                .antMatchers("/api/services").hasAnyRole("ADMIN","SUPERADMIN")
+                .antMatchers("/api/services").hasAnyRole("ADMIN","SUPERADMIN")
+
                 .antMatchers("/api/groups/user").hasAnyRole("ADMIN","SUPERADMIN")
                 .antMatchers("/api/groups/**").hasAnyRole("ADMIN","SUPERADMIN")
 
@@ -149,22 +145,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/events/**").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
                 .antMatchers("/api/groups/user").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
                 .antMatchers("/api/services/user").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                .antMatchers("/api/mobile/profile").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                .antMatchers("/api/mobile/services").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                .antMatchers("/api/mobile/events").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                .antMatchers("/api/dashboard").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                //.antMatchers("/api/mobile/profile").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                //.antMatchers("/api/mobile/services").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                //.antMatchers("/api/mobile/events").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                .antMatchers("/api/dashboard").hasAnyRole("ADMIN", "SUPERADMIN")
 
 
                 //Excepts
-                //.antMatchers("/api/services/**").hasRole("ADMIN")
+                .antMatchers("/api/mobile/**").anonymous()
                 //
                 .anyRequest().authenticated()
                 .and()
-
-
-
-//*/
-
 
 
 

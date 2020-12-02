@@ -217,28 +217,48 @@
                             <div class="card-body pb-0" style="background-color: #f8f9fa!important;">
                                 <h4 class="mt-3 mb-3 border-bottom pb-2" id="showS4" v-bind:style="showS"><span>{{s9}}</span></h4>
                                 <div v-bind:style="showS" id="showS2" class="row mb-3" style="padding: .5rem;">
-                                    <a v-bind:href="s18" class="btn btn-success btn-sm" :class="margin1">
-                                        <span class="fa-stack">
-                                            <i class="fa fa-plus fa-stack-1x"></i>
-                                        </span>
-                                        {{s14}}
-                                    </a>
-                                    <button v-on:click="deleteAllServices()" class="btn btn-danger btn-sm">
-                                        <span class="fa-stack">
-                                            <i class="fa fa-trash fa-stack-1x"></i>
-                                        </span>
-                                        {{s47}}
-                                    </button>
+                                    <div class="col-5">
+                                        <a v-bind:href="s18" class="btn btn-success btn-sm" :class="margin1">
+                                            <span class="fa-stack">
+                                                <i class="fa fa-plus fa-stack-1x"></i>
+                                            </span>
+                                            {{s14}}
+                                        </a>
+                                        <button v-on:click="deleteAllServices()" class="btn btn-danger btn-sm">
+                                            <span class="fa-stack">
+                                                <i class="fa fa-trash fa-stack-1x"></i>
+                                            </span>
+                                            {{s47}}
+                                        </button>
+                                    </div>
+                                    <div class="col-2"></div>
+                                    <div class="col-5" style="text-align: center; display: inline-flex;">
+                                        <select id="selectedAction" name="type" class="form-control mr-2 ml-2">
+                                            <option value="delete" selected>{{s83}}</option>
+                                        </select>
+                                        <button v-on:click="changeSelected()" class="btn btn-primary btn-sm">
+                                            {{s84}}
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="mb-2" style="background-color: white; padding: .5rem;">
                                             <table class="table table-responsive" id="showS5" v-bind:style="showS">
                                                 <tr>
+                                                    <th style="border: none;">#</th>
+                                                    <th style="border: none;"></th>
                                                     <th style="border: none;">{{s20}}</th>
                                                     <th style="border: none;">{{s21}}</th>
                                                     <th style="border: none;">{{s22}}</th>
                                                 </tr>
                                                 <tbody id="body">
-                                                    <tr v-for="service in sortedServices" v-bind:key="service.id">
+                                                    <tr v-for="service in sortedServices" v-bind:key="service.id" :id="'row-' + service.id">
+                                                        <td>{{service.orderOfRecords}}</td>
+                                                        <td>
+                                                            <label class="checkboxclass">
+                                                                <input :id="'checkbox-' + service.id" type="checkbox">
+                                                                <span v-on:click="rowSelected(service.id)" class="checkmark"></span>
+                                                            </label>                                                                      
+                                                        </td>
                                                         <td>{{service.id}}</td>
                                                         <td>{{service.name}}</td>
                                                         <td><a v-bind:href="service.serviceId">{{service.serviceId}}</a></td>

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -35,25 +37,7 @@ public class CasServiceHelper {
     ServiceRepo serviceRepo;
 
     private final String collection = "IDMAN_Services";
-
-
-    public List<Service> listServices() throws IOException {
-        File folder = new File(path); // ./services/
-        String[] files = folder.list();
-        JSONParser jsonParser = new JSONParser();
-        List<Service> services = new LinkedList<>();
-        for (String file : files) {
-            if (file.endsWith(".json"))
-                try {
-                    Service service = analyze(file);
-                    if (isCasService(service))
-                        services.add(analyze(file));
-                } catch (Exception e) {
-                    continue;
-                }
-        }
-        return services;
-    }
+    Logger logger = LoggerFactory.getLogger(CasServiceHelper.class);
 
     public CasService buildCasService(JSONObject jo) {
 
@@ -72,75 +56,56 @@ public class CasServiceHelper {
         if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
 
 
-        if (jo.get("expirationPolicy") == null) {
-            ExpirationPolicy expirationPolicy = new ExpirationPolicy();
-            service.setExpirationPolicy(expirationPolicy);
-        } else {
+        if (jo.get("expirationPolicy") == null)
+            service.setExpirationPolicy(new ExpirationPolicy());
+        else {
             JSONObject jsonObject = null;
             String s = jo.get("expirationPolicy").getClass().toString();
-            if (jo.get("expirationPolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
-                jsonObject = new JSONObject();
+            if (jo.get("expirationPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
                 jsonObject = (JSONObject) jo.get("expirationPolicy");
-            }
-            if (jo.get("expirationPolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
+            if (jo.get("expirationPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
                 jsonObject = new JSONObject((Map) jo.get("expirationPolicy"));
-            }
-
 
             ExpirationPolicy expirationPolicy = new ExpirationPolicy();
             expirationPolicy.setAtClass((String) jsonObject.get("@class"));
             expirationPolicy.setDeleteWhenExpired((boolean) jsonObject.get("deleteWhenExpired"));
             expirationPolicy.setNotifyWhenDeleted((boolean) jsonObject.get("notifyWhenDeleted"));
             service.setExpirationPolicy(expirationPolicy);
-
         }
 
-        if (jo.get("proxyPolicy") == null) {
-            ProxyPolicy proxyPolicy = new ProxyPolicy();
-            service.setProxyPolicy(proxyPolicy);
-        } else {
+        if (jo.get("proxyPolicy") == null)
+            service.setProxyPolicy(new ProxyPolicy());
+        else {
 
             JSONObject jsonObject = null;
-            String s = jo.get("proxyPolicy").getClass().toString();
-            if (jo.get("proxyPolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
-                jsonObject = new JSONObject();
+            if (jo.get("proxyPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
                 jsonObject = (JSONObject) jo.get("proxyPolicy");
-            }
-            if (jo.get("proxyPolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
-                jsonObject = new JSONObject((Map) jo.get("proxyPolicy"));
-            }
 
+            if (jo.get("proxyPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
+                jsonObject = new JSONObject((Map) jo.get("proxyPolicy"));
 
             ProxyPolicy proxyPolicy = new ProxyPolicy();
             proxyPolicy.setAtClass((String) jsonObject.get("@class"));
             proxyPolicy.setPattern((String) jsonObject.get("pattern"));
             service.setProxyPolicy(proxyPolicy);
-
         }
 
         if (jo.get("usernameAttributeProvider") == null) {
-
-            UsernameAttributeProvider usernameAttributeProvider = new UsernameAttributeProvider();
-            service.setUsernameAttributeProvider(usernameAttributeProvider);
+            service.setUsernameAttributeProvider(new UsernameAttributeProvider());
         } else {
 
             JSONObject jsonObject = null;
-            String s = jo.get("usernameAttributeProvider").getClass().toString();
-            if (jo.get("usernameAttributeProvider").getClass().toString().equals("class org.json.simple.JSONObject")) {
-                jsonObject = new JSONObject();
+            if (jo.get("usernameAttributeProvider").getClass().toString().equals("class org.json.simple.JSONObject"))
                 jsonObject = (JSONObject) jo.get("usernameAttributeProvider");
-            }
-            if (jo.get("usernameAttributeProvider").getClass().toString().equals("class java.util.LinkedHashMap")) {
-                jsonObject = new JSONObject((Map) jo.get("usernameAttributeProvider"));
-            }
 
+            if (jo.get("usernameAttributeProvider").getClass().toString().equals("class java.util.LinkedHashMap"))
+                jsonObject = new JSONObject((Map) jo.get("usernameAttributeProvider"));
 
             UsernameAttributeProvider usernameAttributeProvider = new UsernameAttributeProvider();
             usernameAttributeProvider.setAtClass((String) jsonObject.get("@class"));
             usernameAttributeProvider.setCanonicalizationMode((String) jsonObject.get("canonicalizationMode"));
             usernameAttributeProvider.setEncryptUsername((Boolean) jsonObject.get("encryptUsername"));
             service.setUsernameAttributeProvider(usernameAttributeProvider);
-
         }
         if (jo.get("attributeReleasePolicy") == null && jo.get("accessStrategy")!=null) {
 
@@ -149,13 +114,12 @@ public class CasServiceHelper {
         } else {
             JSONObject jsonObject = null;
             String s = jo.get("attributeReleasePolicy").getClass().toString();
-            if (jo.get("attributeReleasePolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
-                jsonObject = new JSONObject();
+            if (jo.get("attributeReleasePolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
                 jsonObject = (JSONObject) jo.get("attributeReleasePolicy");
-            }
-            if (jo.get("attributeReleasePolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
+
+            if (jo.get("attributeReleasePolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
                 jsonObject = new JSONObject((Map) jo.get("attributeReleasePolicy"));
-            }
+
             AttributeReleasePolicy attributeReleasePolicy = new AttributeReleasePolicy();
             attributeReleasePolicy.setAtClass((String) jsonObject.get("@class"));
             attributeReleasePolicy.setAuthorizedToReleaseAuthenticationAttributes((boolean) jsonObject.get("authorizedToReleaseAuthenticationAttributes"));
@@ -170,13 +134,11 @@ public class CasServiceHelper {
                 attributeReleasePolicy.setConsentPolicy(consentPolicy);
             } else {
 
-                if (jo.get("ConsentPolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
-                    jsonObject = new JSONObject();
+                if (jo.get("ConsentPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
                     jsonObject = (JSONObject) jo.get("ConsentPolicy");
-                }
-                if (jo.get("ConsentPolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
+
+                if (jo.get("ConsentPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
                     jsonObject = new JSONObject((Map) jo.get("ConsentPolicy"));
-                }
 
                 ConsentPolicy consentPolicy = new ConsentPolicy();
                 consentPolicy.setAtClass((String) jsonConcentPolicy.get("@class"));
@@ -198,38 +160,35 @@ public class CasServiceHelper {
 
                 }
             }
-
-
         }
 
-        MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
-
-        if (jo.get("multifactorPolicy") == null) {
-
-            service.setMultifactorPolicy(multifactorPolicy);
-        } else {
+        if (jo.get("multifactorPolicy")!=null) {
 
             JSONObject jsonObject = null;
 
-            if (jo.get("multifactorPolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
+            if (jo.get("multifactorPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
                 jsonObject = (JSONObject) jo.get("multifactorPolicy");
-            }
-            if (jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
+
+            else if (jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
                 jsonObject = new JSONObject((Map) jo.get("multifactorPolicy"));
+
+            if (jsonObject.get("multifactorAuthenticationProviders") != null) {
+
+                MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
+
+                if (jsonObject.get("failureMode") != null)
+                    multifactorPolicy.setFailureMode((String) jsonObject.get("failureMode"));
+                if (jsonObject.get("bypassEnabled") != null)
+                    multifactorPolicy.setBypassEnabled((Boolean) jsonObject.get("bypassEnabled"));
+                if (jsonObject.get("multifactorAuthenticationProviders") != null && jsonObject.get("multifactorAuthenticationProviders").toString().contains("mfa-simple"))
+                    multifactorPolicy.setMultifactorAuthenticationProviders(jsonObject.get("multifactorAuthenticationProviders").toString());
+                service.setMultifactorPolicy(multifactorPolicy);
+
             }
-            if(jsonObject.get("failureMode")!=null)
-            multifactorPolicy.setFailureMode((String) jsonObject.get("failureMode"));
-            if(jsonObject.get("bypassEnabled")!=null)
-                multifactorPolicy.setBypassEnabled((Boolean) jsonObject.get("bypassEnabled"));
-            if(jsonObject.get("multifactorAuthenticationProviders")!=null)
-                multifactorPolicy.setMultifactorAuthenticationProviders(jsonObject.get("multifactorAuthenticationProviders").toString());
-            service.setMultifactorPolicy(multifactorPolicy);
-
-
         }
 
         // AccessStrategy
-        JSONObject jsonObject = null;
+        JSONObject jsonObject;
         if (jo.get("accessStrategy")!=null) {
             jsonObject = new JSONObject((Map) jo.get("accessStrategy"));
             AccessStrategy accessStrategy = new AccessStrategy();
@@ -254,9 +213,7 @@ public class CasServiceHelper {
                     ArrayList temp1 = (ArrayList) arrayList.get(1);
                     for (int i = 0; i < temp1.size(); i++) {
 
-
                         JSONObject jsonObject1 = null;
-
 
                         if (temp1.get(i) != null &&
                                 temp1.get(i).getClass().toString().equals("class org.json.simple.JSONObject")) {
@@ -270,10 +227,7 @@ public class CasServiceHelper {
 
                         Contact contact = new Contact();
                         if (jsonObject1.get("name") != null) contact.setName(jsonObject1.get("name").toString());
-                        Email email = new Email();
                         if (jsonObject1.get("email") != null) {
-
-
                             contact.setEmail((String) jsonObject1.get("email"));
 
                             if (jsonObject1.get("phone") != (null)) contact.setPhone(jsonObject1.get("phone").toString());
@@ -285,28 +239,12 @@ public class CasServiceHelper {
                     }
                 }
 
-
                 Object[] tempObj = new Object[2];
                 tempObj[0] = temp0;
                 tempObj[1] = contacts;
                 service.setContacts(tempObj);
             }
         }
-
-        JSONObject jsonObject1 = null;
-
-
-        if (jo.get("multifactorPolicy") != null &&
-                jo.get("multifactorPolicy").getClass().toString().equals("class org.json.simple.JSONObject")) {
-            jsonObject1 = new JSONObject();
-            jsonObject1 = (JSONObject) jo.get("multifactorPolicy");
-        }
-        if (jo.get("multifactorPolicy") != null &&
-                jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap")) {
-            jsonObject1 = new JSONObject((Map) jo.get("multifactorPolicy"));
-        }
-
-
 
         return service;
 
@@ -315,14 +253,6 @@ public class CasServiceHelper {
     boolean isCasService (JSONObject jo) {
 
         if (jo.get("@class").toString().toLowerCase().contains("saml"))
-            return false;
-        return true;
-
-    }
-
-    boolean isCasService (Service service) {
-
-        if (service.getAtClass().toLowerCase().contains("saml"))
             return false;
         return true;
 
@@ -342,10 +272,8 @@ public class CasServiceHelper {
     public HttpStatus update(long id, JSONObject jsonObject) throws IOException, ParseException {
         Service oldService = serviceRepo.retrieveService(id);
 
-
         Service service = buildCasService(jsonObject);
         service.setId(id);
-
 
         String json = null;
 
@@ -356,7 +284,7 @@ public class CasServiceHelper {
             e.printStackTrace();
         }
 
-        FileWriter file = null;
+        FileWriter file;
         try {
 
             File oldFile = new File(path+oldService.getName()+"-"+service.getId()+".json");
@@ -369,15 +297,15 @@ public class CasServiceHelper {
             file = new FileWriter(path+filePath + ".json");
             file.write(json);
             file.close();
+            logger.info("Service "+"\""+service.getId()+"\""+" deleted successfully");
             return HttpStatus.OK;
         } catch (IOException e) {
             e.printStackTrace();
+            logger.warn("Updating Service "+"\""+service.getId()+"\""+" was unsuccessful");
             return HttpStatus.FORBIDDEN;
         }
 
     }
-
-
 
     public HttpStatus create(JSONObject jo) {
 
@@ -394,19 +322,19 @@ public class CasServiceHelper {
                 e.printStackTrace();
             }
 
-            FileWriter file = null;
+            FileWriter file;
             try {
                 String fileName = service.getName();
                 String s1 = fileName.replaceAll("\\s+", "");
                 s1 = s1.replaceAll("[-,]", "");
                 String filePath = s1 + "-" + service.getId();
 
-
                 InetAddress[] machines = null;
                 if(!(service.getServiceId().contains("localhost")))
                     try{
-                    machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
+                        machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
                     }catch (Exception e){
+                        logger.warn("Unable to get IP from it's serverId with these serviceId: " +service.getServiceId());
                         machines = null;
                     }
 
@@ -422,11 +350,13 @@ public class CasServiceHelper {
                 file.close();
 
                 mongoTemplate.save(microService,collection);
+                logger.info("Service "+"\""+service.getId()+"\""+" created successfully");
+
                 return HttpStatus.OK;
             } catch (IOException e) {
+                logger.warn("Creating Service "+"\""+service.getId()+"\""+" was unsuccessful");
                 return HttpStatus.FORBIDDEN;
             }
-
 
         }
 

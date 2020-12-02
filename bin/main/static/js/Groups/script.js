@@ -90,6 +90,10 @@ document.addEventListener('DOMContentLoaded', function () {
             s29: "افزودن گروه",
             s30: "ویرایش گروه",
             s31: "./events",
+            s32: "حذف گروه",
+            s33: "اعمال",
+            s34: "آیا از حذف گروه های انتخاب شده اطمینان دارید؟",
+            s35: "هیچ گروهی انتخاب نشده است.",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "شناسه",
@@ -172,6 +176,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 axios.get(url + "/api/groups") //
                     .then((res) => {
                         vm.groups = res.data;
+                        for(let i = 0; i < vm.groups.length; ++i){
+                            vm.groups[i].orderOfRecords = i + 1;
+                        }
                         vm.total = Math.ceil(vm.groups.length / vm.recordsShownOnPage);
                     });
             },
@@ -192,25 +199,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
             },
             editGroup: function (id) {
-                this.showS = ""
-                this.addS = "display:none"
-                this.editS = "display:none"
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var check = confirm(this.s23);
-                if (check == true) {
-                    axios({
-                        method: 'put',
-                        url: url + '/api/groups/' + id, //
-                        headers: {'Content-Type': 'application/json'},
-                        data: JSON.stringify({
-                            id: id,
-                            name: document.getElementById('group.nameUpdate').value,
-                            description: document.getElementById('group.descriptionUpdate').value,
-                        }),
-                    })
-                    .then((res) => {
-                        location.reload();
-                    });
+                if(document.getElementById('group.nameUpdate').value == ""){
+                    alert("لطفا قسمت های الزامی را پر کنید.");
+                }else{
+                    var check = confirm(this.s23);
+                    if (check == true) {
+                        axios({
+                            method: 'put',
+                            url: url + '/api/groups/' + id, //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                id: id,
+                                name: document.getElementById('group.nameUpdate').value,
+                                description: document.getElementById('group.descriptionUpdate').value,
+                            }),
+                        })
+                        .then((res) => {
+                            location.reload();
+                        });
+                    }
                 }
             },
             addGroupS: function () {
@@ -221,28 +229,41 @@ document.addEventListener('DOMContentLoaded', function () {
             addGroup: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios({
-                    method: 'post',
-                    url: url + "/api/groups", //
-                    headers: {'Content-Type': 'application/json'},
-                    data: JSON.stringify({
-                        name: document.getElementById('group.nameCreate').value,
-                        description: document.getElementById('group.descriptionCreate').value,
-                    }),
-                })
-                .then((res) => {
-                    location.reload();
-                });
+                if(document.getElementById('group.nameCreate').value == ""){
+                    alert("لطفا قسمت های الزامی را پر کنید.");
+                }else{
+                    axios({
+                        method: 'post',
+                        url: url + "/api/groups", //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                            name: document.getElementById('group.nameCreate').value,
+                            description: document.getElementById('group.descriptionCreate').value,
+                        }),
+                    })
+                    .then((res) => {
+                        location.reload();
+                    });
+                }
             },
             deleteGroup: function (id) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                let selectedGroups = [];
+                selectedGroups.push(id.toString());
                 var check = confirm(this.s24);
                 if (check == true) {
-                    axios.delete(url + `/api/groups/${id}`) //
-                        .then(() => {
-                            vm.getGroups();
-                        });
+                    axios({
+                        method: 'delete',
+                        url: url + "/api/groups", //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                            names: selectedGroups
+                        }),
+                    })
+                    .then((res) => {
+                        vm.getGroups();
+                    });
                 }
             },
             deleteAllGroups: function () {
@@ -250,10 +271,56 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 var check = confirm(this.s25);
                 if (check == true) {
-                    axios.delete(url + `/api/groups`) //
-                        .then(() => {
-                            vm.getGroups();
-                        });
+                    axios({
+                        method: 'delete',
+                        url: url + "/api/groups", //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                        }),
+                    })
+                    .then((res) => {
+                        vm.getGroups();
+                    });
+                }
+            },
+            changeSelected: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                let selectedGroups = [];
+                let action = document.getElementById("selectedAction").value;
+                if(action == "delete"){
+                    selectedGroups = [];
+                    for(let i = 0; i < vm.groups.length; ++i){
+                        if(document.getElementById("checkbox-" + vm.groups[i].id).checked){
+                            selectedGroups.push(vm.groups[i].id.toString());
+                        }
+                    }
+                    if(selectedGroups.length != 0){
+                        var check = confirm(this.s34);
+                        if (check == true) {
+                            axios({
+                                method: 'delete',
+                                url: url + "/api/groups", //
+                                headers: {'Content-Type': 'application/json'},
+                                data: JSON.stringify({
+                                    names: selectedGroups
+                                }),
+                            })
+                            .then((res) => {
+                                vm.getGroups();
+                            });
+                        }
+                    }else{
+                        alert(this.s35);
+                    }
+                }
+            },
+            rowSelected:function(id) {
+                let row = document.getElementById("row-" + id);
+                if(row.style.background == ""){
+                    row.style.background = "#c2dbff";
+                }else{
+                    row.style.background = "";
                 }
             },
             changeLang: function () {
@@ -294,6 +361,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s29 = "Add Group";
                     this.s30 = "Edit Group";
                     this.s31 = "./events?en";
+                    this.s32 = "Delete Group";
+                    this.s33 = "Action";
+                    this.s34 = "Are You Sure You Want To Delete Selected Groups?";
+                    this.s35 = "No Group is Selected.";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "ID";
@@ -346,16 +417,20 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s29 = "افزودن گروه";
                     this.s30 = "ویرایش گروه";
                     this.s31 = "./events";
-                    this.U0= "رمز";
-                    this.U1= "گروه ها";
-                    this.U2= "شناسه";
-                    this.U3= "نام";
-                    this.U4= "نام خانوادگی (به انگلیسی)";
-                    this.U5= "نام کامل (به فارسی)";
-                    this.U6= "شماره تماس";
-                    this.U7= "ایمیل";
-                    this.U8= "کد ملی";
-                    this.U9= "توضیحات";
+                    this.s32 = "حذف گروه";
+                    this.s33 = "اعمال";
+                    this.s34 = "آیا از حذف گروه های انتخاب شده اطمینان دارید؟";
+                    this.s35 = "هیچ گروهی انتخاب نشده است.";
+                    this.U0 = "رمز";
+                    this.U1 = "گروه ها";
+                    this.U2 = "شناسه";
+                    this.U3 = "نام";
+                    this.U4 = "نام خانوادگی (به انگلیسی)";
+                    this.U5 = "نام کامل (به فارسی)";
+                    this.U6 = "شماره تماس";
+                    this.U7 = "ایمیل";
+                    this.U8 = "کد ملی";
+                    this.U9 = "توضیحات";
                     this.U10 = "به روز رسانی";
                     this.U11 = "حذف"
                     this.U12 = "گروه جدید";

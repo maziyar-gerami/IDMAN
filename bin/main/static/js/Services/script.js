@@ -168,7 +168,13 @@ function myFunction() {
         s79: "کاربران منع شده",
         s80: "دسترسی بر اساس پارامتر",
         s81: "نام پارامتر",
-        s82: "مقدار پارامتر"
+        s82: "مقدار پارامتر",
+        s83: "حذف سرویس",
+        s84: "اعمال",
+        s85: "آیا از حذف سرویس های انتخاب شده اطمینان دارید؟",
+        s86: "هیچ سرویسی انتخاب نشده است.",
+        s87: "آیا از حذف این سرویس اطمینان دارید؟",
+        s88: "آیا از حذف تمامی سرویس ها اطمینان دارید؟"
       },
       created: function () {
         this.getUserInfo();
@@ -245,6 +251,9 @@ function myFunction() {
           axios.get(url + "/api/services") //
           .then((res) => {
             vm.services = res.data;
+            for(let i = 0; i < vm.services.length; ++i){
+              vm.services[i].orderOfRecords = i + 1;
+            }
             vm.total = Math.ceil(vm.services.length / vm.recordsShownOnPage);
           });
         },
@@ -360,7 +369,8 @@ function myFunction() {
             if(typeof res.data.multifactorPolicy !== 'undefined'){
 
               if(typeof res.data.multifactorPolicy.multifactorAuthenticationProviders !== 'undefined'){
-                if(res.data.multifactorPolicy.multifactorAuthenticationProviders == "mfa-simple"){
+                if(res.data.multifactorPolicy.multifactorAuthenticationProviders[0] == "java.util.LinkedHashSet" &&
+                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] == "[\"java.util.LinkedHashSet\",[\"mfa-simple\"]]"){
                   document.getElementsByName("mfaEnabled")[0].checked = true;
                 }else{
                   document.getElementsByName("mfaEnabled")[0].checked = false;
@@ -826,18 +836,39 @@ function myFunction() {
         deleteService: function (id) {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.delete(url + `/api/services/${id}`) //
-          .then(() => {
-            location.reload();
-          });
+          let selectedServices = [];
+          selectedServices.push(id.toString());
+          var check = confirm(this.s87);
+          if (check == true) {
+            axios({
+              method: 'delete',
+              url: url + "/api/services", //
+              headers: {'Content-Type': 'application/json'},
+              data: JSON.stringify({
+                names: selectedServices
+              }),
+            })
+            .then((res) => {
+              vm.refreshServices();
+            });
+          }
         },
         deleteAllServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.delete(url + "/api/services") //
-          .then(() => {
-            location.reload();
-          });
+          var check = confirm(this.s88);
+          if (check == true) {
+            axios({
+              method: 'delete',
+              url: url + "/api/services", //
+              headers: {'Content-Type': 'application/json'},
+              data: JSON.stringify({
+              }),
+            })
+            .then((res) => {
+              vm.refreshServices();
+            });
+          }
         },
         getGroups: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port; //
@@ -943,6 +974,46 @@ function myFunction() {
           this.flagList[index] = false;
           document.getElementById("attribute" + index).remove();
         },
+        changeSelected: function () {
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          var vm = this;
+          let selectedServices = [];
+          let action = document.getElementById("selectedAction").value;
+          if(action == "delete"){
+              selectedServices = [];
+              for(let i = 0; i < vm.services.length; ++i){
+                  if(document.getElementById("checkbox-" + vm.services[i].id).checked){
+                    selectedServices.push(vm.services[i].id.toString());
+                  }
+              }
+              if(selectedServices.length != 0){
+                  var check = confirm(this.s85);
+                  if (check == true) {
+                      axios({
+                          method: 'delete',
+                          url: url + "/api/services", //
+                          headers: {'Content-Type': 'application/json'},
+                          data: JSON.stringify({
+                              names: selectedServices
+                          }),
+                      })
+                      .then((res) => {
+                        vm.refreshServices();
+                      });
+                  }
+              }else{
+                  alert(this.s86);
+              }
+          }
+        },
+        rowSelected:function(id) {
+            let row = document.getElementById("row-" + id);
+            if(row.style.background == ""){
+                row.style.background = "#c2dbff";
+            }else{
+                row.style.background = "";
+            }
+        },
         changeLang: function () {
           if(this.lang == "EN"){
             this.margin = "margin-left: 30px;";
@@ -1032,6 +1103,12 @@ function myFunction() {
             this.s80 = "Attribute Based Access";
             this.s81 = "Attribute Name";
             this.s82 = "Attribute Value";
+            this.s83 = "Delete Service";
+            this.s84 = "Action";
+            this.s85 = "Are You Sure You Want To Delete Selected Services?";
+            this.s86 = "No Service is Selected.";
+            this.s87 = "Are You Sure You Want To Delete?";
+            this.s88 = "Are You Sure You Want To Delete All Services?";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
@@ -1120,15 +1197,14 @@ function myFunction() {
               this.s80 = "دسترسی بر اساس پارامتر";
               this.s81 = "نام پارامتر";
               this.s82 = "مقدار پارامتر";
+              this.s83 = "حذف سرویس";
+              this.s84 = "اعمال";
+              this.s85 = "آیا از حذف سرویس های انتخاب شده اطمینان دارید؟";
+              this.s86 = "هیچ سرویسی انتخاب نشده است.";
+              this.s87 = "آیا از حذف این سرویس اطمینان دارید؟";
+              this.s88 = "آیا از حذف تمامی سرویس ها اطمینان دارید؟";
           }
         },
-        /* saml: function () {
-          this.samls = true;
-        },
-        cas: function () {
-          this.samls = false;
-        }, */
-
         div: function (a, b) {
           return parseInt((a / b));
         },

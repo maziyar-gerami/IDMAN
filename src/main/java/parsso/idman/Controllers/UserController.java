@@ -2,9 +2,11 @@ package parsso.idman.Controllers;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.http.protocol.HTTP;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
@@ -236,26 +238,14 @@ public class UserController {
         return new ResponseEntity<>(userRepo.update(uid, user));
     }
 
-
     /**
-     * Delete a User with provided uId.
-     *
-     * @param userId the user id
-     * @return the response entity
-     */
-    @DeleteMapping("/api/users/u/{id}")
-    public ResponseEntity<String> unbindLdapUser(@PathVariable("id") String userId) {
-        return new ResponseEntity<>(userRepo.remove(userId), HttpStatus.OK);
-    }
-
-    /**
-     * Delete all users
+     * Delete users
      *
      * @return the response entity
      */
     @DeleteMapping("/api/users")
-    public ResponseEntity<String> unbindAllLdapUser() {
-        return new ResponseEntity<>(userRepo.remove(), HttpStatus.OK);
+    public ResponseEntity<HttpStatus> unbindAllLdapUser(@RequestBody JSONObject jsonObject) {
+        return new ResponseEntity<>(userRepo.remove(jsonObject), HttpStatus.OK);
     }
 
     /**
@@ -319,17 +309,18 @@ public class UserController {
         return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
     }
 
+
     /**
-     * sends email to specified user
+     * send Email for reset password
      *
-     * @param email and userId
-     * @return if token is correspond to provided email, returns httpStatus=ok
+     * @param jsonObject
+     * @return the http status code
      */
-    @GetMapping("/api/users/sendMail/{email}/{uid}")
-    public ResponseEntity<Integer> sendMailByAdmin(@PathVariable("email") String email,
-                                            @PathVariable("uid") String uid) {
-            return new ResponseEntity<>(userRepo.sendEmail(email, uid));
+    @PostMapping("/api/users/sendMail")
+    public ResponseEntity<HttpStatus> sendMultipleMailByAdmin(@RequestBody JSONObject jsonObject) {
+            return new ResponseEntity<>(userRepo.sendEmail(jsonObject), HttpStatus.OK);
     }
+
 
     //*************************************** Public Controllers ***************************************
 
@@ -498,4 +489,6 @@ public class UserController {
     public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));
     }
+
+
 }

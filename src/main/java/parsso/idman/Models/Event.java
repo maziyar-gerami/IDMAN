@@ -10,6 +10,7 @@ import com.mongodb.client.MongoClients;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -42,7 +43,6 @@ public class Event implements Serializable {
     @JsonIgnore
     String collection = "Agents";
 
-    @JsonIgnore
     String _id;
     @JsonProperty("action")
     String type;
@@ -99,34 +99,33 @@ public class Event implements Serializable {
     }
 
     public String service;
-    public String getService() throws UnknownHostException {
-        InetAddress addr = InetAddress.getByName(serverip);
-        return  addr.getHostName();
 
-    }
-
+    @Setter
+    @Getter
     @JsonDeserialize
     public static class Properties {
-        public String eventId;
-        public String agent;
+        private String eventId;
+        private String agent;
         @JsonProperty("clientIP")
-        public String clientip;
+        private String clientip;
         //@JsonProperty("serverIP")
         @JsonIgnore
-        public String serverip;
+        private String serverip;
         @JsonIgnore
-        public String timestamp;
+        private String timestamp;
     }
 
     public Client getAgent() {
 
-        Parser uaParser = null;
+        Parser uaParser;
+        Client c=null;
         try {
             uaParser = new Parser();
+            c = uaParser.parse(properties.agent);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Client c = uaParser.parse(properties.agent);
 
         return  c;
 
