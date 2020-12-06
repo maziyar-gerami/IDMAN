@@ -19,4 +19,6 @@ public class Tokens {
     private String resetPassToken;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String qrToken;
+    private long creationTimeStamp;
+
 }

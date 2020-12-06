@@ -1,14 +1,13 @@
 package parsso.idman.Controllers;
 
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.apache.http.protocol.HTTP;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +18,13 @@ import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Captcha.RepoImp.CaptchaRepoImp;
 import parsso.idman.Helpers.Communicate.Message;
 import parsso.idman.Helpers.Communicate.Token;
+import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.print.Pageable;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
@@ -42,7 +41,7 @@ public class UserController {
     @Value("${api.get.users}")
     private final static String apiAddress = null;
     // default sequence of variables which can be changed using frontend
-    private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11};
     @Autowired
     Token tokenClass;
     @Autowired
@@ -179,15 +178,31 @@ public class UserController {
     }
 
     /**
+     * Retrieve user with main variables
+     *
+     * @return the the user object with provided uId
+     */
+    @GetMapping("/api/users")
+    public ResponseEntity<List<SimpleUser>> retrieveUsersMain() {
+        if (userRepo.retrieveUsersMain() == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(userRepo.retrieveUsersMain(), HttpStatus.OK);
+    }
+
+    /**
      * Retrieve all users user only with main attributes
      * main attributes are as following: userId, displayName, OU
      *
      * @return the list of simpleUser object
      */
-    @GetMapping("/api/users")
-    public ResponseEntity<List<SimpleUser>> retrieveUsersMain() {
+    @GetMapping("/api/users/{page}/{n}")
+    public ResponseEntity<ListUsers> retrieveUsersMain(@PathVariable("page") int page, @PathVariable("n") int n,
+                                                       @RequestParam( name = "sortType",defaultValue = "") String sortType,
+                                                       @RequestParam(name = "groupFilter",defaultValue = "") String groupFilter,
+                                                       @RequestParam(name = "searchUid",defaultValue = "") String searchuUid,
+                                                       @RequestParam(name = "userStatus",defaultValue = "") String userStatus,
+                                                       @RequestParam(name = "searchDisplayName",defaultValue = "") String searchDisplayName) {
         if (userRepo.retrieveUsersFull().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveUsersMain(), HttpStatus.OK);
+        else return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n,sortType,groupFilter,searchuUid,searchDisplayName,userStatus), HttpStatus.OK);
     }
 
 
@@ -202,16 +217,7 @@ public class UserController {
         else return new ResponseEntity<>(userRepo.retrieveUsersFull(), HttpStatus.OK);
     }
 
-    /**
-     * Retrieve all users with all attributes with pagination
-     *
-     * @return the list of user object
-     */
-    @GetMapping("/api/users/{page}/{n}")
-    public ResponseEntity<List<SimpleUser>> retrieveUsersPagination(@PathVariable("page") int page, @PathVariable("n") int n) {
-        if (userRepo.retrieveUsersMain().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveUsersPagination(page, n), HttpStatus.OK);
-    }
+
     /**
      * Create user
      *
@@ -288,14 +294,12 @@ public class UserController {
      * @throws IOException the io exception
      */
     @PostMapping("/api/users/import")
-    public ResponseEntity<JSONArray> uploadFile(@RequestParam("file") MultipartFile file
-                                                //@RequestParam(value= "sequence", defaultValue = defaultSequence) int[] sequence,
-                                                //@RequestParam("hasHeader") boolean hasHeader
-    ) throws IOException {
+    public ResponseEntity<JSONObject> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
 
-        JSONArray jsonArray = userRepo.importFileUsers(file, defaultSequence, true);
-        if (jsonArray.get(0).equals(new JSONObject())) return new ResponseEntity<>(jsonArray, HttpStatus.OK);
-        else return new ResponseEntity<>(jsonArray, HttpStatus.FOUND);
+        JSONObject jsonObject = userRepo.importFileUsers(file, defaultSequence, true);
+        if (Integer.valueOf(jsonObject.getAsString("nUnSuccessful"))==0)
+            return new ResponseEntity<>(jsonObject, HttpStatus.OK);
+        else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
     }
 
 

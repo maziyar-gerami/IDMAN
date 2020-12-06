@@ -9,9 +9,11 @@ import parsso.idman.Models.ServicesSubModel.AccessStrategy;
 import parsso.idman.Models.ServicesSubModel.AttributeReleasePolicy;
 import parsso.idman.Models.ServicesSubModel.MultifactorPolicy;
 
+import java.io.File;
+
 @Setter
 @Getter
-public class Service {
+public class Service implements Comparable<Service>{
     private long id;
     private String name;
     @JsonProperty("@class")
@@ -39,4 +41,15 @@ public class Service {
     private String privacyUrl;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String logo;
+
+
+    @Override
+    public int compareTo(Service second) {
+        if (this.getId()>second.getId())
+            return -1;
+        else if (this.getId()<second.getId())
+            return 1;
+        else
+            return 0;
+    }
 }

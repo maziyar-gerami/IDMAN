@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
         el: '#app',
         data: {
             recordsShownOnPage: 20,
+            currentPage: 1,
             currentSort: "id",
             currentSortDir: "asc",
             userInfo: [],
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
             name: "",
             nameEN: "",
             menuSA: false,
+            changePageUsers: false,
             users: [],
             usersPage: [],
             usersConflictList: [],
@@ -52,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function () {
             addS: "display:none",
             showS: "",
             importConflictS: "display:none",
-            currentPage: 1,
             total: 1,
             ImportedFile: '',
             bootstrapPaginationClasses: {
@@ -71,6 +72,8 @@ document.addEventListener('DOMContentLoaded', function () {
             margin1: "ml-1",
             margin3: "ml-3",
             margin5: "ml-5",
+            col1Style: "padding-left: .5rem !important; padding-right: 0 !important; display: inline-flex;",
+            col2Style: "padding-left: 0 !important; padding-right: .5rem !important; display: inline-flex;",
             padding0Left: "padding-left: 0rem;",
             padding0Right: "padding-right: 0rem;",
             userPicture: "images/PlaceholderUser.png",
@@ -108,6 +111,16 @@ document.addEventListener('DOMContentLoaded', function () {
             submittedCreate: false,
             userStatus: "",
             resetPassEmailSent: false,
+            usersImported: false,
+            allIsSelected: false,
+            userIdm2MFlag: false,
+            userIdM2mFlag: false,
+            displayNamem2MFlag: false,
+            displayNameM2mFlag: false,
+            searchUserId: "",
+            searchDisplayName: "",
+            searchGroup: "none",
+            searchStatus: "none",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -165,6 +178,22 @@ document.addEventListener('DOMContentLoaded', function () {
             s55: "آیا از حذف کاربران انتخاب شده اطمینان دارید؟",
             s56: "هیچ کاربری انتخاب نشده است.",
             s57: "بازنشانی رمزعبور همه",
+            s58: "جدید",
+            s59: "بازنشانی",
+            s60: "فایل نمونه",
+            s61: "نام فارسی",
+            s62: "گروه",
+            s63: "وضعیت",
+            s64: "فعال",
+            s65: "غیرفعال",
+            s66: "قفل شده",
+            s67: "اعمال فیلتر",
+            s68: "حذف فیلتر",
+            s69: "",
+            s70: "",
+            s71: "از مجموع کاربران وارد شده تعداد ",
+            s72: " کاربر با موفقیت ثبت شدند و تعداد ",
+            s73: " کاربر در هنگام ثبت با مشکل مواجه شده و ثبت نشدند.",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -188,7 +217,8 @@ document.addEventListener('DOMContentLoaded', function () {
             U20: "وارد کردن کاربران با فایل",
             U21: "بارگزاری",
             U22: "بازنشانی رمز عبور",
-            U23: "فایل الگو"
+            U23: "فایل الگو",
+            U24: "کد پرسنلی"
         },
         created: function () {
             this.getUserInfo();
@@ -201,6 +231,25 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         methods: {
+            allSelected () {
+                if(this.allIsSelected){
+                    this.allIsSelected = false;
+                    for(let i = 0; i < this.users.length; ++i){
+                        if(document.getElementById("checkbox-" + this.users[i].userId).checked == true){
+                            document.getElementById("checkbox-" + this.users[i].userId).click();
+                        }
+                        document.getElementById("row-" + this.users[i].userId).style.background = "";
+                    }
+                }else{
+                    this.allIsSelected = true;
+                    for(let i = 0; i < this.users.length; ++i){
+                        if(document.getElementById("checkbox-" + this.users[i].userId).checked == false){
+                            document.getElementById("checkbox-" + this.users[i].userId).click();
+                        }
+                        document.getElementById("row-" + this.users[i].userId).style.background = "#c2dbff";
+                    }
+                }
+            },
             isActive (menuItem) {
                 return this.activeItem === menuItem
             },
@@ -208,9 +257,44 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.activeItem = menuItem
             },
             selectedFile() {
+                let re = /(\.xlsx)$/i;
+                let fup = document.getElementById('file');
+                let fileName = fup.value;
+                if(!re.exec(fileName)){
+                    alert(this.s24);
+                    return;
+                }else{
+                    var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                    var vm = this;
+                    var bodyFormData = new FormData();
+                    var file = document.querySelector('#file');
+                    bodyFormData.append("file", file.files[0]);
+                    axios({
+                        method: 'post',
+                        url: url + "/api/users/import",  //
+                        headers: {'Content-Type': 'multipart/form-data'},
+                        data: bodyFormData,
+                    })
+                    .then((res) => {
+                        vm.filter();
+                        vm.s69 = res.data.nSuccessful;
+                        vm.s70 = res.data.nUnSuccessful;
+                        vm.usersImported = true;
+                        setTimeout(function(){ vm.usersImported = false; }, 10000);
+                    }).catch((error) => {
+                        if(error.response.status === 302){
+                            vm.filter();
+                            vm.s69 = error.response.data.nSuccessful;
+                            vm.s70 = error.response.data.nUnSuccessful;
+                            vm.usersImported = true;
+                            setTimeout(function(){ vm.usersImported = false; }, 10000);
+                        }
+                    });
+                }
+                /*
                 this.ImportedFile = this.$refs.file.files[0];
                 const file = this.$refs.file.files[0];
-                var re = /(\.xls|\.xlsx|\.csv|\.ldif)$/i;
+                var re = /(\.xlsx)$/i;   // |\.xls|\.csv|\.ldif
 
                 if (!file) {
                     alert(this.s23);
@@ -237,9 +321,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                 data: bodyFormData,
                             })
                             .then((res) => {
-                                location.reload();
-                            })
-                            .catch((error) => {
+                                vm.filter();
+                                vm.s69 = res.data.nSuccessful;
+                                vm.s70 = res.data.nUnSuccessful;
+                                vm.usersImported = true;
+                                setTimeout(function(){ vm.usersImported = false; }, 10000);
+                            });
+                             .catch((error) => {
                                 if(error.response){
                                     vm.usernameList = error.response.data;
                                     for(var i = 0; i < error.response.data.length; ++i){
@@ -306,10 +394,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                 vm.addS = "display:none";
                                 vm.editS = "display:none";
                                 vm.importConflictS = "";
-                            });
+                            }); 
+                            
                         }
                     }
                 }
+                */
             },
             selectConflict:function(s1, s2) {
                 document.getElementById(s1).className = "btn btn-success mb-2";
@@ -458,14 +548,125 @@ document.addEventListener('DOMContentLoaded', function () {
             getUsers: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/users") //
+                let tempUsers = {};
+                this.users = [];
+                axios.get(url + "/api/users/" + vm.currentPage + "/" + vm.recordsShownOnPage) //
                     .then((res) => {
-                        vm.users = res.data;
-                        for(let i = 0; i < vm.users.length; ++i){
-                            vm.users[i].orderOfRecords = i + 1;
+                        vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
+                        res.data.userList.forEach(function (item) {
+                            tempUsers = {};
+                            tempUsers.userId = item.userId;
+                            tempUsers.displayName = item.displayName;
+                            tempUsers.memberOf = item.memberOf;
+                            vm.users.push(tempUsers);
+                        });
+                        for(let i = 0; i < vm.recordsShownOnPage; ++i){
+                            if(i < res.data.size){
+                                vm.users[i].orderOfRecords = i + 1;
+                            }
                         }
-                        vm.total = Math.ceil(vm.users.length / vm.recordsShownOnPage);
                     });
+            },
+            filter: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                let searchQuery = "?";
+                if(!this.changePageUsers){
+                    this.currentPage = 1;
+                }
+                this.users = [];
+                searchQuery = searchQuery + "searchUid=";
+                if(this.searchUserId != ""){
+                    searchQuery = searchQuery + this.searchUserId + "&";
+                }else{
+                    searchQuery = searchQuery + "&";
+                }
+                searchQuery = searchQuery + "searchDisplayName=";
+                if(this.searchDisplayName != ""){
+                    searchQuery = searchQuery + this.searchDisplayName + "&";
+                }else{
+                    searchQuery = searchQuery + "&";
+                }
+                searchQuery = searchQuery + "groupFilter=";
+                if(this.searchGroup != "none"){
+                    searchQuery = searchQuery + this.searchGroup + "&";
+                }else{
+                    searchQuery = searchQuery + "&";
+                }
+                searchQuery = searchQuery + "userStatus=";
+                if(this.searchStatus != "none"){
+                    searchQuery = searchQuery + this.searchStatus + "&";
+                }else{
+                    searchQuery = searchQuery + "&";
+                }
+                searchQuery = searchQuery + "sortType=";
+                if(this.userIdm2MFlag){
+                    searchQuery = searchQuery + "uid_m2M";
+                }else if(this.userIdM2mFlag){
+                    searchQuery = searchQuery + "uid_M2m";
+                }else if(this.displayNamem2MFlag){
+                    searchQuery = searchQuery + "displayName_m2M";
+                }else if(this.displayNameM2mFlag){
+                    searchQuery = searchQuery + "displayName_M2m";
+                }
+                let tempUsers = {};
+                this.users = [];
+                axios.get(url + "/api/users/" + vm.currentPage + "/" + vm.recordsShownOnPage + searchQuery) //
+                    .then((res) => {
+                        vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
+                        res.data.userList.forEach(function (item) {
+                            tempUsers = {};
+                            tempUsers.userId = item.userId;
+                            tempUsers.displayName = item.displayName;
+                            tempUsers.memberOf = item.memberOf;
+                            vm.users.push(tempUsers);
+                        });
+                        for(let i = 0; i < vm.recordsShownOnPage; ++i){
+                            if(i < res.data.size){
+                                vm.users[i].orderOfRecords = i + 1;
+                            }
+                        }
+                    });
+                this.changePageUsers = false;
+            },
+            deleteFilter: function () {
+                this.searchUserId = "";
+                this.searchDisplayName = "";
+                this.searchGroup = "none";
+                this.searchStatus = "none"
+                this.userIdm2MFlag = false;
+                this.userIdM2mFlag = false;
+                this.displayNamem2MFlag = false;
+                this.displayNameM2mFlag = false;
+                this.filter();
+            },
+            userIdm2M: function () {
+                this.userIdm2MFlag = true,
+                this.userIdM2mFlag = false,
+                this.displayNamem2MFlag = false,
+                this.displayNameM2mFlag = false,
+                this.filter();
+            },
+            userIdM2m: function () {
+                this.userIdm2MFlag = false,
+                this.userIdM2mFlag = true,
+                this.displayNamem2MFlag = false,
+                this.displayNameM2mFlag = false,
+                this.filter();
+            },
+            displayNamem2M: function () {
+                this.userIdm2MFlag = false,
+                this.userIdM2mFlag = false,
+                this.displayNamem2MFlag = true,
+                this.displayNameM2mFlag = false,
+                this.filter();
+            },
+            displayNameM2m: function () {
+                this.userIdm2MFlag = false,
+                this.userIdM2mFlag = false,
+                this.displayNamem2MFlag = false,
+                this.displayNameM2mFlag = true,
+                this.filter();
             },
             showUsers: function () {
                 this.showS = ""
@@ -536,10 +737,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('editInfo.mailUpdate').value == ""){
                     alert("لطفا قسمت های الزامی را پر کنید.");
                 }else{
-                    this.showS = ""
-                    this.addS = "display:none"
-                    this.editS = "display:none"
-                    this.importConflictS = "display:none"
                     let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                     var check = confirm(this.s26);
 
@@ -668,6 +865,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 mobile: document.getElementById('editInfo.mobileUpdate').value,
                                 memberOf: checkedGroups,
                                 mail: document.getElementById('editInfo.mailUpdate').value,
+                                employeeNumber: document.getElementById('editInfo.employeeNumberUpdate').value,
                                 description: document.getElementById('editInfo.descriptionUpdate').value,
                                 cStatus: statusValue,
                                 endTime: endTimeFinal
@@ -681,10 +879,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             editPass: function (id) {
-                this.showS = ""
-                this.addS = "display:none"
-                this.editS = "display:none"
-                this.importConflictS = "display:none"
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var check = confirm(this.s26);
 
@@ -874,6 +1068,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     mobile: document.getElementById('editInfo.mobileCreate').value,
                                     memberOf: checkedGroups,
                                     mail: document.getElementById('editInfo.mailCreate').value,
+                                    employeeNumber: document.getElementById('editInfo.employeeNumberCreate').value,
                                     userPassword: document.getElementById('newPasswordCreate').value,
                                     description: document.getElementById('editInfo.descriptionCreate').value,
                                     cStatus: document.getElementById('statusCreate').value,
@@ -910,7 +1105,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }),
                     })
                     .then((res) => {
-                        vm.getUsers();
+                        vm.filter();
                     });
                 }
             },
@@ -927,7 +1122,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }),
                     })
                     .then((res) => {
-                        vm.getUsers();
+                        vm.filter();
                     });
                 }
             },
@@ -987,16 +1182,15 @@ document.addEventListener('DOMContentLoaded', function () {
                   $event.preventDefault();
                 }
             },
-            changeSelected: function () {
+            changeSelected: function (action) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 let selectedUsers = [];
-                let action = document.getElementById("selectedAction").value;
                 if(action == "delete"){
                     selectedUsers = [];
                     for(let i = 0; i < vm.users.length; ++i){
                         if(document.getElementById("checkbox-" + vm.users[i].userId).checked){
-                            selectedUsers.push(vm.users[i].userId.toString());
+                             selectedUsers.push(vm.users[i].userId.toString());
                         }
                     }
                     if(selectedUsers.length != 0){
@@ -1011,7 +1205,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 }),
                             })
                             .then((res) => {
-                                vm.getUsers();
+                                vm.filter();
                             });
                         }
                     }else{
@@ -1049,6 +1243,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 }else{
                     row.style.background = "";
                 }
+                this.allIsSelected = false;
+                if(document.getElementById("selectAllCheckbox").checked == true){
+                    document.getElementById("selectAllCheckbox").click();
+                }
             },
             changeLang: function () {
                 if(this.lang == "EN"){
@@ -1059,6 +1257,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.margin1 = "mr-1";
                     this.margin3 = "mr-3";
                     this.margin5 = "mr-5";
+                    this.col1Style = "padding-left: 0 !important; padding-right: .5rem !important; display: inline-flex;";
+                    this.col2Style = "padding-left: .5rem !important; padding-right: 0 !important; display: inline-flex;";
                     this.padding0Left = "padding-right: 0rem;";
                     this.padding0Right = "padding-left: 0rem;";
                     this.eye = "left: 1%;";
@@ -1120,18 +1320,32 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s55 = "Are You Sure You Want To Delete Selected Users?";
                     this.s56 = "No User is Selected.";
                     this.s57 = "Reset Password All";
+                    this.s58 = "New";
+                    this.s59 = "Reset";
+                    this.s60 = "Sample";
+                    this.s61 = "Full Name";
+                    this.s62 = "Group";
+                    this.s63 = "Status";
+                    this.s64 = "Active";
+                    this.s65 = "Disabled";
+                    this.s66 = "Locked";
+                    this.s67 = "Filter";
+                    this.s68 = "No Filter";
+                    this.s71 = "From Imported Users, ";
+                    this.s72 = " Of Them Were Imported Successfully, And ";
+                    this.s73 = " Of Them Faced Some Problem And Were Not Imported.";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
                     this.U3 = "First Name (In English)";
                     this.U4 = "Last Name (In English)";
-                    this.U5 = "FullName (In Persian)";
+                    this.U5 = "Full Name (In Persian)";
                     this.U6 = "Phone";
                     this.U7 = "Email";
                     this.U8 = "NID";
                     this.U9 = "Description";
                     this.U10 = "Update";
-                    this.U11 = "Delete"
+                    this.U11 = "Delete";
                     this.U12 = "New User";
                     this.U13 = "Edit";
                     this.U14 = "Groups";
@@ -1142,6 +1356,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U21 = "Upload";
                     this.U22 = "Reset Password";
                     this.U23 = "Template File";
+                    this.U24 = "Employee Number";
                     this.rules[0].message = "- One Lowercase or Uppercase English Letter Required.";
                     this.rules[1].message = "- One special Character or Persian Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
@@ -1154,6 +1369,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.margin1 = "ml-1";
                     this.margin3 = "ml-3";
                     this.margin5 = "ml-5";
+                    this.col1Style = "padding-left: .5rem !important; padding-right: 0 !important; display: inline-flex;";
+                    this.col2Style = "padding-left: 0 !important; padding-right: .5rem !important; display: inline-flex;";
                     this.padding0Left = "padding-left: 0rem;";
                     this.padding0Right = "padding-right: 0rem;";
                     this.eye = "right: 1%;";
@@ -1215,6 +1432,20 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s55 = "آیا از حذف کاربران انتخاب شده اطمینان دارید؟";
                     this.s56 = "هیچ کاربری انتخاب نشده است.";
                     this.s57 = "بازنشانی رمزعبور همه";
+                    this.s58 = "جدید";
+                    this.s59 = "بازنشانی";
+                    this.s60 = "فایل نمونه";
+                    this.s61 = "نام فارسی";
+                    this.s62 = "گروه";
+                    this.s63 = "وضعیت";
+                    this.s64 = "فعال";
+                    this.s65 = "غیرفعال";
+                    this.s66 = "قفل شده";
+                    this.s67 = "اعمال فیلتر";
+                    this.s68 = "حذف فیلتر";
+                    this.s71 = "از مجموع کاربران وارد شده تعداد ";
+                    this.s72 = " کاربر با موفقیت ثبت شدند و تعداد ";
+                    this.s73 = " کاربر در هنگام ثبت با مشکل مواجه شده و ثبت نشدند.";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه";
@@ -1237,6 +1468,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U21 = "بارگزاری";
                     this.U22 = "بازنشانی رمز عبور";
                     this.U23 = "فایل الگو";
+                    this.U24 = "کد پرسنلی";
                     this.rules[0].message = "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ";
                     this.rules[1].message = "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ";
                     this.rules[2].message = "حداقل ۸ کاراکتر باشد. ";
@@ -1249,12 +1481,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return this.userFound;
             },
             sortedUsers:function() {
-                this.usersPage = [];
-                for(let i = 0; i < this.recordsShownOnPage; ++i){
-                    if(i + ((this.currentPage - 1) * this.recordsShownOnPage) <= this.users.length - 1){
-                        this.usersPage[i] = this.users[i + ((this.currentPage - 1) * this.recordsShownOnPage)];
-                    }
-                }
+                this.usersPage = this.users;
                 return this.usersPage;
             },
             notSamePasswords () {
@@ -1395,6 +1622,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(errors.length === 2) return 2;
                 if(errors.length === 3) return 1;
                 if(errors.length === 4) return 0;
+            }
+        },
+        watch : {
+            currentPage : function () {
+              this.changePageUsers = true;
+              this.filter();
             }
         }
     });

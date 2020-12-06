@@ -46,6 +46,7 @@ public class BuildAttributes {
         attrs.put("userPassword", p.getUserPassword() != null ? p.getUserPassword() : defaultPassword);
         attrs.put("displayName", p.getDisplayName());
         attrs.put("mobile", p.getMobile().equals("") || p.getMobile() == null ? " " : p.getMobile());
+        attrs.put("employeeNumber",  (p.getEmployeeNumber()==null? "0":p.getEmployeeNumber()));
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
         if (p.getTokens()!=null && p.getTokens().getResetPassToken() != null)
@@ -95,6 +96,11 @@ public class BuildAttributes {
         if (p.getUserPassword() != null && p.getUserPassword() != "")
             context.setAttributeValue("userPassword", p.getUserPassword());
         if (p.getMobile() != "" && p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
+        if (p.getEmployeeNumber() != null) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
+        if (p.getTimeStamp()>0)
+        context.setAttributeValue("createtimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
+
+
         if (p.getMail() != "" && p.getFirstName() != null) context.setAttributeValue("mail", p.getMail());
         if ((p.getFirstName()) != null || (p.getLastName() != null)) {
             if (p.getFirstName() == null)
@@ -145,6 +151,8 @@ public class BuildAttributes {
         if (p.getEndTime() != "" && old.getEndTime() != null)
             context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()));
 
+        if (p.getEmployeeNumber() != "" && old.getEmployeeNumber() != null)
+            context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
 
 
         return context;

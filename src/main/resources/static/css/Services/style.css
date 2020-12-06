@@ -152,8 +152,9 @@ html,body {
   .slider.round:before {
     border-radius: 50%;
   } 
-  #enInput {
+  .enInput {
     text-align: left;
+    direction: ltr;
   }
 
   .checkboxclass {
@@ -216,4 +217,28 @@ html,body {
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
+}
+
+@media only screen and (min-width: 776px) {
+  .mobileView{
+    display: none;
+  }
+  .desktopView{
+    display: "";
+  }
+  .tableList{
+    display: inline-table;
+  }
+}
+
+@media only screen and (max-width: 775px) {
+  .mobileView{
+    display: "";
+  }
+  .desktopView{
+    display: none;
+  }
+  .tableList{
+    display: block;
+  }
 }

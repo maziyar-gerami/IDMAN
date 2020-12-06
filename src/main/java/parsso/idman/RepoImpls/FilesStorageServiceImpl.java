@@ -49,12 +49,14 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     }
 
     @Override
-    public void save(MultipartFile file, String name) {
+    public void save(MultipartFile file, String name,String path) {
         try {
             //InputStream inputStream = file.getInputStream();
 
             //Files.copy(inputStream, this.photoPathRoot.resolve(name));
-            Files.copy(file.getInputStream(), this.photoPathRoot.resolve(name));
+
+            Path path1 = Paths.get(path);
+            Files.copy(file.getInputStream(), path1.resolve(name));
 
 
         } catch (Exception e) {

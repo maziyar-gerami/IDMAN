@@ -77,7 +77,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
 
 
-                
+
+///*
 
                 .authorizeRequests()
                 //****************Public Objects*********************
@@ -150,14 +151,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers("/api/mobile/events").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
                 .antMatchers("/api/dashboard").hasAnyRole("ADMIN", "SUPERADMIN")
 
-
                 //Excepts
-                .antMatchers("/api/mobile/**").anonymous()
+                .antMatchers("/api/mobile/**").permitAll()
+
+
                 //
                 .anyRequest().authenticated()
                 .and()
 
-
+//*/
 
                 .formLogin()
                 .loginPage("/login")

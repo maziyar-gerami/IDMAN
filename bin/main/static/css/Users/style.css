@@ -367,3 +367,48 @@ html,body {
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+
+.up-arrow {
+  width: 0;
+  height: 0;
+  border: solid 5px transparent;
+  background: transparent;
+  border-bottom: solid 7px black;
+  border-top-width: 0;
+  cursor: pointer;
+}
+
+.down-arrow {
+  width: 0;
+  height: 0;
+  border: solid 5px transparent;
+  background: transparent;
+  border-top: solid 7px black;
+  border-bottom-width: 0;
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+@media only screen and (min-width: 776px) {
+  .mobileView{
+    display: none;
+  }
+  .desktopView{
+    display: "";
+  }
+  #tableList{
+    display: inline-table;
+  }
+}
+
+@media only screen and (max-width: 775px) {
+  .mobileView{
+    display: "";
+  }
+  .desktopView{
+    display: none;
+  }
+  #tableList{
+    display: block;
+  }
+}

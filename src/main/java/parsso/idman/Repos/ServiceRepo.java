@@ -3,6 +3,7 @@ package parsso.idman.Repos;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.ServiceType.MicroService;
 import parsso.idman.Models.User;
@@ -22,6 +23,8 @@ public interface ServiceRepo {
     HttpStatus deleteService(long id) throws IOException, ParseException;
 
     LinkedList<String> deleteServices(JSONObject files) throws IOException;
+
+    String uploadMetadata(MultipartFile file, String userId);
 
     HttpStatus createService(JSONObject jsonObject, String system) throws IOException;
 

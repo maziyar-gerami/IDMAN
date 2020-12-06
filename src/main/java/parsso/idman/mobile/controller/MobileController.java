@@ -120,12 +120,22 @@ public class  MobileController {
 
     }
 
-    @GetMapping("/api/mobile/user")
+    @PostMapping("/api/mobile/user")
     public @ResponseBody
     ResponseEntity<User> M_retrieveUser(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) {
         User user = userRepo.retrieveUser(uid);
         if (MobileToken.equals(user.getTokens().getMobileToken()))
             return new ResponseEntity<>(user, HttpStatus.OK);
+        else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+    }
+
+    @PostMapping("/api/mobile/photo")
+    public @ResponseBody
+    ResponseEntity<byte[]> M_retrieveUserPhoto(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) {
+        User user = userRepo.retrieveUser(uid);
+        if (MobileToken.equals(user.getTokens().getMobileToken()))
+            return new ResponseEntity<>(userRepo.showProfilePic(user), HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }

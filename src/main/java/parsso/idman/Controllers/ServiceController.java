@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.ServiceType.MicroService;
 import parsso.idman.Models.User;
@@ -75,6 +76,20 @@ public class ServiceController {
     public ResponseEntity<String> updateService(@PathVariable("id") long id,
                                                 @RequestBody JSONObject jsonObject,@PathVariable("system") String system) throws IOException, ParseException {
         return new ResponseEntity<>(serviceRepo.updateService(id, jsonObject, system));
+    }
+
+    /**
+     * metaData for logged-in user
+     *
+     * @return the response entity
+     */
+    @PostMapping("/api/configs/user/metadata")
+    public ResponseEntity<String> uploadMetadata(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        String result = serviceRepo.uploadMetadata(file, request.getUserPrincipal().getName());
+        if (result != null)
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
 

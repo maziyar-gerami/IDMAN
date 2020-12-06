@@ -11,20 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Service.CasServiceHelper;
 import parsso.idman.Helpers.Service.SamlServiceHelper;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.ServiceType.MicroService;
 import parsso.idman.Models.User;
+import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.ServiceRepo;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 @org.springframework.stereotype.Service
@@ -39,6 +39,13 @@ public class ServiceRepoImpl implements ServiceRepo {
     Logger logger = LoggerFactory.getLogger(ServiceRepoImpl.class);
     @Value("${services.folder.path}")
     private String path;
+
+    @Value("${metadata.file.path}")
+    private String uploadedFilesPath;
+
+    @Autowired
+    FilesStorageService storageService;
+
 
     @Override
     public List<MicroService> listUserServices(User user) throws IOException {
@@ -93,6 +100,7 @@ public class ServiceRepoImpl implements ServiceRepo {
             if (file.endsWith(".json"))
                 try {
                     services.add(analyze(file));
+                    Collections.sort(services);
                 } catch (Exception e) {
                     e.printStackTrace();
                     logger.warn("Unable to read service "+file);
@@ -180,6 +188,21 @@ public class ServiceRepoImpl implements ServiceRepo {
             return samlServiceHelper.create(jsonObject);
 
         return HttpStatus.FORBIDDEN;
+    }
+
+    @Override
+    public String uploadMetadata(MultipartFile file, String userId) {
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
+
+        try {
+            storageService.save(file, userId+timeStamp+file.getOriginalFilename(),uploadedFilesPath);
+            return uploadedFilesPath+userId+timeStamp+file.getOriginalFilename();
+
+        }catch (Exception e){
+            return null;
+        }
+
+
     }
 
     @Override

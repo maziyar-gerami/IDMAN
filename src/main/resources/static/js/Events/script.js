@@ -622,6 +622,6 @@ document.addEventListener('DOMContentLoaded', function () {
         this.changePageEvents = true;
         this.getEventsDate();
       }
-   }
+    }
   })
 })

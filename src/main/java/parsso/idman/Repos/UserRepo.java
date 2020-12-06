@@ -1,11 +1,11 @@
 package parsso.idman.Repos;
 
-import net.minidev.json.JSONArray;
+import com.google.gson.JsonObject;
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 
@@ -21,15 +21,19 @@ public interface UserRepo {
 
     String showProfilePic(HttpServletResponse response, User user);
 
+    byte[] showProfilePic(User user);
+
     HttpStatus uploadProfilePic(MultipartFile file, String name);
 
     List<SimpleUser> retrieveUsersMain();
+
+    List<SimpleUser> retrieveUsersMain(String sortType,String groupFilter,String searchuUid, String searchUid,String userStatus);
 
     User getName(String uid, String token);
 
     List<User> retrieveUsersFull();
 
-    JSONObject create(User p);
+    JsonObject create(User p);
 
     JSONObject createUserImport(User p);
 
@@ -41,13 +45,15 @@ public interface UserRepo {
 
     HttpStatus sendEmail(JSONObject jsonObject);
 
+    ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus);
+
     int sendEmail(String email, String cid, String answer);
 
     int sendEmail(String email, String uid, String cid, String answer);
 
     HttpStatus updatePass(String userId, String pass, String token);
 
-    JSONArray importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException;
+    JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException;
 
     org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException;
 
@@ -61,5 +67,4 @@ public interface UserRepo {
 
     int requestToken(User user);
 
-    List<SimpleUser> retrieveUsersPagination(int page, int n);
 }

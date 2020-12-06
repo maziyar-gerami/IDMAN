@@ -66,6 +66,7 @@ public class Email {
 
     public HttpStatus sendEmail(String email) {
         if (checkMail(email) != null) {
+            List<JSONObject> s = checkMail(email);
             User user = userRepo.retrieveUser(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
@@ -83,7 +84,8 @@ public class Email {
             List<User> users = userRepo.retrieveUsersFull();
 
             for (User user:users)
-                sendEmail(user.getMail());
+                if (user.getUserId()!="su"&&user.getMail()!=null&&user.getMail()!=null&&user.getMail()!=""&&user.getMail()!=" ")
+                    sendEmail(user.getMail());
 
         }
         else {
@@ -114,7 +116,6 @@ public class Email {
             User user = userRepo.retrieveUser(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
-            EmailSend emailSend = new EmailSend();
 
             String fullUrl = userRepo.createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
 

@@ -1,5 +1,7 @@
 package parsso.idman.Helpers.User;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldif.LDIFException;
 import com.unboundid.ldif.LDIFReader;
@@ -14,6 +16,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
@@ -26,15 +29,20 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+@Service
 public class ImportUsers {
 
     @Autowired
     private UserRepo userRepo;
 
-    public JSONArray excelSheetAnalyze(Sheet sheet, int[] sequence, boolean hasHeader) {
+    public JSONObject excelSheetAnalyze(Sheet sheet, int[] sequence, boolean hasHeader) {
         JSONArray jsonArray = new JSONArray();
 
         Iterator<Row> rowIterator = sheet.iterator();
+
+        int count=0;
+        int nUnSuccessful =0;
+
 
         if (hasHeader == true) rowIterator.next();
 
@@ -62,18 +70,36 @@ public class ImportUsers {
             List<String> lst = extractGroups(tt1);
             user.setMemberOf(lst);
             user.setDescription(row.getCell(sequence[7]).getStringCellValue());
-            user.setUserPassword(row.getCell(sequence[8]).getStringCellValue());
+            user.setStatus(row.getCell(sequence[8]).getStringCellValue());
+            user.setEmployeeNumber(row.getCell(sequence[9]).getStringCellValue());
+            user.setUserPassword(row.getCell(sequence[10]).getStringCellValue());
 
 
             temp = userRepo.createUserImport(user);
 
 
-            if (temp != null)
+            if (temp.size()==0) {
                 jsonArray.add(temp);
+                nUnSuccessful++;
+            }
+
+            count++;
 
 
         }
-        return jsonArray;
+
+        JSONObject finalJson = new JSONObject();
+        finalJson.put("count",count);
+        finalJson.put("nUnSuccessful",nUnSuccessful);
+        finalJson.put("nSuccessful",count-nUnSuccessful);
+
+
+        finalJson.put("list",jsonArray);
+
+
+
+
+        return finalJson;
     }
 
     public JSONObject compareUsers(User oldUser, User newUser) {
@@ -99,10 +125,10 @@ public class ImportUsers {
 
     }
 
-    public JSONArray csvSheetAnalyze(BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException {
+    public JsonArray csvSheetAnalyze(BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException {
 
         String row;
-        JSONArray jsonArray = new JSONArray();
+        JsonArray jsonArray = new JsonArray();
         int i = 0;
         List<User> lsUserConflicts = new LinkedList();
 
@@ -146,9 +172,9 @@ public class ImportUsers {
         return ls;
     }
 
-    public JSONArray importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
+    public JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
 
-        JSONArray lsusers = new JSONArray();
+        JSONObject lsusers = new JSONObject();
 
 
         InputStream insfile = file.getInputStream();
@@ -180,7 +206,7 @@ public class ImportUsers {
 
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-            lsusers = csvSheetAnalyze(csvReader, sequence, hasHeader);
+            //lsusers = csvSheetAnalyze(csvReader, sequence, hasHeader);
 
 
             csvReader.close();
@@ -189,7 +215,7 @@ public class ImportUsers {
 
             final LDIFReader ldifReader = new LDIFReader(insfile);
 
-            lsusers = ldifAnalayze(ldifReader, sequence, hasHeader);
+            //lsusers = ldifAnalayze(ldifReader, sequence, hasHeader);
         }
 
 

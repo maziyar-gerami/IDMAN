@@ -93,14 +93,15 @@ document.addEventListener('DOMContentLoaded', function () {
             s27: "پیکربندی",
             s28: "./configs",
             s29: "./events",
-            s30: "فعال سازی پارسو اپ",
-            s31: "لطفا کد QR را جهت فعال سازی پارسو اپ، اسکن کنید.",
+            s30: "برنامه موبایل",
+            s31: "لطفا کد QR را جهت فعال سازی برنامه موبایل، اسکن کنید.",
             s32: "کد تایید با موفقیت ارسال شد. لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.",
             s33: "لطفا جهت تغییر رمز عبور خود، ابتدا درخواست کد تایید را داده و سپس کد ارسال شده را وارد نمایید.",
             s34: "درخواست کد تایید",
             s35: "تایید",
             s36: "کد تایید را وارد نمایید",
             s37: "خطایی رخ داده است. لطفا از صحت شماره موبایل خود اطمینان حاصل فرمایید.",
+            s38: "لطفا برای دریافت برنامه موبایل بر روی لینک زیر کلیک کنید.",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -118,7 +119,8 @@ document.addEventListener('DOMContentLoaded', function () {
             U14: "گروههای عضو",
             U15: "تکرار رمز عبور",
             U16: "تغییر رمز عبور",
-            U17: "تغییر اطلاعات کاربری"
+            U17: "تغییر اطلاعات کاربری",
+            U18: "کد پرسنلی"
         },
         created: function () {
             this.getUserInfo();
@@ -208,6 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 displayName: document.getElementById('userInfo.displayNameUpdate').value,
                                 mobile: document.getElementById('userInfo.mobileUpdate').value,
                                 mail: document.getElementById('userInfo.mailUpdate').value,
+                                employeeNumber: document.getElementById('userInfo.employeeNumberUpdate').value,
                                 description: document.getElementById('userInfo.descriptionUpdate').value
                             }),
                         }).then((res) => {
@@ -326,23 +329,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s27 = "Configs";
                     this.s28 = "./configs?en";
                     this.s29 = "./events?en";
-                    this.s30 = "Parsso App Activation";
-                    this.s31 = "Please Scan The QR Code To Activate Parsso App.";
+                    this.s30 = "Mobile Application";
+                    this.s31 = "Please Scan The QR Code To Activate The App.";
                     this.s32 = "Verification Code Sent Successfully. Please Go To Your SMS Inbox And Enter The Code We Sent You.";
                     this.s33 = "To Change Your Password, Please Request a Verification Code And Then Enter the Sent Code.";
                     this.s34 = "Request Code";
                     this.s35 = "Submit";
                     this.s36 = "Enter The Verification Code";
                     this.s37 = "An Error Has Occurred. Please Make Sure Your Mobile Number Is Valid.";
-                    this.U0= "Password";
-                    this.U1= "Users";
-                    this.U2= "ID";
-                    this.U3= "First Name (In English)";
-                    this.U4= "Last Name (In English)";
-                    this.U5= "FullName (In Persian)";
-                    this.U6= "Phone";
-                    this.U7= "Email";
-                    this.U8= "NID";
+                    this.s38 = "Please Click On The Link Below To Download The App.";
+                    this.U0 = "Password";
+                    this.U1 = "Users";
+                    this.U2 = "ID";
+                    this.U3 = "First Name (In English)";
+                    this.U4 = "Last Name (In English)";
+                    this.U5 = "FullName (In Persian)";
+                    this.U6 = "Phone";
+                    this.U7 = "Email";
+                    this.U8 = "NID";
                     this.U9 = "Description";
                     this.U10 = "Update";
                     this.U11 = "Delete"
@@ -350,6 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U13 = "Edit";
                     this.U16 = "Edit Password";
                     this.U17 = "Edit User Information";
+                    this.U18 = "Employee Number";
                     this.rules[0].message = "- One Lowercase or Uppercase English Letter Required.";
                     this.rules[1].message = "- One special Character or Persian Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
@@ -390,14 +395,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s27 = "پیکربندی";
                     this.s28 = "./configs";
                     this.s29 = "./events";
-                    this.s30 = "فعال سازی پارسو اپ";
-                    this.s31 = "لطفا کد QR را جهت فعال سازی پارسو اپ، اسکن کنید.";
+                    this.s30 = "برنامه موبایل";
+                    this.s31 = "لطفا کد QR را جهت فعال سازی برنامه موبایل، اسکن کنید.";
                     this.s32 = "کد تایید با موفقیت ارسال شد. لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.";
                     this.s33 = "لطفا جهت تغییر رمز عبور خود، ابتدا درخواست کد تایید را داده و سپس کد ارسال شده را وارد نمایید.";
                     this.s34 = "درخواست کد تایید";
                     this.s35 = "تایید";
                     this.s36 = "کد تایید را وارد نمایید";
                     this.s37 = "خطایی رخ داده است. لطفا از صحت شماره موبایل خود اطمینان حاصل فرمایید.";
+                    this.s38 = "لطفا برای دریافت برنامه موبایل بر روی لینک زیر کلیک کنید.";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";
@@ -414,6 +420,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U13 = "ویرایش";
                     this.U16 = "تغییر رمز عبور";
                     this.U17 = "تغییر اطلاعات کاربری";
+                    this.U18 = "کد پرسنلی";
                     this.rules[0].message = "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ";
                     this.rules[1].message = "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ";
                     this.rules[2].message = "حداقل ۸ کاراکتر باشد. ";

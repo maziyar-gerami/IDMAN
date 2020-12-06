@@ -164,3 +164,27 @@ html,body {
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+
+@media only screen and (min-width: 776px) {
+  .mobileView{
+    display: none;
+  }
+  .desktopView{
+    display: "";
+  }
+  #tableList{
+    display: inline-table;
+  }
+}
+
+@media only screen and (max-width: 775px) {
+  .mobileView{
+    display: "";
+  }
+  .desktopView{
+    display: none;
+  }
+  #tableList{
+    display: block;
+  }
+}

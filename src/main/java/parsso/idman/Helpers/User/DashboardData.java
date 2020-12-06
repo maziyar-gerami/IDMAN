@@ -11,7 +11,10 @@ import parsso.idman.RepoImpls.ServiceRepoImpl;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
+import parsso.idman.utils.Convertor.DateUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
@@ -72,10 +75,11 @@ public  class DashboardData {
         int nUnSucceful = 0;
 
         for (Event event : events) {
-            if (event.getType().equals("Unsuccessful Login")) {
+            Date date1=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(event.getCreationTime());
+            if (event.getType().equals("Unsuccessful Login")&&DateUtils.isToday(date1)) {
                 nUnSucceful++;
 
-            } else if (event.getType().equals("Successful Login"))
+            } else if (event.getType().equals("Successful Login")&&DateUtils.isToday(date1))
                 nSuccessful++;
         }
         loginJson.put("total", nSuccessful + nUnSucceful);

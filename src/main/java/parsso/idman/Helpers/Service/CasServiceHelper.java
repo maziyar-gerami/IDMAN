@@ -124,7 +124,11 @@ public class CasServiceHelper {
             attributeReleasePolicy.setAtClass((String) jsonObject.get("@class"));
             attributeReleasePolicy.setAuthorizedToReleaseAuthenticationAttributes((boolean) jsonObject.get("authorizedToReleaseAuthenticationAttributes"));
             attributeReleasePolicy.setAuthorizedToReleaseCredentialPassword((Boolean) jsonObject.get("authorizedToReleaseCredentialPassword"));
-            attributeReleasePolicy.setOrder((long) jsonObject.get("order"));
+            try {
+                attributeReleasePolicy.setOrder((int) jsonObject.get("order"));
+            } catch (Exception e) {
+                attributeReleasePolicy.setOrder((long) jsonObject.get("order"));
+            }
             attributeReleasePolicy.setExcludeDefaultAttributes((boolean) jsonObject.get("excludeDefaultAttributes"));
             attributeReleasePolicy.setAuthorizedToReleaseProxyGrantingTicket((boolean) jsonObject.get("authorizedToReleaseProxyGrantingTicket"));
 

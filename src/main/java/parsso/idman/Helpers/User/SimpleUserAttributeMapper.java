@@ -16,9 +16,21 @@ public class SimpleUserAttributeMapper implements AttributesMapper<SimpleUser> {
 
         user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
         user.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
+        user.setTimeStamp(Long.valueOf(attributes.get("createtimestamp").get().toString().substring(0,14)));
         int nGroups = (null == attributes.get("ou") ? 0 : attributes.get("ou").size());
         List<String> ls = new LinkedList<>();
         for (int i = 0; i < nGroups; i++) ls.add(attributes.get("ou").get(i).toString());
+
+        if (null != attributes.get("pwdAccountLockedTime"))
+            if (attributes.get("pwdAccountLockedTime").get().toString().equals("40400404040404.950Z"))
+                user.setStatus("disabled");
+            else
+                user.setStatus("locked");
+         else
+            user.setStatus("active");
+
+
+
         user.setMemberOf(ls);
 
         return user;

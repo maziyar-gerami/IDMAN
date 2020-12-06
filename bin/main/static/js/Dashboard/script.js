@@ -120,9 +120,6 @@ document.addEventListener('DOMContentLoaded', function () {
       setActive (menuItem) {
         this.activeItem = menuItem
       },
-      connect (add) {
-        window.open(add);
-      },
       isAdmin: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
@@ -199,6 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
       getServices: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        const regex = new RegExp('^', 'g');
         axios.get(url + "/api/services/user") //
         .then((res) => {
           vm.services = res.data;
@@ -218,6 +216,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }else{
               vm.services[i].description = "...";
             }
+
+            vm.services[i].serviceId = vm.services[i].serviceId.replace(/\((.*?)\)/g, "");
+            vm.services[i].serviceId = vm.services[i].serviceId.replace(/\^/g, "");
           }
         });
       },

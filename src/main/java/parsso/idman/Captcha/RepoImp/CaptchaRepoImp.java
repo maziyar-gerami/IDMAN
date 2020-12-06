@@ -128,7 +128,6 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         g2d.dispose();
 
         try {
-            //ImageIO.write(img, "png", new File("D:\\\\app\\Textooo.png"));
             CAPTCHAimage captchaImage = new CAPTCHAimage();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ImageIO.write(img, "png", out);

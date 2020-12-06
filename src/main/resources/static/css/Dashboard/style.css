@@ -10,6 +10,10 @@ body {
 button,.btn {
   border-radius: 2rem;
 }
+.enInput {
+  text-align: left;
+  direction: ltr;
+}
 textarea {
   border-radius: 2rem;
 }

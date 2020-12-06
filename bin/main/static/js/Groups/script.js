@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             margin1: "ml-1",
             userPicture: "images/PlaceholderUser.png",
+            allIsSelected: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -106,12 +107,12 @@ document.addEventListener('DOMContentLoaded', function () {
             U9: "توضیحات",
             U10: "به روزرسانی",
             U11: "حذف",
-            U12: "گروه جدید",
+            U12: "جدید",
             U13: "ویرایش",
             U14: "گروههای عضو",
             U15: "تکرار رمز عبور",
             U16: "کاربر مورد نظر در گروههای زیر عضویت دارد. کاربر مورد نظر از چه گروههایی حذف شود؟",
-            U17: "حذف همه",
+            U17: "حذف",
             h1: "ترکیبی از حروف و اعداد. مثال: ali123",
             p1: "خیلی ضعیف",
             p2: "متوسط",
@@ -127,6 +128,25 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         methods: {
+            allSelected () {
+                if(this.allIsSelected){
+                    this.allIsSelected = false;
+                    for(let i = 0; i < this.groups.length; ++i){
+                        if(document.getElementById("checkbox-" + this.groups[i].id).checked == true){
+                            document.getElementById("checkbox-" + this.groups[i].id).click();
+                        }
+                        document.getElementById("row-" + this.groups[i].id).style.background = "";
+                    }
+                }else{
+                    this.allIsSelected = true;
+                    for(let i = 0; i < this.groups.length; ++i){
+                        if(document.getElementById("checkbox-" + this.groups[i].id).checked == false){
+                            document.getElementById("checkbox-" + this.groups[i].id).click();
+                        }
+                        document.getElementById("row-" + this.groups[i].id).style.background = "#c2dbff";
+                    }
+                }
+            },
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
@@ -283,11 +303,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
             },
-            changeSelected: function () {
+            changeSelected: function (action) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 let selectedGroups = [];
-                let action = document.getElementById("selectedAction").value;
                 if(action == "delete"){
                     selectedGroups = [];
                     for(let i = 0; i < vm.groups.length; ++i){
@@ -321,6 +340,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     row.style.background = "#c2dbff";
                 }else{
                     row.style.background = "";
+                }
+                this.allIsSelected = false;
+                if(document.getElementById("selectAllCheckbox").checked == true){
+                    document.getElementById("selectAllCheckbox").click();
                 }
             },
             changeLang: function () {
@@ -377,9 +400,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U9 = "Description";
                     this.U10 = "Update";
                     this.U11 = "Delete"
-                    this.U12 = "New Group";
+                    this.U12 = "New";
                     this.U13 = "Edit";
-                    this.U17 = "Remove All";
+                    this.U17 = "Delete";
                 } else{
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
@@ -433,9 +456,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U9 = "توضیحات";
                     this.U10 = "به روز رسانی";
                     this.U11 = "حذف"
-                    this.U12 = "گروه جدید";
+                    this.U12 = "جدید";
                     this.U13 = "ویرایش";
-                    this.U17 = "حذف همه"
+                    this.U17 = "حذف"
                 }
             }
         },

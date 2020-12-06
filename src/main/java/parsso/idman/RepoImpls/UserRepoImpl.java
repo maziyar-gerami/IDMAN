@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 
+import com.google.gson.JsonObject;
 import net.minidev.json.JSONObject;
 import org.apache.commons.compress.utils.IOUtils;
 import org.json.simple.parser.ParseException;
@@ -30,11 +31,12 @@ import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.Message;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
+import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
-import parsso.idman.Models.Time;
 import parsso.idman.Models.Tokens;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.FilesStorageService;
+import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
@@ -105,10 +107,14 @@ public class UserRepoImpl implements UserRepo {
     private BuildDn buildDn;
     @Autowired
     private DashboardData dashboardData;
+    @Autowired
+    private GroupRepo groupRepo;
+    @Autowired
+    private ImportUsers importUsers;
 
 
     @Override
-    public JSONObject create(User p) {
+    public JsonObject create(User p) {
 
         User user = retrieveUser(p.getUserId());
         DirContextOperations context;
@@ -121,6 +127,8 @@ public class UserRepoImpl implements UserRepo {
                 Tokens tokens = new Tokens();
                 tokens.setUserId(p.getUserId());
                 tokens.setQrToken(UUID.randomUUID().toString());
+                Date date = new Date();
+                tokens.setCreationTimeStamp(date.getTime());
                 mongoTemplate.save(tokens, Token.collection);
 
 
@@ -130,33 +138,43 @@ public class UserRepoImpl implements UserRepo {
                 }
 
                 logger.info("User " + "\"" + p.getUserId() + "\"" + " in " + new Date() + " created successfully");
-                return new JSONObject();
+                return new JsonObject();
             } else {
                 logger.warn("User " + "\"" + p.getUserId() + "\"" + " is exist. So it cannot be created");
 
-                return new ImportUsers().compareUsers(user, p);
+                importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
             logger.warn("Creating user " + "\"" + p.getUserId() + "\"" + " was unsuccessful");
             e.printStackTrace();
             return null;
         }
+        return null;
     }
 
     @Override
     public JSONObject createUserImport(User p) {
 
         User user = retrieveUser(p.getUserId());
-        p.setUserPassword(defaultPassword);
+        if (p.getUserPassword() == null)
+            p.setUserPassword(defaultPassword);
 
         try {
             if (user == null) {
                 Name dn = buildDn.buildDn(p.getUserId());
                 ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
+
+                Tokens tokens = new Tokens();
+                tokens.setUserId(p.getUserId());
+                tokens.setQrToken(UUID.randomUUID().toString());
+                Date date = new Date();
+                tokens.setCreationTimeStamp(date.getTime());
+                mongoTemplate.save(tokens, Token.collection);
+
                 return new JSONObject();
             } else {
 
-                return new ImportUsers().compareUsers(user, p);
+                return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -220,16 +238,16 @@ public class UserRepoImpl implements UserRepo {
                     ldapTemplate.unbind(dn);
 
                 } catch (Exception e) {
-                    logger.warn("Deleting User "+user.getUserId()+ " was unsuccessfully");
+                    logger.warn("Deleting User " + user.getUserId() + " was unsuccessfully");
                     e.printStackTrace();
                 }
 
             }
 
-        if (people.size()==0)
+        if (people.size() == 0)
             logger.info("All users removed successfully");
-        if (people.size()==1)
-            logger.info("User "+people.get(0).getUserId()+" removed successfully");
+        if (people.size() == 1)
+            logger.info("User " + people.get(0).getUserId() + " removed successfully");
         else
             logger.info("Selected users removed successfully");
 
@@ -336,6 +354,29 @@ public class UserRepoImpl implements UserRepo {
         return "NotExist";
     }
 
+
+    @Override
+    public byte[] showProfilePic(User user) {
+        File file = new File(uploadedFilesPath + user.getPhotoName());
+        byte[] media = null;
+
+
+        if (file.exists()) {
+            try {
+                String contentType = "image/png";
+                FileInputStream out = new FileInputStream(file);
+                // copy from in to out
+                media = IOUtils.toByteArray(out);
+                out.close();
+                return media;
+            } catch (Exception e) {
+                return media;
+            }
+        }
+        return media;
+    }
+
+
     @Override
     public HttpStatus uploadProfilePic(MultipartFile file, String name) {
 
@@ -343,7 +384,7 @@ public class UserRepoImpl implements UserRepo {
 
         String s = timeStamp + file.getOriginalFilename();
 
-        storageService.save(file, s);
+        storageService.save(file, s, uploadedFilesPath);
 
         User user = retrieveUser(name);
 
@@ -364,8 +405,9 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public List<SimpleUser> retrieveUsersMain() {
         SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou").where("objectClass").is("person"),
+        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp").where("objectClass").is("person"),
                 new SimpleUserAttributeMapper());
         List relatedUsers = new LinkedList();
         for (SimpleUser user : people) {
@@ -373,7 +415,89 @@ public class UserRepoImpl implements UserRepo {
                 relatedUsers.add(user);
             }
         }
+        Collections.sort(relatedUsers);
         return relatedUsers;
+    }
+
+    @Override
+    public List<SimpleUser> retrieveUsersMain(String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
+        List<SimpleUser> users = retrieveUsersMain();
+        List<SimpleUser> sortTypeUsers;
+        if (!sortType.equals("")) {
+            if (sortType.equals("uid_m2M"))
+                Collections.sort(users, SimpleUser.uidMinToMaxComparator);
+            else if (sortType.equals("uid_M2m"))
+                Collections.sort(users, SimpleUser.uidMaxToMinComparator);
+            else if (sortType.equals("displayName_m2M"))
+                Collections.sort(users, SimpleUser.displayNameMinToMaxComparator);
+            else if (sortType.equals("displayName_M2m"))
+                Collections.sort(users, SimpleUser.displayNameMaxToMinComparator);
+        }
+        sortTypeUsers = users;
+
+
+        List<SimpleUser> groupFilterUsers = new LinkedList<>();
+        if (!groupFilter.equals("")) {
+
+            for (SimpleUser user : sortTypeUsers) {
+
+                if (user.getMemberOf().contains(groupFilter))
+                    groupFilterUsers.add(user);
+            }
+
+        } else
+            groupFilterUsers = sortTypeUsers;
+
+        List<SimpleUser> searchUidUsers = new LinkedList<>();
+
+        if (!searchUid.equals("")) {
+
+            searchUid = searchUid.toLowerCase();
+
+            for (SimpleUser user : groupFilterUsers) {
+
+                if (user.getUserId().contains(searchUid))
+                    searchUidUsers.add(user);
+
+            }
+
+        } else
+            searchUidUsers = groupFilterUsers;
+
+
+        List<SimpleUser> searchDisplayNameUsers = new LinkedList<>();
+
+        if (!searchDisplayName.equals("")) {
+
+            searchDisplayName = searchDisplayName.toLowerCase();
+
+            for (SimpleUser user : searchUidUsers) {
+
+                if (user.getDisplayName().contains(searchDisplayName))
+                    searchDisplayNameUsers.add(user);
+
+            }
+
+        } else
+            searchDisplayNameUsers = searchUidUsers;
+
+
+        List<SimpleUser> userStatusUsers = new LinkedList<>();
+
+        if (!userStatus.equals("")) {
+
+            for (SimpleUser user : searchDisplayNameUsers) {
+
+                if (user.getStatus().equals(userStatus))
+                    userStatusUsers.add(user);
+
+            }
+
+        } else
+            userStatusUsers = searchDisplayNameUsers;
+
+
+        return userStatusUsers;
     }
 
     @Override
@@ -405,6 +529,9 @@ public class UserRepoImpl implements UserRepo {
             }
 
         }
+
+        Collections.sort(relatedPeople);
+
 
         return relatedPeople;
     }
@@ -458,12 +585,12 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.info("Enabling "+uid + " was successful");
+                logger.info("Enabling " + uid + " was successful");
                 return HttpStatus.OK;
 
             } catch (Exception e) {
                 e.printStackTrace();
-                logger.warn("Enabling " + uid+ " was unsuccessful");
+                logger.warn("Enabling " + uid + " was unsuccessful");
                 return HttpStatus.BAD_REQUEST;
             }
         } else {
@@ -512,12 +639,12 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.info("Disabling "+uid + " was successful");
+                logger.info("Disabling " + uid + " was successful");
                 return HttpStatus.OK;
 
             } catch (Exception e) {
                 e.printStackTrace();
-                logger.warn("Disabling " + uid +" was unsuccessful");
+                logger.warn("Disabling " + uid + " was unsuccessful");
                 return HttpStatus.BAD_REQUEST;
             }
         } else {
@@ -543,7 +670,7 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.warn("Unlocking"+uid + "was successful");
+                logger.warn("Unlocking" + uid + "was successful");
                 return HttpStatus.OK;
 
             } catch (Exception e) {
@@ -563,24 +690,32 @@ public class UserRepoImpl implements UserRepo {
         return tokenClass.requestToken(user);
     }
 
-    @Override
-    public List<SimpleUser> retrieveUsersPagination(int page, int number) {
-        List<SimpleUser> allUsers = retrieveUsersMain();
 
+    @Override
+    public ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
+        List<SimpleUser> allUsers = retrieveUsersMain(sortType, groupFilter, searchUid, searchDisplayName, userStatus);
         int n = (page) * number;
 
         if (n > allUsers.size())
             n = allUsers.size();
 
-        List<SimpleUser> relativeUsers = new LinkedList<SimpleUser>();
+        int size = allUsers.size();
+
+        int pages = (int) Math.ceil(size/number);
+
 
         int start = (page - 1) * number;
 
 
+        List<SimpleUser> relativeUsers = new LinkedList<>();
+
         for (int i = start; i < n; i++)
             relativeUsers.add(allUsers.get(i));
 
-        return relativeUsers;
+        ListUsers finalList = new ListUsers(size, relativeUsers, pages);
+
+
+        return finalList;
     }
 
     @Override
@@ -614,7 +749,6 @@ public class UserRepoImpl implements UserRepo {
 
             DirContextOperations context = buildAttributes.buildAttributes(userId, user, dn);
             ldapTemplate.modifyAttributes(context);
-
             return HttpStatus.OK;
         } else {
             return HttpStatus.FORBIDDEN;
@@ -622,8 +756,8 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public net.minidev.json.JSONArray importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
-        return new ImportUsers().importFileUsers(file, sequence, hasHeader);
+    public JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
+        return importUsers.importFileUsers(file, sequence, hasHeader);
     }
 
     @Bean

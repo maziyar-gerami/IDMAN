@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class User implements UserDetails {
+public class User implements UserDetails,Comparable {
 
     private static final String PREFIX = "ROLE_";
     @Value("${administrator.ou.id}")
@@ -30,6 +30,8 @@ public class User implements UserDetails {
     private String displayName;
     private String mobile;
     @JsonIgnore
+    private long timeStamp;
+    @JsonIgnore
     private boolean locked;
     @JsonIgnore
     private boolean enabled;
@@ -39,9 +41,13 @@ public class User implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String userPassword;
 
+    @JsonIgnore
     private String photoName;
 
+    @JsonIgnore
     private Role role;
+
+    private String employeeNumber;
 
     @JsonProperty
     private String status;
@@ -53,6 +59,7 @@ public class User implements UserDetails {
         locked = false;
         enabled = true;
     }
+    @JsonIgnore
     private  Tokens tokens;
 
     public String getStatus() {
@@ -136,5 +143,14 @@ public class User implements UserDetails {
     }
 
 
+    @Override
+    public int compareTo(Object second) {
+        if (this.timeStamp>((User)second).timeStamp)
+            return -1;
+        else if (this.timeStamp<((User)second).timeStamp)
+            return 1;
+        else
+            return 0;
+    }
 }
 

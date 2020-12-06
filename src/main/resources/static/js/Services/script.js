@@ -86,6 +86,9 @@ function myFunction() {
         contactsList: [],
         contactsObj: {},
         activeItem: "main",
+        metaDataAddress: true,
+        metaDataFile: false,
+        allIsSelected: false,
         s0: "پارسو",
         s1: "",
         s2: "خروج",
@@ -100,7 +103,7 @@ function myFunction() {
         s11: "حریم خصوصی",
         s12: "راهنما",
         s13: "ایجاد سرویس جدید",
-        s14: "سرویس جدید",
+        s14: "جدید",
         s15: "کاربران",
         s16: "./dashboard",
         s17: "./services",
@@ -133,7 +136,7 @@ function myFunction() {
         s44: "نوع خروج",
         s45: "تایید",
         s46: "بازگشت",
-        s47: "حذف همه",
+        s47: "حذف",
         s48: "./groups",
         s49: "./settings",
         s50: "./privacy",
@@ -174,7 +177,10 @@ function myFunction() {
         s85: "آیا از حذف سرویس های انتخاب شده اطمینان دارید؟",
         s86: "هیچ سرویسی انتخاب نشده است.",
         s87: "آیا از حذف این سرویس اطمینان دارید؟",
-        s88: "آیا از حذف تمامی سرویس ها اطمینان دارید؟"
+        s88: "آیا از حذف تمامی سرویس ها اطمینان دارید؟",
+        s89: " (در صورت وارد کردن آدرس، http یا https ذکر شود)",
+        s90: "آدرس",
+        s91: "فایل"
       },
       created: function () {
         this.getUserInfo();
@@ -188,11 +194,38 @@ function myFunction() {
         }
       },
       methods: {
+        allSelected () {
+          if(this.allIsSelected){
+              this.allIsSelected = false;
+              for(let i = 0; i < this.services.length; ++i){
+                  if(document.getElementById("checkbox-" + this.services[i].id).checked == true){
+                      document.getElementById("checkbox-" + this.services[i].id).click();
+                  }
+                  document.getElementById("row-" + this.services[i].id).style.background = "";
+              }
+          }else{
+              this.allIsSelected = true;
+              for(let i = 0; i < this.services.length; ++i){
+                  if(document.getElementById("checkbox-" + this.services[i].id).checked == false){
+                      document.getElementById("checkbox-" + this.services[i].id).click();
+                  }
+                  document.getElementById("row-" + this.services[i].id).style.background = "#c2dbff";
+              }
+          }
+        },
         isActive (menuItem) {
           return this.activeItem === menuItem
         },
         setActive (menuItem) {
           this.activeItem = menuItem
+        },
+        selectMetaDataAddress: function () {
+          this.metaDataAddress = true;
+          this.metaDataFile = false;
+        },
+        selectMetaDataFile: function () {
+          this.metaDataAddress = false;
+          this.metaDataFile = true;
         },
         getUserInfo: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -486,7 +519,7 @@ function myFunction() {
             document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
             document.getElementsByName('description')[0].value == ""){
             alert("لطفا قسمت های الزامی را پر کنید.");
-          }else if (this.samls && document.getElementsByName('metadataLocation')[0].value == "") {
+          }else if(this.metaDataAddress && document.getElementsByName('metadataLocation')[0].value == ""){
             alert("لطفا قسمت های الزامی را پر کنید.");
           }else{
 
@@ -781,31 +814,82 @@ function myFunction() {
             }
 
             if(this.samls){
-              if(document.getElementsByName('metadataLocation')[0].value != ""){
-                this.service.metadataLocation = document.getElementsByName('metadataLocation')[0].value;
+              if(this.metaDataAddress || this.metaDataFile){
+                if(this.metaDataFile){
+                  let file = document.querySelector('#file');
+                  if(!file.files[0]){
+                    alert("لطفا قسمت های الزامی را پر کنید.");
+                  }else{
+                    let bodyFormData = new FormData();
+                    bodyFormData.append("file", file.files[0]);
+                    axios({
+                      method: 'post',
+                      url: url + "/api/services/user/metadata",  //
+                      headers: {'Content-Type': 'multipart/form-data'},
+                      data: bodyFormData,
+                    }).then((res) => {
+                      if(res.data[0] != ""){
+                        this.service.metadataLocation = res.data[0];
 
-                axios({
-                  method: 'put',
-                  url: url + `/api/service/${id}/saml`, //
-                  headers: {'Content-Type': 'application/json'},
-                  data: JSON.stringify({
-                    name: vm.service.name,
-                    serviceId: vm.service.serviceId,
-                    metadataLocation: vm.service.metadataLocation,
-                    multifactorPolicy: vm.multifactorPolicy,
-                    description: vm.service.description,
-                    logo: vm.service.logo,
-                    informationUrl: vm.service.informationUrl,
-                    privacyUrl: vm.service.privacyUrl,
-                    logoutType: vm.service.logoutType,
-                    logoutUrl: vm.service.logoutUrl,
-                    accessStrategy: vm.accessStrategy,
-                    contacts: vm.contacts
-                  })
-                })
-                .then((res) => {
-                  location.reload();
-                });
+                        axios({
+                          method: 'put',
+                          url: url + `/api/service/${id}/saml`, //
+                          headers: {'Content-Type': 'application/json'},
+                          data: JSON.stringify({
+                            name: vm.service.name,
+                            serviceId: vm.service.serviceId,
+                            metadataLocation: vm.service.metadataLocation,
+                            multifactorPolicy: vm.multifactorPolicy,
+                            description: vm.service.description,
+                            logo: vm.service.logo,
+                            informationUrl: vm.service.informationUrl,
+                            privacyUrl: vm.service.privacyUrl,
+                            logoutType: vm.service.logoutType,
+                            logoutUrl: vm.service.logoutUrl,
+                            accessStrategy: vm.accessStrategy,
+                            contacts: vm.contacts
+                          })
+                        })
+                        .then((res) => {
+                          location.reload();
+                        });
+                      }
+                    });
+                  }
+                }
+  
+                if(this.metaDataAddress){
+                  if(document.getElementsByName('metadataLocation')[0].value != ""){
+                    this.service.metadataLocation = document.getElementsByName('metadataLocation')[0].value;
+
+                    axios({
+                      method: 'put',
+                      url: url + `/api/service/${id}/saml`, //
+                      headers: {'Content-Type': 'application/json'},
+                      data: JSON.stringify({
+                        name: vm.service.name,
+                        serviceId: vm.service.serviceId,
+                        metadataLocation: vm.service.metadataLocation,
+                        multifactorPolicy: vm.multifactorPolicy,
+                        description: vm.service.description,
+                        logo: vm.service.logo,
+                        informationUrl: vm.service.informationUrl,
+                        privacyUrl: vm.service.privacyUrl,
+                        logoutType: vm.service.logoutType,
+                        logoutUrl: vm.service.logoutUrl,
+                        accessStrategy: vm.accessStrategy,
+                        contacts: vm.contacts
+                      })
+                    })
+                    .then((res) => {
+                      location.reload();
+                    });
+                  }
+                }
+
+                
+              }else{
+                alert("لطفا قسمت های الزامی را پر کنید.");
               }
             }else{
 
@@ -974,11 +1058,10 @@ function myFunction() {
           this.flagList[index] = false;
           document.getElementById("attribute" + index).remove();
         },
-        changeSelected: function () {
+        changeSelected: function (action) {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
           let selectedServices = [];
-          let action = document.getElementById("selectedAction").value;
           if(action == "delete"){
               selectedServices = [];
               for(let i = 0; i < vm.services.length; ++i){
@@ -1013,6 +1096,10 @@ function myFunction() {
             }else{
                 row.style.background = "";
             }
+            this.allIsSelected = false;
+            if(document.getElementById("selectAllCheckbox").checked == true){
+                document.getElementById("selectAllCheckbox").click();
+            }
         },
         changeLang: function () {
           if(this.lang == "EN"){
@@ -1034,7 +1121,7 @@ function myFunction() {
             this.s11 = "Privacy";
             this.s12 = "Guide";
             this.s13 = "Create New Service";
-            this.s14 = "New Service";
+            this.s14 = "New";
             this.s15 = "Users";
             this.s16 = "./dashboard?en";
             this.s17 = "./services?en";
@@ -1067,7 +1154,7 @@ function myFunction() {
             this.s44 = "Logout Type";
             this.s45 = "Submit";
             this.s46 = "Go Back";
-            this.s47 = "Remove All";
+            this.s47 = "Delete";
             this.s48 = "./groups?en";
             this.s49 = "./settings?en";
             this.s50 = "./privacy?en";
@@ -1109,6 +1196,9 @@ function myFunction() {
             this.s86 = "No Service is Selected.";
             this.s87 = "Are You Sure You Want To Delete?";
             this.s88 = "Are You Sure You Want To Delete All Services?";
+            this.s89 = " (If Entering The Address, Mention http Or https)";
+            this.s90 = "Address";
+            this.s91 = "File";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
@@ -1128,7 +1218,7 @@ function myFunction() {
               this.s11 = "حریم خصوصی";
               this.s12 = "راهنما";
               this.s13 = "ایجاد سرویس جدید";
-              this.s14 = "سرویس جدید";
+              this.s14 = "جدید";
               this.s15 = "کاربران";
               this.s16 = "./dashboard";
               this.s17 = "./services";
@@ -1161,7 +1251,7 @@ function myFunction() {
               this.s44 = "نوع خروج";
               this.s45 = "تایید";
               this.s46 = "بازگشت";
-              this.s47 = "حذف همه";
+              this.s47 = "حذف";
               this.s48 = "./groups";
               this.s49 = "./settings";
               this.s50 = "./privacy";
@@ -1203,6 +1293,9 @@ function myFunction() {
               this.s86 = "هیچ سرویسی انتخاب نشده است.";
               this.s87 = "آیا از حذف این سرویس اطمینان دارید؟";
               this.s88 = "آیا از حذف تمامی سرویس ها اطمینان دارید؟";
+              this.s89 = " (در صورت وارد کردن آدرس، http یا https ذکر شود)";
+              this.s90 = "آدرس";
+              this.s91 = "فایل";
           }
         },
         div: function (a, b) {

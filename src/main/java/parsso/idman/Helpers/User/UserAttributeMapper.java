@@ -26,6 +26,8 @@ import java.util.List;
             user.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
             user.setMobile(null != attributes.get("mobile") ? attributes.get("mobile").get().toString() : null);
             user.setMail(null != attributes.get("mail") ? attributes.get("mail").get().toString() : null);
+            user.setTimeStamp(null != attributes.get("createtimestamp") ? Long.valueOf(attributes.get("createtimestamp").get().toString().substring(0,14)):0);
+            user.setEmployeeNumber(null != attributes.get("employeeNumber") ? attributes.get("employeeNumber").get().toString() : "0");
             user.setUserPassword(null != attributes.get("userPassword") ? attributes.get("userPassword").get().toString() : null);
             int nGroups = (null == attributes.get("ou") ? 0 : attributes.get("ou").size());
             List<String> ls = new LinkedList<>();
