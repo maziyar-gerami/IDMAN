@@ -78,7 +78,7 @@ public class ImportUsers {
             temp = userRepo.createUserImport(user);
 
 
-            if (temp.size()==0) {
+            if (temp.size()>0) {
                 jsonArray.add(temp);
                 nUnSuccessful++;
             }

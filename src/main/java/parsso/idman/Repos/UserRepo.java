@@ -23,7 +23,7 @@ public interface UserRepo {
 
     byte[] showProfilePic(User user);
 
-    HttpStatus uploadProfilePic(MultipartFile file, String name);
+    HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException;
 
     List<SimpleUser> retrieveUsersMain();
 

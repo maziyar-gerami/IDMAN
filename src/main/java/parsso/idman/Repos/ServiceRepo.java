@@ -8,6 +8,8 @@ import parsso.idman.Models.Service;
 import parsso.idman.Models.ServiceType.MicroService;
 import parsso.idman.Models.User;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +27,8 @@ public interface ServiceRepo {
     LinkedList<String> deleteServices(JSONObject files) throws IOException;
 
     String uploadMetadata(MultipartFile file, String userId);
+
+    File downloadMetadata(String fileName) throws IOException;
 
     HttpStatus createService(JSONObject jsonObject, String system) throws IOException;
 

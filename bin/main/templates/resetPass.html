@@ -58,10 +58,15 @@
                                                     <i class="fa fa-undo fa-stack-2x"></i>
                                                 </span> 
                                             </button>
-                                            <div class="row">
-                                                <input type="text" name="capAnswer" id="capAnswer" v-model="capAnswer" class="form-control mb-3 mt-3 col-3"
+                                            <div class="desktopView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-3"
                                                 v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 <div class="col-9"></div>
+                                            </div>
+                                            <div class=" mobileView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-9"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-3"></div>
                                             </div>
                                         </div>
                                         <button @click="sendEmail(emailE)" class="btn btn-primary mb-3">
@@ -99,10 +104,15 @@
                                                     <i class="fa fa-undo fa-stack-2x"></i>
                                                 </span> 
                                             </button>
-                                            <div class="row">
-                                                <input type="text" name="capAnswer" id="capAnswer" v-model="capAnswer" class="form-control mb-3 mt-3 col-3"
+                                            <div class="desktopView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-3"
                                                 v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 <div class="col-9"></div>
+                                            </div>
+                                            <div class="mobileView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-9"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-3"></div>
                                             </div>
                                         </div>
                                         <button @click="sendEmail(emailEE)" class="btn btn-primary mb-3">
@@ -125,10 +135,15 @@
                                                     <i class="fa fa-undo fa-stack-2x"></i>
                                                 </span> 
                                             </button>
-                                            <div class="row">
-                                                <input type="text" name="capAnswer" id="capAnswer" v-model="capAnswer" class="form-control mb-3 mt-3 col-3"
+                                            <div class="desktopView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-3"
                                                 v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 <div class="col-9"></div>
+                                            </div>
+                                            <div class="mobileView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-9"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-3"></div>
                                             </div>
                                         </div>
                                         <button @click="sendSMS(mobile)" class="btn btn-primary mb-3">
@@ -182,10 +197,15 @@
                                                     <i class="fa fa-undo fa-stack-2x"></i>
                                                 </span> 
                                             </button>
-                                            <div class="row">
-                                                <input type="text" name="capAnswer" id="capAnswer" v-model="capAnswer" class="form-control mb-3 mt-3 col-3"
+                                            <div class="desktopView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-3"
                                                 v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 <div class="col-9"></div>
+                                            </div>
+                                            <div class="mobileView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-9"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-3"></div>
                                             </div>
                                         </div>
                                         <button @click="sendSMS(mobileS)" class="btn btn-primary mb-3">

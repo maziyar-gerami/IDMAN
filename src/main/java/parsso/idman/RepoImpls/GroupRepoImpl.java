@@ -109,8 +109,11 @@ public class GroupRepoImpl implements GroupRepo {
         attrs.put(ocattr);
         attrs.put("name", group.getName());
         attrs.put("ou", uid);
-        if (group.getDescription()!=null)
+        if (group.getDescription()!="")
             attrs.put("description", group.getDescription());
+        else
+            attrs.put("description", " ");
+
         return attrs;
     }
 

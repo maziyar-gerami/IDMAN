@@ -105,8 +105,9 @@ document.addEventListener('DOMContentLoaded', function () {
             s41: "شناسه کاربری خود را وارد کنید",
             s42: "شماره موبایل خود را وارد کنید",
             s43: "کد پیامک شده خود را وارد کنید",
-            s44: "جواب CAPTCHA نمی تواند خالی باشد.",
-            s45: "جواب CAPTCHA اشتباه است، دوباره تلاش کنید."
+            s44: "جواب کد امنیتی نمی تواند خالی باشد.",
+            s45: "جواب کد امنیتی اشتباه است، دوباره تلاش کنید.",
+            s46: "کد امنیتی"
         },
         created: function () {
             this.getCaptcha();
@@ -438,8 +439,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s36= "ID";
                     this.s37 = "Enter Your Email Address";
                     this.s38 = "Enter Email Address Format Correctly";
-                    this.s44 = "The Answer To CAPTCHA Cannot Be Empty.";
-                    this.s45 = "The Answer To CAPTCHA Is Incorrect, Try Again.";
+                    this.s44 = "Security Code Answer Cannot Be Empty.";
+                    this.s45 = "Security Code Answer Is Incorrect, Try Again.";
+                    this.s46 = "Security Code";
                 } else{
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
@@ -483,8 +485,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s36 = "شناسه کاربری";
                     this.s37 = "آدرس ایمیل خود را وارد کنید";
                     this.s38 = "فرمت آدرس ایمیل را به درستی وارد کنید";
-                    this.s44 = "جواب CAPTCHA نمی تواند خالی باشد.";
-                    this.s45 = "جواب CAPTCHA اشتباه است، دوباره تلاش کنید.";
+                    this.s44 = "جواب کد امنیتی نمی تواند خالی باشد.";
+                    this.s45 = "جواب کد امنیتی اشتباه است، دوباره تلاش کنید.";
+                    this.s46 = "کد امنیتی";
                 }
             }
         }

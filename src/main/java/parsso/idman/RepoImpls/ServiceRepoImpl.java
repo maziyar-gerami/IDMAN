@@ -20,9 +20,8 @@ import parsso.idman.Models.User;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.ServiceRepo;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -40,8 +39,12 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Value("${services.folder.path}")
     private String path;
 
+    @Value("${base.url}")
+    private String baseUrl;
+
     @Value("${metadata.file.path}")
     private String uploadedFilesPath;
+
 
     @Autowired
     FilesStorageService storageService;
@@ -192,16 +195,23 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     @Override
     public String uploadMetadata(MultipartFile file, String userId) {
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
+        Date date = new Date();
+        String fileName = date.getTime()+"_"+file.getOriginalFilename();
 
         try {
-            storageService.save(file, userId+timeStamp+file.getOriginalFilename(),uploadedFilesPath);
-            return uploadedFilesPath+userId+timeStamp+file.getOriginalFilename();
+            storageService.saveMetadata(file, fileName);
+            return baseUrl+"/api/public/metadata/"+fileName;
+            //return uploadedFilesPath+userId+timeStamp+file.getOriginalFilename();
 
         }catch (Exception e){
             return null;
         }
+    }
 
+    @Override
+    public File downloadMetadata(String fileName) throws IOException {
+
+        return new File(uploadedFilesPath + fileName);
 
     }
 

@@ -174,6 +174,36 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
       },
+      exportEvents: function(){
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          axios.get(url + "/api/events/1/1") //
+          .then((response) => {
+            let tempEvents = {};
+            let eventsExport = [];
+            axios.get(url + "/api/events/1/" + response.data.size) //
+            .then((res) => {
+              data = res.data;
+              var opts = [{sheetid:'Users',header:true}]
+              var result = alasql('SELECT * INTO XLSX("events.xlsx",?) FROM ?',
+              [opts,[data]]);
+            });
+          });
+      },
+      exportEvent: function(){
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          axios.get(url + "/api/events/user/1/1") //
+          .then((response) => {
+            let tempEvent = {};
+            let eventExport = [];
+            axios.get(url + "/api/events/user/1/" + response.data.size) //
+            .then((res) => {
+              data = res.data;
+              var opts = [{sheetid:'Users',header:true}]
+              var result = alasql('SELECT * INTO XLSX("event.xlsx",?) FROM ?',
+              [opts,[data]]);
+            });
+          });
+      },
       getEvents: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;

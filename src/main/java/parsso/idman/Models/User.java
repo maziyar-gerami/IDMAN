@@ -22,6 +22,7 @@ import java.util.List;
 public class User implements UserDetails,Comparable {
 
     private static final String PREFIX = "ROLE_";
+    @JsonIgnore
     @Value("${administrator.ou.id}")
     private String admidId;
     private String userId;
@@ -74,6 +75,7 @@ public class User implements UserDetails,Comparable {
     }
 
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
@@ -103,28 +105,31 @@ public class User implements UserDetails,Comparable {
         return list;
     }
 
-
+    @JsonIgnore
     @Override
     public String getPassword() {
         return null;
     }
 
+    @JsonIgnore
     @Override
     public String getUsername() {
         return null;
     }
 
-
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return false;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return false;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return false;

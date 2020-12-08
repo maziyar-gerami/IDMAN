@@ -130,7 +130,7 @@ public class UserController {
      * @return the response entity
      */
     @PostMapping("/api/user/photo")
-    public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+    public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
         userRepo.uploadProfilePic(file, request.getUserPrincipal().getName());
         return new RedirectView("/dashboard");
     }

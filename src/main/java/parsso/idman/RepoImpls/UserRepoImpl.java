@@ -199,6 +199,8 @@ public class UserRepoImpl implements UserRepo {
 
         context = buildAttributes.buildAttributes(uid, p, dn);
 
+        //context.setAttributeValue("createTimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
+
 
         try {
             ldapTemplate.modifyAttributes(context);
@@ -378,13 +380,13 @@ public class UserRepoImpl implements UserRepo {
 
 
     @Override
-    public HttpStatus uploadProfilePic(MultipartFile file, String name) {
+    public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException {
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
 
         String s = timeStamp + file.getOriginalFilename();
 
-        storageService.save(file, s, uploadedFilesPath);
+        storageService.saveProfilePhoto(file, s);
 
         User user = retrieveUser(name);
 

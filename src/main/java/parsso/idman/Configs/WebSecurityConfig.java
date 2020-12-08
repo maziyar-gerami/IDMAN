@@ -196,7 +196,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         entryPoint.setLoginUrl(casLogin);
         entryPoint.setServiceProperties(serviceProperties);
 
-
         return entryPoint;
     }
 

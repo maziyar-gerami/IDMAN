@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
       username: "",
       name: "",
       nameEN: "",
+      menuSA: false,
       groups: [],
       users:[],
       searchQuery: "",
@@ -141,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     created: function () {
       this.getUserInfo();
+      this.isAdmin();
       this.getUserPic();
       this.getGroups();
       this.getUsersList();
@@ -154,6 +156,16 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       setActive (menuItem) {
         this.activeItem = menuItem
+      },
+      isAdmin: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        axios.get(url + "/api/user/isAdmin") //
+          .then((res) => {
+            if(res.data == "0"){
+              vm.menuSA = true;
+            }
+          });
       },
       selectMetaDataAddress: function () {
         this.metaDataAddress = true;
@@ -549,8 +561,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     headers: {'Content-Type': 'multipart/form-data'},
                     data: bodyFormData,
                   }).then((res) => {
-                    if(res.data[0] != ""){
-                      this.service.metadataLocation = res.data[0];
+                    if(res.data != ""){
+                      this.service.metadataLocation = res.data;
 
                       axios({
                         method: 'post',

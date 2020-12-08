@@ -899,7 +899,6 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             exportUsers: function(){
                 url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-
                 axios.get(url + "/api/users/full") //
                     .then((res) => {
                         data = res.data;
@@ -907,7 +906,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         var result = alasql('SELECT * INTO XLSX("users.xlsx",?) FROM ?',
                             [opts,[data]]);
                     });
-
             },
             addUserS: function () {
                 this.showS = "display:none"

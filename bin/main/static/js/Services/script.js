@@ -828,8 +828,8 @@ function myFunction() {
                       headers: {'Content-Type': 'multipart/form-data'},
                       data: bodyFormData,
                     }).then((res) => {
-                      if(res.data[0] != ""){
-                        this.service.metadataLocation = res.data[0];
+                      if(res.data != ""){
+                        this.service.metadataLocation = res.data;
 
                         axios({
                           method: 'put',

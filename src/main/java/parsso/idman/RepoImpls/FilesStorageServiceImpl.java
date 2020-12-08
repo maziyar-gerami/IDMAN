@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Repos.FilesStorageService;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,6 +26,8 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     private String photoPath;
     @Value("${services.folder.path}")
     private String servicesPath;
+    @Value("${metadata.file.path}")
+    private String metadataPath;
 
     @Override
     public void init() {
@@ -49,15 +52,22 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     }
 
     @Override
-    public void save(MultipartFile file, String name,String path) {
+    public void saveMetadata(MultipartFile file, String name) throws IOException {
+
         try {
-            //InputStream inputStream = file.getInputStream();
+            Path pathServices = Paths.get(metadataPath);
+            Files.copy(file.getInputStream(), pathServices.resolve(name));
+        } catch (Exception e) {
+            throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
+        }
+    }
 
-            //Files.copy(inputStream, this.photoPathRoot.resolve(name));
+    @Override
+    public void saveProfilePhoto(MultipartFile file, String name) throws IOException {
 
-            Path path1 = Paths.get(path);
-            Files.copy(file.getInputStream(), path1.resolve(name));
+        try {
 
+            Files.copy(file.getInputStream(),this.photoPathRoot.resolve(name));
 
         } catch (Exception e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
