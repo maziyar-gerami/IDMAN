@@ -75,9 +75,8 @@ public class EventController {
     @GetMapping("/api/events/export")
     public ModelAndView downloadExcel() throws ParseException, org.json.simple.parser.ParseException, IOException {
 
-        List<Event> eventList = eventRepo.getMainListEvents();
         // return a view which will be resolved by an excel view resolver
-        return new ModelAndView(eventsExcelView, "listBooks", eventList);
+        return new ModelAndView(eventsExcelView, "listEvents", null);
     }
 
 }

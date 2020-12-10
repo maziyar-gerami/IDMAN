@@ -329,9 +329,8 @@ public class UserController {
     @GetMapping("/api/users/export")
     public ModelAndView downloadExcel() {
 
-        List<User> userList = userRepo.retrieveUsersFull();
         // return a view which will be resolved by an excel view resolver
-        return new ModelAndView(excelView, "listBooks", userList);
+        return new ModelAndView(excelView, "listUsers", null);
     }
 
 
