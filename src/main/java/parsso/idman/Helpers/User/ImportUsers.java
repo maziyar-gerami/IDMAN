@@ -1,7 +1,5 @@
 package parsso.idman.Helpers.User;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldif.LDIFException;
 import com.unboundid.ldif.LDIFReader;
@@ -43,7 +41,6 @@ public class ImportUsers {
         int count=0;
         int nUnSuccessful =0;
 
-
         if (hasHeader == true) rowIterator.next();
 
         while (rowIterator.hasNext()) {
@@ -53,12 +50,10 @@ public class ImportUsers {
 
             JSONObject temp;
 
-
             Cell cell = row.getCell(0);
             //Check the cell type and format accordingly
 
             if (cell == null) break;
-
 
             DataFormatter formatter = new DataFormatter();
             user.setUserId(formatter.formatCellValue(row.getCell(sequence[0])));
@@ -73,9 +68,7 @@ public class ImportUsers {
             user.setEmployeeNumber(formatter.formatCellValue(row.getCell(sequence[9])));
             user.setUserPassword(formatter.formatCellValue(row.getCell(sequence[10])));
 
-
             temp = userRepo.createUserImport(user);
-
 
             if (temp.size()>0) {
                 jsonArray.add(temp);
@@ -83,8 +76,6 @@ public class ImportUsers {
             }
 
             count++;
-
-
         }
 
         JSONObject finalJson = new JSONObject();
@@ -92,11 +83,7 @@ public class ImportUsers {
         finalJson.put("nUnSuccessful",nUnSuccessful);
         finalJson.put("nSuccessful",count-nUnSuccessful);
 
-
         finalJson.put("list",jsonArray);
-
-
-
 
         return finalJson;
     }
@@ -119,17 +106,16 @@ public class ImportUsers {
         jsonObject.put("new", newUser);
         jsonObject.put("conflicts", conflicts);
 
-
         return jsonObject;
-
     }
 
-    public JsonArray csvSheetAnalyze(BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException {
+    public JSONObject csvSheetAnalyze(BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException {
 
         String row;
-        JsonArray jsonArray = new JsonArray();
+        JSONArray jsonArray = new JSONArray();
         int i = 0;
-        List<User> lsUserConflicts = new LinkedList();
+        int count=0;
+        int nUnSuccessful =0;
 
         while ((row = sheet.readLine()) != null) {
             if (i == 0 && hasHeader) {
@@ -147,21 +133,34 @@ public class ImportUsers {
             user.setFirstName(data[sequence[1]]);
             user.setLastName(data[sequence[2]]);
             user.setDisplayName(data[sequence[3]]);
-
-            user.setUserPassword((data[sequence[7]]));
-            user.setDescription((data[sequence[8]]));
-            //user.setStatus(data[sequence[9]]);
-
+            user.setMobile(data[sequence[4]]);
+            user.setMail(data[sequence[5]]);
+            user.setMemberOf(extractGroups(data[sequence[6]]));
+            user.setDescription((data[sequence[7]]));
+            user.setStatus(data[sequence[8]]);
+            user.setEmployeeNumber(data[sequence[9]]);
+            user.setUserPassword((data[sequence[10]]));
 
             i++;
 
-            jsonArray.add(userRepo.create(user));
+            JSONObject temp = userRepo.createUserImport(user);
 
+            if (temp.size()>0) {
+                jsonArray.add(temp);
+                nUnSuccessful++;
+            }
+
+            count++;
         }
-        return jsonArray;
 
+        JSONObject finalJson = new JSONObject();
+        finalJson.put("count",count);
+        finalJson.put("nUnSuccessful",nUnSuccessful);
+        finalJson.put("nSuccessful",count-nUnSuccessful);
+        finalJson.put("list",jsonArray);
+
+        return finalJson;
     }
-
 
     List<String> extractGroups(String strMain) {
         String[] arrSplit = (strMain.split(","));
@@ -174,17 +173,12 @@ public class ImportUsers {
     public JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
 
         JSONObject lsusers = new JSONObject();
-
-
         InputStream insfile = file.getInputStream();
 
-
         if (file.getOriginalFilename().endsWith(".xlsx")) {
-
             //Create Workbook instance holding reference to .xlsx file
             XSSFWorkbook workbookXLSX = null;
             workbookXLSX = new XSSFWorkbook(insfile);
-
 
             //Get first/desired sheet from the workbook
             XSSFSheet sheet = workbookXLSX.getSheetAt(0);
@@ -202,26 +196,22 @@ public class ImportUsers {
 
         } else if (file.getOriginalFilename().endsWith(".csv")) {
 
-
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-            //lsusers = csvSheetAnalyze(csvReader, sequence, hasHeader);
-
+            lsusers = csvSheetAnalyze(csvReader, sequence, hasHeader);
 
             csvReader.close();
-
         } else if (file.getOriginalFilename().endsWith(".ldif")) {
 
             final LDIFReader ldifReader = new LDIFReader(insfile);
 
-            //lsusers = ldifAnalayze(ldifReader, sequence, hasHeader);
+            lsusers = ldifAnalayze(ldifReader, sequence, hasHeader);
         }
-
 
         return lsusers;
     }
 
-    private JSONArray ldifAnalayze(LDIFReader ldifReader, int[] sequence, boolean hasHeader) {
+    private JSONObject ldifAnalayze(LDIFReader ldifReader, int[] sequence, boolean hasHeader) {
         Entry entry = null;
         while (true) {
             try {
@@ -232,8 +222,6 @@ public class ImportUsers {
                 }
 
                 extractAttrEntry(entry);
-
-
             } catch (IOException | LDIFException ldifE) {
                 //errorCount++;
                 ldifE.printStackTrace();
@@ -259,18 +247,11 @@ public class ImportUsers {
         List<String> ls = new LinkedList<>();
         for (int i = 0; i < nGroups; i++) ls.add(entry.getAttributeValue("ou"));
         user.setMemberOf(null != entry.getAttributeValue("ou") ? ls : null);
-        user.getTokens().setResetPassToken(entry.getAttributeValue("resetPassToken"));
-        user.setUserPassword(entry.getAttributeValue("userPassword"));
         user.setDescription(entry.getAttributeValue("description"));
-        user.setPhotoName(entry.getAttributeValue("photoName"));
-        //user.setStatus(entry.getAttributeValue("userStatus"));
+        user.setPhotoName(entry.getAttributeValue("status"));
+        user.setStatus(entry.getAttributeValue("employeeNumber"));
         user.setPhotoName(entry.getAttributeValue("userPassword"));
 
-        //lsUserConflicts.add(create(user));
-
-
         return lsUserConflicts;
-
-
     }
 }

@@ -10,10 +10,7 @@ import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.utils.Convertor.DateConverter;
 import parsso.idman.utils.Query.QueryDomain;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -25,7 +22,6 @@ public class EventRepoImpl implements EventRepo {
 
     public static String path;
     public static String mainCollection = "MongoDbCasEventRepository";
-    public static String secondaryCollection = "MongoDbCasEventRepository";
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -64,47 +60,21 @@ public class EventRepoImpl implements EventRepo {
     public ListEvents getEventsByDate(String date, int page, int number) throws ParseException, IOException, org.json.simple.parser.ParseException {
         List<Event> events = getMainListEvents();
 
-        return pagination(iterateEvents(events, date),page,number);
+        return pagination(iterateEvents(events, date,null),page,number);
     }
-
-
 
 
     @Override
     public ListEvents getListUserEventByDate(String date, String userId, int page, int number) throws ParseException, IOException, org.json.simple.parser.ParseException {
         List<Event> events = getMainListEvents();
-        List<Event> relatedEvents = new LinkedList<>();
-        int inJalaliDay = Integer.valueOf(date.substring(0, 2));
-        int inJalaliMonth = Integer.valueOf(date.substring(2, 4));
-        int inJalaliYear = Integer.valueOf(date.substring(4, 8));
-
-        SimpleDateFormat newFormatter = new SimpleDateFormat("yyyy-MM-dd");
-
-        for (Event event : events) {
-
-            Date tempDate = newFormatter.parse(event.getCreationTime());
-
-            Calendar myCal = new GregorianCalendar();
-            myCal.setTime(tempDate);
-
-            DateConverter dateConverter = new DateConverter();
-
-            dateConverter.gregorianToPersian(myCal.get(Calendar.YEAR), myCal.get(Calendar.MONTH) + 1, myCal.get(Calendar.DAY_OF_MONTH));
-
-
-            if (event.getPrincipalId().equals(userId)
-                    &&dateConverter.getYear()==inJalaliYear&& dateConverter.getMonth()==inJalaliMonth && dateConverter.getDay()==inJalaliDay) {
-
-                relatedEvents.add(event);
-            }
-
-        }
+        List<Event> relatedEvents= iterateEvents(events, date,userId);
+        relatedEvents = relatedEvents.stream().filter(p -> p.getPrincipalId().equals(userId)).collect(Collectors.toList());
 
         return pagination(relatedEvents,page,number);
 
     }
 
-    private List<Event> iterateEvents(List<Event> events, String date) throws ParseException {
+    private List<Event> iterateEvents(List<Event> events, String date, String userId) throws ParseException {
 
         List<Event> relatedEvents = new LinkedList<>();
         int inDay = Integer.valueOf(date.substring(0, 2));
@@ -127,8 +97,15 @@ public class EventRepoImpl implements EventRepo {
 
             if (dateConverter.getYear() == inYear && dateConverter.getMonth() == inMonth && dateConverter.getDay() == inDay) {
 
+                if (userId!=null) {
 
-                relatedEvents.add(event);
+                    if (event.getPrincipalId().equals(userId))
+
+                        relatedEvents.add(event);
+                }
+                else
+
+                    relatedEvents.add(event);
 
             }
         }
