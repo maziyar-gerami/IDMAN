@@ -10,14 +10,12 @@ import lombok.Setter;
 
 public class ProxyPolicy {
 
-        public ProxyPolicy(){
-                atClass = "org.apereo.cas.services.RefuseRegisteredServiceProxyPolicy";
-        }
-
-
-        @JsonProperty("@class")
-        private String atClass;
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        private String pattern;
+    @JsonProperty("@class")
+    private String atClass;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String pattern;
+    public ProxyPolicy() {
+        atClass = "org.apereo.cas.services.RefuseRegisteredServiceProxyPolicy";
+    }
 
 }

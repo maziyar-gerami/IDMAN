@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
       username: "",
       name: "",
       nameEN: "",
+      menuSA: false,
       groups: [],
       users:[],
       searchQuery: "",
@@ -43,7 +44,8 @@ document.addEventListener('DOMContentLoaded', function () {
       margin: "margin-right: 30px;",
       lang: "EN",
       isRtl: true,
-      samls: "display: none;",
+      samls: false,
+      serviceType: "CAS",
       userPicture: "images/PlaceholderUser.png",
       accessStrategy: {},
       requiredAttributes: {},
@@ -58,6 +60,8 @@ document.addEventListener('DOMContentLoaded', function () {
       contactsObj: {},
       service: {},
       activeItem: "main",
+      metaDataAddress: true,
+      metaDataFile: false,
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -72,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s11: "حریم خصوصی",
       s12: "راهنما",
       s13: "کاربران",
-      s14: "تنطیمات پایه",
+      s14: "تنظیمات پایه",
       s15: "فعال سازی سرویس",
       s16: "نوع سرویس",
       s17: "نام سرویس",
@@ -87,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s26: "ایمیل",
       s27: "شماره تماس",
       s28: "دپارتمان",
-      s29: "تنطیمات خروج",
+      s29: "تنظیمات خروج",
       s30: "آدرس خروج",
       s31: "نوع خروج",
       s32: "تایید",
@@ -104,9 +108,9 @@ document.addEventListener('DOMContentLoaded', function () {
       s43: "./events",
       s44: "استراتژی دسترسی",
       s45: "فعال سازی SSO",
-      s46: "آدرس تغییر مسیر غیرمجاز",
+      s46: "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی",
       s47: " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)",
-      s48: "تنطیمات پایه",
+      s48: "تنظیمات پایه",
       s49: "استراتژی دسترسی",
       s50: "دسترسی بر اساس زمان",
       s51: "تاریخ شروع",
@@ -130,10 +134,15 @@ document.addEventListener('DOMContentLoaded', function () {
       s69: "کاربران منع شده",
       s70: "دسترسی بر اساس پارامتر",
       s71: "نام پارامتر",
-      s72: "مقدار پارامتر"
+      s72: "مقدار پارامتر",
+      s73: " (در صورت وارد کردن آدرس، http یا https ذکر شود)",
+      s74: "آدرس",
+      s75: "فایل",
+      s76: "بازگشت"
     },
     created: function () {
       this.getUserInfo();
+      this.isAdmin();
       this.getUserPic();
       this.getGroups();
       this.getUsersList();
@@ -147,6 +156,24 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       setActive (menuItem) {
         this.activeItem = menuItem
+      },
+      isAdmin: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        axios.get(url + "/api/user/isAdmin") //
+          .then((res) => {
+            if(res.data == "0"){
+              vm.menuSA = true;
+            }
+          });
+      },
+      selectMetaDataAddress: function () {
+        this.metaDataAddress = true;
+        this.metaDataFile = false;
+      },
+      selectMetaDataFile: function () {
+        this.metaDataAddress = false;
+        this.metaDataFile = true;
       },
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -165,7 +192,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/api/user/photo") //
             .then((res) => {
-              vm.userPicture = "/api/user/photo";
+              if(res.data == "Problem" || res.data == "NotExist"){
+                vm.userPicture = "images/PlaceholderUser.png";
+              }else{
+                vm.userPicture = "/api/user/photo";
+              }
             })
             .catch((error) => {
                 if (error.response) {
@@ -174,8 +205,6 @@ document.addEventListener('DOMContentLoaded', function () {
                   }else{
                     vm.userPicture = "/api/user/photo";
                   }
-                }else{
-                  console.log("error.response is False")
                 }
             });
       },
@@ -451,13 +480,13 @@ document.addEventListener('DOMContentLoaded', function () {
           if(this.userAllowedId.length != 0){
             this.userIdAllowed[0] = "java.util.HashSet";
             this.userIdAllowed[1] = this.userAllowedId;
-            this.requiredAttributes.userId = this.userIdAllowed;
+            this.requiredAttributes.uid = this.userIdAllowed;
           }
           
           if(this.userBlockedId.length != 0){
             this.userIdBlocked[0] = "java.util.HashSet";
             this.userIdBlocked[1] = this.userBlockedId;
-            this.rejectedAttributes.userId = this.userIdBlocked;
+            this.rejectedAttributes.uid = this.userIdBlocked;
           }
 
           for(i = 0; i < this.indexList.length; ++i){
@@ -465,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function () {
               if(document.getElementById("attributeKey" + this.indexList[i]).value != "" &&
               document.getElementById("attributeValue" + this.indexList[i]).value != ""){
                 if(document.getElementById("attributeKey" + this.indexList[i]).value != "@class" &&
-                document.getElementById("attributeKey" + this.indexList[i]).value != "userId" &&
+                document.getElementById("attributeKey" + this.indexList[i]).value != "uid" &&
                 document.getElementById("attributeKey" + this.indexList[i]).value != "ou"){
                   this.requiredAttributes[document.getElementById("attributeKey" + this.indexList[i]).value] = ["java.util.HashSet", document.getElementById("attributeValue" + this.indexList[i]).value.split(',')];
                 }
@@ -500,9 +529,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
           
           if(document.getElementsByName('mfaEnabled')[0].checked){
-            this.multifactorPolicy.multifactorAuthenticationProviders = [ "java.util.LinkedHashSet", [ "mfa-simple" ] ];
+            this.multifactorPolicy.multifactorAuthenticationProviders = "mfa-simple";
           }else{
-            this.multifactorPolicy.multifactorAuthenticationProviders = [ "java.util.LinkedHashSet", [ ] ];
+            this.multifactorPolicy.multifactorAuthenticationProviders = null;
           }
 
           if(document.getElementsByName('bypassEnabled')[0].checked){
@@ -517,33 +546,115 @@ document.addEventListener('DOMContentLoaded', function () {
             this.multifactorPolicy.failureMode = null;
           }
 
-          axios({
-              method: 'post',
-              url: url + "/api/services", //
-              headers: {'Content-Type': 'application/json'},
-              data: JSON.stringify({
-                name: vm.service.name,
-                serviceId: vm.service.serviceId,
-                multifactorPolicy: vm.multifactorPolicy,
-                description: vm.service.description,
-                logo: vm.service.logo,
-                informationUrl: vm.service.informationUrl,
-                privacyUrl: vm.service.privacyUrl,
-                logoutType: vm.service.logoutType,
-                logoutUrl: vm.service.logoutUrl,
-                accessStrategy: vm.accessStrategy,
-                contacts: vm.contacts
-              })
-          })
-          .then((res) => {
-            window.location.replace(url + "/services");
-          });
+          if(this.samls){
+            if(this.metaDataAddress || this.metaDataFile){
+              if(this.metaDataFile){
+                let file = document.querySelector('#file');
+                if(!file.files[0]){
+                  alert("لطفا قسمت های الزامی را پر کنید.");
+                }else{
+                  let bodyFormData = new FormData();
+                  bodyFormData.append("file", file.files[0]);
+                  axios({
+                    method: 'post',
+                    url: url + "/api/services/user/metadata",  //
+                    headers: {'Content-Type': 'multipart/form-data'},
+                    data: bodyFormData,
+                  }).then((res) => {
+                    if(res.data != ""){
+                      this.service.metadataLocation = res.data;
+
+                      axios({
+                        method: 'post',
+                        url: url + "/api/services/saml", //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                          name: vm.service.name,
+                          serviceId: vm.service.serviceId,
+                          metadataLocation: vm.service.metadataLocation,
+                          multifactorPolicy: vm.multifactorPolicy,
+                          description: vm.service.description,
+                          logo: vm.service.logo,
+                          informationUrl: vm.service.informationUrl,
+                          privacyUrl: vm.service.privacyUrl,
+                          logoutType: vm.service.logoutType,
+                          logoutUrl: vm.service.logoutUrl,
+                          accessStrategy: vm.accessStrategy,
+                          contacts: vm.contacts
+                        })
+                      })
+                      .then((res) => {
+                        window.location.replace(url + "/services");
+                      });
+                    }
+                  });
+                }
+              }
+
+              if(this.metaDataAddress){
+                if(document.getElementsByName('metadataLocation')[0].value != ""){
+                  this.service.metadataLocation = document.getElementsByName('metadataLocation')[0].value;
+
+                  axios({
+                    method: 'post',
+                    url: url + "/api/services/saml", //
+                    headers: {'Content-Type': 'application/json'},
+                    data: JSON.stringify({
+                      name: vm.service.name,
+                      serviceId: vm.service.serviceId,
+                      metadataLocation: vm.service.metadataLocation,
+                      multifactorPolicy: vm.multifactorPolicy,
+                      description: vm.service.description,
+                      logo: vm.service.logo,
+                      informationUrl: vm.service.informationUrl,
+                      privacyUrl: vm.service.privacyUrl,
+                      logoutType: vm.service.logoutType,
+                      logoutUrl: vm.service.logoutUrl,
+                      accessStrategy: vm.accessStrategy,
+                      contacts: vm.contacts
+                    })
+                  })
+                  .then((res) => {
+                    window.location.replace(url + "/services");
+                  });
+                }
+              }
+              
+            }else{
+              alert("لطفا قسمت های الزامی را پر کنید.");
+            }
+          }else{
+
+            axios({
+                method: 'post',
+                url: url + "/api/services/cas", //
+                headers: {'Content-Type': 'application/json'},
+                data: JSON.stringify({
+                  name: vm.service.name,
+                  serviceId: vm.service.serviceId,
+                  multifactorPolicy: vm.multifactorPolicy,
+                  description: vm.service.description,
+                  logo: vm.service.logo,
+                  informationUrl: vm.service.informationUrl,
+                  privacyUrl: vm.service.privacyUrl,
+                  logoutType: vm.service.logoutType,
+                  logoutUrl: vm.service.logoutUrl,
+                  accessStrategy: vm.accessStrategy,
+                  contacts: vm.contacts
+                })
+            })
+            .then((res) => {
+              window.location.replace(url + "/services");
+            });
+          }
         }
       },
       serviceNameValidate ($event) {
         let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
         if (keyCode < 48 || keyCode > 122) {
            $event.preventDefault();
+        }else if (keyCode == 58 || keyCode == 62) {
+          $event.preventDefault();
         }
       },
       FaNumToEnNum: function (str) {
@@ -696,6 +807,10 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s70 = "Attribute Based Access";
           this.s71 = "Attribute Name";
           this.s72 = "Attribute Value";
+          this.s73 = " (If Entering The Address, Mention http Or https)";
+          this.s74 = "Address";
+          this.s75 = "File";
+          this.s76 = "Go Back";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -714,7 +829,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s11 = "حریم خصوصی";
             this.s12 = "راهنما";
             this.s13 = "کاربران";
-            this.s14 = "تنطیمات پایه";
+            this.s14 = "تنظیمات پایه";
             this.s15 = "فعال سازی سرویس";
             this.s16 = "نوع سرویس";
             this.s17 = "نام سرویس";
@@ -729,7 +844,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s26 = "ایمیل";
             this.s27 = "شماره تماس";
             this.s28 = "دپارتمان";
-            this.s29 = "تنطیمات خروج";
+            this.s29 = "تنظیمات خروج";
             this.s30 = "آدرس خروج";
             this.s31 = "نوع خروج";
             this.s32 = "تایید";
@@ -746,9 +861,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s43 = "./events";
             this.s44 = "استراتژی دسترسی";
             this.s45 = "فعال سازی SSO";
-            this.s46 = "آدرس تغییر مسیر غیرمجاز";
+            this.s46 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
             this.s47 =  " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
-            this.s48 = "تنطیمات پایه";
+            this.s48 = "تنظیمات پایه";
             this.s49 = "استراتژی دسترسی";
             this.s50 = "دسترسی بر اساس زمان";
             this.s51 = "تاریخ شروع";
@@ -773,19 +888,24 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s70 = "دسترسی بر اساس پارامتر";
             this.s71 = "نام پارامتر";
             this.s72 = "مقدار پارامتر";
+            this.s73 = " (در صورت وارد کردن آدرس، http یا https ذکر شود)";
+            this.s74 = "آدرس";
+            this.s75 = "فایل";
+            this.s76 = "بازگشت";
+        }
+      },
+      setServiceType: function () {
+        if(this.serviceType == "CAS"){
+          this.samls = false;
+        }else{
+          this.samls = true;
         }
       },
       saml: function () {
-        this.samls = "";
-        this.s18 = "Entity ID";
+        this.samls = true;
       },
       cas: function () {
-        this.samls = "display: none;";
-        if(this.lang == "EN"){
-          this.s18 = "آدرس سرویس";
-        }else{
-          this.s18 = "Service URL";
-        }
+        
       }
     },
     computed: {

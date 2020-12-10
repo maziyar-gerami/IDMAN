@@ -8,14 +8,14 @@ import lombok.Setter;
 @Getter
 
 public class ExpirationPolicy {
-    public ExpirationPolicy(){
+    @JsonProperty("@class")
+    private String atClass;
+    private boolean deleteWhenExpired;
+    private boolean notifyWhenDeleted;
+    public ExpirationPolicy() {
         atClass = "org.apereo.cas.services.DefaultRegisteredServiceExpirationPolicy";
         deleteWhenExpired = false;
         notifyWhenDeleted = false;
 
     }
-    @JsonProperty("@class")
-    private String atClass;
-    private boolean deleteWhenExpired;
-    private boolean notifyWhenDeleted;
 }

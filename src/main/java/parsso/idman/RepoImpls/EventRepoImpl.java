@@ -1,14 +1,19 @@
 package parsso.idman.RepoImpls;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Event;
-import parsso.idman.Models.EventsSubModel.Time;
+import parsso.idman.Models.ListEvents;
+import parsso.idman.Models.Time;
 import parsso.idman.Repos.EventRepo;
+import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.utils.Query.QueryDomain;
 
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -18,155 +23,143 @@ import java.util.stream.Collectors;
 public class EventRepoImpl implements EventRepo {
 
 
-
     public static String path;
+    public static String mainCollection = "MongoDbCasEventRepository";
+    public static String secondaryCollection = "MongoDbCasEventRepository";
 
-
-
-    @Value("${events.file.path}")
-    public void setPath(String value){
-        path = value;
-    }
-
-    public static Calendar toCalendar(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal;
-    }
-
+    @Autowired
+    MongoTemplate mongoTemplate;
+    @Autowired
+    QueryDomain queryDomain;
+    @Autowired
+    ServiceRepo serviceRepo;
 
     @Override
-    public List<Event> getListUserEvents() throws FileNotFoundException, ParseException {
-        List<Event> events = analyze();
+    public List<Event> getMainListEvents() throws IOException, org.json.simple.parser.ParseException {
+        List<Event> events = analyze(mainCollection);
         return events;
     }
 
     @Override
-    public List<Event> getListUserEvents(String userId) throws FileNotFoundException, ParseException {
-        List<Event> events = analyze();
+    public ListEvents getListSizeEvents(int page, int n) throws IOException, org.json.simple.parser.ParseException {
+        List<Event> allEvents = getMainListEvents();
+        return pagination(allEvents,page,n);
+    }
+
+
+    @Override
+    public List<Event> getListEvents(int page, int number) throws IOException, org.json.simple.parser.ParseException {
+        return getMainListEvents();
+    }
+
+    @Override
+    public ListEvents getListUserEvents(String userId, int page, int number) throws IOException, org.json.simple.parser.ParseException {
+        List<Event> events = getMainListEvents();
         List<Event> relatedEvents;
-        relatedEvents = events.stream().filter(p -> p.getUserId().equals(userId)).collect(Collectors.toList());
-        return relatedEvents;
+        relatedEvents = events.stream().filter(p -> p.getPrincipalId().equals(userId)).collect(Collectors.toList());
+        return pagination(relatedEvents,page,number);
     }
 
     @Override
-    public List<Event> getEventsByDate(String date) throws FileNotFoundException, ParseException {
-        List<Event> events = analyze();
+    public ListEvents getEventsByDate(String date, int page, int number) throws ParseException, IOException, org.json.simple.parser.ParseException {
+        List<Event> events = getMainListEvents();
+
+        return pagination(iterateEvents(events, date),page,number);
+    }
+
+
+
+
+    @Override
+    public ListEvents getListUserEventByDate(String date, String userId, int page, int number) throws ParseException, IOException, org.json.simple.parser.ParseException {
+        List<Event> events = getMainListEvents();
+        List<Event> relatedEvents = new LinkedList<>();
+        int inJalaliDay = Integer.valueOf(date.substring(0, 2));
+        int inJalaliMonth = Integer.valueOf(date.substring(2, 4));
+        int inJalaliYear = Integer.valueOf(date.substring(4, 8));
+
+        SimpleDateFormat newFormatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        for (Event event : events) {
+
+            Date tempDate = newFormatter.parse(event.getCreationTime());
+
+            Calendar myCal = new GregorianCalendar();
+            myCal.setTime(tempDate);
+
+            DateConverter dateConverter = new DateConverter();
+
+            dateConverter.gregorianToPersian(myCal.get(Calendar.YEAR), myCal.get(Calendar.MONTH) + 1, myCal.get(Calendar.DAY_OF_MONTH));
+
+
+            if (event.getPrincipalId().equals(userId)
+                    &&dateConverter.getYear()==inJalaliYear&& dateConverter.getMonth()==inJalaliMonth && dateConverter.getDay()==inJalaliDay) {
+
+                relatedEvents.add(event);
+            }
+
+        }
+
+        return pagination(relatedEvents,page,number);
+
+    }
+
+    private List<Event> iterateEvents(List<Event> events, String date) throws ParseException {
+
         List<Event> relatedEvents = new LinkedList<>();
         int inDay = Integer.valueOf(date.substring(0, 2));
         int inMonth = Integer.valueOf(date.substring(2, 4));
         int inYear = Integer.valueOf(date.substring(4, 8));
 
-        DateConverter dc = new DateConverter();
-
-        dc.persianToGregorian(inYear, inMonth, inDay);
-
-        int inGregorianDay = dc.getDay();
-        int inGregorianMonth = dc.getMonth();
-        int inGregorianYear = dc.getYear();
-
+        SimpleDateFormat newFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
         for (Event event : events) {
-            //Calendar calendar = toCalendar(event.getTime());
-            int day = event.getTime().getDay();
-            int month = event.getTime().getMonth();
-            int year = event.getTime().getYear();
 
-            if ((inGregorianDay == day) && (inGregorianMonth == month) && (inGregorianYear == year))
+            Date tempDate = newFormatter.parse(event.getCreationTime());
+
+            Calendar myCal = new GregorianCalendar();
+            myCal.setTime(tempDate);
+
+            DateConverter dateConverter = new DateConverter();
+
+            dateConverter.gregorianToPersian(myCal.get(Calendar.YEAR), myCal.get(Calendar.MONTH) + 1, myCal.get(Calendar.DAY_OF_MONTH));
+
+
+            if (dateConverter.getYear() == inYear && dateConverter.getMonth() == inMonth && dateConverter.getDay() == inDay) {
+
+
                 relatedEvents.add(event);
 
-        }
-        return relatedEvents;
-    }
-
-    @Override
-    public List<Event> getListUserEventByDate(String date, String userId) throws FileNotFoundException, ParseException {
-        List<Event> events = analyze();
-        List<Event> relatedEvents = new LinkedList<>();
-        int inDay = Integer.valueOf(date.substring(0, 2));
-        int inMonth = Integer.valueOf(date.substring(2, 4));
-        int inYear = Integer.valueOf(date.substring(4, 8));
-
-        for (Event event : events) {
-            //Calendar calendar = toCalendar(event.getTimeStamp());
-            int day = event.getTime().getDay();
-            int month = event.getTime().getMonth();
-            int year = event.getTime().getYear();
-
-            DateConverter dc = new DateConverter();
-
-            dc.persianToGregorian(inYear, inMonth, inDay);
-
-            int inGregorianDay = dc.getDay();
-            int inGregorianMonth = dc.getMonth();
-            int inGregorianYear = dc.getYear();
-
-            if ((inGregorianDay == day) && (inGregorianMonth == month) && (inGregorianYear == year) && (userId.equals(event.getUserId())))
-                relatedEvents.add(event);
-
-        }
-        return relatedEvents;
-    }
-
-    public List<Event> analyze() throws FileNotFoundException, ParseException {
-
-        List<Event> events = new LinkedList<>();
-        File myfile = new File(path);
-        Scanner scanner = new Scanner(myfile);
-        StringBuffer data = new StringBuffer();
-        String temp = String.valueOf(data);
-        Event event = null;
-        String[] s = temp.split("=============================================================");
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            if (line.equals("=============================================================")) {
-                if (!(event == null) && event.getAction()!=null) events.add(event);
-                event = new Event();
-            }
-            if (line.contains("WHO: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setUserId(temp);
-            } else if (line.contains("WHAT: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setDetails(temp);
-            } else if (line.contains("ACTION: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setAction(temp);
-            } else if (line.contains("APPLICATION: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setApplication(temp);
-            } else if (line.contains("WHEN: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                SimpleDateFormat parserSDF = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
-                parserSDF.setTimeZone(TimeZone.getDefault());
-                Date date = parserSDF.parse(temp);
-
-                Calendar myCal = new GregorianCalendar();
-                myCal.setTime(date);
-
-                Time time = new Time(
-                        myCal.get(Calendar.YEAR),
-                        myCal.get(Calendar.MONTH)+1,
-                        myCal.get(Calendar.DAY_OF_MONTH),
-
-                        myCal.get(Calendar.HOUR_OF_DAY),
-                        myCal.get(Calendar.MINUTE),
-                        myCal.get(Calendar.SECOND)
-
-                );
-
-                event.setTime(time);
-
-
-            } else if (line.contains("CLIENT IP ADDRESS: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setClientIP(temp);
-            } else if (line.contains("SERVER IP ADDRESS: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setServerIP(temp);
             }
         }
+
+        return relatedEvents;
+
+    }
+
+    public List<Event> analyze(String collection) {
+
+        List<Event> events;
+        events = mongoTemplate.findAll(Event.class,collection);
         Collections.reverse(events);
         return events;
     }
+
+    public ListEvents pagination(List<Event> events, int page, int number){
+        int n = (page)*number;
+
+        if (n>events.size())
+            n = events.size();
+
+        List<Event> relativeEvents= new LinkedList<>();
+
+        int start = (page-1)*number;
+
+        for (int i=start; i<n; i++)
+            relativeEvents.add(events.get(i));
+
+        return new ListEvents(events.size(),relativeEvents, (int) Math.ceil(events.size()/number));
+    }
 }
+
+

@@ -11,11 +11,11 @@ import com.google.gson.JsonObject;
  */
 public class ReceiveResult {
 
-    private Long messageId;
-    private String message;
-    private String sender;
-    private String receptor;
-    private Long date;
+    private final Long messageId;
+    private final String message;
+    private final String sender;
+    private final String receptor;
+    private final Long date;
 
 
     public ReceiveResult(JsonObject json) {

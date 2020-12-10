@@ -1,11 +1,13 @@
 package parsso.idman;
 
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator;
 import org.jasig.cas.client.validation.TicketValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,21 +15,25 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import parsso.idman.Configs.CasUserDetailService;
+import parsso.idman.Helpers.Events.Pulling;
 import parsso.idman.Repos.FilesStorageService;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.io.*;
-import java.nio.channels.FileChannel;
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * The type Idman application.
@@ -36,33 +42,26 @@ import java.nio.channels.FileChannel;
 
 public class IdmanApplication implements CommandLineRunner {
 
-    @Value("${cas.url.logout.path}")
-    private String casLogout;
-
-
-    @Value("${cas.url.validator}")
-    private String ticketValidator;
-
-    @Value("${base.url}")
-    private String baseurl;
-
 
 
 
     private static final Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
-
     /**
      * The Storage service.
      */
     @Resource
     FilesStorageService storageService;
+    @Value("${cas.url.logout.path}")
+    private String casLogout;
+    @Value("${cas.url.validator}")
+    private String ticketValidator;
+    @Value("${base.url}")
+    private String baseurl;
+    @Autowired
+    static MongoTemplate mongoTemplate;
 
 
-    @Override
-    public void run(String... arg) {
-        //storageService.deleteAll();
-        storageService.init();
-    }
+
 
 
     /**
@@ -70,16 +69,41 @@ public class IdmanApplication implements CommandLineRunner {
      *
      * @param args the input arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException, org.json.simple.parser.ParseException {
+
+
+
+
+
 
 
 
         SpringApplication.run(IdmanApplication.class, args);
 
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
     private static void copyFileUsingApacheCommonsIO(File s, File d) throws IOException {
         FileUtils.copyFile(s, d);
+    }
+
+    @Override
+    public void run(String... arg) {
+        //storageService.deleteAll();
+        storageService.init();
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -103,6 +127,7 @@ public class IdmanApplication implements CommandLineRunner {
         filter.setServiceProperties(serviceProperties);
         return filter;
     }
+
 
     /**
      * Service properties service properties.

@@ -1,4 +1,4 @@
-package parsso.idman.mobile.Repos;
+package parsso.idman.Mobile.Repos;
 
 import com.google.zxing.WriterException;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,7 @@ import java.io.IOException;
 public interface ServicesRepo {
     public byte[] getQRCodeImage(String text, int width, int height) throws WriterException, IOException;
 
-    public String ActivationSendMessage(String mobile);
+    public String ActivationSendMessage(User user);
 
     public String insertMobileToken1(User user);
 

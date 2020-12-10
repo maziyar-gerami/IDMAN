@@ -1,4 +1,4 @@
-package parsso.idman.mobile.RepoImpls;
+package parsso.idman.Mobile.RepoImpls;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 @Service
 public class JwtUtil {
-    private String SECRET_KEY = "secret";
+    private String SECRET_KEY = "meis";
 
     public String extractUsrname(String token) {
         return extratClaim(token, Claims::getSubject);

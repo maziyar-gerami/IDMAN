@@ -1,82 +1,55 @@
 package parsso.idman.Models;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Models.ServicesSubModel.*;
+import parsso.idman.Models.ServicesSubModel.AccessStrategy;
+import parsso.idman.Models.ServicesSubModel.AttributeReleasePolicy;
+import parsso.idman.Models.ServicesSubModel.MultifactorPolicy;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.io.File;
 
 @Setter
 @Getter
-
-public class Service {
-
-    public Service(){
-
-        atClass = "org.apereo.cas.services.RegexRegisteredService";
-        properties = new Property();
-        evaluationOrder = 1;
-
-        requiredHandlers = new Object[2];
-        requiredHandlers[0] = "java.util.HashSet";
-        requiredHandlers[1] = new LinkedList<>();
-
-        environments = new Object[2];
-        environments[0] = "java.util.HashSet";
-        environments[1] = new LinkedList<>();
-
-        contacts = new Object[2];
-        contacts[0] = "java.util.ArrayList";
-        contacts[1] = new LinkedList<>();
-
-    }
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+public class Service implements Comparable<Service>{
     private long id;
     private String name;
     @JsonProperty("@class")
     private String atClass;
+    private String serviceId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private int evaluationOrder;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private AccessStrategy accessStrategy;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private MultifactorPolicy multifactorPolicy;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private AttributeReleasePolicy attributeReleasePolicy;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Object[] contacts;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String description;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private ExpirationPolicy expirationPolicy;
+    private String logoutUrl;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String logoutType;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String informationUrl;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private UsernameAttributeProvider usernameAttributeProvider;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private int evaluationOrder;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String privacyUrl;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String logo;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String serviceId;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String theme;
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private ProxyPolicy proxyPolicy;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Object[] requiredHandlers;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Object[] environments;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private AttributeReleasePolicy attributeReleasePolicy;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String logoutType;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private AccessStrategy accessStrategy;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String publicKey;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String logoutUrl;
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private Property properties;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private MultifactorPolicy multifactorPolicy;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Object[] contacts;
-    }
 
+
+    @Override
+    public int compareTo(Service second) {
+        if (this.getId()>second.getId())
+            return -1;
+        else if (this.getId()<second.getId())
+            return 1;
+        else
+            return 0;
+    }
+}

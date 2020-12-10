@@ -1,20 +1,18 @@
 package parsso.idman.Controllers;
 
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.Group;
 import parsso.idman.Models.User;
-import parsso.idman.Repos.UserRepo;
 import parsso.idman.Repos.GroupRepo;
-
-import java.security.Principal;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.List;
+import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.List;
 
 @RestController
 public class GroupsController {
@@ -33,15 +31,13 @@ public class GroupsController {
     }
 
     @PostMapping("/api/groups")
-    public ResponseEntity<String> bindLdapGroup(@RequestBody Group ou) {
-        String result = groupRepo.create(ou);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<HttpStatus> bindLdapGroup(@RequestBody Group ou) {
+        return new ResponseEntity<>(groupRepo.create(ou), HttpStatus.OK);
     }
 
     @PutMapping("/api/groups/{id}")
-    public ResponseEntity<String> rebindLdapUser(@RequestBody Group ou, @PathVariable("id") String id) {
-        String result = groupRepo.update(id, ou);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<HttpStatus> rebindLdapUser(@RequestBody Group ou, @PathVariable("id") String id) {
+        return new ResponseEntity<>(groupRepo.update(id, ou), HttpStatus.OK);
     }
 
     @GetMapping("/api/groups")
@@ -50,18 +46,13 @@ public class GroupsController {
     }
 
     @GetMapping("/api/groups/{id}")
-    public ResponseEntity <Group> retrieveOU(@PathVariable("id") String id) {
-        return new ResponseEntity<> (groupRepo.retrieveOu(id), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/api/groups/{id}")
-    public ResponseEntity<String> unbindLdapOU(@PathVariable("id") String id) {
-        return new ResponseEntity<>(groupRepo.remove(id), HttpStatus.OK);
+    public ResponseEntity<Group> retrieveOU(@PathVariable("id") String id) {
+        return new ResponseEntity<>(groupRepo.retrieveOu(id), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/groups")
-    public ResponseEntity<String> unbindAllLdapOU() {
-        return new ResponseEntity<>(groupRepo.remove(), HttpStatus.OK);
+    public ResponseEntity<HttpStatus> unbindAllLdapOU(@RequestBody JSONObject jsonObject) {
+            return new ResponseEntity<>(groupRepo.remove(jsonObject), HttpStatus.OK);
     }
 
 }

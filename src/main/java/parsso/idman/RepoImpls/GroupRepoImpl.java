@@ -1,7 +1,12 @@
 package parsso.idman.RepoImpls;
 
+
+import net.minidev.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
@@ -18,16 +23,12 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.SearchControls;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
+import java.util.*;
 
 @Service
 public class GroupRepoImpl implements GroupRepo {
 
-    //public static final String BASE_DN = "dc=partition1,dc=com";;
+    Logger logger = LoggerFactory.getLogger(Group.class);
 
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
@@ -36,26 +37,37 @@ public class GroupRepoImpl implements GroupRepo {
     private LdapTemplate ldapTemplate;
 
     @Override
-    public String remove(String id) {
+    public HttpStatus remove(JSONObject jsonObject) {
 
-        Name dn = buildDn(id);
-        ldapTemplate.unbind(dn);
-        return id + " removed successfully";
-    }
-
-    @Override
-    public String remove() {
-
-        List <Group> allous = retrieve();
-        for (Group ou: allous) {
-            Name dn = buildDn(ou.getId());
-            ldapTemplate.unbind(dn);
-
+        List<Group> groups = new LinkedList<>();
+        if (jsonObject.size()==0)
+            groups = retrieve();
+        else {
+            ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+            Iterator<String> iterator = jsonArray.iterator();
+            while (iterator.hasNext()) {
+                Group group = retrieveOu(iterator.next());
+                if (group != null)
+                    groups.add(group);
+            }
         }
 
-        return "All Groups removed successfully";
-    }
+        if (groups != null)
+            for (Group group : groups) {
+                Name dn = buildDn(group.getId());
+                try {
+                    logger.info("All groups removed");
+                    ldapTemplate.unbind(dn);
 
+                } catch (Exception e) {
+                    logger.warn("removing group "+group.getName()+ "  was unsuccessful");
+                }
+
+            }
+
+            logger.info("Removing groups ended");
+            return HttpStatus.OK;
+    }
 
 
     @Override
@@ -63,9 +75,9 @@ public class GroupRepoImpl implements GroupRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        List<Group> groups= retrieve();
+        List<Group> groups = retrieve();
 
-        for (Group group:groups ) {
+        for (Group group : groups) {
             if (group.getId().equals(uid))
                 return group;
         }
@@ -73,31 +85,20 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
     @Override
-    public Group retrieveOu() {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        List<Group> groupList = ldapTemplate.search(query().where("objectClass").is("extensibleObject"),
-                new OUAttributeMapper());
-        return groupList.get(0);
-    }
-
-    @Override
     public List<Group> retrieveCurrentUserGroup(User user) {
         List<String> memberOf = user.getMemberOf();
         List<Group> groups = new ArrayList<Group>();
-        try{
-            for(int i = 0; i < memberOf.size(); ++i){
+        try {
+            for (int i = 0; i < memberOf.size(); ++i) {
                 groups.add(retrieveOu(memberOf.get(i)));
             }
-        } catch (NullPointerException e){
-            e.printStackTrace();
+        } catch (NullPointerException e) {
+
         }
         return groups;
     }
 
     private Attributes buildAttributes(String uid, Group group) {
-
-        Date date = new Date();
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
         ocattr.add("extensibleObject");
@@ -107,16 +108,17 @@ public class GroupRepoImpl implements GroupRepo {
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
         attrs.put("name", group.getName());
-        attrs.put("ou",uid);
-        attrs.put("description" , group.getDescription());
+        attrs.put("ou", uid);
+        if (group.getDescription()!="")
+            attrs.put("description", group.getDescription());
+        else
+            attrs.put("description", " ");
+
         return attrs;
     }
 
-    public Name buildDn(String  id) {
+    public Name buildDn(String id) {
         return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").add("ou", id).build();
-    }
-    public Name buildBaseDn() {
-        return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").build();
     }
 
     @Override
@@ -133,31 +135,44 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
     @Override
-    public String create(Group ou) {
+    public HttpStatus create(Group ou) {
 
         List<Group> groups = retrieve();
-        int max=0;
+        long max = 0;
 
-        for (Group group:groups) {
-            if (Integer.valueOf(group.getId())>max)
-                max = Integer.valueOf(group.getId());
+        for (Group group : groups) {
+            if (Long.valueOf(group.getId()) > max)
+                max = Long.valueOf(group.getId());
 
         }
 
+        Name dn = buildDn(String.valueOf(max + 1));
+        try {
+            ldapTemplate.bind(dn, null, buildAttributes(String.valueOf(max + 1), ou));
+            logger.info("Group "+ou.getName() +" created successfully");
+            return HttpStatus.OK;
 
-        Name dn = buildDn(String.valueOf(max+1));
-        ldapTemplate.bind(dn, null, buildAttributes(String.valueOf(max+1), ou));
-        return ou.getName() + " created successfully";
+        } catch (Exception e){
+            logger.warn("Creating group "+ou.getName() +" was unsuccessful");
+            return HttpStatus.BAD_REQUEST;
+        }
     }
 
     @Override
-    public String update(String id, Group ou) {
+    public HttpStatus update(String id, Group ou) {
         Name dn = buildDn(id);
 
         Group group = retrieveOu(id);
 
-        ldapTemplate.rebind(dn, null, buildAttributes(group.getId(),ou));
-        return ou.getName() + " updated successfully";
+        try {
+            ldapTemplate.rebind(dn, null, buildAttributes(group.getId(), ou));
+            logger.info("Group "+ou.getId() +" updated successfully");
+            return  HttpStatus.OK;
+
+        }  catch (Exception e) {
+            logger.warn("updating group "+ou.getName() +"  was unsuccessful");
+            return HttpStatus.BAD_REQUEST;
+        }
     }
 
 

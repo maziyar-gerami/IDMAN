@@ -1,6 +1,8 @@
 package parsso.idman.utils.Convertor;
 
 
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
+
 public class DateConverter {
 
     private int day, month, year;
@@ -76,7 +78,7 @@ public class DateConverter {
         jYear = gYear - 621;
         JalCal(jYear);
         int JDN1F = JG2JD(gYear, 3, march, 0);
-        int k     = JDN - JDN1F;
+        int k = JDN - JDN1F;
         if (k >= 0) {
             if (k <= 185) {
                 jMonth = 1 + k / 31;
@@ -125,8 +127,8 @@ public class DateConverter {
                 1635, 2060, 2097, 2192, 2262, 2324, 2394, 2456, 3178};
         gYear = jY + 621;
         int leapJ = -14;
-        int jp    = breaks[0];
-        int jump  = 0;
+        int jp = breaks[0];
+        int jump = 0;
         for (int j = 1; j <= 19; j++) {
             int jm = breaks[j];
             jump = jm - jp;
@@ -175,8 +177,8 @@ public class DateConverter {
     }
 
 
-    public String[] convertDate(String s){
-        String[]strings=new String[2];
+    public String[] convertDate(String s) {
+        String[] strings = new String[2];
         StringBuilder stringBuilder = new StringBuilder();
         int y, m, d;
         String[] temp = s.split("-");
@@ -193,21 +195,19 @@ public class DateConverter {
 
         stringBuilder.append(MonthToString(m));
         stringBuilder.append(" ");
-        if(d/10==0)
+        if (d / 10 == 0)
             stringBuilder.append("0");
-        stringBuilder.append(String.valueOf(d));
+        stringBuilder.append(d);
 
 
-        strings[0]=String.valueOf(stringBuilder);
-        strings[1]=String.valueOf(y);
+        strings[0] = String.valueOf(stringBuilder);
+        strings[1] = String.valueOf(y);
         return strings;
     }
 
 
-
-
-    public String MonthToString(int n){
-        switch (n){
+    public String MonthToString(int n) {
+        switch (n) {
             case 1:
                 return "Jan";
             case 2:
@@ -246,6 +246,7 @@ public class DateConverter {
                 return " ";
         }
     }
+
     /**
      * Converts Persian(Jalali) date to Gregorian date
      *
@@ -287,5 +288,7 @@ public class DateConverter {
     public int getYear() {
         return year;
     }
+
+
 }
 

@@ -5,7 +5,6 @@
 package parsso.idman.utils.SMS.sdk.models;
 
 import com.google.gson.JsonObject;
-
 import parsso.idman.utils.SMS.sdk.enums.MessageStatus;
 
 /**

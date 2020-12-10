@@ -5,7 +5,6 @@
 package parsso.idman.utils.SMS.sdk.enums;
 
 /**
- *
  * @author Mohsen
  */
 public enum MetaData {
@@ -27,14 +26,10 @@ public enum MetaData {
     InvalidDate(114),
     MsgIsTooLarge(115),
     RecpNotEqualWithMessage(116);
-    private int value;
+    private final int value;
 
-    private MetaData(int type) {
+    MetaData(int type) {
         this.value = type;
-    }
-
-    public int getValue() {
-        return value;
     }
 
     public static MetaData valueOf(int type) {
@@ -44,5 +39,9 @@ public enum MetaData {
             }
         }
         return null;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

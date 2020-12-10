@@ -6,17 +6,15 @@
 package parsso.idman.utils.SMS.sdk.utils;
 
 /**
- *
  * @author Hadi
  */
 public class PairValue {
-    private String Key=null;
-    private String Value=null;
+    private String Key = null;
+    private String Value = null;
 
-    public PairValue(String Key,String Value)
-    {
-        this.Key=Key;
-        this.Value=Value;
+    public PairValue(String Key, String Value) {
+        this.Key = Key;
+        this.Value = Value;
     }
 
     public String getKey() {
@@ -27,10 +25,5 @@ public class PairValue {
         return Value;
     }
 
-    
-    
-    
-    
-    
-    
+
 }

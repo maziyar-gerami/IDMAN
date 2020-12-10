@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fa" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>پارسو</title>
+
+    <link href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/Groups/style.css" rel="stylesheet">
+    <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="fonts/IranSans/font.css" rel="stylesheet">
+
+
+    <script src="js/vue.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/Groups/script.js"></script>
+    <script src="//unpkg.com/vue-plain-pagination"></script>
+
+</head>
+<body class="h-100">
+    <div id="app">
+        <div  v-bind:class="{rtl: isRtl}" class=" h-100">
+                <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
+                    <div class="container">
+                        <a class="navbar-brand" href="./">{{s0}}</a>
+                        <div class="dropdown">
+                            <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span class="fa fa-caret-down"></span></a>
+                            <div id="myDropdown" class="dropdown-content">
+                                <a href="./logout">{{s2}}</a>
+                            </div>
+                            <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 mb-3 mb-lg-0">
+                        <div class="card">
+                            <div class="card-body p-0 pt-3">
+                                <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
+                                    <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
+                                </form>
+                                <div class="userpic mb-3">
+                                    <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
+                                    <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()"><!--  -->
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <i class="fa fa-photo"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </a>
+                                </div>
+
+                                <div class="text-center mb-3">
+                                    <div>
+                                        <strong>{{s1}}</strong>
+                                    </div>
+                                    <div class="text-primary">
+                                        <small>{{username}}</small>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mb-3">
+                                    <a href="./logout" class="btn btn-danger btn-sm">
+                                        <i class="fa fa-power-off"></i>
+                                        {{s2}}
+                                    </a>
+                                </div>
+
+                                <div class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s14">
+                                        <i class="fa fa-dashboard"></i>
+                                        <span>{{s20}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s15">
+                                        <i class="fa fa-server"></i>
+                                        <span>{{s4}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s16">
+                                        <i class="fa fa-user"></i>
+                                        <span>{{s13}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s21">
+                                        <i class="fa fa-users"></i>
+                                        <span>{{s5}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s31">
+                                        <i class="fa fa-calendar"></i>
+                                        <span>{{s6}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s22">
+                                        <i class="fa fa-cogs"></i>
+                                        <span>{{s7}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s28">
+                                        <i class="fa fa-cog"></i>
+                                        <span>{{s27}}</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 page-content">
+                        <div class="card">
+                            <div class="card-body pb-0" style="background-color: #f8f9fa!important;">
+                                <div class="container">
+                                    <h3 class="border-bottom pb-2" v-bind:style="showS">{{U1}}</h3>
+                                    <div v-bind:style="showS" class="row mb-3 mt-3" style="font-size: 15px;">
+                                        <button class="btn btn-success btn-sm" :class="margin1" v-on:click="addGroupS()">
+                                            <span class="fa-stack">
+                                                <i class="fa fa-plus fa-stack-1x"></i>
+                                            </span>
+                                            {{U12}}
+                                        </button>
+                                        <button v-on:click="deleteAllGroups()" class="btn btn-danger btn-sm">
+                                            <span class="fa-stack">
+                                                <i class="fa fa-trash fa-stack-1x"></i>
+                                            </span>
+                                            {{U17}}
+                                        </button>
+                                    </div>
+                                    <div v-if="message" class="alert alert-success">{{this.message}}</div>
+                                    <div class="container mb-5" style="background-color: white; font-size: 15px;">
+                                        <table class="table table-responsive" v-bind:style="showS" style="padding: .5rem;">
+                                            <tr>
+                                                <th style="border: none;">{{U2}}</th>
+                                                <th style="border: none;">{{U3}}</th>
+                                            </tr>
+                                            <tbody id="body">
+                                                    <tr v-for="group in sortedGroups" v-bind:key="group.id">
+                                                        <td>{{group.id}}</td>
+                                                        <td>{{group.name}}</td>
+                                                        <td>
+                                                            <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editGroupS(group.name)">
+                                                                <span class="fa-passwd-reset fa-stack">
+                                                                        <i class="fa fa-pencil-square-o fa-stack-2x"></i>
+                                                                </span>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-sm" v-on:click="deleteGroup(group.name)">
+                                                                <span class="fa-passwd-reset fa-stack">
+                                                                    <i class="fa fa-trash fa-stack-2x"></i>
+                                                                </span>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                        <div v-bind:style="showS">
+                                            <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                            :labels="paginationAnchorTexts"></v-pagination>
+                                        </div>
+                                        
+                                        <form v-bind:style="editS">
+                                            <h3 class="mb-3 pb-2 border-bottom">{{s30}}</h3>
+                                            <div class="form-group">
+                                              <label>{{U2}}<span style="color: red;"> *</span></label>
+                                              <input v-bind:value="group.id" id="group.idUpdate" type="text" class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                              oninput="setCustomValidity('')">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{U3}}<span style="color: red;"> *</span></label>
+                                                <input v-bind:value="group.name" id="group.nameUpdate" type="text" class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                                oninput="setCustomValidity('')" disabled>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{U9}}</label>
+                                                <textarea v-bind:value="group.description" id= "group.descriptionUpdate" rows="10" type="text" class="form-control">
+                                                </textarea>
+                                            </div>
+                                            <button v-on:click="editGroup(group.name)" class="btn btn-primary">{{U13}}</button>
+                                            <button v-on:click="showGroups()" class="btn btn-danger">{{s17}}</button>
+                                        </form>
+                                        <form v-bind:style="addS">
+                                            <h3 class="mb-3 pb-2 border-bottom">{{s29}}</h3>
+                                            <div class="form-group">
+                                              <label>{{U2}}<span style="color: red;"> *</span></label>
+                                              <input id="group.idCreate" type="text" class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                              oninput="setCustomValidity('')">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{U3}}<span style="color: red;"> *</span></label>
+                                                <input id="group.nameCreate" type="text" class="form-control" required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                                oninput="setCustomValidity('')">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{{U9}}</label>
+                                                <textarea id= "group.descriptionCreate" rows="5" type="text" class="form-control">
+                                                </textarea>
+                                            </div>
+                                            <button v-on:click="addGroup()" class="btn btn-primary">{{s18}}</button>
+                                            <button v-on:click="showGroups()" class="btn btn-danger">{{s17}}</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="mb-3 mt-4">
+                <div class="container">
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="btn btn-link" style="text-decoration: none;">{{s10}}</a>
+                        <a v-bind:href="s26" class="btn btn-link" style="text-decoration: none;">{{s11}}</a>
+                        <a href="#" class="btn btn-link" style="text-decoration: none;">{{s12}}</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

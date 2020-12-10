@@ -101,7 +101,7 @@
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
+                                    <a v-if="menuSA" class="list-group-item list-group-item-action py-2 "
                                     style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s25">
                                         <i class="fa fa-cog"></i>
@@ -130,10 +130,8 @@
                                         </div>
                                     </div>
                                     <div class="row mt-3">
-                                        <div class="col-1">
-                                        </div>
-                                        <div class="col-10" style="text-align: center; display: inline-flex;">
-                                            <select id="restorePointID" class="form-control ml-1 mr-1" style="direction: ltr;">
+                                        <div class="col-12" style="text-align: center; display: inline-flex;">
+                                            <select id="restorePointID" class="form-control enInput ml-1 mr-1">
                                                 <option v-for="point in restorePoints" v-bind:id="point" v-model="point">{{point}}</option>
                                                 <option v-if="storePointsExists" selected disabled>{{s30}}</option>
                                             </select>
@@ -141,14 +139,12 @@
                                                 {{s31}}
                                             </button>
                                         </div>
-                                        <div class="col-1">
-                                        </div>
                                     </div>
                                 </div>
                                 <div v-if="configsLoaded">
                                     <ul class="nav nav-tabs nav-justified" style="font-size: 15px;">
                                         <li class="nav-item" v-for="groups in configsGroupNames" v-bind:key="groups">
-                                            <a class="nav-link" @click.prevent="setActive(groups)" :class="{ active: isActive(groups) }" v-bind:href="'#'+ groups"><p style="font-size: 15px;">{{groups}}</p></a>
+                                            <a class="nav-link" @click.prevent="setActive(groups)" :class="{ active: isActive(groups) }" v-bind:href="'#'+ groups" style="outline: 0;"><p style="font-size: 15px;">{{groups}}</p></a>
                                         </li>
                                     </ul>
                                     <div class="tab-content py-3" id="myTabContent" style="background-color: white; padding: 2%; font-size: 15px; direction: rtl;">
@@ -161,7 +157,7 @@
                                                             <tbody id="body">
                                                                 <tr>
                                                                     <td style="width: 50%;">
-                                                                        <input class="form-control" type="text" v-model="config.value" style="direction: ltr;">
+                                                                        <input class="form-control enInput" type="text" v-model="config.value">
                                                                     </td>
                                                                     <td style="width: 50%;">
                                                                         <p style="text-align: center; margin-top: 4%;">{{config.name}}</p>

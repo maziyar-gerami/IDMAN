@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
         el: '#app',
         data: {
             recordsShownOnPage: 20,
+            currentPage: 1,
             currentSort: "id",
             currentSortDir: "asc",
             userInfo: [],
@@ -32,6 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
             username: "",
             name: "",
             nameEN: "",
+            menuSA: false,
+            changePageUsers: false,
             users: [],
             usersPage: [],
             usersConflictList: [],
@@ -51,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function () {
             addS: "display:none",
             showS: "",
             importConflictS: "display:none",
-            currentPage: 1,
             total: 1,
             ImportedFile: '',
             bootstrapPaginationClasses: {
@@ -70,6 +72,8 @@ document.addEventListener('DOMContentLoaded', function () {
             margin1: "ml-1",
             margin3: "ml-3",
             margin5: "ml-5",
+            col1Style: "padding-left: .5rem !important; padding-right: 0 !important; display: inline-flex;",
+            col2Style: "padding-left: 0 !important; padding-right: .5rem !important; display: inline-flex;",
             padding0Left: "padding-left: 0rem;",
             padding0Right: "padding-right: 0rem;",
             userPicture: "images/PlaceholderUser.png",
@@ -77,17 +81,17 @@ document.addEventListener('DOMContentLoaded', function () {
             eye: "right: 1%;",
             font: "font-size: 0.74em; text-align: right;",
             rules: [
-                { message:"حداقل شامل یک کاراکتر کوچک باشد. ", regex:/[a-z]+/ },
-				{ message:"حداقل شامل یک کاراکتر بزرگ باشد. ",  regex:/[A-Z]+/ },
-				{ message:"حداقل ۸ کاراکتر باشد. ", regex:/.{8,}/ },
-				{ message:"حداقل شامل یک عدد باشد. ", regex:/[0-9]+/ }
+                { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ", regex:/[a-zA-Z]+/, fa:false},
+                { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ",  regex:/[!@#\$%\^\&*\)\(+=\[\]._-]+/, fa:true},
+				{ message:"حداقل ۸ کاراکتر باشد. ", regex:/.{8,}/, fa:false},
+				{ message:"حداقل شامل یک عدد باشد. ", regex:/[0-9]+/, fa:false}
             ],
             show: false,
             showR: false,
             showC: false,
             has_number: false,
-            has_lowercase: false,
-            has_uppercase: false,
+            has_lowerUPPERcase: false,
+            has_specialchar: false,
             has_char: false,
             password: "",
             checkPassword: "",
@@ -98,14 +102,25 @@ document.addEventListener('DOMContentLoaded', function () {
             showRCreate: false,
             showCCreate: false,
             has_numberCreate: false,
-            has_lowercaseCreate: false,
-            has_uppercaseCreate: false,
+            has_lowerUPPERcaseCreate: false,
+            has_specialcharCreate: false,
             has_charCreate: false,
             passwordCreate: "",
             checkPasswordCreate: "",
 			passwordVisibleCreate: true,
             submittedCreate: false,
             userStatus: "",
+            resetPassEmailSent: false,
+            usersImported: false,
+            allIsSelected: false,
+            userIdm2MFlag: false,
+            userIdM2mFlag: false,
+            displayNamem2MFlag: false,
+            displayNameM2mFlag: false,
+            searchUserId: "",
+            searchDisplayName: "",
+            searchGroup: "none",
+            searchStatus: "none",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -157,12 +172,34 @@ document.addEventListener('DOMContentLoaded', function () {
             s49: "رمز عبور های وارد شده یکسان نمی باشند",
             s50: "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.",
             s51: "زمان انقضا کاربر",
+            s52: "ایمیل بازنشانی رمز عبور با موفقیت ارسال شد.",
+            s53: "حذف کاربر",
+            s54: "اعمال",
+            s55: "آیا از حذف کاربران انتخاب شده اطمینان دارید؟",
+            s56: "هیچ کاربری انتخاب نشده است.",
+            s57: "بازنشانی رمزعبور همه",
+            s58: "جدید",
+            s59: "بازنشانی",
+            s60: "فایل نمونه",
+            s61: "نام فارسی",
+            s62: "گروه",
+            s63: "وضعیت",
+            s64: "فعال",
+            s65: "غیرفعال",
+            s66: "قفل شده",
+            s67: "اعمال فیلتر",
+            s68: "حذف فیلتر",
+            s69: "",
+            s70: "",
+            s71: "از مجموع کاربران وارد شده تعداد ",
+            s72: " کاربر با موفقیت ثبت شدند و تعداد ",
+            s73: " کاربر در هنگام ثبت با مشکل مواجه شده و ثبت نشدند.",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
             U3: "نام (به انگلیسی)",
             U4: "نام خانوادگی (به انگلیسی)",
-            U5: "نام",
+            U5: "نام کامل (به فارسی)",
             U6: "شماره تلفن",
             U7: "ایمیل",
             U8: "کد ملی",
@@ -180,18 +217,39 @@ document.addEventListener('DOMContentLoaded', function () {
             U20: "وارد کردن کاربران با فایل",
             U21: "بارگزاری",
             U22: "بازنشانی رمز عبور",
-            U23: "فایل الگو"
+            U23: "فایل الگو",
+            U24: "کد پرسنلی"
         },
         created: function () {
             this.getUserInfo();
+            this.isAdmin();
             this.getUserPic();
-            this.refreshUsers();
+            this.getUsers();
             this.getGroups();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
             }
         },
         methods: {
+            allSelected () {
+                if(this.allIsSelected){
+                    this.allIsSelected = false;
+                    for(let i = 0; i < this.users.length; ++i){
+                        if(document.getElementById("checkbox-" + this.users[i].userId).checked == true){
+                            document.getElementById("checkbox-" + this.users[i].userId).click();
+                        }
+                        document.getElementById("row-" + this.users[i].userId).style.background = "";
+                    }
+                }else{
+                    this.allIsSelected = true;
+                    for(let i = 0; i < this.users.length; ++i){
+                        if(document.getElementById("checkbox-" + this.users[i].userId).checked == false){
+                            document.getElementById("checkbox-" + this.users[i].userId).click();
+                        }
+                        document.getElementById("row-" + this.users[i].userId).style.background = "#c2dbff";
+                    }
+                }
+            },
             isActive (menuItem) {
                 return this.activeItem === menuItem
             },
@@ -199,9 +257,44 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.activeItem = menuItem
             },
             selectedFile() {
+                let re = /(\.xlsx)$/i;
+                let fup = document.getElementById('file');
+                let fileName = fup.value;
+                if(!re.exec(fileName)){
+                    alert(this.s24);
+                    return;
+                }else{
+                    var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                    var vm = this;
+                    var bodyFormData = new FormData();
+                    var file = document.querySelector('#file');
+                    bodyFormData.append("file", file.files[0]);
+                    axios({
+                        method: 'post',
+                        url: url + "/api/users/import",  //
+                        headers: {'Content-Type': 'multipart/form-data'},
+                        data: bodyFormData,
+                    })
+                    .then((res) => {
+                        vm.filter();
+                        vm.s69 = res.data.nSuccessful;
+                        vm.s70 = res.data.nUnSuccessful;
+                        vm.usersImported = true;
+                        setTimeout(function(){ vm.usersImported = false; }, 10000);
+                    }).catch((error) => {
+                        if(error.response.status === 302){
+                            vm.filter();
+                            vm.s69 = error.response.data.nSuccessful;
+                            vm.s70 = error.response.data.nUnSuccessful;
+                            vm.usersImported = true;
+                            setTimeout(function(){ vm.usersImported = false; }, 10000);
+                        }
+                    });
+                }
+                /*
                 this.ImportedFile = this.$refs.file.files[0];
                 const file = this.$refs.file.files[0];
-                var re = /(\.xls|\.xlsx|\.csv|\.ldif)$/i;
+                var re = /(\.xlsx)$/i;   // |\.xls|\.csv|\.ldif
 
                 if (!file) {
                     alert(this.s23);
@@ -228,9 +321,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                 data: bodyFormData,
                             })
                             .then((res) => {
-                                location.reload();
-                            })
-                            .catch((error) => {
+                                vm.filter();
+                                vm.s69 = res.data.nSuccessful;
+                                vm.s70 = res.data.nUnSuccessful;
+                                vm.usersImported = true;
+                                setTimeout(function(){ vm.usersImported = false; }, 10000);
+                            });
+                             .catch((error) => {
                                 if(error.response){
                                     vm.usernameList = error.response.data;
                                     for(var i = 0; i < error.response.data.length; ++i){
@@ -297,10 +394,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                 vm.addS = "display:none";
                                 vm.editS = "display:none";
                                 vm.importConflictS = "";
-                            });
+                            }); 
+                            
                         }
                     }
                 }
+                */
             },
             selectConflict:function(s1, s2) {
                 document.getElementById(s1).className = "btn btn-success mb-2";
@@ -371,22 +470,34 @@ document.addEventListener('DOMContentLoaded', function () {
                         vm.s1 = vm.name;
                     });
             },
+            isAdmin: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/api/user/isAdmin") //
+                  .then((res) => {
+                    if(res.data == "0"){
+                      vm.menuSA = true;
+                    }
+                  });
+            },
             getUserPic: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                      vm.userPicture = "/api/user/photo";
+                        if(res.data == "Problem" || res.data == "NotExist"){
+                            vm.userPicture = "images/PlaceholderUser.png";
+                        }else{
+                            vm.userPicture = "/api/user/photo";
+                        }
                     })
                     .catch((error) => {
                         if (error.response) {
-                          if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
-                            vm.userPicture = "images/PlaceholderUser.png";
-                          }else{
-                            vm.userPicture = "/api/user/photo";
-                          }
-                        }else{
-                          console.log("error.response is False")
+                            if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
+                                vm.userPicture = "images/PlaceholderUser.png";
+                            }else{
+                                vm.userPicture = "/api/user/photo";
+                            }
                         }
                     });
             },
@@ -434,14 +545,128 @@ document.addEventListener('DOMContentLoaded', function () {
                   }
                 }
             },
-            refreshUsers: function () {
+            getUsers: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/users") //
+                let tempUsers = {};
+                this.users = [];
+                axios.get(url + "/api/users/" + vm.currentPage + "/" + vm.recordsShownOnPage) //
                     .then((res) => {
-                        vm.users = res.data;
-                        vm.total = Math.ceil(vm.users.length / vm.recordsShownOnPage);
+                        vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
+                        res.data.userList.forEach(function (item) {
+                            tempUsers = {};
+                            tempUsers.userId = item.userId;
+                            tempUsers.displayName = item.displayName;
+                            tempUsers.memberOf = item.memberOf;
+                            vm.users.push(tempUsers);
+                        });
+                        for(let i = 0; i < vm.recordsShownOnPage; ++i){
+                            if(i < res.data.size){
+                                vm.users[i].orderOfRecords = i + 1;
+                            }
+                        }
                     });
+            },
+            filter: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                let searchQuery = "?";
+                if(!this.changePageUsers){
+                    this.currentPage = 1;
+                }
+                this.users = [];
+                searchQuery = searchQuery + "searchUid=";
+                if(this.searchUserId != ""){
+                    searchQuery = searchQuery + this.searchUserId + "&";
+                }else{
+                    searchQuery = searchQuery + "&";
+                }
+                searchQuery = searchQuery + "searchDisplayName=";
+                if(this.searchDisplayName != ""){
+                    searchQuery = searchQuery + this.searchDisplayName + "&";
+                }else{
+                    searchQuery = searchQuery + "&";
+                }
+                searchQuery = searchQuery + "groupFilter=";
+                if(this.searchGroup != "none"){
+                    searchQuery = searchQuery + this.searchGroup + "&";
+                }else{
+                    searchQuery = searchQuery + "&";
+                }
+                searchQuery = searchQuery + "userStatus=";
+                if(this.searchStatus != "none"){
+                    searchQuery = searchQuery + this.searchStatus + "&";
+                }else{
+                    searchQuery = searchQuery + "&";
+                }
+                searchQuery = searchQuery + "sortType=";
+                if(this.userIdm2MFlag){
+                    searchQuery = searchQuery + "uid_m2M";
+                }else if(this.userIdM2mFlag){
+                    searchQuery = searchQuery + "uid_M2m";
+                }else if(this.displayNamem2MFlag){
+                    searchQuery = searchQuery + "displayName_m2M";
+                }else if(this.displayNameM2mFlag){
+                    searchQuery = searchQuery + "displayName_M2m";
+                }
+                let tempUsers = {};
+                this.users = [];
+                axios.get(url + "/api/users/" + vm.currentPage + "/" + vm.recordsShownOnPage + searchQuery) //
+                    .then((res) => {
+                        vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
+                        res.data.userList.forEach(function (item) {
+                            tempUsers = {};
+                            tempUsers.userId = item.userId;
+                            tempUsers.displayName = item.displayName;
+                            tempUsers.memberOf = item.memberOf;
+                            vm.users.push(tempUsers);
+                        });
+                        for(let i = 0; i < vm.recordsShownOnPage; ++i){
+                            if(i < res.data.size){
+                                vm.users[i].orderOfRecords = i + 1;
+                            }
+                        }
+                    });
+                this.changePageUsers = false;
+            },
+            deleteFilter: function () {
+                this.searchUserId = "";
+                this.searchDisplayName = "";
+                this.searchGroup = "none";
+                this.searchStatus = "none"
+                this.userIdm2MFlag = false;
+                this.userIdM2mFlag = false;
+                this.displayNamem2MFlag = false;
+                this.displayNameM2mFlag = false;
+                this.filter();
+            },
+            userIdm2M: function () {
+                this.userIdm2MFlag = true,
+                this.userIdM2mFlag = false,
+                this.displayNamem2MFlag = false,
+                this.displayNameM2mFlag = false,
+                this.filter();
+            },
+            userIdM2m: function () {
+                this.userIdm2MFlag = false,
+                this.userIdM2mFlag = true,
+                this.displayNamem2MFlag = false,
+                this.displayNameM2mFlag = false,
+                this.filter();
+            },
+            displayNamem2M: function () {
+                this.userIdm2MFlag = false,
+                this.userIdM2mFlag = false,
+                this.displayNamem2MFlag = true,
+                this.displayNameM2mFlag = false,
+                this.filter();
+            },
+            displayNameM2m: function () {
+                this.userIdm2MFlag = false,
+                this.userIdM2mFlag = false,
+                this.displayNamem2MFlag = false,
+                this.displayNameM2mFlag = true,
+                this.filter();
             },
             showUsers: function () {
                 this.showS = ""
@@ -505,152 +730,155 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
             },
             editUser: function (id) {
-                this.showS = ""
-                this.addS = "display:none"
-                this.editS = "display:none"
-                this.importConflictS = "display:none"
-                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var check = confirm(this.s26);
 
-                var checkedGroups = [];
-                if(document.getElementById('groupsUpdate').value != ""){
-                    checkedGroups = document.getElementById('groupsUpdate').value.split(',');
-                }
-
-                let dateEndTemp = document.getElementById('endTime').value.split("  ");
-                let dateEnd = dateEndTemp[0].split(' ');
-                let dateEndFinal;
-                dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
-                dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
-
-                switch(dateEnd[dateEnd.length-2]) {
-                  case "فروردین":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "اردیبهشت":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "خرداد":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "تیر":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "مرداد":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "شهریور":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "مهر":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "آبان":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "آذر":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "دی":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "بهمن":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "اسفند":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
-                    break;
-                  default:
-                    console.log("Wrong Input for Month");
-                }
-
-                let timeEnd = dateEndTemp[1].split(':');
-
-                timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
-                
-                let dateE = dateEndFinal.split('-');
-
-                if(parseInt(dateE[1]) < 7){
-                  timeEnd = timeEnd + ":00.000+4:30";
+                if(id == "" ||
+                document.getElementById('editInfo.displayNameUpdate').value == "" ||
+                document.getElementById('editInfo.mobileUpdate').value == "" ||
+                document.getElementById('editInfo.mailUpdate').value == ""){
+                    alert("لطفا قسمت های الزامی را پر کنید.");
                 }else{
-                  timeEnd = timeEnd + ":00.000+3:30";
-                }
+                    let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                    var check = confirm(this.s26);
 
-                let TempE = timeEnd.split(':');
-                if(TempE[0].length == 1){
-                  TempE[0] = '0' + TempE[0];
-                  timeEnd = "";
-                  for(i = 0; i < TempE.length; ++i){
-                    timeEnd = timeEnd + TempE[i] + ':';
-                  }
-                  timeEnd = timeEnd.substring(0,timeEnd.length-1);
-                }
-
-                TempE = dateEndFinal.split('-');
-                if(TempE[1].length == 1){
-                  TempE[1] = '0' + TempE[1];
-                }
-                if(TempE[2].length == 1){
-                  TempE[2] = '0' + TempE[2];
-                }
-                
-                dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
-
-                let endTimeFinal = dateEndFinal + "T" + timeEnd;
-
-                if (check == true) {
-                    let statusValue;
-                    if(document.getElementById('status').value != "locked"){
-                        if(document.getElementById('status').value == "active"){
-                            if(this.userStatus == "active"){
-                                statusValue = "";
-                            }else if(this.userStatus == "disabled"){
-                                statusValue = "enable";
-                            }else if(this.userStatus == "locked"){
-                                statusValue = "unlock";
-                            }
-                        }else if(document.getElementById('status').value == "disabled"){
-                            if(this.userStatus == "active"){
-                                statusValue = "disable";
-                            }else if(this.userStatus == "disabled"){
-                                statusValue = "";
-                            }else if(this.userStatus == "locked"){
-                                statusValue = "disable";
-                            }
-                        }
-                    }else{
-                        statusValue = "";
+                    var checkedGroups = [];
+                    if(document.getElementById('groupsUpdate').value != ""){
+                        checkedGroups = document.getElementById('groupsUpdate').value.split(',');
                     }
 
-                    axios({
-                        method: 'put',
-                        url: url + '/api/users/u/' + id,  //
-                        headers: {'Content-Type': 'application/json'},
-                        data: JSON.stringify({
-                            userId: id,
-                            firstName: document.getElementById('editInfo.firstNameUpdate').value,
-                            lastName: document.getElementById('editInfo.lastNameUpdate').value,
-                            displayName: document.getElementById('editInfo.displayNameUpdate').value,
-                            mobile: document.getElementById('editInfo.mobileUpdate').value,
-                            memberOf: checkedGroups,
-                            mail: document.getElementById('editInfo.mailUpdate').value,
-                            description: document.getElementById('editInfo.descriptionUpdate').value,
-                            cStatus: statusValue,
-                            endTime: endTimeFinal
-                        })
-                    })
-                    .then((res) => {
-                        location.reload();
-                    });
-                    
-                }
+                    let endTimeFinal = null;
+                    if(document.getElementById('endTime').value != ""){
+                        let dateEndTemp = document.getElementById('endTime').value.split("  ");
+                        let dateEnd = dateEndTemp[0].split(' ');
+                        let dateEndFinal;
+                        dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
+                        dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
 
+                        switch(dateEnd[dateEnd.length-2]) {
+                        case "فروردین":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "اردیبهشت":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "خرداد":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "تیر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "مرداد":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "شهریور":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "مهر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "آبان":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "آذر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "دی":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "بهمن":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "اسفند":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
+                            break;
+                        default:
+                            console.log("Wrong Input for Month");
+                        }
+
+                        let timeEnd = dateEndTemp[1].split(':');
+
+                        timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
+                        
+                        let dateE = dateEndFinal.split('-');
+
+                        if(parseInt(dateE[1]) < 7){
+                        timeEnd = timeEnd + ":00.000+4:30";
+                        }else{
+                        timeEnd = timeEnd + ":00.000+3:30";
+                        }
+
+                        let TempE = timeEnd.split(':');
+                        if(TempE[0].length == 1){
+                        TempE[0] = '0' + TempE[0];
+                        timeEnd = "";
+                        for(i = 0; i < TempE.length; ++i){
+                            timeEnd = timeEnd + TempE[i] + ':';
+                        }
+                        timeEnd = timeEnd.substring(0,timeEnd.length-1);
+                        }
+
+                        TempE = dateEndFinal.split('-');
+                        if(TempE[1].length == 1){
+                        TempE[1] = '0' + TempE[1];
+                        }
+                        if(TempE[2].length == 1){
+                        TempE[2] = '0' + TempE[2];
+                        }
+                        
+                        dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
+
+                        endTimeFinal = dateEndFinal + "T" + timeEnd;
+                    }
+
+                    if (check == true) {
+                        let statusValue;
+                        if(document.getElementById('status').value != "locked"){
+                            if(document.getElementById('status').value == "active"){
+                                if(this.userStatus == "active"){
+                                    statusValue = "";
+                                }else if(this.userStatus == "disabled"){
+                                    statusValue = "enable";
+                                }else if(this.userStatus == "locked"){
+                                    statusValue = "unlock";
+                                }
+                            }else if(document.getElementById('status').value == "disabled"){
+                                if(this.userStatus == "active"){
+                                    statusValue = "disable";
+                                }else if(this.userStatus == "disabled"){
+                                    statusValue = "";
+                                }else if(this.userStatus == "locked"){
+                                    statusValue = "disable";
+                                }
+                            }
+                        }else{
+                            statusValue = "";
+                        }
+
+                        axios({
+                            method: 'put',
+                            url: url + '/api/users/u/' + id,  //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                userId: id,
+                                firstName: document.getElementById('editInfo.firstNameUpdate').value,
+                                lastName: document.getElementById('editInfo.lastNameUpdate').value,
+                                displayName: document.getElementById('editInfo.displayNameUpdate').value,
+                                mobile: document.getElementById('editInfo.mobileUpdate').value,
+                                memberOf: checkedGroups,
+                                mail: document.getElementById('editInfo.mailUpdate').value,
+                                employeeNumber: document.getElementById('editInfo.employeeNumberUpdate').value,
+                                description: document.getElementById('editInfo.descriptionUpdate').value,
+                                cStatus: statusValue,
+                                endTime: endTimeFinal
+                            })
+                        })
+                        .then((res) => {
+                            location.reload();
+                        });
+                        
+                    }
+                }
             },
             editPass: function (id) {
-                this.showS = ""
-                this.addS = "display:none"
-                this.editS = "display:none"
-                this.importConflictS = "display:none"
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var check = confirm(this.s26);
 
@@ -671,7 +899,6 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             exportUsers: function(){
                 url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-
                 axios.get(url + "/api/users/full") //
                     .then((res) => {
                         data = res.data;
@@ -679,7 +906,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         var result = alasql('SELECT * INTO XLSX("users.xlsx",?) FROM ?',
                             [opts,[data]]);
                     });
-
             },
             addUserS: function () {
                 this.showS = "display:none"
@@ -691,149 +917,194 @@ document.addEventListener('DOMContentLoaded', function () {
             sendResetEmail(userId) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/users/u/" + userId) //
-                    .then((res) => {
-                        axios.get(url + "/api/public/sendMail/" + res.data.mail) //
-                            .then((res) => {
-                            });
-                    })
+                let selectedUsers = [];
+                selectedUsers.push(userId.toString());
+                axios({
+                    method: 'post',
+                    url: url + "/api/users/sendMail", //
+                    headers: {'Content-Type': 'application/json'},
+                    data: JSON.stringify({
+                        names: selectedUsers
+                    }),
+                })
+                .then((res) => {
+                    vm.resetPassEmailSent = true;
+                    setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
+                });
+            },
+            sendAllResetEmail() {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios({
+                    method: 'post',
+                    url: url + "/api/users/sendMail", //
+                    headers: {'Content-Type': 'application/json'},
+                    data: JSON.stringify({
+                    }),
+                })
+                .then((res) => {
+                    vm.resetPassEmailSent = true;
+                    setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
+                });
             },
             removeError() {
                 this.userFound = false;
             },
-            addUser: function (id1,id2) {
+            addUser: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                var check = confirm(this.s27);
 
-                var checkedGroups = [];
-                if(document.getElementById('groupsCreate').value != ""){
-                    checkedGroups = document.getElementById('groupsCreate').value.split(',');
-                }
-
-
-                let dateEndTemp = document.getElementById('endTimeCreate').value.split("  ");
-                let dateEnd = dateEndTemp[0].split(' ');
-                let dateEndFinal;
-                dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
-                dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
-
-                switch(dateEnd[dateEnd.length-2]) {
-                  case "فروردین":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "اردیبهشت":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "خرداد":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "تیر":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "مرداد":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "شهریور":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "مهر":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "آبان":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "آذر":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "دی":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "بهمن":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "اسفند":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
-                    break;
-                  default:
-                    console.log("Wrong Input for Month");
-                }
-
-                let timeEnd = dateEndTemp[1].split(':');
-
-                timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
-                
-                let dateE = dateEndFinal.split('-');
-
-                if(parseInt(dateE[1]) < 7){
-                  timeEnd = timeEnd + ":00.000+4:30";
+                if(document.getElementById('editInfo.userIdCreate').value == "" ||
+                document.getElementById('editInfo.displayNameCreate').value == "" ||
+                document.getElementById('editInfo.mailCreate').value == "" ||
+                document.getElementById('editInfo.mobileCreate').value == ""){
+                    alert("لطفا قسمت های الزامی را پر کنید.");
                 }else{
-                  timeEnd = timeEnd + ":00.000+3:30";
-                }
 
-                let TempE = timeEnd.split(':');
-                if(TempE[0].length == 1){
-                  TempE[0] = '0' + TempE[0];
-                  timeEnd = "";
-                  for(i = 0; i < TempE.length; ++i){
-                    timeEnd = timeEnd + TempE[i] + ':';
-                  }
-                  timeEnd = timeEnd.substring(0,timeEnd.length-1);
-                }
+                    var check = confirm(this.s27);
 
-                TempE = dateEndFinal.split('-');
-                if(TempE[1].length == 1){
-                  TempE[1] = '0' + TempE[1];
-                }
-                if(TempE[2].length == 1){
-                  TempE[2] = '0' + TempE[2];
-                }
-                
-                dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
+                    var checkedGroups = [];
+                    if(document.getElementById('groupsCreate').value != ""){
+                        checkedGroups = document.getElementById('groupsCreate').value.split(',');
+                    }
 
-                let endTimeFinal = dateEndFinal + "T" + timeEnd;
+                    let endTimeFinal = null;
+                    if(document.getElementById('endTimeCreate').value != ""){
+                        let dateEndTemp = document.getElementById('endTimeCreate').value.split("  ");
+                        let dateEnd = dateEndTemp[0].split(' ');
+                        let dateEndFinal;
+                        dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
+                        dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
+                    
 
-                if(check==true) {
-                    axios({
-                        method: 'post',
-                        url: url + "/api/users",  //
-                        headers: {'Content-Type': 'application/json'},
-                        data: JSON.stringify({
-                                userId: document.getElementById('editInfo.userIdCreate').value,
-                                firstName: document.getElementById('editInfo.firstNameCreate').value,
-                                lastName: document.getElementById('editInfo.lastNameCreate').value,
-                                displayName: document.getElementById('editInfo.displayNameCreate').value,
-                                mobile: document.getElementById('editInfo.mobileCreate').value,
-                                memberOf: checkedGroups,
-                                mail: document.getElementById('editInfo.mailCreate').value,
-                                userPassword: document.getElementById('newPasswordCreate').value,
-                                description: document.getElementById('editInfo.descriptionCreate').value,
-                                cStatus: document.getElementById('statusCreate').value,
-                                endTime: endTimeFinal
-                            }
-                        ),
-                    })
-                    .then(() => {
-                        location.reload();
-                    })
-                    .catch((error) => {
-                        if (error.response) {
-                            if(error.response.status === 302){
-                                vm.userFound = true;
-                            }
+                        switch(dateEnd[dateEnd.length-2]) {
+                        case "فروردین":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "اردیبهشت":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "خرداد":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "تیر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "مرداد":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "شهریور":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "مهر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "آبان":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "آذر":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "دی":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "بهمن":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
+                            break;
+                        case "اسفند":
+                            dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
+                            break;
+                        default:
+                            console.log("Wrong Input for Month");
                         }
-                    });
+
+                        let timeEnd = dateEndTemp[1].split(':');
+
+                        timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
+                        
+                        let dateE = dateEndFinal.split('-');
+
+                        if(parseInt(dateE[1]) < 7){
+                        timeEnd = timeEnd + ":00.000+4:30";
+                        }else{
+                        timeEnd = timeEnd + ":00.000+3:30";
+                        }
+
+                        let TempE = timeEnd.split(':');
+                        if(TempE[0].length == 1){
+                        TempE[0] = '0' + TempE[0];
+                        timeEnd = "";
+                        for(i = 0; i < TempE.length; ++i){
+                            timeEnd = timeEnd + TempE[i] + ':';
+                        }
+                        timeEnd = timeEnd.substring(0,timeEnd.length-1);
+                        }
+
+                        TempE = dateEndFinal.split('-');
+                        if(TempE[1].length == 1){
+                        TempE[1] = '0' + TempE[1];
+                        }
+                        if(TempE[2].length == 1){
+                        TempE[2] = '0' + TempE[2];
+                        }
+                        
+                        dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
+
+                        endTimeFinal = dateEndFinal + "T" + timeEnd;
+                    }
+
+                    if(check==true) {
+                        axios({
+                            method: 'post',
+                            url: url + "/api/users",  //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                    userId: document.getElementById('editInfo.userIdCreate').value,
+                                    firstName: document.getElementById('editInfo.firstNameCreate').value,
+                                    lastName: document.getElementById('editInfo.lastNameCreate').value,
+                                    displayName: document.getElementById('editInfo.displayNameCreate').value,
+                                    mobile: document.getElementById('editInfo.mobileCreate').value,
+                                    memberOf: checkedGroups,
+                                    mail: document.getElementById('editInfo.mailCreate').value,
+                                    employeeNumber: document.getElementById('editInfo.employeeNumberCreate').value,
+                                    userPassword: document.getElementById('newPasswordCreate').value,
+                                    description: document.getElementById('editInfo.descriptionCreate').value,
+                                    cStatus: document.getElementById('statusCreate').value,
+                                    endTime: endTimeFinal
+                                }
+                            ),
+                        })
+                        .then(() => {
+                            location.reload();
+                        })
+                        .catch((error) => {
+                            if (error.response) {
+                                if(error.response.status === 302){
+                                    vm.userFound = true;
+                                }
+                            }
+                        });
+                    }
                 }
             },
-            deleteUser: function (id) {
+            deleteUser: function (userId) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                let selectedUsers = [];
+                selectedUsers.push(userId.toString());
                 var check = confirm(this.s28);
                 if (check == true) {
-                    axios.delete(url + `/api/users/u/${id}`) //
-                        .then(() => {
-                            vm.refreshUsers();
-                        });
+                    axios({
+                        method: 'delete',
+                        url: url + "/api/users", //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                            names: selectedUsers
+                        }),
+                    })
+                    .then((res) => {
+                        vm.filter();
+                    });
                 }
             },
             deleteAllUsers: function () {
@@ -841,24 +1112,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 var check = confirm(this.s29);
                 if (check == true) {
-                    axios.delete(url + `/api/users`) //
-                        .then(() => {
-                            vm.refreshUsers();
-                        });
+                    axios({
+                        method: 'delete',
+                        url: url + "/api/users", //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                        }),
+                    })
+                    .then((res) => {
+                        vm.filter();
+                    });
                 }
-
             },
             passwordCheck () {
-                this.has_number    = /\d/.test(this.password);
-                this.has_lowercase = /[a-z]/.test(this.password);
-                this.has_uppercase = /[A-Z]/.test(this.password);
+                this.has_number    = /[0-9]+/.test(this.password);
+                this.has_lowerUPPERcase = /[a-zA-Z]/.test(this.password);
+                this.has_specialchar = /[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password);
                 this.has_char   = /.{8,}/.test(this.password);
             },
+            persianTextCheck (s) {
+                for (let i = 0; i < s.length; ++i) {
+                    if(persianRex.text.test(s.charAt(i))){
+                        return true;
+                    }
+                }
+                return false;
+            },
             passwordCheckCreate () {
-                this.has_numberCreate    = /\d/.test(this.passwordCreate);
-                this.has_lowercaseCreate = /[a-z]/.test(this.passwordCreate);
-                this.has_uppercaseCreate = /[A-Z]/.test(this.passwordCreate);
-                this.has_charCreate   = /.{8,}/.test(this.passwordCreate);
+                this.has_numberCreate    = /[0-9]+/.test(this.passwordCreate);
+                this.has_lowerUPPERcaseCreate = /[a-zA-Z]/.test(this.passwordCreate);
+                this.has_specialcharCreate = /[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.passwordCreate) || this.persianTextCheck(this.passwordCreate);
+                this.has_charCreate  = /.{8,}/.test(this.passwordCreate);
             },
             FaNumToEnNum: function (str) {
                 let s = str.split("");
@@ -888,6 +1172,80 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return sEn;
             },
+            userIdValidate ($event) {
+                let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+                if (keyCode < 48 || keyCode > 122) {
+                   $event.preventDefault();
+                }else if (keyCode == 58 || keyCode == 62) {
+                  $event.preventDefault();
+                }
+            },
+            changeSelected: function (action) {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                let selectedUsers = [];
+                if(action == "delete"){
+                    selectedUsers = [];
+                    for(let i = 0; i < vm.users.length; ++i){
+                        if(document.getElementById("checkbox-" + vm.users[i].userId).checked){
+                             selectedUsers.push(vm.users[i].userId.toString());
+                        }
+                    }
+                    if(selectedUsers.length != 0){
+                        var check = confirm(this.s55);
+                        if (check == true) {
+                            axios({
+                                method: 'delete',
+                                url: url + "/api/users", //
+                                headers: {'Content-Type': 'application/json'},
+                                data: JSON.stringify({
+                                    names: selectedUsers
+                                }),
+                            })
+                            .then((res) => {
+                                vm.filter();
+                            });
+                        }
+                    }else{
+                        alert(this.s56);
+                    }
+                }else if(action == "resetEmail"){
+                    selectedUsers = [];
+                    for(let i = 0; i < vm.users.length; ++i){
+                        if(document.getElementById("checkbox-" + vm.users[i].userId).checked){
+                            selectedUsers.push(vm.users[i].userId.toString());
+                        }
+                    }
+                    if(selectedUsers.length != 0){
+                        axios({
+                            method: 'post',
+                            url: url + "/api/users/sendMail", //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                names: selectedUsers
+                            }),
+                        })
+                        .then((res) => {
+                            vm.resetPassEmailSent = true;
+                            setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
+                        });
+                    }else{
+                        alert(this.s56);
+                    }
+                }
+            },
+            rowSelected:function(id) {
+                let row = document.getElementById("row-" + id);
+                if(row.style.background == ""){
+                    row.style.background = "#c2dbff";
+                }else{
+                    row.style.background = "";
+                }
+                this.allIsSelected = false;
+                if(document.getElementById("selectAllCheckbox").checked == true){
+                    document.getElementById("selectAllCheckbox").click();
+                }
+            },
             changeLang: function () {
                 if(this.lang == "EN"){
                     this.placeholder = "text-align: left;"
@@ -897,6 +1255,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.margin1 = "mr-1";
                     this.margin3 = "mr-3";
                     this.margin5 = "mr-5";
+                    this.col1Style = "padding-left: 0 !important; padding-right: .5rem !important; display: inline-flex;";
+                    this.col2Style = "padding-left: .5rem !important; padding-right: 0 !important; display: inline-flex;";
                     this.padding0Left = "padding-right: 0rem;";
                     this.padding0Right = "padding-left: 0rem;";
                     this.eye = "left: 1%;";
@@ -952,18 +1312,38 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s49 = "Passwords Don't Match";
                     this.s50 = "This UID Already Exists In Our Database, Please Choose Another.";
                     this.s51 = "User Expiration Date";
+                    this.s52 = "Password Reset Email Sent Successfully.";
+                    this.s53 = "Delete User";
+                    this.s54 = "Action";
+                    this.s55 = "Are You Sure You Want To Delete Selected Users?";
+                    this.s56 = "No User is Selected.";
+                    this.s57 = "Reset Password All";
+                    this.s58 = "New";
+                    this.s59 = "Reset";
+                    this.s60 = "Sample";
+                    this.s61 = "Full Name";
+                    this.s62 = "Group";
+                    this.s63 = "Status";
+                    this.s64 = "Active";
+                    this.s65 = "Disabled";
+                    this.s66 = "Locked";
+                    this.s67 = "Filter";
+                    this.s68 = "No Filter";
+                    this.s71 = "From Imported Users, ";
+                    this.s72 = " Of Them Were Imported Successfully, And ";
+                    this.s73 = " Of Them Faced Some Problem And Were Not Imported.";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
                     this.U3 = "First Name (In English)";
                     this.U4 = "Last Name (In English)";
-                    this.U5 = "FullName (In Persian)";
+                    this.U5 = "Full Name (In Persian)";
                     this.U6 = "Phone";
                     this.U7 = "Email";
                     this.U8 = "NID";
                     this.U9 = "Description";
                     this.U10 = "Update";
-                    this.U11 = "Delete"
+                    this.U11 = "Delete";
                     this.U12 = "New User";
                     this.U13 = "Edit";
                     this.U14 = "Groups";
@@ -972,10 +1352,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U19 = "Save in file";
                     this.U20 = "Import users using file";
                     this.U21 = "Upload";
-                    this.U22 = "Password Reset";
+                    this.U22 = "Reset Password";
                     this.U23 = "Template File";
-                    this.rules[0].message = "- One Lowercase Letter Required.";
-                    this.rules[1].message = "- One Uppercase Letter Required.";
+                    this.U24 = "Employee Number";
+                    this.rules[0].message = "- One Lowercase or Uppercase English Letter Required.";
+                    this.rules[1].message = "- One special Character or Persian Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
                     this.rules[3].message = "- One Number Required.";
                 } else{
@@ -986,6 +1367,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.margin1 = "ml-1";
                     this.margin3 = "ml-3";
                     this.margin5 = "ml-5";
+                    this.col1Style = "padding-left: .5rem !important; padding-right: 0 !important; display: inline-flex;";
+                    this.col2Style = "padding-left: 0 !important; padding-right: .5rem !important; display: inline-flex;";
                     this.padding0Left = "padding-left: 0rem;";
                     this.padding0Right = "padding-right: 0rem;";
                     this.eye = "right: 1%;";
@@ -1041,6 +1424,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s49 = "رمز عبور های وارد شده یکسان نمی باشند";
                     this.s50 = "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.";
                     this.s51 = "زمان انقضا کاربر";
+                    this.s52 = "ایمیل بازنشانی رمز عبور با موفقیت ارسال شد.";
+                    this.s53 = "حذف کاربر";
+                    this.s54 = "اعمال";
+                    this.s55 = "آیا از حذف کاربران انتخاب شده اطمینان دارید؟";
+                    this.s56 = "هیچ کاربری انتخاب نشده است.";
+                    this.s57 = "بازنشانی رمزعبور همه";
+                    this.s58 = "جدید";
+                    this.s59 = "بازنشانی";
+                    this.s60 = "فایل نمونه";
+                    this.s61 = "نام فارسی";
+                    this.s62 = "گروه";
+                    this.s63 = "وضعیت";
+                    this.s64 = "فعال";
+                    this.s65 = "غیرفعال";
+                    this.s66 = "قفل شده";
+                    this.s67 = "اعمال فیلتر";
+                    this.s68 = "حذف فیلتر";
+                    this.s71 = "از مجموع کاربران وارد شده تعداد ";
+                    this.s72 = " کاربر با موفقیت ثبت شدند و تعداد ";
+                    this.s73 = " کاربر در هنگام ثبت با مشکل مواجه شده و ثبت نشدند.";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه";
@@ -1063,8 +1466,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U21 = "بارگزاری";
                     this.U22 = "بازنشانی رمز عبور";
                     this.U23 = "فایل الگو";
-                    this.rules[0].message = "حداقل شامل یک کاراکتر کوچک باشد. ";
-                    this.rules[1].message = "حداقل شامل یک کاراکتر بزرگ باشد. ";
+                    this.U24 = "کد پرسنلی";
+                    this.rules[0].message = "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ";
+                    this.rules[1].message = "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ";
                     this.rules[2].message = "حداقل ۸ کاراکتر باشد. ";
                     this.rules[3].message = "حداقل شامل یک عدد باشد. ";
                 }
@@ -1075,12 +1479,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return this.userFound;
             },
             sortedUsers:function() {
-                this.usersPage = [];
-                for(let i = 0; i < this.recordsShownOnPage; ++i){
-                    if(i + ((this.currentPage - 1) * this.recordsShownOnPage) <= this.users.length - 1){
-                        this.usersPage[i] = this.users[i + ((this.currentPage - 1) * this.recordsShownOnPage)];
-                    }
-                }
+                this.usersPage = this.users;
                 return this.usersPage;
             },
             notSamePasswords () {
@@ -1093,13 +1492,6 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordsFilled () {
                 return (this.password !== '' && this.checkPassword !== '')
             },
-            /* isActiveUserInfoUpdate () {
-                if(this.editInfo.displayName == "" || this.editInfo.mail == ""){ Create
-                    return true;
-                }else{
-                    return false;
-                }
-            }, */
             isActiveUserPassUpdate () {
                 if(this.password !== '' && this.checkPassword !== ''){
                     let errors = []
@@ -1124,8 +1516,14 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordValidation () {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.password)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.password)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if (errors.length === 0) {
@@ -1137,8 +1535,14 @@ document.addEventListener('DOMContentLoaded', function () {
             strengthLevel() {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.password)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.password)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if(errors.length === 0) return 4;
@@ -1182,8 +1586,14 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordValidationCreate () {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.passwordCreate)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.passwordCreate) && !this.persianTextCheck(this.passwordCreate)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.passwordCreate)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if (errors.length === 0) {
@@ -1195,8 +1605,14 @@ document.addEventListener('DOMContentLoaded', function () {
             strengthLevelCreate() {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.passwordCreate)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.passwordCreate) && !this.persianTextCheck(this.passwordCreate)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.passwordCreate)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if(errors.length === 0) return 4;
@@ -1204,6 +1620,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(errors.length === 2) return 2;
                 if(errors.length === 3) return 1;
                 if(errors.length === 4) return 0;
+            }
+        },
+        watch : {
+            currentPage : function () {
+              this.changePageUsers = true;
+              this.filter();
             }
         }
     });

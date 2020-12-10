@@ -11,8 +11,8 @@ import com.google.gson.JsonObject;
  */
 public class CountOutboxResult extends CountInboxResult {
 
-    private   Long sumPart;
-    private  Long cost;
+    private final Long sumPart;
+    private final Long cost;
 
 
     public CountOutboxResult(JsonObject json) {

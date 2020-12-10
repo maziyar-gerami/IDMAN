@@ -19,14 +19,13 @@
     <script src="js/axios.min.js"></script>
     <script src="js/Users/script.js"></script>
     <script src="js/alasql.min.js"></script>
-    <script src="js/xlsx.core.min.js"></script>
-    <script src="js/xlsx.full.min.js"></script>
     <script src="js/jszip.js"></script>
-    <script src="js/xlsx.js"></script>
+    <script src="js/xlsx.full.min.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
     <script src="js/jquery.js"></script>
     <script src="js/persian-date.min.js"></script>
     <script src="js/persian-datepicker.min.js"></script>
+    <script src="js/persian-rex.min.js"></script>
 
 </head>
 <script type="text/javascript">
@@ -132,8 +131,7 @@
             <div class="container">
                 <a class="navbar-brand" href="./">{{s0}}</a>
                 <div class="dropdown">
-                    <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span
-                            class="fa fa-caret-down"></span></a>
+                    <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span onclick="myFunction()" class="fa fa-caret-down"></span></a>
                     <div id="myDropdown" class="dropdown-content">
                         <a href="./logout">{{s2}}</a>
                     </div>
@@ -212,7 +210,7 @@
                                     <i class="fa fa-cogs"></i>
                                     <span>{{s7}}</span>
                                 </a>
-                                <a class="list-group-item list-group-item-action py-2 "
+                                <a v-if="menuSA" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s32">
                                     <i class="fa fa-cog"></i>
                                     <span>{{s31}}</span>
@@ -225,64 +223,262 @@
 
                 <div class="col-lg-9 page-content">
                     <div class="card">
-                        <div class="card-body pb-0" style="background-color: #f8f9fa!important;">
+                        <div class="card-body pb-0 pl-0 pr-0" style="background-color: #f8f9fa!important;">
                             <div class="container">
-                                <h3 class="pb-2" v-bind:style="showS">{{U1}}</h3>
-                                <div v-bind:style="showS" class="row mb-3 mt-3" style="font-size: 15px;">
-                                    <table class="table table-responsive" style="padding: .5rem;">
-                                        <tr class="mb-3">
-                                            <th>
-                                                <button class="btn btn-success btn-sm" :class="margin1" v-on:click="addUserS()">
+                                <div class="ml-0 mr-0">
+                                    <h3 class="pb-2" v-bind:style="showS">{{U1}}</h3>
+                                </div>
+                                <div v-bind:style="showS">
+                                    <div class="desktopView row pb-3 mt-3 ml-0 mr-0 border-bottom">
+                                        <div class="col-6" :style="col1Style">
+                                            <div class="col-4 pl-1 pr-1">
+                                                <button class="w-100 btn btn-success btn-sm" v-on:click="addUserS()">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-plus fa-stack-1x"></i>
                                                     </span>
-                                                    {{U12}}
+                                                    {{s58}}
                                                 </button>
-                                            </th>
-                                            <th>
-                                                <button v-on:click="deleteAllUsers()" class="btn btn-danger btn-sm" :class="margin5">
+                                            </div>
+                                            <div class="col-4 pl-1 pr-1">
+                                                <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-trash fa-stack-1x"></i>
                                                     </span>
-                                                    {{U17}}
+                                                    {{U11}}
                                                 </button>
-                                            </th>
-                                            <th>
-                                                <button data-toggle="tooltip" data-placement="top" :title="U19" class="btn btn-success btn-sm" :class="margin3" v-on:click="exportUsers()">
-                                                    <span class="fa-passwd-reset fa-stack">
-                                                        <i class="fa fa-cloud-download fa-stack-2x"></i>
+                                            </div>
+                                            <div class="col-4 pl-1 pr-1">
+                                                <button class="w-100 btn btn-primary btn-sm" v-on:click="changeSelected('resetEmail')">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-undo fa-stack-1x"></i>
                                                     </span>
+                                                    {{s59}}
                                                 </button>
-                                            </th>
-                                            <th :style="padding0Left">
+                                            </div>
+                                        </div>
+                                        <div class="col-6" :style="col2Style">
+                                            <div class="col-4 pl-1 pr-1">
+                                                <button class="w-100 btn btn-secondary btn-sm" v-on:click="exportUsers()">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-upload fa-stack-1x"></i>
+                                                    </span>
+                                                    Export
+                                                </button>
+                                            </div>
+                                            <div class="col-4 pl-1 pr-1">
                                                 <form id="myForm" method="POST" enctype="multipart/form-data" action="/api/users/import">
-                                                    <input type="file" accept=".xls, .xlsx, .csv, .ldif" ref="file" @change="selectedFile"
-                                                    data-toggle="tooltip" data-placement="top" :title="U20" class="btn btn-success btn-sm" :class="margin1"  name="file" id="file">
+                                                    <input type="file" accept=".xlsx" ref="file" @change="selectedFile"
+                                                    class="d-none" name="file" id="file"> <!--, .xls, .csv, .ldif-->
                                                 </form>
-                                            </th>
-                                            <th :style="padding0Right">
-                                                <form method="get" action="template/users.xlsx">
-                                                    <button type="submit" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" :title="U23">
+                                                <button class="w-100 btn btn-secondary btn-sm" onclick="document.getElementById('file').click()">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-download fa-stack-1x"></i>
+                                                    </span>
+                                                    Import
+                                                </button>
+                                            </div>
+                                            <div class="col-4 pl-1 pr-1">
+                                                <form method="GET" action="template/users.xlsx">
+                                                    <button type="submit" class="w-100 btn btn-secondary btn-sm">
                                                         <span class="fa-stack">
-                                                            <i class="fa fa-info-circle fa-stack-2x"></i>
+                                                            <i class="fa fa-info fa-stack-1x"></i>
                                                         </span>
+                                                        {{s60}}
                                                     </button>
                                                 </form>
-                                            </th>
-                                        </tr>
-                                    </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
+                                        <div class="col-3 pl-1 pr-1">
+                                            <input v-model="searchUserId" type="text" class="w-100 form-control" :placeholder="U2" autocomplete="off" style="padding-right: 5px; padding-left: 5px;">
+                                        </div>
+                                        <div class="col-3 pl-1 pr-1">
+                                            <input v-model="searchDisplayName" type="text" class="w-100 form-control" :placeholder="s61" autocomplete="off" style="padding-right: 5px; padding-left: 5px;">
+                                        </div>
+                                        <div class="col-2 pl-1 pr-1">
+                                            <select v-model="searchGroup" name="type" class="w-100 form-control" style="padding-right: 5px; padding-left: 5px;">
+                                                <option value="none" selected disabled>{{s62}}</option>
+                                                <option v-for="group in groups" v-bind:id="group" :value="group.id">{{group.name}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-2 pl-1 pr-1">
+                                            <select v-model="searchStatus" name="type" class="w-100 form-control" style="padding-right: 5px; padding-left: 5px;">
+                                                <option value="none" selected disabled>{{s63}}</option>
+                                                <option value="active">{{s64}}</option>
+                                                <option value="disabled">{{s65}}</option>
+                                                <option value="locked">{{s66}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-2 pl-1 pr-1">
+                                            <button class="w-100 btn btn-success btn-sm" v-on:click="filter()">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-check fa-stack-1x"></i>
+                                                </span>
+                                                {{s67}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="desktopView row mt-3 mb-1 ml-0 mr-0">
+                                        <div class="col-10 pl-1 pr-1"></div>
+                                        <div class="col-2 pl-1 pr-1">
+                                            <button class="w-100 btn btn-danger btn-sm" v-on:click="deleteFilter()">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-times fa-stack-1x"></i>
+                                                </span>
+                                                {{s68}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mobileView mb-5">
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <button class="w-100 btn btn-success btn-sm" v-on:click="addUserS()">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-plus fa-stack-1x"></i>
+                                                    </span>
+                                                    {{s58}}
+                                                </button>
+                                            </div>
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-trash fa-stack-1x"></i>
+                                                    </span>
+                                                    {{U11}}
+                                                </button>
+                                            </div>
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <button class="w-100 btn btn-primary btn-sm" v-on:click="changeSelected('resetEmail')">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-undo fa-stack-1x"></i>
+                                                    </span>
+                                                    {{s59}}
+                                                </button>
+                                            </div>
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <button class="w-100 btn btn-secondary btn-sm" v-on:click="exportUsers()">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-upload fa-stack-1x"></i>
+                                                    </span>
+                                                    Export
+                                                </button>
+                                            </div>
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <form id="myForm" method="POST" enctype="multipart/form-data" action="/api/users/import">
+                                                    <input type="file" accept=".xlsx" ref="file" @change="selectedFile"
+                                                    class="d-none" name="file" id="file"> <!--, .xls, .csv, .ldif-->
+                                                </form>
+                                                <button class="w-100 btn btn-secondary btn-sm" onclick="document.getElementById('file').click()">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-download fa-stack-1x"></i>
+                                                    </span>
+                                                    Import
+                                                </button>
+                                            </div>
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <form class="w-100" method="GET" action="template/users.xlsx">
+                                                    <button type="submit" class="w-100 btn btn-secondary btn-sm">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-info fa-stack-1x"></i>
+                                                        </span>
+                                                        {{s60}}
+                                                    </button>
+                                                </form>
+                                            </div>
+                                    </div>
+                                    <div class="mobileView">
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <input v-model="searchUserId" type="text" class="w-100 form-control" :placeholder="U2" autocomplete="off" style="padding-right: 5px; padding-left: 5px;">
+                                            </div>
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <input v-model="searchDisplayName" type="text" class="w-100 form-control" :placeholder="s61" autocomplete="off" style="padding-right: 5px; padding-left: 5px;">
+                                            </div>
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <select v-model="searchGroup" name="type" class="w-100 form-control" style="padding-right: 5px; padding-left: 5px;">
+                                                    <option value="none" selected disabled>{{s62}}</option>
+                                                    <option v-for="group in groups" v-bind:id="group" :value="group.id">{{group.name}}</option>
+                                                </select>
+                                            </div>
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <select v-model="searchStatus" name="type" class="w-100 form-control" style="padding-right: 5px; padding-left: 5px;">
+                                                    <option value="none" selected disabled>{{s63}}</option>
+                                                    <option value="active">{{s64}}</option>
+                                                    <option value="disabled">{{s65}}</option>
+                                                    <option value="locked">{{s66}}</option>
+                                                </select>
+                                            </div>
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <button class="w-100 btn btn-success btn-sm" v-on:click="filter()">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-check fa-stack-1x"></i>
+                                                    </span>
+                                                    {{s67}}
+                                                </button>
+                                            </div>
+                                    </div>
+                                    <div class="mobileView">
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <button class="w-100 btn btn-danger btn-sm" v-on:click="deleteFilter()">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-times fa-stack-1x"></i>
+                                                    </span>
+                                                    {{s68}}
+                                                </button>
+                                            </div>
+                                    </div>
                                 </div>
-                                <div v-if="message" class="alert alert-success">{{this.message}}</div>
-                                <div class="container mb-5" style="background-color: white; font-size: 15px;">
-                                    <table class="table table-responsive" v-bind:style="showS" style="padding: .5rem;">
+                                <div v-bind:style="showS">
+                                    <div  v-bind:style="(usersImported || resetPassEmailSent) ? 'visibility: visible;' : 'visibility: hidden;' ">
+                                        <p v-if="resetPassEmailSent" class="rounded" style="background-color:rgba(144, 238, 144, 0.521); padding: 1%;">{{s52}}</p>
+                                        <p v-if="usersImported" class="rounded" style="background-color:rgba(234, 236, 68, 0.637); padding: 1%;">
+                                            {{s71}}<span style="color: green;">{{s69}}</span>{{s72}}<span style="color: red;">{{s70}}</span>{{s73}}
+                                        </p>
+                                        <p v-if="!resetPassEmailSent && !usersImported" class="rounded" style="background-color:rgba(234, 236, 68, 0.637); padding: 1%;">
+                                            {{s71}}<span style="color: green;">{{s69}}</span>{{s72}}<span style="color: red;">{{s70}}</span>{{s73}}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
+                                    <table id="tableList" class="table table-responsive p-2" v-bind:style="showS">
                                         <tr>
-                                            <th style="border: none;">{{U2}}</th>
-                                            <th style="border: none;">{{U5}}</th>
+                                            <th style="border: none;">
+                                                <label class="checkboxclass">
+                                                    <input id="selectAllCheckbox" type="checkbox">
+                                                    <span v-on:click="allSelected()" class="checkmark"></span>
+                                                </label>
+                                            </th>
+                                            <th style="border: none;">#</th>
+                                            <th style="border: none;">
+                                                <div style="display: inline-flex;">
+                                                    {{U2}}
+                                                    <div class="mt-1 mb-1 mr-2 ml-2">
+                                                        <div class="up-arrow" v-on:click="userIdm2M()"></div>
+                                                        <div class="down-arrow" v-on:click="userIdM2m()"></div>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th style="border: none;">
+                                                <div style="display: inline-flex;">
+                                                    {{U5}}
+                                                    <div class="mt-1 mb-1 mr-2 ml-2">
+                                                        <div class="up-arrow" v-on:click="displayNamem2M()"></div>
+                                                        <div class="down-arrow" v-on:click="displayNameM2m()"></div>
+                                                    </div>
+                                                </div>
+                                            </th>
                                             <th style="border: none;">{{U14}}</th>
                                         </tr>
                                         <tbody id="body">
 
-                                        <tr v-for="user in sortedUsers" v-bind:key="user.userId">
+                                        <tr v-for="user in sortedUsers" v-bind:key="user.userId" :id="'row-' + user.userId">
+                                            <td>
+                                                <label class="checkboxclass">
+                                                    <input :id="'checkbox-' + user.userId" type="checkbox">
+                                                    <span v-on:click="rowSelected(user.userId)" class="checkmark"></span>
+                                                </label>                                                                    
+                                            </td>
+                                            <td>{{user.orderOfRecords}}</td>
                                             <td>{{user.userId}}</td>
                                             <td>{{user.displayName}}</td>
                                             <td>
@@ -320,12 +516,12 @@
 
                                         </tbody>
                                     </table>
-                                    <div v-bind:style="showS"  style="direction: rtl;">
+                                    <div class="p-2" v-bind:style="showS"  style="direction: rtl;">
                                         <v-pagination v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
                                         :labels="paginationAnchorTexts"></v-pagination>
                                     </div>
 
-                                    <div v-bind:style="importConflictS">
+                                    <div class="p-3" v-bind:style="importConflictS">
                                         <h3 class="mb-3 pb-2 border-bottom">{{s33}}</h3>
                                         <ul class="nav nav-tabs nav-justified">
                                             <li class="nav-item">
@@ -355,7 +551,7 @@
                                         <button v-on:click="resolveConflicts()" class="btn btn-primary mt-3">{{s36}}</button>
                                         <button v-on:click="showUsers()" class="btn btn-danger mt-3">{{s17}}</button>
                                     </div>
-                                    <div v-bind:style="editS">
+                                    <div class="p-3" v-bind:style="editS">
                                         <h3 class="mb-3 pb-2 border-bottom">{{s37}}</h3>
                                         <ul class="nav nav-tabs nav-justified" style="font-size: 15px;">
                                             <li class="nav-item">
@@ -388,8 +584,8 @@
                                                             <div v-if='!submitted' class='hints'>
                                                                 <p style="box-sizing: unset;">{{s48}}</p> <br>
                                                                 <p :class="{'passed' :has_number }" v-bind:style="font"><i :class="has_number ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
-                                                                <p :class="{'passed' :has_lowercase }" v-bind:style="font"><i :class="has_lowercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
-                                                                <p :class="{'passed' :has_uppercase }" v-bind:style="font"><i :class="has_uppercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
+                                                                <p :class="{'passed' :has_lowerUPPERcase }" v-bind:style="font"><i :class="has_lowerUPPERcase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
+                                                                <p :class="{'passed' :has_specialchar }" v-bind:style="font"><i :class="has_specialchar ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
                                                                 <p :class="{'passed' :has_char }" v-bind:style="font"><i :class="has_char ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[2].message}}</p>
                                                             </div>
                                                         </transition>
@@ -398,8 +594,8 @@
                                                         <div class="matches" v-bind:style="notSamePasswords ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                             <p class="error" style="font-size: .8rem;">{{s49}}</p>
                                                         </div> <br> <br>
-                                                        <button v-on:click="editPass(editInfo.userId)" :disabled="isActiveUserPassUpdate" class="btn btn-primary">{{U13}}</button>
                                                         <button v-on:click="showUsers()" class="btn btn-danger">{{s17}}</button>
+                                                        <button v-on:click="editPass(editInfo.userId)" :disabled="isActiveUserPassUpdate" class="btn btn-primary">{{U13}}</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -456,7 +652,7 @@
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label>{{U6}}</label>
+                                                        <label>{{U6}}<span style="color: red;"> *</span></label>
                                                         <input v-bind:value="editInfo.mobile" id="editInfo.mobileUpdate" type="text"
                                                                 pattern="09\d{9}" class="form-control">
                                                     </div>
@@ -466,26 +662,27 @@
                                                             class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                     </div>
                                                     <div class="form-group">
+                                                        <label>{{U24}}</label>
+                                                        <input v-bind:value="editInfo.employeeNumber" id="editInfo.employeeNumberUpdate" type="text" class="form-control">
+                                                    </div>
+                                                    <div class="form-group">
                                                         <label>{{U9}}</label>
                                                         <textarea v-bind:value="editInfo.description"
-                                                                id="editInfo.descriptionUpdate" rows="5" type="text"
-                                                                class="form-control">
-                                                            </textarea>
+                                                            id="editInfo.descriptionUpdate" rows="3" type="text" class="form-control">
+                                                        </textarea>
                                                     </div>
-                                                    <button v-on:click="editUser(editInfo.userId)"  class="btn btn-primary">{{U13}}</button>
                                                     <button v-on:click="showUsers()" class="btn btn-danger">{{s17}}</button>
-
+                                                    <button v-on:click="editUser(editInfo.userId)"  class="btn btn-primary">{{U13}}</button>
+                                                    
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-
-
-                                    <div v-bind:style="addS">
+                                    <div class="p-3" v-bind:style="addS">
                                         <h3 class="mb-3 pb-2 border-bottom">{{s38}}</h3>
                                         <div class="form-group">
                                             <label>{{U2}}<span style="color: red;"> *</span></label>
-                                            <input id="editInfo.userIdCreate" type="text" v-on:keyup="removeError" class="form-control"
+                                            <input id="editInfo.userIdCreate" @keypress="userIdValidate" type="text" v-on:keyup="removeError" class="form-control"
                                             required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                             <div class="matches mt-2" v-bind:style="userCreateExists ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                 <p class="error" style="font-size: .8rem;">{{s50}}</p>
@@ -521,8 +718,8 @@
                                                     <div v-if='!submittedCreate' class='hints'>
                                                         <p style="box-sizing: unset;">{{s48}}</p> <br>
                                                         <p :class="{'passed' :has_numberCreate }" v-bind:style="font"><i :class="has_numberCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
-                                                        <p :class="{'passed' :has_lowercaseCreate }" v-bind:style="font"><i :class="has_lowercaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
-                                                        <p :class="{'passed' :has_uppercaseCreate }" v-bind:style="font"><i :class="has_uppercaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
+                                                        <p :class="{'passed' :has_lowerUPPERcaseCreate }" v-bind:style="font"><i :class="has_lowerUPPERcaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
+                                                        <p :class="{'passed' :has_specialcharCreate }" v-bind:style="font"><i :class="has_specialcharCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
                                                         <p :class="{'passed' :has_charCreate }" v-bind:style="font"><i :class="has_charCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[2].message}}</p>
                                                     </div>
                                                 </transition>
@@ -530,7 +727,7 @@
                                             <div class="form-group">
                                                 <div class="matches" v-bind:style="notSamePasswordsCreate ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                     <p class="error" style="font-size: .8rem;">{{s49}}</p>
-                                                </div> <br> <br>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -570,7 +767,7 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label>{{U6}}</label>
+                                            <label>{{U6}}<span style="color: red;"> *</span></label>
                                             <input id="editInfo.mobileCreate" type="text"
                                                    class="form-control" placeholder="09xxxxxxxxx" pattern="09\d{9}">
                                         </div>
@@ -580,13 +777,17 @@
                                             data-placement="top" title="لطفا این قسمت را تکمیل کنید" placeholder="Ali.Amiri@example.com">
                                         </div>
                                         <div class="form-group">
+                                            <label>{{U24}}</label>
+                                            <input id="editInfo.employeeNumberCreate" type="text" class="form-control">
+                                        </div>
+                                        <div class="form-group">
                                             <label>{{U9}}</label>
                                             <textarea id="editInfo.descriptionCreate"
-                                                      rows="5" type="text" class="form-control">
-                                                </textarea>
+                                                      rows="3" type="text" class="form-control">
+                                            </textarea>
                                         </div>
-                                        <button v-on:click="addUser()" :disabled="isActiveUserPassCreate" class="btn btn-primary">{{s18}}</button>
                                         <button v-on:click="showUsers()" class="btn btn-danger">{{s17}}</button>
+                                        <button v-on:click="addUser()" :disabled="isActiveUserPassCreate" class="btn btn-primary">{{s18}}</button>
 
                                     </div>
 

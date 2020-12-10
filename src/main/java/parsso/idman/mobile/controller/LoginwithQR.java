@@ -1,8 +1,10 @@
-package parsso.idman.mobile.controller;
+package parsso.idman.Mobile.controller;
 
 import com.google.zxing.WriterException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,9 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import parsso.idman.Configs.WebSecurityConfig;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
-import parsso.idman.mobile.RepoImpls.JwtUtil;
-import parsso.idman.mobile.RepoImpls.ServicesRepoImpl;
-import parsso.idman.mobile.RepoImpls.Socket;
+import parsso.idman.Mobile.RepoImpls.JwtUtil;
+import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
 
 import java.io.IOException;
 
@@ -27,7 +28,7 @@ public class LoginwithQR {
     @Autowired
     WebSecurityConfig webSecurityConfig;
     @Autowired
-    private Socket socket;
+    private SimpMessagingTemplate webSocket;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -45,20 +46,25 @@ public class LoginwithQR {
     }
 
     @PostMapping(value = "/api/mobile/login")
-    public void creatAuthenticationToken(@RequestParam("qrToken") String qrToken, @RequestParam("uid") String uid, @RequestParam("mobileToken") String mobileToken) throws Exception {
+    public HttpStatus creatAuthenticationToken(@RequestParam("qrToken") String qrToken, @RequestParam("uid") String uid, @RequestParam("mobileToken") String mobileToken) throws Exception {
         try {
             User user = userRepo.retrieveUser(uid);
-            if (user.getMobileToken().equals(mobileToken) && qrToken.equals(random)) {
+            if (user.getTokens().getMobileToken().equals(mobileToken) && qrToken.equals(random)) {
                 authenticationManager.authenticate
                         (new UsernamePasswordAuthenticationToken(uid, mobileToken));
-            }
+
+
+                String jwt = jwtUtil.generateToken(user);
+
+                webSocket.convertAndSend("/room.2",jwt);
+
+                return  HttpStatus.OK;            }
+            else
+                return HttpStatus.BAD_REQUEST;
         } catch (BadCredentialsException e) {
             throw new Exception("Incorrect user and pass", e);
         }
-        final User user = userRepo.retrieveUser(uid);
 
-        String jwt = jwtUtil.generateToken(user);
-        socket.broadcast(jwt);
     }
 
 
