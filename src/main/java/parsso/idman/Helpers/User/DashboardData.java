@@ -53,7 +53,7 @@ public  class DashboardData {
 
         //________services data____________
         JSONObject servicesJson = new JSONObject();
-        List<parsso.idman.Models.Service> services = serviceRepo.listServices();
+        List<parsso.idman.Models.Service> services = serviceRepo.listServicesFull();
         int nServices = services.size();
         int nEnabledServices = 0;
 

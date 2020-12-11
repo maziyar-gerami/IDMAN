@@ -32,14 +32,14 @@ public class Pulling {
 
     public String insert() throws ParseException, org.json.simple.parser.ParseException, IOException {
         List<Event> mainEvents = eventRepo.getMainListEvents();
-        List<parsso.idman.Models.Service> services = serviceRepo.listServices();
+        List<parsso.idman.Models.Service> services = serviceRepo.listServicesFull();
         run(mainEvents,services, mainCollection);
         return null;
     }
 
     public void update() throws ParseException, org.json.simple.parser.ParseException, IOException {
         List<Event> secondaryEvents = eventRepo.getMainListEvents();
-        List<parsso.idman.Models.Service> services = serviceRepo.listServices();
+        List<parsso.idman.Models.Service> services = serviceRepo.listServicesFull();
         run(secondaryEvents, services, secondaryCollection);
     }
 

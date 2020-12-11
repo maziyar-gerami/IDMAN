@@ -205,7 +205,7 @@ public class SamlServiceHelper {
         return service;
     }
 
-    public HttpStatus create(JSONObject jo){
+    public long create(JSONObject jo){
         SamlService service = buildSamlService(jo);
         service.setId(new Date().getTime());
         String json = null;
@@ -252,15 +252,15 @@ public class SamlServiceHelper {
 
                 mongoTemplate.save(microService,collection);
                 logger.info("Service "+"\""+service.getId()+"\""+" created successfully");
-                return HttpStatus.OK;
+                return service.getId();
             } catch (IOException e) {
                 logger.info("Creating Service "+"\""+service.getId()+"\""+" was unsuccessful");
-                return HttpStatus.FORBIDDEN;
+                return 0;
             }
 
         }
 
-        return HttpStatus.OK;
+        return service.getId();
     }
 
     public HttpStatus update(long id, JSONObject jsonObject) throws IOException, ParseException {

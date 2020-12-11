@@ -18,7 +18,9 @@ public interface ServiceRepo {
 
     List<MicroService> listUserServices(User user) throws IOException, ParseException;
 
-    List<Service> listServices() throws IOException, ParseException;
+    List<Service> listServicesFull() throws IOException, ParseException;
+
+    List<MicroService> listServicesMain() throws IOException, ParseException;
 
     Service retrieveService(long id) throws IOException, ParseException;
 
@@ -26,11 +28,14 @@ public interface ServiceRepo {
 
     LinkedList<String> deleteServices(JSONObject files) throws IOException;
 
-    String uploadMetadata(MultipartFile file, String userId);
+    String uploadMetadata(MultipartFile file);
 
-    File downloadMetadata(String fileName) throws IOException;
 
     HttpStatus createService(JSONObject jsonObject, String system) throws IOException;
 
     HttpStatus updateService(long id, JSONObject jsonObject, String system) throws IOException, ParseException;
+
+    HttpStatus increasePosition(String id);
+
+    HttpStatus decreasePosition(String id);
 }
