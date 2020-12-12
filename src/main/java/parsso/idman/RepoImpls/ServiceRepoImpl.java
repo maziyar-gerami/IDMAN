@@ -160,33 +160,6 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
     @Override
-    public HttpStatus deleteService(long serviceId)  {
-        File folder = new File(path);
-
-        for (String file : folder.list()) {
-            if (file.contains(String.valueOf(serviceId))) {
-                File oFile = new File(path + file);
-
-                if (!oFile.exists()) {
-                    logger.warn("File related to service "+"\""+serviceId+"\""+" with "+"\""+file+"\""+ " file name, no longer exist");
-                    return HttpStatus.BAD_REQUEST;
-
-                }
-                else if (oFile.delete()) {
-                    logger.info("Service "+"\""+serviceId+"\""+" with "+"\""+file+"\""+ " file name, deleted successfully");
-                    return HttpStatus.OK;
-                }
-                else {
-                    logger.warn("Deleting Service " + "\""+serviceId+ "\"" + " was unsuccessful");
-                    return HttpStatus.FORBIDDEN;
-                }
-
-            }
-        }
-        return HttpStatus.BAD_REQUEST;
-    }
-
-    @Override
     public LinkedList<String> deleteServices(JSONObject jsonObject) {
         File folder = new File(path);
         List allFiles = Arrays.asList(folder.list());
@@ -212,10 +185,18 @@ public class ServiceRepoImpl implements ServiceRepo {
             File serv = new File(path + file.toString());
             if (!(serv.delete())) {
                 notDeleted.add((String) file);
-                //Query query = Criteria.where(file.toString().substring(0,14));
 
                 logger.warn("Deleting Service " + "\""+file+ "\"" + " was unsuccessful");
             }
+
+        }
+
+        for (Object file: selectedFiles) {
+            long id = Trim.extractIdFromFile(file.toString());
+            Query query = new Query(Criteria.where("_id").is(id));
+            MicroService microService = mongoTemplate.findOne(query, MicroService.class,collection);
+            position.delete(microService.getPosition());
+            mongoTemplate.remove(query, MicroService.class,collection);
 
         }
 

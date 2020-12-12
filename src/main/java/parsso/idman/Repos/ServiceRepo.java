@@ -24,12 +24,9 @@ public interface ServiceRepo {
 
     Service retrieveService(long id) throws IOException, ParseException;
 
-    HttpStatus deleteService(long id) throws IOException, ParseException;
-
     LinkedList<String> deleteServices(JSONObject files) throws IOException;
 
     String uploadMetadata(MultipartFile file);
-
 
     HttpStatus createService(JSONObject jsonObject, String system) throws IOException;
 

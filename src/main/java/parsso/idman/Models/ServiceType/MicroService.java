@@ -65,9 +65,9 @@ public class MicroService implements Comparable{
     @Override
     public int compareTo(Object o) {
         MicroService second = (MicroService) o;
-        if (this.get_id()>second.get_id())
+        if (this.getPosition()>second.getPosition())
             return -1;
-        else if (this.get_id()<second.get_id())
+        else if (this.getPosition()<second.getPosition())
             return 1;
         else
             return 0;

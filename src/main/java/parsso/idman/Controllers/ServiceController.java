@@ -66,10 +66,6 @@ public class ServiceController {
         return new ResponseEntity<>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/services/{id}")
-    public ResponseEntity<String> deleteService(@PathVariable("id") long serviceId) throws IOException, ParseException {
-        return new ResponseEntity<>(serviceRepo.deleteService(serviceId));
-    }
 
     @DeleteMapping("/api/services")
     public ResponseEntity<LinkedList<String>> deleteServices(@RequestBody JSONObject jsonObject) throws IOException {
