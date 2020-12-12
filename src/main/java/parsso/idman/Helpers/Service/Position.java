@@ -31,31 +31,46 @@ public class Position {
         return maxPosition;
     }
 
-    public HttpStatus increase(int position) {
+    public HttpStatus increase(String id) {
+        Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
+        MicroService ms = mongoTemplate.findOne(query, MicroService.class, collection);
+        int position = ms.getPosition();
         List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
-        for (int i = 0; i < microservices.size() - 1; i++) {
-            if (microservices.get(i).getPosition() == position) {
-                microservices.get(i + 1).setPosition(position - 1);
-                microservices.get(i).setPosition(position + 1);
+        if(position!=microservices.size()) {
+            MicroService ms1 = searchByPosition(microservices,position+1);
+            ms1.setPosition(position);
+            mongoTemplate.save(ms1,collection);
+            ms.setPosition(position+1);
+            mongoTemplate.save(ms,collection);
 
-            } else
-                return HttpStatus.FORBIDDEN;
-        }
-        mongoTemplate.save(microservices,collection);
+        }else
+            return HttpStatus.FORBIDDEN;
         return HttpStatus.OK;
     }
 
-    public HttpStatus decrease(int position) {
-        List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
-        for (int i = 1; i < microservices.size(); i++) {
-            if (microservices.get(i).getPosition() == position) {
-                microservices.get(i - 1).setPosition(position + 1);
-                microservices.get(i).setPosition(position - 1);
-
-            } else
-                return HttpStatus.FORBIDDEN;
+    public MicroService searchByPosition(List<MicroService> microServices, int position){
+        for (MicroService microService:microServices) {
+            if(microService.getPosition()==position)
+                return microService;
         }
-        mongoTemplate.save(microservices,collection);
+        return  null;
+    }
+
+    public HttpStatus decrease(String id) {
+        Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
+        MicroService ms = mongoTemplate.findOne(query, MicroService.class, collection);
+        int position = ms.getPosition();
+        List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
+        if(position!=1) {
+            MicroService ms1 = searchByPosition(microservices,position);
+            ms1.setPosition(position-1);
+            mongoTemplate.save(ms1,collection);
+            MicroService ms2 = searchByPosition(microservices,position-1);
+            ms2.setPosition(position);
+            mongoTemplate.save(ms2,collection);
+
+        }else
+            return HttpStatus.FORBIDDEN;
         return HttpStatus.OK;
 
     }

@@ -90,7 +90,7 @@ public class ServiceController {
      *
      * @return the response entity
      */
-    @PostMapping("/api/services/user/metadata")
+    @PostMapping("/api/services/metadata")
     public ResponseEntity<String> uploadMetadata(@RequestParam("file") MultipartFile file) {
         String result = serviceRepo.uploadMetadata(file);
         if (result != null)
@@ -154,6 +154,4 @@ public class ServiceController {
         }
         return "403";
     }
-
-
 }

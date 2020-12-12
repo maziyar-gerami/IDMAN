@@ -297,12 +297,12 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     @Override
     public HttpStatus increasePosition(String id) {
-        return position.decrease(Integer.valueOf(id));
+        return position.increase(id);
     }
 
     @Override
     public HttpStatus decreasePosition(String id) {
-        return position.decrease(Integer.valueOf(id));
+        return position.decrease(id);
     }
 
     private Service analyze(String file) throws IOException, ParseException {
