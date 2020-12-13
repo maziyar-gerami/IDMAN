@@ -403,7 +403,6 @@ public class UserRepoImpl implements UserRepo {
         return HttpStatus.BAD_REQUEST;
     }
 
-
     @Override
     public List<SimpleUser> retrieveUsersMain() {
         SearchControls searchControls = new SearchControls();
@@ -413,7 +412,7 @@ public class UserRepoImpl implements UserRepo {
                 new SimpleUserAttributeMapper());
         List relatedUsers = new LinkedList();
         for (SimpleUser user : people) {
-            if (!(user.getUserId().equals("admin")) && user.getDisplayName() != null && !user.getUserId().equals("su")) {
+            if (user.getDisplayName() != null && !user.getUserId().equals("su")) {
                 relatedUsers.add(user);
             }
         }
