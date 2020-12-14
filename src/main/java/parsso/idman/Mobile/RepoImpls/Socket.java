@@ -1,4 +1,4 @@
-package parsso.idman.mobile.RepoImpls;
+package parsso.idman.Mobile.RepoImpls;
 
 
 import org.springframework.stereotype.Component;
