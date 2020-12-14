@@ -95,7 +95,6 @@ public class AuditRepoImpl implements AuditRepo {
 
             dateConverter.gregorianToPersian(myCal.get(Calendar.YEAR), myCal.get(Calendar.MONTH) + 1, myCal.get(Calendar.DAY_OF_MONTH));
 
-
             if (dateConverter.getYear() == inYear && dateConverter.getMonth() == inMonth && dateConverter.getDay() == inDay) {
 
                 if (userId!=null) {
@@ -105,9 +104,7 @@ public class AuditRepoImpl implements AuditRepo {
                         relatedAudits.add(audit);
                 }
                 else
-
                     relatedAudits.add(audit);
-
             }
         }
 

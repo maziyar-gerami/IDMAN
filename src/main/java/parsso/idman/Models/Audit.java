@@ -18,8 +18,4 @@ public class Audit {
     private Date whenActionWasPerformed;
     private String clientIpAddress;
     private String serverIpAddress;
-    private Time time;
-
-
-
 }

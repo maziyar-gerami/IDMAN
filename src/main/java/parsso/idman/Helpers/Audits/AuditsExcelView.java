@@ -15,8 +15,8 @@ import parsso.idman.Repos.AuditRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
+import java.time.*;
+import java.util.*;
 
 @Service
 public class AuditsExcelView extends AbstractXlsView {
@@ -74,11 +74,15 @@ public class AuditsExcelView extends AbstractXlsView {
             aRow.createCell(0).setCellValue(audit.getPrincipal());
             aRow.createCell(1).setCellValue(audit.getResourceOperatedUpon());
             aRow.createCell(2).setCellValue(audit.getActionPerformed());
-//            Time time = new Time(audit.getTime().getYear(),audit.getTime().getMonth(),audit.getTime().getDay(),
-//                    audit.getTime().getHours(),audit.getTime().getMinutes(),audit.getTime().getSeconds());
-//            String jalali = time.convertDateGeorgianToJalali(audit.getTime().getYear(),audit.getTime().getMonth(),audit.getTime().getDay());
-//            aRow.createCell(3).setCellValue(jalali.substring(0,4)+"/"+jalali.substring(4,6)+"/"+jalali.substring(6));
-//            aRow.createCell(4).setCellValue(audit.getTime().getHours()+":"+audit.getTime().getMinutes()+":"+audit.getTime().getSeconds());
+            aRow.createCell(3).setCellValue(audit.getApplicationCode());
+
+            Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+            cal.setTime(audit.getWhenActionWasPerformed());
+
+            Time time = new Time(cal);
+
+            String jalali = time.convertDateGeorgianToJalali(time.getYear(),time.getMonth(),time.getDay());
+            aRow.createCell(4).setCellValue(jalali.substring(0,4)+"/"+jalali.substring(4,6)+"/"+jalali.substring(6)+" "+time.getHours()+":"+time.getMinutes()+":"+time.getSeconds());
             aRow.createCell(5).setCellValue(audit.getClientIpAddress());
             aRow.createCell(6).setCellValue(audit.getClientIpAddress());
 

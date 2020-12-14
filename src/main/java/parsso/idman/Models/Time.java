@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.utils.Convertor.DateConverter;
 
+import java.util.Calendar;
+
 @Setter
 @Getter
 
@@ -16,6 +18,17 @@ public class Time {
     int minutes;
     int seconds;
     int miliseconds;
+
+    public Time(Calendar cal){
+        year = cal.get(Calendar.YEAR);
+        month = cal.get(Calendar.MONTH);
+        day = cal.get(Calendar.DATE);
+
+        hours = cal.get(Calendar.HOUR_OF_DAY);
+        minutes = cal.get(Calendar.MINUTE);
+        seconds = cal.get(Calendar.SECOND);
+
+    }
 
 
     public Time(int year, int month, int day, int hours, int minutes, int seconds) {
