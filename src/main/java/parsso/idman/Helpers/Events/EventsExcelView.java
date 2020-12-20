@@ -14,11 +14,12 @@ import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.UserRepo;
+import parsso.idman.utils.Convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class EventsExcelView extends AbstractXlsView {
@@ -76,9 +77,19 @@ public class EventsExcelView extends AbstractXlsView {
             aRow.createCell(0).setCellValue(event.getType());
             aRow.createCell(1).setCellValue(event.getApplication());
             aRow.createCell(2).setCellValue(event.getClientip());
-            Time time = new Time(event.getTime().getYear(),event.getTime().getMonth(),event.getTime().getDay(),
-                    event.getTime().getHours(),event.getTime().getMinutes(),event.getTime().getSeconds());
-            String jalali = time.convertDateGeorgianToJalali(event.getTime().getYear(),event.getTime().getMonth(),event.getTime().getDay());
+
+            SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+            Date date = parserSDF.parse(event.getCreationTime());
+            Calendar myCal = new GregorianCalendar();
+            myCal.setTimeZone(TimeZone.getDefault());
+            myCal.setTime(date);
+
+            DateConverter dateConverter = new DateConverter();
+            dateConverter.gregorianToPersian(myCal.get(Calendar.YEAR), myCal.get(Calendar.MONTH) + 1, myCal.get(Calendar.DAY_OF_MONTH));
+
+            Time time = new Time(dateConverter, myCal);
+
+            String jalali = time.convertDateGeorgianToJalali(time.getYear(),time.getMonth(),time.getDay());
             aRow.createCell(3).setCellValue(jalali.substring(0,4)+"/"+jalali.substring(4,6)+"/"+jalali.substring(6));
             aRow.createCell(4).setCellValue(event.getTime().getHours()+":"+event.getTime().getMinutes()+":"+event.getTime().getSeconds());
             aRow.createCell(5).setCellValue(event.getAgentInfo().getOs());

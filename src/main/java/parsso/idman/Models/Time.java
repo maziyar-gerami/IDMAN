@@ -30,6 +30,11 @@ public class Time {
 
     }
 
+    public String toString(){
+        return getYear()+"-"+getMonth()+"-"+getDay()+"T"
+                + getHours()+":"+getMinutes()+":"+getSeconds()+"."+getMiliseconds();
+    }
+
 
     public Time(int year, int month, int day, int hours, int minutes, int seconds) {
         this.year = year;
@@ -49,10 +54,21 @@ public class Time {
 
 
 
+
         this.seconds = seconds;
         this.miliseconds = 0;
     }
 
+    public Time(DateConverter dateConverter, Calendar myCal) {
+        this.year = dateConverter.getYear();
+        this.month = dateConverter.getMonth();
+        this.day = dateConverter.getDay();
+
+        this.hours = myCal.get(Calendar.HOUR_OF_DAY);
+        this.minutes = myCal.get(Calendar.MINUTE);
+        this.seconds = myCal.get(Calendar.SECOND);
+        this.miliseconds = myCal.get(Calendar.MILLISECOND);
+    }
 
 
     public static String setEndTime(String input) {
@@ -110,7 +126,7 @@ public class Time {
         String time = String.format("%02d", Integer.valueOf(hours)) +
                 String.format("%02d", Integer.valueOf(minutes)) +
                 String.format("%02d", Integer.valueOf(seconds)) + "." +
-                String.format("%03d", Integer.valueOf(miliSeconds)) + "+0330";
+                String.format("%03d", Integer.valueOf(miliSeconds));
 
         return date + time;
 

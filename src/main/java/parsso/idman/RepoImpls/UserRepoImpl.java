@@ -193,9 +193,11 @@ public class UserRepoImpl implements UserRepo {
         DirContextOperations context;
 
         //remove current pwdEndTime
-        if (user.getEndTime() != null && p.getEndTime() == null)
-            removeCurrentEndTime(uid);
-
+        if ((p.getEndTime()==null || p.getEndTime().equals(""))) {
+            if ((user.getEndTime() != null || user.getEndTime() != ""))
+                removeCurrentEndTime(uid);
+        }else if(!(p.getEndTime().equals(user.getEndTime())))
+                removeCurrentEndTime(uid);
 
         context = buildAttributes.buildAttributes(uid, p, dn);
 
@@ -412,7 +414,7 @@ public class UserRepoImpl implements UserRepo {
                 new SimpleUserAttributeMapper());
         List relatedUsers = new LinkedList();
         for (SimpleUser user : people) {
-            if (user.getDisplayName() != null && !user.getUserId().equals("su")) {
+            if (user.getDisplayName() != null && !user.getUserId().equals("su")&& !user.getDisplayName().equals("Directory Superuser")) {
                 relatedUsers.add(user);
             }
         }
@@ -711,10 +713,9 @@ public class UserRepoImpl implements UserRepo {
         List<SimpleUser> relativeUsers = new LinkedList<>();
 
         for (int i = start; i < n; i++)
-            relativeUsers.add(allUsers.get(i));
+             relativeUsers.add(allUsers.get(i));
 
         ListUsers finalList = new ListUsers(size, relativeUsers, pages);
-
 
         return finalList;
     }

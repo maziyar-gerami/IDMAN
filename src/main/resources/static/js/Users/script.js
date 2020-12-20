@@ -709,11 +709,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
 
-                        if(typeof res.data.endTime !== 'undefined'){
+                        if(typeof res.data.endTime !== 'undefined'){ //"20201218135200.000+0330"
                             let seTime = res.data.endTime;
                             persianDate.toCalendar('gregorian');
-                            let dayWrapper = new persianDate([seTime.substring(0,4), seTime.substring(5,7), seTime.substring(8,10),
-                              seTime.substring(11,13), seTime.substring(14,16), seTime.substring(17,19), seTime.substring(20,23)]);
+                            let dayWrapper = new persianDate([seTime.substring(0,4), seTime.substring(4,6), seTime.substring(6,8),
+                              seTime.substring(8,10), seTime.substring(10,12), seTime.substring(12,14), seTime.substring(15,18)]);
                             document.getElementById("endTime").value = dayWrapper.toCalendar('persian').format("dddd DD MMMM YYYY  HH:mm  a");
                         }
 

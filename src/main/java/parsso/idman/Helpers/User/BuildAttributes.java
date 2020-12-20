@@ -148,8 +148,11 @@ public class BuildAttributes {
             context.setAttributeValue("photoName", old.getPhotoName());
 
 
-        if (p.getEndTime() != "" && old.getEndTime() != null)
-            context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()));
+        if (p.getEndTime() != ""||p.getEndTime() != null) {
+            String time = Time.convertDateTimeJalali(p.getEndTime());
+            context.setAttributeValue("pwdEndTime", time+"Z");
+
+        }
 
         if (p.getEmployeeNumber() != "" && old.getEmployeeNumber() != null)
             context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
