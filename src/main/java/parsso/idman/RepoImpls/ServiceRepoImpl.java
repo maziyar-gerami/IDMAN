@@ -130,17 +130,24 @@ public class ServiceRepoImpl implements ServiceRepo {
         String sid;
         String[] files = folder.list();
         List<MicroService> services = new LinkedList<>();
+        Service service = null;
+        MicroService microService = null;
         for (String file : files) {
             if (file.endsWith(".json"))
                 try {
-                    Service service = analyze(file);
-                    Query query = new Query(Criteria.where("_id").is(Long.valueOf(Trim.extractIdFromFile(file))));
-                    MicroService microService = mongoTemplate.findOne(query,MicroService.class,collection);
-                    services.add(new MicroService(service,microService));
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    service = analyze(file);
+                }catch (Exception e){
                     logger.warn("Unable to read service "+file);
                     continue;
+                }
+                    Query query = new Query(Criteria.where("_id").is(Long.valueOf(Trim.extractIdFromFile(file))));
+                try {
+                    microService = mongoTemplate.findOne(query,MicroService.class,collection);
+                } catch (Exception e) {
+                    microService = new MicroService(service.getId());
+                    System.out.println("hi");
+                }finally {
+                    services.add(new MicroService(service,microService));
                 }
         }
         Collections.sort(services);
