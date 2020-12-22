@@ -49,7 +49,8 @@ public class AccessStrategy {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String groovyScript;
     public AccessStrategy() {
-        if (startingDateTime != null)
+        if (startingDateTime != null || startingDateTime !=""||
+            endingDateTime != null|| endingDateTime!="")
             atClass = "org.apereo.cas.services.TimeBasedRegisteredServiceAccessStrategy";
         else
             atClass = "org.apereo.cas.services.DefaultRegisteredServiceAccessStrategy";
