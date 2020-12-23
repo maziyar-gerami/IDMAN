@@ -40,6 +40,10 @@ public class MicroService implements Comparable{
         this.url = serviceId;
         this.position = 0;
     }
+    public MicroService() {
+        this.url = serviceId;
+        this.position = 0;
+    }
 
     public MicroService(long id, String name, String serviceId, String description, String logo) {
         this._id = id;
@@ -60,8 +64,6 @@ public class MicroService implements Comparable{
         this.position = (null!= microService ? microService.getPosition() : 0);
 
     }
-
-
 
     @Override
     public int compareTo(Object o) {
