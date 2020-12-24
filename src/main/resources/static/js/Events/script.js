@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     el: '#app',
     data: {
       recordsShownOnPage: 20,
+      recordsShownOnPageEvents: 20,
       currentPageEvents: 1,
       totalEvents: 1,
       currentPageEvent: 1,
@@ -106,7 +107,8 @@ document.addEventListener('DOMContentLoaded', function () {
       s40: "ورود ناموفق",
       s41: "سرویس",
       s42: "سیستم عامل",
-      s43: "مرورگر"
+      s43: "مرورگر",
+      s44: "تعداد رکورد ها: ",
     },
     created: function () {
       this.getUserInfo();
@@ -124,6 +126,14 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       setActive (menuItem) {
         this.activeItem = menuItem
+      },
+      changeRecordsEvent: function(event) {
+        this.recordsShownOnPage = event.target.value;
+        this.getEventDate();
+      },
+      changeRecordsEvents: function(event) {
+        this.recordsShownOnPageEvents = event.target.value;
+        this.getEventsDate();
       },
       connect (add) {
         window.open(add);
@@ -213,9 +223,9 @@ document.addEventListener('DOMContentLoaded', function () {
         
         var tempEvent = {};
         this.events = [];
-        axios.get(url + "/api/events/" + vm.currentPageEvents + "/" + vm.recordsShownOnPage)
+        axios.get(url + "/api/events/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents)
         .then((res) => {
-          vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPage);
+          vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
           res.data.eventList.forEach(function (item) {
             tempEvent = {};
             if(item.action == "Successful Login"){
@@ -343,9 +353,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }else if(this.tempEventsDate == "" && this.eventsUserId != ""){
           var tempEvent = {};
           this.events = [];
-          axios.get(url + "/api/events/users/" + vm.eventsUserId + "/" + + vm.currentPageEvents + "/" + vm.recordsShownOnPage) //
+          axios.get(url + "/api/events/users/" + vm.eventsUserId + "/" + + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
           .then((res) => {
-            vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPage);
+            vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
             res.data.eventList.forEach(function (item) {
               tempEvent = {};
               if(item.action == "Successful Login"){
@@ -401,9 +411,9 @@ document.addEventListener('DOMContentLoaded', function () {
               date[2] = "0" + date[2];
             }
             this.eventsDate = date[2] + date[1] + date[0];
-            axios.get(url + "/api/events/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPage) //
+            axios.get(url + "/api/events/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
             .then((res) => {
-              vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPage);
+              vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
               res.data.eventList.forEach(function (item) {
                 tempEvent = {};
                 if(item.action == "Successful Login"){
@@ -455,9 +465,9 @@ document.addEventListener('DOMContentLoaded', function () {
               date[2] = "0" + date[2];
             }
             this.eventsDate = date[2] + date[1] + date[0];
-            axios.get(url + "/api/events/users/" + vm.eventsUserId + "/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPage) //
+            axios.get(url + "/api/events/users/" + vm.eventsUserId + "/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
             .then((res) => {
-              vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPage);
+              vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
               res.data.eventList.forEach(function (item) {
                 tempEvent = {};
                 if(item.action == "Successful Login"){
@@ -536,6 +546,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s41 = "Service";
           this.s42 = "OS";
           this.s43 = "Browser";
+          this.s44 = "Records a Page: ";
         } else{
             this.getEvents();
             this.getEvent();
@@ -586,6 +597,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s41 = "سرویس";
             this.s42 = "سیستم عامل";
             this.s43 = "مرورگر";
+            this.s44 = "تعداد رکورد ها: ";
         }
       },
 

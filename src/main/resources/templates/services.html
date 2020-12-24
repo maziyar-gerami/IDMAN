@@ -274,26 +274,26 @@
                                                         <th style="border: none;">{{s22}}</th>
                                                     </tr>
                                                     <tbody id="body">
-                                                        <tr v-for="service in sortedServices" v-bind:key="service.id" :id="'row-' + service.id">
+                                                        <tr v-for="service in sortedServices" v-bind:key="service._id" :id="'row-' + service._id">
                                                             <td>
                                                                 <label class="checkboxclass">
-                                                                    <input :id="'checkbox-' + service.id" type="checkbox">
-                                                                    <span v-on:click="rowSelected(service.id)" class="checkmark"></span>
+                                                                    <input :id="'checkbox-' + service._id" type="checkbox">
+                                                                    <span v-on:click="rowSelected(service._id)" class="checkmark"></span>
                                                                 </label>                                                                      
                                                             </td>
                                                             <td>{{service.orderOfRecords}}</td>
-                                                            <td>{{service.id}}</td>
+                                                            <td>{{service._id}}</td>
                                                             <td>{{service.name}}</td>
                                                             <td class="enInput"><a v-bind:href="service.serviceId">{{service.serviceId}}</a></td>
                                                             <td>
-                                                                <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-sm" v-on:click="editServiceS(service.id)">
+                                                                <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-sm" v-on:click="editServiceS(service._id)">
                                                                     <span class="fa-passwd-reset fa-stack">
                                                                         <i class="fa fa-pencil-square-o fa-stack-2x"></i>
                                                                     </span>
                                                                 </button>
                                                             </td>
                                                             <td>
-                                                                <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s24" class="btn btn-sm" v-on:click="deleteService(service.id)">
+                                                                <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s24" class="btn btn-sm" v-on:click="deleteService(service._id)">
                                                                     <span class="fa-passwd-reset fa-stack">
                                                                         <i class="fa fa-trash fa-stack-2x"></i>
                                                                     </span>
@@ -306,7 +306,22 @@
                                             <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
                                             :labels="paginationAnchorTexts"></v-pagination>
                                         </div>
-
+                                        <div v-bind:style="showS" id="showS6">
+                                            <div class="row mt-3" style="text-align: center;">
+                                                <div class="col-8"></div>
+                                                <div class="col-2 pr-0 pl-0">
+                                                    <label>{{s92}}</label>
+                                                </div>
+                                                <div class="col-2 pr-2 pl-3">
+                                                    <select class="form-control" v-on:change="changeRecords($event)">
+                                                        <option value="20" selected>20</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
                                         <div class="p-3" id="editS" v-bind:style="editS">
                                                     <ul class="nav nav-tabs nav-justified">
                                                         <li class="nav-item">
@@ -349,7 +364,7 @@
                                                             </div> -->
                                                             <div class="form-group">
                                                                 <label>{{s28}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s57}}</small></label>
-                                                                <input name="name" @keypress="serviceNameValidate" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                                <input name="name" @keypress="serviceNameValidate" class="form-control enInput" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>{{s30}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s89}}</small></label>
@@ -645,10 +660,10 @@
                                                                 </div>
                                                                 <div class="row mt-2" v-for="index in indexList" v-bind:id="'attribute' + index">
                                                                     <div class="col-3">
-                                                                        <input v-bind:value="attKey[index]" v-bind:id="'attributeKey' + index" class="form-control enInput" type="text" placeholder="name">
+                                                                        <input v-model:value="attKey[index]" v-bind:id="'attributeKey' + index" class="form-control enInput" type="text" placeholder="name">
                                                                     </div>
                                                                     <div class="col-8">
-                                                                        <input v-bind:value="attVal[index]" v-bind:id="'attributeValue' + index" class="form-control enInput" type="text" placeholder="value1,value2,value3">
+                                                                        <input v-model:value="attVal[index]" v-bind:id="'attributeValue' + index" class="form-control enInput" type="text" placeholder="value1,value2,value3">
                                                                     </div>
                                                                     <div class="col-1">
                                                                         <button v-on:click="deleteAttribute(index)" class="btn btn-danger btn-circle" v-if="index != 0">

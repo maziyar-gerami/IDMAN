@@ -180,7 +180,8 @@ function myFunction() {
         s88: "آیا از حذف تمامی سرویس ها اطمینان دارید؟",
         s89: " (در صورت وارد کردن آدرس، http یا https ذکر شود)",
         s90: "آدرس",
-        s91: "فایل"
+        s91: "فایل",
+        s92: "تعداد رکورد ها: ",
       },
       created: function () {
         this.getUserInfo();
@@ -198,18 +199,18 @@ function myFunction() {
           if(this.allIsSelected){
               this.allIsSelected = false;
               for(let i = 0; i < this.services.length; ++i){
-                  if(document.getElementById("checkbox-" + this.services[i].id).checked == true){
-                      document.getElementById("checkbox-" + this.services[i].id).click();
+                  if(document.getElementById("checkbox-" + this.services[i]._id).checked == true){
+                      document.getElementById("checkbox-" + this.services[i]._id).click();
                   }
-                  document.getElementById("row-" + this.services[i].id).style.background = "";
+                  document.getElementById("row-" + this.services[i]._id).style.background = "";
               }
           }else{
               this.allIsSelected = true;
               for(let i = 0; i < this.services.length; ++i){
-                  if(document.getElementById("checkbox-" + this.services[i].id).checked == false){
-                      document.getElementById("checkbox-" + this.services[i].id).click();
+                  if(document.getElementById("checkbox-" + this.services[i]._id).checked == false){
+                      document.getElementById("checkbox-" + this.services[i]._id).click();
                   }
-                  document.getElementById("row-" + this.services[i].id).style.background = "#c2dbff";
+                  document.getElementById("row-" + this.services[i]._id).style.background = "#c2dbff";
               }
           }
         },
@@ -218,6 +219,10 @@ function myFunction() {
         },
         setActive (menuItem) {
           this.activeItem = menuItem
+        },
+        changeRecords: function(event) {
+          this.recordsShownOnPage = event.target.value;
+          this.refreshServices();
         },
         selectMetaDataAddress: function () {
           this.metaDataAddress = true;
@@ -281,11 +286,12 @@ function myFunction() {
         refreshServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/api/services") //
+          axios.get(url + "/api/services/main") //
           .then((res) => {
             vm.services = res.data;
             for(let i = 0; i < vm.services.length; ++i){
-              vm.services[i].orderOfRecords = i + 1;
+              vm.services[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
+              vm.services[i].serviceId = vm.services[i].serviceId.replace(/\\/g, "\\\\");
             }
             vm.total = Math.ceil(vm.services.length / vm.recordsShownOnPage);
           });
@@ -298,6 +304,7 @@ function myFunction() {
           document.getElementById("showS3").setAttribute("style", "display:none;");
           document.getElementById("showS4").setAttribute("style", "display:none;");
           document.getElementById("showS5").setAttribute("style", "display:none;");
+          document.getElementById("showS6").setAttribute("style", "display:none;");
           document.getElementById("editS").setAttribute("style", "");
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
@@ -315,6 +322,7 @@ function myFunction() {
 
             document.getElementsByName("name")[0].value = res.data.name;
 
+            res.data.serviceId = res.data.serviceId.replace(/\\/g, "\\\\")
             document.getElementsByName("serviceId")[0].value = res.data.serviceId;
 
             if(typeof res.data.metadataLocation !== 'undefined'){
@@ -515,12 +523,36 @@ function myFunction() {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
 
+          let serviceIdFlag = false;
+          for(let i = 0; i < document.getElementsByName('serviceId')[0].value.length; ++i){
+            if(i == 0){
+              if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
+              document.getElementsByName('serviceId')[0].value[i+1] != '\\'){
+                serviceIdFlag = true;
+                break;
+              }
+            }else if(i == document.getElementsByName('serviceId')[0].value.length-1){
+              if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
+              document.getElementsByName('serviceId')[0].value[i-1] != '\\'){
+                serviceIdFlag = true;
+                break;
+              }
+            }else{
+              if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
+              document.getElementsByName('serviceId')[0].value[i+1] != '\\' &&
+              document.getElementsByName('serviceId')[0].value[i-1] != '\\'){
+                serviceIdFlag = true;
+                break;
+              }
+            }
+          }
+
           if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
             document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
             document.getElementsByName('description')[0].value == ""){
             alert("لطفا قسمت های الزامی را پر کنید.");
-          }else if(this.metaDataAddress && document.getElementsByName('metadataLocation')[0].value == ""){
-            alert("لطفا قسمت های الزامی را پر کنید.");
+          }else if(serviceIdFlag){
+            alert("فرمت آدرس سرویس درست نمی باشد.");
           }else{
 
             this.service.name = document.getElementsByName('name')[0].value;
@@ -687,15 +719,15 @@ function myFunction() {
                 let dateE = dateEndFinal.split('-');
 
                 if(parseInt(dateS[1]) < 7){
-                  timeStart = timeStart + ":00.000+4:30";
+                  timeStart = timeStart + ":00.000+04:30";
                 }else{
-                  timeStart = timeStart + ":00.000+3:30";
+                  timeStart = timeStart + ":00.000+03:30";
                 }
 
                 if(parseInt(dateE[1]) < 7){
-                  timeEnd = timeEnd + ":00.000+4:30";
+                  timeEnd = timeEnd + ":00.000+04:30";
                 }else{
-                  timeEnd = timeEnd + ":00.000+3:30";
+                  timeEnd = timeEnd + ":00.000+03:30";
                 }
 
                 let TempS = timeStart.split(':');
@@ -824,7 +856,7 @@ function myFunction() {
                     bodyFormData.append("file", file.files[0]);
                     axios({
                       method: 'post',
-                      url: url + "/api/services/user/metadata",  //
+                      url: url + "/api/services/metadata",  //
                       headers: {'Content-Type': 'multipart/form-data'},
                       data: bodyFormData,
                     }).then((res) => {
@@ -848,7 +880,7 @@ function myFunction() {
                             logoutUrl: vm.service.logoutUrl,
                             accessStrategy: vm.accessStrategy,
                             contacts: vm.contacts
-                          })
+                          }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
                           location.reload();
@@ -879,15 +911,15 @@ function myFunction() {
                         logoutUrl: vm.service.logoutUrl,
                         accessStrategy: vm.accessStrategy,
                         contacts: vm.contacts
-                      })
+                      }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
                       location.reload();
                     });
+                  }else{
+                    alert("لطفا قسمت های الزامی را پر کنید.");
                   }
-                }
-
-                
+                }                
               }else{
                 alert("لطفا قسمت های الزامی را پر کنید.");
               }
@@ -909,7 +941,7 @@ function myFunction() {
                   logoutUrl: vm.service.logoutUrl,
                   accessStrategy: vm.accessStrategy,
                   contacts: vm.contacts
-                })
+                }).replace(/\\\\/g, "\\")
               })
               .then((res) => {
                 location.reload();
@@ -930,7 +962,7 @@ function myFunction() {
               headers: {'Content-Type': 'application/json'},
               data: JSON.stringify({
                 names: selectedServices
-              }),
+              }).replace(/\\\\/g, "\\")
             })
             .then((res) => {
               vm.refreshServices();
@@ -947,7 +979,7 @@ function myFunction() {
               url: url + "/api/services", //
               headers: {'Content-Type': 'application/json'},
               data: JSON.stringify({
-              }),
+              }).replace(/\\\\/g, "\\")
             })
             .then((res) => {
               vm.refreshServices();
@@ -1065,8 +1097,8 @@ function myFunction() {
           if(action == "delete"){
               selectedServices = [];
               for(let i = 0; i < vm.services.length; ++i){
-                  if(document.getElementById("checkbox-" + vm.services[i].id).checked){
-                    selectedServices.push(vm.services[i].id.toString());
+                  if(document.getElementById("checkbox-" + vm.services[i]._id).checked){
+                    selectedServices.push(vm.services[i]._id.toString());
                   }
               }
               if(selectedServices.length != 0){
@@ -1078,7 +1110,7 @@ function myFunction() {
                           headers: {'Content-Type': 'application/json'},
                           data: JSON.stringify({
                               names: selectedServices
-                          }),
+                          }).replace(/\\\\/g, "\\")
                       })
                       .then((res) => {
                         vm.refreshServices();
@@ -1199,6 +1231,7 @@ function myFunction() {
             this.s89 = " (If Entering The Address, Mention http Or https)";
             this.s90 = "Address";
             this.s91 = "File";
+            this.s92 = "Records a Page: ";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
@@ -1296,6 +1329,7 @@ function myFunction() {
               this.s89 = " (در صورت وارد کردن آدرس، http یا https ذکر شود)";
               this.s90 = "آدرس";
               this.s91 = "فایل";
+              this.s92 = "تعداد رکورد ها: ";
           }
         },
         div: function (a, b) {
