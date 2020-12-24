@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 mail: document.getElementById('userInfo.mailUpdate').value,
                                 employeeNumber: document.getElementById('userInfo.employeeNumberUpdate').value,
                                 description: document.getElementById('userInfo.descriptionUpdate').value
-                            }),
+                            }).replace(/\\\\/g, "\\")
                         }).then((res) => {
                             location.replace(url + "/settings"); //
                         });
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 newPassword: document.getElementById('newPassword').value,
                                 currentPassword: document.getElementById('currentPassword').value,
                                 token: document.getElementById('token').value
-                            }),
+                            }).replace(/\\\\/g, "\\")
                         }).then((res) => {
                             location.replace(url + "/settings"); //
                         });

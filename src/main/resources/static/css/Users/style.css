@@ -412,3 +412,7 @@ html,body {
     display: block;
   }
 }
+.enInput {
+  text-align: left;
+  direction: ltr;
+}

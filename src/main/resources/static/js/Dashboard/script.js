@@ -219,6 +219,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             vm.services[i].serviceId = vm.services[i].serviceId.replace(/\((.*?)\)/g, "");
             vm.services[i].serviceId = vm.services[i].serviceId.replace(/\^/g, "");
+
+            vm.services[i].serviceId = vm.services[i].serviceId.replace(/\\/g, "\\\\")
           }
         });
       },

@@ -71,7 +71,7 @@ public class BuildAttributes {
             attrs.put("pwdAccountLockedTime", p.isEnabled());
 
         if (p.getEndTime()!=null) {
-            attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime()));
+            attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime())+'Z');
         }
 
 
@@ -97,6 +97,9 @@ public class BuildAttributes {
             context.setAttributeValue("userPassword", p.getUserPassword());
         if (p.getMobile() != "" && p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
         if (p.getEmployeeNumber() != null) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
+        if (p.getEmployeeNumber() != null) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
+        if (p.getEmployeeNumber() != null) context.setAttributeValue("mail", p.getMail());
+
         if (p.getTimeStamp()>0)
         //context.setAttributeValue("createtimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
 
@@ -148,10 +151,9 @@ public class BuildAttributes {
             context.setAttributeValue("photoName", old.getPhotoName());
 
 
-        if (p.getEndTime() != ""||p.getEndTime() != null) {
+        if (p.getEndTime() != null) {
             String time = Time.convertDateTimeJalali(p.getEndTime());
             context.setAttributeValue("pwdEndTime", time+"Z");
-
         }
 
         if (p.getEmployeeNumber() != "" && old.getEmployeeNumber() != null)

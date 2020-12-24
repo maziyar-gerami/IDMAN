@@ -205,6 +205,21 @@
                                             <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
                                             :labels="paginationAnchorTexts"></v-pagination>
                                         </div>
+                                        <div v-bind:style="showS">
+                                            <div class="row mt-3" style="text-align: center;">
+                                                <div class="col-8"></div>
+                                                <div class="col-2 pr-0 pl-0">
+                                                    <label>{{s36}}</label>
+                                                </div>
+                                                <div class="col-2 pr-2 pl-3">
+                                                    <select class="form-control" v-on:change="changeRecords($event)">
+                                                        <option value="20" selected>20</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
                                         
                                         <div class="p-3" v-bind:style="editS">
                                             <h3 class="mb-3 pb-2 border-bottom">{{s30}}</h3>

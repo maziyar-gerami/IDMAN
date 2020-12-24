@@ -78,8 +78,8 @@ public class EventsExcelView extends AbstractXlsView {
             aRow.createCell(1).setCellValue(event.getApplication());
             aRow.createCell(2).setCellValue(event.getClientip());
 
-            SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-            Date date = parserSDF.parse(event.getCreationTime());
+            SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date date = parserSDF.parse(event.getCreationTime().substring(0,19));
             Calendar myCal = new GregorianCalendar();
             myCal.setTimeZone(TimeZone.getDefault());
             myCal.setTime(date);
@@ -89,8 +89,7 @@ public class EventsExcelView extends AbstractXlsView {
 
             Time time = new Time(dateConverter, myCal);
 
-            String jalali = time.convertDateGeorgianToJalali(time.getYear(),time.getMonth(),time.getDay());
-            aRow.createCell(3).setCellValue(jalali.substring(0,4)+"/"+jalali.substring(4,6)+"/"+jalali.substring(6));
+            aRow.createCell(3).setCellValue(time.getYear()+"/"+time.getMonth()+"/"+time.getDay());
             aRow.createCell(4).setCellValue(event.getTime().getHours()+":"+event.getTime().getMinutes()+":"+event.getTime().getSeconds());
             aRow.createCell(5).setCellValue(event.getAgentInfo().getOs());
             aRow.createCell(6).setCellValue(event.getAgentInfo().getBrowser());

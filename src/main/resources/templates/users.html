@@ -17,6 +17,7 @@
     <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
+    <!-- <script src="js/file-download.js"></script> -->
     <script src="js/Users/script.js"></script>
     <script src="js/alasql.min.js"></script>
     <script src="js/jszip.js"></script>
@@ -264,6 +265,15 @@
                                                     </span>
                                                     Export
                                                 </button>
+
+                                                <!-- <form method="GET" action="api/users/export">
+                                                    <button type="submit" class="w-100 btn btn-secondary btn-sm">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-upload fa-stack-1x"></i>
+                                                        </span>
+                                                        Export
+                                                    </button>
+                                                </form> -->
                                             </div>
                                             <div class="col-4 pl-1 pr-1">
                                                 <form id="myForm" method="POST" enctype="multipart/form-data" action="/api/users/import">
@@ -520,6 +530,23 @@
                                         <v-pagination v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
                                         :labels="paginationAnchorTexts"></v-pagination>
                                     </div>
+                                    <div v-bind:style="showS">
+                                        <div class="row mt-3" style="text-align: center;">
+                                            <div class="col-8"></div>
+                                            <div class="col-2 pr-0 pl-0">
+                                                <label>{{s75}}</label>
+                                            </div>
+                                            <div class="col-2 pr-2 pl-3">
+                                                <select class="form-control" v-on:change="changeRecords($event)">
+                                                    <option value="20" selected>20</option>
+                                                    <option value="50">50</option>
+                                                    <option value="100">100</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
 
                                     <div class="p-3" v-bind:style="importConflictS">
                                         <h3 class="mb-3 pb-2 border-bottom">{{s33}}</h3>
@@ -575,7 +602,7 @@
                                                         <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="show = !show"></i>
                                                     </div>
                                                     <div class="form-group">
-                                                        <input class="form-control" :type="showR === true ? 'text' : 'password'" v-model.lazy='checkPassword' v-bind:placeholder="s47" v-bind:style="placeholder" autocomplete="off"> 
+                                                        <input class="form-control" :type="showR === true ? 'text' : 'password'" v-model="checkPassword" v-bind:placeholder="s47" v-bind:style="placeholder" autocomplete="off"> 
                                                         <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showR" @click="showR = !showR"></i>
                                                         <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showR = !showR"></i>
                                                     </div>
@@ -623,17 +650,17 @@
 
                                                     <div class="form-group">
                                                         <label>{{U3}}</label>
-                                                        <input v-bind:value="editInfo.firstName" id="editInfo.firstNameUpdate"
-                                                            type="text" class="form-control">
+                                                        <input v-model:value="editInfo.firstName" id="editInfo.firstNameUpdate"
+                                                            type="text" class="form-control enInput">
                                                     </div>
                                                     <div class="form-group">
                                                         <label>{{U4}}</label>
                                                         <input v-model="editInfo.lastName" id="editInfo.lastNameUpdate"
-                                                            type="text" class="form-control">
+                                                            type="text" class="form-control enInput">
                                                     </div>
                                                     <div class="form-group">
                                                         <label>{{U5}}<span style="color: red;"> *</span></label>
-                                                        <input v-bind:value="editInfo.displayName" id="editInfo.displayNameUpdate"
+                                                        <input v-model:value="editInfo.displayName" id="editInfo.displayNameUpdate"
                                                             type="text" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                     </div>
 
@@ -653,21 +680,21 @@
 
                                                     <div class="form-group">
                                                         <label>{{U6}}<span style="color: red;"> *</span></label>
-                                                        <input v-bind:value="editInfo.mobile" id="editInfo.mobileUpdate" type="text"
+                                                        <input v-model:value="editInfo.mobile" id="editInfo.mobileUpdate" type="text"
                                                                 pattern="09\d{9}" class="form-control">
                                                     </div>
                                                     <div class="form-group">
                                                         <label>{{U7}}<span style="color: red;"> *</span></label>
-                                                        <input v-bind:value="editInfo.mail" id="editInfo.mailUpdate" type="email"
+                                                        <input v-model:value="editInfo.mail" id="editInfo.mailUpdate" type="email"
                                                             class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                     </div>
                                                     <div class="form-group">
                                                         <label>{{U24}}</label>
-                                                        <input v-bind:value="editInfo.employeeNumber" id="editInfo.employeeNumberUpdate" type="text" class="form-control">
+                                                        <input v-model:value="editInfo.employeeNumber" id="editInfo.employeeNumberUpdate" type="text" class="form-control">
                                                     </div>
                                                     <div class="form-group">
                                                         <label>{{U9}}</label>
-                                                        <textarea v-bind:value="editInfo.description"
+                                                        <textarea v-model:value="editInfo.description"
                                                             id="editInfo.descriptionUpdate" rows="3" type="text" class="form-control">
                                                         </textarea>
                                                     </div>
@@ -681,8 +708,8 @@
                                     <div class="p-3" v-bind:style="addS">
                                         <h3 class="mb-3 pb-2 border-bottom">{{s38}}</h3>
                                         <div class="form-group">
-                                            <label>{{U2}}<span style="color: red;"> *</span></label>
-                                            <input id="editInfo.userIdCreate" @keypress="userIdValidate" type="text" v-on:keyup="removeError" class="form-control"
+                                            <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s74}}</small></label>
+                                            <input id="editInfo.userIdCreate" @keypress="userIdValidate" type="text" v-on:keyup="removeError" class="form-control enInput"
                                             required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                             <div class="matches mt-2" v-bind:style="userCreateExists ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                 <p class="error" style="font-size: .8rem;">{{s50}}</p>
@@ -709,7 +736,7 @@
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showCreate = !showCreate"></i>
                                             </div>
                                             <div class="form-group">
-                                                <input class="form-control" :type="showRCreate === true ? 'text' : 'password'" v-model.lazy='checkPasswordCreate' v-bind:placeholder="s47" v-bind:style="placeholder" autocomplete="off"> 
+                                                <input class="form-control" :type="showRCreate === true ? 'text' : 'password'" v-model='checkPasswordCreate' v-bind:placeholder="s47" v-bind:style="placeholder" autocomplete="off"> 
                                                 <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showRCreate" @click="showRCreate = !showRCreate"></i>
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showRCreate = !showRCreate"></i>
                                             </div>
@@ -739,12 +766,12 @@
                                         <div class="form-group">
                                             <label>{{U3}}</label>
                                             <input id="editInfo.firstNameCreate" type="text"
-                                                   class="form-control" placeholder="Ali">
+                                                   class="form-control enInput" placeholder="Ali">
                                         </div>
                                         <div class="form-group">
                                             <label>{{U4}}</label>
                                             <input id="editInfo.lastNameCreate" type="text"
-                                                   class="form-control" placeholder="Amiri">
+                                                   class="form-control enInput" placeholder="Amiri">
                                         </div>
                                         <div class="form-group">
                                             <label>{{U5}}<span style="color: red;"> *</span></label>

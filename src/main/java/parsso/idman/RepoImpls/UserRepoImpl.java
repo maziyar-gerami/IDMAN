@@ -286,9 +286,13 @@ public class UserRepoImpl implements UserRepo {
             role = "USER";
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
 
-        if (auth.getName().equals(p.getUserId())) {
+        List<GrantedAuthority> updatedAuthorities = null;
+
+        if (auth != null){
+            updatedAuthorities = new ArrayList<>(auth.getAuthorities());
+
+        if (auth != null && auth.getName().equals(p.getUserId())) {
             updatedAuthorities.remove(0);
 
             updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role));
@@ -297,6 +301,7 @@ public class UserRepoImpl implements UserRepo {
 
             SecurityContextHolder.getContext().setAuthentication(newAuth);
         }
+    }
 
     }
 

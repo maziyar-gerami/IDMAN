@@ -246,10 +246,36 @@ document.addEventListener('DOMContentLoaded', function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
 
+        let serviceIdFlag = false;
+        for(let i = 0; i < document.getElementsByName('serviceId')[0].value.length; ++i){
+          if(i == 0){
+            if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
+            document.getElementsByName('serviceId')[0].value[i+1] != '\\'){
+              serviceIdFlag = true;
+              break;
+            }
+          }else if(i == document.getElementsByName('serviceId')[0].value.length-1){
+            if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
+            document.getElementsByName('serviceId')[0].value[i-1] != '\\'){
+              serviceIdFlag = true;
+              break;
+            }
+          }else{
+            if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
+            document.getElementsByName('serviceId')[0].value[i+1] != '\\' &&
+            document.getElementsByName('serviceId')[0].value[i-1] != '\\'){
+              serviceIdFlag = true;
+              break;
+            }
+          }
+        }
+
         if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
         document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
         document.getElementsByName('description')[0].value == ""){
           alert("لطفا قسمت های الزامی را پر کنید.");
+        }else if(serviceIdFlag){
+          alert("فرمت آدرس سرویس درست نمی باشد.");
         }else{
 
           this.service.name = document.getElementsByName('name')[0].value;
@@ -417,15 +443,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 let dateE = dateEndFinal.split('-');
 
                 if(parseInt(dateS[1]) < 7){
-                  timeStart = timeStart + ":00.000+4:30";
+                  timeStart = timeStart + ":00.000+04:30";
                 }else{
-                  timeStart = timeStart + ":00.000+3:30";
+                  timeStart = timeStart + ":00.000+03:30";
                 }
 
                 if(parseInt(dateE[1]) < 7){
-                  timeEnd = timeEnd + ":00.000+4:30";
+                  timeEnd = timeEnd + ":00.000+04:30";
                 }else{
-                  timeEnd = timeEnd + ":00.000+3:30";
+                  timeEnd = timeEnd + ":00.000+03:30";
                 }
 
                 let TempS = timeStart.split(':');
@@ -557,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   bodyFormData.append("file", file.files[0]);
                   axios({
                     method: 'post',
-                    url: url + "/api/services/user/metadata",  //
+                    url: url + "/api/services/metadata",  //
                     headers: {'Content-Type': 'multipart/form-data'},
                     data: bodyFormData,
                   }).then((res) => {
@@ -581,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function () {
                           logoutUrl: vm.service.logoutUrl,
                           accessStrategy: vm.accessStrategy,
                           contacts: vm.contacts
-                        })
+                        }).replace(/\\\\/g, "\\")
                       })
                       .then((res) => {
                         window.location.replace(url + "/services");
@@ -612,11 +638,13 @@ document.addEventListener('DOMContentLoaded', function () {
                       logoutUrl: vm.service.logoutUrl,
                       accessStrategy: vm.accessStrategy,
                       contacts: vm.contacts
-                    })
+                    }).replace(/\\\\/g, "\\")
                   })
                   .then((res) => {
                     window.location.replace(url + "/services");
                   });
+                }else{
+                  alert("لطفا قسمت های الزامی را پر کنید.");
                 }
               }
               
@@ -641,7 +669,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   logoutUrl: vm.service.logoutUrl,
                   accessStrategy: vm.accessStrategy,
                   contacts: vm.contacts
-                })
+                }).replace(/\\\\/g, "\\")
             })
             .then((res) => {
               window.location.replace(url + "/services");

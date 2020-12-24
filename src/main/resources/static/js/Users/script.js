@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s47: "تکرار رمز عبور جدید",
             s48: "رمز عبور شما باید شامل موارد زیر باشد:",
             s49: "رمز عبور های وارد شده یکسان نمی باشند",
-            s50: "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.",
+            s50: "کاربری با این شناسه کاربری وجود دارد، شناسه کاربری دیگری انتخاب کنید.",
             s51: "زمان انقضا کاربر",
             s52: "ایمیل بازنشانی رمز عبور با موفقیت ارسال شد.",
             s53: "حذف کاربر",
@@ -194,9 +194,11 @@ document.addEventListener('DOMContentLoaded', function () {
             s71: "از مجموع کاربران وارد شده تعداد ",
             s72: " کاربر با موفقیت ثبت شدند و تعداد ",
             s73: " کاربر در هنگام ثبت با مشکل مواجه شده و ثبت نشدند.",
+            s74: " (برای شناسه کاربری تنها حروف انگلیسی و اعداد مجاز می باشد)",
+            s75: "تعداد رکورد ها: ",
             U0: "رمز عبور",
             U1: "کاربران",
-            U2: "شناسه",
+            U2: "شناسه کاربری",
             U3: "نام (به انگلیسی)",
             U4: "نام خانوادگی (به انگلیسی)",
             U5: "نام کامل (به فارسی)",
@@ -401,7 +403,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 */
             },
-            selectConflict:function(s1, s2) {
+            changeRecords: function(event) {
+                this.recordsShownOnPage = event.target.value;
+                this.filter();
+            },
+            selectConflict: function(s1, s2) {
                 document.getElementById(s1).className = "btn btn-success mb-2";
                 document.getElementById(s2).className = "btn btn-notSelected mb-2";
                 var res = s1.split("-");
@@ -426,10 +432,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
-            unselectConflict:function(s) {
+            unselectConflict: function(s) {
                 document.getElementById(s).className = "btn btn-notSelected mb-2";
             },
-            resolveConflicts:function() {
+            resolveConflicts: function() {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 for(var i = 0; i < this.usersCorrectList.length; ++i){
@@ -452,7 +458,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 memberOf: groupsConflictList,
                                 mail: vm.usersCorrectList[i].mail,
                                 description: vm.usersCorrectList[i].description,
-                            }),
+                            }).replace(/\\\\/g, "\\")
                         });
                     }
                 }
@@ -562,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
                         for(let i = 0; i < vm.recordsShownOnPage; ++i){
                             if(i < res.data.size){
-                                vm.users[i].orderOfRecords = i + 1;
+                                vm.users[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
                             }
                         }
                     });
@@ -623,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
                         for(let i = 0; i < vm.recordsShownOnPage; ++i){
                             if(i < res.data.size){
-                                vm.users[i].orderOfRecords = i + 1;
+                                vm.users[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
                             }
                         }
                     });
@@ -869,7 +875,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 description: document.getElementById('editInfo.descriptionUpdate').value,
                                 cStatus: statusValue,
                                 endTime: endTimeFinal
-                            })
+                            }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
                             location.reload();
@@ -889,7 +895,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                             userPassword: document.getElementById('newPassword').value
-                        }),
+                        }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
                         location.reload();
@@ -899,6 +905,12 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             exportUsers: function(){
                 url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                /* const FileDownload = require('js-file-download');
+                axios.get(url + "/api/users/export", {
+                    responseType: 'blob',
+                  }).then(res => {
+                    fileDownload(res.data, "users.xls");
+                  }); */
                 axios.get(url + "/api/users/full") //
                     .then((res) => {
                         data = res.data;
@@ -925,7 +937,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     headers: {'Content-Type': 'application/json'},
                     data: JSON.stringify({
                         names: selectedUsers
-                    }),
+                    }).replace(/\\\\/g, "\\")
                 })
                 .then((res) => {
                     vm.resetPassEmailSent = true;
@@ -940,7 +952,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     url: url + "/api/users/sendMail", //
                     headers: {'Content-Type': 'application/json'},
                     data: JSON.stringify({
-                    }),
+                    }).replace(/\\\\/g, "\\")
                 })
                 .then((res) => {
                     vm.resetPassEmailSent = true;
@@ -1072,7 +1084,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     cStatus: document.getElementById('statusCreate').value,
                                     endTime: endTimeFinal
                                 }
-                            ),
+                            ).replace(/\\\\/g, "\\")
                         })
                         .then(() => {
                             location.reload();
@@ -1100,7 +1112,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                             names: selectedUsers
-                        }),
+                        }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
                         vm.filter();
@@ -1117,7 +1129,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         url: url + "/api/users", //
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
-                        }),
+                        }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
                         vm.filter();
@@ -1200,7 +1212,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 headers: {'Content-Type': 'application/json'},
                                 data: JSON.stringify({
                                     names: selectedUsers
-                                }),
+                                }).replace(/\\\\/g, "\\")
                             })
                             .then((res) => {
                                 vm.filter();
@@ -1223,7 +1235,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             headers: {'Content-Type': 'application/json'},
                             data: JSON.stringify({
                                 names: selectedUsers
-                            }),
+                            }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
                             vm.resetPassEmailSent = true;
@@ -1332,6 +1344,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s71 = "From Imported Users, ";
                     this.s72 = " Of Them Were Imported Successfully, And ";
                     this.s73 = " Of Them Faced Some Problem And Were Not Imported.";
+                    this.s74 = " (Only English Letters And Numbers Are Allowed For ID)";
+                    this.s75 = "Records a Page: ";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1422,7 +1436,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s47 = "تکرار رمز عبور جدید";
                     this.s48 = "رمز عبور شما باید شامل موارد زیر باشد:";
                     this.s49 = "رمز عبور های وارد شده یکسان نمی باشند";
-                    this.s50 = "کاربری با این شناسه وجود دارد، شناسه دیگری انتخاب کنید.";
+                    this.s50 = "کاربری با این شناسه کاربری وجود دارد، شناسه کاربری دیگری انتخاب کنید.";
                     this.s51 = "زمان انقضا کاربر";
                     this.s52 = "ایمیل بازنشانی رمز عبور با موفقیت ارسال شد.";
                     this.s53 = "حذف کاربر";
@@ -1444,9 +1458,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s71 = "از مجموع کاربران وارد شده تعداد ";
                     this.s72 = " کاربر با موفقیت ثبت شدند و تعداد ";
                     this.s73 = " کاربر در هنگام ثبت با مشکل مواجه شده و ثبت نشدند.";
+                    this.s74 = " (برای شناسه کاربری تنها حروف انگلیسی و اعداد مجاز می باشد)";
+                    this.s75 = "تعداد رکورد ها: ";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
-                    this.U2 = "شناسه";
+                    this.U2 = "شناسه کاربری";
                     this.U3 = "نام (به انگلیسی)";
                     this.U4 = "نام خانوادگی (به انگلیسی)";
                     this.U5 = "نام کامل (به فارسی)";
@@ -1493,6 +1509,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 return (this.password !== '' && this.checkPassword !== '')
             },
             isActiveUserPassUpdate () {
+                console.log(this.password);
+                console.log(this.checkPassword);
                 if(this.password !== '' && this.checkPassword !== ''){
                     let errors = []
                     for (let condition of this.rules) {

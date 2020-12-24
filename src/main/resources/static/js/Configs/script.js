@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
           method: 'put',
           url: url + '/api/configs',  //
           headers: {'Content-Type': 'application/json'},
-          data: JSON.stringify(vm.configsList)
+          data: JSON.stringify(vm.configsList).replace(/\\\\/g, "\\")
         })
         .then((res) => {
           vm.getConfigs();
