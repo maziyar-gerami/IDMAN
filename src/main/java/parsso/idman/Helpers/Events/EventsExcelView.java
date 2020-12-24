@@ -51,23 +51,29 @@ public class EventsExcelView extends AbstractXlsView {
         header.createCell(0).setCellValue("type");
         header.getCell(0).setCellStyle(style);
 
-        header.createCell(1).setCellValue("application");
+        header.createCell(1).setCellValue("userId");
         header.getCell(1).setCellStyle(style);
 
-        header.createCell(2).setCellValue("Client IP");
+        header.createCell(2).setCellValue("application");
         header.getCell(2).setCellStyle(style);
 
-        header.createCell(3).setCellValue("date");
+        header.createCell(3).setCellValue("Client IP");
         header.getCell(3).setCellStyle(style);
 
-        header.createCell(4).setCellValue("Time");
+        header.createCell(4).setCellValue("Server IP");
         header.getCell(4).setCellStyle(style);
 
-        header.createCell(5).setCellValue("Operation system");
+        header.createCell(5).setCellValue("Date");
         header.getCell(5).setCellStyle(style);
 
-        header.createCell(6).setCellValue("Browser");
+        header.createCell(6).setCellValue("Time");
         header.getCell(6).setCellStyle(style);
+
+        header.createCell(7).setCellValue("Operation system");
+        header.getCell(7).setCellStyle(style);
+
+        header.createCell(8).setCellValue("Browser");
+        header.getCell(8).setCellStyle(style);
 
         // create data rows
         int rowCount = 1;
@@ -75,8 +81,11 @@ public class EventsExcelView extends AbstractXlsView {
         for (Event event : events) {
             HSSFRow aRow = sheet.createRow(rowCount++);
             aRow.createCell(0).setCellValue(event.getType());
-            aRow.createCell(1).setCellValue(event.getApplication());
-            aRow.createCell(2).setCellValue(event.getClientip());
+            aRow.createCell(1).setCellValue(event.getPrincipalId());
+            aRow.createCell(2).setCellValue(event.getApplication());
+            aRow.createCell(3).setCellValue(event.getClientip());
+            aRow.createCell(4).setCellValue(event.getServerip());
+
 
             SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date = parserSDF.parse(event.getCreationTime().substring(0,19));
@@ -89,10 +98,10 @@ public class EventsExcelView extends AbstractXlsView {
 
             Time time = new Time(dateConverter, myCal);
 
-            aRow.createCell(3).setCellValue(time.getYear()+"/"+time.getMonth()+"/"+time.getDay());
-            aRow.createCell(4).setCellValue(event.getTime().getHours()+":"+event.getTime().getMinutes()+":"+event.getTime().getSeconds());
-            aRow.createCell(5).setCellValue(event.getAgentInfo().getOs());
-            aRow.createCell(6).setCellValue(event.getAgentInfo().getBrowser());
+            aRow.createCell(5).setCellValue(time.getYear()+"/"+time.getMonth()+"/"+time.getDay());
+            aRow.createCell(6).setCellValue(event.getTime().getHours()+":"+event.getTime().getMinutes()+":"+event.getTime().getSeconds());
+            aRow.createCell(7).setCellValue(event.getAgentInfo().getOs());
+            aRow.createCell(8).setCellValue(event.getAgentInfo().getBrowser());
 
         }
 

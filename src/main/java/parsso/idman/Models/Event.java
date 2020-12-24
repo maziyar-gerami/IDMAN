@@ -108,8 +108,6 @@ public class Event implements Serializable {
         private String agent;
         @JsonProperty("clientIP")
         private String clientip;
-        //@JsonProperty("serverIP")
-        @JsonIgnore
         private String serverip;
         @JsonIgnore
         private String timestamp;
