@@ -698,6 +698,14 @@ public class UserRepoImpl implements UserRepo {
         return tokenClass.requestToken(user);
     }
 
+    @Override
+    public HttpStatus massUpdate(List<User> users) {
+        for (User user:users)
+            update(user.getUserId(),user);
+
+        return HttpStatus.OK;
+    }
+
 
     @Override
     public ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {

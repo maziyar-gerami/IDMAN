@@ -303,6 +303,10 @@ public class UserController {
         else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
     }
 
+    @PutMapping("/api/users/import/massUpdate")
+    public ResponseEntity<JSONObject> updateConflicts(@RequestBody List<User> users){
+        return new ResponseEntity<>(userRepo.massUpdate(users));
+    }
 
     /**
      * get the information for dashboard

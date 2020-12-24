@@ -67,4 +67,5 @@ public interface UserRepo {
 
     int requestToken(User user);
 
+    HttpStatus massUpdate(List<User> users);
 }
