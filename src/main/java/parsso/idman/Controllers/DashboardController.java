@@ -117,17 +117,12 @@ public class DashboardController {
 
     @GetMapping("/events")
     public String Events(HttpServletRequest request) {
-        Collection<? extends GrantedAuthority> s = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         return "events";
     }
 
     @GetMapping("/configs")
     public String Configs(HttpServletRequest request) {
         try {
-
-
-
-
                 if (request.getUserPrincipal().getName().equals("su"))
                     return "configs";
 

@@ -42,7 +42,7 @@ public class Service implements Comparable<Service>{
     private String privacyUrl;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String logo;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private ExtraInfo extraInfo;
 
 

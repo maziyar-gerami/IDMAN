@@ -32,6 +32,7 @@ import parsso.idman.Helpers.Communicate.Message;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.ListUsers;
+import parsso.idman.Models.ServicesSubModel.ExtraInfo;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.Tokens;
 import parsso.idman.Models.User;
@@ -550,12 +551,14 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = new User();
-        Tokens tokens = new Tokens();
+        Tokens tokens = null;
+        ExtraInfo extraInfo=null;
         if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
             user = ldapTemplate.lookup(buildDn.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
             tokens = mongoTemplate.findOne(query, Tokens.class, Token.collection);
             user.setTokens(tokens);
+
         }
         setRole(userId, user);
         if (user.getUserId() == null) return null;

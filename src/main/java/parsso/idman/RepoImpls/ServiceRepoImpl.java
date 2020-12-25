@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import com.google.gson.JsonObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -26,9 +25,9 @@ import parsso.idman.Models.User;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.ServiceRepo;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.text.SimpleDateFormat;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -42,28 +41,20 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Autowired
     SamlServiceHelper samlServiceHelper;
     Logger logger = LoggerFactory.getLogger(ServiceRepoImpl.class);
+    @Autowired
+    FilesStorageService storageService;
+    @Autowired
+    Position position;
+    String collection = "IDMAN_ServicesExtraInfo";
     @Value("${services.folder.path}")
     private String path;
-
     @Value("${base.url}")
     private String baseUrl;
-
     @Value("${metadata.file.path}")
     private String uploadedFilesPath;
 
-
-    @Autowired
-    FilesStorageService storageService;
-
-    @Autowired
-    Position position;
-
-    String collection = "IDMAN_ServicesExtraInfo";
-
-
     @Override
     public List<MicroService> listUserServices(User user) throws IOException {
-        File folder = new File(path); // ./services/
         List<Service> services = listServicesFull();
 
         List<Service> relatedList = new LinkedList();
@@ -95,9 +86,18 @@ public class ServiceRepoImpl implements ServiceRepo {
 
         }
         List<MicroService> microServices = new LinkedList<>();
+        MicroService microService = null;
 
         for (Service service : relatedList) {
-            microServices.add(new MicroService(service.getId(), service.getName(), service.getServiceId(), service.getDescription(), service.getLogo()));
+            Query query = new Query(Criteria.where("_id").is(service.getId()));
+            try {
+                microService = mongoTemplate.findOne(query, MicroService.class, collection);
+            } catch (Exception e) {
+                microService = new MicroService(service.getId(), service.getServiceId());
+                logger.warn("Unable to read ExtraInfo for service " + service.getId());
+            } finally {
+                microServices.add(new MicroService(service, microService));
+            }
         }
 
         Collections.sort(microServices);
@@ -117,7 +117,7 @@ public class ServiceRepoImpl implements ServiceRepo {
                     Collections.sort(services);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    logger.warn("Unable to read service "+file);
+                    logger.warn("Unable to read service " + file);
                     continue;
                 }
         }
@@ -136,34 +136,45 @@ public class ServiceRepoImpl implements ServiceRepo {
             if (file.endsWith(".json"))
                 try {
                     service = analyze(file);
-                }catch (Exception e){
-                    logger.warn("Unable to read service "+file);
+                } catch (Exception e) {
+                    logger.warn("Unable to read service " + file);
                     continue;
                 }
-                    Query query = new Query(Criteria.where("_id").is(Long.valueOf(Trim.extractIdFromFile(file))));
-                try {
-                    microService = mongoTemplate.findOne(query,MicroService.class,collection);
-                } catch (Exception e) {
-                    microService = new MicroService(service.getId());
-                    System.out.println("hi");
-                }finally {
-                    services.add(new MicroService(service,microService));
-                }
+            Query query = new Query(Criteria.where("_id").is(Long.valueOf(Trim.extractIdFromFile(file))));
+            try {
+                microService = mongoTemplate.findOne(query, MicroService.class, collection);
+            } catch (Exception e) {
+                microService = new MicroService(service.getId(), service.getServiceId());
+                System.out.println("hi");
+            } finally {
+                services.add(new MicroService(service, microService));
+            }
         }
         Collections.sort(services);
         return services;
     }
 
 
-
     @Override
     public Service retrieveService(long serviceId) throws IOException {
+        ExtraInfo extraInfo;
 
         for (Service service : listServicesFull())
-            if (service.getId() == serviceId)
-                return service;
+            if (service.getId() == serviceId) {
 
+                Query query = new Query(Criteria.where("_id").is(service.getId()));
+                try {
+                    extraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
+                } catch (Exception e) {
+                    extraInfo = new ExtraInfo();
+                    logger.warn("Unable to get extra service for service " + service.getId());
+                }
+
+                service.setExtraInfo(extraInfo);
+                return service;
+            }
         return null;
+
     }
 
     @Override
@@ -172,7 +183,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         List allFiles = Arrays.asList(folder.list());
         List selectedFiles = new LinkedList();
 
-        if (jsonObject.size()==0)
+        if (jsonObject.size() == 0)
             selectedFiles = allFiles;
 
         else {
@@ -193,17 +204,17 @@ public class ServiceRepoImpl implements ServiceRepo {
             if (!(serv.delete())) {
                 notDeleted.add((String) file);
 
-                logger.warn("Deleting Service " + "\""+file+ "\"" + " was unsuccessful");
+                logger.warn("Deleting Service " + "\"" + file + "\"" + " was unsuccessful");
             }
 
         }
 
-        for (Object file: selectedFiles) {
+        for (Object file : selectedFiles) {
             long id = Trim.extractIdFromFile(file.toString());
             Query query = new Query(Criteria.where("_id").is(id));
-            MicroService microService = mongoTemplate.findOne(query, MicroService.class,collection);
+            MicroService microService = mongoTemplate.findOne(query, MicroService.class, collection);
             position.delete(microService.getPosition());
-            mongoTemplate.remove(query, MicroService.class,collection);
+            mongoTemplate.remove(query, MicroService.class, collection);
 
         }
 
@@ -211,66 +222,57 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
 
-
     @Override
     public HttpStatus createService(JSONObject jsonObject, String system) throws IOException {
 
         ExtraInfo extraInfo = null;
         long id = 0;
+        JSONObject jsonExtraInfo = new JSONObject();
 
 
         if (jsonObject.get("extraInfo") != null) {
-
-            JSONObject jsonExtraInfo = new JSONObject();
-
             if (jsonObject.get("extraInfo").getClass().toString().equals("class org.json.simple.JSONObject"))
                 jsonExtraInfo = (JSONObject) jsonObject.get("extraInfo");
 
             else if (jsonObject.get("extraInfo").getClass().toString().equals("class java.util.LinkedHashMap"))
                 jsonExtraInfo = new JSONObject((Map) jsonObject.get("extraInfo"));
-
-            extraInfo = new ExtraInfo();
-            if (jsonExtraInfo.get("url")!=null)
-                extraInfo.setUrl(jsonExtraInfo.get("url").toString());
-
-
         }
 
+        extraInfo = new ExtraInfo();
+
+        extraInfo.setUrl(jsonExtraInfo != null && jsonExtraInfo.get("url") != null ?
+                jsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
 
         if (system.equalsIgnoreCase("cas")) {
             id = casServiceHelper.create(jsonObject);
             if (id > 0)
                 if (extraInfo != null) {
                     extraInfo.setId(id);
-                    extraInfo.setPosition(position.lastPosition()+1);
+                    extraInfo.setPosition(position.lastPosition() + 1);
                     mongoTemplate.save(extraInfo, collection);
                     return HttpStatus.OK;
                 } else {
                     extraInfo = new ExtraInfo();
                     extraInfo.setId(id);
-                    extraInfo.setPosition(position.lastPosition()+1);
+                    extraInfo.setPosition(position.lastPosition() + 1);
                     mongoTemplate.save(extraInfo, collection);
                     return HttpStatus.OK;
                 }
-        }
-
-        else if (system.equalsIgnoreCase("saml"))
+        } else if (system.equalsIgnoreCase("saml"))
             id = samlServiceHelper.create(jsonObject);
-                if (id>0)
-                    if(extraInfo!=null) {
-                        extraInfo.setId(id);
-                        extraInfo.setPosition(position.lastPosition()+1);
-                        mongoTemplate.save(extraInfo,collection);
-                        return HttpStatus.OK;
-                    }
-                    else
-                 {
-                    extraInfo = new ExtraInfo();
-                    extraInfo.setId(id);
-                     extraInfo.setPosition(position.lastPosition()+1);
-                     mongoTemplate.save(extraInfo, collection);
-                    return HttpStatus.OK;
-                }
+        if (id > 0)
+            if (extraInfo != null) {
+                extraInfo.setId(id);
+                extraInfo.setPosition(position.lastPosition() + 1);
+                mongoTemplate.save(extraInfo, collection);
+                return HttpStatus.OK;
+            } else {
+                extraInfo = new ExtraInfo();
+                extraInfo.setId(id);
+                extraInfo.setPosition(position.lastPosition() + 1);
+                mongoTemplate.save(extraInfo, collection);
+                return HttpStatus.OK;
+            }
 
         return HttpStatus.FORBIDDEN;
     }
@@ -278,14 +280,14 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Override
     public String uploadMetadata(MultipartFile file) {
         Date date = new Date();
-        String fileName = date.getTime()+"_"+file.getOriginalFilename();
+        String fileName = date.getTime() + "_" + file.getOriginalFilename();
 
         try {
             storageService.saveMetadata(file, fileName);
-            return baseUrl+"/api/public/metadata/"+fileName;
+            return baseUrl + "/api/public/metadata/" + fileName;
             //return uploadedFilesPath+userId+timeStamp+file.getOriginalFilename();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -293,6 +295,34 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     @Override
     public HttpStatus updateService(long id, JSONObject jsonObject, String system) throws IOException, ParseException {
+
+        JSONObject JsonExtraInfo = null;
+
+        ExtraInfo extraInfo = new ExtraInfo();
+
+
+        Query query = new Query(Criteria.where("_id").is(id));
+
+        ExtraInfo oldExtraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
+
+        if (jsonObject.get("extraInfo") != null) {
+
+            if (jsonObject.get("extraInfo").getClass().toString().equals("class org.json.simple.JSONObject"))
+                JsonExtraInfo = (JSONObject) jsonObject.get("extraInfo");
+
+            else if (jsonObject.get("extraInfo").getClass().toString().equals("class java.util.LinkedHashMap"))
+                JsonExtraInfo = new JSONObject((Map) jsonObject.get("extraInfo"));
+
+            extraInfo.setUrl(JsonExtraInfo != null && JsonExtraInfo.get("url") != null ?
+                    JsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
+
+            extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
+            extraInfo.setPosition(oldExtraInfo.getPosition());
+            extraInfo.setId(id);
+
+            mongoTemplate.save(extraInfo, collection);
+        }
+
         if (system.equalsIgnoreCase("cas"))
             return casServiceHelper.update(id, jsonObject);
 

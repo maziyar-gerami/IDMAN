@@ -35,9 +35,9 @@ public class MicroService implements Comparable{
         this.url = serviceId;
     }
 
-    public MicroService(Long id) {
+    public MicroService(Long id,String url) {
         this._id = id;
-        this.url = serviceId;
+        this.url = url;
         this.position = 0;
     }
     public MicroService() {
@@ -60,7 +60,7 @@ public class MicroService implements Comparable{
         this.serviceId = service.getServiceId();
         this.description =service.getDescription();
         this.logo = service.getLogo();
-        this.url = (null!= microService ? microService.getUrl() : service.getServiceId());
+        this.url = (null!= microService&&null!=microService.getUrl() ? microService.getUrl() : service.getServiceId());
         this.position = (null!= microService ? microService.getPosition() : 0);
 
     }
