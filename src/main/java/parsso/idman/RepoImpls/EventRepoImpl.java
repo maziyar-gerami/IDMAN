@@ -13,13 +13,11 @@ import parsso.idman.utils.Query.QueryDomain;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class EventRepoImpl implements EventRepo {
 
-    public static String path;
-    public static String mainCollection = "MongoDbCasEventRepository";
+    private static String mainCollection = "MongoDbCasEventRepository";
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -33,8 +31,7 @@ public class EventRepoImpl implements EventRepo {
         p= inverseP(p,n);
         List<Event> allEvents = analyze(mainCollection,(p-1)*n,n);
         long size =  mongoTemplate.getCollection(mainCollection).countDocuments();
-        int pages = (int) Math.ceil(size/n);
-        return new ListEvents(size,pages,allEvents);
+        return new ListEvents(size,(int) Math.ceil(size/n),allEvents);
     }
 
     private int inverseP(int p,int n){

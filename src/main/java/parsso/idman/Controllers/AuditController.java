@@ -29,7 +29,10 @@ public class AuditController {
     //OK
     @GetMapping("/api/audits/{page}/{n}")
     public ResponseEntity<ListAudits> retrieveAllAudits(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-        return new ResponseEntity<>(auditRepo.getListSizeAudits(page,n), HttpStatus.OK);
+            ListAudits listAudits = auditRepo.getListSizeAudits(page,n);
+
+            return new ResponseEntity<>(auditRepo.getListSizeAudits(page,n), HttpStatus.OK);
+
     }
 
     //OK

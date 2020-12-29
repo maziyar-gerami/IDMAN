@@ -40,8 +40,21 @@ public class Time {
         this.year = year;
         this.month = month;
         this.day = day;
-        this.hours = hours;
-        this.minutes = minutes;
+        this.hours = hours+3;
+        this.minutes = minutes+30;
+        if(this.minutes>59) {
+            this.hours += 1;
+            this.minutes-=60;
+
+        }
+         if (this.hours>23) {
+             this.hours -= 24;
+             this.day += 1;
+         }
+
+
+
+
         this.seconds = seconds;
         this.miliseconds = 0;
     }

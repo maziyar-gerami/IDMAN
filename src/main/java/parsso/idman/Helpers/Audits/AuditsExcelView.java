@@ -24,13 +24,14 @@ public class AuditsExcelView extends AbstractXlsView {
     @Autowired
     AuditRepo auditRepo;
 
+    public static String mainCollection = "MongoDbCasAuditRepository";
 
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // get data model which is passed by the Spring container
-        List<Audit> audits = auditRepo.getMainListAudits();
+        List<Audit> audits = auditRepo.analyze(mainCollection, 0,0);
 
         // create a new Excel sheet
         HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Audits");

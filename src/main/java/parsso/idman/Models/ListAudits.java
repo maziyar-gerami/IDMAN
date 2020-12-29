@@ -20,4 +20,8 @@ public class ListAudits {
         this.pages = pages;
         this.auditList = relativeAudits;
     }
+
+    public ListAudits() {
+
+    }
 }

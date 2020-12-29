@@ -77,7 +77,7 @@ public  class DashboardData {
         int nUnSucceful = 0;
 
         for (Event event : events) {
-            Date date1=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(event.getCreationTime());
+            Date date1=new SimpleDateFormat("yyyy-MM-dd").parse(event.getCreationTime());
             if (event.getType().equals("Unsuccessful Login")&&DateUtils.isToday(date1)) {
                 nUnSucceful++;
 
