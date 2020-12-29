@@ -10,14 +10,14 @@ import java.util.List;
 @Getter
 
 public class ListAudits {
-    int size;
+    long size;
     int pages;
     List <Audit> auditList;
 
 
-    public ListAudits(int size, List<Audit> relativeAudits, int pages) {
+    public ListAudits(List<Audit> relativeAudits,long size, int pages) {
         this.size = size;
-        this.pages = pages+1;
+        this.pages = pages;
         this.auditList = relativeAudits;
     }
 }

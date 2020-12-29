@@ -12,8 +12,10 @@ import java.util.List;
 @Service
 public interface AuditRepo {
 
+    List<Audit> getMainListAudits(int page, int n) throws ParseException, IOException, org.json.simple.parser.ParseException;
+
     List<Audit> getMainListAudits() throws ParseException, IOException, org.json.simple.parser.ParseException;
-    
+
     ListAudits getListSizeAudits(int page, int n) throws IOException, org.json.simple.parser.ParseException;
 
     List<Audit> getListAudits(int page, int n) throws IOException, org.json.simple.parser.ParseException;

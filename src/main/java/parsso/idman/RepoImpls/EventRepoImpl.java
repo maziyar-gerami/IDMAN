@@ -2,23 +2,21 @@ package parsso.idman.RepoImpls;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Event;
 import parsso.idman.Models.ListEvents;
-import parsso.idman.Models.Time;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.utils.Convertor.DateConverter;
 import parsso.idman.utils.Query.QueryDomain;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class EventRepoImpl implements EventRepo {
-
 
     public static String path;
     public static String mainCollection = "MongoDbCasEventRepository";
@@ -31,111 +29,70 @@ public class EventRepoImpl implements EventRepo {
     ServiceRepo serviceRepo;
 
     @Override
-    public List<Event> getMainListEvents() throws IOException, org.json.simple.parser.ParseException {
-        List<Event> events = analyze(mainCollection);
-        return events;
+    public ListEvents getListSizeEvents(int p, int n) {
+        p= inverseP(p,n);
+        List<Event> allEvents = analyze(mainCollection,(p-1)*n,n);
+        long size =  mongoTemplate.getCollection(mainCollection).countDocuments();
+        int pages = (int) Math.ceil(size/n);
+        return new ListEvents(size,pages,allEvents);
+    }
+
+    private int inverseP(int p,int n){
+        long size =  mongoTemplate.getCollection(mainCollection).countDocuments();
+        int pages = (int) Math.ceil(size/n);
+        return pages-(p-1);
     }
 
     @Override
-    public ListEvents getListSizeEvents(int page, int n) throws IOException, org.json.simple.parser.ParseException {
-        List<Event> allEvents = getMainListEvents();
-        return pagination(allEvents,page,n);
-    }
-
-
-    @Override
-    public List<Event> getListEvents(int page, int number) throws IOException, org.json.simple.parser.ParseException {
-        return getMainListEvents();
-    }
-
-    @Override
-    public ListEvents getListUserEvents(String userId, int page, int number) throws IOException, org.json.simple.parser.ParseException {
-        List<Event> events = getMainListEvents();
-        List<Event> relatedEvents;
-        relatedEvents = events.stream().filter(p -> p.getPrincipalId().equals(userId)).collect(Collectors.toList());
-        return pagination(relatedEvents,page,number);
+    public ListEvents getListUserEvents(String userId, int p, int n)  {
+        ListEvents listEvents = new ListEvents();
+        Query query = new Query(Criteria.where("principalId").is(userId));
+        query.skip((p-1)*(n));
+        query.limit(n);
+        List<Event> eventList =  mongoTemplate.find(query, Event.class,mainCollection);
+        Collections.reverse(eventList);
+        listEvents.setSize(eventList.size());
+        listEvents.setPages((int) Math.ceil(eventList.size()/n));
+        listEvents.setEventList(eventList);
+        return listEvents;
     }
 
     @Override
-    public ListEvents getEventsByDate(String date, int page, int number) throws ParseException, IOException, org.json.simple.parser.ParseException {
-        List<Event> events = getMainListEvents();
+    public ListEvents getEventsByDate(String date, int p, int n) throws ParseException, IOException, org.json.simple.parser.ParseException {
+        p= inverseP(p,n);
+        List<Event> events = analyze(mainCollection,n*(p-1),n);
 
-        return pagination(iterateEvents(events, date,null),page,number);
+        ListEvents listEvents = new ListEvents();
+        Query query = new Query(Criteria.where("principalId").is(date));
+        listEvents.setSize((int) mongoTemplate.count(query,mainCollection));
+        listEvents.setPages((int) Math.ceil(listEvents.getSize()/n));
+        listEvents.setEventList(events);
+        return listEvents;
     }
-
 
     @Override
-    public ListEvents getListUserEventByDate(String date, String userId, int page, int number) throws ParseException, IOException, org.json.simple.parser.ParseException {
-        List<Event> events = getMainListEvents();
-        List<Event> relatedEvents= iterateEvents(events, date,userId);
-        relatedEvents = relatedEvents.stream().filter(p -> p.getPrincipalId().equals(userId)).collect(Collectors.toList());
+    public ListEvents getListUserEventByDate(String date, String userId, int skip, int limit) throws ParseException, IOException, org.json.simple.parser.ParseException {
 
-        return pagination(relatedEvents,page,number);
-
+        Query query = new Query(Criteria.where("principalId").is(userId));
+        long size =  mongoTemplate.count(query, ListEvents.class,mainCollection);
+        query.skip((skip-1)*(limit));
+        query.limit(limit);
+        List<Event> eventList =  mongoTemplate.find(query, Event.class,mainCollection);
+        int pages = (int) Math.ceil(size/limit);
+        ListEvents listEvents = new ListEvents(size,pages,eventList);
+        return listEvents;
     }
 
-    private List<Event> iterateEvents(List<Event> events, String date, String userId) throws ParseException {
-
-        List<Event> relatedEvents = new LinkedList<>();
-        int inDay = Integer.valueOf(date.substring(0, 2));
-        int inMonth = Integer.valueOf(date.substring(2, 4));
-        int inYear = Integer.valueOf(date.substring(4, 8));
-
-        SimpleDateFormat newFormatter = new SimpleDateFormat("yyyy-MM-dd");
-
-        for (Event event : events) {
-
-            Date tempDate = newFormatter.parse(event.getCreationTime());
-
-            Calendar myCal = new GregorianCalendar();
-            myCal.setTime(tempDate);
-
-            DateConverter dateConverter = new DateConverter();
-
-            dateConverter.gregorianToPersian(myCal.get(Calendar.YEAR), myCal.get(Calendar.MONTH) + 1, myCal.get(Calendar.DAY_OF_MONTH));
-
-
-            if (dateConverter.getYear() == inYear && dateConverter.getMonth() == inMonth && dateConverter.getDay() == inDay) {
-
-                if (userId!=null) {
-
-                    if (event.getPrincipalId().equals(userId))
-
-                        relatedEvents.add(event);
-                }
-                else
-
-                    relatedEvents.add(event);
-
-            }
-        }
-
-        return relatedEvents;
-
-    }
-
-    public List<Event> analyze(String collection) {
+    @Override
+    public List<Event> analyze(String collection,int skip, int limit) {
 
         List<Event> events;
-        events = mongoTemplate.findAll(Event.class,collection);
+        Query query = new Query();
+        if (skip!=0) query.skip(skip);
+        if (limit!=0) query.limit(limit);
+        events = mongoTemplate.find(query,Event.class,collection);
         Collections.reverse(events);
         return events;
-    }
-
-    public ListEvents pagination(List<Event> events, int page, int number){
-        int n = (page)*number;
-
-        if (n>events.size())
-            n = events.size();
-
-        List<Event> relativeEvents= new LinkedList<>();
-
-        int start = (page-1)*number;
-
-        for (int i=start; i<n; i++)
-            relativeEvents.add(events.get(i));
-
-        return new ListEvents(events.size(),relativeEvents, (int) Math.ceil(events.size()/number));
     }
 }
 

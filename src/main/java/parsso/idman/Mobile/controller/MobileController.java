@@ -96,7 +96,7 @@ public class  MobileController {
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }
-
+/*
     @PostMapping("/api/mobile/events")
     public @ResponseBody
     ResponseEntity<List<Event>> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, ParseException, org.json.simple.parser.ParseException {
@@ -106,6 +106,8 @@ public class  MobileController {
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }
+
+ */
 
     @PostMapping("/api/mobile/events/{page}/{n}")
     public @ResponseBody

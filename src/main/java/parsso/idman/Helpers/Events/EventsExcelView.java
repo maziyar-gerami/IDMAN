@@ -27,13 +27,15 @@ public class EventsExcelView extends AbstractXlsView {
     @Autowired
     EventRepo eventRepo;
 
+    public static String mainCollection = "MongoDbCasEventRepository";
+
 
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // get data model which is passed by the Spring container
-        List<Event> events = eventRepo.getMainListEvents();
+        List<Event> events = eventRepo.analyze(mainCollection, 0,0);
 
         // create a new Excel sheet
         HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Events");
@@ -60,20 +62,17 @@ public class EventsExcelView extends AbstractXlsView {
         header.createCell(3).setCellValue("Client IP");
         header.getCell(3).setCellStyle(style);
 
-        header.createCell(4).setCellValue("Server IP");
+        header.createCell(4).setCellValue("Date");
         header.getCell(4).setCellStyle(style);
 
-        header.createCell(5).setCellValue("Date");
+        header.createCell(5).setCellValue("Time");
         header.getCell(5).setCellStyle(style);
 
-        header.createCell(6).setCellValue("Time");
+        header.createCell(6).setCellValue("Operation system");
         header.getCell(6).setCellStyle(style);
 
-        header.createCell(7).setCellValue("Operation system");
+        header.createCell(7).setCellValue("Browser");
         header.getCell(7).setCellStyle(style);
-
-        header.createCell(8).setCellValue("Browser");
-        header.getCell(8).setCellStyle(style);
 
         // create data rows
         int rowCount = 1;
@@ -84,9 +83,6 @@ public class EventsExcelView extends AbstractXlsView {
             aRow.createCell(1).setCellValue(event.getPrincipalId());
             aRow.createCell(2).setCellValue(event.getApplication());
             aRow.createCell(3).setCellValue(event.getClientip());
-            aRow.createCell(4).setCellValue(event.getServerip());
-
-
             SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date date = parserSDF.parse(event.getCreationTime().substring(0,19));
             Calendar myCal = new GregorianCalendar();
@@ -98,10 +94,10 @@ public class EventsExcelView extends AbstractXlsView {
 
             Time time = new Time(dateConverter, myCal);
 
-            aRow.createCell(5).setCellValue(time.getYear()+"/"+time.getMonth()+"/"+time.getDay());
-            aRow.createCell(6).setCellValue(event.getTime().getHours()+":"+event.getTime().getMinutes()+":"+event.getTime().getSeconds());
-            aRow.createCell(7).setCellValue(event.getAgentInfo().getOs());
-            aRow.createCell(8).setCellValue(event.getAgentInfo().getBrowser());
+            aRow.createCell(4).setCellValue(time.getYear()+"/"+time.getMonth()+"/"+time.getDay());
+            aRow.createCell(5).setCellValue(event.getTime().getHours()+":"+event.getTime().getMinutes()+":"+event.getTime().getSeconds());
+            aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
+            aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
 
         }
 

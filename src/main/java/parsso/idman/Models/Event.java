@@ -72,11 +72,9 @@ public class Event implements Serializable {
     public String getClientip() {
         return properties.clientip;
     }
-    @JsonProperty("serverIP")
+    @JsonIgnore
     public String serverip;
-    public String getServerip() {
-        return properties.serverip;
-    }
+
     public String eventId;
     public String getEventId() {
         return properties.eventId;

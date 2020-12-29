@@ -26,6 +26,8 @@ public  class DashboardData {
     EventRepo eventRepo;
     @Autowired
     ServiceRepo serviceRepo;
+    public static String mainCollection = "MongoDbCasEventRepository";
+
 
     public JSONObject retrieveDashboardData() throws IOException, java.text.ParseException, java.io.IOException, org.json.simple.parser.ParseException {
         JSONObject jsonObject = new JSONObject();
@@ -70,7 +72,7 @@ public  class DashboardData {
 
         //__________________login data____________
         JSONObject loginJson = new JSONObject();
-        List<Event> events = eventRepo.getMainListEvents();
+        List<Event> events = eventRepo.analyze(mainCollection,0,0);
         int nSuccessful = 0;
         int nUnSucceful = 0;
 

@@ -10,14 +10,18 @@ import java.util.List;
 @Getter
 
 public class ListEvents {
-    int size;
+    long size;
     int pages;
     List <Event> eventList;
 
 
-    public ListEvents(int size, List<Event> relativeEvents, int pages) {
+    public ListEvents(long size, int pages, List<Event> relativeEvents) {
         this.size = size;
         this.pages = pages+1;
         this.eventList = relativeEvents;
+    }
+
+    public ListEvents() {
+
     }
 }

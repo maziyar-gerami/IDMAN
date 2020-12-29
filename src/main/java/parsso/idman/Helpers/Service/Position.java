@@ -48,14 +48,6 @@ public class Position {
         return HttpStatus.OK;
     }
 
-    public MicroService searchByPosition(List<MicroService> microServices, int position){
-        for (MicroService microService:microServices) {
-            if(microService.getPosition()==position)
-                return microService;
-        }
-        return  null;
-    }
-
     public HttpStatus decrease(String id) {
         Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
         MicroService ms = mongoTemplate.findOne(query, MicroService.class, collection);
@@ -63,16 +55,22 @@ public class Position {
         List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
         if(position!=1) {
             MicroService ms1 = searchByPosition(microservices,position);
-            ms1.setPosition(position-1);
-            mongoTemplate.save(ms1,collection);
             MicroService ms2 = searchByPosition(microservices,position-1);
+            ms1.setPosition(position-1);
             ms2.setPosition(position);
+            mongoTemplate.save(ms1,collection);
             mongoTemplate.save(ms2,collection);
-
         }else
             return HttpStatus.FORBIDDEN;
         return HttpStatus.OK;
+    }
 
+    public MicroService searchByPosition(List<MicroService> microServices, int position){
+        for (MicroService microService:microServices) {
+            if(microService.getPosition()==position)
+                return microService;
+        }
+        return  null;
     }
 
     public  HttpStatus delete(int position){

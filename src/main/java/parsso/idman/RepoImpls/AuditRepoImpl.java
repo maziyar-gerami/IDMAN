@@ -3,6 +3,8 @@ package parsso.idman.RepoImpls;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Audit;
 import parsso.idman.Models.ListAudits;
@@ -20,9 +22,7 @@ import java.util.stream.Collectors;
 @Service
 public class AuditRepoImpl implements AuditRepo {
 
-
-    public static String path;
-    public static String mainCollection = "MongoDbCasAuditRepository";
+    private String mainCollection = "MongoDbCasAuditRepository";
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -32,46 +32,60 @@ public class AuditRepoImpl implements AuditRepo {
     ServiceRepo serviceRepo;
 
     @Override
-    public List<Audit> getMainListAudits() throws IOException, org.json.simple.parser.ParseException {
+    public List<Audit> getMainListAudits(){
         List<Audit> audits = analyze(mainCollection);
         return audits;
     }
 
     @Override
-    public ListAudits getListSizeAudits(int page, int n) throws IOException, org.json.simple.parser.ParseException {
-        List<Audit> allAudits = getMainListAudits();
-        return pagination(allAudits,page,n);
+    public List<Audit> getMainListAudits(int page,int n){
+        List<Audit> audits = analyze(mainCollection ,page*(n-1),n);
+        return audits;
+    }
+
+    @Override
+    public ListAudits getListSizeAudits(int p, int n){
+        List<Audit> allAudits = getMainListAudits(p, n);
+        Query query = new Query();
+        long size = mongoTemplate.count(query,mainCollection);
+        ListAudits listAudits = new ListAudits(allAudits,size, (int) Math.ceil(size/n));
+        return listAudits;
     }
 
 
     @Override
-    public List<Audit> getListAudits(int page, int number) throws IOException, org.json.simple.parser.ParseException {
-        return getMainListAudits();
+    public List<Audit> getListAudits(int page, int n) {
+        return getMainListAudits(page, n);
     }
 
     @Override
-    public ListAudits getListUserAudits(String userId, int page, int number) throws IOException, org.json.simple.parser.ParseException {
-        List<Audit> audits = getMainListAudits();
-        List<Audit> relatedAudits;
-        relatedAudits = audits.stream().filter(p -> p.getPrincipal().equals(userId)).collect(Collectors.toList());
-        return pagination(relatedAudits,page,number);
+    public ListAudits getListUserAudits(String userId, int p, int n) {
+        List<Audit> audits = getMainListAudits(p,n);
+        audits = audits.stream().filter(q -> q.getPrincipal().equals(userId)).collect(Collectors.toList());
+        Query query = new Query(Criteria.where("principal").is(userId));
+        long size = mongoTemplate.count(query,mainCollection);
+        return new ListAudits(audits,size, (int) Math.ceil(size/n));
     }
 
     @Override
-    public ListAudits getAuditsByDate(String date, int page, int number) throws ParseException, IOException, org.json.simple.parser.ParseException {
-        List<Audit> audits = getMainListAudits();
+    public ListAudits getAuditsByDate(String date, int p, int n) throws ParseException{
+        List<Audit> audits = getMainListAudits(p,n);
 
-        return pagination(iterateAudits(audits, date,null),page,number);
+        Query query = new Query();
+        long size = mongoTemplate.count(query,mainCollection);
+        return new ListAudits(audits,size, (int) Math.ceil(size/n));
     }
 
 
     @Override
-    public ListAudits getListUserAuditByDate(String date, String userId, int page, int number) throws ParseException, IOException, org.json.simple.parser.ParseException {
-        List<Audit> audits = getMainListAudits();
+    public ListAudits getListUserAuditByDate(String date, String userId, int p, int n) throws ParseException {
+        List<Audit> audits = getMainListAudits(p,n);
         List<Audit> relatedAudits= iterateAudits(audits, date,userId);
-        relatedAudits = relatedAudits.stream().filter(p -> p.getPrincipal().equals(userId)).collect(Collectors.toList());
+        relatedAudits = relatedAudits.stream().filter(q -> q.getPrincipal().equals(userId)).collect(Collectors.toList());
 
-        return pagination(relatedAudits,page,number);
+        Query query = new Query();
+        long size = mongoTemplate.count(query,mainCollection);
+        return new ListAudits(relatedAudits,size, (int) Math.ceil(size/n));
 
     }
 
@@ -112,28 +126,21 @@ public class AuditRepoImpl implements AuditRepo {
 
     }
 
-    public List<Audit> analyze(String collection) {
-
+    public List<Audit> analyze(String collection,int skip,int limit) {
         List<Audit> audits;
-        audits = mongoTemplate.findAll(Audit.class,collection);
+        Query query = new Query();
+        query.skip(skip);
+        query.limit(limit);
+        audits = mongoTemplate.find(query, Audit.class,collection);
         Collections.reverse(audits);
         return audits;
     }
 
-    public ListAudits pagination(List<Audit> audits, int page, int number){
-        int n = (page)*number;
-
-        if (n>audits.size())
-            n = audits.size();
-
-        List<Audit> relativeAudits= new LinkedList<>();
-
-        int start = (page-1)*number;
-
-        for (int i=start; i<n; i++)
-            relativeAudits.add(audits.get(i));
-
-        return new ListAudits(audits.size(),relativeAudits, (int) Math.ceil(audits.size()/number));
+    public List<Audit> analyze(String collection) {
+        List<Audit> audits;
+        audits = mongoTemplate.findAll(Audit.class,collection);
+        Collections.reverse(audits);
+        return audits;
     }
 }
 

@@ -65,13 +65,6 @@ public class EventController {
     }
 
 
-@Autowired
-    Pulling pulling;
-    @GetMapping("/api/events/test")
-    public ResponseEntity<String> retrieveCurrentUserEventsByDate() throws IOException, ParseException, org.json.simple.parser.ParseException {
-        return new ResponseEntity<>(pulling.insert(),HttpStatus.OK);
-    }
-
     @GetMapping("/api/events/export")
     public ModelAndView downloadExcel() throws ParseException, org.json.simple.parser.ParseException, IOException {
 

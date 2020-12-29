@@ -40,21 +40,8 @@ public class Time {
         this.year = year;
         this.month = month;
         this.day = day;
-        this.hours = hours+3;
-        this.minutes = minutes+30;
-        if(this.minutes>59) {
-            this.hours += 1;
-            this.minutes-=60;
-
-        }
-         if (this.hours>23) {
-             this.hours -= 24;
-             this.day += 1;
-         }
-
-
-
-
+        this.hours = hours;
+        this.minutes = minutes;
         this.seconds = seconds;
         this.miliseconds = 0;
     }
@@ -204,7 +191,6 @@ public class Time {
                 String.format("%03d", Integer.valueOf(miliSeconds));
 
         return date.substring(0, 4) + '-' + date.substring(4, 6) + '-' + date.substring(6, 8) + 'T' + time;
-
 
     }
 

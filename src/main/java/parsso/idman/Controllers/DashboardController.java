@@ -115,6 +115,11 @@ public class DashboardController {
         return "403";
     }
 
+    @GetMapping("/audits")
+    public String Audits(HttpServletRequest request) {
+        return "audits";
+    }
+
     @GetMapping("/events")
     public String Events(HttpServletRequest request) {
         return "events";
