@@ -102,6 +102,10 @@ document.addEventListener('DOMContentLoaded', function () {
             s36: "کد تایید را وارد نمایید",
             s37: "خطایی رخ داده است. لطفا از صحت شماره موبایل خود اطمینان حاصل فرمایید.",
             s38: "لطفا برای دریافت برنامه موبایل بر روی لینک زیر کلیک کنید.",
+            s39: "بازگشت",
+            s40: "./dashboard",
+            s41: "ممیزی ها",
+            s42: "/audits",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -137,6 +141,9 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             setActive (menuItem) {
                 this.activeItem = menuItem
+            },
+            backDashboard: function () {
+                window.location.href = this.s40;
             },
             isAdmin: function () {
             var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -212,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 mail: document.getElementById('userInfo.mailUpdate').value,
                                 employeeNumber: document.getElementById('userInfo.employeeNumberUpdate').value,
                                 description: document.getElementById('userInfo.descriptionUpdate').value
-                            }),
+                            }).replace(/\\\\/g, "\\")
                         }).then((res) => {
                             location.replace(url + "/settings"); //
                         });
@@ -232,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 newPassword: document.getElementById('newPassword').value,
                                 currentPassword: document.getElementById('currentPassword').value,
                                 token: document.getElementById('token').value
-                            }),
+                            }).replace(/\\\\/g, "\\")
                         }).then((res) => {
                             location.replace(url + "/settings"); //
                         });
@@ -338,6 +345,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s36 = "Enter The Verification Code";
                     this.s37 = "An Error Has Occurred. Please Make Sure Your Mobile Number Is Valid.";
                     this.s38 = "Please Click On The Link Below To Download The App.";
+                    this.s39 = "Go Back";
+                    this.s40 = "./dashboard?en";
+                    this.s41 = "Audits";
+                    this.s42 = "/audits?en";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -404,6 +415,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s36 = "کد تایید را وارد نمایید";
                     this.s37 = "خطایی رخ داده است. لطفا از صحت شماره موبایل خود اطمینان حاصل فرمایید.";
                     this.s38 = "لطفا برای دریافت برنامه موبایل بر روی لینک زیر کلیک کنید.";
+                    this.s39 = "بازگشت";
+                    this.s40 = "./dashboard";
+                    this.s41 = "ممیزی ها";
+                    this.s42 = "/audits";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";

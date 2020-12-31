@@ -3,6 +3,7 @@ package parsso.idman.Helpers.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.JsonObject;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -48,12 +49,15 @@ public class CasServiceHelper {
         if (jo.get("serviceId") != null) service.setServiceId(jo.get("serviceId").toString());
         if (jo.get("description") != null) service.setDescription(jo.get("description").toString());
         if (jo.get("logoutType") != null) service.setLogoutType(jo.get("logoutType").toString());
-        if (jo.get("@class")!=null && isCasService(jo)) service.setAtClass(jo.get("@class").toString());
+        if (jo.get("@class")!=null) service.setAtClass(jo.get("@class").toString());
         if (jo.get("logoutUrl") != null) service.setLogoutUrl(jo.get("logoutUrl").toString());
         if (jo.get("name") != null) service.setName(jo.get("name").toString());
         if (jo.get("privacyUrl") != null) service.setPrivacyUrl(jo.get("privacyUrl").toString());
         if (jo.get("logo") != null) service.setLogo(jo.get("logo").toString());
         if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
+
+
+
 
 
         if (jo.get("expirationPolicy") == null)
@@ -311,7 +315,7 @@ public class CasServiceHelper {
 
     }
 
-    public HttpStatus create(JSONObject jo) {
+    public long create(JSONObject jo) {
 
         CasService service = buildCasService(jo);
         service.setId(new Date().getTime());
@@ -356,15 +360,15 @@ public class CasServiceHelper {
                 mongoTemplate.save(microService,collection);
                 logger.info("Service "+"\""+service.getId()+"\""+" created successfully");
 
-                return HttpStatus.OK;
+                return service.getId();
             } catch (IOException e) {
                 logger.warn("Creating Service "+"\""+service.getId()+"\""+" was unsuccessful");
-                return HttpStatus.FORBIDDEN;
+                return 0;
             }
 
         }
 
-        return HttpStatus.OK;
+        return service.getId();
 
     }
 

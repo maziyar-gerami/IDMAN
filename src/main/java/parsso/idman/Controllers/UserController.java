@@ -1,9 +1,6 @@
 package parsso.idman.Controllers;
 
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Captcha.RepoImp.CaptchaRepoImp;
 import parsso.idman.Helpers.Communicate.Message;
 import parsso.idman.Helpers.Communicate.Token;
+import parsso.idman.Helpers.User.UsersExcelView;
 import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
@@ -48,6 +47,8 @@ public class UserController {
     private Message message;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    UsersExcelView excelView;
     @Value("${administrator.ou.id}")
     private String adminOu;
     @Value("${token.valid.email}")
@@ -302,6 +303,10 @@ public class UserController {
         else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
     }
 
+    @PutMapping("/api/users/import/massUpdate")
+    public ResponseEntity<JSONObject> updateConflicts(@RequestBody List<User> users){
+        return new ResponseEntity<>(userRepo.massUpdate(users));
+    }
 
     /**
      * get the information for dashboard
@@ -323,6 +328,13 @@ public class UserController {
     @PostMapping("/api/users/sendMail")
     public ResponseEntity<HttpStatus> sendMultipleMailByAdmin(@RequestBody JSONObject jsonObject) {
             return new ResponseEntity<>(userRepo.sendEmail(jsonObject), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/users/export")
+    public ModelAndView downloadExcel() {
+
+        // return a view which will be resolved by an excel view resolver
+        return new ModelAndView(excelView, "listUsers", null);
     }
 
 

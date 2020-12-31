@@ -102,3 +102,7 @@ img:hover {
   border-radius: .25rem;
 }
 .show {display:block;} 
+.enInput {
+  text-align: left;
+  direction: ltr;
+}

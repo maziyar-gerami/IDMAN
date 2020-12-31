@@ -102,6 +102,11 @@
                                         <span>{{s6}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s29">
+                                        <i class="fa fa-history"></i>
+                                        <span>{{s28}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s22">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
@@ -165,7 +170,7 @@
                                                                 <div class="px-1">
                                                                     <div class="mb-3">
                                                                         <div class="btn-group btn-group-sm">                                                                            
-                                                                            <a class="btn btn-primary" :href="service.serviceId" target="_blank">{{s20}}</a>
+                                                                            <a class="btn btn-primary" :href="service.url" target="_blank">{{s20}}</a>
                                                                         </div>
                                                                     </div>
                                                                 </div>

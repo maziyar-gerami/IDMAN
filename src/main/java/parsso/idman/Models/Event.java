@@ -72,11 +72,9 @@ public class Event implements Serializable {
     public String getClientip() {
         return properties.clientip;
     }
-    @JsonProperty("serverIP")
+    @JsonIgnore
     public String serverip;
-    public String getServerip() {
-        return properties.serverip;
-    }
+
     public String eventId;
     public String getEventId() {
         return properties.eventId;
@@ -108,8 +106,6 @@ public class Event implements Serializable {
         private String agent;
         @JsonProperty("clientIP")
         private String clientip;
-        //@JsonProperty("serverIP")
-        @JsonIgnore
         private String serverip;
         @JsonIgnore
         private String timestamp;

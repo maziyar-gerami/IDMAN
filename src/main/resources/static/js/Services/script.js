@@ -74,6 +74,7 @@ function myFunction() {
         },
         userPicture: "images/PlaceholderUser.png",
         margin1: "ml-1",
+        extraInfo: {},
         accessStrategy: {},
         requiredAttributes: {},
         rejectedAttributes: {},
@@ -182,6 +183,9 @@ function myFunction() {
         s90: "آدرس",
         s91: "فایل",
         s92: "تعداد رکورد ها: ",
+        s93: "موقعیت",
+        s94: "ممیزی ها",
+        s95: "/audits",
       },
       created: function () {
         this.getUserInfo();
@@ -283,6 +287,22 @@ function myFunction() {
             vm.userSearch = res.data;
           });
         },
+        posInc: function(id){
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          var vm = this;
+          axios.get(url + "/api/services/position/" + id + "?value=1")
+          .then((res) => {
+            vm.refreshServices();
+          });
+        },
+        posDec: function(id){
+          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          var vm = this;
+          axios.get(url + "/api/services/position/" + id + "?value=-1")
+          .then((res) => {
+            vm.refreshServices();
+          });
+        },
         refreshServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
@@ -334,6 +354,12 @@ function myFunction() {
 
             if(typeof res.data.description !== 'undefined'){
               document.getElementsByName("description")[0].value = res.data.description;
+            }
+
+            if(typeof res.data.extraInfo !== 'undefined'){
+              if(typeof res.data.extraInfo.url !== 'undefined'){
+                document.getElementsByName("url")[0].value = res.data.extraInfo.url;
+              }
             }
 
             if(res.data.accessStrategy.ssoEnabled){
@@ -549,7 +575,7 @@ function myFunction() {
 
           if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
             document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
-            document.getElementsByName('description')[0].value == ""){
+            document.getElementsByName('description')[0].value == "" || document.getElementsByName('url')[0].value == ""){
             alert("لطفا قسمت های الزامی را پر کنید.");
           }else if(serviceIdFlag){
             alert("فرمت آدرس سرویس درست نمی باشد.");
@@ -564,6 +590,8 @@ function myFunction() {
             }else{
               this.service.description = null;
             }
+
+            this.extraInfo.url = document.getElementsByName('url')[0].value;
 
             if(document.getElementsByName('logo')[0].value != ""){
               this.service.logo = document.getElementsByName('logo')[0].value;
@@ -870,6 +898,7 @@ function myFunction() {
                           data: JSON.stringify({
                             name: vm.service.name,
                             serviceId: vm.service.serviceId,
+                            extraInfo: vm.extraInfo,
                             metadataLocation: vm.service.metadataLocation,
                             multifactorPolicy: vm.multifactorPolicy,
                             description: vm.service.description,
@@ -901,6 +930,7 @@ function myFunction() {
                       data: JSON.stringify({
                         name: vm.service.name,
                         serviceId: vm.service.serviceId,
+                        extraInfo: vm.extraInfo,
                         metadataLocation: vm.service.metadataLocation,
                         multifactorPolicy: vm.multifactorPolicy,
                         description: vm.service.description,
@@ -932,6 +962,7 @@ function myFunction() {
                 data: JSON.stringify({
                   name: vm.service.name,
                   serviceId: vm.service.serviceId,
+                  extraInfo: vm.extraInfo,
                   multifactorPolicy: vm.multifactorPolicy,
                   description: vm.service.description,
                   logo: vm.service.logo,
@@ -1232,6 +1263,9 @@ function myFunction() {
             this.s90 = "Address";
             this.s91 = "File";
             this.s92 = "Records a Page: ";
+            this.s93 = "Position";
+            this.s94 = "Audits";
+            this.s95 = "/audits?en";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
@@ -1330,6 +1364,9 @@ function myFunction() {
               this.s90 = "آدرس";
               this.s91 = "فایل";
               this.s92 = "تعداد رکورد ها: ";
+              this.s93 = "موقعیت";
+              this.s94 = "ممیزی ها";
+              this.s95 = "/audits";
           }
         },
         div: function (a, b) {

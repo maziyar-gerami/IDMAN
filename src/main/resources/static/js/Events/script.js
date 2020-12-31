@@ -109,6 +109,8 @@ document.addEventListener('DOMContentLoaded', function () {
       s42: "سیستم عامل",
       s43: "مرورگر",
       s44: "تعداد رکورد ها: ",
+      s45: "ممیزی ها",
+      s46: "/audits",
     },
     created: function () {
       this.getUserInfo();
@@ -185,33 +187,18 @@ document.addEventListener('DOMContentLoaded', function () {
             });
       },
       exportEvents: function(){
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          axios.get(url + "/api/events/1/1") //
-          .then((response) => {
-            let tempEvents = {};
-            let eventsExport = [];
-            axios.get(url + "/api/events/1/" + response.data.size) //
-            .then((res) => {
-              data = res.data;
-              var opts = [{sheetid:'Users',header:true}]
-              var result = alasql('SELECT * INTO XLSX("events.xlsx",?) FROM ?',
-              [opts,[data]]);
-            });
-          });
-      },
-      exportEvent: function(){
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          axios.get(url + "/api/events/user/1/1") //
-          .then((response) => {
-            let tempEvent = {};
-            let eventExport = [];
-            axios.get(url + "/api/events/user/1/" + response.data.size) //
-            .then((res) => {
-              data = res.data;
-              var opts = [{sheetid:'Users',header:true}]
-              var result = alasql('SELECT * INTO XLSX("event.xlsx",?) FROM ?',
-              [opts,[data]]);
-            });
+        url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          axios({
+            url: url_ + "/api/events/export",
+            method: "GET",
+            responseType: "blob",
+          }).then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute("download", "events.xls");
+            document.body.appendChild(link);
+            link.click();
           });
       },
       getEvents: function () {
@@ -273,7 +260,6 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent.userId = item.userId;
             tempEvent.application = item.application;
             tempEvent.clientIP = item.clientIP;
-            tempEvent.serverIP = item.serverIP;
             tempEvent.service = item.service;
 
             let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
@@ -324,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent.userId = item.userId;
                 tempEvent.application = item.application;
                 tempEvent.clientIP = item.clientIP;
-                tempEvent.serverIP = item.serverIP;
                 tempEvent.service = item.service;
 
                 let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
@@ -547,6 +532,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s42 = "OS";
           this.s43 = "Browser";
           this.s44 = "Records a Page: ";
+          this.s45 = "Audits";
+          this.s46 = "/audits?en";
         } else{
             this.getEvents();
             this.getEvent();
@@ -598,6 +585,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s42 = "سیستم عامل";
             this.s43 = "مرورگر";
             this.s44 = "تعداد رکورد ها: ";
+            this.s45 = "ممیزی ها";
+            this.s46 = "/audits";
         }
       },
 

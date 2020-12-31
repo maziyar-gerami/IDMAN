@@ -198,6 +198,11 @@
                                         <span>{{s6}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s79">
+                                        <i class="fa fa-history"></i>
+                                        <span>{{s78}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s39">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
@@ -266,7 +271,6 @@
                                                 </div>
                                                 <div v-if="samls" class="form-group">
                                                     <label>Metadata Location<span style="color: red;"> *</span></label>
-                                                    <!-- <input name="metadataLocation" class="form-control enInput" type="text" placeholder="URL" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"> -->
                                                     <div class="row">
                                                         <div class="col-3">
                                                             <input id="metaDataAddressID" type="radio" name="metaDataType" value="address" style="outline: 0;" v-on:click="selectMetaDataAddress()" checked>
@@ -289,6 +293,10 @@
                                                 <div class="form-group mb-3">
                                                     <label>{{s19}}<span style="color: red;"> *</span></label>
                                                     <input name="description" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"></input>
+                                                </div>
+                                                <div class="form-group mb-3">
+                                                    <label>URL<span style="color: red;"> *</span></label>
+                                                    <input name="url" class="form-control enInput" type="text" placeholder="URL" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"></input>
                                                 </div>
 
                                                 <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s20}}</span></h4>

@@ -69,7 +69,9 @@ document.addEventListener('DOMContentLoaded', function () {
       s28: "ذخیره پیکربندی کنونی",
       s29: "بازگردانی پیکربندی اولیه",
       s30: "نقطه بازگردانی قبلی وجود ندارد",
-      s31: "بازگردانی"
+      s31: "بازگردانی",
+      s32: "ممیزی ها",
+      s33: "/audits",
     },
     created: function () {
       this.getConfigs();
@@ -180,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
           method: 'put',
           url: url + '/api/configs',  //
           headers: {'Content-Type': 'application/json'},
-          data: JSON.stringify(vm.configsList)
+          data: JSON.stringify(vm.configsList).replace(/\\\\/g, "\\")
         })
         .then((res) => {
           vm.getConfigs();
@@ -263,6 +265,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s29 = "Restore Initial Configs";
           this.s30 = "There Are No Restore Points";
           this.s31 = "Restore";
+          this.s32 = "Audits";
+          this.s33 = "/audits?en";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -299,6 +303,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s29 = "بازگردانی پیکربندی اولیه";
             this.s30 = "نقطه بازگردانی قبلی وجود ندارد";
             this.s31 = "بازگردانی";
+            this.s32 = "ممیزی ها";
+            this.s33 = "/audits";
         }
       }
     },

@@ -49,7 +49,8 @@ public class AccessStrategy {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String groovyScript;
     public AccessStrategy() {
-        if (startingDateTime != null)
+        if (startingDateTime != null || startingDateTime !=""||
+            endingDateTime != null|| endingDateTime!="")
             atClass = "org.apereo.cas.services.TimeBasedRegisteredServiceAccessStrategy";
         else
             atClass = "org.apereo.cas.services.DefaultRegisteredServiceAccessStrategy";
@@ -94,8 +95,8 @@ public class AccessStrategy {
         String seconds = seTime.substring(17, 19);
 
         String miliSeconds = seTime.substring(20, 23);
-        String tf1 = seTime.substring(24, 25);
-        String tf2 = seTime.substring(26, 28);
+        String tf1 = seTime.substring(24, 26);
+        String tf2 = seTime.substring(27, 29);
 
 
         return (convertDate(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day))) +

@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.utils.Convertor.DateConverter;
 
+import java.util.Calendar;
+
 @Setter
 @Getter
 
@@ -16,6 +18,22 @@ public class Time {
     int minutes;
     int seconds;
     int miliseconds;
+
+    public Time(Calendar cal){
+        year = cal.get(Calendar.YEAR);
+        month = cal.get(Calendar.MONTH);
+        day = cal.get(Calendar.DATE);
+
+        hours = cal.get(Calendar.HOUR_OF_DAY);
+        minutes = cal.get(Calendar.MINUTE);
+        seconds = cal.get(Calendar.SECOND);
+
+    }
+
+    public String toString(){
+        return getYear()+"-"+getMonth()+"-"+getDay()+"T"
+                + getHours()+":"+getMinutes()+":"+getSeconds()+"."+getMiliseconds();
+    }
 
 
     public Time(int year, int month, int day, int hours, int minutes, int seconds) {
@@ -36,10 +54,21 @@ public class Time {
 
 
 
+
         this.seconds = seconds;
         this.miliseconds = 0;
     }
 
+    public Time(DateConverter dateConverter, Calendar myCal) {
+        this.year = dateConverter.getYear();
+        this.month = dateConverter.getMonth();
+        this.day = dateConverter.getDay();
+
+        this.hours = myCal.get(Calendar.HOUR_OF_DAY);
+        this.minutes = myCal.get(Calendar.MINUTE);
+        this.seconds = myCal.get(Calendar.SECOND);
+        this.miliseconds = myCal.get(Calendar.MILLISECOND);
+    }
 
 
     public static String setEndTime(String input) {
@@ -97,7 +126,7 @@ public class Time {
         String time = String.format("%02d", Integer.valueOf(hours)) +
                 String.format("%02d", Integer.valueOf(minutes)) +
                 String.format("%02d", Integer.valueOf(seconds)) + "." +
-                String.format("%03d", Integer.valueOf(miliSeconds)) + "+0330";
+                String.format("%03d", Integer.valueOf(miliSeconds));
 
         return date + time;
 
@@ -175,7 +204,6 @@ public class Time {
                 String.format("%03d", Integer.valueOf(miliSeconds));
 
         return date.substring(0, 4) + '-' + date.substring(4, 6) + '-' + date.substring(6, 8) + 'T' + time;
-
 
     }
 

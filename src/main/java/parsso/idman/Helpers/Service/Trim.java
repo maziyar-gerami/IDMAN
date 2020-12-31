@@ -26,4 +26,8 @@ public class Trim {
         return serviceId;
     }
 
+    public static long extractIdFromFile(String file){
+        return Long.valueOf(file.substring(file.length()-18, file.length()-5));
+    }
+
 }

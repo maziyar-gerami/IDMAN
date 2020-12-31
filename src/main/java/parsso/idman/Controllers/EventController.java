@@ -1,22 +1,21 @@
 package parsso.idman.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+import parsso.idman.Helpers.Events.EventsExcelView;
 import parsso.idman.Helpers.Events.Pulling;
 import parsso.idman.Models.Event;
 import parsso.idman.Models.ListEvents;
 import parsso.idman.Repos.EventRepo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -25,6 +24,8 @@ public class EventController {
 
     @Autowired
     private EventRepo eventRepo;
+    @Autowired
+    private EventsExcelView eventsExcelView;
 
     //OK
     @GetMapping("/api/events/{page}/{n}")
@@ -62,11 +63,13 @@ public class EventController {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(eventRepo.getListUserEventByDate(date, principal.getName(),page,n), HttpStatus.OK);
     }
-@Autowired
-    Pulling pulling;
-    @GetMapping("/api/events/test")
-    public ResponseEntity<String> retrieveCurrentUserEventsByDate() throws IOException, ParseException, org.json.simple.parser.ParseException {
-        return new ResponseEntity<>(pulling.insert(),HttpStatus.OK);
+
+
+    @GetMapping("/api/events/export")
+    public ModelAndView downloadExcel() throws ParseException, org.json.simple.parser.ParseException, IOException {
+
+        // return a view which will be resolved by an excel view resolver
+        return new ModelAndView(eventsExcelView, "listEvents", null);
     }
 
 }

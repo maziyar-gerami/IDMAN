@@ -17,9 +17,6 @@
     <script src="js/axios.min.js"></script>
     <script src="js/Events/script.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
-    <script src="js/alasql.min.js"></script>
-    <script src="js/jszip.js"></script>
-    <script src="js/xlsx.full.min.js"></script>
 
 </head>
 
@@ -103,6 +100,11 @@
                                         <span>{{s6}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s46">
+                                        <i class="fa fa-history"></i>
+                                        <span>{{s45}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s22">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
@@ -127,14 +129,6 @@
                                             <input v-model="tempEventDate" type="text" :placeholder="s35" style="direction: ltr; display: inline-block;">
                                             <button class="btn btn-primary btn-sm" @click.prevent="getEventDate()" style="display: inline-block;">{{s27}}</button>
                                         </li>
-                                        <!-- <li class="nav-item" style="margin: 0.25rem;">
-                                            <button class="btn btn-primary btn-sm" v-on:click="exportEvent()">
-                                                <span class="fa-stack">
-                                                    <i class="fa fa-upload fa-stack-1x"></i>
-                                                </span>
-                                                Export
-                                            </button>
-                                        </li> -->
                                     </ul>
                                     <table class="table table-responsive">
                                         <tr>
@@ -201,14 +195,14 @@
                                                     <input v-model="tempEventsDate" type="text" :placeholder="s35" style="direction: ltr; display: inline-block;">
                                                     <button class="btn btn-primary btn-sm" @click.prevent="getEventsDate()" style="display: inline-block;">{{s27}}</button>
                                                 </li>
-                                                <!-- <li class="nav-item" style="margin: 0.25rem;">
+                                                <li class="nav-item" style="margin: 0.25rem;">
                                                     <button class="btn btn-primary btn-sm" v-on:click="exportEvents()">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-upload fa-stack-1x"></i>
                                                         </span>
                                                         Export
                                                     </button>
-                                                </li> -->
+                                                </li>
                                             </ul>
                                             <table class="table table-responsive">
                                                 <tr>
@@ -263,14 +257,6 @@
                                                     <input v-model="tempEventDate" type="text" :placeholder="s35" style="direction: ltr; display: inline-block;">
                                                     <button class="btn btn-primary btn-sm" @click.prevent="getEventDate()" style="display: inline-block;">{{s27}}</button>
                                                 </li>
-                                                <!-- <li class="nav-item" style="margin: 0.25rem;">
-                                                    <button class="btn btn-primary btn-sm" v-on:click="exportEvent()">
-                                                        <span class="fa-stack">
-                                                            <i class="fa fa-upload fa-stack-1x"></i>
-                                                        </span>
-                                                        Export
-                                                    </button>
-                                                </li> -->
                                             </ul>
                                             <table class="table table-responsive">
                                                 <tr>

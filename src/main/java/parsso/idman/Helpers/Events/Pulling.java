@@ -31,15 +31,15 @@ public class Pulling {
     MongoTemplate mongoTemplate;
 
     public String insert() throws ParseException, org.json.simple.parser.ParseException, IOException {
-        List<Event> mainEvents = eventRepo.getMainListEvents();
-        List<parsso.idman.Models.Service> services = serviceRepo.listServices();
+        List<Event> mainEvents = eventRepo.analyze(mainCollection, 0,0);
+        List<parsso.idman.Models.Service> services = serviceRepo.listServicesFull();
         run(mainEvents,services, mainCollection);
         return null;
     }
 
     public void update() throws ParseException, org.json.simple.parser.ParseException, IOException {
-        List<Event> secondaryEvents = eventRepo.getSecondaryListEvents();
-        List<parsso.idman.Models.Service> services = serviceRepo.listServices();
+        List<Event> secondaryEvents = eventRepo.analyze(mainCollection,0,0);
+        List<parsso.idman.Models.Service> services = serviceRepo.listServicesFull();
         run(secondaryEvents, services, secondaryCollection);
     }
 

@@ -10,19 +10,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Service.CasServiceHelper;
+import parsso.idman.Helpers.Service.Position;
 import parsso.idman.Helpers.Service.SamlServiceHelper;
+import parsso.idman.Helpers.Service.Trim;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.ServiceType.MicroService;
+import parsso.idman.Models.ServicesSubModel.ExtraInfo;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.ServiceRepo;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.text.SimpleDateFormat;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -36,24 +41,21 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Autowired
     SamlServiceHelper samlServiceHelper;
     Logger logger = LoggerFactory.getLogger(ServiceRepoImpl.class);
+    @Autowired
+    FilesStorageService storageService;
+    @Autowired
+    Position position;
+    String collection = "IDMAN_ServicesExtraInfo";
     @Value("${services.folder.path}")
     private String path;
-
     @Value("${base.url}")
     private String baseUrl;
-
     @Value("${metadata.file.path}")
     private String uploadedFilesPath;
 
-
-    @Autowired
-    FilesStorageService storageService;
-
-
     @Override
     public List<MicroService> listUserServices(User user) throws IOException {
-        File folder = new File(path); // ./services/
-        List<Service> services = listServices();
+        List<Service> services = listServicesFull();
 
         List<Service> relatedList = new LinkedList();
 
@@ -66,7 +68,6 @@ public class ServiceRepoImpl implements ServiceRepo {
                         Object member = service.getAccessStrategy().getRequiredAttributes().get("ou");
                         if (member != null) {
                             JSONArray s = (JSONArray) member;
-
 
                             if (user.getMemberOf() != null && s != null)
                                 for (int i = 0; i < user.getMemberOf().size(); i++)
@@ -85,17 +86,27 @@ public class ServiceRepoImpl implements ServiceRepo {
 
         }
         List<MicroService> microServices = new LinkedList<>();
+        MicroService microService = null;
 
         for (Service service : relatedList) {
-            microServices.add(new MicroService(service.getId(), service.getName(), service.getServiceId(), service.getDescription(), service.getLogo()));
+            Query query = new Query(Criteria.where("_id").is(service.getId()));
+            try {
+                microService = mongoTemplate.findOne(query, MicroService.class, collection);
+            } catch (Exception e) {
+                microService = new MicroService(service.getId(), service.getServiceId());
+                logger.warn("Unable to read ExtraInfo for service " + service.getId());
+            } finally {
+                microServices.add(new MicroService(service, microService));
+            }
         }
 
+        Collections.sort(microServices);
         return microServices;
 
     }
 
     @Override
-    public List<Service> listServices() throws IOException {
+    public List<Service> listServicesFull() throws IOException {
         File folder = new File(path); // ./services/
         String[] files = folder.list();
         List<Service> services = new LinkedList<>();
@@ -106,7 +117,7 @@ public class ServiceRepoImpl implements ServiceRepo {
                     Collections.sort(services);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    logger.warn("Unable to read service "+file);
+                    logger.warn("Unable to read service " + file);
                     continue;
                 }
         }
@@ -114,40 +125,56 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
     @Override
-    public Service retrieveService(long serviceId) throws IOException {
-
-        for (Service service : listServices())
-            if (service.getId() == serviceId)
-                return service;
-
-        return null;
-    }
-
-    @Override
-    public HttpStatus deleteService(long serviceId)  {
-        File folder = new File(path);
-
-        for (String file : folder.list()) {
-            if (file.contains(String.valueOf(serviceId))) {
-                File oFile = new File(path + file);
-
-                if (!oFile.exists()) {
-                    logger.warn("File related to service "+"\""+serviceId+"\""+" with "+"\""+file+"\""+ " file name, no longer exist");
-                    return HttpStatus.BAD_REQUEST;
-
+    public List<MicroService> listServicesMain() throws IOException, ParseException {
+        File folder = new File(path); // ./services/
+        String sid;
+        String[] files = folder.list();
+        List<MicroService> services = new LinkedList<>();
+        Service service = null;
+        MicroService microService = null;
+        for (String file : files) {
+            if (file.endsWith(".json"))
+                try {
+                    service = analyze(file);
+                } catch (Exception e) {
+                    logger.warn("Unable to read service " + file);
+                    continue;
                 }
-                else if (oFile.delete()) {
-                    logger.info("Service "+"\""+serviceId+"\""+" with "+"\""+file+"\""+ " file name, deleted successfully");
-                    return HttpStatus.OK;
-                }
-                else {
-                    logger.warn("Deleting Service " + "\""+serviceId+ "\"" + " was unsuccessful");
-                    return HttpStatus.FORBIDDEN;
-                }
-
+            Query query = new Query(Criteria.where("_id").is(Long.valueOf(Trim.extractIdFromFile(file))));
+            try {
+                microService = mongoTemplate.findOne(query, MicroService.class, collection);
+            } catch (Exception e) {
+                microService = new MicroService(service.getId(), service.getServiceId());
+                System.out.println("hi");
+            } finally {
+                services.add(new MicroService(service, microService));
             }
         }
-        return HttpStatus.BAD_REQUEST;
+        Collections.sort(services);
+        return services;
+    }
+
+
+    @Override
+    public Service retrieveService(long serviceId) throws IOException {
+        ExtraInfo extraInfo;
+
+        for (Service service : listServicesFull())
+            if (service.getId() == serviceId) {
+
+                Query query = new Query(Criteria.where("_id").is(service.getId()));
+                try {
+                    extraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
+                } catch (Exception e) {
+                    extraInfo = new ExtraInfo();
+                    logger.warn("Unable to get extra service for service " + service.getId());
+                }
+
+                service.setExtraInfo(extraInfo);
+                return service;
+            }
+        return null;
+
     }
 
     @Override
@@ -156,7 +183,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         List allFiles = Arrays.asList(folder.list());
         List selectedFiles = new LinkedList();
 
-        if (jsonObject.size()==0)
+        if (jsonObject.size() == 0)
             selectedFiles = allFiles;
 
         else {
@@ -170,53 +197,132 @@ public class ServiceRepoImpl implements ServiceRepo {
         }
 
         LinkedList<String> notDeleted = null;
+        List<String> toBeDeleted = new LinkedList();
+
         for (Object file : selectedFiles) {
             File serv = new File(path + file.toString());
             if (!(serv.delete())) {
                 notDeleted.add((String) file);
-                logger.warn("Deleting Service " + "\""+file+ "\"" + " was unsuccessful");
 
+                logger.warn("Deleting Service " + "\"" + file + "\"" + " was unsuccessful");
             }
+
+        }
+
+        for (Object file : selectedFiles) {
+            long id = Trim.extractIdFromFile(file.toString());
+            Query query = new Query(Criteria.where("_id").is(id));
+            MicroService microService = mongoTemplate.findOne(query, MicroService.class, collection);
+            position.delete(microService.getPosition());
+            mongoTemplate.remove(query, MicroService.class, collection);
+
         }
 
         return notDeleted;
     }
 
+
     @Override
     public HttpStatus createService(JSONObject jsonObject, String system) throws IOException {
-        if (system.equalsIgnoreCase("cas"))
-            return casServiceHelper.create(jsonObject);
 
-        else if (system.equalsIgnoreCase("saml"))
-            return samlServiceHelper.create(jsonObject);
+        ExtraInfo extraInfo = null;
+        long id = 0;
+        JSONObject jsonExtraInfo = new JSONObject();
+
+
+        if (jsonObject.get("extraInfo") != null) {
+            if (jsonObject.get("extraInfo").getClass().toString().equals("class org.json.simple.JSONObject"))
+                jsonExtraInfo = (JSONObject) jsonObject.get("extraInfo");
+
+            else if (jsonObject.get("extraInfo").getClass().toString().equals("class java.util.LinkedHashMap"))
+                jsonExtraInfo = new JSONObject((Map) jsonObject.get("extraInfo"));
+        }
+
+        extraInfo = new ExtraInfo();
+
+        extraInfo.setUrl(jsonExtraInfo != null && jsonExtraInfo.get("url") != null ?
+                jsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
+
+        if (system.equalsIgnoreCase("cas")) {
+            id = casServiceHelper.create(jsonObject);
+            if (id > 0)
+                if (extraInfo != null) {
+                    extraInfo.setId(id);
+                    extraInfo.setPosition(position.lastPosition() + 1);
+                    mongoTemplate.save(extraInfo, collection);
+                    return HttpStatus.OK;
+                } else {
+                    extraInfo = new ExtraInfo();
+                    extraInfo.setId(id);
+                    extraInfo.setPosition(position.lastPosition() + 1);
+                    mongoTemplate.save(extraInfo, collection);
+                    return HttpStatus.OK;
+                }
+        } else if (system.equalsIgnoreCase("saml"))
+            id = samlServiceHelper.create(jsonObject);
+        if (id > 0)
+            if (extraInfo != null) {
+                extraInfo.setId(id);
+                extraInfo.setPosition(position.lastPosition() + 1);
+                mongoTemplate.save(extraInfo, collection);
+                return HttpStatus.OK;
+            } else {
+                extraInfo = new ExtraInfo();
+                extraInfo.setId(id);
+                extraInfo.setPosition(position.lastPosition() + 1);
+                mongoTemplate.save(extraInfo, collection);
+                return HttpStatus.OK;
+            }
 
         return HttpStatus.FORBIDDEN;
     }
 
     @Override
-    public String uploadMetadata(MultipartFile file, String userId) {
+    public String uploadMetadata(MultipartFile file) {
         Date date = new Date();
-        String fileName = date.getTime()+"_"+file.getOriginalFilename();
+        String fileName = date.getTime() + "_" + file.getOriginalFilename();
 
         try {
             storageService.saveMetadata(file, fileName);
-            return baseUrl+"/api/public/metadata/"+fileName;
+            return baseUrl + "/api/public/metadata/" + fileName;
             //return uploadedFilesPath+userId+timeStamp+file.getOriginalFilename();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
-    @Override
-    public File downloadMetadata(String fileName) throws IOException {
-
-        return new File(uploadedFilesPath + fileName);
-
-    }
 
     @Override
     public HttpStatus updateService(long id, JSONObject jsonObject, String system) throws IOException, ParseException {
+
+        JSONObject JsonExtraInfo = null;
+
+        ExtraInfo extraInfo = new ExtraInfo();
+
+
+        Query query = new Query(Criteria.where("_id").is(id));
+
+        ExtraInfo oldExtraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
+
+        if (jsonObject.get("extraInfo") != null) {
+
+            if (jsonObject.get("extraInfo").getClass().toString().equals("class org.json.simple.JSONObject"))
+                JsonExtraInfo = (JSONObject) jsonObject.get("extraInfo");
+
+            else if (jsonObject.get("extraInfo").getClass().toString().equals("class java.util.LinkedHashMap"))
+                JsonExtraInfo = new JSONObject((Map) jsonObject.get("extraInfo"));
+
+            extraInfo.setUrl(JsonExtraInfo != null && JsonExtraInfo.get("url") != null ?
+                    JsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
+
+            extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
+            extraInfo.setPosition(oldExtraInfo.getPosition());
+            extraInfo.setId(id);
+
+            mongoTemplate.save(extraInfo, collection);
+        }
+
         if (system.equalsIgnoreCase("cas"))
             return casServiceHelper.update(id, jsonObject);
 
@@ -224,6 +330,16 @@ public class ServiceRepoImpl implements ServiceRepo {
             return samlServiceHelper.update(id, jsonObject);
 
         return HttpStatus.FORBIDDEN;
+    }
+
+    @Override
+    public HttpStatus increasePosition(String id) {
+        return position.increase(id);
+    }
+
+    @Override
+    public HttpStatus decreasePosition(String id) {
+        return position.decrease(id);
     }
 
     private Service analyze(String file) throws IOException, ParseException {

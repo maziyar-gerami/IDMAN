@@ -95,6 +95,9 @@ document.addEventListener('DOMContentLoaded', function () {
             s33: "اعمال",
             s34: "آیا از حذف گروه های انتخاب شده اطمینان دارید؟",
             s35: "هیچ گروهی انتخاب نشده است.",
+            s36: "تعداد رکورد ها: ",
+            s37: "ممیزی ها",
+            s38: "/audits",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "شناسه",
@@ -147,6 +150,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
+            changeRecords: function(event) {
+                this.recordsShownOnPage = event.target.value;
+                this.getGroups();
+            },
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
@@ -197,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then((res) => {
                         vm.groups = res.data;
                         for(let i = 0; i < vm.groups.length; ++i){
-                            vm.groups[i].orderOfRecords = i + 1;
+                            vm.groups[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
                         }
                         vm.total = Math.ceil(vm.groups.length / vm.recordsShownOnPage);
                     });
@@ -233,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 id: id,
                                 name: document.getElementById('group.nameUpdate').value,
                                 description: document.getElementById('group.descriptionUpdate').value,
-                            }),
+                            }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
                             location.reload();
@@ -259,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         data: JSON.stringify({
                             name: document.getElementById('group.nameCreate').value,
                             description: document.getElementById('group.descriptionCreate').value,
-                        }),
+                        }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
                         location.reload();
@@ -279,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
                             names: selectedGroups
-                        }),
+                        }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
                         vm.getGroups();
@@ -296,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         url: url + "/api/groups", //
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
-                        }),
+                        }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
                         vm.getGroups();
@@ -323,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 headers: {'Content-Type': 'application/json'},
                                 data: JSON.stringify({
                                     names: selectedGroups
-                                }),
+                                }).replace(/\\\\/g, "\\")
                             })
                             .then((res) => {
                                 vm.getGroups();
@@ -388,6 +395,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s33 = "Action";
                     this.s34 = "Are You Sure You Want To Delete Selected Groups?";
                     this.s35 = "No Group is Selected.";
+                    this.s36 = "Records a Page: ";
+                    this.s37 = "Audits";
+                    this.s38 = "/audits?en";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "ID";
@@ -444,6 +454,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s33 = "اعمال";
                     this.s34 = "آیا از حذف گروه های انتخاب شده اطمینان دارید؟";
                     this.s35 = "هیچ گروهی انتخاب نشده است.";
+                    this.s36 = "تعداد رکورد ها: ";
+                    this.s37 = "ممیزی ها";
+                    this.s38 = "/audits";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "شناسه";

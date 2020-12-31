@@ -51,9 +51,14 @@ public class ServiceController {
         return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUser(principal.getName())), HttpStatus.OK);
     }
 
-    @GetMapping("/api/services")
-    public ResponseEntity<List<Service>> listServices() throws IOException, ParseException {
-        return new ResponseEntity<>(serviceRepo.listServices(), HttpStatus.OK);
+    @GetMapping("/api/services/full")
+    public ResponseEntity<List<Service>> listServicesFull() throws IOException, ParseException {
+        return new ResponseEntity<>(serviceRepo.listServicesFull(), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/services/main")
+    public ResponseEntity<List<MicroService>> listServicesMain() throws IOException, ParseException {
+        return new ResponseEntity<>(serviceRepo.listServicesMain(), HttpStatus.OK);
     }
 
     @GetMapping("/api/services/{id}")
@@ -61,10 +66,6 @@ public class ServiceController {
         return new ResponseEntity<>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/services/{id}")
-    public ResponseEntity<String> deleteService(@PathVariable("id") long serviceId) throws IOException, ParseException {
-        return new ResponseEntity<>(serviceRepo.deleteService(serviceId));
-    }
 
     @DeleteMapping("/api/services")
     public ResponseEntity<LinkedList<String>> deleteServices(@RequestBody JSONObject jsonObject) throws IOException {
@@ -89,13 +90,24 @@ public class ServiceController {
      *
      * @return the response entity
      */
-    @PostMapping("/api/services/user/metadata")
+    @PostMapping("/api/services/metadata")
     public ResponseEntity<String> uploadMetadata(@RequestParam("file") MultipartFile file) {
-        String result = serviceRepo.uploadMetadata(file, "maziyar");
+        String result = serviceRepo.uploadMetadata(file);
         if (result != null)
             return new ResponseEntity<>(result, HttpStatus.OK);
         else
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+
+    @GetMapping("/api/services/position/{serviceId}")
+    public ResponseEntity<HttpStatus> increasePosition(@PathVariable("serviceId") String id,@RequestParam("value") int value) {
+        if (value == 1)
+            return new ResponseEntity<>(serviceRepo.increasePosition(id));
+        else if (value==-1)
+            return new ResponseEntity<>(serviceRepo.decreasePosition(id));
+        else
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     /**
@@ -142,6 +154,4 @@ public class ServiceController {
         }
         return "403";
     }
-
-
 }

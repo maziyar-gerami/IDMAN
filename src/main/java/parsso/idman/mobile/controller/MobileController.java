@@ -92,11 +92,11 @@ public class  MobileController {
     ResponseEntity<List<Service>> M_listServices(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
         User user = userRepo.retrieveUser(uid);
         if (MobileToken.equals(user.getTokens().getMobileToken()))
-            return new ResponseEntity<>(serviceRepo.listServices(), HttpStatus.OK);
+            return new ResponseEntity<>(serviceRepo.listServicesFull(), HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }
-
+/*
     @PostMapping("/api/mobile/events")
     public @ResponseBody
     ResponseEntity<List<Event>> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, ParseException, org.json.simple.parser.ParseException {
@@ -106,6 +106,8 @@ public class  MobileController {
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }
+
+ */
 
     @PostMapping("/api/mobile/events/{page}/{n}")
     public @ResponseBody

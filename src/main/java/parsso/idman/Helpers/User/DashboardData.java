@@ -26,6 +26,8 @@ public  class DashboardData {
     EventRepo eventRepo;
     @Autowired
     ServiceRepo serviceRepo;
+    public static String mainCollection = "MongoDbCasEventRepository";
+
 
     public JSONObject retrieveDashboardData() throws IOException, java.text.ParseException, java.io.IOException, org.json.simple.parser.ParseException {
         JSONObject jsonObject = new JSONObject();
@@ -53,7 +55,7 @@ public  class DashboardData {
 
         //________services data____________
         JSONObject servicesJson = new JSONObject();
-        List<parsso.idman.Models.Service> services = serviceRepo.listServices();
+        List<parsso.idman.Models.Service> services = serviceRepo.listServicesFull();
         int nServices = services.size();
         int nEnabledServices = 0;
 
@@ -70,12 +72,12 @@ public  class DashboardData {
 
         //__________________login data____________
         JSONObject loginJson = new JSONObject();
-        List<Event> events = eventRepo.getMainListEvents();
+        List<Event> events = eventRepo.analyze(mainCollection,0,0);
         int nSuccessful = 0;
         int nUnSucceful = 0;
 
         for (Event event : events) {
-            Date date1=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(event.getCreationTime());
+            Date date1=new SimpleDateFormat("yyyy-MM-dd").parse(event.getCreationTime());
             if (event.getType().equals("Unsuccessful Login")&&DateUtils.isToday(date1)) {
                 nUnSucceful++;
 

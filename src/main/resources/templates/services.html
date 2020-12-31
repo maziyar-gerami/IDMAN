@@ -199,6 +199,11 @@
                                         <span>{{s6}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s95">
+                                        <i class="fa fa-history"></i>
+                                        <span>{{s94}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s49">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
@@ -284,7 +289,7 @@
                                                             <td>{{service.orderOfRecords}}</td>
                                                             <td>{{service._id}}</td>
                                                             <td>{{service.name}}</td>
-                                                            <td class="enInput"><a v-bind:href="service.serviceId">{{service.serviceId}}</a></td>
+                                                            <td class="enInput"><a v-bind:href="service.url">{{service.url}}</a></td>
                                                             <td>
                                                                 <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-sm" v-on:click="editServiceS(service._id)">
                                                                     <span class="fa-passwd-reset fa-stack">
@@ -298,6 +303,12 @@
                                                                         <i class="fa fa-trash fa-stack-2x"></i>
                                                                     </span>
                                                                 </button>
+                                                            </td>
+                                                            <td>
+                                                                <div class="mt-1 mb-1 mr-2 ml-2">
+                                                                    <div class="up-arrow" v-on:click="posInc(service._id)"></div>
+                                                                    <div class="down-arrow" v-on:click="posDec(service._id)"></div>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -355,13 +366,6 @@
                                                                     <span class="slider round"></span>
                                                                 </label>
                                                             </div>
-                                                            <!-- <div class="form-group">
-                                                                <label>{{s27}}</label>
-                                                                <select name="type" class="form-control">
-                                                                    <option id="option0" value="CAS" v-on:click="cas" selected>CAS</option>
-                                                                    <option id="option1" value="SAML" v-on:click="saml">SAML</option>
-                                                                </select>
-                                                            </div> -->
                                                             <div class="form-group">
                                                                 <label>{{s28}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s57}}</small></label>
                                                                 <input name="name" @keypress="serviceNameValidate" class="form-control enInput" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
@@ -372,7 +376,6 @@
                                                             </div>
                                                             <div v-if="samls" class="form-group">
                                                                 <label>Metadata Location<span style="color: red;"> *</span></label>
-                                                                <!-- <input name="metadataLocation" class="form-control enInput" type="text" placeholder="URL" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"> -->
                                                                 <div class="row">
                                                                     <div class="col-3">
                                                                         <input id="metaDataAddressID" type="radio" name="metaDataType" value="address" style="outline: 0;" v-on:click="selectMetaDataAddress()" checked>
@@ -395,6 +398,10 @@
                                                             <div class="form-group mb-3">
                                                                 <label>{{s31}}<span style="color: red;"> *</span></label>
                                                                 <input id="description" name="description" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"></input>
+                                                            </div>
+                                                            <div class="form-group mb-3">
+                                                                <label>URL<span style="color: red;"> *</span></label>
+                                                                <input name="url" class="form-control enInput" type="text" placeholder="URL" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"></input>
                                                             </div>
                         
                                                             <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s33}}</span></h4>

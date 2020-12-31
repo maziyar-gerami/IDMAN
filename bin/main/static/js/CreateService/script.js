@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
       samls: false,
       serviceType: "CAS",
       userPicture: "images/PlaceholderUser.png",
+      extraInfo: {},
       accessStrategy: {},
       requiredAttributes: {},
       rejectedAttributes: {},
@@ -138,7 +139,10 @@ document.addEventListener('DOMContentLoaded', function () {
       s73: " (در صورت وارد کردن آدرس، http یا https ذکر شود)",
       s74: "آدرس",
       s75: "فایل",
-      s76: "بازگشت"
+      s76: "بازگشت",
+      s77: "موقعیت",
+      s78: "ممیزی ها",
+      s79: "/audits",
     },
     created: function () {
       this.getUserInfo();
@@ -246,10 +250,36 @@ document.addEventListener('DOMContentLoaded', function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
 
+        let serviceIdFlag = false;
+        for(let i = 0; i < document.getElementsByName('serviceId')[0].value.length; ++i){
+          if(i == 0){
+            if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
+            document.getElementsByName('serviceId')[0].value[i+1] != '\\'){
+              serviceIdFlag = true;
+              break;
+            }
+          }else if(i == document.getElementsByName('serviceId')[0].value.length-1){
+            if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
+            document.getElementsByName('serviceId')[0].value[i-1] != '\\'){
+              serviceIdFlag = true;
+              break;
+            }
+          }else{
+            if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
+            document.getElementsByName('serviceId')[0].value[i+1] != '\\' &&
+            document.getElementsByName('serviceId')[0].value[i-1] != '\\'){
+              serviceIdFlag = true;
+              break;
+            }
+          }
+        }
+
         if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
         document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
-        document.getElementsByName('description')[0].value == ""){
+        document.getElementsByName('description')[0].value == "" || document.getElementsByName('url')[0].value == ""){
           alert("لطفا قسمت های الزامی را پر کنید.");
+        }else if(serviceIdFlag){
+          alert("فرمت آدرس سرویس درست نمی باشد.");
         }else{
 
           this.service.name = document.getElementsByName('name')[0].value;
@@ -261,6 +291,8 @@ document.addEventListener('DOMContentLoaded', function () {
           }else{
             this.service.description = null;
           }
+
+          this.extraInfo.url = document.getElementsByName('url')[0].value;
 
           if(document.getElementsByName('logo')[0].value != ""){
             this.service.logo = document.getElementsByName('logo')[0].value;
@@ -417,15 +449,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 let dateE = dateEndFinal.split('-');
 
                 if(parseInt(dateS[1]) < 7){
-                  timeStart = timeStart + ":00.000+4:30";
+                  timeStart = timeStart + ":00.000+04:30";
                 }else{
-                  timeStart = timeStart + ":00.000+3:30";
+                  timeStart = timeStart + ":00.000+03:30";
                 }
 
                 if(parseInt(dateE[1]) < 7){
-                  timeEnd = timeEnd + ":00.000+4:30";
+                  timeEnd = timeEnd + ":00.000+04:30";
                 }else{
-                  timeEnd = timeEnd + ":00.000+3:30";
+                  timeEnd = timeEnd + ":00.000+03:30";
                 }
 
                 let TempS = timeStart.split(':');
@@ -557,7 +589,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   bodyFormData.append("file", file.files[0]);
                   axios({
                     method: 'post',
-                    url: url + "/api/services/user/metadata",  //
+                    url: url + "/api/services/metadata",  //
                     headers: {'Content-Type': 'multipart/form-data'},
                     data: bodyFormData,
                   }).then((res) => {
@@ -571,6 +603,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         data: JSON.stringify({
                           name: vm.service.name,
                           serviceId: vm.service.serviceId,
+                          extraInfo: vm.extraInfo,
                           metadataLocation: vm.service.metadataLocation,
                           multifactorPolicy: vm.multifactorPolicy,
                           description: vm.service.description,
@@ -581,10 +614,10 @@ document.addEventListener('DOMContentLoaded', function () {
                           logoutUrl: vm.service.logoutUrl,
                           accessStrategy: vm.accessStrategy,
                           contacts: vm.contacts
-                        })
+                        }).replace(/\\\\/g, "\\")
                       })
                       .then((res) => {
-                        window.location.replace(url + "/services");
+                        window.location.replace(vm.s34);
                       });
                     }
                   });
@@ -602,6 +635,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     data: JSON.stringify({
                       name: vm.service.name,
                       serviceId: vm.service.serviceId,
+                      extraInfo: vm.extraInfo,
                       metadataLocation: vm.service.metadataLocation,
                       multifactorPolicy: vm.multifactorPolicy,
                       description: vm.service.description,
@@ -612,11 +646,13 @@ document.addEventListener('DOMContentLoaded', function () {
                       logoutUrl: vm.service.logoutUrl,
                       accessStrategy: vm.accessStrategy,
                       contacts: vm.contacts
-                    })
+                    }).replace(/\\\\/g, "\\")
                   })
                   .then((res) => {
-                    window.location.replace(url + "/services");
+                    window.location.replace(vm.s34);
                   });
+                }else{
+                  alert("لطفا قسمت های الزامی را پر کنید.");
                 }
               }
               
@@ -632,6 +668,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 data: JSON.stringify({
                   name: vm.service.name,
                   serviceId: vm.service.serviceId,
+                  extraInfo: vm.extraInfo,
                   multifactorPolicy: vm.multifactorPolicy,
                   description: vm.service.description,
                   logo: vm.service.logo,
@@ -641,10 +678,10 @@ document.addEventListener('DOMContentLoaded', function () {
                   logoutUrl: vm.service.logoutUrl,
                   accessStrategy: vm.accessStrategy,
                   contacts: vm.contacts
-                })
+                }).replace(/\\\\/g, "\\")
             })
             .then((res) => {
-              window.location.replace(url + "/services");
+              window.location.replace(vm.s34);
             });
           }
         }
@@ -811,6 +848,9 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s74 = "Address";
           this.s75 = "File";
           this.s76 = "Go Back";
+          this.s77 = "Position";
+          this.s78 = "Audits";
+          this.s79 = "/audits?en";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -892,6 +932,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s74 = "آدرس";
             this.s75 = "فایل";
             this.s76 = "بازگشت";
+            this.s77 = "موقعیت";
+            this.s78 = "ممیزی ها";
+            this.s79 = "/audits";
         }
       },
       setServiceType: function () {

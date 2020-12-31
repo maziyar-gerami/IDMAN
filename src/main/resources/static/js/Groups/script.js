@@ -96,6 +96,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s34: "آیا از حذف گروه های انتخاب شده اطمینان دارید؟",
             s35: "هیچ گروهی انتخاب نشده است.",
             s36: "تعداد رکورد ها: ",
+            s37: "ممیزی ها",
+            s38: "/audits",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "شناسه",
@@ -394,6 +396,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s34 = "Are You Sure You Want To Delete Selected Groups?";
                     this.s35 = "No Group is Selected.";
                     this.s36 = "Records a Page: ";
+                    this.s37 = "Audits";
+                    this.s38 = "/audits?en";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "ID";
@@ -451,6 +455,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s34 = "آیا از حذف گروه های انتخاب شده اطمینان دارید؟";
                     this.s35 = "هیچ گروهی انتخاب نشده است.";
                     this.s36 = "تعداد رکورد ها: ";
+                    this.s37 = "ممیزی ها";
+                    this.s38 = "/audits";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "شناسه";

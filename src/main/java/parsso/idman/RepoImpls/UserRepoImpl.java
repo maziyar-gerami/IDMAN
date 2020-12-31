@@ -32,6 +32,7 @@ import parsso.idman.Helpers.Communicate.Message;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.ListUsers;
+import parsso.idman.Models.ServicesSubModel.ExtraInfo;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.Tokens;
 import parsso.idman.Models.User;
@@ -193,9 +194,11 @@ public class UserRepoImpl implements UserRepo {
         DirContextOperations context;
 
         //remove current pwdEndTime
-        if (user.getEndTime() != null && p.getEndTime() == null)
-            removeCurrentEndTime(uid);
-
+        if ((p.getEndTime()==null || p.getEndTime().equals(""))) {
+            if ((user.getEndTime() != null || user.getEndTime() != ""))
+                removeCurrentEndTime(uid);
+        }else if(!(p.getEndTime().equals(user.getEndTime())))
+                removeCurrentEndTime(uid);
 
         context = buildAttributes.buildAttributes(uid, p, dn);
 
@@ -284,9 +287,13 @@ public class UserRepoImpl implements UserRepo {
             role = "USER";
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
 
-        if (auth.getName().equals(p.getUserId())) {
+        List<GrantedAuthority> updatedAuthorities = null;
+
+        if (auth != null){
+            updatedAuthorities = new ArrayList<>(auth.getAuthorities());
+
+        if (auth != null && auth.getName().equals(p.getUserId())) {
             updatedAuthorities.remove(0);
 
             updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role));
@@ -295,6 +302,7 @@ public class UserRepoImpl implements UserRepo {
 
             SecurityContextHolder.getContext().setAuthentication(newAuth);
         }
+    }
 
     }
 
@@ -403,7 +411,6 @@ public class UserRepoImpl implements UserRepo {
         return HttpStatus.BAD_REQUEST;
     }
 
-
     @Override
     public List<SimpleUser> retrieveUsersMain() {
         SearchControls searchControls = new SearchControls();
@@ -413,7 +420,7 @@ public class UserRepoImpl implements UserRepo {
                 new SimpleUserAttributeMapper());
         List relatedUsers = new LinkedList();
         for (SimpleUser user : people) {
-            if (!(user.getUserId().equals("admin")) && user.getDisplayName() != null && !user.getUserId().equals("su")) {
+            if (user.getDisplayName() != null && !user.getUserId().equals("su")&& !user.getDisplayName().equals("Directory Superuser")) {
                 relatedUsers.add(user);
             }
         }
@@ -544,12 +551,14 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = new User();
-        Tokens tokens = new Tokens();
+        Tokens tokens = null;
+        ExtraInfo extraInfo=null;
         if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
             user = ldapTemplate.lookup(buildDn.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
             tokens = mongoTemplate.findOne(query, Tokens.class, Token.collection);
             user.setTokens(tokens);
+
         }
         setRole(userId, user);
         if (user.getUserId() == null) return null;
@@ -692,6 +701,14 @@ public class UserRepoImpl implements UserRepo {
         return tokenClass.requestToken(user);
     }
 
+    @Override
+    public HttpStatus massUpdate(List<User> users) {
+        for (User user:users)
+            update(user.getUserId(),user);
+
+        return HttpStatus.OK;
+    }
+
 
     @Override
     public ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
@@ -712,10 +729,9 @@ public class UserRepoImpl implements UserRepo {
         List<SimpleUser> relativeUsers = new LinkedList<>();
 
         for (int i = start; i < n; i++)
-            relativeUsers.add(allUsers.get(i));
+             relativeUsers.add(allUsers.get(i));
 
         ListUsers finalList = new ListUsers(size, relativeUsers, pages);
-
 
         return finalList;
     }

@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     el: '#app',
     data: {
       recordsShownOnPage: 20,
+      recordsShownOnPageEvents: 20,
       currentPageEvents: 1,
       totalEvents: 1,
       currentPageEvent: 1,
@@ -106,7 +107,10 @@ document.addEventListener('DOMContentLoaded', function () {
       s40: "ورود ناموفق",
       s41: "سرویس",
       s42: "سیستم عامل",
-      s43: "مرورگر"
+      s43: "مرورگر",
+      s44: "تعداد رکورد ها: ",
+      s45: "ممیزی ها",
+      s46: "/audits",
     },
     created: function () {
       this.getUserInfo();
@@ -124,6 +128,14 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       setActive (menuItem) {
         this.activeItem = menuItem
+      },
+      changeRecordsEvent: function(event) {
+        this.recordsShownOnPage = event.target.value;
+        this.getEventDate();
+      },
+      changeRecordsEvents: function(event) {
+        this.recordsShownOnPageEvents = event.target.value;
+        this.getEventsDate();
       },
       connect (add) {
         window.open(add);
@@ -175,33 +187,18 @@ document.addEventListener('DOMContentLoaded', function () {
             });
       },
       exportEvents: function(){
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          axios.get(url + "/api/events/1/1") //
-          .then((response) => {
-            let tempEvents = {};
-            let eventsExport = [];
-            axios.get(url + "/api/events/1/" + response.data.size) //
-            .then((res) => {
-              data = res.data;
-              var opts = [{sheetid:'Users',header:true}]
-              var result = alasql('SELECT * INTO XLSX("events.xlsx",?) FROM ?',
-              [opts,[data]]);
-            });
-          });
-      },
-      exportEvent: function(){
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          axios.get(url + "/api/events/user/1/1") //
-          .then((response) => {
-            let tempEvent = {};
-            let eventExport = [];
-            axios.get(url + "/api/events/user/1/" + response.data.size) //
-            .then((res) => {
-              data = res.data;
-              var opts = [{sheetid:'Users',header:true}]
-              var result = alasql('SELECT * INTO XLSX("event.xlsx",?) FROM ?',
-              [opts,[data]]);
-            });
+        url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          axios({
+            url: url_ + "/api/events/export",
+            method: "GET",
+            responseType: "blob",
+          }).then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute("download", "events.xls");
+            document.body.appendChild(link);
+            link.click();
           });
       },
       getEvents: function () {
@@ -213,9 +210,9 @@ document.addEventListener('DOMContentLoaded', function () {
         
         var tempEvent = {};
         this.events = [];
-        axios.get(url + "/api/events/" + vm.currentPageEvents + "/" + vm.recordsShownOnPage)
+        axios.get(url + "/api/events/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents)
         .then((res) => {
-          vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPage);
+          vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
           res.data.eventList.forEach(function (item) {
             tempEvent = {};
             if(item.action == "Successful Login"){
@@ -263,7 +260,6 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent.userId = item.userId;
             tempEvent.application = item.application;
             tempEvent.clientIP = item.clientIP;
-            tempEvent.serverIP = item.serverIP;
             tempEvent.service = item.service;
 
             let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
@@ -314,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent.userId = item.userId;
                 tempEvent.application = item.application;
                 tempEvent.clientIP = item.clientIP;
-                tempEvent.serverIP = item.serverIP;
                 tempEvent.service = item.service;
 
                 let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
@@ -343,9 +338,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }else if(this.tempEventsDate == "" && this.eventsUserId != ""){
           var tempEvent = {};
           this.events = [];
-          axios.get(url + "/api/events/users/" + vm.eventsUserId + "/" + + vm.currentPageEvents + "/" + vm.recordsShownOnPage) //
+          axios.get(url + "/api/events/users/" + vm.eventsUserId + "/" + + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
           .then((res) => {
-            vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPage);
+            vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
             res.data.eventList.forEach(function (item) {
               tempEvent = {};
               if(item.action == "Successful Login"){
@@ -401,9 +396,9 @@ document.addEventListener('DOMContentLoaded', function () {
               date[2] = "0" + date[2];
             }
             this.eventsDate = date[2] + date[1] + date[0];
-            axios.get(url + "/api/events/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPage) //
+            axios.get(url + "/api/events/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
             .then((res) => {
-              vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPage);
+              vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
               res.data.eventList.forEach(function (item) {
                 tempEvent = {};
                 if(item.action == "Successful Login"){
@@ -455,9 +450,9 @@ document.addEventListener('DOMContentLoaded', function () {
               date[2] = "0" + date[2];
             }
             this.eventsDate = date[2] + date[1] + date[0];
-            axios.get(url + "/api/events/users/" + vm.eventsUserId + "/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPage) //
+            axios.get(url + "/api/events/users/" + vm.eventsUserId + "/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
             .then((res) => {
-              vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPage);
+              vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
               res.data.eventList.forEach(function (item) {
                 tempEvent = {};
                 if(item.action == "Successful Login"){
@@ -536,6 +531,9 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s41 = "Service";
           this.s42 = "OS";
           this.s43 = "Browser";
+          this.s44 = "Records a Page: ";
+          this.s45 = "Audits";
+          this.s46 = "/audits?en";
         } else{
             this.getEvents();
             this.getEvent();
@@ -586,6 +584,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s41 = "سرویس";
             this.s42 = "سیستم عامل";
             this.s43 = "مرورگر";
+            this.s44 = "تعداد رکورد ها: ";
+            this.s45 = "ممیزی ها";
+            this.s46 = "/audits";
         }
       },
 

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.Models.ServicesSubModel.AccessStrategy;
 import parsso.idman.Models.ServicesSubModel.AttributeReleasePolicy;
+import parsso.idman.Models.ServicesSubModel.ExtraInfo;
 import parsso.idman.Models.ServicesSubModel.MultifactorPolicy;
 
 import java.io.File;
@@ -41,6 +42,8 @@ public class Service implements Comparable<Service>{
     private String privacyUrl;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String logo;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private ExtraInfo extraInfo;
 
 
     @Override
