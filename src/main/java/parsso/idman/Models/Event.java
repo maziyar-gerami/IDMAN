@@ -92,7 +92,6 @@ public class Event implements Serializable {
         ,Integer.valueOf(creationTime.substring(14,16))
         , Integer.valueOf(creationTime.substring(17,19)));
 
-
         return time;
     }
 

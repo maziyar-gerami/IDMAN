@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', function () {
       configsGroupNames: [],
       restorePoints: [],
       menuS: false,
-      menuSA: false,
       configsLoaded: false,
       userPicture: "images/PlaceholderUser.png",
       s0: "پارسو",
@@ -96,10 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/api/user/isAdmin") //
           .then((res) => {
-            if(res.data == "0"){
-              vm.menuS = true;
-              vm.menuSA = true;
-            }else if(res.data == "1"){
+            if(res.data){
                 vm.menuS = true;
             }
           });
@@ -121,11 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/api/user/photo") //
             .then((res) => {
-              if(res.data == "Problem" || res.data == "NotExist"){
-                vm.userPicture = "images/PlaceholderUser.png";
-              }else{
-                vm.userPicture = "/api/user/photo";
-              }
+              vm.userPicture = "/api/user/photo";
             })
             .catch((error) => {
                 if (error.response) {
@@ -134,6 +126,8 @@ document.addEventListener('DOMContentLoaded', function () {
                   }else{
                     vm.userPicture = "/api/user/photo";
                   }
+                }else{
+                  console.log("error.response is False")
                 }
             });
       },
@@ -180,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
           method: 'put',
           url: url + '/api/configs',  //
           headers: {'Content-Type': 'application/json'},
-          data: JSON.stringify(vm.configsList).replace(/\\\\/g, "\\")
+          data: JSON.stringify(vm.configsList)
         })
         .then((res) => {
           vm.getConfigs();

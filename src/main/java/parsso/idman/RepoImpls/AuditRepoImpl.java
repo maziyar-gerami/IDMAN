@@ -69,9 +69,9 @@ public class AuditRepoImpl implements AuditRepo {
     @Override
     public ListAudits getAuditsByDate(String date, int p, int n) throws ParseException{
         p= inverseP(p,n);
-        List<Audit> audits = analyze(mainCollection,n*(p-1),n);
         ListAudits listAudits = new ListAudits();
         Query query = new Query(Criteria.where("principal").is(date));
+        List<Audit> audits = mongoTemplate.find(query,Audit.class,mainCollection);
         listAudits.setSize((int) mongoTemplate.count(query,mainCollection));
         listAudits.setPages((int) Math.ceil(listAudits.getSize()/n));
         listAudits.setAuditList(audits);

@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
       groups: [],
       services: [],
       menuS: false,
-      menuSA: false,
       userPicture: "images/PlaceholderUser.png",
       ActiveUsersChart: {
         size: 80,
@@ -104,11 +103,11 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     created: function () {
       this.getUserInfo();
-      this.isAdmin();
+      this.getUserPic();
       this.getDashboardInfo();
       this.getServices();
-      this.getUserPic();
       this.getGroups();
+      this.isAdmin();
       if(typeof this.$route.query.en !== 'undefined'){
         this.changeLang()
       }
@@ -120,15 +119,15 @@ document.addEventListener('DOMContentLoaded', function () {
       setActive (menuItem) {
         this.activeItem = menuItem
       },
+      connect (add) {
+        window.open(add);
+      },
       isAdmin: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         axios.get(url + "/api/user/isAdmin") //
           .then((res) => {
-            if(res.data == "0"){
-              vm.menuS = true;
-              vm.menuSA = true;
-            }else if(res.data == "1"){
+            if(res.data){
                 vm.menuS = true;
             }
           });
@@ -169,11 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/api/user/photo") //
             .then((res) => {
-              if(res.data == "Problem" || res.data == "NotExist"){
-                vm.userPicture = "images/PlaceholderUser.png";
-              }else{
-                vm.userPicture = "/api/user/photo";
-              }
+              vm.userPicture = "/api/user/photo";
             })
             .catch((error) => {
                 if (error.response) {
@@ -182,6 +177,8 @@ document.addEventListener('DOMContentLoaded', function () {
                   }else{
                     vm.userPicture = "/api/user/photo";
                   }
+                }else{
+                  console.log("error.response is False")
                 }
             });
       },
@@ -196,7 +193,6 @@ document.addEventListener('DOMContentLoaded', function () {
       getServices: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
-        const regex = new RegExp('^', 'g');
         axios.get(url + "/api/services/user") //
         .then((res) => {
           vm.services = res.data;
@@ -216,11 +212,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }else{
               vm.services[i].description = "...";
             }
-
-            vm.services[i].serviceId = vm.services[i].serviceId.replace(/\((.*?)\)/g, "");
-            vm.services[i].serviceId = vm.services[i].serviceId.replace(/\^/g, "");
-
-            vm.services[i].serviceId = vm.services[i].serviceId.replace(/\\/g, "\\\\")
           }
         });
       },

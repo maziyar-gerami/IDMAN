@@ -149,7 +149,6 @@ html,body {
   .slider.round:before {
     border-radius: 50%;
   } 
-  .enInput {
+  #enInput {
     text-align: left;
-    direction: ltr;
   }

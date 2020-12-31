@@ -28,7 +28,6 @@ function myFunction() {
         username: "",
         name: "",
         nameEN: "",
-        menuSA: false,
         service: {},
         services: [],
         servicesPage: [],
@@ -53,7 +52,7 @@ function myFunction() {
         isRtl: true,
         groups: [],
         groupList: "",
-        samls: true,
+        samls: "display: none;",
         editS: "display: none;",
         showS: "",
         flag: false,
@@ -86,9 +85,6 @@ function myFunction() {
         contactsList: [],
         contactsObj: {},
         activeItem: "main",
-        metaDataAddress: true,
-        metaDataFile: false,
-        allIsSelected: false,
         s0: "پارسو",
         s1: "",
         s2: "خروج",
@@ -103,7 +99,7 @@ function myFunction() {
         s11: "حریم خصوصی",
         s12: "راهنما",
         s13: "ایجاد سرویس جدید",
-        s14: "جدید",
+        s14: "سرویس جدید",
         s15: "کاربران",
         s16: "./dashboard",
         s17: "./services",
@@ -114,7 +110,7 @@ function myFunction() {
         s22: "آدرس",
         s23: "ویرایش",
         s24: "حذف",
-        s25: "تنظیمات پایه",
+        s25: "تنطیمات پایه",
         s26: "فعال سازی سرویس",
         s27: "نوع سرویس",
         s28: "نام سرویس",
@@ -131,12 +127,12 @@ function myFunction() {
         s39: "ایمیل",
         s40: "شماره تماس",
         s41: "دپارتمان",
-        s42: "تنظیمات خروج",
+        s42: "تنطیمات خروج",
         s43: "آدرس خروج",
         s44: "نوع خروج",
         s45: "تایید",
         s46: "بازگشت",
-        s47: "حذف",
+        s47: "حذف همه",
         s48: "./groups",
         s49: "./settings",
         s50: "./privacy",
@@ -145,9 +141,9 @@ function myFunction() {
         s53: "./events",
         s54: "استراتژی دسترسی",
         s55: "فعال سازی SSO",
-        s56: "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی",
+        s56: "آدرس تغییر مسیر غیرمجاز",
         s57: " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)",
-        s58: "تنظیمات پایه",
+        s58: "تنطیمات پایه",
         s59: "استراتژی دسترسی",
         s60: "دسترسی بر اساس زمان",
         s61: "تاریخ شروع",
@@ -171,21 +167,10 @@ function myFunction() {
         s79: "کاربران منع شده",
         s80: "دسترسی بر اساس پارامتر",
         s81: "نام پارامتر",
-        s82: "مقدار پارامتر",
-        s83: "حذف سرویس",
-        s84: "اعمال",
-        s85: "آیا از حذف سرویس های انتخاب شده اطمینان دارید؟",
-        s86: "هیچ سرویسی انتخاب نشده است.",
-        s87: "آیا از حذف این سرویس اطمینان دارید؟",
-        s88: "آیا از حذف تمامی سرویس ها اطمینان دارید؟",
-        s89: " (در صورت وارد کردن آدرس، http یا https ذکر شود)",
-        s90: "آدرس",
-        s91: "فایل",
-        s92: "تعداد رکورد ها: ",
+        s82: "مقدار پارامتر"
       },
       created: function () {
         this.getUserInfo();
-        this.isAdmin();
         this.getUserPic();
         this.refreshServices();
         this.getGroups();
@@ -195,42 +180,11 @@ function myFunction() {
         }
       },
       methods: {
-        allSelected () {
-          if(this.allIsSelected){
-              this.allIsSelected = false;
-              for(let i = 0; i < this.services.length; ++i){
-                  if(document.getElementById("checkbox-" + this.services[i]._id).checked == true){
-                      document.getElementById("checkbox-" + this.services[i]._id).click();
-                  }
-                  document.getElementById("row-" + this.services[i]._id).style.background = "";
-              }
-          }else{
-              this.allIsSelected = true;
-              for(let i = 0; i < this.services.length; ++i){
-                  if(document.getElementById("checkbox-" + this.services[i]._id).checked == false){
-                      document.getElementById("checkbox-" + this.services[i]._id).click();
-                  }
-                  document.getElementById("row-" + this.services[i]._id).style.background = "#c2dbff";
-              }
-          }
-        },
         isActive (menuItem) {
           return this.activeItem === menuItem
         },
         setActive (menuItem) {
           this.activeItem = menuItem
-        },
-        changeRecords: function(event) {
-          this.recordsShownOnPage = event.target.value;
-          this.refreshServices();
-        },
-        selectMetaDataAddress: function () {
-          this.metaDataAddress = true;
-          this.metaDataFile = false;
-        },
-        selectMetaDataFile: function () {
-          this.metaDataAddress = false;
-          this.metaDataFile = true;
         },
         getUserInfo: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -244,36 +198,24 @@ function myFunction() {
                 vm.s1 = vm.name;
             });
         },
-        isAdmin: function () {
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          var vm = this;
-          axios.get(url + "/api/user/isAdmin") //
-            .then((res) => {
-              if(res.data == "0"){
-                vm.menuSA = true;
-              }
-            });
-        },
         getUserPic: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
           axios.get(url + "/api/user/photo") //
-            .then((res) => {
-              if(res.data == "Problem" || res.data == "NotExist"){
-                vm.userPicture = "images/PlaceholderUser.png";
-              }else{
+              .then((res) => {
                 vm.userPicture = "/api/user/photo";
-              }
-            })
-            .catch((error) => {
-                if (error.response) {
-                  if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
-                    vm.userPicture = "images/PlaceholderUser.png";
+              })
+              .catch((error) => {
+                  if (error.response) {
+                    if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
+                      vm.userPicture = "images/PlaceholderUser.png";
+                    }else{
+                      vm.userPicture = "/api/user/photo";
+                    }
                   }else{
-                    vm.userPicture = "/api/user/photo";
+                    console.log("error.response is False")
                   }
-                }
-            });
+              });
         },
         getUsersList: function (){
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -286,13 +228,9 @@ function myFunction() {
         refreshServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          axios.get(url + "/api/services/main") //
+          axios.get(url + "/api/services") //
           .then((res) => {
             vm.services = res.data;
-            for(let i = 0; i < vm.services.length; ++i){
-              vm.services[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
-              vm.services[i].serviceId = vm.services[i].serviceId.replace(/\\/g, "\\\\");
-            }
             vm.total = Math.ceil(vm.services.length / vm.recordsShownOnPage);
           });
         },
@@ -304,7 +242,6 @@ function myFunction() {
           document.getElementById("showS3").setAttribute("style", "display:none;");
           document.getElementById("showS4").setAttribute("style", "display:none;");
           document.getElementById("showS5").setAttribute("style", "display:none;");
-          document.getElementById("showS6").setAttribute("style", "display:none;");
           document.getElementById("editS").setAttribute("style", "");
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
@@ -322,15 +259,7 @@ function myFunction() {
 
             document.getElementsByName("name")[0].value = res.data.name;
 
-            res.data.serviceId = res.data.serviceId.replace(/\\/g, "\\\\")
             document.getElementsByName("serviceId")[0].value = res.data.serviceId;
-
-            if(typeof res.data.metadataLocation !== 'undefined'){
-              vm.samls = true;
-              document.getElementsByName("metadataLocation")[0].value = res.data.metadataLocation;
-            }else{
-              vm.samls = false;
-            }
 
             if(typeof res.data.description !== 'undefined'){
               document.getElementsByName("description")[0].value = res.data.description;
@@ -410,8 +339,7 @@ function myFunction() {
             if(typeof res.data.multifactorPolicy !== 'undefined'){
 
               if(typeof res.data.multifactorPolicy.multifactorAuthenticationProviders !== 'undefined'){
-                if(res.data.multifactorPolicy.multifactorAuthenticationProviders[0] == "java.util.LinkedHashSet" &&
-                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] == "[\"java.util.LinkedHashSet\",[\"mfa-simple\"]]"){
+                if(res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] == "mfa-simple"){
                   document.getElementsByName("mfaEnabled")[0].checked = true;
                 }else{
                   document.getElementsByName("mfaEnabled")[0].checked = false;
@@ -453,17 +381,17 @@ function myFunction() {
             }
 
             if(typeof res.data.accessStrategy.rejectedAttributes !== 'undefined'){
-              if(typeof res.data.accessStrategy.rejectedAttributes.uid !== 'undefined'){
+              if(typeof res.data.accessStrategy.rejectedAttributes.userId !== 'undefined'){
                 let countA = 0;
                 for(let i = 0; i < this.userSearch.length; ++i){
-                  for(let j = 0; j < res.data.accessStrategy.rejectedAttributes.uid[1].length; ++j){
-                    if(this.userSearch[i].userId == res.data.accessStrategy.rejectedAttributes.uid[1][j]){
+                  for(let j = 0; j < res.data.accessStrategy.rejectedAttributes.userId[1].length; ++j){
+                    if(this.userSearch[i].userId == res.data.accessStrategy.rejectedAttributes.userId[1][j]){
                       this.blockUserAccess(this.userSearch[i]);
                       countA = countA + 1;
                       break;
                     }
                   }
-                  if(countA == res.data.accessStrategy.rejectedAttributes.uid[1].length){
+                  if(countA == res.data.accessStrategy.rejectedAttributes.userId[1].length){
                     break;
                   }
                 }
@@ -475,7 +403,7 @@ function myFunction() {
               let index = 0;
               const entries = Object.entries(res.data.accessStrategy.requiredAttributes);
               for(let i = 0; i < entries.length; ++i){
-                if(entries[i][0] != "@class" && entries[i][0] != "ou" && entries[i][0] != "uid"){
+                if(entries[i][0] != "@class" && entries[i][0] != "ou" && entries[i][0] != "userId"){
                   if(flag){
                     this.addAttribute();
                   }
@@ -490,17 +418,17 @@ function myFunction() {
                 }
               }
 
-              if(typeof res.data.accessStrategy.requiredAttributes.uid !== 'undefined'){
+              if(typeof res.data.accessStrategy.requiredAttributes.userId !== 'undefined'){
                 let countB = 0;
                 for(let i = 0; i < this.userSearch.length; ++i){
-                  for(let j = 0; j < res.data.accessStrategy.requiredAttributes.uid[1].length; ++j){
-                    if(this.userSearch[i].userId == res.data.accessStrategy.requiredAttributes.uid[1][j]){
+                  for(let j = 0; j < res.data.accessStrategy.requiredAttributes.userId[1].length; ++j){
+                    if(this.userSearch[i].userId == res.data.accessStrategy.requiredAttributes.userId[1][j]){
                       this.allowUserAccess(this.userSearch[i]);
                       countB = countB + 1;
                       break;
                     }
                   }
-                  if(countB == res.data.accessStrategy.requiredAttributes.uid[1].length){
+                  if(countB == res.data.accessStrategy.requiredAttributes.userId[1].length){
                     break;
                   }
                 }
@@ -523,36 +451,10 @@ function myFunction() {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
 
-          let serviceIdFlag = false;
-          for(let i = 0; i < document.getElementsByName('serviceId')[0].value.length; ++i){
-            if(i == 0){
-              if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
-              document.getElementsByName('serviceId')[0].value[i+1] != '\\'){
-                serviceIdFlag = true;
-                break;
-              }
-            }else if(i == document.getElementsByName('serviceId')[0].value.length-1){
-              if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
-              document.getElementsByName('serviceId')[0].value[i-1] != '\\'){
-                serviceIdFlag = true;
-                break;
-              }
-            }else{
-              if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
-              document.getElementsByName('serviceId')[0].value[i+1] != '\\' &&
-              document.getElementsByName('serviceId')[0].value[i-1] != '\\'){
-                serviceIdFlag = true;
-                break;
-              }
-            }
-          }
-
           if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
             document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
             document.getElementsByName('description')[0].value == ""){
             alert("لطفا قسمت های الزامی را پر کنید.");
-          }else if(serviceIdFlag){
-            alert("فرمت آدرس سرویس درست نمی باشد.");
           }else{
 
             this.service.name = document.getElementsByName('name')[0].value;
@@ -719,15 +621,15 @@ function myFunction() {
                 let dateE = dateEndFinal.split('-');
 
                 if(parseInt(dateS[1]) < 7){
-                  timeStart = timeStart + ":00.000+04:30";
+                  timeStart = timeStart + ":00.000+4:30";
                 }else{
-                  timeStart = timeStart + ":00.000+03:30";
+                  timeStart = timeStart + ":00.000+3:30";
                 }
 
                 if(parseInt(dateE[1]) < 7){
-                  timeEnd = timeEnd + ":00.000+04:30";
+                  timeEnd = timeEnd + ":00.000+4:30";
                 }else{
-                  timeEnd = timeEnd + ":00.000+03:30";
+                  timeEnd = timeEnd + ":00.000+3:30";
                 }
 
                 let TempS = timeStart.split(':');
@@ -781,13 +683,13 @@ function myFunction() {
             if(this.userAllowedId.length != 0){
               this.userIdAllowed[0] = "java.util.HashSet";
               this.userIdAllowed[1] = this.userAllowedId;
-              this.requiredAttributes.uid = this.userIdAllowed;
+              this.requiredAttributes.userId = this.userIdAllowed;
             }
             
             if(this.userBlockedId.length != 0){
               this.userIdBlocked[0] = "java.util.HashSet";
               this.userIdBlocked[1] = this.userBlockedId;
-              this.rejectedAttributes.uid = this.userIdBlocked;
+              this.rejectedAttributes.userId = this.userIdBlocked;
             }
             
             for(i = 0; i < this.indexList.length; ++i){
@@ -795,7 +697,7 @@ function myFunction() {
                 if(document.getElementById("attributeKey" + this.indexList[i]).value != "" &&
                 document.getElementById("attributeValue" + this.indexList[i]).value != ""){
                   if(document.getElementById("attributeKey" + this.indexList[i]).value != "@class" &&
-                  document.getElementById("attributeKey" + this.indexList[i]).value != "uid" &&
+                  document.getElementById("attributeKey" + this.indexList[i]).value != "userId" &&
                   document.getElementById("attributeKey" + this.indexList[i]).value != "ou"){
                     this.requiredAttributes[document.getElementById("attributeKey" + this.indexList[i]).value] = ["java.util.HashSet", document.getElementById("attributeValue" + this.indexList[i]).value.split(',')];
                   }
@@ -828,9 +730,9 @@ function myFunction() {
             this.contacts[1] = this.contactsList;
 
             if(document.getElementsByName('mfaEnabled')[0].checked){
-              this.multifactorPolicy.multifactorAuthenticationProviders = "mfa-simple";
+              this.multifactorPolicy.multifactorAuthenticationProviders = [ "java.util.LinkedHashSet", [ "mfa-simple" ] ];
             }else{
-              this.multifactorPolicy.multifactorAuthenticationProviders = null;
+              this.multifactorPolicy.multifactorAuthenticationProviders = [ "java.util.LinkedHashSet", [ ] ];
             }
 
             if(document.getElementsByName('bypassEnabled')[0].checked){
@@ -845,146 +747,44 @@ function myFunction() {
               this.multifactorPolicy.failureMode = null;
             }
 
-            if(this.samls){
-              if(this.metaDataAddress || this.metaDataFile){
-                if(this.metaDataFile){
-                  let file = document.querySelector('#file');
-                  if(!file.files[0]){
-                    alert("لطفا قسمت های الزامی را پر کنید.");
-                  }else{
-                    let bodyFormData = new FormData();
-                    bodyFormData.append("file", file.files[0]);
-                    axios({
-                      method: 'post',
-                      url: url + "/api/services/metadata",  //
-                      headers: {'Content-Type': 'multipart/form-data'},
-                      data: bodyFormData,
-                    }).then((res) => {
-                      if(res.data != ""){
-                        this.service.metadataLocation = res.data;
-
-                        axios({
-                          method: 'put',
-                          url: url + `/api/service/${id}/saml`, //
-                          headers: {'Content-Type': 'application/json'},
-                          data: JSON.stringify({
-                            name: vm.service.name,
-                            serviceId: vm.service.serviceId,
-                            metadataLocation: vm.service.metadataLocation,
-                            multifactorPolicy: vm.multifactorPolicy,
-                            description: vm.service.description,
-                            logo: vm.service.logo,
-                            informationUrl: vm.service.informationUrl,
-                            privacyUrl: vm.service.privacyUrl,
-                            logoutType: vm.service.logoutType,
-                            logoutUrl: vm.service.logoutUrl,
-                            accessStrategy: vm.accessStrategy,
-                            contacts: vm.contacts
-                          }).replace(/\\\\/g, "\\")
-                        })
-                        .then((res) => {
-                          location.reload();
-                        });
-                      }
-                    });
-                  }
-                }
-  
-                if(this.metaDataAddress){
-                  if(document.getElementsByName('metadataLocation')[0].value != ""){
-                    this.service.metadataLocation = document.getElementsByName('metadataLocation')[0].value;
-
-                    axios({
-                      method: 'put',
-                      url: url + `/api/service/${id}/saml`, //
-                      headers: {'Content-Type': 'application/json'},
-                      data: JSON.stringify({
-                        name: vm.service.name,
-                        serviceId: vm.service.serviceId,
-                        metadataLocation: vm.service.metadataLocation,
-                        multifactorPolicy: vm.multifactorPolicy,
-                        description: vm.service.description,
-                        logo: vm.service.logo,
-                        informationUrl: vm.service.informationUrl,
-                        privacyUrl: vm.service.privacyUrl,
-                        logoutType: vm.service.logoutType,
-                        logoutUrl: vm.service.logoutUrl,
-                        accessStrategy: vm.accessStrategy,
-                        contacts: vm.contacts
-                      }).replace(/\\\\/g, "\\")
-                    })
-                    .then((res) => {
-                      location.reload();
-                    });
-                  }else{
-                    alert("لطفا قسمت های الزامی را پر کنید.");
-                  }
-                }                
-              }else{
-                alert("لطفا قسمت های الزامی را پر کنید.");
-              }
-            }else{
-
-              axios({
-                method: 'put',
-                url: url + `/api/service/${id}/cas`, //
-                headers: {'Content-Type': 'application/json'},
-                data: JSON.stringify({
-                  name: vm.service.name,
-                  serviceId: vm.service.serviceId,
-                  multifactorPolicy: vm.multifactorPolicy,
-                  description: vm.service.description,
-                  logo: vm.service.logo,
-                  informationUrl: vm.service.informationUrl,
-                  privacyUrl: vm.service.privacyUrl,
-                  logoutType: vm.service.logoutType,
-                  logoutUrl: vm.service.logoutUrl,
-                  accessStrategy: vm.accessStrategy,
-                  contacts: vm.contacts
-                }).replace(/\\\\/g, "\\")
+            axios({
+              method: 'put',
+              url: url + `/api/service/${id}`, //
+              headers: {'Content-Type': 'application/json'},
+              data: JSON.stringify({
+                name: vm.service.name,
+                serviceId: vm.service.serviceId,
+                multifactorPolicy: vm.multifactorPolicy,
+                description: vm.service.description,
+                logo: vm.service.logo,
+                informationUrl: vm.service.informationUrl,
+                privacyUrl: vm.service.privacyUrl,
+                logoutType: vm.service.logoutType,
+                logoutUrl: vm.service.logoutUrl,
+                accessStrategy: vm.accessStrategy,
+                contacts: vm.contacts
               })
-              .then((res) => {
-                location.reload();
-              });
-            }
+            })
+            .then((res) => {
+              location.reload();
+            });
           }
         },
         deleteService: function (id) {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          let selectedServices = [];
-          selectedServices.push(id.toString());
-          var check = confirm(this.s87);
-          if (check == true) {
-            axios({
-              method: 'delete',
-              url: url + "/api/services", //
-              headers: {'Content-Type': 'application/json'},
-              data: JSON.stringify({
-                names: selectedServices
-              }).replace(/\\\\/g, "\\")
-            })
-            .then((res) => {
-              vm.refreshServices();
-            });
-          }
+          axios.delete(url + `/api/services/${id}`) //
+          .then(() => {
+            location.reload();
+          });
         },
         deleteAllServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
-          var check = confirm(this.s88);
-          if (check == true) {
-            axios({
-              method: 'delete',
-              url: url + "/api/services", //
-              headers: {'Content-Type': 'application/json'},
-              data: JSON.stringify({
-              }).replace(/\\\\/g, "\\")
-            })
-            .then((res) => {
-              vm.refreshServices();
-            });
-          }
+          axios.delete(url + "/api/services") //
+          .then(() => {
+            location.reload();
+          });
         },
         getGroups: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port; //
@@ -1090,49 +890,6 @@ function myFunction() {
           this.flagList[index] = false;
           document.getElementById("attribute" + index).remove();
         },
-        changeSelected: function (action) {
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          var vm = this;
-          let selectedServices = [];
-          if(action == "delete"){
-              selectedServices = [];
-              for(let i = 0; i < vm.services.length; ++i){
-                  if(document.getElementById("checkbox-" + vm.services[i]._id).checked){
-                    selectedServices.push(vm.services[i]._id.toString());
-                  }
-              }
-              if(selectedServices.length != 0){
-                  var check = confirm(this.s85);
-                  if (check == true) {
-                      axios({
-                          method: 'delete',
-                          url: url + "/api/services", //
-                          headers: {'Content-Type': 'application/json'},
-                          data: JSON.stringify({
-                              names: selectedServices
-                          }).replace(/\\\\/g, "\\")
-                      })
-                      .then((res) => {
-                        vm.refreshServices();
-                      });
-                  }
-              }else{
-                  alert(this.s86);
-              }
-          }
-        },
-        rowSelected:function(id) {
-            let row = document.getElementById("row-" + id);
-            if(row.style.background == ""){
-                row.style.background = "#c2dbff";
-            }else{
-                row.style.background = "";
-            }
-            this.allIsSelected = false;
-            if(document.getElementById("selectAllCheckbox").checked == true){
-                document.getElementById("selectAllCheckbox").click();
-            }
-        },
         changeLang: function () {
           if(this.lang == "EN"){
             this.margin = "margin-left: 30px;";
@@ -1153,7 +910,7 @@ function myFunction() {
             this.s11 = "Privacy";
             this.s12 = "Guide";
             this.s13 = "Create New Service";
-            this.s14 = "New";
+            this.s14 = "New Service";
             this.s15 = "Users";
             this.s16 = "./dashboard?en";
             this.s17 = "./services?en";
@@ -1186,7 +943,7 @@ function myFunction() {
             this.s44 = "Logout Type";
             this.s45 = "Submit";
             this.s46 = "Go Back";
-            this.s47 = "Delete";
+            this.s47 = "Remove All";
             this.s48 = "./groups?en";
             this.s49 = "./settings?en";
             this.s50 = "./privacy?en";
@@ -1222,16 +979,6 @@ function myFunction() {
             this.s80 = "Attribute Based Access";
             this.s81 = "Attribute Name";
             this.s82 = "Attribute Value";
-            this.s83 = "Delete Service";
-            this.s84 = "Action";
-            this.s85 = "Are You Sure You Want To Delete Selected Services?";
-            this.s86 = "No Service is Selected.";
-            this.s87 = "Are You Sure You Want To Delete?";
-            this.s88 = "Are You Sure You Want To Delete All Services?";
-            this.s89 = " (If Entering The Address, Mention http Or https)";
-            this.s90 = "Address";
-            this.s91 = "File";
-            this.s92 = "Records a Page: ";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
@@ -1251,7 +998,7 @@ function myFunction() {
               this.s11 = "حریم خصوصی";
               this.s12 = "راهنما";
               this.s13 = "ایجاد سرویس جدید";
-              this.s14 = "جدید";
+              this.s14 = "سرویس جدید";
               this.s15 = "کاربران";
               this.s16 = "./dashboard";
               this.s17 = "./services";
@@ -1262,7 +1009,7 @@ function myFunction() {
               this.s22 = "آدرس";
               this.s23 = "ویرایش";
               this.s24 = "حذف";
-              this.s25 = "تنظیمات پایه";
+              this.s25 = "تنطیمات پایه";
               this.s26 = "فعال سازی سرویس";
               this.s27 = "نوع سرویس";
               this.s28 = "نام سرویس";
@@ -1279,12 +1026,12 @@ function myFunction() {
               this.s39 = "ایمیل";
               this.s40 = "شماره تماس";
               this.s41 = "دپارتمان";
-              this.s42 = "تنظیمات خروج";
+              this.s42 = "تنطیمات خروج";
               this.s43 = "آدرس خروج";
               this.s44 = "نوع خروج";
               this.s45 = "تایید";
               this.s46 = "بازگشت";
-              this.s47 = "حذف";
+              this.s47 = "حذف همه";
               this.s48 = "./groups";
               this.s49 = "./settings";
               this.s50 = "./privacy";
@@ -1293,9 +1040,9 @@ function myFunction() {
               this.s53 = "./events";
               this.s54 = "استراتژی دسترسی";
               this.s55 = "فعال سازی SSO";
-              this.s56 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
+              this.s56 = "آدرس تغییر مسیر غیرمجاز";
               this.s57 = " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
-              this.s58 = "تنظیمات پایه";
+              this.s58 = "تنطیمات پایه";
               this.s59 = "استراتژی دسترسی";
               this.s60 = "دسترسی بر اساس زمان";
               this.s61 = "تاریخ شروع";
@@ -1320,18 +1067,21 @@ function myFunction() {
               this.s80 = "دسترسی بر اساس پارامتر";
               this.s81 = "نام پارامتر";
               this.s82 = "مقدار پارامتر";
-              this.s83 = "حذف سرویس";
-              this.s84 = "اعمال";
-              this.s85 = "آیا از حذف سرویس های انتخاب شده اطمینان دارید؟";
-              this.s86 = "هیچ سرویسی انتخاب نشده است.";
-              this.s87 = "آیا از حذف این سرویس اطمینان دارید؟";
-              this.s88 = "آیا از حذف تمامی سرویس ها اطمینان دارید؟";
-              this.s89 = " (در صورت وارد کردن آدرس، http یا https ذکر شود)";
-              this.s90 = "آدرس";
-              this.s91 = "فایل";
-              this.s92 = "تعداد رکورد ها: ";
           }
         },
+        saml: function () {
+          this.samls = "";
+          this.s18 = "Entity ID";
+          },
+        cas: function () {
+          this.samls = "display: none;";
+          if(this.lang == "EN"){
+            this.s18 = "آدرس سرویس";
+          }else{
+            this.s18 = "Service URL";
+          }
+        },
+
         div: function (a, b) {
           return parseInt((a / b));
         },
