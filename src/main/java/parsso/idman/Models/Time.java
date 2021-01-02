@@ -10,14 +10,23 @@ import java.util.Calendar;
 @Getter
 
 public class Time {
-    int year;
-    int month;
-    int day;
+    private int year;
+    private int month;
+    private int day;
 
-    int hours;
-    int minutes;
-    int seconds;
-    int miliseconds;
+    private int hours;
+    private int minutes;
+    private int seconds;
+    private int miliseconds;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this.year == ((Time) obj).getYear() &&
+                this.month == ((Time) obj).getMonth() &&
+                this.day == ((Time) obj).getDay())
+            return true;
+            else return false;
+    }
 
     public Time(Calendar cal){
         year = cal.get(Calendar.YEAR);
@@ -42,12 +51,17 @@ public class Time {
         this.day = day;
         this.hours = hours;
         this.minutes = minutes;
-
-
-
-
         this.seconds = seconds;
         this.miliseconds = 0;
+    }
+
+    public Time(int year, int month, int day) {
+
+        DateConverter dateConverter = new DateConverter();
+        dateConverter.persianToGregorian(year,month,day);
+        this.year = dateConverter.getYear();
+        this.month = dateConverter.getMonth();
+        this.day = dateConverter.getDay();
     }
 
     public Time(DateConverter dateConverter, Calendar myCal) {
@@ -60,7 +74,6 @@ public class Time {
         this.seconds = myCal.get(Calendar.SECOND);
         this.miliseconds = myCal.get(Calendar.MILLISECOND);
     }
-
 
     public static String setEndTime(String input) {
         //if is jalali
@@ -85,7 +98,6 @@ public class Time {
                 return convertDateTimeJalali(input);
 
             }
-
 
             //if is G
         } else {
@@ -143,13 +155,13 @@ public class Time {
 
     public static String convertDateFromNumber(String date) {
         String y = date.substring(0, 4);
-        String M = date.substring(4, 6);
-        String d = date.substring(6, 8);
+        String M = date.substring(5, 7);
+        String d = date.substring(8, 10);
 
-        String h = date.substring(8, 10);
-        String m = date.substring(10, 12);
-        String s = date.substring(12, 14);
-        String S = date.substring(15, 18);
+        String h = "00";
+        String m = "00";
+        String s = "00";
+        String S = "00";
 
         return y + "-" + M + "-" + d + "T" + h + ":" + m + ":" + s + "." + S;
     }

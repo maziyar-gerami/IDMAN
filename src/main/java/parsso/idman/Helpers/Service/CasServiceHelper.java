@@ -188,7 +188,7 @@ public class CasServiceHelper {
                     multifactorPolicy.setFailureMode((String) jsonObject.get("failureMode"));
                 if (jsonObject.get("bypassEnabled") != null)
                     multifactorPolicy.setBypassEnabled((Boolean) jsonObject.get("bypassEnabled"));
-                if (jsonObject.get("multifactorAuthenticationProviders") != null && jsonObject.get("multifactorAuthenticationProviders").toString().contains("mfa-simple"))
+                if (jsonObject.get("multifactorAuthenticationProviders")!=null)
                     multifactorPolicy.setMultifactorAuthenticationProviders(jsonObject.get("multifactorAuthenticationProviders").toString());
                 service.setMultifactorPolicy(multifactorPolicy);
 

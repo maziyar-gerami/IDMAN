@@ -1,5 +1,6 @@
 package parsso.idman.Controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import parsso.idman.Helpers.Events.EventsExcelView;
 import parsso.idman.Helpers.Events.Pulling;
 import parsso.idman.Models.Event;
 import parsso.idman.Models.ListEvents;
+import parsso.idman.Models.Views;
 import parsso.idman.Repos.EventRepo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +54,7 @@ public class EventController {
     }
     //OK
     @GetMapping("/api/events/user/{page}/{n}")
+    //@JsonView(Views.UserEvent.class)
     public ResponseEntity<ListEvents> retrieveCurrentUserEvents(HttpServletRequest request,@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(eventRepo.getListUserEvents(principal.getName(),page,n), HttpStatus.OK);

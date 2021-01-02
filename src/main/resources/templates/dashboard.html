@@ -102,11 +102,16 @@
                                         <span>{{s6}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s29">
+                                        <i class="fa fa-history"></i>
+                                        <span>{{s28}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s22">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    <a v-if="menuSA" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s25">
                                         <i class="fa fa-cog"></i>
                                         <span>{{s24}}</span>
@@ -123,19 +128,19 @@
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <vc-donut v-bind="ActiveUsersChart">
-                                                <h1>{{ActiveUsersChart.total}}</h1>
+                                                <h4>{{ActiveUsersChart.total}}</h4>
                                                 <h5>{{s13}}</h5>
                                             </vc-donut>
                                         </div>
                                         <div class="col-lg-4">
                                             <vc-donut v-bind="ActiveServicesChart">
-                                                <h1>{{ActiveServicesChart.total}}</h1>
+                                                <h4>{{ActiveServicesChart.total}}</h4>
                                                 <h5>{{s4}}</h5>
                                             </vc-donut>
                                         </div>
                                         <div class="col-lg-4">
                                             <vc-donut v-bind="SuccessfulLoginsChart">
-                                                <h1>{{SuccessfulLoginsChart.total}}</h1>
+                                                <h4>{{SuccessfulLoginsChart.total}}</h4>
                                                 <h6>{{s27}}</h6>
                                             </vc-donut>
                                         </div>
@@ -164,10 +169,8 @@
                                                                 <p class="text-muted mb-3">{{service.name}}</p>
                                                                 <div class="px-1">
                                                                     <div class="mb-3">
-                                                                        <div class="btn-group btn-group-sm">
-                                                                            <button v-on:click="connect(service.serviceId)" class="btn btn-primary">
-                                                                            {{s20}}
-                                                                            </button>
+                                                                        <div class="btn-group btn-group-sm">                                                                            
+                                                                            <a class="btn btn-primary" :href="service.url" target="_blank">{{s20}}</a>
                                                                         </div>
                                                                     </div>
                                                                 </div>

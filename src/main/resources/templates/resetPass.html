@@ -51,6 +51,24 @@
                                             <input type="email" name="emailE" id="emailE" v-model="emailE" class="form-control"
                                             v-bind:placeholder="s19" v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                         </div>
+                                        <div>
+                                            <img v-bind:src="captcha">
+                                            <button style="padding: .2rem .2rem; color: #28a745; font-size: 70%;" data-toggle="tooltip" data-placement="top" title="Refresh Captcha" class="btn btn-sm" v-on:click="getCaptcha()">
+                                                <span class="fa-passwd-reset fa-stack">
+                                                    <i class="fa fa-undo fa-stack-2x"></i>
+                                                </span> 
+                                            </button>
+                                            <div class="desktopView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-3"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-9"></div>
+                                            </div>
+                                            <div class=" mobileView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-9"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-3"></div>
+                                            </div>
+                                        </div>
                                         <button @click="sendEmail(emailE)" class="btn btn-primary mb-3">
                                             {{s18}}
                                         </button>        
@@ -69,7 +87,7 @@
                                         <div class="mt-3 mb-3 form-group">
                                             <p style="color: green;"><i style="padding-left: 0.25rem; padding-right: 0.25rem;" class="fa fa-check-circle"></i>{{s24}}</p>
                                             <p class="mt-3">{{s25}}</p>
-                                            <a href="../login" class="btn btn-primary">{{s26}}</a>
+                                            <a href="../" class="btn btn-primary">{{s26}}</a>
                                         </div>
                                     </div>
                                     <div class="container" id="Error" v-if="Error">
@@ -78,6 +96,24 @@
                                             <p class="mt-3">{{s28}}</p>
                                             <input type="email" name="emailEE" id="emailEE" v-model="emailEE" class="form-control"
                                             v-bind:placeholder="s19" v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                        </div>
+                                        <div>
+                                            <img v-bind:src="captcha">
+                                            <button style="padding: .2rem .2rem; color: #28a745; font-size: 70%;" data-toggle="tooltip" data-placement="top" title="Refresh Captcha" class="btn btn-sm" v-on:click="getCaptcha()">
+                                                <span class="fa-passwd-reset fa-stack">
+                                                    <i class="fa fa-undo fa-stack-2x"></i>
+                                                </span> 
+                                            </button>
+                                            <div class="desktopView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-3"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-9"></div>
+                                            </div>
+                                            <div class="mobileView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-9"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-3"></div>
+                                            </div>
                                         </div>
                                         <button @click="sendEmail(emailEE)" class="btn btn-primary mb-3">
                                             {{s18}}
@@ -91,6 +127,24 @@
                                             <p>{{s30}}</p>
                                             <input type="text" name="mobile" id="mobile" v-model="mobile" class="form-control"
                                             v-bind:placeholder="s34" v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                        </div>
+                                        <div>
+                                            <img v-bind:src="captcha">
+                                            <button style="padding: .2rem .2rem; color: #28a745; font-size: 70%;" data-toggle="tooltip" data-placement="top" title="Refresh Captcha" class="btn btn-sm" v-on:click="getCaptcha()">
+                                                <span class="fa-passwd-reset fa-stack">
+                                                    <i class="fa fa-undo fa-stack-2x"></i>
+                                                </span> 
+                                            </button>
+                                            <div class="desktopView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-3"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-9"></div>
+                                            </div>
+                                            <div class="mobileView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-9"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-3"></div>
+                                            </div>
                                         </div>
                                         <button @click="sendSMS(mobile)" class="btn btn-primary mb-3">
                                             {{s18}}
@@ -135,6 +189,24 @@
                                             <p class="mt-3">{{s33}}</p>
                                             <input type="text" name="mobileS" id="mobileS" v-model="mobileS" class="form-control"
                                             v-bind:placeholder="s34" v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                        </div>
+                                        <div>
+                                            <img v-bind:src="captcha">
+                                            <button style="padding: .2rem .2rem; color: #28a745; font-size: 70%;" data-toggle="tooltip" data-placement="top" title="Refresh Captcha" class="btn btn-sm" v-on:click="getCaptcha()">
+                                                <span class="fa-passwd-reset fa-stack">
+                                                    <i class="fa fa-undo fa-stack-2x"></i>
+                                                </span> 
+                                            </button>
+                                            <div class="desktopView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-3"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-9"></div>
+                                            </div>
+                                            <div class="mobileView row">
+                                                <input type="text" name="capAnswer" v-model="capAnswer" :placeholder="s46" class="form-control mb-3 mt-3 col-9"
+                                                v-bind:style="placeholder" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="col-3"></div>
+                                            </div>
                                         </div>
                                         <button @click="sendSMS(mobileS)" class="btn btn-primary mb-3">
                                             {{s18}}

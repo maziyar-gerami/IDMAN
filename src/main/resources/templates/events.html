@@ -100,11 +100,16 @@
                                         <span>{{s6}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s46">
+                                        <i class="fa fa-history"></i>
+                                        <span>{{s45}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s22">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    <a v-if="menuSA" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s25">
                                         <i class="fa fa-cog"></i>
                                         <span>{{s24}}</span>
@@ -130,24 +135,41 @@
                                             <th>{{s28}}</th>
                                             <th>{{s29}}</th>
                                             <th>Client IP</th>
-                                            <th>Server IP</th>
                                             <th>{{s38}}</th>
                                             <th>{{s30}}</th>
+                                            <!-- <th>{{s41}}</th> -->
+                                            <th>{{s42}}</th>
+                                            <th>{{s43}}</th>
                                         </tr>
                                         <tbody id="body">
                                             <tr v-for="eve in sortedEvent" >
                                                 <td>{{eve.action}}</td>
                                                 <td>{{eve.application}}</td>
                                                 <td>{{eve.clientIP}}</td>
-                                                <td>{{eve.serverIP}}</td>
                                                 <td>{{eve.date}}</td>
                                                 <td>{{eve.clock}}</td>
+                                                <!-- <td>{{eve.service}}</td> -->
+                                                <td>{{eve.os}}</td>
+                                                <td>{{eve.browser}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                     <div style="direction: rtl;">
-                                        <v-pagination  v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
+                                        <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
                                         :labels="paginationAnchorTexts"></v-pagination>
+                                    </div>
+                                    <div class="row mt-3" style="text-align: center;">
+                                        <div class="col-8"></div>
+                                        <div class="col-2 pr-0 pl-0">
+                                            <label>{{s44}}</label>
+                                        </div>
+                                        <div class="col-2 pr-2 pl-3">
+                                            <select class="form-control" v-on:change="changeRecordsEvent($event)">
+                                                <option value="20" selected>20</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -173,6 +195,14 @@
                                                     <input v-model="tempEventsDate" type="text" :placeholder="s35" style="direction: ltr; display: inline-block;">
                                                     <button class="btn btn-primary btn-sm" @click.prevent="getEventsDate()" style="display: inline-block;">{{s27}}</button>
                                                 </li>
+                                                <li class="nav-item" style="margin: 0.25rem;">
+                                                    <button class="btn btn-primary btn-sm" v-on:click="exportEvents()">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-upload fa-stack-1x"></i>
+                                                        </span>
+                                                        Export
+                                                    </button>
+                                                </li>
                                             </ul>
                                             <table class="table table-responsive">
                                                 <tr>
@@ -183,6 +213,9 @@
                                                     <th>Server IP</th>
                                                     <th>{{s38}}</th>
                                                     <th>{{s30}}</th>
+                                                    <!-- <th>{{s41}}</th> -->
+                                                    <th>{{s42}}</th>
+                                                    <th>{{s43}}</th>
                                                 </tr>
                                                 <tbody id="body">
                                                     <tr v-for="event in sortedEvents">
@@ -193,12 +226,28 @@
                                                         <td>{{event.serverIP}}</td>
                                                         <td>{{event.date}}</td>
                                                         <td>{{event.clock}}</td>
+                                                        <!-- <td>{{event.service}}</td> -->
+                                                        <td>{{event.os}}</td>
+                                                        <td>{{event.browser}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                             <div style="direction: rtl;">
                                                 <v-pagination  v-model="currentPageEvents" :page-count="totalEvents" :classes="bootstrapPaginationClasses"
                                                 :labels="paginationAnchorTexts"></v-pagination>
+                                            </div>
+                                            <div class="row mt-3" style="text-align: center;">
+                                                <div class="col-8"></div>
+                                                <div class="col-2 pr-0 pl-0">
+                                                    <label>{{s44}}</label>
+                                                </div>
+                                                <div class="col-2 pr-2 pl-3">
+                                                    <select class="form-control" v-on:change="changeRecordsEvents($event)">
+                                                        <option value="20" selected>20</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" :class="{ 'active show': isActive('myEvents') }" id="myEvents">
@@ -214,24 +263,41 @@
                                                     <th>{{s28}}</th>
                                                     <th>{{s29}}</th>
                                                     <th>Client IP</th>
-                                                    <th>Server IP</th>
                                                     <th>{{s38}}</th>
                                                     <th>{{s30}}</th>
+                                                    <!-- <th>{{s41}}</th> -->
+                                                    <th>{{s42}}</th>
+                                                    <th>{{s43}}</th>
                                                 </tr>
                                                 <tbody id="body">
                                                     <tr v-for="eve in sortedEvent" >
                                                         <td>{{eve.action}}</td>
                                                         <td>{{eve.application}}</td>
                                                         <td>{{eve.clientIP}}</td>
-                                                        <td>{{eve.serverIP}}</td>
                                                         <td>{{eve.date}}</td>
                                                         <td>{{eve.clock}}</td>
+                                                        <!-- <td>{{eve.service}}</td> -->
+                                                        <td>{{eve.os}}</td>
+                                                        <td>{{eve.browser}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                             <div style="direction: rtl;">
-                                                <v-pagination  v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
+                                                <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
                                                 :labels="paginationAnchorTexts"></v-pagination>
+                                            </div>
+                                            <div class="row mt-3" style="text-align: center;">
+                                                <div class="col-8"></div>
+                                                <div class="col-2 pr-0 pl-0">
+                                                    <label>{{s44}}</label>
+                                                </div>
+                                                <div class="col-2 pr-2 pl-3">
+                                                    <select class="form-control" v-on:change="changeRecordsEvent($event)">
+                                                        <option value="20" selected>20</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

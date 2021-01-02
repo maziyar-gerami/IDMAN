@@ -4,14 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Event;
 import parsso.idman.Models.ListEvents;
+import parsso.idman.Models.Time;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
+import parsso.idman.utils.Convertor.DateConverter;
 import parsso.idman.utils.Query.QueryDomain;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -57,14 +62,9 @@ public class EventRepoImpl implements EventRepo {
     @Override
     public ListEvents getEventsByDate(String date, int p, int n) throws ParseException, IOException, org.json.simple.parser.ParseException {
         p= inverseP(p,n);
-        List<Event> events = analyze(mainCollection,n*(p-1),n);
-
-        ListEvents listEvents = new ListEvents();
-        Query query = new Query(Criteria.where("principalId").is(date));
-        listEvents.setSize((int) mongoTemplate.count(query,mainCollection));
-        listEvents.setPages((int) Math.ceil(listEvents.getSize()/n));
-        listEvents.setEventList(events);
-        return listEvents;
+        List<Event> allEvents = analyze(mainCollection,(p-1)*n,n);
+        long size =  mongoTemplate.getCollection(mainCollection).countDocuments();
+        return new ListEvents(size,(int) Math.ceil(size/n),allEvents);
     }
 
     @Override

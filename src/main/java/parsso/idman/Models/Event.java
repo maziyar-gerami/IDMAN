@@ -1,9 +1,6 @@
 package parsso.idman.Models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.mongodb.client.MongoClients;
@@ -72,7 +69,6 @@ public class Event implements Serializable {
     public String getClientip() {
         return properties.clientip;
     }
-    @JsonIgnore
     public String serverip;
 
     public String eventId;
@@ -91,10 +87,8 @@ public class Event implements Serializable {
         ,Integer.valueOf(creationTime.substring(11,13))
         ,Integer.valueOf(creationTime.substring(14,16))
         , Integer.valueOf(creationTime.substring(17,19)));
-
         return time;
     }
-
     public String service;
 
     @Setter
@@ -105,6 +99,7 @@ public class Event implements Serializable {
         private String agent;
         @JsonProperty("clientIP")
         private String clientip;
+        @JsonView(Views.UserEvent.class)
         private String serverip;
         @JsonIgnore
         private String timestamp;

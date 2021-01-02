@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
             username: "",
             name: "",
             nameEN: "",
+            menuSA: false,
             group: [],
             groups: [],
             groupsPage: [],
@@ -58,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             margin1: "ml-1",
             userPicture: "images/PlaceholderUser.png",
+            allIsSelected: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -89,6 +91,13 @@ document.addEventListener('DOMContentLoaded', function () {
             s29: "افزودن گروه",
             s30: "ویرایش گروه",
             s31: "./events",
+            s32: "حذف گروه",
+            s33: "اعمال",
+            s34: "آیا از حذف گروه های انتخاب شده اطمینان دارید؟",
+            s35: "هیچ گروهی انتخاب نشده است.",
+            s36: "تعداد رکورد ها: ",
+            s37: "ممیزی ها",
+            s38: "/audits",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "شناسه",
@@ -101,12 +110,12 @@ document.addEventListener('DOMContentLoaded', function () {
             U9: "توضیحات",
             U10: "به روزرسانی",
             U11: "حذف",
-            U12: "گروه جدید",
+            U12: "جدید",
             U13: "ویرایش",
             U14: "گروههای عضو",
             U15: "تکرار رمز عبور",
             U16: "کاربر مورد نظر در گروههای زیر عضویت دارد. کاربر مورد نظر از چه گروههایی حذف شود؟",
-            U17: "حذف همه",
+            U17: "حذف",
             h1: "ترکیبی از حروف و اعداد. مثال: ali123",
             p1: "خیلی ضعیف",
             p2: "متوسط",
@@ -114,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.getUserInfo();
+            this.isAdmin();
             this.getUserPic();
             this.getGroups();
             if(typeof this.$route.query.en !== 'undefined'){
@@ -121,6 +131,29 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         methods: {
+            allSelected () {
+                if(this.allIsSelected){
+                    this.allIsSelected = false;
+                    for(let i = 0; i < this.groups.length; ++i){
+                        if(document.getElementById("checkbox-" + this.groups[i].id).checked == true){
+                            document.getElementById("checkbox-" + this.groups[i].id).click();
+                        }
+                        document.getElementById("row-" + this.groups[i].id).style.background = "";
+                    }
+                }else{
+                    this.allIsSelected = true;
+                    for(let i = 0; i < this.groups.length; ++i){
+                        if(document.getElementById("checkbox-" + this.groups[i].id).checked == false){
+                            document.getElementById("checkbox-" + this.groups[i].id).click();
+                        }
+                        document.getElementById("row-" + this.groups[i].id).style.background = "#c2dbff";
+                    }
+                }
+            },
+            changeRecords: function(event) {
+                this.recordsShownOnPage = event.target.value;
+                this.getGroups();
+            },
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
@@ -133,31 +166,46 @@ document.addEventListener('DOMContentLoaded', function () {
                     vm.s1 = vm.name;
                 });
             },
+            isAdmin: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/api/user/isAdmin") //
+                  .then((res) => {
+                    if(res.data == "0"){
+                      vm.menuSA = true;
+                    }
+                  });
+            },
             getUserPic: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                      vm.userPicture = "/api/user/photo";
+                        if(res.data == "Problem" || res.data == "NotExist"){
+                            vm.userPicture = "images/PlaceholderUser.png";
+                        }else{
+                            vm.userPicture = "/api/user/photo";
+                        }
                     })
                     .catch((error) => {
                         if (error.response) {
-                          if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
-                            vm.userPicture = "images/PlaceholderUser.png";
-                          }else{
-                            vm.userPicture = "/api/user/photo";
-                          }
-                        }else{
-                          console.log("error.response is False")
+                            if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
+                                vm.userPicture = "images/PlaceholderUser.png";
+                            }else{
+                                vm.userPicture = "/api/user/photo";
+                            }
                         }
                     });
-              },
+            },
             getGroups: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 axios.get(url + "/api/groups") //
                     .then((res) => {
                         vm.groups = res.data;
+                        for(let i = 0; i < vm.groups.length; ++i){
+                            vm.groups[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
+                        }
                         vm.total = Math.ceil(vm.groups.length / vm.recordsShownOnPage);
                     });
             },
@@ -178,25 +226,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
             },
             editGroup: function (id) {
-                this.showS = ""
-                this.addS = "display:none"
-                this.editS = "display:none"
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var check = confirm(this.s23);
-                if (check == true) {
-                    axios({
-                        method: 'put',
-                        url: url + '/api/groups/' + id, //
-                        headers: {'Content-Type': 'application/json'},
-                        data: JSON.stringify({
-                            id: id,
-                            name: document.getElementById('group.nameUpdate').value,
-                            description: document.getElementById('group.descriptionUpdate').value,
-                        }),
-                    })
-                    .then((res) => {
-                        location.reload();
-                    });
+                if(document.getElementById('group.nameUpdate').value == ""){
+                    alert("لطفا قسمت های الزامی را پر کنید.");
+                }else{
+                    var check = confirm(this.s23);
+                    if (check == true) {
+                        axios({
+                            method: 'put',
+                            url: url + '/api/groups/' + id, //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                id: id,
+                                name: document.getElementById('group.nameUpdate').value,
+                                description: document.getElementById('group.descriptionUpdate').value,
+                            }).replace(/\\\\/g, "\\")
+                        })
+                        .then((res) => {
+                            location.reload();
+                        });
+                    }
                 }
             },
             addGroupS: function () {
@@ -207,28 +256,41 @@ document.addEventListener('DOMContentLoaded', function () {
             addGroup: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios({
-                    method: 'post',
-                    url: url + "/api/groups", //
-                    headers: {'Content-Type': 'application/json'},
-                    data: JSON.stringify({
-                        name: document.getElementById('group.nameCreate').value,
-                        description: document.getElementById('group.descriptionCreate').value,
-                    }),
-                })
-                .then((res) => {
-                    location.reload();
-                });
+                if(document.getElementById('group.nameCreate').value == ""){
+                    alert("لطفا قسمت های الزامی را پر کنید.");
+                }else{
+                    axios({
+                        method: 'post',
+                        url: url + "/api/groups", //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                            name: document.getElementById('group.nameCreate').value,
+                            description: document.getElementById('group.descriptionCreate').value,
+                        }).replace(/\\\\/g, "\\")
+                    })
+                    .then((res) => {
+                        location.reload();
+                    });
+                }
             },
             deleteGroup: function (id) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                let selectedGroups = [];
+                selectedGroups.push(id.toString());
                 var check = confirm(this.s24);
                 if (check == true) {
-                    axios.delete(url + `/api/groups/${id}`) //
-                        .then(() => {
-                            vm.getGroups();
-                        });
+                    axios({
+                        method: 'delete',
+                        url: url + "/api/groups", //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                            names: selectedGroups
+                        }).replace(/\\\\/g, "\\")
+                    })
+                    .then((res) => {
+                        vm.getGroups();
+                    });
                 }
             },
             deleteAllGroups: function () {
@@ -236,10 +298,59 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 var check = confirm(this.s25);
                 if (check == true) {
-                    axios.delete(url + `/api/groups`) //
-                        .then(() => {
-                            vm.getGroups();
-                        });
+                    axios({
+                        method: 'delete',
+                        url: url + "/api/groups", //
+                        headers: {'Content-Type': 'application/json'},
+                        data: JSON.stringify({
+                        }).replace(/\\\\/g, "\\")
+                    })
+                    .then((res) => {
+                        vm.getGroups();
+                    });
+                }
+            },
+            changeSelected: function (action) {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                let selectedGroups = [];
+                if(action == "delete"){
+                    selectedGroups = [];
+                    for(let i = 0; i < vm.groups.length; ++i){
+                        if(document.getElementById("checkbox-" + vm.groups[i].id).checked){
+                            selectedGroups.push(vm.groups[i].id.toString());
+                        }
+                    }
+                    if(selectedGroups.length != 0){
+                        var check = confirm(this.s34);
+                        if (check == true) {
+                            axios({
+                                method: 'delete',
+                                url: url + "/api/groups", //
+                                headers: {'Content-Type': 'application/json'},
+                                data: JSON.stringify({
+                                    names: selectedGroups
+                                }).replace(/\\\\/g, "\\")
+                            })
+                            .then((res) => {
+                                vm.getGroups();
+                            });
+                        }
+                    }else{
+                        alert(this.s35);
+                    }
+                }
+            },
+            rowSelected:function(id) {
+                let row = document.getElementById("row-" + id);
+                if(row.style.background == ""){
+                    row.style.background = "#c2dbff";
+                }else{
+                    row.style.background = "";
+                }
+                this.allIsSelected = false;
+                if(document.getElementById("selectAllCheckbox").checked == true){
+                    document.getElementById("selectAllCheckbox").click();
                 }
             },
             changeLang: function () {
@@ -280,6 +391,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s29 = "Add Group";
                     this.s30 = "Edit Group";
                     this.s31 = "./events?en";
+                    this.s32 = "Delete Group";
+                    this.s33 = "Action";
+                    this.s34 = "Are You Sure You Want To Delete Selected Groups?";
+                    this.s35 = "No Group is Selected.";
+                    this.s36 = "Records a Page: ";
+                    this.s37 = "Audits";
+                    this.s38 = "/audits?en";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "ID";
@@ -292,9 +410,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U9 = "Description";
                     this.U10 = "Update";
                     this.U11 = "Delete"
-                    this.U12 = "New Group";
+                    this.U12 = "New";
                     this.U13 = "Edit";
-                    this.U17 = "Remove All";
+                    this.U17 = "Delete";
                 } else{
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
@@ -332,21 +450,28 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s29 = "افزودن گروه";
                     this.s30 = "ویرایش گروه";
                     this.s31 = "./events";
-                    this.U0= "رمز";
-                    this.U1= "گروه ها";
-                    this.U2= "شناسه";
-                    this.U3= "نام";
-                    this.U4= "نام خانوادگی (به انگلیسی)";
-                    this.U5= "نام کامل (به فارسی)";
-                    this.U6= "شماره تماس";
-                    this.U7= "ایمیل";
-                    this.U8= "کد ملی";
-                    this.U9= "توضیحات";
+                    this.s32 = "حذف گروه";
+                    this.s33 = "اعمال";
+                    this.s34 = "آیا از حذف گروه های انتخاب شده اطمینان دارید؟";
+                    this.s35 = "هیچ گروهی انتخاب نشده است.";
+                    this.s36 = "تعداد رکورد ها: ";
+                    this.s37 = "ممیزی ها";
+                    this.s38 = "/audits";
+                    this.U0 = "رمز";
+                    this.U1 = "گروه ها";
+                    this.U2 = "شناسه";
+                    this.U3 = "نام";
+                    this.U4 = "نام خانوادگی (به انگلیسی)";
+                    this.U5 = "نام کامل (به فارسی)";
+                    this.U6 = "شماره تماس";
+                    this.U7 = "ایمیل";
+                    this.U8 = "کد ملی";
+                    this.U9 = "توضیحات";
                     this.U10 = "به روز رسانی";
                     this.U11 = "حذف"
-                    this.U12 = "گروه جدید";
+                    this.U12 = "جدید";
                     this.U13 = "ویرایش";
-                    this.U17 = "حذف همه"
+                    this.U17 = "حذف"
                 }
             }
         },

@@ -19,7 +19,6 @@ public class Audit {
     private String applicationCode;
     private Date whenActionWasPerformed;
     private String clientIpAddress;
-    @JsonIgnore
     private String serverIpAddress;
 
     private Time time;

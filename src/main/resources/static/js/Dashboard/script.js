@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
       groups: [],
       services: [],
       menuS: false,
+      menuSA: false,
       userPicture: "images/PlaceholderUser.png",
       ActiveUsersChart: {
         size: 80,
@@ -99,15 +100,17 @@ document.addEventListener('DOMContentLoaded', function () {
       s24: "پیکربندی",
       s25: "./configs",
       s26: "./events",
-      s27: "لاگین های امروز"
+      s27: "لاگین های امروز",
+      s28: "ممیزی ها",
+      s29: "/audits",
     },
     created: function () {
       this.getUserInfo();
-      this.getUserPic();
+      this.isAdmin();
       this.getDashboardInfo();
       this.getServices();
+      this.getUserPic();
       this.getGroups();
-      this.isAdmin();
       if(typeof this.$route.query.en !== 'undefined'){
         this.changeLang()
       }
@@ -119,15 +122,15 @@ document.addEventListener('DOMContentLoaded', function () {
       setActive (menuItem) {
         this.activeItem = menuItem
       },
-      connect (add) {
-        window.open(add);
-      },
       isAdmin: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         axios.get(url + "/api/user/isAdmin") //
           .then((res) => {
-            if(res.data){
+            if(res.data == "0"){
+              vm.menuS = true;
+              vm.menuSA = true;
+            }else if(res.data == "1"){
                 vm.menuS = true;
             }
           });
@@ -168,7 +171,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/api/user/photo") //
             .then((res) => {
-              vm.userPicture = "/api/user/photo";
+              if(res.data == "Problem" || res.data == "NotExist"){
+                vm.userPicture = "images/PlaceholderUser.png";
+              }else{
+                vm.userPicture = "/api/user/photo";
+              }
             })
             .catch((error) => {
                 if (error.response) {
@@ -177,8 +184,6 @@ document.addEventListener('DOMContentLoaded', function () {
                   }else{
                     vm.userPicture = "/api/user/photo";
                   }
-                }else{
-                  console.log("error.response is False")
                 }
             });
       },
@@ -193,6 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
       getServices: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        const regex = new RegExp('^', 'g');
         axios.get(url + "/api/services/user") //
         .then((res) => {
           vm.services = res.data;
@@ -212,6 +218,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }else{
               vm.services[i].description = "...";
             }
+
+            vm.services[i].serviceId = vm.services[i].serviceId.replace(/\((.*?)\)/g, "");
+            vm.services[i].serviceId = vm.services[i].serviceId.replace(/\^/g, "");
+
+            vm.services[i].serviceId = vm.services[i].serviceId.replace(/\\/g, "\\\\")
           }
         });
       },
@@ -249,6 +260,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s25 = "./configs?en";
           this.s26 = "./events?en";
           this.s27 = "Today's Logins";
+          this.s28 = "Audits";
+          this.s29 = "/audits?en";
           this.ActiveUsersChart.sections[0].label = "Active";
           this.ActiveUsersChart.sections[1].label = "Disabled";
           this.ActiveUsersChart.sections[2].label = "Locked";
@@ -289,6 +302,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s25 = "./configs";
             this.s26 = "./events";
             this.s27 = "لاگین های امروز";
+            this.s28 = "ممیزی ها";
+            this.s29 = "/audits";
             this.ActiveUsersChart.sections[0].label = "فعال";
             this.ActiveUsersChart.sections[1].label = "غیرفعال";
             this.ActiveUsersChart.sections[2].label = "قفل شده";

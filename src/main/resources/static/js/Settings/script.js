@@ -24,17 +24,17 @@ document.addEventListener('DOMContentLoaded', function () {
         el: '#app',
         data: {
             rules: [
-                { message:"حداقل شامل یک کاراکتر کوچک باشد. ", regex:/[a-z]+/ },
-				{ message:"حداقل شامل یک کاراکتر بزرگ باشد. ",  regex:/[A-Z]+/ },
-				{ message:"حداقل ۸ کاراکتر باشد. ", regex:/.{8,}/ },
-				{ message:"حداقل شامل یک عدد باشد. ", regex:/[0-9]+/ }
+                { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ", regex:/[a-zA-Z]+/, fa:false},
+                { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ",  regex:/[!@#\$%\^\&*\)\(+=\[\]._-]+/, fa:true},
+				{ message:"حداقل ۸ کاراکتر باشد. ", regex:/.{8,}/, fa:false},
+				{ message:"حداقل شامل یک عدد باشد. ", regex:/[0-9]+/, fa:false}
             ],
             show: false,
             showR: false,
             showC: false,
             has_number: false,
-            has_lowercase: false,
-            has_uppercase: false,
+            has_lowerUPPERcase: false,
+            has_specialchar: false,
             has_char: false,
             password: "",
             checkPassword: "",
@@ -55,12 +55,15 @@ document.addEventListener('DOMContentLoaded', function () {
             lang: "EN",
             isRtl: true,
             menuS: false,
+            menuSA: false,
             activeItem: "info",
             eye: "right: 1%;",
             userPicture: "images/PlaceholderUser.png",
             QR: "/api/mobile/qrcode",
             token: "",
             requestSent: false,
+            requestSentSuccess: false,
+            requestSentFail: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -90,13 +93,19 @@ document.addEventListener('DOMContentLoaded', function () {
             s27: "پیکربندی",
             s28: "./configs",
             s29: "./events",
-            s30: "فعال سازی پارسو اپ",
-            s31: "لطفا کد QR را جهت فعال سازی پارسو اپ، اسکن کنید.",
+            s30: "برنامه موبایل",
+            s31: "لطفا کد QR را جهت فعال سازی برنامه موبایل، اسکن کنید.",
             s32: "کد تایید با موفقیت ارسال شد. لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.",
             s33: "لطفا جهت تغییر رمز عبور خود، ابتدا درخواست کد تایید را داده و سپس کد ارسال شده را وارد نمایید.",
             s34: "درخواست کد تایید",
             s35: "تایید",
             s36: "کد تایید را وارد نمایید",
+            s37: "خطایی رخ داده است. لطفا از صحت شماره موبایل خود اطمینان حاصل فرمایید.",
+            s38: "لطفا برای دریافت برنامه موبایل بر روی لینک زیر کلیک کنید.",
+            s39: "بازگشت",
+            s40: "./dashboard",
+            s41: "ممیزی ها",
+            s42: "/audits",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -114,7 +123,8 @@ document.addEventListener('DOMContentLoaded', function () {
             U14: "گروههای عضو",
             U15: "تکرار رمز عبور",
             U16: "تغییر رمز عبور",
-            U17: "تغییر اطلاعات کاربری"
+            U17: "تغییر اطلاعات کاربری",
+            U18: "کد پرسنلی"
         },
         created: function () {
             this.getUserInfo();
@@ -132,12 +142,18 @@ document.addEventListener('DOMContentLoaded', function () {
             setActive (menuItem) {
                 this.activeItem = menuItem
             },
+            backDashboard: function () {
+                window.location.href = this.s40;
+            },
             isAdmin: function () {
             var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
             var vm = this;
             axios.get(url + "/api/user/isAdmin") //
                 .then((res) => {
-                    if(res.data){
+                    if(res.data == "0"){
+                        vm.menuS = true;
+                        vm.menuSA = true;
+                    }else if(res.data == "1"){
                         vm.menuS = true;
                     }
                 });
@@ -159,17 +175,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                      vm.userPicture = "/api/user/photo";
+                        if(res.data == "Problem" || res.data == "NotExist"){
+                            vm.userPicture = "images/PlaceholderUser.png";
+                        }else{
+                            vm.userPicture = "/api/user/photo";
+                        }
                     })
                     .catch((error) => {
                         if (error.response) {
-                          if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
-                            vm.userPicture = "images/PlaceholderUser.png";
-                          }else{
-                            vm.userPicture = "/api/user/photo";
-                          }
-                        }else{
-                          console.log("error.response is False")
+                            if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
+                                vm.userPicture = "images/PlaceholderUser.png";
+                            }else{
+                                vm.userPicture = "/api/user/photo";
+                            }
                         }
                     });
             },
@@ -177,26 +195,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 this.QR = url + this.QR;
             },
-            editUser: function (id) {
+            editUser: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                var check = confirm(this.s24);
-                if (check == true) {
-                    axios({
-                        method: 'put',
-                        url: url + '/api/user',   //
-                        headers: {'Content-Type': 'application/json'},
-                        data: JSON.stringify({
-                            firstName: document.getElementById('userInfo.firstNameUpdate').value,
-                            lastName: document.getElementById('userInfo.lastNameUpdate').value,
-                            displayName: document.getElementById('userInfo.displayNameUpdate').value,
-                            mobile: document.getElementById('userInfo.mobileUpdate').value,
-                            mail: document.getElementById('userInfo.mailUpdate').value,
-                            description: document.getElementById('userInfo.descriptionUpdate').value
-                        }),
-                    }).then((res) => {
-                        location.replace(url + "/settings"); //
-                    });
+
+                if(document.getElementById('userInfo.displayNameUpdate').value == "" ||
+                document.getElementById('userInfo.mobileUpdate').value == "" ||
+                document.getElementById('userInfo.mailUpdate').value == ""){
+                    alert("لطفا قسمت های الزامی را پر کنید.");
+                }else{
+
+                    var check = confirm(this.s24);
+                    if (check == true) {
+                        axios({
+                            method: 'put',
+                            url: url + '/api/user',   //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                firstName: document.getElementById('userInfo.firstNameUpdate').value,
+                                lastName: document.getElementById('userInfo.lastNameUpdate').value,
+                                displayName: document.getElementById('userInfo.displayNameUpdate').value,
+                                mobile: document.getElementById('userInfo.mobileUpdate').value,
+                                mail: document.getElementById('userInfo.mailUpdate').value,
+                                employeeNumber: document.getElementById('userInfo.employeeNumberUpdate').value,
+                                description: document.getElementById('userInfo.descriptionUpdate').value
+                            }).replace(/\\\\/g, "\\")
+                        }).then((res) => {
+                            location.replace(url + "/settings"); //
+                        });
+                    }
                 }
             },
             editPass: function (id) {
@@ -212,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 newPassword: document.getElementById('newPassword').value,
                                 currentPassword: document.getElementById('currentPassword').value,
                                 token: document.getElementById('token').value
-                            }),
+                            }).replace(/\\\\/g, "\\")
                         }).then((res) => {
                             location.replace(url + "/settings"); //
                         });
@@ -222,18 +249,55 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             passwordCheck () {
-                this.has_number    = /\d/.test(this.password);
-                this.has_lowercase = /[a-z]/.test(this.password);
-                this.has_uppercase = /[A-Z]/.test(this.password);
+                this.has_number    = /[0-9]+/.test(this.password);
+                this.has_lowerUPPERcase = /[a-zA-Z]/.test(this.password);
+                this.has_specialchar = /[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password);
                 this.has_char   = /.{8,}/.test(this.password);
             },
+            persianTextCheck (s) {
+                for (let i = 0; i < s.length; ++i) {
+                    if(persianRex.text.test(s.charAt(i))){
+                        return true;
+                    }
+                }
+                return false;
+            },
             sendToken: function () {
-                this.requestSent = true;
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/user/password/request") //
-                    .then((res) => {
-                    });
+                if(this.userInfo.mobile == "" || this.userInfo.mobile == null){
+                    this.requestSent = true;
+                    this.requestSentFail = true;
+                    this.requestSentSuccess = false;
+                }else{
+                    this.requestSent = true;
+                    this.requestSentFail = false;
+                    this.requestSentSuccess = true;
+                    axios.get(url + "/api/user/password/request") //
+                        .then((res) => {
+                            vm.setCountdown(res.data * 60);
+                            document.getElementById("countdownBtn").disabled = true;
+                        });
+                }
+                
+            },
+            setCountdown: function (duration) {
+                var timer = duration, minutes, seconds;
+                var cd = setInterval(function () {
+                    minutes = parseInt(timer / 60, 10)
+                    seconds = parseInt(timer % 60, 10);
+            
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+            
+                    document.querySelector("#countdown").textContent = " (" + minutes + ":" + seconds + ") ";
+            
+                    if (--timer < 0) {
+                        clearInterval(cd);
+                        document.querySelector("#countdown").textContent = "";
+                        document.getElementById("countdownBtn").disabled = false;
+                    }
+                }, 1000);
             },
             changeLang: function () {
                 if(this.lang == "EN"){
@@ -272,22 +336,28 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s27 = "Configs";
                     this.s28 = "./configs?en";
                     this.s29 = "./events?en";
-                    this.s30 = "Parsso App Activation";
-                    this.s31 = "Please Scan The QR Code To Activate Parsso App.";
+                    this.s30 = "Mobile Application";
+                    this.s31 = "Please Scan The QR Code To Activate The App.";
                     this.s32 = "Verification Code Sent Successfully. Please Go To Your SMS Inbox And Enter The Code We Sent You.";
                     this.s33 = "To Change Your Password, Please Request a Verification Code And Then Enter the Sent Code.";
                     this.s34 = "Request Code";
                     this.s35 = "Submit";
                     this.s36 = "Enter The Verification Code";
-                    this.U0= "Password";
-                    this.U1= "Users";
-                    this.U2= "ID";
-                    this.U3= "First Name (In English)";
-                    this.U4= "Last Name (In English)";
-                    this.U5= "FullName (In Persian)";
-                    this.U6= "Phone";
-                    this.U7= "Email";
-                    this.U8= "NID";
+                    this.s37 = "An Error Has Occurred. Please Make Sure Your Mobile Number Is Valid.";
+                    this.s38 = "Please Click On The Link Below To Download The App.";
+                    this.s39 = "Go Back";
+                    this.s40 = "./dashboard?en";
+                    this.s41 = "Audits";
+                    this.s42 = "/audits?en";
+                    this.U0 = "Password";
+                    this.U1 = "Users";
+                    this.U2 = "ID";
+                    this.U3 = "First Name (In English)";
+                    this.U4 = "Last Name (In English)";
+                    this.U5 = "FullName (In Persian)";
+                    this.U6 = "Phone";
+                    this.U7 = "Email";
+                    this.U8 = "NID";
                     this.U9 = "Description";
                     this.U10 = "Update";
                     this.U11 = "Delete"
@@ -295,8 +365,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U13 = "Edit";
                     this.U16 = "Edit Password";
                     this.U17 = "Edit User Information";
-                    this.rules[0].message = "- One Lowercase Letter Required.";
-                    this.rules[1].message = "- One Uppercase Letter Required.";
+                    this.U18 = "Employee Number";
+                    this.rules[0].message = "- One Lowercase or Uppercase English Letter Required.";
+                    this.rules[1].message = "- One special Character or Persian Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
                     this.rules[3].message = "- One Number Required.";
                 } else{
@@ -335,13 +406,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s27 = "پیکربندی";
                     this.s28 = "./configs";
                     this.s29 = "./events";
-                    this.s30 = "فعال سازی پارسو اپ";
-                    this.s31 = "لطفا کد QR را جهت فعال سازی پارسو اپ، اسکن کنید.";
+                    this.s30 = "برنامه موبایل";
+                    this.s31 = "لطفا کد QR را جهت فعال سازی برنامه موبایل، اسکن کنید.";
                     this.s32 = "کد تایید با موفقیت ارسال شد. لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.";
                     this.s33 = "لطفا جهت تغییر رمز عبور خود، ابتدا درخواست کد تایید را داده و سپس کد ارسال شده را وارد نمایید.";
                     this.s34 = "درخواست کد تایید";
                     this.s35 = "تایید";
                     this.s36 = "کد تایید را وارد نمایید";
+                    this.s37 = "خطایی رخ داده است. لطفا از صحت شماره موبایل خود اطمینان حاصل فرمایید.";
+                    this.s38 = "لطفا برای دریافت برنامه موبایل بر روی لینک زیر کلیک کنید.";
+                    this.s39 = "بازگشت";
+                    this.s40 = "./dashboard";
+                    this.s41 = "ممیزی ها";
+                    this.s42 = "/audits";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";
@@ -358,8 +435,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U13 = "ویرایش";
                     this.U16 = "تغییر رمز عبور";
                     this.U17 = "تغییر اطلاعات کاربری";
-                    this.rules[0].message = "حداقل شامل یک کاراکتر کوچک باشد. ";
-                    this.rules[1].message = "حداقل شامل یک کاراکتر بزرگ باشد. ";
+                    this.U18 = "کد پرسنلی";
+                    this.rules[0].message = "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ";
+                    this.rules[1].message = "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ";
                     this.rules[2].message = "حداقل ۸ کاراکتر باشد. ";
                     this.rules[3].message = "حداقل شامل یک عدد باشد. ";
                 }
@@ -403,8 +481,14 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordValidation () {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.password)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.password)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if (errors.length === 0) {
@@ -416,8 +500,14 @@ document.addEventListener('DOMContentLoaded', function () {
             strengthLevel() {
                 let errors = []
                 for (let condition of this.rules) {
-                    if (!condition.regex.test(this.password)) {
-                        errors.push(condition.message)
+                    if(condition.fa){
+                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
+                            errors.push(condition.message)
+                        }
+                    }else{
+                        if (!condition.regex.test(this.password)) {
+                            errors.push(condition.message)
+                        }
                     }
                 }
                 if(errors.length === 0) return 4;

@@ -59,6 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
             addS: "display:none",
             showS: "",
             activeItem: "email",
+            captcha: "",
+            captchaId: "",
+            capAnswer: "",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -87,67 +90,94 @@ document.addEventListener('DOMContentLoaded', function () {
             s26: "بازگشت به صفحه ورود",
             s27: "ایمیل وارد شده در پایگاه داده ما وجود ندارد.",
             s28: "لطفا با دقت بیشتری نسبت به ورود آدرس ایمیل اقدام نمایید:",
-            s29: "لطفا جهت تکمیل مراحل، شناسه خود را وارد نمایید:",
+            s29: "لطفا جهت تکمیل مراحل، شناسه کاربری خود را وارد نمایید:",
             s30: "لطفا جهت بازنشانی رمز عبور، شماره موبایل خود را وارد کنید:",
             s31: "لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.",
             s32: "شماره موبایل وارد شده در پایگاه داده ما وجود ندارد.",
             s33: "لطفا با دقت بیشتری نسبت به ورود شماره موبایل اقدام نمایید:",
             s34: "شماره موبایل",
             s35: "شما در حال انتقال به صفحه بازنشانی رمز عبور هستید...",
-            s36: "شناسه",
+            s36: "شناسه کاربری",
             s37: "آدرس ایمیل خود را وارد کنید",
             s38: "فرمت آدرس ایمیل را به درستی وارد کنید",
             s39: "کد وارد شده منقضی شده است، لطفا دوباره تلاش کنید.",
             s40: "کد وارد شده اشتباه است.",
-            s41: "شناسه خود را وارد کنید",
+            s41: "شناسه کاربری خود را وارد کنید",
             s42: "شماره موبایل خود را وارد کنید",
-            s43: "کد پیامک شده خود را وارد کنید"
+            s43: "کد پیامک شده خود را وارد کنید",
+            s44: "جواب کد امنیتی نمی تواند خالی باشد.",
+            s45: "جواب کد امنیتی اشتباه است، دوباره تلاش کنید.",
+            s46: "کد امنیتی"
         },
         created: function () {
+            this.getCaptcha();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
             }
         },
         methods: {
+            getCaptcha: function  () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                
+                axios.get(url + "/api/captcha/request") //
+                .then((res) => {
+                    vm.captcha = "data:image/png;base64," + res.data.img;
+                    vm.captchaId = res.data.id;
+                    vm.capAnswer = "";
+                })
+            },
             isActive (menuItem) {
                 return this.activeItem === menuItem;
             },
             setActive (menuItem) {
                 this.activeItem = menuItem;
+                this.getCaptcha();
             },
             sendEmail: function  (email) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                console.log(emailRegex.test(email));
                 if(email != ""){
                     if(emailRegex.test(email)){
-                        axios.get(url + "/api/public/checkMail/" + email) //
-                            .then((res) => {
-                                vm.emails = res.data;
-                                if(vm.emails.length == 0){
-                                    vm.emailEE = "";
-                                    vm.sendE = false;
-                                    vm.sendU = false;
-                                    vm.Success = false;
-                                    vm.Error = true;
-                                } else if(vm.emails.length == 1){
-                                    vm.sendE = false;
-                                    vm.sendU = false;
-                                    vm.Success = true;
-                                    vm.Error = false;
-                                    axios.get(url + "/api/public/sendMail/" + email) //
-                                        .then((res) => {
-                                            
-                                        });
-                                } else if(vm.emails.length > 1){
-                                    vm.usernameE = "";
-                                    vm.sendE = false;
-                                    vm.sendU = true;
-                                    vm.Success = false;
-                                    vm.Error = false;
-                                }
-                            });
+                        if(vm.capAnswer != ""){
+                            axios.get(url + "/api/public/checkMail/" + email) //
+                                .then((res) => {
+                                    vm.emails = res.data;
+                                    if(vm.emails.length == 0){
+                                        vm.emailEE = "";
+                                        vm.sendE = false;
+                                        vm.sendU = false;
+                                        vm.Success = false;
+                                        vm.Error = true;
+                                        vm.getCaptcha();
+                                    } else if(vm.emails.length == 1){
+                                         axios.get(url + "/api/public/sendMail/" + email + "/" + vm.captchaId + "/" + vm.capAnswer) //
+                                            .then((res) => {
+                                                vm.sendE = false;
+                                                vm.sendU = false;
+                                                vm.Success = true;
+                                                vm.Error = false;
+                                            })
+                                            .catch((error) => {
+                                                if (error.response) {
+                                                    if(error.response.status === 403){
+                                                        alert(vm.s45);
+                                                        vm.getCaptcha();
+                                                    }
+                                                }
+                                            });
+                                    } else if(vm.emails.length > 1){
+                                        vm.usernameE = "";
+                                        vm.sendE = false;
+                                        vm.sendU = true;
+                                        vm.Success = false;
+                                        vm.Error = false;
+                                    }
+                                });
+                            }else{
+                                alert(this.s44);
+                            }
                     }else{
                         alert(this.s38);
                     }
@@ -167,14 +197,28 @@ document.addEventListener('DOMContentLoaded', function () {
                                 for(let i = 0; i < vm.emails.length; ++i){
                                     if(vm.emails[i].userId == username){
                                         flag = true;
-                                        vm.sendE = false;
-                                        vm.sendU = false;
-                                        vm.Success = true;
-                                        vm.Error = false;
-                                        axios.get(url + "/api/public/sendMail/" + email + "/" + username) //
+                                        
+                                        axios.get(url + "/api/public/sendMail/" + email + "/" + username + "/" + vm.captchaId + "/" + vm.capAnswer) //
                                             .then((res) => {
-                                                
+                                                vm.sendE = false;
+                                                vm.sendU = false;
+                                                vm.Success = true;
+                                                vm.Error = false;
+                                            }).catch((error) => {
+                                                if (error.response) {
+                                                    if(error.response.status === 403){
+                                                        vm.emailE = "";
+                                                        vm.emailEE = "";
+                                                        vm.sendE = true;
+                                                        vm.sendU = false;
+                                                        vm.Success = false;
+                                                        vm.Error = false;
+                                                        alert(vm.s45);
+                                                        vm.getCaptcha();
+                                                    }
+                                                }
                                             });
+
                                         break;
                                     }
                                 }
@@ -184,6 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     vm.sendU = false;
                                     vm.Success = false;
                                     vm.Error = true;
+                                    vm.getCaptcha();
                                 }
                             }
                         });
@@ -245,39 +290,50 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 if(mobile != ""){
-                    axios.get(url + "/api/public/checkMobile/" + mobile) //
-                        .then((res) => {
-                            vm.mobiles = res.data;
-                            if(vm.mobiles.length == 0){
-                                vm.mobileS = "";
-                                vm.sendS = false;
-                                vm.sendUS = false;
-                                vm.checkSMSCode = false;
-                                vm.SuccessS = false;
-                                vm.ErrorS = true;
-                                vm.ErrorSMSCode = false;
-                            } else if(vm.mobiles.length == 1){
-                                vm.codeSMS = "";
-                                vm.sendS = false;
-                                vm.sendUS = false;
-                                vm.checkSMSCode = true;
-                                vm.SuccessS = false;
-                                vm.ErrorS = false;
-                                vm.ErrorSMSCode = false;
-                                axios.get(url + "/api/public/sendSMS/" + mobile) //
-                                    .then((res) => {
-                                        
-                                    });
-                            } else if(vm.mobiles.length > 1){
-                                vm.usernameS = "";
-                                vm.sendS = false;
-                                vm.sendUS = true;
-                                vm.checkSMSCode = false;
-                                vm.SuccessS = false;
-                                vm.ErrorS = false;
-                                vm.ErrorSMSCode = false;
-                            }
-                        });
+                    if(vm.capAnswer != ""){
+                        axios.get(url + "/api/public/checkMobile/" + mobile) //
+                            .then((res) => {
+                                vm.mobiles = res.data;
+                                if(vm.mobiles.length == 0){
+                                    vm.mobileS = "";
+                                    vm.sendS = false;
+                                    vm.sendUS = false;
+                                    vm.checkSMSCode = false;
+                                    vm.SuccessS = false;
+                                    vm.ErrorS = true;
+                                    vm.ErrorSMSCode = false;
+                                    vm.getCaptcha();
+                                } else if(vm.mobiles.length == 1){
+                                    axios.get(url + "/api/public/sendSMS/" + mobile + "/" + vm.captchaId + "/" + vm.capAnswer) //
+                                        .then((res) => {
+                                            vm.codeSMS = "";
+                                            vm.sendS = false;
+                                            vm.sendUS = false;
+                                            vm.checkSMSCode = true;
+                                            vm.SuccessS = false;
+                                            vm.ErrorS = false;
+                                            vm.ErrorSMSCode = false;
+                                        }).catch((error) => {
+                                            if (error.response) {
+                                                if(error.response.status === 403){
+                                                    alert(vm.s45);
+                                                    vm.getCaptcha();
+                                                }
+                                            }
+                                        });
+                                } else if(vm.mobiles.length > 1){
+                                    vm.usernameS = "";
+                                    vm.sendS = false;
+                                    vm.sendUS = true;
+                                    vm.checkSMSCode = false;
+                                    vm.SuccessS = false;
+                                    vm.ErrorS = false;
+                                    vm.ErrorSMSCode = false;
+                                }
+                            });
+                        }else{
+                            alert(this.s44);
+                        }
                 }else{
                     alert(this.s42);
                 }
@@ -293,18 +349,33 @@ document.addEventListener('DOMContentLoaded', function () {
                             if(vm.mobiles.length > 1){
                                 for(let i = 0; i < vm.mobiles.length; ++i){
                                     if(vm.mobiles[i].userId == username){
-                                        vm.codeSMS = "";
                                         flag = true;
-                                        vm.sendS = false;
-                                        vm.sendUS = false;
-                                        vm.checkSMSCode = true;
-                                        vm.SuccessS = false;
-                                        vm.ErrorS = false;
-                                        vm.ErrorSMSCode = false;
-                                        axios.get(url + "/api/public/sendSMS/" + mobile + "/" + username) //
+                                        axios.get(url + "/api/public/sendSMS/" + mobile + "/" + username + "/" + vm.captchaId + "/" + vm.capAnswer) //
                                             .then((res) => {
-                                                
+                                                vm.codeSMS = "";
+                                                vm.sendS = false;
+                                                vm.sendUS = false;
+                                                vm.checkSMSCode = true;
+                                                vm.SuccessS = false;
+                                                vm.ErrorS = false;
+                                                vm.ErrorSMSCode = false;
+                                            }).catch((error) => {
+                                                if (error.response) {
+                                                    if(error.response.status === 403){
+                                                        vm.mobile = "";
+                                                        vm.mobileS = "";
+                                                        vm.sendS = true;
+                                                        vm.sendUS = false;
+                                                        vm.checkSMSCode = false;
+                                                        vm.SuccessS = false;
+                                                        vm.ErrorS = false;
+                                                        vm.ErrorSMSCode = false;
+                                                        alert(vm.s45);
+                                                        vm.getCaptcha();
+                                                    }
+                                                }
                                             });
+
                                         break;
                                     }
                                 }
@@ -316,6 +387,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     vm.SuccessS = false;
                                     vm.ErrorS = true;
                                     vm.ErrorSMSCode = false;
+                                    vm.getCaptcha();
                                 }
                             }
                         });
@@ -367,6 +439,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s36= "ID";
                     this.s37 = "Enter Your Email Address";
                     this.s38 = "Enter Email Address Format Correctly";
+                    this.s44 = "Security Code Answer Cannot Be Empty.";
+                    this.s45 = "Security Code Answer Is Incorrect, Try Again.";
+                    this.s46 = "Security Code";
                 } else{
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
@@ -400,16 +475,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s26 = "بازگشت به صفحه ورود";
                     this.s27 = "ایمیل وارد شده در پایگاه داده ما وجود ندارد.";
                     this.s28 = "لطفا با دقت بیشتری نسبت به ورود آدرس ایمیل اقدام نمایید:";
-                    this.s29 = "لطفا جهت تکمیل مراحل، شناسه خود را وارد نمایید:";
+                    this.s29 = "لطفا جهت تکمیل مراحل، شناسه کاربری خود را وارد نمایید:";
                     this.s30 = "لطفا جهت بازنشانی رمز عبور، شماره موبایل خود را وارد کنید:";
                     this.s31 = "لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.";
                     this.s32 = "شماره موبایل وارد شده در پایگاه داده ما وجود ندارد.";
                     this.s33 = "لطفا با دقت بیشتری نسبت به ورود شماره موبایل اقدام نمایید:";
                     this.s34 = "شماره موبایل";
                     this.s35 = "شما در حال انتقال به صفحه بازنشانی رمز عبور هستید...";
-                    this.s36 = "شناسه";
+                    this.s36 = "شناسه کاربری";
                     this.s37 = "آدرس ایمیل خود را وارد کنید";
                     this.s38 = "فرمت آدرس ایمیل را به درستی وارد کنید";
+                    this.s44 = "جواب کد امنیتی نمی تواند خالی باشد.";
+                    this.s45 = "جواب کد امنیتی اشتباه است، دوباره تلاش کنید.";
+                    this.s46 = "کد امنیتی";
                 }
             }
         }

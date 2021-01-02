@@ -16,6 +16,7 @@
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Settings/script.js"></script>
+    <script src="js/persian-rex.min.js"></script>
 
 </head>
 <body class="h-100">
@@ -97,12 +98,17 @@
                                         <span>{{s6}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s42">
+                                        <i class="fa fa-history"></i>
+                                        <span>{{s41}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
                                     style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s23">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    <a v-if="menuSA" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s28">
                                         <i class="fa fa-cog"></i>
                                         <span>{{s27}}</span>
@@ -144,7 +150,7 @@
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="show = !show"></i>
                                             </div>
                                             <div class="form-group">
-                                                <input v-bind:value="userInfo.userPassword" class="form-control" :type="showR === true ? 'text' : 'password'" v-model.lazy='checkPassword' v-bind:placeholder="s18" v-bind:style="placeholder" autocomplete="off">
+                                                <input v-bind:value="userInfo.userPassword" class="form-control" :type="showR === true ? 'text' : 'password'" v-model='checkPassword' v-bind:placeholder="s18" v-bind:style="placeholder" autocomplete="off">
                                                 <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showR" @click="showR = !showR"></i>
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showR = !showR"></i>
                                             </div>
@@ -153,8 +159,8 @@
                                                     <div v-if='!submitted' class='hints'>
                                                         <p style="box-sizing: unset;">{{s19}}</p> <br>
                                                         <p :class="{'passed' :has_number }" v-bind:style="font"><i :class="has_number ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
-                                                        <p :class="{'passed' :has_lowercase }" v-bind:style="font"><i :class="has_lowercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
-                                                        <p :class="{'passed' :has_uppercase }" v-bind:style="font"><i :class="has_uppercase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
+                                                        <p :class="{'passed' :has_lowerUPPERcase }" v-bind:style="font"><i :class="has_lowerUPPERcase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
+                                                        <p :class="{'passed' :has_specialchar }" v-bind:style="font"><i :class="has_specialchar ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
                                                         <p :class="{'passed' :has_char }" v-bind:style="font"><i :class="has_char ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[2].message}}</p>
                                                     </div>
                                                 </transition>
@@ -163,20 +169,20 @@
                                                 <p>{{s33}}</p>
                                                 <div class="row mb-3">
                                                     <input v-model:value="token" id="token" type="text" class="form-control col-7 ml-1 mr-1">
-                                                    <button v-on:click="sendToken()" class="btn btn-success col-3 ml-1 mr-1">{{s34}}</button>
+                                                    <button id="countdownBtn" style="font-size: .75rem;" v-on:click="sendToken()" class="btn btn-sm btn-success col-3 ml-1 mr-1">{{s34}}<span id="countdown"></span></button>
                                                     <div class="col-2"></div>
                                                 </div>
                                                 <div v-bind:style="requestSentFunc ? 'visibility: visible;' : 'visibility: hidden;' ">
-                                                    <p class="rounded" style="background-color:rgba(144, 238, 144, 0.521); padding: 1%;">{{s32}}</p>
+                                                    <p v-if="requestSentSuccess" class="rounded" style="background-color:rgba(144, 238, 144, 0.521); padding: 1%;">{{s32}}</p>
+                                                    <p v-if="requestSentFail" class="rounded" style="background-color:rgba(228, 30, 30, 0.521); padding: 1%;">{{s37}}</p>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <div class="matches" v-bind:style="notSamePasswords ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                     <p class="error" style="font-size: .8rem;">{{s21}}</p>
                                                 </div> <br> <br>
-                                                <button v-on:click="editPass(userInfo.userId)" :disabled="setActivee" class="btn btn-primary">
-                                                    {{U13}}
-                                                </button>
+                                                <button v-on:click="backDashboard()" class="btn btn-danger">{{s39}}</button>
+                                                <button v-on:click="editPass()" :disabled="setActivee" class="btn btn-primary">{{U13}}</button>
                                             </div>
                                     </div>
                                     <div class="tab-pane fade" :class="{ 'active show': isActive('info') }" id="info">
@@ -195,7 +201,7 @@
                                                 oninput="setCustomValidity('')">
                                             </div>
                                             <div class="form-group">
-                                                <label>{{U6}}</label>
+                                                <label>{{U6}}<span style="color: red;"> *</span></label>
                                                 <input v-bind:value="userInfo.mobile" id="userInfo.mobileUpdate" type="text" pattern="09\d{9}" class="form-control">
                                             </div>
                                             <div class="form-group">
@@ -204,20 +210,31 @@
                                                 oninput="setCustomValidity('')">
                                             </div>
                                             <div class="form-group">
+                                                <label>{{U18}}</label>
+                                                <input v-bind:value="userInfo.employeeNumber" id="userInfo.employeeNumberUpdate" type="text" class="form-control">
+                                            </div>
+                                            <div class="form-group">
                                                 <label>{{U9}}</label>
-                                                <textarea v-bind:value="userInfo.description" id= "userInfo.descriptionUpdate" rows="5" type="text" class="form-control">
+                                                <textarea v-bind:value="userInfo.description" id= "userInfo.descriptionUpdate" rows="3" type="text" class="form-control">
                                                 </textarea>
                                             </div>
                                             <div class="form-group">
-                                                <button v-on:click="editUser(userInfo.userId)"  class="btn btn-primary">
-                                                    {{U13}}
-                                                </button>
+                                                <button v-on:click="backDashboard()" class="btn btn-danger">{{s39}}</button>
+                                                <button v-on:click="editUser()"  class="btn btn-primary">{{U13}}</button>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="tab-pane fade" :class="{ 'active show': isActive('app') }" id="app">
                                         <h6>{{s31}}</h6>
                                         <img id="qr" v-bind:src="QR" class="img-responsive center-block" alt="qrCode" width="30%">
+                                        <h6 class="mt-5 mb-3">{{s38}}</h6>
+                                        <form method="GET" action="app/parsso.apk">
+                                            <button type="submit" class="btn btn-primary">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-android fa-stack-2x"></i>
+                                                </span>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
