@@ -31,14 +31,15 @@ public class AuditRepoImpl implements AuditRepo {
 
     @Override
     public ListAudits getListSizeAudits(int p, int n){
-        p= inverseP(p,n);
-        List<Audit> allAudits = analyze(mainCollection,(p-1)*n,n);
+        Query query = new Query().skip((p-1)*(n)).limit(n);
+        query.with(Sort.by(Sort.Direction.DESC,"_id"));
+        List<Audit> allAudits = mongoTemplate.find(query,Audit.class,mainCollection);
         long size =  mongoTemplate.getCollection(mainCollection).countDocuments();
         return new ListAudits(allAudits,size, (int) Math.ceil(size/n));
     }
 
-    private int inverseP(int p,int n){
-        long size =  mongoTemplate.getCollection(mainCollection).countDocuments();
+    private int inverseP(int p,int n,Query query){
+        long size =  mongoTemplate.count(query,Audit.class,mainCollection);
         int pages = (int) Math.ceil(size/n);
         return pages-(p-1);
     }
@@ -46,13 +47,10 @@ public class AuditRepoImpl implements AuditRepo {
     @Override
     public ListAudits getListUserAudits(String userId, int skip, int limit) {
         Query query = new Query(Criteria.where("principal").is(userId));
-        long size =  mongoTemplate.count(query, mainCollection);
-        query.skip((skip-1)*(limit));
-        query.limit(limit);
+        query.skip((skip-1)*(limit)).limit(limit);
         query.with(Sort.by(Sort.Direction.DESC,"_id"));
         List<Audit> auditList =  mongoTemplate.find(query, Audit.class,mainCollection);
-        int pages = (int) Math.ceil(size/limit);
-        ListAudits listAudits = new ListAudits(auditList, size,pages);
+        ListAudits listAudits = new ListAudits(auditList, auditList.size(),(int) Math.ceil(auditList.size()/limit));
         return listAudits;
     }
     @Override
@@ -61,8 +59,7 @@ public class AuditRepoImpl implements AuditRepo {
         Query query = new Query(Criteria.where("principal").is(userId));
         long size =  mongoTemplate.count(query, mainCollection);
         query.skip((skip-1)*(limit));
-        query.limit(limit);
-        query.with(Sort.by(Sort.Direction.DESC,"_id"));
+        query.limit(limit).with(Sort.by(Sort.Direction.DESC,"_id"));
         List<Audit> auditList =  mongoTemplate.find(query, Audit.class,mainCollection);
         int pages = (int) Math.ceil(size/limit);
         ListAudits listAudits = new ListAudits(auditList, size,pages);
@@ -70,24 +67,16 @@ public class AuditRepoImpl implements AuditRepo {
     }
 
     @Override
-    public ListAudits getAuditsByDate(String date, int p, int n) throws ParseException{
-        p= inverseP(p,n);
-        ListAudits listAudits = new ListAudits();
-        Query query = new Query(Criteria.where("principal").is(date));
-        query.with(Sort.by(Sort.Direction.DESC,"_id"));
+    public ListAudits getAuditsByDate(String date, int p, int n){
+        Query query = new Query(Criteria.where("principal").is(date)).with(Sort.by(Sort.Direction.DESC,"_id"))
+                .skip((p-1)*n).limit(n);
         List<Audit> audits = mongoTemplate.find(query,Audit.class,mainCollection);
-        listAudits.setSize((int) mongoTemplate.count(query,mainCollection));
-        listAudits.setPages((int) Math.ceil(listAudits.getSize()/n));
-        listAudits.setAuditList(audits);
-        return listAudits;
+        return new ListAudits(audits, (int) mongoTemplate.count(query,mainCollection), (int) Math.ceil(audits.size()/n));
     }
 
     public List<Audit> analyze(String collection,int skip,int limit) {
         List<Audit> audits;
-        Query query = new Query();
-        query.skip(skip);
-        query.limit(limit);
-        query.with(Sort.by(Sort.Direction.ASC,"_id"));
+        Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.ASC,"_id"));
         audits = mongoTemplate.find(query, Audit.class,collection);
         Collections.reverse(audits);
         return audits;
