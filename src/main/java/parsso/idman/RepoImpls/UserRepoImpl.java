@@ -706,7 +706,8 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public HttpStatus massUpdate(List<User> users) {
         for (User user:users)
-            update(user.getUserId(),user);
+            if(user!=null && user.getUserId()!=null)
+                update(user.getUserId(),user);
 
         return HttpStatus.OK;
     }
