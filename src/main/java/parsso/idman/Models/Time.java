@@ -5,6 +5,8 @@ import lombok.Setter;
 import parsso.idman.utils.Convertor.DateConverter;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 @Setter
 @Getter
@@ -44,6 +46,13 @@ public class Time {
                 + getHours()+":"+getMinutes()+":"+getSeconds()+"."+getMiliseconds();
     }
 
+    public String toStringDate(){
+
+
+        return String.format(("%4d"), getYear())+"-"+String.format(("%02d"), getMonth())+"-"+String.format(("%02d"), getDay());
+
+    }
+
 
     public Time(int year, int month, int day, int hours, int minutes, int seconds) {
         this.year = year;
@@ -62,6 +71,7 @@ public class Time {
         }
 
 
+
         this.seconds = seconds;
         this.miliseconds = 0;
     }
@@ -71,6 +81,7 @@ public class Time {
 
         DateConverter dateConverter = new DateConverter();
         dateConverter.persianToGregorian(year,month,day);
+
         this.year = dateConverter.getYear();
         this.month = dateConverter.getMonth();
         this.day = dateConverter.getDay();
