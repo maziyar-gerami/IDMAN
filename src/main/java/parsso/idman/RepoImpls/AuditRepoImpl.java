@@ -1,5 +1,7 @@
 package parsso.idman.RepoImpls;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -46,8 +48,11 @@ public class AuditRepoImpl implements AuditRepo {
     public ListAudits getListUserAudits(String userId, int skip, int limit) {
         Query query = new Query(Criteria.where("principal").is(userId));
         long size =  mongoTemplate.count(query, mainCollection);
+        List<String> order = new LinkedList<>();
+        order.add("_id");
         query.skip((skip-1)*(limit));
         query.limit(limit);
+        query.with(Sort.by(Sort.Direction.DESC,"_id"));
         List<Audit> auditList =  mongoTemplate.find(query, Audit.class,mainCollection);
         int pages = (int) Math.ceil(size/limit);
         ListAudits listAudits = new ListAudits(auditList, size,pages);
@@ -60,6 +65,7 @@ public class AuditRepoImpl implements AuditRepo {
         long size =  mongoTemplate.count(query, mainCollection);
         query.skip((skip-1)*(limit));
         query.limit(limit);
+        query.with(Sort.by(Sort.Direction.DESC,"_id"));
         List<Audit> auditList =  mongoTemplate.find(query, Audit.class,mainCollection);
         int pages = (int) Math.ceil(size/limit);
         ListAudits listAudits = new ListAudits(auditList, size,pages);
@@ -71,6 +77,7 @@ public class AuditRepoImpl implements AuditRepo {
         p= inverseP(p,n);
         ListAudits listAudits = new ListAudits();
         Query query = new Query(Criteria.where("principal").is(date));
+        query.with(Sort.by(Sort.Direction.DESC,"_id"));
         List<Audit> audits = mongoTemplate.find(query,Audit.class,mainCollection);
         listAudits.setSize((int) mongoTemplate.count(query,mainCollection));
         listAudits.setPages((int) Math.ceil(listAudits.getSize()/n));
@@ -78,14 +85,12 @@ public class AuditRepoImpl implements AuditRepo {
         return listAudits;
     }
 
-
-
-
     public List<Audit> analyze(String collection,int skip,int limit) {
         List<Audit> audits;
         Query query = new Query();
         query.skip(skip);
         query.limit(limit);
+        query.with(Sort.by(Sort.Direction.ASC,"_id"));
         audits = mongoTemplate.find(query, Audit.class,collection);
         Collections.reverse(audits);
         return audits;

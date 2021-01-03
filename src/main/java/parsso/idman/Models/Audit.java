@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Setter
 @Getter
-public class Audit {
+public class Audit{
     ObjectId _id;
     private String principal;
     private String resourceOperatedUpon;
@@ -46,5 +46,6 @@ public class Audit {
 
         return time;
     }
+
 
 }
