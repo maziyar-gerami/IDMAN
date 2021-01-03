@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -34,9 +35,15 @@ public class EventRepoImpl implements EventRepo {
     @Override
     public ListEvents getListSizeEvents(int p, int n) {
         p= inverseP(p,n);
-        List<Event> allEvents = analyze(mainCollection,(p-1)*n,n);
+        Query query = new Query();
+        int skip = (p-1)*n;
+        query.skip(skip);
+        query.limit(n);
+        query.with(Sort.by(Sort.Direction.ASC,"_id"));
+        List<Event> events = mongoTemplate.find(query,Event.class,mainCollection);
+        Collections.reverse(events);
         long size =  mongoTemplate.getCollection(mainCollection).countDocuments();
-        return new ListEvents(size,(int) Math.ceil(size/n),allEvents);
+        return new ListEvents(size,(int) Math.ceil(size/n),events);
     }
 
     private int inverseP(int p,int n){
@@ -51,8 +58,8 @@ public class EventRepoImpl implements EventRepo {
         Query query = new Query(Criteria.where("principalId").is(userId));
         query.skip((p-1)*(n));
         query.limit(n);
+        query.with(Sort.by(Sort.Direction.DESC,"_id"));
         List<Event> eventList =  mongoTemplate.find(query, Event.class,mainCollection);
-        Collections.reverse(eventList);
         listEvents.setSize(eventList.size());
         listEvents.setPages((int) Math.ceil(eventList.size()/n));
         listEvents.setEventList(eventList);
@@ -74,6 +81,7 @@ public class EventRepoImpl implements EventRepo {
         long size =  mongoTemplate.count(query, ListEvents.class,mainCollection);
         query.skip((skip-1)*(limit));
         query.limit(limit);
+        query.with(Sort.by(Sort.Direction.DESC,"_id"));
         List<Event> eventList =  mongoTemplate.find(query, Event.class,mainCollection);
         int pages = (int) Math.ceil(size/limit);
         ListEvents listEvents = new ListEvents(size,pages,eventList);
@@ -85,8 +93,9 @@ public class EventRepoImpl implements EventRepo {
 
         List<Event> events;
         Query query = new Query();
-        if (skip!=0) query.skip(skip);
-        if (limit!=0) query.limit(limit);
+        query.skip(skip);
+        query.limit(limit);
+        query.with(Sort.by(Sort.Direction.ASC,"_id"));
         events = mongoTemplate.find(query,Event.class,collection);
         Collections.reverse(events);
         return events;

@@ -33,8 +33,7 @@ public class AuditRepoImpl implements AuditRepo {
     public ListAudits getListSizeAudits(int p, int n){
         p= inverseP(p,n);
         List<Audit> allAudits = analyze(mainCollection,(p-1)*n,n);
-        Query query = new Query();
-        long size = mongoTemplate.count(query,mainCollection);
+        long size =  mongoTemplate.getCollection(mainCollection).countDocuments();
         return new ListAudits(allAudits,size, (int) Math.ceil(size/n));
     }
 
@@ -48,8 +47,6 @@ public class AuditRepoImpl implements AuditRepo {
     public ListAudits getListUserAudits(String userId, int skip, int limit) {
         Query query = new Query(Criteria.where("principal").is(userId));
         long size =  mongoTemplate.count(query, mainCollection);
-        List<String> order = new LinkedList<>();
-        order.add("_id");
         query.skip((skip-1)*(limit));
         query.limit(limit);
         query.with(Sort.by(Sort.Direction.DESC,"_id"));
