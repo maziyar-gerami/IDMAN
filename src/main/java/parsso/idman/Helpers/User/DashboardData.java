@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.ServiceType.CasService;
 import parsso.idman.Models.Event;
+import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
 import parsso.idman.RepoImpls.ServiceRepoImpl;
 import parsso.idman.Repos.EventRepo;
@@ -14,6 +15,7 @@ import parsso.idman.Repos.UserRepo;
 import parsso.idman.utils.Convertor.DateUtils;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -75,12 +77,14 @@ public  class DashboardData {
         List<Event> events = eventRepo.analyze(mainCollection,0,0);
         int nSuccessful = 0;
         int nUnSucceful = 0;
+        Date date = new Date();
+        LocalDateTime now = LocalDateTime.now();
+        Time time= new Time(now.getDayOfYear(),now.getMonthValue(),now.getDayOfMonth());
 
         for (Event event : events) {
             Date date1=new SimpleDateFormat("yyyy-MM-dd").parse(event.getCreationTime());
-            if (event.getType().equals("Unsuccessful Login")&&DateUtils.isToday(date1)) {
+            if (event.getType().equals("Unsuccessful Login")&& event.getCreationTime().startsWith(time.toString())) {
                 nUnSucceful++;
-
             } else if (event.getType().equals("Successful Login")&&DateUtils.isToday(date1))
                 nSuccessful++;
         }
