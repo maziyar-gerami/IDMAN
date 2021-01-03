@@ -55,7 +55,7 @@ public interface UserRepo {
 
     JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException;
 
-    org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException;
+    org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException;
 
     HttpStatus enable(String uid);
 

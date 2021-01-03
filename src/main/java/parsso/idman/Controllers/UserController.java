@@ -314,7 +314,7 @@ public class UserController {
      * @return a json file containing tha data
      */
     @GetMapping("/api/dashboard")
-    public ResponseEntity<org.json.simple.JSONObject> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException {
+    public ResponseEntity<org.json.simple.JSONObject> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException, InterruptedException {
         return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
     }
 

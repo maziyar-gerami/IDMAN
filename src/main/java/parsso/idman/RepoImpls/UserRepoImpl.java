@@ -237,10 +237,12 @@ public class UserRepoImpl implements UserRepo {
         if (people != null)
             for (User user : people) {
                 Name dn = buildDn.buildDn(user.getUserId());
+                Query query = new Query(new Criteria("userId").is(user.getUserId()));
 
                 try {
 
                     ldapTemplate.unbind(dn);
+                    mongoTemplate.remove(query,User.class,"IDMAN_Tokens");
 
                 } catch (Exception e) {
                     logger.warn("Deleting User " + user.getUserId() + " was unsuccessfully");
@@ -576,7 +578,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException {
+    public org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException {
         return dashboardData.retrieveDashboardData();
     }
 
