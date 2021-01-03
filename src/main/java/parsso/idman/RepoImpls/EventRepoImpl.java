@@ -35,15 +35,9 @@ public class EventRepoImpl implements EventRepo {
     @Override
     public ListEvents getListSizeEvents(int p, int n) {
         p= inverseP(p,n);
-        Query query = new Query();
-        int skip = (p-1)*n;
-        query.skip(skip);
-        query.limit(n);
-        query.with(Sort.by(Sort.Direction.ASC,"_id"));
-        List<Event> events = mongoTemplate.find(query,Event.class,mainCollection);
-        Collections.reverse(events);
+        List<Event> allEvents = analyze(mainCollection,(p-1)*n,n);
         long size =  mongoTemplate.getCollection(mainCollection).countDocuments();
-        return new ListEvents(size,(int) Math.ceil(size/n),events);
+        return new ListEvents(size,(int) Math.ceil(size/n),allEvents);
     }
 
     private int inverseP(int p,int n){
