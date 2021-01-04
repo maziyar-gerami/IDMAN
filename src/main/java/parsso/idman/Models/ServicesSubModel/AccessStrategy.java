@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.util.Map;
 

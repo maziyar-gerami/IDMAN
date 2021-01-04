@@ -4,22 +4,19 @@ import io.jsonwebtoken.io.IOException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.ServiceType.CasService;
 import parsso.idman.Models.Event;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
-import parsso.idman.RepoImpls.ServiceRepoImpl;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
-import parsso.idman.utils.Convertor.DateUtils;
+import parsso.idman.Utils.Convertor.DateUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 
@@ -34,6 +31,8 @@ public  class DashboardData {
     @Autowired
     MongoTemplate mongoTemplate;
     public static String mainCollection = "MongoDbCasEventRepository";
+    ZoneId zoneId = ZoneId.of("UTC+03:30");
+
 
 
     public JSONObject retrieveDashboardData() throws IOException, java.text.ParseException, java.io.IOException, org.json.simple.parser.ParseException, InterruptedException {
@@ -42,6 +41,8 @@ public  class DashboardData {
         JSONObject userJson = new JSONObject();
         JSONObject servicesJson = new JSONObject();
         JSONObject loginJson = new JSONObject();
+
+
 
         Thread userData = new Thread(()->{
             //________users data____________
@@ -98,19 +99,20 @@ public  class DashboardData {
             List<Event> events = eventRepo.analyze(mainCollection,0,0);
             int nSuccessful = 0;
             int nUnSucceful = 0;
+
+
+
             LocalDateTime now = LocalDateTime.now();
             Time time= new Time(now.getDayOfYear(),now.getMonthValue(),now.getDayOfMonth());
 
             for (Event event : events) {
-                Date date1= null;
-                try {
-                    date1 = new SimpleDateFormat("yyyy-MM-dd").parse(event.getCreationTime());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                if (event.getType().equals("Unsuccessful Login")&& event.getCreationTime().startsWith(time.toString())) {
+                //TODO: This is date
+                ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
+
+
+                if (event.getType().equals("Unsuccessful Login")&& DateUtils.isToday(eventDate)) {
                     nUnSucceful++;
-                } else if (event.getType().equals("Successful Login")&&DateUtils.isToday(date1))
+                } else if (event.getType().equals("Successful Login")&& DateUtils.isToday(eventDate))
                     nSuccessful++;
             }
             loginJson.put("total", nSuccessful + nUnSucceful);
@@ -136,4 +138,6 @@ public  class DashboardData {
         return jsonObject;
 
     }
+
+
 }

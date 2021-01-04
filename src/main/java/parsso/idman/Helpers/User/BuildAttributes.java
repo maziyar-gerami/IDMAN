@@ -9,14 +9,12 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
-import parsso.idman.utils.Convertor.DateConverter;
 
 import javax.naming.Name;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
-import java.util.UUID;
 
 @Service
 public class BuildAttributes {

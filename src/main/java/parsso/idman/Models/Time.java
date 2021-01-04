@@ -2,11 +2,9 @@ package parsso.idman.Models;
 
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 @Setter
 @Getter

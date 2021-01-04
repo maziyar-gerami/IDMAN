@@ -10,16 +10,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Captcha.Models.CAPTCHA;
-import parsso.idman.Models.Group;
 import parsso.idman.Models.User;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.UserRepo;
-import parsso.idman.utils.Email.EmailSend;
+import parsso.idman.Utils.Email.EmailSend;
 
 import javax.naming.directory.SearchControls;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 

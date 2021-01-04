@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Models.Event;
 import parsso.idman.Models.ListEvents;
 import parsso.idman.Repos.EventRepo;
-import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.Utils.Convertor.DateConverter;
 import java.util.*;
 
 @Service

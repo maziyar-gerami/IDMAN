@@ -17,15 +17,13 @@ import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Communicate.Message;
 import parsso.idman.Helpers.Communicate.Token;
-import parsso.idman.Models.Tokens;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Mobile.Repos.ServicesRepo;
-import parsso.idman.utils.SMS.sdk.KavenegarApi;
-import parsso.idman.utils.SMS.sdk.excepctions.ApiException;
-import parsso.idman.utils.SMS.sdk.excepctions.HttpException;
+import parsso.idman.Utils.SMS.sdk.KavenegarApi;
+import parsso.idman.Utils.SMS.sdk.excepctions.ApiException;
+import parsso.idman.Utils.SMS.sdk.excepctions.HttpException;
 
-import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.directory.SearchControls;
 import java.io.ByteArrayOutputStream;

@@ -13,9 +13,9 @@ import parsso.idman.Captcha.Models.CAPTCHA;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
-import parsso.idman.utils.SMS.sdk.KavenegarApi;
-import parsso.idman.utils.SMS.sdk.excepctions.ApiException;
-import parsso.idman.utils.SMS.sdk.excepctions.HttpException;
+import parsso.idman.Utils.SMS.sdk.KavenegarApi;
+import parsso.idman.Utils.SMS.sdk.excepctions.ApiException;
+import parsso.idman.Utils.SMS.sdk.excepctions.HttpException;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;

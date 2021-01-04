@@ -1,24 +1,19 @@
 package parsso.idman.Helpers.Communicate;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
-import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.BuildAttributes;
 import parsso.idman.Helpers.User.BuildDn;
 import parsso.idman.Models.Tokens;
 import parsso.idman.Models.User;
-import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.UserRepo;
-import parsso.idman.utils.Email.EmailSend;
 
-import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.directory.SearchControls;
 import java.sql.Timestamp;

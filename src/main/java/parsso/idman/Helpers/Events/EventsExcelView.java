@@ -11,10 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Models.Event;
 import parsso.idman.Models.Time;
-import parsso.idman.Models.User;
 import parsso.idman.Repos.EventRepo;
-import parsso.idman.Repos.UserRepo;
-import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.Utils.Convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
