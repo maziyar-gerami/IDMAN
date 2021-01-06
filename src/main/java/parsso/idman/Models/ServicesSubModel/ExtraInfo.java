@@ -15,4 +15,5 @@ public class ExtraInfo {
     public ExtraInfo(){
         position = 0;
     }
+    String UUID;
 }

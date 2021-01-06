@@ -70,12 +70,12 @@ public class ImportUsers {
 
             temp = userRepo.createUserImport(user);
 
-            if (temp.size()>0) {
+            if (temp!=null && temp.size()>0) {
                 jsonArray.add(temp);
                 nUnSuccessful++;
+                count++;
             }
 
-            count++;
         }
 
         JSONObject finalJson = new JSONObject();

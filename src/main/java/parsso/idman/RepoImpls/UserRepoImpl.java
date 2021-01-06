@@ -156,31 +156,33 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public JSONObject createUserImport(User p) {
 
-        User user = retrieveUser(p.getUserId());
-        if (p.getUserPassword() == null)
-            p.setUserPassword(defaultPassword);
+        if (p.getUserId()!=null && !p.getUserId().equals("")) {
+            User user = retrieveUser(p.getUserId());
+            if (p.getUserPassword() == null)
+                p.setUserPassword(defaultPassword);
 
-        try {
-            if (user == null) {
-                Name dn = buildDn.buildDn(p.getUserId());
-                ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
+            try {
+                if (user == null) {
+                    Name dn = buildDn.buildDn(p.getUserId());
+                    ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
 
-                Tokens tokens = new Tokens();
-                tokens.setUserId(p.getUserId());
-                tokens.setQrToken(UUID.randomUUID().toString());
-                Date date = new Date();
-                tokens.setCreationTimeStamp(date.getTime());
-                mongoTemplate.save(tokens, Token.collection);
+                    Tokens tokens = new Tokens();
+                    tokens.setUserId(p.getUserId());
+                    tokens.setQrToken(UUID.randomUUID().toString());
+                    Date date = new Date();
+                    tokens.setCreationTimeStamp(date.getTime());
+                    mongoTemplate.save(tokens, Token.collection);
 
-                return new JSONObject();
-            } else {
-
-                return importUsers.compareUsers(user, p);
+                    return new JSONObject();
+                } else {
+                    return importUsers.compareUsers(user, p);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     @Override

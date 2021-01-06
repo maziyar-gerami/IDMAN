@@ -28,8 +28,10 @@ import parsso.idman.Repos.FilesStorageService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Timer;
@@ -80,6 +82,18 @@ public class IdmanApplication implements CommandLineRunner {
 
         SpringApplication.run(IdmanApplication.class, args);
 
+
+        String command = "wmic csproduct get UUID";
+        StringBuffer output = new StringBuffer();
+
+        Process SerNumProcess = Runtime.getRuntime().exec(command);
+        BufferedReader sNumReader = new BufferedReader(new InputStreamReader(SerNumProcess.getInputStream()));
+
+        String line = "";
+        while ((line = sNumReader.readLine()) != null) {
+            output.append(line + "\n");
+        }
+        String MachineID=output.toString().substring(output.indexOf("\n"), output.length()).trim();
 
 
 

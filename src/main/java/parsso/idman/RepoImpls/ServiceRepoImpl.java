@@ -24,6 +24,7 @@ import parsso.idman.Models.ServicesSubModel.ExtraInfo;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.ServiceRepo;
+import parsso.idman.Utils.Other.GenerateUUID;
 
 import java.io.File;
 import java.io.FileReader;
@@ -50,8 +51,8 @@ public class ServiceRepoImpl implements ServiceRepo {
     private String path;
     @Value("${base.url}")
     private String baseUrl;
-    @Value("${metadata.file.path}")
-    private String uploadedFilesPath;
+
+
 
     @Override
     public List<MicroService> listUserServices(User user) throws IOException {
@@ -242,6 +243,10 @@ public class ServiceRepoImpl implements ServiceRepo {
 
         extraInfo.setUrl(jsonExtraInfo != null && jsonExtraInfo.get("url") != null ?
                 jsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
+
+        if (baseUrl.contains("localhost")) {
+            extraInfo.setUUID(GenerateUUID.getUUID());
+        }
 
         if (system.equalsIgnoreCase("cas")) {
             id = casServiceHelper.create(jsonObject);
