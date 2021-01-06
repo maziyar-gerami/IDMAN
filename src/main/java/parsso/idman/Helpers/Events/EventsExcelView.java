@@ -17,6 +17,9 @@ import parsso.idman.Utils.Convertor.DateConverter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -26,6 +29,8 @@ public class EventsExcelView extends AbstractXlsView {
     EventRepo eventRepo;
 
     public static String mainCollection = "MongoDbCasEventRepository";
+
+    ZoneId zoneId = ZoneId.of("UTC+03:30");
 
 
 
@@ -81,18 +86,15 @@ public class EventsExcelView extends AbstractXlsView {
             aRow.createCell(1).setCellValue(event.getPrincipalId());
             aRow.createCell(2).setCellValue(event.getApplication());
             aRow.createCell(3).setCellValue(event.getClientip());
-            SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            Date date = parserSDF.parse(event.getCreationTime().substring(0,19));
-            Calendar myCal = new GregorianCalendar();
-            myCal.setTimeZone(TimeZone.getDefault());
-            myCal.setTime(date);
+
+            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
+            Time time = new Time(eventDate.getYear(),eventDate.getMonthValue(),eventDate.getDayOfMonth(),
+                    eventDate.getHour(),eventDate.getMinute(),eventDate.getSecond());
+            event.setTime(time);
 
             DateConverter dateConverter = new DateConverter();
-            dateConverter.gregorianToPersian(myCal.get(Calendar.YEAR), myCal.get(Calendar.MONTH) + 1, myCal.get(Calendar.DAY_OF_MONTH));
-
-            Time time = new Time(dateConverter, myCal);
-
-            aRow.createCell(4).setCellValue(time.getYear()+"/"+time.getMonth()+"/"+time.getDay());
+            dateConverter.gregorianToPersian(eventDate.getYear(),eventDate.getMonthValue(),eventDate.getDayOfMonth());
+            aRow.createCell(4).setCellValue(dateConverter.getYear()+"/"+dateConverter.getMonth()+"/"+dateConverter.getDay());
             aRow.createCell(5).setCellValue(event.getTime().getHours()+":"+event.getTime().getMinutes()+":"+event.getTime().getSeconds());
             aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
             aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());

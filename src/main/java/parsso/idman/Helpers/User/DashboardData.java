@@ -100,8 +100,6 @@ public  class DashboardData {
             int nSuccessful = 0;
             int nUnSucceful = 0;
 
-
-
             LocalDateTime now = LocalDateTime.now();
             Time time= new Time(now.getDayOfYear(),now.getMonthValue(),now.getDayOfMonth());
 

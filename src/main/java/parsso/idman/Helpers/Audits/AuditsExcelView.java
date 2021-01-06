@@ -24,6 +24,8 @@ public class AuditsExcelView extends AbstractXlsView {
     @Autowired
     AuditRepo auditRepo;
 
+    ZoneId zoneId = ZoneId.of("UTC+03:30");
+
     public static String mainCollection = "MongoDbCasAuditRepository";
 
 
@@ -58,14 +60,17 @@ public class AuditsExcelView extends AbstractXlsView {
         header.createCell(3).setCellValue("Application Code");
         header.getCell(3).setCellStyle(style);
 
-        header.createCell(4).setCellValue("When Action Was Performed");
+        header.createCell(4).setCellValue("Date");
         header.getCell(4).setCellStyle(style);
 
-        header.createCell(5).setCellValue("Client IP Address");
+        header.createCell(5).setCellValue("Time");
         header.getCell(5).setCellStyle(style);
 
-        header.createCell(6).setCellValue("Server IP Address");
+        header.createCell(6).setCellValue("Client IP Address");
         header.getCell(6).setCellStyle(style);
+
+        header.createCell(7).setCellValue("Server IP Address");
+        header.getCell(7).setCellStyle(style);
 
         // create data rows
         int rowCount = 1;
@@ -80,12 +85,15 @@ public class AuditsExcelView extends AbstractXlsView {
             Calendar cal = Calendar.getInstance(TimeZone.getDefault());
             cal.setTime(audit.getWhenActionWasPerformed());
 
-            Time time = new Time(cal);
 
-            String jalali = time.convertDateGeorgianToJalali(time.getYear(),time.getMonth(),time.getDay());
-            aRow.createCell(4).setCellValue(jalali.substring(0,4)+"/"+jalali.substring(4,6)+"/"+jalali.substring(6)+" "+time.getHours()+":"+time.getMinutes()+":"+time.getSeconds());
-            aRow.createCell(5).setCellValue(audit.getClientIpAddress());
+            ZonedDateTime eventDate = OffsetDateTime.ofInstant(audit.getWhenActionWasPerformed().toInstant(),zoneId).atZoneSameInstant(zoneId);
+            Time time = new Time(eventDate.getYear(),eventDate.getMonthValue(),eventDate.getDayOfMonth(),
+                    eventDate.getHour(),eventDate.getMinute(),eventDate.getSecond());
+
+            aRow.createCell(4).setCellValue(time.getYear()+"/"+time.getMonth()+"/"+time.getDay());
+            aRow.createCell(5).setCellValue(time.getHours()+":"+time.getMinutes()+":"+time.getSeconds());
             aRow.createCell(6).setCellValue(audit.getClientIpAddress());
+            aRow.createCell(7).setCellValue(audit.getClientIpAddress());
 
         }
 

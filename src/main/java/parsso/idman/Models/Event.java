@@ -62,33 +62,16 @@ public class Event implements Serializable {
     @JsonIgnore
     String _class;
     @JsonIgnore
-    Properties properties = new Properties();
+    public Properties properties = new Properties();
     Time time;
     @JsonProperty("clientIP")
     public String clientip;
-    public String getClientip() {
-        return properties.clientip;
-    }
     public String serverip;
-
     public String eventId;
-    public String getEventId() {
-        return properties.eventId;
-    }
     @JsonIgnoreProperties
     @JsonIgnore
     public Client agent;
 
-
-    public Time getTime() {
-        time = new Time(Integer.valueOf(creationTime.substring(0, 4))
-        , Integer.valueOf(creationTime.substring(5, 7))
-                , Integer.valueOf(creationTime.substring(8, 10))
-        ,Integer.valueOf(creationTime.substring(11,13))
-        ,Integer.valueOf(creationTime.substring(14,16))
-        , Integer.valueOf(creationTime.substring(17,19)));
-        return time;
-    }
     public String service;
 
     @Setter
@@ -99,10 +82,14 @@ public class Event implements Serializable {
         private String agent;
         @JsonProperty("clientIP")
         private String clientip;
-        @JsonView(Views.UserEvent.class)
+
         private String serverip;
         @JsonIgnore
         private String timestamp;
+    }
+
+    public String getClientip(){
+        return this.properties.getClientip();
     }
 
     public Client getAgent() {
