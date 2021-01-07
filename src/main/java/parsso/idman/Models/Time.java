@@ -105,12 +105,7 @@ public class Time {
                 String s = input.substring(12, 14);
                 String S = input.substring(15, 15);
 
-
-                //DateConverter dateConverter = new DateConverter();
-                //dateConverter.persianToGregorian(Y, M, D);
-
                 ZonedDateTime eventDate = OffsetDateTime.parse(Y+"-"+M+"-"+D+'T'+H+":"+m+":"+s+"."+S).atZoneSameInstant(zoneId);
-
 
                 return eventDate.getYear()
                         + String.format("%02d", eventDate.getMonth())

@@ -75,7 +75,6 @@ public class BuildAttributes {
             attrs.put("pwdAccountLockedTime", p.isEnabled());
 
         if (p.getEndTime()!=null) {
-            String s = Time.setEndTime(p.getEndTime())+'Z';
             attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime())+'Z');
         }
 
@@ -143,6 +142,7 @@ public class BuildAttributes {
                     else context.addAttributeValue("ou", p.getMemberOf().get(i));
                 }
             } else
+                if(old.getMemberOf()!=null)
                 for (String id : old.getMemberOf()) {
                     context.removeAttributeValue("ou", id);
                 }
