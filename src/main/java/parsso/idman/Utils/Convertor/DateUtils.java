@@ -33,18 +33,14 @@ public class DateUtils {
     }
 
     public static boolean isSameDay(ZonedDateTime t1, ZonedDateTime t2){
-        if(t1.getYear()==t2.getYear() && t1.getMonth()==t2.getMonth() && t1.getDayOfMonth()== t2.getDayOfMonth())
-            return true;
-        return false;
+        return t1.getYear() == t2.getYear() && t1.getMonth() == t2.getMonth() && t1.getDayOfMonth() == t2.getDayOfMonth();
     }
 
     public static boolean isToday(ZonedDateTime t1){
         OffsetDateTime offsetDateTime = OffsetDateTime.now();
         ZonedDateTime t2 = offsetDateTime.atZoneSameInstant(zoneId);
 
-        if(t1.getYear()==t2.getYear() && t1.getMonth()==t2.getMonth() && t1.getDayOfMonth()== t2.getDayOfMonth())
-            return true;
-        return false;
+        return t1.getYear() == t2.getYear() && t1.getMonth() == t2.getMonth() && t1.getDayOfMonth() == t2.getDayOfMonth();
     }
 
     OffsetDateTime offsetDateTime = OffsetDateTime.now();
@@ -234,10 +230,7 @@ public class DateUtils {
         if (c.get(Calendar.SECOND) > 0) {
             return true;
         }
-        if (c.get(Calendar.MILLISECOND) > 0) {
-            return true;
-        }
-        return false;
+        return c.get(Calendar.MILLISECOND) > 0;
     }
 
     /** Returns the given date with time set to the end of the day */

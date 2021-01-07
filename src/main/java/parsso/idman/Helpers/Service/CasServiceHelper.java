@@ -260,9 +260,7 @@ public class CasServiceHelper {
 
     boolean isCasService (JSONObject jo) {
 
-        if (jo.get("@class").toString().toLowerCase().contains("saml"))
-            return false;
-        return true;
+        return !jo.get("@class").toString().toLowerCase().contains("saml");
 
     }
 

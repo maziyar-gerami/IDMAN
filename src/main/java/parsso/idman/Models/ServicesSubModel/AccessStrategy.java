@@ -157,17 +157,9 @@ public class AccessStrategy {
         //accessStrategy.setAtClass(jsonObject.get("@class").toString()););
         if (jsonObject.get("endpointUrl") != null)
             accessStrategy.setEndpointUrl(jsonObject.get("endpointUrl").toString());
-        if (jsonObject.get("enabled") == (null) || (boolean) jsonObject.get("enabled") == false) {
+        accessStrategy.setEnabled(jsonObject.get("enabled") != (null) && (boolean) jsonObject.get("enabled") != false);
 
-            accessStrategy.setEnabled(false);
-        } else
-            accessStrategy.setEnabled(true);
-
-        if (jsonObject.get("ssoEnabled") == (null) || (boolean) jsonObject.get("ssoEnabled") == false) {
-
-            accessStrategy.setSsoEnabled(false);
-        } else
-            accessStrategy.setSsoEnabled(true);
+        accessStrategy.setSsoEnabled(jsonObject.get("ssoEnabled") != (null) && (boolean) jsonObject.get("ssoEnabled") != false);
 
 
         JSONObject tempreqiredattribute = new JSONObject();

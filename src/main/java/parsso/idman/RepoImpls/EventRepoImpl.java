@@ -22,7 +22,7 @@ import java.util.*;
 @Service
 public class EventRepoImpl implements EventRepo {
 
-    private static String mainCollection = "MongoDbCasEventRepository";
+    private static final String mainCollection = "MongoDbCasEventRepository";
     ZoneId zoneId = ZoneId.of("UTC+03:30");
 
 

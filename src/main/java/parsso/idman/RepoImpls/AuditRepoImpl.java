@@ -18,7 +18,7 @@ import java.util.*;
 @Service
 public class AuditRepoImpl implements AuditRepo {
 
-    private String mainCollection = "MongoDbCasAuditRepository";
+    private final String mainCollection = "MongoDbCasAuditRepository";
 
     @Autowired
     MongoTemplate mongoTemplate;

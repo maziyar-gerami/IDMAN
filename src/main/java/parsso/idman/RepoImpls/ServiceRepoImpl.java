@@ -361,9 +361,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     boolean isCasService(JSONObject jo) {
 
-        if (jo.get("@class").toString().contains("saml"))
-            return false;
-        return true;
+        return !jo.get("@class").toString().contains("saml");
 
     }
 

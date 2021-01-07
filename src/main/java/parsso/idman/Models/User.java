@@ -140,11 +140,7 @@ public class User implements UserDetails,Comparable {
 
         final User other = (User) obj;
 
-        if (this.getUserId().equals(other.getUserId())) {
-            return true;
-        }
-
-        return false;
+        return this.getUserId().equals(other.getUserId());
     }
 
 

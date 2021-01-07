@@ -28,11 +28,9 @@ public class Time {
 
     @Override
     public boolean equals(Object obj) {
-        if (this.year == ((Time) obj).getYear() &&
+        return this.year == ((Time) obj).getYear() &&
                 this.month == ((Time) obj).getMonth() &&
-                this.day == ((Time) obj).getDay())
-            return true;
-            else return false;
+                this.day == ((Time) obj).getDay();
     }
 
     public Time(Calendar cal){
