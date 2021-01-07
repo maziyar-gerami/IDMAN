@@ -1,6 +1,5 @@
 package parsso.idman.Repos;
 
-import com.google.gson.JsonObject;
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
@@ -33,7 +32,7 @@ public interface UserRepo {
 
     List<User> retrieveUsersFull();
 
-    JsonObject create(User p);
+    JSONObject create(User p);
 
     JSONObject createUserImport(User p);
 

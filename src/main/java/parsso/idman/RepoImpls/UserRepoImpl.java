@@ -115,7 +115,7 @@ public class UserRepoImpl implements UserRepo {
 
 
     @Override
-    public JsonObject create(User p) {
+    public JSONObject create(User p) {
 
         User user = retrieveUser(p.getUserId());
         DirContextOperations context;
@@ -139,18 +139,17 @@ public class UserRepoImpl implements UserRepo {
                 }
 
                 logger.info("User " + "\"" + p.getUserId() + "\"" + " in " + new Date() + " created successfully");
-                return new JsonObject();
+                return new JSONObject();
             } else {
                 logger.warn("User " + "\"" + p.getUserId() + "\"" + " is exist. So it cannot be created");
 
-                importUsers.compareUsers(user, p);
+                return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
             logger.warn("Creating user " + "\"" + p.getUserId() + "\"" + " was unsuccessful");
             e.printStackTrace();
             return null;
         }
-        return null;
     }
 
     @Override

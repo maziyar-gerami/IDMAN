@@ -227,9 +227,10 @@ public class UserController {
      */
     @PostMapping("/api/users")
     public ResponseEntity<JSONObject> bindLdapUser(@RequestBody User user) {
-        if (userRepo.create(user).size() == 0)
+        JSONObject jsonObject = userRepo.create(user);
+        if (jsonObject.size() == 0)
             return new ResponseEntity<>(null, HttpStatus.OK);
-        else return new ResponseEntity<>(null, HttpStatus.FOUND);
+        else return new ResponseEntity<>(jsonObject , HttpStatus.FOUND);
 
     }
 
