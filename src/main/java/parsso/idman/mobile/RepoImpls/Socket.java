@@ -1,4 +1,4 @@
-package parsso.idman.mobile.RepoImpls;
+package parsso.idman.Mobile.RepoImpls;
 
 
 import org.springframework.stereotype.Component;
@@ -42,12 +42,12 @@ public class Socket {
         throwable.printStackTrace();
     }
 
-    public void broadcast(String message){
-        for (Socket current: connections )
-            try{
+    public void broadcast(String message) {
+        for (Socket current : connections)
+            try {
                 current.session.getBasicRemote().sendText(message);
 
-            }catch (IOException e) {
+            } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

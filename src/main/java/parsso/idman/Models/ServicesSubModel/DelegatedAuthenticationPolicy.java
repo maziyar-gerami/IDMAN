@@ -1,5 +1,6 @@
 package parsso.idman.Models.ServicesSubModel;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +12,13 @@ import java.util.LinkedList;
 
 public class DelegatedAuthenticationPolicy {
 
-    public DelegatedAuthenticationPolicy(){
+    @JsonProperty("@class")
+    String atClass;
+    Object[] allowedProviders;
+    boolean permitUndefined;
+    boolean exclusive;
+
+    public DelegatedAuthenticationPolicy() {
         atClass = "org.apereo.cas.services.DefaultRegisteredServiceDelegatedAuthenticationPolicy";
         exclusive = false;
         permitUndefined = true;
@@ -20,13 +27,5 @@ public class DelegatedAuthenticationPolicy {
         allowedProviders[1] = new LinkedList<>();
 
 
-
     }
-
-    @JsonProperty("@class")
-    String atClass;
-    Object[] allowedProviders;
-
-    boolean permitUndefined;
-    boolean exclusive;
 }

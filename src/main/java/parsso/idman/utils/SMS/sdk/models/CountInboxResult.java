@@ -2,7 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package parsso.idman.utils.SMS.sdk.models;
+package parsso.idman.Utils.SMS.sdk.models;
+
 
 import com.google.gson.JsonObject;
 
@@ -11,9 +12,9 @@ import com.google.gson.JsonObject;
  */
 public class CountInboxResult {
 
-    private Long startDate;
-    private Long endDate;
-    private  Long sumCount;
+    private final Long startDate;
+    private final Long endDate;
+    private final Long sumCount;
 
     public CountInboxResult(JsonObject json) {
         this.startDate = json.get("startdate").getAsLong();

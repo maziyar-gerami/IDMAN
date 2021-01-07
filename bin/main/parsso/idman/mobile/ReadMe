@@ -28,6 +28,6 @@ Gradle changes-->
 resources/templates/login.html
 
                              add web socket script
-                             add Qr code(/api/mobile/qrlogin)
+                             add Qr code(and change login's js script)
 
 

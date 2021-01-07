@@ -2,18 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package parsso.idman.utils.SMS.sdk;
+package parsso.idman.Utils.SMS.sdk;
+
 
 import com.google.gson.*;
-import parsso.idman.utils.SMS.sdk.enums.MessageType;
-import parsso.idman.utils.SMS.sdk.excepctions.ApiException;
-import parsso.idman.utils.SMS.sdk.excepctions.BaseException;
-import parsso.idman.utils.SMS.sdk.excepctions.HttpException;
-import parsso.idman.utils.SMS.sdk.models.*;
-import parsso.idman.utils.SMS.sdk.utils.PairValue;
-import parsso.idman.utils.SMS.sdk.utils.StringUtils;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -21,6 +14,13 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import parsso.idman.Utils.SMS.sdk.enums.MessageType;
+import parsso.idman.Utils.SMS.sdk.excepctions.ApiException;
+import parsso.idman.Utils.SMS.sdk.excepctions.BaseException;
+import parsso.idman.Utils.SMS.sdk.excepctions.HttpException;
+import parsso.idman.Utils.SMS.sdk.models.*;
+import parsso.idman.Utils.SMS.sdk.utils.PairValue;
+import parsso.idman.Utils.SMS.sdk.utils.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,14 +35,14 @@ public class KavenegarApi {
 
     static final String API_PATH = "https://api.kavenegar.com/v1/%s/%s.json";
 
-    private String apiKey;
+    private final String apiKey;
 
     public KavenegarApi(String apiKey) {
         this.apiKey = apiKey;
     }
 
     private String getApiPath(String method) {
-    	return String.format(API_PATH, apiKey, method);
+        return String.format(API_PATH, apiKey, method);
     }
 
     public UrlEncodedFormEntity createParams(Object... params) {
@@ -478,11 +478,11 @@ public class KavenegarApi {
         JsonObject json = array.get(0).getAsJsonObject();
         return new SendResult(json);
     }
-    
-     public SendResult verifyLookup(String receptor, String token, String token2, String token3, String template,List<PairValue> params) throws BaseException {
+
+    public SendResult verifyLookup(String receptor, String token, String token2, String token3, String template, List<PairValue> params) throws BaseException {
         String path = getApiPath("verify/lookup");
-        String token10=null;
-        String token20=null;     
+        String token10 = null;
+        String token20 = null;
         for (PairValue Key : params) {
             if (null != Key.getKey()) switch (Key.getKey()) {
                 case "token10":
@@ -493,7 +493,7 @@ public class KavenegarApi {
                     break;
             }
         }
-        JsonArray array = execute(path, "receptor", receptor, "token", token, "token2", token2, "token3", token3, "template", template,"token10",token10,"token20",token20).getAsJsonArray();
+        JsonArray array = execute(path, "receptor", receptor, "token", token, "token2", token2, "token3", token3, "template", template, "token10", token10, "token20", token20).getAsJsonArray();
         JsonObject json = array.get(0).getAsJsonObject();
         return new SendResult(json);
     }
@@ -502,10 +502,10 @@ public class KavenegarApi {
         return verifyLookup(receptor, token, "", "", template);
     }
 
-    public List<SendResult> CallMakeTTS(String message,List<String> receptors,Long date, List<String> localIds) throws BaseException {
+    public List<SendResult> CallMakeTTS(String message, List<String> receptors, Long date, List<String> localIds) throws BaseException {
         JsonArray entry = execute(getApiPath("call/maketts"),
                 "receptor", StringUtils.join(",", receptors),
-                "message", message,                
+                "message", message,
                 "date", date,
                 "localid", localIds == null ? "" : StringUtils.join(",", localIds)
         ).getAsJsonArray();
@@ -518,35 +518,35 @@ public class KavenegarApi {
         }
         return list;
     }
-    
-    public SendResult CallMakeTTS(String message,String receptor) throws BaseException {
+
+    public SendResult CallMakeTTS(String message, String receptor) throws BaseException {
         List<String> receptors = new ArrayList<>();
         receptors.add(receptor);
-        return CallMakeTTS(message,receptors).get(0);
+        return CallMakeTTS(message, receptors).get(0);
     }
-    
-     public List<SendResult> CallMakeTTS(String message,List<String> receptor) throws BaseException {
-       return CallMakeTTS(message,receptor,null,null);
+
+    public List<SendResult> CallMakeTTS(String message, List<String> receptor) throws BaseException {
+        return CallMakeTTS(message, receptor, null, null);
     }
-     
-    public List<SendResult> CallMakeTTS(String message,String receptor,Long date) throws BaseException {
+
+    public List<SendResult> CallMakeTTS(String message, String receptor, Long date) throws BaseException {
         List<String> receptors = new ArrayList<>();
         receptors.add(receptor);
-       return CallMakeTTS(message,receptors,date);
+        return CallMakeTTS(message, receptors, date);
     }
-    
-    public List<SendResult> CallMakeTTS(String message,List<String> receptor,Long date) throws BaseException {
-       return CallMakeTTS(message,receptor,date,null);
+
+    public List<SendResult> CallMakeTTS(String message, List<String> receptor, Long date) throws BaseException {
+        return CallMakeTTS(message, receptor, date, null);
     }
-    
-     public List<SendResult> CallMakeTTS(String message,List<String> receptor,List<String> localId) throws BaseException {
-       return CallMakeTTS(message,receptor,null,localId);
+
+    public List<SendResult> CallMakeTTS(String message, List<String> receptor, List<String> localId) throws BaseException {
+        return CallMakeTTS(message, receptor, null, localId);
     }
-     
-     public List<SendResult> CallMakeTTS(String message,List<String> receptor,String localId) throws BaseException {
-         List<String> localIds = new ArrayList<>();
+
+    public List<SendResult> CallMakeTTS(String message, List<String> receptor, String localId) throws BaseException {
+        List<String> localIds = new ArrayList<>();
         localIds.add(localId);
-       return CallMakeTTS(message,receptor,null,localIds);
+        return CallMakeTTS(message, receptor, null, localIds);
     }
-  
+
 }

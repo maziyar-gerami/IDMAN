@@ -1,27 +1,33 @@
 package parsso.idman.Models.ServicesSubModel;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
 
 @Setter
 @Getter
 
 public class MultifactorPolicy {
 
-    public  MultifactorPolicy(){
+    Object[] multifactorAuthenticationProviders;
+    String failureMode;
+    Boolean bypassEnabled;
+    @JsonProperty("@class")
+    private String atClass;
+
+    public MultifactorPolicy() {
+        multifactorAuthenticationProviders = new Object[2];
+        multifactorAuthenticationProviders[0] = "java.util.LinkedHashSet";
+        multifactorAuthenticationProviders[1] = new String[1];
         atClass = "org.apereo.cas.services.DefaultRegisteredServiceMultifactorPolicy";
-        failureMode ="UNDEFINED";
+        failureMode = "UNDEFINED";
         bypassEnabled = false;
     }
 
-    @JsonProperty("@class")
-    private String atClass;
-    ArrayList multifactorAuthenticationProviders;
-    String failureMode;
-    Boolean bypassEnabled;
-
+    public void setMultifactorAuthenticationProviders(String multifactorAuthenticationProviders) {
+        String[] temp = new String[1];
+        temp[0] = multifactorAuthenticationProviders;
+        this.multifactorAuthenticationProviders[1] = temp;
+    }
 }

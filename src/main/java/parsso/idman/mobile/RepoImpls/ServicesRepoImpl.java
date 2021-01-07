@@ -1,4 +1,5 @@
-package parsso.idman.mobile.RepoImpls;
+package parsso.idman.Mobile.RepoImpls;
+
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -7,19 +8,23 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Communicate.Message;
+import parsso.idman.Helpers.Communicate.Token;
+import parsso.idman.Mobile.Repos.ServicesRepo;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
-import parsso.idman.mobile.Repos.ServicesRepo;
-import parsso.idman.utils.SMS.sdk.KavenegarApi;
-import parsso.idman.utils.SMS.sdk.excepctions.ApiException;
-import parsso.idman.utils.SMS.sdk.excepctions.HttpException;
+import parsso.idman.Utils.SMS.sdk.KavenegarApi;
+import parsso.idman.Utils.SMS.sdk.excepctions.ApiException;
+import parsso.idman.Utils.SMS.sdk.excepctions.HttpException;
 
-import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.directory.SearchControls;
 import java.io.ByteArrayOutputStream;
@@ -32,32 +37,26 @@ import java.util.Random;
 @Service
 public class ServicesRepoImpl implements ServicesRepo {
 
-    @Value("${token.valid.email}")
-    private int EMAIL_VALID_TIME;
-
-    @Value("${token.valid.SMS}")
-    private int SMS_VALID_TIME;
-
-    @Value("${sms.api.key}")
-    private String SMS_API_KEY;
-
-    @Value("${spring.ldap.base.dn}")
-    private String BASE_DN;
-
-    @Autowired
-    private LdapTemplate ldapTemplate;
-
-    @Value("${sms.validation.digits}")
-    private int SMS_VALIDATION_DIGITS;
-
-    @Autowired
-    private UserRepo userRepo;
-
-
-
-
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static SecureRandom rnd = new SecureRandom();
+    @Value("${token.valid.email}")
+    private int EMAIL_VALID_TIME;
+    @Value("${token.valid.SMS}")
+    private int SMS_VALID_TIME;
+    @Value("${sms.api.key}")
+    private String SMS_API_KEY;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
+    @Autowired
+    private LdapTemplate ldapTemplate;
+    @Value("${sms.validation.digits}")
+    private int SMS_VALIDATION_DIGITS;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private Message message;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     public byte[] getQRCodeImage(String text, int width, int height) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
@@ -68,14 +67,12 @@ public class ServicesRepoImpl implements ServicesRepo {
         return pngOutputStream.toByteArray();
     }
 
-    public String ActivationSendMessage(String mobile) {
-        String s = userRepo.checkMobile(mobile).get(0).getAsString("userId");
-        User user = userRepo.retrieveUser(userRepo.checkMobile(mobile).get(0).getAsString("userId"));
+    public String ActivationSendMessage(User user) {
         insertMobileToken1(user);
         try {
-            String message = user.getMobileToken().substring(0, SMS_VALIDATION_DIGITS);
+            String message = user.getTokens().getMobileToken().substring(0, SMS_VALIDATION_DIGITS);
             KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-            api.verifyLookup(mobile, message, "", "", "mfa");
+            api.verifyLookup(user.getMobile(), message, "", "", "mfa");
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
             System.out.print("HttpException  : " + ex.getMessage());
         } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
@@ -93,10 +90,12 @@ public class ServicesRepoImpl implements ServicesRepo {
         int token = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)) + rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS - 1) - 1)));
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         long cTimeStamp = currentTimestamp.getTime();
-        user.setMobileToken(String.valueOf(token) + cTimeStamp);
-        Name dn = buildDn(user.getUserId());
-        Context context = buildAttributes(user.getUserId(), user, dn);
-        ldapTemplate.modifyAttributes((DirContextOperations) context);
+        user.getTokens().setMobileToken(String.valueOf(token) + cTimeStamp);
+
+        Query query = new Query(Criteria.where("userId").is(user.getUserId()));
+        mongoTemplate.remove(query, Token.collection);
+        mongoTemplate.save(user.getTokens(), Token.collection);
+
         return "Mobile Token for " + user.getUserId() + " is created";
 
     }
@@ -110,7 +109,7 @@ public class ServicesRepoImpl implements ServicesRepo {
 
         User user = userRepo.retrieveUser(userId);
 
-        String mainDbToken = user.getMobileToken();
+        String mainDbToken = user.getTokens().getMobileToken();
         String mainPartToken;
 
         if (token.length() > 30)
@@ -167,7 +166,8 @@ public class ServicesRepoImpl implements ServicesRepo {
         }
         if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhotoName());
 
-        if (p.getResetPassToken() != null) context.setAttributeValue("resetPassToken", p.getResetPassToken());
+        if (p.getTokens().getResetPassToken() != null)
+            context.setAttributeValue("resetPassToken", p.getTokens().getResetPassToken());
 
         if (p.getMemberOf() != null) {
 
@@ -180,7 +180,8 @@ public class ServicesRepoImpl implements ServicesRepo {
         if (p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
         if (p.getPhotoName() != null) context.setAttributeValue("photoName", p.getPhotoName());
         if (p.getStatus() != null) context.setAttributeValue("userStatus", p.getStatus());
-        if (p.getMobileToken() != null) context.setAttributeValue("mobileToken", p.getMobileToken());
+        if (p.getTokens().getMobileToken() != null)
+            context.setAttributeValue("mobileToken", p.getTokens().getMobileToken());
 
 
         return context;

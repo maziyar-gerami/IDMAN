@@ -1,172 +1,129 @@
 package parsso.idman.RepoImpls;
 
-import org.springframework.beans.factory.annotation.Value;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Event;
-import parsso.idman.Models.EventsSubModel.Time;
+import parsso.idman.Models.ListEvents;
+import parsso.idman.Models.Time;
 import parsso.idman.Repos.EventRepo;
-import parsso.idman.utils.Convertor.DateConverter;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
 
 @Service
 public class EventRepoImpl implements EventRepo {
 
+    private static final String mainCollection = "MongoDbCasEventRepository";
+    ZoneId zoneId = ZoneId.of("UTC+03:30");
 
 
-    public static String path;
-
-
-
-    @Value("${events.file.path}")
-    public void setPath(String value){
-        path = value;
-    }
-
-    public static Calendar toCalendar(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal;
-    }
-
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Override
-    public List<Event> getListUserEvents() throws FileNotFoundException, ParseException {
-        List<Event> events = analyze();
-        return events;
-    }
-
-    @Override
-    public List<Event> getListUserEvents(String userId) throws FileNotFoundException, ParseException {
-        List<Event> events = analyze();
-        List<Event> relatedEvents;
-        relatedEvents = events.stream().filter(p -> p.getUserId().equals(userId)).collect(Collectors.toList());
-        return relatedEvents;
-    }
-
-    @Override
-    public List<Event> getEventsByDate(String date) throws FileNotFoundException, ParseException {
-        List<Event> events = analyze();
-        List<Event> relatedEvents = new LinkedList<>();
-        int inDay = Integer.valueOf(date.substring(0, 2));
-        int inMonth = Integer.valueOf(date.substring(2, 4));
-        int inYear = Integer.valueOf(date.substring(4, 8));
-
-        DateConverter dc = new DateConverter();
-
-        dc.persianToGregorian(inYear, inMonth, inDay);
-
-        int inGregorianDay = dc.getDay();
-        int inGregorianMonth = dc.getMonth();
-        int inGregorianYear = dc.getYear();
-
-
-        for (Event event : events) {
-            //Calendar calendar = toCalendar(event.getTime());
-            int day = event.getTime().getDay();
-            int month = event.getTime().getMonth();
-            int year = event.getTime().getYear();
-
-            if ((inGregorianDay == day) && (inGregorianMonth == month) && (inGregorianYear == year))
-                relatedEvents.add(event);
-
+    public ListEvents getListSizeEvents(int p, int n) {
+        List<Event> allEvents = analyze(mainCollection, (p - 1) * n, n);
+        long size = mongoTemplate.getCollection(mainCollection).countDocuments();
+        for (Event event : allEvents) {
+            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
+            Time time1 = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
+                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
+            event.setTime(time1);
         }
-        return relatedEvents;
+        return new ListEvents(size, (int) Math.ceil(size / n), allEvents);
     }
 
     @Override
-    public List<Event> getListUserEventByDate(String date, String userId) throws FileNotFoundException, ParseException {
-        List<Event> events = analyze();
-        List<Event> relatedEvents = new LinkedList<>();
-        int inDay = Integer.valueOf(date.substring(0, 2));
-        int inMonth = Integer.valueOf(date.substring(2, 4));
-        int inYear = Integer.valueOf(date.substring(4, 8));
+    public ListEvents getListUserEvents(String userId, int p, int n) {
+        Query query = new Query(Criteria.where("principalId").is(userId))
+                .with(Sort.by(Sort.Direction.DESC, "_id"));
+        long size = mongoTemplate.count(query, Event.class, mainCollection);
 
-        for (Event event : events) {
-            //Calendar calendar = toCalendar(event.getTimeStamp());
-            int day = event.getTime().getDay();
-            int month = event.getTime().getMonth();
-            int year = event.getTime().getYear();
-
-            DateConverter dc = new DateConverter();
-
-            dc.persianToGregorian(inYear, inMonth, inDay);
-
-            int inGregorianDay = dc.getDay();
-            int inGregorianMonth = dc.getMonth();
-            int inGregorianYear = dc.getYear();
-
-            if ((inGregorianDay == day) && (inGregorianMonth == month) && (inGregorianYear == year) && (userId.equals(event.getUserId())))
-                relatedEvents.add(event);
-
+        query.skip((p - 1) * (n)).limit(n);
+        List<Event> eventList = mongoTemplate.find(query, Event.class, mainCollection);
+        for (Event event : eventList) {
+            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
+            Time time1 = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
+                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
+            event.setTime(time1);
         }
-        return relatedEvents;
+        ListEvents listEvents = new ListEvents(size, (int) Math.ceil(size / n), eventList);
+        return listEvents;
     }
 
-    public List<Event> analyze() throws FileNotFoundException, ParseException {
-
-        List<Event> events = new LinkedList<>();
-        File myfile = new File(path);
-        Scanner scanner = new Scanner(myfile);
-        StringBuffer data = new StringBuffer();
-        String temp = String.valueOf(data);
-        Event event = null;
-        String[] s = temp.split("=============================================================");
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            if (line.equals("=============================================================")) {
-                if (!(event == null) && event.getAction()!=null) events.add(event);
-                event = new Event();
-            }
-            if (line.contains("WHO: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setUserId(temp);
-            } else if (line.contains("WHAT: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setDetails(temp);
-            } else if (line.contains("ACTION: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setAction(temp);
-            } else if (line.contains("APPLICATION: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setApplication(temp);
-            } else if (line.contains("WHEN: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                SimpleDateFormat parserSDF = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
-                parserSDF.setTimeZone(TimeZone.getDefault());
-                Date date = parserSDF.parse(temp);
-
-                Calendar myCal = new GregorianCalendar();
-                myCal.setTime(date);
-
-                Time time = new Time(
-                        myCal.get(Calendar.YEAR),
-                        myCal.get(Calendar.MONTH)+1,
-                        myCal.get(Calendar.DAY_OF_MONTH),
-
-                        myCal.get(Calendar.HOUR_OF_DAY),
-                        myCal.get(Calendar.MINUTE),
-                        myCal.get(Calendar.SECOND)
-
-                );
-
-                event.setTime(time);
+    @Override
+    public ListEvents getEventsByDate(String date, int p, int n) {
 
 
-            } else if (line.contains("CLIENT IP ADDRESS: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setClientIP(temp);
-            } else if (line.contains("SERVER IP ADDRESS: ")) {
-                temp = line.substring(line.indexOf(":") + 2);
-                event.setServerIP(temp);
-            }
+        String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+        String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
+        String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
+
+        long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+        long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+
+        Query query = new Query(Criteria.where("_id").gte(eventStartDate).lte(eventEndDate));
+        List<Event> allEvents = mongoTemplate.find(query, Event.class, mainCollection);
+
+        for (Event event : allEvents) {
+            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
+            Time time1 = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
+                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
+            event.setTime(time1);
         }
-        Collections.reverse(events);
-        return events;
+
+
+        long size = mongoTemplate.count(query, Event.class, mainCollection);
+
+        return new ListEvents(size, (int) Math.ceil(size / n), allEvents);
+    }
+
+    @Override
+    public ListEvents getListUserEventByDate(String date, String userId, int skip, int limit) {
+
+        String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+        String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
+        String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
+
+        long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+        long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+        Query query = new Query(Criteria.where("principalId").is(userId).and("_id").gte(eventStartDate).lte(eventEndDate));
+        long size = mongoTemplate.count(query, ListEvents.class, mainCollection);
+        query.skip((skip - 1) * (limit)).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
+        List<Event> eventList = mongoTemplate.find(query, Event.class, mainCollection);
+
+        for (Event event : eventList) {
+            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
+            Time time1 = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
+                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
+            event.setTime(time1);
+        }
+
+        int pages = (int) Math.ceil(size / limit) + 1;
+        ListEvents listEvents = new ListEvents(size, pages, eventList);
+        return listEvents;
+    }
+
+    @Override
+    public List<Event> analyze(String collection, int skip, int limit) {
+        Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
+        List<Event> le = mongoTemplate.find(query, Event.class, collection);
+        for (Event event : le) {
+            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
+            Time time1 = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
+                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
+            event.setTime(time1);
+        }
+
+        return le;
     }
 }
+
+

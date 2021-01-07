@@ -1,11 +1,9 @@
 package parsso.idman.Models;
 
+
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Models.EventsSubModel.Time;
 
-import java.nio.file.Path;
-import java.util.Date;
 import java.util.List;
 
 @Getter

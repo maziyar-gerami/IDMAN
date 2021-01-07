@@ -2,7 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package parsso.idman.utils.SMS.sdk.models;
+package parsso.idman.Utils.SMS.sdk.models;
+
 
 import com.google.gson.JsonObject;
 
@@ -11,14 +12,14 @@ import com.google.gson.JsonObject;
  */
 public class SendResult {
 
-    private Long messageId;
-    private String message;
-    private Integer status;
-    private String statusText;
-    private String sender;
-    private String receptor;
-    private Long date;
-    private Integer cost;
+    private final Long messageId;
+    private final String message;
+    private final Integer status;
+    private final String statusText;
+    private final String sender;
+    private final String receptor;
+    private final Long date;
+    private final Integer cost;
 
 
     public SendResult(JsonObject json) {

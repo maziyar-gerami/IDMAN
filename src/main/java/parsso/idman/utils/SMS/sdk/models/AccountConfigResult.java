@@ -2,7 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package parsso.idman.utils.SMS.sdk.models;
+package parsso.idman.Utils.SMS.sdk.models;
+
 
 import com.google.gson.JsonObject;
 
@@ -12,12 +13,12 @@ import com.google.gson.JsonObject;
 public class AccountConfigResult {
 
 
-    private String apiLogs;
-    private String dailyReport;
-    private String debugMode;
-    private String defaultSender;
-    private String resendFailed;
-    private int minCreditAlarm;
+    private final String apiLogs;
+    private final String dailyReport;
+    private final String debugMode;
+    private final String defaultSender;
+    private final String resendFailed;
+    private final int minCreditAlarm;
 
     public AccountConfigResult(JsonObject json) {
         this.apiLogs = json.get("apilogs").getAsString();

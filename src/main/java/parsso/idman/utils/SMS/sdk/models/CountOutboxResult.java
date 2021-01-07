@@ -2,7 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package parsso.idman.utils.SMS.sdk.models;
+package parsso.idman.Utils.SMS.sdk.models;
+
 
 import com.google.gson.JsonObject;
 
@@ -11,8 +12,8 @@ import com.google.gson.JsonObject;
  */
 public class CountOutboxResult extends CountInboxResult {
 
-    private   Long sumPart;
-    private  Long cost;
+    private final Long sumPart;
+    private final Long cost;
 
 
     public CountOutboxResult(JsonObject json) {

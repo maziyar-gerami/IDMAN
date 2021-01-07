@@ -1,4 +1,4 @@
-package parsso.idman.utils.SMS.sdk.utils;
+package parsso.idman.Utils.SMS.sdk.utils;
 
 
 import java.util.List;

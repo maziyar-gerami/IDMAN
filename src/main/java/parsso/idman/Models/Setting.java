@@ -1,9 +1,8 @@
 package parsso.idman.Models;
 
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.HashMap;
 
 @Setter
 @Getter

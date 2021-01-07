@@ -2,10 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package parsso.idman.utils.SMS.sdk.enums;
+package parsso.idman.Utils.SMS.sdk.enums;
+
 
 /**
- *
  * @author mohsen
  */
 public enum MessageType {
@@ -16,12 +16,8 @@ public enum MessageType {
     AppMemory(3);
     private final int value;
 
-    private MessageType(int type) {
+    MessageType(int type) {
         this.value = type;
-    }
-
-    public int getValue() {
-        return value;
     }
 
     public static MessageType valueOf(int type) {
@@ -31,5 +27,9 @@ public enum MessageType {
             }
         }
         return null;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

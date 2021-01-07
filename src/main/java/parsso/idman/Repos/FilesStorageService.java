@@ -1,19 +1,23 @@
 package parsso.idman.Repos;
 
-import java.nio.file.Path;
-import java.util.stream.Stream;
 
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.stream.Stream;
+
 public interface FilesStorageService {
-    public void init();
+    void init();
 
-    public void save(MultipartFile file, String name);
+    void saveMetadata(MultipartFile file, String name) throws IOException;
 
-    public Resource load(String filename);
+    void saveProfilePhoto(MultipartFile file, String name) throws IOException;
 
-    public void deleteAll();
+    Resource load(String filename);
 
-    public Stream<Path> loadAll();
+    void deleteAll();
+
+    Stream<Path> loadAll();
 }

@@ -1,6 +1,6 @@
 package parsso.idman.Controllers;
 
-import org.json.simple.JSONArray;
+
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,10 +11,7 @@ import parsso.idman.Models.Config;
 import parsso.idman.Models.Setting;
 import parsso.idman.Repos.ConfigRepo;
 
-
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -61,5 +58,6 @@ public class ConfigController {
     public ResponseEntity<HttpStatus> resetFactory() throws IOException {
         return new ResponseEntity<>(configRepo.factoryReset());
     }
+
 
 }

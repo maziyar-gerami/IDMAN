@@ -1,33 +1,34 @@
-package parsso.idman.utils.Email;
+package parsso.idman.Utils.Email;
 
-import java.util.Properties;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Properties;
 
+@Component
 public class EmailSend {
 
-    public  void sendMail(String to, String uid,String name, String token) {
+    // Recipient's email ID needs to be mentioned.
 
-        // Recipient's email ID needs to be mentioned.
+    // Sender's email ID needs to be mentioned
+    @Value("${address.email.sender}")
+    String from;
+    @Value("${password.email.sender}")
+    String password;
 
-        // Sender's email ID needs to be mentioned
-        String from = "Parsso.Idman@gmail.com";
+    // Assuming you are sending email from through gmails
+    @Value("${host.email.sender}")
+    String host;
 
-        String password = "Parsso2020";
-
-        // Assuming you are sending email from through gmails smtp
-        String host = "smtp.gmail.com";
-
+    public void sendMail(String to, String uid, String name, String token) {
 
         String subject = "بازنشانی رمز عبور";
         String body = " عزیز \nشما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید.\n" +
-                "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n"+
+                "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +
                 "در غیر این صورت با کلیک بر روی  لینک زیر نسبت به بازنشانی و تغییر رمز عبور خود اقدام نمایید.\n";
         String end = "\n\nاگر این لینک برای شما بصورت یک لینک قابل کلیک نشان داده نشد، آن را عینا در مرورگر خود کپی کنید";
 
@@ -55,7 +56,7 @@ public class EmailSend {
         });
 
         // Used to debug SMTP issues
-        session.setDebug(true);
+        session.setDebug(false);
 
         try {
             // Create a default MimeMessage object.
@@ -71,7 +72,7 @@ public class EmailSend {
             message.setSubject(subject);
 
             // Now set the actual message
-            message.setText(name + body+stringUid+uid+"\n"+stringLink+token+end,"UTF8");
+            message.setText(name + body + stringUid + uid + "\n" + stringLink + token + end, "UTF8");
 
             // Send message
             Transport.send(message);
