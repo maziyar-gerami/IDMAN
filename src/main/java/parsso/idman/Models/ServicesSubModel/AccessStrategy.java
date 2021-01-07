@@ -8,12 +8,18 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import parsso.idman.Utils.Convertor.DateConverter;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 @Setter
 @Getter
 
 public class AccessStrategy {
+
+    ZoneId zoneId = ZoneId.of("UTC+03:30");
+
 
     @JsonProperty("@class")
     private String atClass;
@@ -95,12 +101,15 @@ public class AccessStrategy {
         String seconds = seTime.substring(17, 19);
 
         String miliSeconds = seTime.substring(20, 23);
-        String tf1 = seTime.substring(24, 26);
-        String tf2 = seTime.substring(27, 29);
 
 
-        return (convertDate(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day))) +
-                'T' + hours + ':' + minutes + ':' + seconds + '.' + miliSeconds + seTime.charAt(23) + tf1 + ":" + tf2;
+        String s = convertDate(Integer.valueOf(year),Integer.valueOf(month),Integer.valueOf(day));
+
+        OffsetDateTime eventDate = OffsetDateTime.parse(s+'T' + hours + ':' + minutes + ':' + seconds + '.' + miliSeconds + zoneId.toString().substring(3));
+
+
+
+        return eventDate.toString();
 
 
     }
