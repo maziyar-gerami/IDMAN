@@ -15,6 +15,9 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Service
 public class BuildAttributes {
@@ -28,6 +31,9 @@ public class BuildAttributes {
     private LdapTemplate ldapTemplate;
 
     public Attributes BuildAttributes(User p) {
+
+        ZoneId zoneId = ZoneId.of("UTC+03:30");
+
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
         ocattr.add("top");
@@ -69,6 +75,7 @@ public class BuildAttributes {
             attrs.put("pwdAccountLockedTime", p.isEnabled());
 
         if (p.getEndTime()!=null) {
+            String s = Time.setEndTime(p.getEndTime())+'Z';
             attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime())+'Z');
         }
 

@@ -4,6 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.Utils.Convertor.DateConverter;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 @Setter
@@ -18,6 +22,9 @@ public class Time {
     private int minutes;
     private int seconds;
     private int miliseconds;
+
+
+    static ZoneId zoneId = ZoneId.of("UTC+03:30");
 
     @Override
     public boolean equals(Object obj) {
@@ -89,22 +96,31 @@ public class Time {
         if (Integer.valueOf(input.substring(0, 4)) < 2000) {
 
             if (!(input.contains("-"))) {
-                int Y = Integer.valueOf(input.substring(0, 4));
-                int M = Integer.valueOf(input.substring(4, 6));
-                int D = Integer.valueOf(input.substring(6, 8));
+                String Y = input.substring(0, 4);
+                String M = input.substring(4, 6);
+                String D = input.substring(6, 8);
 
-                DateConverter dateConverter = new DateConverter();
-                dateConverter.persianToGregorian(Y, M, D);
+                String H = input.substring(8, 10);
+                String m = input.substring(10, 12);
+                String s = input.substring(12, 14);
+                String S = input.substring(15, 15);
 
-                return dateConverter.getYear()
-                        + String.format("%02d", dateConverter.getMonth())
-                        + String.format("%02d", dateConverter.getDay())
-                        + input.substring(8, 10)
-                        + input.substring(10, 12)
-                        + input.substring(12, 14)
-                        + input.substring(15, 17);
+
+                //DateConverter dateConverter = new DateConverter();
+                //dateConverter.persianToGregorian(Y, M, D);
+
+                ZonedDateTime eventDate = OffsetDateTime.parse(Y+"-"+M+"-"+D+'T'+H+":"+m+":"+s+"."+S).atZoneSameInstant(zoneId);
+
+
+                return eventDate.getYear()
+                        + String.format("%02d", eventDate.getMonth())
+                        + String.format("%02d", eventDate.getDayOfMonth())
+                        + String.format("%02d", eventDate.getHour())
+                        + String.format("%02d", eventDate.getMinute())
+                        + String.format("%02d", eventDate.getSecond())
+                        + String.format("%02d", eventDate.getNano());
             } else {
-                return convertDateTimeJalali(input);
+                return convertDateTimeJalali(input+"+03:30");
 
             }
 
@@ -120,6 +136,8 @@ public class Time {
         }
 
     }
+
+
 
     public static String convertDateTimeJalali(String seTime) {
 
