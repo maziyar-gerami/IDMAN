@@ -16,29 +16,26 @@ import parsso.idman.Utils.Convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class EventsExcelView extends AbstractXlsView {
 
+    public static String mainCollection = "MongoDbCasEventRepository";
     @Autowired
     EventRepo eventRepo;
-
-    public static String mainCollection = "MongoDbCasEventRepository";
-
     ZoneId zoneId = ZoneId.of("UTC+03:30");
-
 
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // get data model which is passed by the Spring container
-        List<Event> events = eventRepo.analyze(mainCollection, 0,0);
+        List<Event> events = eventRepo.analyze(mainCollection, 0, 0);
 
         // create a new Excel sheet
         HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Events");
@@ -88,14 +85,14 @@ public class EventsExcelView extends AbstractXlsView {
             aRow.createCell(3).setCellValue(event.getClientip());
 
             ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
-            Time time = new Time(eventDate.getYear(),eventDate.getMonthValue(),eventDate.getDayOfMonth(),
-                    eventDate.getHour(),eventDate.getMinute(),eventDate.getSecond());
+            Time time = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
+                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
             event.setTime(time);
 
             DateConverter dateConverter = new DateConverter();
-            dateConverter.gregorianToPersian(eventDate.getYear(),eventDate.getMonthValue(),eventDate.getDayOfMonth());
-            aRow.createCell(4).setCellValue(dateConverter.getYear()+"/"+dateConverter.getMonth()+"/"+dateConverter.getDay());
-            aRow.createCell(5).setCellValue(event.getTime().getHours()+":"+event.getTime().getMinutes()+":"+event.getTime().getSeconds());
+            dateConverter.gregorianToPersian(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth());
+            aRow.createCell(4).setCellValue(dateConverter.getYear() + "/" + dateConverter.getMonth() + "/" + dateConverter.getDay());
+            aRow.createCell(5).setCellValue(event.getTime().getHours() + ":" + event.getTime().getMinutes() + ":" + event.getTime().getSeconds());
             aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
             aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
 

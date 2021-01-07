@@ -1,5 +1,6 @@
 package parsso.idman.Helpers.User;
 
+
 import io.jsonwebtoken.io.IOException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ import java.util.List;
 
 
 @Service
-public  class DashboardData {
+public class DashboardData {
+    public static String mainCollection = "MongoDbCasEventRepository";
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -30,9 +32,7 @@ public  class DashboardData {
     ServiceRepo serviceRepo;
     @Autowired
     MongoTemplate mongoTemplate;
-    public static String mainCollection = "MongoDbCasEventRepository";
     ZoneId zoneId = ZoneId.of("UTC+03:30");
-
 
 
     public JSONObject retrieveDashboardData() throws IOException, java.text.ParseException, java.io.IOException, org.json.simple.parser.ParseException, InterruptedException {
@@ -43,8 +43,7 @@ public  class DashboardData {
         JSONObject loginJson = new JSONObject();
 
 
-
-        Thread userData = new Thread(()->{
+        Thread userData = new Thread(() -> {
             //________users data____________
             List<User> usersList = userRepo.retrieveUsersFull();
             int nUsers = userRepo.retrieveUsersMain().size();
@@ -67,7 +66,7 @@ public  class DashboardData {
 
         });
 
-        Thread servicesData = new Thread(()->{
+        Thread servicesData = new Thread(() -> {
 
             //________services data____________
             List<parsso.idman.Models.Service> services = null;
@@ -82,7 +81,7 @@ public  class DashboardData {
             int nEnabledServices = 0;
 
             for (parsso.idman.Models.Service service : services) {
-                if (service.getAccessStrategy()!=null&& service.getAccessStrategy().isEnabled())
+                if (service.getAccessStrategy() != null && service.getAccessStrategy().isEnabled())
                     nEnabledServices++;
             }
 
@@ -94,30 +93,29 @@ public  class DashboardData {
 
         });
 
-        Thread loginData = new Thread(()->{
+        Thread loginData = new Thread(() -> {
             //__________________login data____________
-            List<Event> events = eventRepo.analyze(mainCollection,0,0);
+            List<Event> events = eventRepo.analyze(mainCollection, 0, 0);
             int nSuccessful = 0;
             int nUnSucceful = 0;
 
             LocalDateTime now = LocalDateTime.now();
-            Time time= new Time(now.getDayOfYear(),now.getMonthValue(),now.getDayOfMonth());
+            Time time = new Time(now.getDayOfYear(), now.getMonthValue(), now.getDayOfMonth());
 
             for (Event event : events) {
                 //TODO: This is date
                 ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
 
 
-                if (event.getType().equals("Unsuccessful Login")&& DateUtils.isToday(eventDate)) {
+                if (event.getType().equals("Unsuccessful Login") && DateUtils.isToday(eventDate)) {
                     nUnSucceful++;
-                } else if (event.getType().equals("Successful Login")&& DateUtils.isToday(eventDate))
+                } else if (event.getType().equals("Successful Login") && DateUtils.isToday(eventDate))
                     nSuccessful++;
             }
             loginJson.put("total", nSuccessful + nUnSucceful);
             loginJson.put("unsuccessful", nUnSucceful);
             loginJson.put("successful", nSuccessful);
         });
-
 
 
         //_________summary________________

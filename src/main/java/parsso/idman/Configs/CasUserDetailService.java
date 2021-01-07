@@ -1,5 +1,6 @@
 package parsso.idman.Configs;
 
+
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
@@ -11,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.naming.directory.SearchControls;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,22 +35,22 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
             collection.add(new SimpleGrantedAuthority("ROLE_" + "SUPERADMIN"));
         }
 
-            try {
-                List<String> lst = (List) attributes.get("ou");
-                for (String id : lst) {
+        try {
+            List<String> lst = (List) attributes.get("ou");
+            for (String id : lst) {
 
-                    if (id.equals(adminId)) {
-                        collection.add(new SimpleGrantedAuthority("ROLE_" + "ADMIN"));
-                        break;
-                    }
-                }
-            } catch (Exception e) {
-                String id = (String) attributes.get("ou");
-
-                if (id != null && id.equals(adminId))
+                if (id.equals(adminId)) {
                     collection.add(new SimpleGrantedAuthority("ROLE_" + "ADMIN"));
-
+                    break;
+                }
             }
+        } catch (Exception e) {
+            String id = (String) attributes.get("ou");
+
+            if (id != null && id.equals(adminId))
+                collection.add(new SimpleGrantedAuthority("ROLE_" + "ADMIN"));
+
+        }
 
         if (role == null)
             collection.add(new SimpleGrantedAuthority("ROLE_" + "USER"));

@@ -1,9 +1,9 @@
 package parsso.idman.Helpers.Service;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.google.gson.JsonObject;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import parsso.idman.Models.ServicesSubModel.*;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.ServiceType.CasService;
 import parsso.idman.Models.ServiceType.MicroService;
+import parsso.idman.Models.ServicesSubModel.*;
 import parsso.idman.Repos.ServiceRepo;
 
 import java.io.File;
@@ -30,14 +30,13 @@ import java.util.*;
 @Component
 public class CasServiceHelper {
 
+    private final String collection = "IDMAN_Services";
     @Value("${services.folder.path}")
     String path;
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
     ServiceRepo serviceRepo;
-
-    private final String collection = "IDMAN_Services";
     Logger logger = LoggerFactory.getLogger(CasServiceHelper.class);
 
     public CasService buildCasService(JSONObject jo) {
@@ -49,15 +48,12 @@ public class CasServiceHelper {
         if (jo.get("serviceId") != null) service.setServiceId(jo.get("serviceId").toString());
         if (jo.get("description") != null) service.setDescription(jo.get("description").toString());
         if (jo.get("logoutType") != null) service.setLogoutType(jo.get("logoutType").toString());
-        if (jo.get("@class")!=null) service.setAtClass(jo.get("@class").toString());
+        if (jo.get("@class") != null) service.setAtClass(jo.get("@class").toString());
         if (jo.get("logoutUrl") != null) service.setLogoutUrl(jo.get("logoutUrl").toString());
         if (jo.get("name") != null) service.setName(jo.get("name").toString());
         if (jo.get("privacyUrl") != null) service.setPrivacyUrl(jo.get("privacyUrl").toString());
         if (jo.get("logo") != null) service.setLogo(jo.get("logo").toString());
         if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
-
-
-
 
 
         if (jo.get("expirationPolicy") == null)
@@ -111,7 +107,7 @@ public class CasServiceHelper {
             usernameAttributeProvider.setEncryptUsername((Boolean) jsonObject.get("encryptUsername"));
             service.setUsernameAttributeProvider(usernameAttributeProvider);
         }
-        if (jo.get("attributeReleasePolicy") == null && jo.get("accessStrategy")!=null) {
+        if (jo.get("attributeReleasePolicy") == null && jo.get("accessStrategy") != null) {
 
             AttributeReleasePolicy attributeReleasePolicy = new AttributeReleasePolicy();
             service.setAttributeReleasePolicy(attributeReleasePolicy);
@@ -170,7 +166,7 @@ public class CasServiceHelper {
             }
         }
 
-        if (jo.get("multifactorPolicy")!=null) {
+        if (jo.get("multifactorPolicy") != null) {
 
             JSONObject jsonObject = null;
 
@@ -188,7 +184,7 @@ public class CasServiceHelper {
                     multifactorPolicy.setFailureMode((String) jsonObject.get("failureMode"));
                 if (jsonObject.get("bypassEnabled") != null)
                     multifactorPolicy.setBypassEnabled((Boolean) jsonObject.get("bypassEnabled"));
-                if (jsonObject.get("multifactorAuthenticationProviders")!=null)
+                if (jsonObject.get("multifactorAuthenticationProviders") != null)
                     multifactorPolicy.setMultifactorAuthenticationProviders(jsonObject.get("multifactorAuthenticationProviders").toString());
                 service.setMultifactorPolicy(multifactorPolicy);
 
@@ -197,7 +193,7 @@ public class CasServiceHelper {
 
         // AccessStrategy
         JSONObject jsonObject;
-        if (jo.get("accessStrategy")!=null) {
+        if (jo.get("accessStrategy") != null) {
             jsonObject = new JSONObject((Map) jo.get("accessStrategy"));
             AccessStrategy accessStrategy = new AccessStrategy();
 
@@ -207,7 +203,7 @@ public class CasServiceHelper {
         }
 
         //contacts
-        if (jo.get("contacts")!= null) {
+        if (jo.get("contacts") != null) {
 
             ArrayList arrayList = (ArrayList) jo.get("contacts");
 
@@ -238,7 +234,8 @@ public class CasServiceHelper {
                         if (jsonObject1.get("email") != null) {
                             contact.setEmail((String) jsonObject1.get("email"));
 
-                            if (jsonObject1.get("phone") != (null)) contact.setPhone(jsonObject1.get("phone").toString());
+                            if (jsonObject1.get("phone") != (null))
+                                contact.setPhone(jsonObject1.get("phone").toString());
                             if (jsonObject1.get("department") != (null))
                                 contact.setDepartment(jsonObject1.get("department").toString());
                             contacts.add(contact);
@@ -258,7 +255,7 @@ public class CasServiceHelper {
 
     }
 
-    boolean isCasService (JSONObject jo) {
+    boolean isCasService(JSONObject jo) {
 
         return !jo.get("@class").toString().toLowerCase().contains("saml");
 
@@ -293,21 +290,21 @@ public class CasServiceHelper {
         FileWriter file;
         try {
 
-            File oldFile = new File(path+oldService.getName()+"-"+service.getId()+".json");
+            File oldFile = new File(path + oldService.getName() + "-" + service.getId() + ".json");
             oldFile.delete();
             String fileName = service.getName();
             String s1 = fileName.replaceAll("\\s+", "");
             s1 = s1.replaceAll("[-,]", "");
-            String filePath = s1+"-"+service.getId();
+            String filePath = s1 + "-" + service.getId();
 
-            file = new FileWriter(path+filePath + ".json");
+            file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            logger.info("Service "+"\""+service.getId()+"\""+" deleted successfully");
+            logger.info("Service " + "\"" + service.getId() + "\"" + " deleted successfully");
             return HttpStatus.OK;
         } catch (IOException e) {
             e.printStackTrace();
-            logger.warn("Updating Service "+"\""+service.getId()+"\""+" was unsuccessful");
+            logger.warn("Updating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
             return HttpStatus.FORBIDDEN;
         }
 
@@ -318,11 +315,11 @@ public class CasServiceHelper {
         CasService service = buildCasService(jo);
         service.setId(new Date().getTime());
         String json = null;
-        if (service!=null){
+        if (service != null) {
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             try {
-                mongoTemplate.save(service,collection);
+                mongoTemplate.save(service, collection);
                 json = ow.writeValueAsString(service);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
@@ -336,31 +333,31 @@ public class CasServiceHelper {
                 String filePath = s1 + "-" + service.getId();
 
                 InetAddress[] machines = null;
-                if(!(service.getServiceId().contains("localhost")))
-                    try{
+                if (!(service.getServiceId().contains("localhost")))
+                    try {
                         machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
-                    }catch (Exception e){
-                        logger.warn("Unable to get IP from it's serverId with these serviceId: " +service.getServiceId());
+                    } catch (Exception e) {
+                        logger.warn("Unable to get IP from it's serverId with these serviceId: " + service.getServiceId());
                         machines = null;
                     }
 
                 List<String> IPaddresses = new LinkedList<>();
 
-                if(machines!=null)
-                for (InetAddress machine:machines)
-                    IPaddresses.add(machine.getHostAddress());
+                if (machines != null)
+                    for (InetAddress machine : machines)
+                        IPaddresses.add(machine.getHostAddress());
                 MicroService microService = new MicroService((service).getServiceId(), IPaddresses);
 
                 file = new FileWriter(path + filePath + ".json");
                 file.write(json);
                 file.close();
 
-                mongoTemplate.save(microService,collection);
-                logger.info("Service "+"\""+service.getId()+"\""+" created successfully");
+                mongoTemplate.save(microService, collection);
+                logger.info("Service " + "\"" + service.getId() + "\"" + " created successfully");
 
                 return service.getId();
             } catch (IOException e) {
-                logger.warn("Creating Service "+"\""+service.getId()+"\""+" was unsuccessful");
+                logger.warn("Creating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
                 return 0;
             }
 

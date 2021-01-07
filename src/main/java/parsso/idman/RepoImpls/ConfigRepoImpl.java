@@ -1,5 +1,6 @@
 package parsso.idman.RepoImpls;
 
+
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -41,7 +42,6 @@ public class ConfigRepoImpl implements ConfigRepo {
 
     @Value("${backup.path}")
     private String backUpPath;
-
 
 
     public static List<Setting> parser(Scanner reader, String system) {
@@ -243,7 +243,6 @@ public class ConfigRepoImpl implements ConfigRepo {
         }
         return HttpStatus.OK;
     }
-
 
 
     @Override

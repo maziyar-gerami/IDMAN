@@ -1,5 +1,6 @@
 package parsso.idman.Models.ServicesSubModel;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ public class DelegatedAuthenticationPolicy {
     Object[] allowedProviders;
     boolean permitUndefined;
     boolean exclusive;
+
     public DelegatedAuthenticationPolicy() {
         atClass = "org.apereo.cas.services.DefaultRegisteredServiceDelegatedAuthenticationPolicy";
         exclusive = false;

@@ -1,5 +1,6 @@
 package parsso.idman.Helpers.User;
 
+
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +16,7 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 @Service
 public class BuildAttributes {
@@ -50,10 +49,10 @@ public class BuildAttributes {
         attrs.put("userPassword", p.getUserPassword() != null ? p.getUserPassword() : defaultPassword);
         attrs.put("displayName", p.getDisplayName());
         attrs.put("mobile", p.getMobile().equals("") || p.getMobile() == null ? " " : p.getMobile());
-        attrs.put("employeeNumber", p.getEmployeeNumber()==null||p.getEmployeeNumber().equals("") ? "0":p.getEmployeeNumber());
+        attrs.put("employeeNumber", p.getEmployeeNumber() == null || p.getEmployeeNumber().equals("") ? "0" : p.getEmployeeNumber());
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
-        if (p.getTokens()!=null && p.getTokens().getResetPassToken() != null)
+        if (p.getTokens() != null && p.getTokens().getResetPassToken() != null)
             attrs.put("resetPassToken", p.getTokens().getResetPassToken());
         if (p.getMemberOf() != null && p.getMemberOf().size() != 0) {
             Attribute attr = new BasicAttribute("ou");
@@ -74,11 +73,9 @@ public class BuildAttributes {
         if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
 
-        if (p.getEndTime()!=null) {
-            attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime())+'Z');
+        if (p.getEndTime() != null) {
+            attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
         }
-
-
 
 
         return attrs;
@@ -104,11 +101,11 @@ public class BuildAttributes {
         if (p.getEmployeeNumber() != null) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
         if (p.getEmployeeNumber() != null) context.setAttributeValue("mail", p.getMail());
 
-        if (p.getTimeStamp()>0)
-        //context.setAttributeValue("createtimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
+        if (p.getTimeStamp() > 0)
+            //context.setAttributeValue("createtimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
 
 
-        if (p.getMail() != "" && p.getFirstName() != null) context.setAttributeValue("mail", p.getMail());
+            if (p.getMail() != "" && p.getFirstName() != null) context.setAttributeValue("mail", p.getMail());
         if ((p.getFirstName()) != null || (p.getLastName() != null)) {
             if (p.getFirstName() == null)
                 context.setAttributeValue("cn", userRepo.retrieveUser(uid).getFirstName() + ' ' + p.getLastName());
@@ -141,8 +138,7 @@ public class BuildAttributes {
                     if (i == 0) context.setAttributeValue("ou", p.getMemberOf().get(i));
                     else context.addAttributeValue("ou", p.getMemberOf().get(i));
                 }
-            } else
-                if(old.getMemberOf()!=null)
+            } else if (old.getMemberOf() != null)
                 for (String id : old.getMemberOf()) {
                     context.removeAttributeValue("ou", id);
                 }
@@ -158,7 +154,7 @@ public class BuildAttributes {
 
         if (p.getEndTime() != null) {
             String time = Time.convertDateTimeJalali(p.getEndTime());
-            context.setAttributeValue("pwdEndTime", time+"Z");
+            context.setAttributeValue("pwdEndTime", time + "Z");
         }
 
         if (p.getEmployeeNumber() != "" && old.getEmployeeNumber() != null)

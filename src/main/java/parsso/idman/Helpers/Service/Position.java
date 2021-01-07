@@ -18,11 +18,9 @@ import java.util.List;
 public class Position {
     @Autowired
     MongoTemplate mongoTemplate;
-
+    String collection = "IDMAN_ServicesExtraInfo";
     @Value("${base.url}")
     private String baseUrl;
-
-    String collection = "IDMAN_ServicesExtraInfo";
 
     public int lastPosition() throws IOException {
         List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
@@ -39,22 +37,22 @@ public class Position {
     public HttpStatus increase(String id) {
         Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
         List<MicroService> ms = mongoTemplate.find(query, MicroService.class, collection);
-        int position=0;
+        int position = 0;
         for (MicroService microService : ms)
             if (!(baseUrl.toLowerCase().contains("localhost")))
                 position = microService.getPosition();
 
         List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
-        if(position!=microservices.size()) {
-            MicroService ms1 = searchByPosition(microservices,position+1);
+        if (position != microservices.size()) {
+            MicroService ms1 = searchByPosition(microservices, position + 1);
             MicroService ms2 = searchByPosition(microservices, position);
 
             ms1.setPosition(position);
-            mongoTemplate.save(ms1,collection);
-            ms2.setPosition(position+1);
-            mongoTemplate.save(ms,collection);
+            mongoTemplate.save(ms1, collection);
+            ms2.setPosition(position + 1);
+            mongoTemplate.save(ms, collection);
 
-        }else
+        } else
             return HttpStatus.FORBIDDEN;
         return HttpStatus.OK;
     }
@@ -62,48 +60,48 @@ public class Position {
     public HttpStatus decrease(String id) {
         Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
         List<MicroService> ms = mongoTemplate.find(query, MicroService.class, collection);
-        int position=0;
+        int position = 0;
         for (MicroService microService : ms)
             if (!(baseUrl.toLowerCase().contains("localhost")))
                 position = microService.getPosition();
 
-                List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
-                if (position != 1) {
-                    MicroService ms1 = searchByPosition(microservices, position);
-                    MicroService ms2 = searchByPosition(microservices, position - 1);
-                    ms1.setPosition(position - 1);
-                    ms2.setPosition(position);
-                    mongoTemplate.save(ms1, collection);
-                    mongoTemplate.save(ms2, collection);
-                } else
-                    return HttpStatus.FORBIDDEN;
-                return HttpStatus.OK;
+        List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
+        if (position != 1) {
+            MicroService ms1 = searchByPosition(microservices, position);
+            MicroService ms2 = searchByPosition(microservices, position - 1);
+            ms1.setPosition(position - 1);
+            ms2.setPosition(position);
+            mongoTemplate.save(ms1, collection);
+            mongoTemplate.save(ms2, collection);
+        } else
+            return HttpStatus.FORBIDDEN;
+        return HttpStatus.OK;
 
     }
 
-    public MicroService searchByPosition(List<MicroService> microServices, int position){
-        for (MicroService microService:microServices) {
+    public MicroService searchByPosition(List<MicroService> microServices, int position) {
+        for (MicroService microService : microServices) {
             if (!(baseUrl.toLowerCase().contains("localhost"))) {
                 if (microService.getPosition() == position)
                     return microService;
             }
         }
-        return  null;
+        return null;
     }
 
-    public  HttpStatus delete(int position){
+    public HttpStatus delete(int position) {
         List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
         Collections.sort(microservices);
         Collections.reverse(microservices);
 
-        for (int i=position; i< microservices.size(); i++) {
+        for (int i = position; i < microservices.size(); i++) {
             if (!(baseUrl.toLowerCase().contains("localhost"))) {
                 microservices.get(i).setPosition(i);
                 mongoTemplate.save(microservices.get(i), collection);
             }
         }
 
-        return  HttpStatus.OK;
+        return HttpStatus.OK;
 
     }
 }

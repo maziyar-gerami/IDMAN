@@ -53,7 +53,6 @@ public class ServiceRepoImpl implements ServiceRepo {
     private String baseUrl;
 
 
-
     @Override
     public List<MicroService> listUserServices(User user) throws IOException {
         List<Service> services = listServicesFull();

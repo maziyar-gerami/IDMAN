@@ -1,5 +1,6 @@
 package parsso.idman.Models.ServicesSubModel;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -10,7 +11,6 @@ import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Map;
 
 @Setter
@@ -54,9 +54,10 @@ public class AccessStrategy {
     private ProxyPolicy proxyPolicy;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String groovyScript;
+
     public AccessStrategy() {
-        if (startingDateTime != null || startingDateTime !=""||
-            endingDateTime != null|| endingDateTime!="")
+        if (startingDateTime != null || startingDateTime != "" ||
+                endingDateTime != null || endingDateTime != "")
             atClass = "org.apereo.cas.services.TimeBasedRegisteredServiceAccessStrategy";
         else
             atClass = "org.apereo.cas.services.DefaultRegisteredServiceAccessStrategy";
@@ -103,10 +104,9 @@ public class AccessStrategy {
         String miliSeconds = seTime.substring(20, 23);
 
 
-        String s = convertDate(Integer.valueOf(year),Integer.valueOf(month),Integer.valueOf(day));
+        String s = convertDate(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day));
 
-        OffsetDateTime eventDate = OffsetDateTime.parse(s+'T' + hours + ':' + minutes + ':' + seconds + '.' + miliSeconds + zoneId.toString().substring(3));
-
+        OffsetDateTime eventDate = OffsetDateTime.parse(s + 'T' + hours + ':' + minutes + ':' + seconds + '.' + miliSeconds + zoneId.toString().substring(3));
 
 
         return eventDate.toString();
@@ -122,7 +122,7 @@ public class AccessStrategy {
         return dateConverter.getYear() + "-" + String.format("%02d", dateConverter.getMonth()) + "-" + String.format("%02d", dateConverter.getDay());
     }
 
-    public AccessStrategy parse(JSONObject jsonObject){
+    public AccessStrategy parse(JSONObject jsonObject) {
 
         AccessStrategy accessStrategy = new AccessStrategy();
         if (jsonObject.get("acceptableResponseCodes") != (null))
@@ -135,9 +135,9 @@ public class AccessStrategy {
         if (jsonObject.get("startingDateTime") != null) {
             String s = jsonObject.get("startingDateTime").toString();
 
-            if (Integer.valueOf(s.substring(0,4)) >2000 )
+            if (Integer.valueOf(s.substring(0, 4)) > 2000)
                 accessStrategy.setStartingDateTimeForGet(jsonObject.get("startingDateTime").toString());
-            if (Integer.valueOf(s.substring(0,4)) <2000 )
+            if (Integer.valueOf(s.substring(0, 4)) < 2000)
                 accessStrategy.setStartingDateTimeForPost(jsonObject.get("startingDateTime").toString());
         }
 
@@ -163,11 +163,11 @@ public class AccessStrategy {
 
 
         JSONObject tempreqiredattribute = new JSONObject();
-        JSONArray obj  = null;
+        JSONArray obj = null;
         JSONObject t1;
-        if (jsonObject.get("requiredAttributes")!=(null)) {
+        if (jsonObject.get("requiredAttributes") != (null)) {
 
-            Object ob1 =jsonObject.get("requiredAttributes");
+            Object ob1 = jsonObject.get("requiredAttributes");
 
             if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
                 obj = new JSONArray();
@@ -176,8 +176,7 @@ public class AccessStrategy {
                 tempreqiredattribute = t1;
                 tempreqiredattribute.put("@class", "java.util.HashMap");
 
-            }
-            else {
+            } else {
                 tempreqiredattribute = new JSONObject((Map) ob1);
                 tempreqiredattribute.put("@class", "java.util.HashMap");
             }
@@ -189,9 +188,9 @@ public class AccessStrategy {
 
         JSONObject temprejecteddattribute = new JSONObject();
 
-        if (jsonObject.get("rejectedAttributes")!=(null)) {
+        if (jsonObject.get("rejectedAttributes") != (null)) {
 
-            Object ob1 =jsonObject.get("rejectedAttributes");
+            Object ob1 = jsonObject.get("rejectedAttributes");
 
             if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
                 obj = new JSONArray();
@@ -200,8 +199,7 @@ public class AccessStrategy {
                 temprejecteddattribute = t1;
                 temprejecteddattribute.put("@class", "java.util.HashMap");
 
-            }
-            else {
+            } else {
                 temprejecteddattribute = new JSONObject((Map) ob1);
                 temprejecteddattribute.put("@class", "java.util.HashMap");
             }

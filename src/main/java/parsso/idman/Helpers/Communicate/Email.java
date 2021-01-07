@@ -1,5 +1,6 @@
 package parsso.idman.Helpers.Communicate;
 
+
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Captcha.Models.CAPTCHA;
-import parsso.idman.Models.User;
 import parsso.idman.Helpers.User.UserAttributeMapper;
+import parsso.idman.Models.User;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Email.EmailSend;
@@ -26,6 +27,7 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 @Service
 public class Email {
 
+    private final String collection = "IDMAN_Captchas";
     @Autowired
     LdapTemplate ldapTemplate;
     @Autowired
@@ -36,15 +38,10 @@ public class Email {
     UserRepo userRepo;
     @Autowired
     UserRepoImpl userRepoImp;
-
     @Autowired
     MongoTemplate mongoTemplate;
-
     @Autowired
     EmailSend emailSend;
-
-    private final String collection = "IDMAN_Captchas";
-
     @Value("${token.valid.email}")
     private String EMAIL_VALID_TIME;
 
@@ -87,15 +84,14 @@ public class Email {
     }
 
     public HttpStatus sendEmail(JSONObject jsonObject) {
-        if(jsonObject.size()==0){
+        if (jsonObject.size() == 0) {
             List<User> users = userRepo.retrieveUsersFull();
 
-            for (User user:users)
-                if (user.getUserId()!="su"&&user.getMail()!=null&&user.getMail()!=null&&user.getMail()!=""&&user.getMail()!=" ")
+            for (User user : users)
+                if (user.getUserId() != "su" && user.getMail() != null && user.getMail() != null && user.getMail() != "" && user.getMail() != " ")
                     sendEmail(user.getMail());
 
-        }
-        else {
+        } else {
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
             for (Object temp : jsonArray) {
 
@@ -103,16 +99,16 @@ public class Email {
                 if (checkMail(user.getMail()) != null)
                     sendEmail(user.getMail());
                 {
-                    Thread thread = new Thread(){
-                        public void run(){
+                    Thread thread = new Thread() {
+                        public void run() {
                             sendEmail(user.getMail());
 
                         }
                     };
                     thread.start();
                 }
-                }
             }
+        }
 
 
         return HttpStatus.OK;
@@ -121,11 +117,11 @@ public class Email {
     public int sendEmail(String email, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class , collection);
-        if((captcha)==null)
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        if ((captcha) == null)
             return -1;
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query,collection);
+            mongoTemplate.remove(query, collection);
             return -1;
         }
 
@@ -136,27 +132,27 @@ public class Email {
 
             String fullUrl = userRepo.createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
 
-            Thread thread = new Thread(){
-                public void run(){
+            Thread thread = new Thread() {
+                public void run() {
                     emailSend.sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
 
                 }
             };
             thread.start();
-            mongoTemplate.remove(query,collection);
+            mongoTemplate.remove(query, collection);
             return Integer.valueOf(EMAIL_VALID_TIME);
         } else
             return 0;
     }
 
-    public int sendEmail(String email, String uid,String cid, String answer) {
+    public int sendEmail(String email, String uid, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class , collection);
-        if((captcha)==null)
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        if ((captcha) == null)
             return -1;
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query,collection);
+            mongoTemplate.remove(query, collection);
             return -1;
         }
 
@@ -173,14 +169,14 @@ public class Email {
                     tokenClass.insertEmailToken(user);
 
                     String fullUrl = userRepoImp.createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
-                    Thread thread = new Thread(){
-                        public void run(){
+                    Thread thread = new Thread() {
+                        public void run() {
                             emailSend.sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
                         }
                     };
 
                     thread.start();
-                    mongoTemplate.remove(query,collection);
+                    mongoTemplate.remove(query, collection);
                     return Integer.valueOf(EMAIL_VALID_TIME);
 
 

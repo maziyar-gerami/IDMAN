@@ -12,12 +12,12 @@ import java.util.List;
 public class ListEvents {
     long size;
     int pages;
-    List <Event> eventList;
+    List<Event> eventList;
 
 
     public ListEvents(long size, int pages, List<Event> relativeEvents) {
         this.size = size;
-        this.pages = pages+1;
+        this.pages = pages + 1;
         this.eventList = relativeEvents;
     }
 

@@ -1,5 +1,6 @@
 package parsso.idman.Mobile.RepoImpls;
 
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -17,9 +18,9 @@ import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Communicate.Message;
 import parsso.idman.Helpers.Communicate.Token;
+import parsso.idman.Mobile.Repos.ServicesRepo;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
-import parsso.idman.Mobile.Repos.ServicesRepo;
 import parsso.idman.Utils.SMS.sdk.KavenegarApi;
 import parsso.idman.Utils.SMS.sdk.excepctions.ApiException;
 import parsso.idman.Utils.SMS.sdk.excepctions.HttpException;
@@ -36,38 +37,26 @@ import java.util.Random;
 @Service
 public class ServicesRepoImpl implements ServicesRepo {
 
-    @Value("${token.valid.email}")
-    private int EMAIL_VALID_TIME;
-
-    @Value("${token.valid.SMS}")
-    private int SMS_VALID_TIME;
-
-    @Value("${sms.api.key}")
-    private String SMS_API_KEY;
-
-    @Value("${spring.ldap.base.dn}")
-    private String BASE_DN;
-
-    @Autowired
-    private LdapTemplate ldapTemplate;
-
-    @Value("${sms.validation.digits}")
-    private int SMS_VALIDATION_DIGITS;
-
-    @Autowired
-    private UserRepo userRepo;
-
-    @Autowired
-    private Message message;
-
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-
-
-
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static SecureRandom rnd = new SecureRandom();
+    @Value("${token.valid.email}")
+    private int EMAIL_VALID_TIME;
+    @Value("${token.valid.SMS}")
+    private int SMS_VALID_TIME;
+    @Value("${sms.api.key}")
+    private String SMS_API_KEY;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
+    @Autowired
+    private LdapTemplate ldapTemplate;
+    @Value("${sms.validation.digits}")
+    private int SMS_VALIDATION_DIGITS;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private Message message;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     public byte[] getQRCodeImage(String text, int width, int height) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
@@ -105,7 +94,7 @@ public class ServicesRepoImpl implements ServicesRepo {
 
         Query query = new Query(Criteria.where("userId").is(user.getUserId()));
         mongoTemplate.remove(query, Token.collection);
-        mongoTemplate.save(user.getTokens(),Token.collection);
+        mongoTemplate.save(user.getTokens(), Token.collection);
 
         return "Mobile Token for " + user.getUserId() + " is created";
 
@@ -177,7 +166,8 @@ public class ServicesRepoImpl implements ServicesRepo {
         }
         if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhotoName());
 
-        if (p.getTokens().getResetPassToken() != null) context.setAttributeValue("resetPassToken", p.getTokens().getResetPassToken());
+        if (p.getTokens().getResetPassToken() != null)
+            context.setAttributeValue("resetPassToken", p.getTokens().getResetPassToken());
 
         if (p.getMemberOf() != null) {
 
@@ -190,7 +180,8 @@ public class ServicesRepoImpl implements ServicesRepo {
         if (p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
         if (p.getPhotoName() != null) context.setAttributeValue("photoName", p.getPhotoName());
         if (p.getStatus() != null) context.setAttributeValue("userStatus", p.getStatus());
-        if (p.getTokens().getMobileToken() != null) context.setAttributeValue("mobileToken", p.getTokens().getMobileToken());
+        if (p.getTokens().getMobileToken() != null)
+            context.setAttributeValue("mobileToken", p.getTokens().getMobileToken());
 
 
         return context;

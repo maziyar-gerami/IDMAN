@@ -1,5 +1,6 @@
 package parsso.idman.Configs;
 
+
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,19 +31,16 @@ import java.util.Collections;
 @PropertySource(value = "file:${external.config}", ignoreResourceNotFound = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${cas.url.logout.path}")
-    private String casLogout;
-
-    @Value("${cas.url.login.path}")
-    private String casLogin;
-
-    @Value("${spring.ldap.urls}")
-    private String ldapUrl;
-
     private final SingleSignOutFilter singleSignOutFilter;
     private final LogoutFilter logoutFilter;
     private final CasAuthenticationProvider casAuthenticationProvider;
     private final ServiceProperties serviceProperties;
+    @Value("${cas.url.logout.path}")
+    private String casLogout;
+    @Value("${cas.url.login.path}")
+    private String casLogin;
+    @Value("${spring.ldap.urls}")
+    private String ldapUrl;
 
     @Autowired
     public WebSecurityConfig(SingleSignOutFilter singleSignOutFilter, LogoutFilter logoutFilter,
@@ -75,7 +73,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .csrf().disable()
-
 
 
 /*

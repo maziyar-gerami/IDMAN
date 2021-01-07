@@ -15,25 +15,27 @@ import parsso.idman.Repos.AuditRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.*;
-import java.util.*;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 @Service
 public class AuditsExcelView extends AbstractXlsView {
 
+    public static String mainCollection = "MongoDbCasAuditRepository";
     @Autowired
     AuditRepo auditRepo;
-
     ZoneId zoneId = ZoneId.of("UTC+03:30");
-
-    public static String mainCollection = "MongoDbCasAuditRepository";
-
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // get data model which is passed by the Spring container
-        List<Audit> audits = auditRepo.analyze(mainCollection, 0,0);
+        List<Audit> audits = auditRepo.analyze(mainCollection, 0, 0);
 
         // create a new Excel sheet
         HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Audits");
@@ -86,13 +88,12 @@ public class AuditsExcelView extends AbstractXlsView {
             cal.setTime(audit.getWhenActionWasPerformed());
 
 
+            ZonedDateTime eventDate = OffsetDateTime.ofInstant(audit.getWhenActionWasPerformed().toInstant(), zoneId).atZoneSameInstant(zoneId);
+            Time time = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
+                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
 
-            ZonedDateTime eventDate = OffsetDateTime.ofInstant(audit.getWhenActionWasPerformed().toInstant(),zoneId).atZoneSameInstant(zoneId);
-            Time time = new Time(eventDate.getYear(),eventDate.getMonthValue(),eventDate.getDayOfMonth(),
-                    eventDate.getHour(),eventDate.getMinute(),eventDate.getSecond());
-
-            aRow.createCell(4).setCellValue(time.getYear()+"/"+time.getMonth()+"/"+time.getDay());
-            aRow.createCell(5).setCellValue(time.getHours()+":"+time.getMinutes()+":"+time.getSeconds());
+            aRow.createCell(4).setCellValue(time.getYear() + "/" + time.getMonth() + "/" + time.getDay());
+            aRow.createCell(5).setCellValue(time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds());
             aRow.createCell(6).setCellValue(audit.getClientIpAddress());
             aRow.createCell(7).setCellValue(audit.getClientIpAddress());
 

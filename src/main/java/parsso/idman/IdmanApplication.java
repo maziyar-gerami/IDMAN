@@ -1,6 +1,6 @@
 package parsso.idman;
 
-import lombok.SneakyThrows;
+
 import org.apache.commons.io.FileUtils;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator;
@@ -23,19 +23,14 @@ import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import parsso.idman.Configs.CasUserDetailService;
-import parsso.idman.Helpers.Events.Pulling;
 import parsso.idman.Repos.FilesStorageService;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * The type Idman application.
@@ -45,9 +40,9 @@ import java.util.TimerTask;
 public class IdmanApplication implements CommandLineRunner {
 
 
-
-
     private static final Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
+    @Autowired
+    static MongoTemplate mongoTemplate;
     /**
      * The Storage service.
      */
@@ -59,12 +54,6 @@ public class IdmanApplication implements CommandLineRunner {
     private String ticketValidator;
     @Value("${base.url}")
     private String baseurl;
-    @Autowired
-    static MongoTemplate mongoTemplate;
-
-
-
-
 
     /**
      * The entry point of application.
@@ -72,12 +61,6 @@ public class IdmanApplication implements CommandLineRunner {
      * @param args the input arguments
      */
     public static void main(String[] args) throws IOException, ParseException, org.json.simple.parser.ParseException {
-
-
-
-
-
-
 
 
         SpringApplication.run(IdmanApplication.class, args);
@@ -93,21 +76,10 @@ public class IdmanApplication implements CommandLineRunner {
         while ((line = sNumReader.readLine()) != null) {
             output.append(line + "\n");
         }
-        String MachineID=output.toString().substring(output.indexOf("\n"), output.length()).trim();
-
-
-
-
+        String MachineID = output.toString().substring(output.indexOf("\n"), output.length()).trim();
 
 
     }
-
-
-
-
-
-
-
 
 
     private static void copyFileUsingApacheCommonsIO(File s, File d) throws IOException {

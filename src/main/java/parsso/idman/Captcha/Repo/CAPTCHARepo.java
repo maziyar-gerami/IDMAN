@@ -7,6 +7,7 @@ import parsso.idman.Captcha.Models.CAPTCHAimage;
 
 public interface CAPTCHARepo {
     CAPTCHAimage createCaptcha(int len, double alphabetRate);
+
     HttpStatus validateCaptcha(CAPTCHA captcha);
 
 }

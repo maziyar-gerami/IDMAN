@@ -1,5 +1,6 @@
 package parsso.idman.Models;
 
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,22 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SimpleUser implements Serializable,Comparable {
-    private String userId;
-    private String displayName;
-    private long timeStamp;
-    private List<String> memberOf;
-    private String status;
-    @Override
-    public int compareTo(Object second) {
-        if (this.timeStamp>((SimpleUser)second).timeStamp)
-            return -1;
-        else if (this.timeStamp<((SimpleUser)second).timeStamp)
-            return 1;
-        else
-            return 0;
-    }
-
+public class SimpleUser implements Serializable, Comparable {
     public static Comparator<SimpleUser> uidMinToMaxComparator = new Comparator<SimpleUser>() {
 
         @Override
@@ -33,7 +19,6 @@ public class SimpleUser implements Serializable,Comparable {
         }
 
     };
-
     public static Comparator<SimpleUser> uidMaxToMinComparator = new Comparator<SimpleUser>() {
 
         @Override
@@ -42,7 +27,6 @@ public class SimpleUser implements Serializable,Comparable {
         }
 
     };
-
     public static Comparator<SimpleUser> displayNameMinToMaxComparator = new Comparator<SimpleUser>() {
 
         @Override
@@ -51,7 +35,6 @@ public class SimpleUser implements Serializable,Comparable {
         }
 
     };
-
     public static Comparator<SimpleUser> displayNameMaxToMinComparator = new Comparator<SimpleUser>() {
 
         @Override
@@ -60,6 +43,21 @@ public class SimpleUser implements Serializable,Comparable {
         }
 
     };
+    private String userId;
+    private String displayName;
+    private long timeStamp;
+    private List<String> memberOf;
+    private String status;
+
+    @Override
+    public int compareTo(Object second) {
+        if (this.timeStamp > ((SimpleUser) second).timeStamp)
+            return -1;
+        else if (this.timeStamp < ((SimpleUser) second).timeStamp)
+            return 1;
+        else
+            return 0;
+    }
 
 
 }

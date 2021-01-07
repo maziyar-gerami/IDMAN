@@ -1,5 +1,6 @@
 package parsso.idman.Helpers.User;
 
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,6 @@ import javax.naming.Name;
 public class BuildDn {
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-
 
 
     public Name buildDn(String userId) {

@@ -1,5 +1,6 @@
 package parsso.idman.Captcha.Models;
 
+
 import lombok.Getter;
 
 @Getter
@@ -9,7 +10,7 @@ public class Points {
     private final int height;
 
 
-    private  int x1 = 0;
+    private int x1 = 0;
     private int y1 = 0;
 
     private int x2 = 0;
@@ -19,14 +20,13 @@ public class Points {
         this.width = width;
         this.height = height;
 
-        x1 = (int) (Math.random()*width);
-        y1 = (int) (Math.random()*height);
+        x1 = (int) (Math.random() * width);
+        y1 = (int) (Math.random() * height);
 
-        x2 = (int) (Math.random()*width);
-        y2 = (int) (Math.random()*height);
+        x2 = (int) (Math.random() * width);
+        y2 = (int) (Math.random() * height);
 
     }
-
 
 
 }

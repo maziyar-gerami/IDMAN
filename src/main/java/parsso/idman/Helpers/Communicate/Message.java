@@ -1,5 +1,6 @@
 package parsso.idman.Helpers.Communicate;
 
+
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,19 +8,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import parsso.idman.Captcha.Models.CAPTCHA;
-import parsso.idman.Helpers.User.UserAttributeMapper;
-import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.SMS.sdk.KavenegarApi;
 import parsso.idman.Utils.SMS.sdk.excepctions.ApiException;
 import parsso.idman.Utils.SMS.sdk.excepctions.HttpException;
 
-import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +25,9 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 @Configuration
 public class Message {
 
+    private final String collection = "IDMAN_Captchas";
+    @Autowired
+    MongoTemplate mongoTemplate;
     @Autowired
     private UserRepo userRepo;
     @Value("${token.valid.SMS}")
@@ -37,30 +36,21 @@ public class Message {
     private String SMS_VALIDATION_DIGITS;
     @Value("${sms.api.key}")
     private String SMS_API_KEY;
-
     @Autowired
     private LdapTemplate ldapTemplate;
-
     @Autowired
     private Token tokenClass;
-
-    @Autowired
-    MongoTemplate mongoTemplate;
-
-    private final String collection = "IDMAN_Captchas";
-
     @Autowired
     private parsso.idman.Helpers.User.UserAttributeMapper userAttributeMapper;
 
 
-
-    public int sendMessage(String mobile,String cid, String answer) {
+    public int sendMessage(String mobile, String cid, String answer) {
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class , collection);
-        if(captcha==null)
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        if (captcha == null)
             return -1;
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query,collection);
+            mongoTemplate.remove(query, collection);
             return -1;
         }
         if (checkMobile(mobile).size() > 0) {
@@ -71,7 +61,7 @@ public class Message {
                     String message = user.getTokens().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
                     KavenegarApi api = new KavenegarApi(SMS_API_KEY);
                     api.verifyLookup(receptor, message, "", "", "mfa");
-                    mongoTemplate.remove(query,collection);
+                    mongoTemplate.remove(query, collection);
                     return Integer.valueOf(SMS_VALID_TIME);
 
                 } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
@@ -115,7 +105,6 @@ public class Message {
     }
 
 
-
     public List<JSONObject> checkMobile(String mobile) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -131,14 +120,13 @@ public class Message {
     }
 
 
-
     public int sendMessage(String mobile, String uId, String cid, String answer) {
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class , collection);
-        if(captcha==null)
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        if (captcha == null)
             return -1;
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query,collection);
+            mongoTemplate.remove(query, collection);
             return -1;
         }
 
@@ -158,7 +146,7 @@ public class Message {
                             String message = user.getTokens().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
                             KavenegarApi api = new KavenegarApi(SMS_API_KEY);
                             api.verifyLookup(receptor, message, "", "", "mfa");
-                            mongoTemplate.remove(query,collection);
+                            mongoTemplate.remove(query, collection);
                             return Integer.valueOf(SMS_VALID_TIME);
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
                             System.out.print("HttpException  : " + ex.getMessage());

@@ -1,10 +1,14 @@
 package parsso.idman.Models.ServiceType;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Models.ServicesSubModel.*;
 import parsso.idman.Models.Service;
+import parsso.idman.Models.ServicesSubModel.ExpirationPolicy;
+import parsso.idman.Models.ServicesSubModel.Property;
+import parsso.idman.Models.ServicesSubModel.ProxyPolicy;
+import parsso.idman.Models.ServicesSubModel.UsernameAttributeProvider;
 
 import java.util.LinkedList;
 
@@ -12,7 +16,6 @@ import java.util.LinkedList;
 @Getter
 
 public class CasService extends Service {
-
 
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -31,6 +34,7 @@ public class CasService extends Service {
     private String publicKey;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Property properties;
+
     public CasService() {
 
         super.setAtClass("org.apereo.cas.services.RegexRegisteredService");

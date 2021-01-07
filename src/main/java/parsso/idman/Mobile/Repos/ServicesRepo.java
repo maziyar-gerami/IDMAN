@@ -1,5 +1,6 @@
 package parsso.idman.Mobile.Repos;
 
+
 import com.google.zxing.WriterException;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.DirContextOperations;

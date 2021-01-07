@@ -1,5 +1,6 @@
 package parsso.idman.Repos;
 
+
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public interface UserRepo {
 
     List<SimpleUser> retrieveUsersMain();
 
-    List<SimpleUser> retrieveUsersMain(String sortType,String groupFilter,String searchuUid, String searchUid,String userStatus);
+    List<SimpleUser> retrieveUsersMain(String sortType, String groupFilter, String searchuUid, String searchUid, String userStatus);
 
     User getName(String uid, String token);
 

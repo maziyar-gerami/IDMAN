@@ -1,5 +1,6 @@
 package parsso.idman.Controllers;
 
+
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -70,8 +71,8 @@ public class ServiceController {
     @DeleteMapping("/api/services")
     public ResponseEntity<LinkedList<String>> deleteServices(@RequestBody JSONObject jsonObject) throws IOException {
         LinkedList ls = serviceRepo.deleteServices(jsonObject);
-        if (ls==null) return new ResponseEntity<>(ls,HttpStatus.OK);
-        else return new ResponseEntity<>(ls,HttpStatus.BAD_REQUEST);
+        if (ls == null) return new ResponseEntity<>(ls, HttpStatus.OK);
+        else return new ResponseEntity<>(ls, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/api/services/{system}")
@@ -81,7 +82,7 @@ public class ServiceController {
 
     @PutMapping("/api/service/{id}/{system}")
     public ResponseEntity<String> updateService(@PathVariable("id") long id,
-                                                @RequestBody JSONObject jsonObject,@PathVariable("system") String system) throws IOException, ParseException {
+                                                @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
         return new ResponseEntity<>(serviceRepo.updateService(id, jsonObject, system));
     }
 
@@ -101,10 +102,10 @@ public class ServiceController {
 
 
     @GetMapping("/api/services/position/{serviceId}")
-    public ResponseEntity<HttpStatus> increasePosition(@PathVariable("serviceId") String id,@RequestParam("value") int value) {
+    public ResponseEntity<HttpStatus> increasePosition(@PathVariable("serviceId") String id, @RequestParam("value") int value) {
         if (value == 1)
             return new ResponseEntity<>(serviceRepo.increasePosition(id));
-        else if (value==-1)
+        else if (value == -1)
             return new ResponseEntity<>(serviceRepo.decreasePosition(id));
         else
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -119,9 +120,9 @@ public class ServiceController {
     @GetMapping(value = "/api/public/metadata/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
     )
     public @ResponseBody
-    Object getFile(@PathVariable ("file") String file) throws IOException {
+    Object getFile(@PathVariable("file") String file) throws IOException {
 
-        FileInputStream in = new FileInputStream(new File(metadataPath+file));
+        FileInputStream in = new FileInputStream(new File(metadataPath + file));
 
         HttpHeaders header = new HttpHeaders();
         header.setContentType(new MediaType("application", "xml"));
@@ -129,7 +130,6 @@ public class ServiceController {
         return new HttpEntity<>(IOUtils.toByteArray(in), header);
 
     }
-
 
 
     @GetMapping("/createservice")

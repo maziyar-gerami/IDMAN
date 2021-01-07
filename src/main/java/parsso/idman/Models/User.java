@@ -1,5 +1,6 @@
 package parsso.idman.Models;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,7 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class User implements UserDetails,Comparable {
+public class User implements UserDetails, Comparable {
 
     private static final String PREFIX = "ROLE_";
     @JsonIgnore
@@ -56,12 +57,13 @@ public class User implements UserDetails,Comparable {
     private String endTime;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String cStatus;
+    @JsonIgnore
+    private Tokens tokens;
+
     public User() {
         locked = false;
         enabled = true;
     }
-    @JsonIgnore
-    private  Tokens tokens;
 
     public String getStatus() {
         if (this.isEnabled() && !this.isLocked())
@@ -87,7 +89,7 @@ public class User implements UserDetails,Comparable {
 
         else {
             if (getUserId().equals("su"))
-                list.add(new SimpleGrantedAuthority(PREFIX+"SUPERADMIN"));
+                list.add(new SimpleGrantedAuthority(PREFIX + "SUPERADMIN"));
 
             else if (this.memberOf.contains("1598656906150")) {
                 list.add(new SimpleGrantedAuthority(PREFIX + "ADMIN"));
@@ -95,8 +97,7 @@ public class User implements UserDetails,Comparable {
                 list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
 
 
-            }
-            else
+            } else
                 list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
 
         }
@@ -146,9 +147,9 @@ public class User implements UserDetails,Comparable {
 
     @Override
     public int compareTo(Object second) {
-        if (this.timeStamp>((User)second).timeStamp)
+        if (this.timeStamp > ((User) second).timeStamp)
             return -1;
-        else if (this.timeStamp<((User)second).timeStamp)
+        else if (this.timeStamp < ((User) second).timeStamp)
             return 1;
         else
             return 0;

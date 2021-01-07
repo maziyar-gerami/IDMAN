@@ -1,5 +1,6 @@
 package parsso.idman.Helpers.Events;
 
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,26 +11,24 @@ public class ActionInfo {
     String actionIn;
     String action;
 
-    public ActionInfo(String action){
+    public ActionInfo(String action) {
         this.actionIn = action;
     }
-    public String getAction(){
+
+    public String getAction() {
         if (actionIn.contains("CasTicketGrantingTicketCreatedEvent")) {
 
             action = "Successful Login";
 
-        }
-
-        else if (actionIn.contains("CasAuthenticationTransactionFailureEvent")) {
+        } else if (actionIn.contains("CasAuthenticationTransactionFailureEvent")) {
 
             action = "Unsuccessful Login";
 
-        }else {
+        } else {
             action = "Other";
         }
-        return  action;
+        return action;
     }
-
 
 
 }

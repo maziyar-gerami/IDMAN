@@ -1,5 +1,6 @@
 package parsso.idman.Controllers;
 
+
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,7 +53,7 @@ public class GroupsController {
 
     @DeleteMapping("/api/groups")
     public ResponseEntity<HttpStatus> unbindAllLdapOU(@RequestBody JSONObject jsonObject) {
-            return new ResponseEntity<>(groupRepo.remove(jsonObject), HttpStatus.OK);
+        return new ResponseEntity<>(groupRepo.remove(jsonObject), HttpStatus.OK);
     }
 
 }

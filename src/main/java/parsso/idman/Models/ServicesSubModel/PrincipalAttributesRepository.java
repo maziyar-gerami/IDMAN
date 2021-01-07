@@ -1,5 +1,6 @@
 package parsso.idman.Models.ServicesSubModel;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ public class PrincipalAttributesRepository {
     private String atClass;
     private String mergingStrategy;
     private boolean ignoreResolvedAttributes;
+
     public PrincipalAttributesRepository() {
         atClass = "org.apereo.cas.authentication.principal.DefaultPrincipalAttributesRepository";
         mergingStrategy = "MULTIVALUED";

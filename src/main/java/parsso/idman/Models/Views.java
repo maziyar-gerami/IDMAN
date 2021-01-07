@@ -2,8 +2,10 @@ package parsso.idman.Models;
 
 
 public class Views {
-    public interface UserEvent {}
+    public interface UserEvent {
+    }
 
-    public interface UserAudit {}
+    public interface UserAudit {
+    }
 
 }

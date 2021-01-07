@@ -10,14 +10,19 @@ import java.util.Date;
 public class DateUtils {
 
 
-
-    static  ZoneId zoneId = ZoneId.of("UTC+03:30");
-
+    /**
+     * The maximum date possible.
+     */
+    public static Date MAX_DATE = new Date(Long.MAX_VALUE);
+    static ZoneId zoneId = ZoneId.of("UTC+03:30");
+    OffsetDateTime offsetDateTime = OffsetDateTime.now();
+    ZonedDateTime zonedDateTime = offsetDateTime.atZoneSameInstant(zoneId);
 
     /**
      * <p>Checks if two dates are on the same day ignoring time.</p>
-     * @param date1  the first date, not altered, not null
-     * @param date2  the second date, not altered, not null
+     *
+     * @param date1 the first date, not altered, not null
+     * @param date2 the second date, not altered, not null
      * @return true if they represent the same day
      * @throws IllegalArgumentException if either date is <code>null</code>
      */
@@ -32,24 +37,22 @@ public class DateUtils {
         return isSameDay(cal1, cal2);
     }
 
-    public static boolean isSameDay(ZonedDateTime t1, ZonedDateTime t2){
+    public static boolean isSameDay(ZonedDateTime t1, ZonedDateTime t2) {
         return t1.getYear() == t2.getYear() && t1.getMonth() == t2.getMonth() && t1.getDayOfMonth() == t2.getDayOfMonth();
     }
 
-    public static boolean isToday(ZonedDateTime t1){
+    public static boolean isToday(ZonedDateTime t1) {
         OffsetDateTime offsetDateTime = OffsetDateTime.now();
         ZonedDateTime t2 = offsetDateTime.atZoneSameInstant(zoneId);
 
         return t1.getYear() == t2.getYear() && t1.getMonth() == t2.getMonth() && t1.getDayOfMonth() == t2.getDayOfMonth();
     }
 
-    OffsetDateTime offsetDateTime = OffsetDateTime.now();
-    ZonedDateTime zonedDateTime = offsetDateTime.atZoneSameInstant(zoneId);
-
     /**
      * <p>Checks if two calendars represent the same day ignoring time.</p>
-     * @param cal1  the first calendar, not altered, not null
-     * @param cal2  the second calendar, not altered, not null
+     *
+     * @param cal1 the first calendar, not altered, not null
+     * @param cal2 the second calendar, not altered, not null
      * @return true if they represent the same day
      * @throws IllegalArgumentException if either calendar is <code>null</code>
      */
@@ -64,6 +67,7 @@ public class DateUtils {
 
     /**
      * <p>Checks if a date is today.</p>
+     *
      * @param date the date, not altered, not null.
      * @return true if the date is today.
      * @throws IllegalArgumentException if the date is <code>null</code>
@@ -74,7 +78,8 @@ public class DateUtils {
 
     /**
      * <p>Checks if a calendar date is today.</p>
-     * @param cal  the calendar, not altered, not null
+     *
+     * @param cal the calendar, not altered, not null
      * @return true if cal date is today
      * @throws IllegalArgumentException if the calendar is <code>null</code>
      */
@@ -84,6 +89,7 @@ public class DateUtils {
 
     /**
      * <p>Checks if the first date is before the second date ignoring time.</p>
+     *
      * @param date1 the first date, not altered, not null
      * @param date2 the second date, not altered, not null
      * @return true if the first date day is before the second date day.
@@ -102,6 +108,7 @@ public class DateUtils {
 
     /**
      * <p>Checks if the first calendar date is before the second calendar date ignoring time.</p>
+     *
      * @param cal1 the first calendar, not altered, not null.
      * @param cal2 the second calendar, not altered, not null.
      * @return true if cal1 date is before cal2 date ignoring time.
@@ -120,6 +127,7 @@ public class DateUtils {
 
     /**
      * <p>Checks if the first date is after the second date ignoring time.</p>
+     *
      * @param date1 the first date, not altered, not null
      * @param date2 the second date, not altered, not null
      * @return true if the first date day is after the second date day.
@@ -138,6 +146,7 @@ public class DateUtils {
 
     /**
      * <p>Checks if the first calendar date is after the second calendar date ignoring time.</p>
+     *
      * @param cal1 the first calendar, not altered, not null.
      * @param cal2 the second calendar, not altered, not null.
      * @return true if cal1 date is after cal2 date ignoring time.
@@ -156,6 +165,7 @@ public class DateUtils {
 
     /**
      * <p>Checks if a date is after today and within a number of days in the future.</p>
+     *
      * @param date the date to check, not altered, not null.
      * @param days the number of days.
      * @return true if the date day is after today and within days in the future .
@@ -172,7 +182,8 @@ public class DateUtils {
 
     /**
      * <p>Checks if a calendar date is after today and within a number of days in the future.</p>
-     * @param cal the calendar, not altered, not null
+     *
+     * @param cal  the calendar, not altered, not null
      * @param days the number of days.
      * @return true if the calendar date day is after today and within days in the future .
      * @throws IllegalArgumentException if the calendar is <code>null</code>
@@ -184,15 +195,22 @@ public class DateUtils {
         Calendar today = Calendar.getInstance();
         Calendar future = Calendar.getInstance();
         future.add(Calendar.DAY_OF_YEAR, days);
-        return (isAfterDay(cal, today) && ! isAfterDay(cal, future));
+        return (isAfterDay(cal, today) && !isAfterDay(cal, future));
     }
 
-    /** Returns the given date with the time set to the start of the day. */
+    /**
+     * Returns the given date with the time set to the start of the day.
+     */
     public static Date getStart(Date date) {
         return clearTime(date);
     }
 
-    /** Returns the given date with the time values cleared. */
+    /** Determines whether or not a date has any time values (hour, minute,
+     * seconds or millisecondsReturns the given date with the time values cleared. */
+
+    /**
+     * Returns the given date with the time values cleared.
+     */
     public static Date clearTime(Date date) {
         if (date == null) {
             return null;
@@ -206,11 +224,9 @@ public class DateUtils {
         return c.getTime();
     }
 
-    /** Determines whether or not a date has any time values (hour, minute,
-     * seconds or millisecondsReturns the given date with the time values cleared. */
-
     /**
      * Determines whether or not a date has any time values.
+     *
      * @param date The date.
      * @return true iff the date is not null and any of the date's hour, minute,
      * seconds or millisecond values are greater than zero.
@@ -233,7 +249,9 @@ public class DateUtils {
         return c.get(Calendar.MILLISECOND) > 0;
     }
 
-    /** Returns the given date with time set to the end of the day */
+    /**
+     * Returns the given date with time set to the end of the day
+     */
     public static Date getEnd(Date date) {
         if (date == null) {
             return null;
@@ -268,8 +286,5 @@ public class DateUtils {
         if (d2 == null) return d1;
         return (d1.before(d2)) ? d1 : d2;
     }
-
-    /** The maximum date possible. */
-    public static Date MAX_DATE = new Date(Long.MAX_VALUE);
 
 }
