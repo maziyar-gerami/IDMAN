@@ -208,7 +208,7 @@ public class UserRepoImpl implements UserRepo {
         try {
             ldapTemplate.modifyAttributes(context);
 
-            logger.info("User " + "\"" + p.getUserId() + "\"" + "in " + new Date() + "updated successfully");
+            logger.info("User " + "\"" + p.getUserId() + "\"" + "in " + new Date() + " updated successfully");
             return HttpStatus.OK;
 
         } catch (Exception e) {

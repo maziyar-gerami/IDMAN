@@ -1,6 +1,7 @@
 package parsso.idman.Models.ServicesSubModel;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -9,7 +10,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import parsso.idman.Utils.Convertor.DateConverter;
 
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Map;
 
@@ -18,9 +18,8 @@ import java.util.Map;
 
 public class AccessStrategy {
 
+    @JsonIgnore
     ZoneId zoneId = ZoneId.of("UTC+03:30");
-
-
     @JsonProperty("@class")
     private String atClass;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -103,13 +102,13 @@ public class AccessStrategy {
 
         String miliSeconds = seTime.substring(20, 23);
 
+        String tf = seTime.substring(23);
 
-        String s = convertDate(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day));
+        return (convertDate(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day))) +
+        'T' + hours + ':' + minutes + ':' + seconds + '.' + miliSeconds + tf;
 
-        OffsetDateTime eventDate = OffsetDateTime.parse(s + 'T' + hours + ':' + minutes + ':' + seconds + '.' + miliSeconds + zoneId.toString().substring(3));
 
 
-        return eventDate.toString();
 
 
     }
