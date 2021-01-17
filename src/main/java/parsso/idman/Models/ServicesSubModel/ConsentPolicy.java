@@ -1,5 +1,6 @@
 package parsso.idman.Models.ServicesSubModel;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ public class ConsentPolicy {
     String atClass;
     boolean enabled;
     int order;
+
     public ConsentPolicy() {
         atClass = "org.apereo.cas.services.consent.DefaultRegisteredServiceConsentPolicy";
         enabled = true;

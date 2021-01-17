@@ -1,5 +1,6 @@
 package parsso.idman.Captcha.RepoImp;
 
+
 import com.mongodb.client.MongoClients;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,43 +17,32 @@ import parsso.idman.Captcha.Models.Points;
 import parsso.idman.Captcha.Repo.CAPTCHARepo;
 
 import javax.imageio.ImageIO;
-import java.io.ByteArrayOutputStream;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 import java.util.Base64;
+import java.util.Random;
 
 @Setter
 @Getter
 @Service
 public class CaptchaRepoImp implements CAPTCHARepo {
 
-    private int len;
-    private double alphabetRate;
-    private int nLines =20;
-
-    @Value("${mongo.db}")
-    private String mongodb;
-
-    @Value("${mongo.opts}")
-    private String mongoOpts;
-
-    @Value("${mongo.creds}")
-    private String mongoCreds;
-
-    @Value("${mongo.hosts}")
-    private String mongoHosts;
-
     @Autowired
     MongoTemplate mongoTemplate;
-
-
-
-
-
+    private int len;
+    private double alphabetRate;
+    private int nLines = 20;
+    @Value("${mongo.db}")
+    private String mongodb;
+    @Value("${mongo.opts}")
+    private String mongoOpts;
+    @Value("${mongo.creds}")
+    private String mongoCreds;
+    @Value("${mongo.hosts}")
+    private String mongoHosts;
     private String collection = "IDMAN_Captchas";
 
     public CaptchaRepoImp() {
@@ -71,29 +61,29 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         this.len = len;
     }
 
-    public CAPTCHAimage createCaptcha(int len,double alphabetRate){
-        int[] organization = createOrganization(len,alphabetRate);
+    public CAPTCHAimage createCaptcha(int len, double alphabetRate) {
+        int[] organization = createOrganization(len, alphabetRate);
         String phrase = createPhrase(organization);
         CAPTCHA captcha = new CAPTCHA(phrase);
 
         try {
 
-            String mongoURI = "mongodb://"+mongoCreds+"@"+mongoHosts+"/"+mongodb+"?"+mongoOpts;
+            String mongoURI = "mongodb://" + mongoCreds + "@" + mongoHosts + "/" + mongodb + "?" + mongoOpts;
             MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(mongoURI), mongodb);
 
             mongoTemplate.save(captcha, collection);
-            return createImage(phrase,captcha);
+            return createImage(phrase, captcha);
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
 
 
     }
 
-    private CAPTCHAimage createImage(String phrase, CAPTCHA captcha){
+    private CAPTCHAimage createImage(String phrase, CAPTCHA captcha) {
 
-        String text = phrase+" ";
+        String text = phrase + " ";
 
 
         /*
@@ -120,8 +110,8 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         g2d.drawString(text, 0, fm.getAscent());
 
         Points point;
-        for (int i=0; i<nLines; i++){
-            point = new Points(width,height);
+        for (int i = 0; i < nLines; i++) {
+            point = new Points(width, height);
             g2d.drawLine(point.getX1(), point.getY1(), point.getX2(), point.getY2());
         }
 
@@ -144,20 +134,20 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         return null;
     }
 
-    private String createPhrase(int[] organization){
+    private String createPhrase(int[] organization) {
 
-        String phrase ="";
+        String phrase = "";
         Random rand = new Random();
 
-        for (int i=0;i<organization.length;i++){
-            if (organization[i]==0){
-                if (rand.nextInt(2)==1)
-                    phrase += (char) (rand.nextInt(123-97)+97);
+        for (int i = 0; i < organization.length; i++) {
+            if (organization[i] == 0) {
+                if (rand.nextInt(2) == 1)
+                    phrase += (char) (rand.nextInt(123 - 97) + 97);
                 else
-                    phrase += (char) (rand.nextInt(123-97)+97-32);
+                    phrase += (char) (rand.nextInt(123 - 97) + 97 - 32);
 
 
-            }else {
+            } else {
                 phrase += rand.nextInt(10);
             }
 
@@ -166,17 +156,17 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         return phrase;
     }
 
-    public HttpStatus validateCaptcha(CAPTCHA captcha){
+    public HttpStatus validateCaptcha(CAPTCHA captcha) {
 
         if (captcha.getId().equals("1"))
-            return  HttpStatus.OK;
+            return HttpStatus.OK;
 
         Query query = new Query(Criteria.where("_id").is(captcha.getId()));
 
 
-        CAPTCHA actualCaptcha = mongoTemplate.findOne(query, CAPTCHA.class , collection);
+        CAPTCHA actualCaptcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
 
-        if (actualCaptcha!=null) {
+        if (actualCaptcha != null) {
             mongoTemplate.remove(query, collection);
             if (captcha.getPhrase().equalsIgnoreCase(actualCaptcha.getPhrase())) {
 
@@ -185,37 +175,35 @@ public class CaptchaRepoImp implements CAPTCHARepo {
                 return HttpStatus.BAD_REQUEST;
 
             }
-        }else
+        } else
             return HttpStatus.BAD_REQUEST;
 
     }
 
-    private int[] createOrganization(int len, Double alphabetRate){
-        int nAlphabet= (int) Math.ceil(alphabetRate*len);
+    private int[] createOrganization(int len, Double alphabetRate) {
+        int nAlphabet = (int) Math.ceil(alphabetRate * len);
         int rAlphabet = nAlphabet;
-        int nNumbers = len-nAlphabet;
+        int nNumbers = len - nAlphabet;
         int rNumbers = nNumbers;
         int[] org = new int[len];
         Random rand = new Random();
         int temp;
-        for (int i=0; i<len;i++) {
+        for (int i = 0; i < len; i++) {
             temp = rand.nextInt(2);
-            if (temp == 0){
-                if (rAlphabet>0) {
+            if (temp == 0) {
+                if (rAlphabet > 0) {
                     rAlphabet--;
                     org[i] = 0;
-                }
-                else {
+                } else {
                     rNumbers--;
                     org[i] = 1;
                 }
 
-            }else {
-                if (rNumbers>0) {
+            } else {
+                if (rNumbers > 0) {
                     rNumbers--;
                     org[i] = 1;
-                }
-                else {
+                } else {
                     rAlphabet--;
                     org[i] = 0;
                 }

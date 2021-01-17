@@ -1,8 +1,8 @@
 package parsso.idman.Captcha.Models;
 
+
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.types.ObjectId;
 
 import java.util.Date;
 import java.util.Random;
@@ -13,10 +13,11 @@ public class CAPTCHA {
     private String id;
     private String phrase;
     private Date createdAt = new Date();
-    public CAPTCHA(String phrase){
+
+    public CAPTCHA(String phrase) {
         this.phrase = phrase;
         long timeStamp = new Date().getTime();
-        this.id = (new Random().nextInt(9999))+10000+""+timeStamp;
+        this.id = (new Random().nextInt(9999)) + 10000 + "" + timeStamp;
     }
 
 }

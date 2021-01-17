@@ -1,13 +1,16 @@
 package parsso.idman.Models.ServicesSubModel;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.Utils.Convertor.DateConverter;
 
+import java.time.ZoneId;
 import java.util.Map;
 
 @Setter
@@ -15,6 +18,8 @@ import java.util.Map;
 
 public class AccessStrategy {
 
+    @JsonIgnore
+    ZoneId zoneId = ZoneId.of("UTC+03:30");
     @JsonProperty("@class")
     private String atClass;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -48,9 +53,10 @@ public class AccessStrategy {
     private ProxyPolicy proxyPolicy;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String groovyScript;
+
     public AccessStrategy() {
-        if (startingDateTime != null || startingDateTime !=""||
-            endingDateTime != null|| endingDateTime!="")
+        if (startingDateTime != null || startingDateTime != "" ||
+                endingDateTime != null || endingDateTime != "")
             atClass = "org.apereo.cas.services.TimeBasedRegisteredServiceAccessStrategy";
         else
             atClass = "org.apereo.cas.services.DefaultRegisteredServiceAccessStrategy";
@@ -95,12 +101,14 @@ public class AccessStrategy {
         String seconds = seTime.substring(17, 19);
 
         String miliSeconds = seTime.substring(20, 23);
-        String tf1 = seTime.substring(24, 26);
-        String tf2 = seTime.substring(27, 29);
 
+        String tf = seTime.substring(23);
 
         return (convertDate(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day))) +
-                'T' + hours + ':' + minutes + ':' + seconds + '.' + miliSeconds + seTime.charAt(23) + tf1 + ":" + tf2;
+        'T' + hours + ':' + minutes + ':' + seconds + '.' + miliSeconds + tf;
+
+
+
 
 
     }
@@ -113,7 +121,7 @@ public class AccessStrategy {
         return dateConverter.getYear() + "-" + String.format("%02d", dateConverter.getMonth()) + "-" + String.format("%02d", dateConverter.getDay());
     }
 
-    public AccessStrategy parse(JSONObject jsonObject){
+    public AccessStrategy parse(JSONObject jsonObject) {
 
         AccessStrategy accessStrategy = new AccessStrategy();
         if (jsonObject.get("acceptableResponseCodes") != (null))
@@ -126,9 +134,9 @@ public class AccessStrategy {
         if (jsonObject.get("startingDateTime") != null) {
             String s = jsonObject.get("startingDateTime").toString();
 
-            if (Integer.valueOf(s.substring(0,4)) >2000 )
+            if (Integer.valueOf(s.substring(0, 4)) > 2000)
                 accessStrategy.setStartingDateTimeForGet(jsonObject.get("startingDateTime").toString());
-            if (Integer.valueOf(s.substring(0,4)) <2000 )
+            if (Integer.valueOf(s.substring(0, 4)) < 2000)
                 accessStrategy.setStartingDateTimeForPost(jsonObject.get("startingDateTime").toString());
         }
 
@@ -148,25 +156,17 @@ public class AccessStrategy {
         //accessStrategy.setAtClass(jsonObject.get("@class").toString()););
         if (jsonObject.get("endpointUrl") != null)
             accessStrategy.setEndpointUrl(jsonObject.get("endpointUrl").toString());
-        if (jsonObject.get("enabled") == (null) || (boolean) jsonObject.get("enabled") == false) {
+        accessStrategy.setEnabled(jsonObject.get("enabled") != (null) && (boolean) jsonObject.get("enabled") != false);
 
-            accessStrategy.setEnabled(false);
-        } else
-            accessStrategy.setEnabled(true);
-
-        if (jsonObject.get("ssoEnabled") == (null) || (boolean) jsonObject.get("ssoEnabled") == false) {
-
-            accessStrategy.setSsoEnabled(false);
-        } else
-            accessStrategy.setSsoEnabled(true);
+        accessStrategy.setSsoEnabled(jsonObject.get("ssoEnabled") != (null) && (boolean) jsonObject.get("ssoEnabled") != false);
 
 
         JSONObject tempreqiredattribute = new JSONObject();
-        JSONArray obj  = null;
+        JSONArray obj = null;
         JSONObject t1;
-        if (jsonObject.get("requiredAttributes")!=(null)) {
+        if (jsonObject.get("requiredAttributes") != (null)) {
 
-            Object ob1 =jsonObject.get("requiredAttributes");
+            Object ob1 = jsonObject.get("requiredAttributes");
 
             if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
                 obj = new JSONArray();
@@ -175,8 +175,7 @@ public class AccessStrategy {
                 tempreqiredattribute = t1;
                 tempreqiredattribute.put("@class", "java.util.HashMap");
 
-            }
-            else {
+            } else {
                 tempreqiredattribute = new JSONObject((Map) ob1);
                 tempreqiredattribute.put("@class", "java.util.HashMap");
             }
@@ -188,9 +187,9 @@ public class AccessStrategy {
 
         JSONObject temprejecteddattribute = new JSONObject();
 
-        if (jsonObject.get("rejectedAttributes")!=(null)) {
+        if (jsonObject.get("rejectedAttributes") != (null)) {
 
-            Object ob1 =jsonObject.get("rejectedAttributes");
+            Object ob1 = jsonObject.get("rejectedAttributes");
 
             if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
                 obj = new JSONArray();
@@ -199,8 +198,7 @@ public class AccessStrategy {
                 temprejecteddattribute = t1;
                 temprejecteddattribute.put("@class", "java.util.HashMap");
 
-            }
-            else {
+            } else {
                 temprejecteddattribute = new JSONObject((Map) ob1);
                 temprejecteddattribute.put("@class", "java.util.HashMap");
             }

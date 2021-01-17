@@ -688,11 +688,13 @@
                                                         <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('mfa') }" id="mfa">
                                                             <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s65}}</span></h4>
                                                             <div class="form-group">
-                                                                <label class="form-check-label">{{s66}}</label>
-                                                                <label class="switch">
-                                                                    <input name="mfaEnabled" type="checkbox">
-                                                                    <span class="slider round"></span>
-                                                                </label>
+                                                                <label>{{s66}}</label>
+                                                                <select name="mfaEnabled" class="form-control">
+                                                                    <option id="option17" value="" selected>{{s97}}</option>
+                                                                    <option id="option14" value="mfa-simple">SMS</option>
+                                                                    <option id="option15" value="mfa-gauth">Google Authenticator</option>
+                                                                    <option id="option16" value="mfa-u2f">{{s96}}</option>
+                                                                </select>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label class="form-check-label">Bypass Enabled</label>

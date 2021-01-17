@@ -1,25 +1,29 @@
 package parsso.idman.Models;
 
+
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.Utils.Convertor.DateConverter;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 @Setter
 @Getter
 
 public class Time {
-    int year;
-    int month;
-    int day;
+    static ZoneId zoneId = ZoneId.of("UTC+03:30");
+    private int year;
+    private int month;
+    private int day;
+    private int hours;
+    private int minutes;
+    private int seconds;
+    private int miliseconds;
 
-    int hours;
-    int minutes;
-    int seconds;
-    int miliseconds;
-
-    public Time(Calendar cal){
+    public Time(Calendar cal) {
         year = cal.get(Calendar.YEAR);
         month = cal.get(Calendar.MONTH);
         day = cal.get(Calendar.DATE);
@@ -30,33 +34,24 @@ public class Time {
 
     }
 
-    public String toString(){
-        return getYear()+"-"+getMonth()+"-"+getDay()+"T"
-                + getHours()+":"+getMinutes()+":"+getSeconds()+"."+getMiliseconds();
-    }
-
-
     public Time(int year, int month, int day, int hours, int minutes, int seconds) {
         this.year = year;
         this.month = month;
         this.day = day;
-        this.hours = hours+3;
-        this.minutes = minutes+30;
-        if(this.minutes>59) {
-            this.hours += 1;
-            this.minutes-=60;
-
-        }
-         if (this.hours>23) {
-             this.hours -= 24;
-             this.day += 1;
-         }
-
-
-
-
+        this.hours = hours;
+        this.minutes = minutes;
         this.seconds = seconds;
         this.miliseconds = 0;
+    }
+
+    public Time(int year, int month, int day) {
+
+        DateConverter dateConverter = new DateConverter();
+        dateConverter.persianToGregorian(year, month, day);
+
+        this.year = dateConverter.getYear();
+        this.month = dateConverter.getMonth();
+        this.day = dateConverter.getDay();
     }
 
     public Time(DateConverter dateConverter, Calendar myCal) {
@@ -70,31 +65,33 @@ public class Time {
         this.miliseconds = myCal.get(Calendar.MILLISECOND);
     }
 
-
     public static String setEndTime(String input) {
         //if is jalali
         if (Integer.valueOf(input.substring(0, 4)) < 2000) {
 
             if (!(input.contains("-"))) {
-                int Y = Integer.valueOf(input.substring(0, 4));
-                int M = Integer.valueOf(input.substring(4, 6));
-                int D = Integer.valueOf(input.substring(6, 8));
+                String Y = input.substring(0, 4);
+                String M = input.substring(4, 6);
+                String D = input.substring(6, 8);
 
-                DateConverter dateConverter = new DateConverter();
-                dateConverter.persianToGregorian(Y, M, D);
+                String H = input.substring(8, 10);
+                String m = input.substring(10, 12);
+                String s = input.substring(12, 14);
+                String S = input.substring(15, 15);
 
-                return dateConverter.getYear()
-                        + String.format("%02d", dateConverter.getMonth())
-                        + String.format("%02d", dateConverter.getDay())
-                        + input.substring(8, 10)
-                        + input.substring(10, 12)
-                        + input.substring(12, 14)
-                        + input.substring(15, 17);
+                ZonedDateTime eventDate = OffsetDateTime.parse(Y + "-" + M + "-" + D + 'T' + H + ":" + m + ":" + s + "." + S).atZoneSameInstant(zoneId);
+
+                return eventDate.getYear()
+                        + String.format("%02d", eventDate.getMonth())
+                        + String.format("%02d", eventDate.getDayOfMonth())
+                        + String.format("%02d", eventDate.getHour())
+                        + String.format("%02d", eventDate.getMinute())
+                        + String.format("%02d", eventDate.getSecond())
+                        + String.format("%02d", eventDate.getNano());
             } else {
-                return convertDateTimeJalali(input);
+                return convertDateTimeJalali(input + "+03:30");
 
             }
-
 
             //if is G
         } else {
@@ -103,7 +100,7 @@ public class Time {
                 return convertDateToNumber(input);
 
 
-                return input;
+            return input;
 
         }
 
@@ -141,7 +138,6 @@ public class Time {
         return dateConverter.getYear() + String.format("%02d", dateConverter.getMonth()) + String.format("%02d", dateConverter.getDay());
     }
 
-
     public static String convertDateJalaliToGeorgian(int Y, int M, int D) {
 
         DateConverter dateConverter = new DateConverter();
@@ -152,18 +148,16 @@ public class Time {
 
     public static String convertDateFromNumber(String date) {
         String y = date.substring(0, 4);
-        String M = date.substring(4, 6);
-        String d = date.substring(6, 8);
+        String M = date.substring(5, 7);
+        String d = date.substring(8, 10);
 
-        String h = date.substring(8, 10);
-        String m = date.substring(10, 12);
-        String s = date.substring(12, 14);
-        String S = date.substring(15, 18);
+        String h = "00";
+        String m = "00";
+        String s = "00";
+        String S = "00";
 
         return y + "-" + M + "-" + d + "T" + h + ":" + m + ":" + s + "." + S;
     }
-
-
 
     public static String convertDateToNumber(String seTime) {
         String year = seTime.substring(0, 4);
@@ -182,8 +176,9 @@ public class Time {
                 String.format("%02d", Integer.valueOf(seconds)) + "." +
                 String.format("%03d", Integer.valueOf(miliSeconds)) + "+0330";
 
-        return year+month+day + time;
+        return year + month + day + time;
     }
+
     public static String convertDateTimeGeorgian(String seTime) {
 
         String year = seTime.substring(0, 4);
@@ -207,7 +202,24 @@ public class Time {
 
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return this.year == ((Time) obj).getYear() &&
+                this.month == ((Time) obj).getMonth() &&
+                this.day == ((Time) obj).getDay();
+    }
 
+    public String toString() {
+        return getYear() + "-" + getMonth() + "-" + getDay() + "T"
+                + getHours() + ":" + getMinutes() + ":" + getSeconds() + "." + getMiliseconds();
+    }
+
+    public String toStringDate() {
+
+
+        return String.format(("%4d"), getYear()) + "-" + String.format(("%02d"), getMonth()) + "-" + String.format(("%02d"), getDay());
+
+    }
 
 
 }

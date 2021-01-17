@@ -40,15 +40,15 @@ public class UserController {
     @Value("${api.get.users}")
     private final static String apiAddress = null;
     // default sequence of variables which can be changed using frontend
-    private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11};
+    private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
     @Autowired
     Token tokenClass;
+    @Autowired
+    UsersExcelView excelView;
     @Autowired
     private Message message;
     @Autowired
     private UserRepo userRepo;
-    @Autowired
-    UsersExcelView excelView;
     @Value("${administrator.ou.id}")
     private String adminOu;
     @Value("${token.valid.email}")
@@ -121,7 +121,7 @@ public class UserController {
     public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException {
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUser(principal.getName());
-        return new ResponseEntity<>(userRepo.showProfilePic(response, user),HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.showProfilePic(response, user), HttpStatus.OK);
     }
 
 
@@ -159,8 +159,8 @@ public class UserController {
         User user = userRepo.retrieveUser(principal.getName());
         int status = userRepo.requestToken(user);
 
-        if (status>0)
-        return new ResponseEntity<>(status, HttpStatus.OK);
+        if (status > 0)
+            return new ResponseEntity<>(status, HttpStatus.OK);
         else
             return new ResponseEntity<>(status, HttpStatus.FORBIDDEN);
     }
@@ -197,13 +197,14 @@ public class UserController {
      */
     @GetMapping("/api/users/{page}/{n}")
     public ResponseEntity<ListUsers> retrieveUsersMain(@PathVariable("page") int page, @PathVariable("n") int n,
-                                                       @RequestParam( name = "sortType",defaultValue = "") String sortType,
-                                                       @RequestParam(name = "groupFilter",defaultValue = "") String groupFilter,
-                                                       @RequestParam(name = "searchUid",defaultValue = "") String searchuUid,
-                                                       @RequestParam(name = "userStatus",defaultValue = "") String userStatus,
-                                                       @RequestParam(name = "searchDisplayName",defaultValue = "") String searchDisplayName) {
+                                                       @RequestParam(name = "sortType", defaultValue = "") String sortType,
+                                                       @RequestParam(name = "groupFilter", defaultValue = "") String groupFilter,
+                                                       @RequestParam(name = "searchUid", defaultValue = "") String searchuUid,
+                                                       @RequestParam(name = "userStatus", defaultValue = "") String userStatus,
+                                                       @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName) {
         if (userRepo.retrieveUsersFull().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n,sortType,groupFilter,searchuUid,searchDisplayName,userStatus), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
 
 
@@ -227,9 +228,10 @@ public class UserController {
      */
     @PostMapping("/api/users")
     public ResponseEntity<JSONObject> bindLdapUser(@RequestBody User user) {
-        if (userRepo.create(user).size() == 0)
+        JSONObject jsonObject = userRepo.create(user);
+        if (jsonObject.size() == 0)
             return new ResponseEntity<>(null, HttpStatus.OK);
-        else return new ResponseEntity<>(null, HttpStatus.FOUND);
+        else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
 
     }
 
@@ -298,13 +300,13 @@ public class UserController {
     public ResponseEntity<JSONObject> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
 
         JSONObject jsonObject = userRepo.importFileUsers(file, defaultSequence, true);
-        if (Integer.valueOf(jsonObject.getAsString("nUnSuccessful"))==0)
+        if (Integer.valueOf(jsonObject.getAsString("nUnSuccessful")) == 0)
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
     }
 
     @PutMapping("/api/users/import/massUpdate")
-    public ResponseEntity<JSONObject> updateConflicts(@RequestBody List<User> users){
+    public ResponseEntity<JSONObject> updateConflicts(@RequestBody List<User> users) {
         return new ResponseEntity<>(userRepo.massUpdate(users));
     }
 
@@ -314,7 +316,7 @@ public class UserController {
      * @return a json file containing tha data
      */
     @GetMapping("/api/dashboard")
-    public ResponseEntity<org.json.simple.JSONObject> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException {
+    public ResponseEntity<org.json.simple.JSONObject> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException, InterruptedException {
         return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
     }
 
@@ -327,7 +329,7 @@ public class UserController {
      */
     @PostMapping("/api/users/sendMail")
     public ResponseEntity<HttpStatus> sendMultipleMailByAdmin(@RequestBody JSONObject jsonObject) {
-            return new ResponseEntity<>(userRepo.sendEmail(jsonObject), HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.sendEmail(jsonObject), HttpStatus.OK);
     }
 
     @GetMapping("/api/users/export")
@@ -348,11 +350,11 @@ public class UserController {
      */
     @GetMapping("/api/public/sendMail/{email}/{uid}/{cid}/{answer}")
     public ResponseEntity<Integer> sendMail(@PathVariable("email") String email,
-                                           @PathVariable("uid") String uid,
-                                           @PathVariable("cid") String cid,
-                                           @PathVariable("answer") String answer) {
+                                            @PathVariable("uid") String uid,
+                                            @PathVariable("cid") String cid,
+                                            @PathVariable("answer") String answer) {
         int time = userRepo.sendEmail(email, uid, cid, answer);
-        if (time>0)
+        if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -369,11 +371,11 @@ public class UserController {
      */
     @GetMapping("/api/public/sendMail/{email}/{cid}/{answer}")
     public ResponseEntity<Integer> sendMail(@PathVariable("email") String email,
-                                           @PathVariable("cid") String cid,
-                                           @PathVariable("answer") String answer) {
+                                            @PathVariable("cid") String cid,
+                                            @PathVariable("answer") String answer) {
 
         int time = userRepo.sendEmail(email, cid, answer);
-        if (time>0)
+        if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -391,8 +393,8 @@ public class UserController {
     @GetMapping("/api/public/sendSMS/{mobile}/{cid}/{answer}")
     public ResponseEntity<Integer> sendMessage(@PathVariable("mobile") String mobile,
                                                @PathVariable("cid") String cid,
-                                                @PathVariable("answer") String answer) {
-        int time = message.sendMessage(mobile,cid, answer);
+                                               @PathVariable("answer") String answer) {
+        int time = message.sendMessage(mobile, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
@@ -409,10 +411,10 @@ public class UserController {
      */
     @GetMapping("/api/public/sendSMS/{mobile}/{uid}/{cid}/{answer}")
     public ResponseEntity<Integer> sendMessage(@PathVariable("mobile") String mobile,
-                                                @PathVariable("uid") String uid,
-                                               @PathVariable ("cid") String cid,
+                                               @PathVariable("uid") String uid,
+                                               @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
-        int time = message.sendMessage(mobile, uid,cid, answer);
+        int time = message.sendMessage(mobile, uid, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
@@ -458,7 +460,6 @@ public class UserController {
     }
 
 
-
     /**
      * Gets the name from userId for showing in the ressetPasseord page
      *
@@ -472,7 +473,6 @@ public class UserController {
             return new ResponseEntity<>(user, HttpStatus.OK);
         return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
     }
-
 
 
     /**

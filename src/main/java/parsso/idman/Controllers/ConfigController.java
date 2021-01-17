@@ -1,18 +1,16 @@
 package parsso.idman.Controllers;
 
+
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Models.Config;
 import parsso.idman.Models.Setting;
 import parsso.idman.Repos.ConfigRepo;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
@@ -60,7 +58,6 @@ public class ConfigController {
     public ResponseEntity<HttpStatus> resetFactory() throws IOException {
         return new ResponseEntity<>(configRepo.factoryReset());
     }
-
 
 
 }

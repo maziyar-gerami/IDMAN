@@ -1,5 +1,6 @@
 package parsso.idman.Configs;
 
+
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import parsso.idman.IdmanApplication;

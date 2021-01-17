@@ -1,8 +1,8 @@
-package parsso.idman.utils.Email;
+package parsso.idman.Utils.Email;
+
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;

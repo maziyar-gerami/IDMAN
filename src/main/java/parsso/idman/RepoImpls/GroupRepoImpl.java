@@ -23,7 +23,10 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.SearchControls;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class GroupRepoImpl implements GroupRepo {
@@ -40,7 +43,7 @@ public class GroupRepoImpl implements GroupRepo {
     public HttpStatus remove(JSONObject jsonObject) {
 
         List<Group> groups = new LinkedList<>();
-        if (jsonObject.size()==0)
+        if (jsonObject.size() == 0)
             groups = retrieve();
         else {
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
@@ -60,13 +63,13 @@ public class GroupRepoImpl implements GroupRepo {
                     ldapTemplate.unbind(dn);
 
                 } catch (Exception e) {
-                    logger.warn("removing group "+group.getName()+ "  was unsuccessful");
+                    logger.warn("removing group " + group.getName() + "  was unsuccessful");
                 }
 
             }
 
-            logger.info("Removing groups ended");
-            return HttpStatus.OK;
+        logger.info("Removing groups ended");
+        return HttpStatus.OK;
     }
 
 
@@ -109,7 +112,7 @@ public class GroupRepoImpl implements GroupRepo {
         attrs.put(ocattr);
         attrs.put("name", group.getName());
         attrs.put("ou", uid);
-        if (group.getDescription()!="")
+        if (group.getDescription() != "")
             attrs.put("description", group.getDescription());
         else
             attrs.put("description", " ");
@@ -149,11 +152,11 @@ public class GroupRepoImpl implements GroupRepo {
         Name dn = buildDn(String.valueOf(max + 1));
         try {
             ldapTemplate.bind(dn, null, buildAttributes(String.valueOf(max + 1), ou));
-            logger.info("Group "+ou.getName() +" created successfully");
+            logger.info("Group " + ou.getName() + " created successfully");
             return HttpStatus.OK;
 
-        } catch (Exception e){
-            logger.warn("Creating group "+ou.getName() +" was unsuccessful");
+        } catch (Exception e) {
+            logger.warn("Creating group " + ou.getName() + " was unsuccessful");
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -166,11 +169,11 @@ public class GroupRepoImpl implements GroupRepo {
 
         try {
             ldapTemplate.rebind(dn, null, buildAttributes(group.getId(), ou));
-            logger.info("Group "+ou.getId() +" updated successfully");
-            return  HttpStatus.OK;
+            logger.info("Group " + ou.getId() + " updated successfully");
+            return HttpStatus.OK;
 
-        }  catch (Exception e) {
-            logger.warn("updating group "+ou.getName() +"  was unsuccessful");
+        } catch (Exception e) {
+            logger.warn("updating group " + ou.getName() + "  was unsuccessful");
             return HttpStatus.BAD_REQUEST;
         }
     }

@@ -1,4 +1,5 @@
-package parsso.idman.utils.JSON;
+package parsso.idman.Utils.JSON;
+
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

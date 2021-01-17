@@ -1,5 +1,6 @@
 package parsso.idman.Models;
 
+
 import lombok.Getter;
 import lombok.Setter;
 

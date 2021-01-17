@@ -3,7 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package parsso.idman.utils.SMS.sdk.utils;
+package parsso.idman.Utils.SMS.sdk.utils;
+
 
 /**
  * @author Hadi

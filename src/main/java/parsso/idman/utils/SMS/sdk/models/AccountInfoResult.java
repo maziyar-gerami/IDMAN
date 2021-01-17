@@ -2,7 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package parsso.idman.utils.SMS.sdk.models;
+package parsso.idman.Utils.SMS.sdk.models;
+
 
 import com.google.gson.JsonObject;
 

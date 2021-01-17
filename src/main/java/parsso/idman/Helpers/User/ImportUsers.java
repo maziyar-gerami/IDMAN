@@ -1,5 +1,6 @@
 package parsso.idman.Helpers.User;
 
+
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldif.LDIFException;
 import com.unboundid.ldif.LDIFReader;
@@ -38,8 +39,8 @@ public class ImportUsers {
 
         Iterator<Row> rowIterator = sheet.iterator();
 
-        int count=0;
-        int nUnSuccessful =0;
+        int count = 0;
+        int nUnSuccessful = 0;
 
         if (hasHeader == true) rowIterator.next();
 
@@ -70,20 +71,20 @@ public class ImportUsers {
 
             temp = userRepo.createUserImport(user);
 
-            if (temp.size()>0) {
+            if (temp != null && temp.size() > 0) {
                 jsonArray.add(temp);
                 nUnSuccessful++;
+                count++;
             }
 
-            count++;
         }
 
         JSONObject finalJson = new JSONObject();
-        finalJson.put("count",count);
-        finalJson.put("nUnSuccessful",nUnSuccessful);
-        finalJson.put("nSuccessful",count-nUnSuccessful);
+        finalJson.put("count", count);
+        finalJson.put("nUnSuccessful", nUnSuccessful);
+        finalJson.put("nSuccessful", count - nUnSuccessful);
 
-        finalJson.put("list",jsonArray);
+        finalJson.put("list", jsonArray);
 
         return finalJson;
     }
@@ -114,8 +115,8 @@ public class ImportUsers {
         String row;
         JSONArray jsonArray = new JSONArray();
         int i = 0;
-        int count=0;
-        int nUnSuccessful =0;
+        int count = 0;
+        int nUnSuccessful = 0;
 
         while ((row = sheet.readLine()) != null) {
             if (i == 0 && hasHeader) {
@@ -145,7 +146,7 @@ public class ImportUsers {
 
             JSONObject temp = userRepo.createUserImport(user);
 
-            if (temp.size()>0) {
+            if (temp.size() > 0) {
                 jsonArray.add(temp);
                 nUnSuccessful++;
             }
@@ -154,10 +155,10 @@ public class ImportUsers {
         }
 
         JSONObject finalJson = new JSONObject();
-        finalJson.put("count",count);
-        finalJson.put("nUnSuccessful",nUnSuccessful);
-        finalJson.put("nSuccessful",count-nUnSuccessful);
-        finalJson.put("list",jsonArray);
+        finalJson.put("count", count);
+        finalJson.put("nUnSuccessful", nUnSuccessful);
+        finalJson.put("nSuccessful", count - nUnSuccessful);
+        finalJson.put("list", jsonArray);
 
         return finalJson;
     }

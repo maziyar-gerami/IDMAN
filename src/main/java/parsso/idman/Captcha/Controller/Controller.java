@@ -1,5 +1,6 @@
 package parsso.idman.Captcha.Controller;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class Controller {
     public ResponseEntity<CAPTCHAimage> requestCaptcha() throws IOException {
 
         CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.valueOf(captchaLenght), Double.valueOf(captchaAlphabetRate));
-        if (captchaImage!=null)
+        if (captchaImage != null)
             return new ResponseEntity<>(captchaImage, HttpStatus.OK);
         else
             return new ResponseEntity<>(captchaImage, HttpStatus.FORBIDDEN);
@@ -36,7 +37,7 @@ public class Controller {
     }
 
     @GetMapping("/api/captcha/validate")
-    public ResponseEntity<CAPTCHAimage> validateCaptcha(@RequestBody CAPTCHA captcha)  {
+    public ResponseEntity<CAPTCHAimage> validateCaptcha(@RequestBody CAPTCHA captcha) {
 
         return new ResponseEntity<>(captchaRepoImp.validateCaptcha(captcha));
 

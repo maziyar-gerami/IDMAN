@@ -15,23 +15,27 @@ import parsso.idman.Repos.AuditRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.*;
-import java.util.*;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 @Service
 public class AuditsExcelView extends AbstractXlsView {
 
+    public static String mainCollection = "MongoDbCasAuditRepository";
     @Autowired
     AuditRepo auditRepo;
-
-    public static String mainCollection = "MongoDbCasAuditRepository";
-
+    ZoneId zoneId = ZoneId.of("UTC+03:30");
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // get data model which is passed by the Spring container
-        List<Audit> audits = auditRepo.analyze(mainCollection, 0,0);
+        List<Audit> audits = auditRepo.analyze(mainCollection, 0, 0);
 
         // create a new Excel sheet
         HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Audits");
@@ -58,14 +62,17 @@ public class AuditsExcelView extends AbstractXlsView {
         header.createCell(3).setCellValue("Application Code");
         header.getCell(3).setCellStyle(style);
 
-        header.createCell(4).setCellValue("When Action Was Performed");
+        header.createCell(4).setCellValue("Date");
         header.getCell(4).setCellStyle(style);
 
-        header.createCell(5).setCellValue("Client IP Address");
+        header.createCell(5).setCellValue("Time");
         header.getCell(5).setCellStyle(style);
 
-        header.createCell(6).setCellValue("Server IP Address");
+        header.createCell(6).setCellValue("Client IP Address");
         header.getCell(6).setCellStyle(style);
+
+        header.createCell(7).setCellValue("Server IP Address");
+        header.getCell(7).setCellStyle(style);
 
         // create data rows
         int rowCount = 1;
@@ -80,12 +87,15 @@ public class AuditsExcelView extends AbstractXlsView {
             Calendar cal = Calendar.getInstance(TimeZone.getDefault());
             cal.setTime(audit.getWhenActionWasPerformed());
 
-            Time time = new Time(cal);
 
-            String jalali = time.convertDateGeorgianToJalali(time.getYear(),time.getMonth(),time.getDay());
-            aRow.createCell(4).setCellValue(jalali.substring(0,4)+"/"+jalali.substring(4,6)+"/"+jalali.substring(6)+" "+time.getHours()+":"+time.getMinutes()+":"+time.getSeconds());
-            aRow.createCell(5).setCellValue(audit.getClientIpAddress());
+            ZonedDateTime eventDate = OffsetDateTime.ofInstant(audit.getWhenActionWasPerformed().toInstant(), zoneId).atZoneSameInstant(zoneId);
+            Time time = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
+                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
+
+            aRow.createCell(4).setCellValue(time.getYear() + "/" + time.getMonth() + "/" + time.getDay());
+            aRow.createCell(5).setCellValue(time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds());
             aRow.createCell(6).setCellValue(audit.getClientIpAddress());
+            aRow.createCell(7).setCellValue(audit.getClientIpAddress());
 
         }
 

@@ -12,7 +12,9 @@ public class ExtraInfo {
     long id;
     String url;
     int position;
-    public ExtraInfo(){
+    String UUID;
+
+    public ExtraInfo() {
         position = 0;
     }
 }

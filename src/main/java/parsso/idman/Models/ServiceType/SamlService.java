@@ -4,7 +4,6 @@ package parsso.idman.Models.ServiceType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Models.ServicesSubModel.AttributeReleasePolicy;
 import parsso.idman.Models.Service;
 
 import java.util.LinkedList;
@@ -100,7 +99,7 @@ public class SamlService extends Service {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     String whiteListBlackListPrecedence;
 
-    public SamlService(){
+    public SamlService() {
         super.setAtClass("org.apereo.cas.support.saml.services.SamlRegisteredService");
 
         Object[] contacts = new Object[2];

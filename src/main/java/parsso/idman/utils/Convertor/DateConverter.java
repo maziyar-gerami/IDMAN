@@ -1,10 +1,17 @@
-package parsso.idman.utils.Convertor;
+package parsso.idman.Utils.Convertor;
 
 
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.ZoneId;
+
+@Setter
+@Getter
 
 public class DateConverter {
 
+    ZoneId zoneId = ZoneId.of("UTC+03:30");
     private int day, month, year;
     private int jYear, jMonth, jDay;
     private int gYear, gMonth, gDay;
@@ -260,33 +267,6 @@ public class DateConverter {
         this.year = gYear;
         this.month = gMonth;
         this.day = gDay;
-    }
-
-    /**
-     * Get manipulated day
-     *
-     * @return Day as int
-     */
-    public int getDay() {
-        return day;
-    }
-
-    /**
-     * Get manipulated month
-     *
-     * @return Month as int
-     */
-    public int getMonth() {
-        return month;
-    }
-
-    /**
-     * Get manipulated year
-     *
-     * @return Year as int
-     */
-    public int getYear() {
-        return year;
     }
 
 

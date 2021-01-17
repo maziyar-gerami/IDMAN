@@ -1,4 +1,5 @@
-package parsso.idman.utils.FilesStorageService;
+package parsso.idman.Utils.FilesStorageService;
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

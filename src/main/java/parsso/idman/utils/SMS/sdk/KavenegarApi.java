@@ -2,7 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package parsso.idman.utils.SMS.sdk;
+package parsso.idman.Utils.SMS.sdk;
+
 
 import com.google.gson.*;
 import org.apache.http.NameValuePair;
@@ -13,13 +14,13 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import parsso.idman.utils.SMS.sdk.enums.MessageType;
-import parsso.idman.utils.SMS.sdk.excepctions.ApiException;
-import parsso.idman.utils.SMS.sdk.excepctions.BaseException;
-import parsso.idman.utils.SMS.sdk.excepctions.HttpException;
-import parsso.idman.utils.SMS.sdk.models.*;
-import parsso.idman.utils.SMS.sdk.utils.PairValue;
-import parsso.idman.utils.SMS.sdk.utils.StringUtils;
+import parsso.idman.Utils.SMS.sdk.enums.MessageType;
+import parsso.idman.Utils.SMS.sdk.excepctions.ApiException;
+import parsso.idman.Utils.SMS.sdk.excepctions.BaseException;
+import parsso.idman.Utils.SMS.sdk.excepctions.HttpException;
+import parsso.idman.Utils.SMS.sdk.models.*;
+import parsso.idman.Utils.SMS.sdk.utils.PairValue;
+import parsso.idman.Utils.SMS.sdk.utils.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;

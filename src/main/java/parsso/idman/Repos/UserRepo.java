@@ -1,6 +1,6 @@
 package parsso.idman.Repos;
 
-import com.google.gson.JsonObject;
+
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
@@ -27,13 +27,13 @@ public interface UserRepo {
 
     List<SimpleUser> retrieveUsersMain();
 
-    List<SimpleUser> retrieveUsersMain(String sortType,String groupFilter,String searchuUid, String searchUid,String userStatus);
+    List<SimpleUser> retrieveUsersMain(String sortType, String groupFilter, String searchuUid, String searchUid, String userStatus);
 
     User getName(String uid, String token);
 
     List<User> retrieveUsersFull();
 
-    JsonObject create(User p);
+    JSONObject create(User p);
 
     JSONObject createUserImport(User p);
 
@@ -55,7 +55,7 @@ public interface UserRepo {
 
     JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException;
 
-    org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException;
+    org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException;
 
     HttpStatus enable(String uid);
 

@@ -8,24 +8,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Models.Event;
+import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
 import parsso.idman.Models.ListEvents;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
-import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
 import java.util.List;
 
 @RestController
-public class  MobileController {
+public class MobileController {
 
     @Autowired
     private UserRepo userRepo;
@@ -56,7 +54,7 @@ public class  MobileController {
 
         if (QrToken.equals(user.getTokens().getQrToken())) {
 
-            return new ResponseEntity<>(user.getMobile(),HttpStatus.OK);
+            return new ResponseEntity<>(user.getMobile(), HttpStatus.OK);
         } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
@@ -117,7 +115,7 @@ public class  MobileController {
 
         User user = userRepo.retrieveUser(uid);
         if (MobileToken.equals(user.getTokens().getMobileToken()))
-            return new ResponseEntity<>(eventRepo.getListSizeEvents(Integer.valueOf(page),Integer.valueOf(n)), HttpStatus.OK);
+            return new ResponseEntity<>(eventRepo.getListSizeEvents(Integer.valueOf(page), Integer.valueOf(n)), HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }

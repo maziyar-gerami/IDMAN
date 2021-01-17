@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import com.google.gson.JsonObject;
 import net.minidev.json.JSONObject;
 import org.apache.commons.compress.utils.IOUtils;
 import org.json.simple.parser.ParseException;
@@ -115,7 +114,7 @@ public class UserRepoImpl implements UserRepo {
 
 
     @Override
-    public JsonObject create(User p) {
+    public JSONObject create(User p) {
 
         User user = retrieveUser(p.getUserId());
         DirContextOperations context;
@@ -139,48 +138,49 @@ public class UserRepoImpl implements UserRepo {
                 }
 
                 logger.info("User " + "\"" + p.getUserId() + "\"" + " in " + new Date() + " created successfully");
-                return new JsonObject();
+                return new JSONObject();
             } else {
                 logger.warn("User " + "\"" + p.getUserId() + "\"" + " is exist. So it cannot be created");
 
-                importUsers.compareUsers(user, p);
+                return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
             logger.warn("Creating user " + "\"" + p.getUserId() + "\"" + " was unsuccessful");
             e.printStackTrace();
             return null;
         }
-        return null;
     }
 
     @Override
     public JSONObject createUserImport(User p) {
 
-        User user = retrieveUser(p.getUserId());
-        if (p.getUserPassword() == null)
-            p.setUserPassword(defaultPassword);
+        if (p.getUserId() != null && !p.getUserId().equals("")) {
+            User user = retrieveUser(p.getUserId());
+            if (p.getUserPassword() == null)
+                p.setUserPassword(defaultPassword);
 
-        try {
-            if (user == null) {
-                Name dn = buildDn.buildDn(p.getUserId());
-                ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
+            try {
+                if (user == null) {
+                    Name dn = buildDn.buildDn(p.getUserId());
+                    ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
 
-                Tokens tokens = new Tokens();
-                tokens.setUserId(p.getUserId());
-                tokens.setQrToken(UUID.randomUUID().toString());
-                Date date = new Date();
-                tokens.setCreationTimeStamp(date.getTime());
-                mongoTemplate.save(tokens, Token.collection);
+                    Tokens tokens = new Tokens();
+                    tokens.setUserId(p.getUserId());
+                    tokens.setQrToken(UUID.randomUUID().toString());
+                    Date date = new Date();
+                    tokens.setCreationTimeStamp(date.getTime());
+                    mongoTemplate.save(tokens, Token.collection);
 
-                return new JSONObject();
-            } else {
-
-                return importUsers.compareUsers(user, p);
+                    return new JSONObject();
+                } else {
+                    return importUsers.compareUsers(user, p);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     @Override
@@ -194,11 +194,11 @@ public class UserRepoImpl implements UserRepo {
         DirContextOperations context;
 
         //remove current pwdEndTime
-        if ((p.getEndTime()==null || p.getEndTime().equals(""))) {
+        if ((p.getEndTime() == null || p.getEndTime().equals(""))) {
             if ((user.getEndTime() != null || user.getEndTime() != ""))
                 removeCurrentEndTime(uid);
-        }else if(!(p.getEndTime().equals(user.getEndTime())))
-                removeCurrentEndTime(uid);
+        } else if (!(p.getEndTime().equals(user.getEndTime())))
+            removeCurrentEndTime(uid);
 
         context = buildAttributes.buildAttributes(uid, p, dn);
 
@@ -208,7 +208,7 @@ public class UserRepoImpl implements UserRepo {
         try {
             ldapTemplate.modifyAttributes(context);
 
-            logger.info("User " + "\"" + p.getUserId() + "\"" + "in " + new Date() + "updated successfully");
+            logger.info("User " + "\"" + p.getUserId() + "\"" + "in " + new Date() + " updated successfully");
             return HttpStatus.OK;
 
         } catch (Exception e) {
@@ -237,10 +237,12 @@ public class UserRepoImpl implements UserRepo {
         if (people != null)
             for (User user : people) {
                 Name dn = buildDn.buildDn(user.getUserId());
+                Query query = new Query(new Criteria("userId").is(user.getUserId()));
 
                 try {
 
                     ldapTemplate.unbind(dn);
+                    mongoTemplate.remove(query, User.class, "IDMAN_Tokens");
 
                 } catch (Exception e) {
                     logger.warn("Deleting User " + user.getUserId() + " was unsuccessfully");
@@ -290,19 +292,19 @@ public class UserRepoImpl implements UserRepo {
 
         List<GrantedAuthority> updatedAuthorities = null;
 
-        if (auth != null){
+        if (auth != null) {
             updatedAuthorities = new ArrayList<>(auth.getAuthorities());
 
-        if (auth != null && auth.getName().equals(p.getUserId())) {
-            updatedAuthorities.remove(0);
+            if (auth != null && auth.getName().equals(p.getUserId())) {
+                updatedAuthorities.remove(0);
 
-            updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+                updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role));
 
-            Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
+                Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
 
-            SecurityContextHolder.getContext().setAuthentication(newAuth);
+                SecurityContextHolder.getContext().setAuthentication(newAuth);
+            }
         }
-    }
 
     }
 
@@ -420,7 +422,7 @@ public class UserRepoImpl implements UserRepo {
                 new SimpleUserAttributeMapper());
         List relatedUsers = new LinkedList();
         for (SimpleUser user : people) {
-            if (user.getDisplayName() != null && !user.getUserId().equals("su")&& !user.getDisplayName().equals("Directory Superuser")) {
+            if (user.getDisplayName() != null && !user.getUserId().equals("su") && !user.getDisplayName().equals("Directory Superuser")) {
                 relatedUsers.add(user);
             }
         }
@@ -552,7 +554,7 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = new User();
         Tokens tokens = null;
-        ExtraInfo extraInfo=null;
+        ExtraInfo extraInfo = null;
         if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
             user = ldapTemplate.lookup(buildDn.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
@@ -576,7 +578,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException {
+    public org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException {
         return dashboardData.retrieveDashboardData();
     }
 
@@ -703,8 +705,9 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public HttpStatus massUpdate(List<User> users) {
-        for (User user:users)
-            update(user.getUserId(),user);
+        for (User user : users)
+            if (user != null && user.getUserId() != null)
+                update(user.getUserId(), user);
 
         return HttpStatus.OK;
     }
@@ -720,7 +723,7 @@ public class UserRepoImpl implements UserRepo {
 
         int size = allUsers.size();
 
-        int pages = (int) Math.ceil(size/number);
+        int pages = (int) Math.ceil(size / number);
 
 
         int start = (page - 1) * number;
@@ -729,7 +732,7 @@ public class UserRepoImpl implements UserRepo {
         List<SimpleUser> relativeUsers = new LinkedList<>();
 
         for (int i = start; i < n; i++)
-             relativeUsers.add(allUsers.get(i));
+            relativeUsers.add(allUsers.get(i));
 
         ListUsers finalList = new ListUsers(size, relativeUsers, pages);
 

@@ -1,5 +1,6 @@
 package parsso.idman.RepoImpls;
 
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -9,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Repos.FilesStorageService;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,7 +67,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
         try {
 
-            Files.copy(file.getInputStream(),this.photoPathRoot.resolve(name));
+            Files.copy(file.getInputStream(), this.photoPathRoot.resolve(name));
 
         } catch (Exception e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());

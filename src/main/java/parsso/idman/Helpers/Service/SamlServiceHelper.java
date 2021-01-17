@@ -18,7 +18,6 @@ import parsso.idman.Models.Service;
 import parsso.idman.Models.ServiceType.MicroService;
 import parsso.idman.Models.ServiceType.SamlService;
 import parsso.idman.Models.ServicesSubModel.*;
-import parsso.idman.RepoImpls.ServiceRepoImpl;
 import parsso.idman.Repos.ServiceRepo;
 
 import java.io.File;
@@ -31,17 +30,13 @@ import java.util.*;
 @Component
 public class SamlServiceHelper {
 
+    private final String collection = "IDMAN_Services";
     @Value("${services.folder.path}")
     String path;
-
     @Autowired
     MongoTemplate mongoTemplate;
-
     @Autowired
     ServiceRepo serviceRepo;
-
-    private final String collection = "IDMAN_Services";
-
     Logger logger = LoggerFactory.getLogger(SamlServiceHelper.class);
 
     public SamlService buildSamlService(JSONObject jo) {
@@ -54,7 +49,8 @@ public class SamlServiceHelper {
         if (jo.get("@class") != null) service.setAtClass(jo.get("@class").toString());
         if (jo.get("name") != null) service.setName(jo.get("name").toString());
         if (jo.get("id") != null) service.setId(Long.valueOf(jo.get("id").toString()));
-        if (jo.get("evaluationOrder") != null) service.setEvaluationOrder(Integer.valueOf(jo.get("evaluationOrder").toString()));
+        if (jo.get("evaluationOrder") != null)
+            service.setEvaluationOrder(Integer.valueOf(jo.get("evaluationOrder").toString()));
         if (jo.get("metadataLocation") != null) service.setMetadataLocation(jo.get("metadataLocation").toString());
         if (jo.get("logoutType") != null) service.setLogoutType(jo.get("logoutType").toString());
         if (jo.get("logoutUrl") != null) service.setLogoutUrl(jo.get("logoutUrl").toString());
@@ -63,7 +59,7 @@ public class SamlServiceHelper {
         if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
         if (jo.get("description") != null) service.setDescription(jo.get("description").toString());
         if (jo.get("attributeReleasePolicy") == null) service.setAttributeReleasePolicy(new AttributeReleasePolicy());
-         else {
+        else {
             JSONObject jsonObject = null;
             if (jo.get("attributeReleasePolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
                 jsonObject = (JSONObject) jo.get("attributeReleasePolicy");
@@ -120,7 +116,7 @@ public class SamlServiceHelper {
         }
         // AccessStrategy
         JSONObject jsonObject = null;
-        if (jo.get("accessStrategy")!=null) {
+        if (jo.get("accessStrategy") != null) {
             jsonObject = new JSONObject((Map) jo.get("accessStrategy"));
             AccessStrategy accessStrategy = new AccessStrategy();
 
@@ -129,7 +125,7 @@ public class SamlServiceHelper {
             service.setAccessStrategy(ac);
         }
 
-        if (jo.get("multifactorPolicy")!=null) {
+        if (jo.get("multifactorPolicy") != null) {
 
             jsonObject = null;
 
@@ -148,14 +144,14 @@ public class SamlServiceHelper {
                     multifactorPolicy.setFailureMode((String) jsonObject.get("failureMode"));
                 if (jsonObject.get("bypassEnabled") != null)
                     multifactorPolicy.setBypassEnabled((Boolean) jsonObject.get("bypassEnabled"));
-                if (jsonObject.get("multifactorAuthenticationProviders") != null && jsonObject.get("multifactorAuthenticationProviders").toString().contains("mfa-simple"))
+                if (jsonObject.get("multifactorAuthenticationProviders") != null)
                     multifactorPolicy.setMultifactorAuthenticationProviders(jsonObject.get("multifactorAuthenticationProviders").toString());
                 service.setMultifactorPolicy(multifactorPolicy);
             }
         }
 
         //contacts
-        if (jo.get("contacts")!= null) {
+        if (jo.get("contacts") != null) {
 
             ArrayList arrayList = (ArrayList) jo.get("contacts");
 
@@ -185,7 +181,8 @@ public class SamlServiceHelper {
                         if (jsonObject1.get("email") != null) {
                             contact.setEmail((String) jsonObject1.get("email"));
 
-                            if (jsonObject1.get("phone") != (null)) contact.setPhone(jsonObject1.get("phone").toString());
+                            if (jsonObject1.get("phone") != (null))
+                                contact.setPhone(jsonObject1.get("phone").toString());
                             if (jsonObject1.get("department") != (null))
                                 contact.setDepartment(jsonObject1.get("department").toString());
                             contacts.add(contact);
@@ -205,19 +202,19 @@ public class SamlServiceHelper {
         return service;
     }
 
-    public long create(JSONObject jo){
+    public long create(JSONObject jo) {
         SamlService service = buildSamlService(jo);
         service.setId(new Date().getTime());
         String json = null;
-        if (service!=null){
+        if (service != null) {
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             try {
-                mongoTemplate.save(service,collection);
+                mongoTemplate.save(service, collection);
                 json = ow.writeValueAsString(service);
-                logger.info("Service "+"\""+service.getId()+"\""+" deleted successfully");
+                logger.info("Service " + "\"" + service.getId() + "\"" + " deleted successfully");
             } catch (JsonProcessingException e) {
-                logger.info("Deleting Service "+"\""+service.getId()+"\""+" was unsuccessful");
+                logger.info("Deleting Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
 
                 e.printStackTrace();
             }
@@ -230,19 +227,19 @@ public class SamlServiceHelper {
                 String filePath = s1 + "-" + service.getId();
 
                 InetAddress[] machines = null;
-                if(!(service.getServiceId().contains("localhost")))
-                    try{
+                if (!(service.getServiceId().contains("localhost")))
+                    try {
                         machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
-                        logger.warn("Unable to get IP from it's serverId with these serviceId: " +service.getServiceId());
-                    }catch (Exception e){
+                        logger.warn("Unable to get IP from it's serverId with these serviceId: " + service.getServiceId());
+                    } catch (Exception e) {
                         machines = null;
                     }
 
                 List<String> IPaddresses = new LinkedList<>();
 
-                if(machines!=null)
-                for (InetAddress machine:machines)
-                    IPaddresses.add(machine.getHostAddress());
+                if (machines != null)
+                    for (InetAddress machine : machines)
+                        IPaddresses.add(machine.getHostAddress());
 
                 file = new FileWriter(path + filePath + ".json");
                 file.write(json);
@@ -250,11 +247,11 @@ public class SamlServiceHelper {
 
                 MicroService microService = new MicroService(service.getServiceId(), IPaddresses);
 
-                mongoTemplate.save(microService,collection);
-                logger.info("Service "+"\""+service.getId()+"\""+" created successfully");
+                mongoTemplate.save(microService, collection);
+                logger.info("Service " + "\"" + service.getId() + "\"" + " created successfully");
                 return service.getId();
             } catch (IOException e) {
-                logger.info("Creating Service "+"\""+service.getId()+"\""+" was unsuccessful");
+                logger.info("Creating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
                 return 0;
             }
 
@@ -282,21 +279,21 @@ public class SamlServiceHelper {
         FileWriter file;
         try {
 
-            File oldFile = new File(path+oldService.getName()+"-"+service.getId()+".json");
+            File oldFile = new File(path + oldService.getName() + "-" + service.getId() + ".json");
             oldFile.delete();
             String fileName = service.getName();
             String s1 = fileName.replaceAll("\\s+", "");
             s1 = s1.replaceAll("[-,]", "");
-            String filePath = s1+"-"+service.getId();
+            String filePath = s1 + "-" + service.getId();
 
-            file = new FileWriter(path+filePath + ".json");
+            file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            logger.info("Service "+"\""+service.getId()+"\""+" updated successfully");
+            logger.info("Service " + "\"" + service.getId() + "\"" + " updated successfully");
             return HttpStatus.OK;
         } catch (IOException e) {
             e.printStackTrace();
-            logger.info("Updating Service "+"\""+service.getId()+"\""+" was unsuccessful");
+            logger.info("Updating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
             return HttpStatus.FORBIDDEN;
         }
 
