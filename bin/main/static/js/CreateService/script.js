@@ -144,6 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s78: "ممیزی ها",
       s79: "/audits",
       s80: "توکن سخت افزاری",
+      s81: "غیرفعال",
     },
     created: function () {
       this.getUserInfo();
@@ -854,6 +855,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s78 = "Audits";
           this.s79 = "/audits?en";
           this.s80 = "Hardware Token";
+          this.s81 = "Disabled";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -939,6 +941,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s78 = "ممیزی ها";
             this.s79 = "/audits";
             this.s80 = "توکن سخت افزاری";
+            this.s81 = "غیرفعال";
         }
       },
       setServiceType: function () {

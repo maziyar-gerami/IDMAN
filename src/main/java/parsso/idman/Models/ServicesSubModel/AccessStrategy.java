@@ -101,7 +101,7 @@ public class AccessStrategy {
         String seconds = seTime.substring(17, 19);
 
         String miliSeconds = seTime.substring(20, 23);
-        
+
         String tf = seTime.substring(23);
 
         return (convertDate(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day))) +

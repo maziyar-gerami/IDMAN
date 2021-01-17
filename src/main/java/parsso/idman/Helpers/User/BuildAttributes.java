@@ -33,7 +33,6 @@ public class BuildAttributes {
 
         ZoneId zoneId = ZoneId.of("UTC+03:30");
 
-
         BasicAttribute ocattr = new BasicAttribute("objectclass");
         ocattr.add("top");
         ocattr.add("person");
@@ -77,13 +76,11 @@ public class BuildAttributes {
             attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
         }
 
-
         return attrs;
     }
 
     @SneakyThrows
     public DirContextOperations buildAttributes(String uid, User p, Name dn) {
-
 
         User old = userRepo.retrieveUser(uid);
 
@@ -97,13 +94,11 @@ public class BuildAttributes {
         if (p.getUserPassword() != null && p.getUserPassword() != "")
             context.setAttributeValue("userPassword", p.getUserPassword());
         if (p.getMobile() != "" && p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
-        if (p.getEmployeeNumber() != null) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
-        if (p.getEmployeeNumber() != null) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
-        if (p.getEmployeeNumber() != null) context.setAttributeValue("mail", p.getMail());
+        if (p.getEmployeeNumber() != null && p.getEmployeeNumber() != "") context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
+        if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
 
-        if (p.getTimeStamp() > 0)
+        //if (p.getTimeStamp() > 0)
             //context.setAttributeValue("createtimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
-
 
             if (p.getMail() != "" && p.getFirstName() != null) context.setAttributeValue("mail", p.getMail());
         if ((p.getFirstName()) != null || (p.getLastName() != null)) {
