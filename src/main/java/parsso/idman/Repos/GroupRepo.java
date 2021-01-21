@@ -12,6 +12,8 @@ public interface GroupRepo {
 
     List<Group> retrieve();
 
+    List<Group> retrieve(String ou);
+
     HttpStatus create(Group ou);
 
     HttpStatus update(String name, Group ou);

@@ -120,8 +120,15 @@ public class UserController {
     @GetMapping("/api/user/photo")
     public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException {
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser(principal.getName());
+        User user = userRepo.retrieveUser("hamed");
         return new ResponseEntity<>(userRepo.showProfilePic(response, user), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/user/photo2")
+    public ResponseEntity<String> getImage2(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        Principal principal = request.getUserPrincipal();
+        User user = userRepo.retrieveUser("maziyar");
+        return new ResponseEntity<>(userRepo.showProfilePic2(response, user), HttpStatus.OK);
     }
 
 

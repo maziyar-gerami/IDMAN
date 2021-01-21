@@ -44,7 +44,7 @@ public class User implements UserDetails, Comparable {
     private String userPassword;
 
     @JsonIgnore
-    private String photoName;
+    private byte[] photo;
 
     @JsonIgnore
     private Role role;

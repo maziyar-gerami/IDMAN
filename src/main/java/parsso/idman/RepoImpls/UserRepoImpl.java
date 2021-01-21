@@ -45,10 +45,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -345,7 +342,10 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public String showProfilePic(HttpServletResponse response, User user) {
-        File file = new File(uploadedFilesPath + user.getPhotoName());
+        if(user.getPhoto()==null)
+            return "NotExist";
+
+        File file = new File(uploadedFilesPath + user.getPhoto());
 
         if (file.exists()) {
             try {
@@ -368,8 +368,33 @@ public class UserRepoImpl implements UserRepo {
 
 
     @Override
+    public String showProfilePic2(HttpServletResponse response, User user) {
+        if(user.getPhoto()==null)
+            return "NotExist";
+        else
+            try {
+
+                String contentType = "image/png";
+                response.setContentType(contentType);
+                OutputStream out = response.getOutputStream();
+                ByteArrayInputStream in = new ByteArrayInputStream(user.getPhoto());
+                // copy from in to out
+                IOUtils.copy(in, out);
+                out.close();
+                in.close();
+                return "OK";
+            } catch (Exception e) {
+                return "Problem";
+
+            }
+
+
+    }
+
+
+    @Override
     public byte[] showProfilePic(User user) {
-        File file = new File(uploadedFilesPath + user.getPhotoName());
+        File file = new File(uploadedFilesPath + user.getPhoto());
         byte[] media = null;
 
 
@@ -401,9 +426,10 @@ public class UserRepoImpl implements UserRepo {
         User user = retrieveUser(name);
 
         //remove old pic
-        File oldPic = new File(uploadedFilesPath + user.getPhotoName());
+        File oldPic = new File(uploadedFilesPath + user.getPhoto());
 
-        user.setPhotoName(s);
+        //TODO:Should consider
+        //user.setPhoto(s);
         if (update(user.getUserId(), user) == HttpStatus.OK) {
             oldPic.delete();
             logger.info("Setting profile pic for" + name + " was successful");

@@ -249,9 +249,8 @@ public class ImportUsers {
         for (int i = 0; i < nGroups; i++) ls.add(entry.getAttributeValue("ou"));
         user.setMemberOf(null != entry.getAttributeValue("ou") ? ls : null);
         user.setDescription(entry.getAttributeValue("description"));
-        user.setPhotoName(entry.getAttributeValue("status"));
         user.setStatus(entry.getAttributeValue("employeeNumber"));
-        user.setPhotoName(entry.getAttributeValue("userPassword"));
+        user.setPhoto(entry.getAttributeValue("userPassword").getBytes());
 
         return lsUserConflicts;
     }

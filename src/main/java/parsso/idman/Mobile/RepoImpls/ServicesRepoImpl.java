@@ -164,7 +164,7 @@ public class ServicesRepoImpl implements ServicesRepo {
 
             else context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
         }
-        if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhotoName());
+        if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhoto());
 
         if (p.getTokens().getResetPassToken() != null)
             context.setAttributeValue("resetPassToken", p.getTokens().getResetPassToken());
@@ -178,7 +178,7 @@ public class ServicesRepoImpl implements ServicesRepo {
         }
 
         if (p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
-        if (p.getPhotoName() != null) context.setAttributeValue("photoName", p.getPhotoName());
+        if (p.getPhoto() != null) context.setAttributeValue("photoName", p.getPhoto());
         if (p.getStatus() != null) context.setAttributeValue("userStatus", p.getStatus());
         if (p.getTokens().getMobileToken() != null)
             context.setAttributeValue("mobileToken", p.getTokens().getMobileToken());

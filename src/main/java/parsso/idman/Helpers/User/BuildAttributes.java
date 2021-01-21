@@ -64,8 +64,8 @@ public class BuildAttributes {
         else
             attrs.put("description", " ");
 
-        if (p.getPhotoName() != null)
-            attrs.put("photoName", p.getPhotoName());
+        if (p.getPhoto() != null)
+            attrs.put("photoName", p.getPhoto());
         else
             attrs.put("photoName", " ");
 
@@ -110,7 +110,7 @@ public class BuildAttributes {
 
             else context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
         }
-        if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhotoName());
+        if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhoto());
 
         if (p.getCStatus() != null) {
 
@@ -141,10 +141,10 @@ public class BuildAttributes {
 
         if (p.getDescription() != "" && p.getDescription() != null)
             context.setAttributeValue("description", p.getDescription());
-        if (p.getPhotoName() != "" && p.getPhotoName() != null)
-            context.setAttributeValue("photoName", p.getPhotoName());
+        if (p.getPhoto() != null)
+            context.setAttributeValue("photoName", p.getPhoto());
         else
-            context.setAttributeValue("photoName", old.getPhotoName());
+            context.setAttributeValue("photoName", old.getPhoto());
 
 
         if (p.getEndTime() != null) {

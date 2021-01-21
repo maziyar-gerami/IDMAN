@@ -34,7 +34,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
             user.getTokens().setResetPassToken(null != attributes.get("resetPassToken") ? attributes.get("resetPassToken").get().toString() : null);
         user.setMemberOf(null != attributes.get("ou") ? ls : null);
         user.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
-        user.setPhotoName(null != attributes.get("photoName") && "" != attributes.get("photoName").toString() ? attributes.get("photoName").get().toString() : null);
+        user.setPhoto(null != attributes.get("jpegPhoto")  ? attributes.get("jpegPhoto").get().toString().getBytes() : null);
         if (user.getTokens() != null)
             user.getTokens().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
         user.setEndTime(null != attributes.get("pwdEndTime") ? Time.setEndTime(attributes.get("pwdEndTime").get().toString()) : null);

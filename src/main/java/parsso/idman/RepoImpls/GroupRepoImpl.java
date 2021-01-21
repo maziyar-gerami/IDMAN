@@ -138,20 +138,36 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
     @Override
+    public List<Group> retrieve(String ou) {
+        SearchControls searchControls = new SearchControls();
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+        List<Group> gt = ldapTemplate.search(BASE_DN,null, new OUAttributeMapper());
+
+        if (gt.size()!=0)
+            return null;
+
+        final AndFilter filter = new AndFilter();
+        filter.and(new EqualsFilter("objectclass", "extensibleObject"));
+
+        return ldapTemplate.search(BASE_DN, filter.encode(),
+                new OUAttributeMapper());
+
+    }
+
+
+    @Override
     public HttpStatus create(Group ou) {
 
         List<Group> groups = retrieve();
-        long max = 0;
 
-        for (Group group : groups) {
-            if (Long.valueOf(group.getId()) > max)
-                max = Long.valueOf(group.getId());
+        for (Group group:groups)
+            if (group.getId().equals(ou.getId()))
+                return  HttpStatus.FOUND;
 
-        }
-
-        Name dn = buildDn(String.valueOf(max + 1));
+        Name dn = buildDn(ou.getId());
         try {
-            ldapTemplate.bind(dn, null, buildAttributes(String.valueOf(max + 1), ou));
+            ldapTemplate.bind(dn, null, buildAttributes(ou.getId(), ou));
             logger.info("Group " + ou.getName() + " created successfully");
             return HttpStatus.OK;
 
@@ -164,6 +180,12 @@ public class GroupRepoImpl implements GroupRepo {
     @Override
     public HttpStatus update(String id, Group ou) {
         Name dn = buildDn(id);
+
+        List<Group> groups = retrieve();
+
+        for (Group group:groups)
+            if (!group.getId().equals(id) && group.getId().equals(ou.getId()))
+                return  HttpStatus.FOUND;
 
         Group group = retrieveOu(id);
 
