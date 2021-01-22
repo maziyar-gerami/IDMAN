@@ -23,6 +23,5 @@ public interface GroupRepo {
     Group retrieveOu(String name);
 
     List<Group> retrieveCurrentUserGroup(User user);
-
-
+    
 }

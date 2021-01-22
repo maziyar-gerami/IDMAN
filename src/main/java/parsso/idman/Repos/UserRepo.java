@@ -41,7 +41,11 @@ public interface UserRepo {
 
     HttpStatus update(String uid, User p);
 
-    User retrieveUser(String userId);
+    HttpStatus updateUsersWithSpecificOU(String old_ou, String new_ou);
+
+    User retrieveUsers(String groupId);
+
+    List<User> retrieveGroupsUsers(String groupId);
 
     List<JSONObject> checkMail(String token);
 

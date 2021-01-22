@@ -107,7 +107,7 @@ public class ServicesRepoImpl implements ServicesRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        User user = userRepo.retrieveUser(userId);
+        User user = userRepo.retrieveUsers(userId);
 
         String mainDbToken = user.getTokens().getMobileToken();
         String mainPartToken;
@@ -157,14 +157,14 @@ public class ServicesRepoImpl implements ServicesRepo {
         if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
         if ((p.getFirstName()) != null || (p.getLastName() != null)) {
             if (p.getFirstName() == null)
-                context.setAttributeValue("cn", userRepo.retrieveUser(uid).getFirstName() + ' ' + p.getLastName());
+                context.setAttributeValue("cn", userRepo.retrieveUsers(uid).getFirstName() + ' ' + p.getLastName());
 
             else if (p.getLastName() == null)
-                context.setAttributeValue("cn", p.getFirstName() + ' ' + userRepo.retrieveUser(uid).getLastName());
+                context.setAttributeValue("cn", p.getFirstName() + ' ' + userRepo.retrieveUsers(uid).getLastName());
 
             else context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
         }
-        if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhoto());
+        if (p.getMail() != null) context.setAttributeValue("st", p.getPhoto());
 
         if (p.getTokens().getResetPassToken() != null)
             context.setAttributeValue("resetPassToken", p.getTokens().getResetPassToken());
@@ -178,7 +178,7 @@ public class ServicesRepoImpl implements ServicesRepo {
         }
 
         if (p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
-        if (p.getPhoto() != null) context.setAttributeValue("photoName", p.getPhoto());
+        if (p.getPhoto() != null) context.setAttributeValue("st", p.getPhoto());
         if (p.getStatus() != null) context.setAttributeValue("userStatus", p.getStatus());
         if (p.getTokens().getMobileToken() != null)
             context.setAttributeValue("mobileToken", p.getTokens().getMobileToken());

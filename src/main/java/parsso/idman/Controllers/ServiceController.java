@@ -49,7 +49,7 @@ public class ServiceController {
     @GetMapping("/api/services/user")
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUser(principal.getName())), HttpStatus.OK);
+        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(principal.getName())), HttpStatus.OK);
     }
 
     @GetMapping("/api/services/full")
@@ -136,7 +136,7 @@ public class ServiceController {
     public String CreateService(HttpServletRequest request) {
         try {
             Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUser(principal.getName());
+            User user = userRepo.retrieveUsers(principal.getName());
 
             List<String> memberOf = user.getMemberOf();
 

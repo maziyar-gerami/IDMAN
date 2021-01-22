@@ -65,9 +65,9 @@ public class BuildAttributes {
             attrs.put("description", " ");
 
         if (p.getPhoto() != null)
-            attrs.put("photoName", p.getPhoto());
+            attrs.put("st", p.getPhoto());
         else
-            attrs.put("photoName", " ");
+            attrs.put("st", " ");
 
         if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
@@ -82,7 +82,7 @@ public class BuildAttributes {
     @SneakyThrows
     public DirContextOperations buildAttributes(String uid, User p, Name dn) {
 
-        User old = userRepo.retrieveUser(uid);
+        User old = userRepo.retrieveUsers(uid);
 
         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
@@ -103,14 +103,14 @@ public class BuildAttributes {
             if (p.getMail() != "" && p.getFirstName() != null) context.setAttributeValue("mail", p.getMail());
         if ((p.getFirstName()) != null || (p.getLastName() != null)) {
             if (p.getFirstName() == null)
-                context.setAttributeValue("cn", userRepo.retrieveUser(uid).getFirstName() + ' ' + p.getLastName());
+                context.setAttributeValue("cn", userRepo.retrieveUsers(uid).getFirstName() + ' ' + p.getLastName());
 
             else if (p.getLastName() == null)
-                context.setAttributeValue("cn", p.getFirstName() + ' ' + userRepo.retrieveUser(uid).getLastName());
+                context.setAttributeValue("cn", p.getFirstName() + ' ' + userRepo.retrieveUsers(uid).getLastName());
 
             else context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
         }
-        if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhoto());
+        if (p.getMail() != null) context.setAttributeValue("st", p.getPhoto());
 
         if (p.getCStatus() != null) {
 
@@ -142,9 +142,9 @@ public class BuildAttributes {
         if (p.getDescription() != "" && p.getDescription() != null)
             context.setAttributeValue("description", p.getDescription());
         if (p.getPhoto() != null)
-            context.setAttributeValue("photoName", p.getPhoto());
+            context.setAttributeValue("st", p.getPhoto());
         else
-            context.setAttributeValue("photoName", old.getPhoto());
+            context.setAttributeValue("st", old.getPhoto());
 
 
         if (p.getEndTime() != null) {

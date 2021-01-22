@@ -30,11 +30,8 @@ import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.Message;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
-import parsso.idman.Models.ListUsers;
+import parsso.idman.Models.*;
 import parsso.idman.Models.ServicesSubModel.ExtraInfo;
-import parsso.idman.Models.SimpleUser;
-import parsso.idman.Models.Tokens;
-import parsso.idman.Models.User;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
@@ -113,7 +110,7 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public JSONObject create(User p) {
 
-        User user = retrieveUser(p.getUserId());
+        User user = retrieveUsers(p.getUserId());
         DirContextOperations context;
 
         try {
@@ -152,7 +149,7 @@ public class UserRepoImpl implements UserRepo {
     public JSONObject createUserImport(User p) {
 
         if (p.getUserId() != null && !p.getUserId().equals("")) {
-            User user = retrieveUser(p.getUserId());
+            User user = retrieveUsers(p.getUserId());
             if (p.getUserPassword() == null)
                 p.setUserPassword(defaultPassword);
 
@@ -186,7 +183,7 @@ public class UserRepoImpl implements UserRepo {
 
         setRole(uid, p);
 
-        User user = retrieveUser(uid);
+        User user = retrieveUsers(uid);
 
         DirContextOperations context;
 
@@ -225,7 +222,7 @@ public class UserRepoImpl implements UserRepo {
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
             Iterator<String> iterator = jsonArray.iterator();
             while (iterator.hasNext()) {
-                User user = retrieveUser(iterator.next());
+                User user = retrieveUsers(iterator.next());
                 if (user != null)
                     people.add(user);
             }
@@ -309,7 +306,7 @@ public class UserRepoImpl implements UserRepo {
     public HttpStatus changePassword(String uId, String newPassword, String token) {
 
         //TODO:check current pass
-        User user = retrieveUser(uId);
+        User user = retrieveUsers(uId);
 
 
         if (true) {
@@ -369,6 +366,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public String showProfilePic2(HttpServletResponse response, User user) {
+        File file = new File(uploadedFilesPath + user.getPhoto());
         if(user.getPhoto()==null)
             return "NotExist";
         else
@@ -377,12 +375,13 @@ public class UserRepoImpl implements UserRepo {
                 String contentType = "image/png";
                 response.setContentType(contentType);
                 OutputStream out = response.getOutputStream();
-                ByteArrayInputStream in = new ByteArrayInputStream(user.getPhoto());
+                FileInputStream in = new FileInputStream(file);
                 // copy from in to out
                 IOUtils.copy(in, out);
                 out.close();
                 in.close();
                 return "OK";
+
             } catch (Exception e) {
                 return "Problem";
 
@@ -423,7 +422,7 @@ public class UserRepoImpl implements UserRepo {
 
         storageService.saveProfilePhoto(file, s);
 
-        User user = retrieveUser(name);
+        User user = retrieveUsers(name);
 
         //remove old pic
         File oldPic = new File(uploadedFilesPath + user.getPhoto());
@@ -574,7 +573,40 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public User retrieveUser(String userId) {
+    public HttpStatus updateUsersWithSpecificOU(String old_ou, String new_ou) {
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+        final AndFilter andFilter = new AndFilter();
+        andFilter.and(new EqualsFilter("objectclass", "person"));
+        andFilter.and(new EqualsFilter("ou", old_ou));
+
+        List<User> people = ldapTemplate.search(BASE_DN, andFilter.toString(), searchControls,
+                userAttributeMapper);
+        List<User> relatedPeople = new LinkedList<>();
+
+        try {
+
+            for (User user : people) {
+
+                    DirContextOperations context = buildAttributes.buildAttributes(user.getUserId(), user, buildDn.buildDn(user.getUserId()));
+
+                    context.removeAttributeValue("ou", old_ou);
+                    context.addAttributeValue("ou", new_ou);
+
+                ldapTemplate.modifyAttributes(context);
+            }
+            return HttpStatus.OK;
+            } catch (Exception e){
+                return  HttpStatus.FORBIDDEN;
+            }
+
+
+    }
+
+    @Override
+    public User retrieveUsers(String userId) {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -591,6 +623,23 @@ public class UserRepoImpl implements UserRepo {
         setRole(userId, user);
         if (user.getUserId() == null) return null;
         else return user;
+    }
+
+    @Override
+    public List<User> retrieveGroupsUsers(String groupId) {
+
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        User user = new User();
+        Tokens tokens = null;
+        ExtraInfo extraInfo = null;
+        final AndFilter andFilter = new AndFilter();
+        andFilter.and(new EqualsFilter("ou", groupId));
+
+        return ldapTemplate.search(query().where("ou").is(groupId), userAttributeMapper);
+
+
     }
 
     @Override
@@ -616,7 +665,7 @@ public class UserRepoImpl implements UserRepo {
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
 
-        User user = retrieveUser(uid);
+        User user = retrieveUsers(uid);
         Boolean status = user.isEnabled();
 
         if (!status) {
@@ -645,7 +694,7 @@ public class UserRepoImpl implements UserRepo {
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
 
-        User user = retrieveUser(uid);
+        User user = retrieveUsers(uid);
 
         if (user.getEndTime() != null) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
@@ -671,7 +720,7 @@ public class UserRepoImpl implements UserRepo {
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
 
-        User user = retrieveUser(uid);
+        User user = retrieveUsers(uid);
 
         if (user.isEnabled()) {
             modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime", "40400404040404.950Z"));
@@ -699,7 +748,7 @@ public class UserRepoImpl implements UserRepo {
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[2];
 
-        User user = retrieveUser(uid);
+        User user = retrieveUsers(uid);
         Boolean locked = user.isLocked();
 
         if (locked) {

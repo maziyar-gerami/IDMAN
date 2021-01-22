@@ -62,7 +62,7 @@ public class Email {
     public HttpStatus sendEmail(String email) {
         if (checkMail(email) != null) {
             List<JSONObject> s = checkMail(email);
-            User user = userRepo.retrieveUser(checkMail(email).get(0).getAsString("userId"));
+            User user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
 
@@ -95,7 +95,7 @@ public class Email {
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
             for (Object temp : jsonArray) {
 
-                User user = userRepo.retrieveUser(temp.toString());
+                User user = userRepo.retrieveUsers(temp.toString());
                 if (checkMail(user.getMail()) != null)
                     sendEmail(user.getMail());
                 {
@@ -126,7 +126,7 @@ public class Email {
         }
 
         if (checkMail(email) != null) {
-            User user = userRepo.retrieveUser(checkMail(email).get(0).getAsString("userId"));
+            User user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
 
@@ -156,11 +156,11 @@ public class Email {
             return -1;
         }
 
-        if (checkMail(email) != null & userRepo.retrieveUser(uid).getUserId() != null) {
+        if (checkMail(email) != null & userRepo.retrieveUsers(uid).getUserId() != null) {
             List<JSONObject> ids = checkMail(email);
             List<User> people = new LinkedList<>();
-            User user = userRepo.retrieveUser(uid);
-            for (JSONObject id : ids) people.add(userRepo.retrieveUser(id.getAsString("userId")));
+            User user = userRepo.retrieveUsers(uid);
+            for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
 
             for (User p : people) {
 

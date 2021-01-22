@@ -54,7 +54,7 @@ public class Token {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        User user = userRepo.retrieveUser(userId);
+        User user = userRepo.retrieveUsers(userId);
 
         String mainDbToken = user.getTokens().getResetPassToken();
         String mainPartToken;

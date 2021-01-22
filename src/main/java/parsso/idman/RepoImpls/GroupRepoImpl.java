@@ -2,12 +2,15 @@ package parsso.idman.RepoImpls;
 
 
 import net.minidev.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
+import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
@@ -16,6 +19,8 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Models.Group;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.GroupRepo;
+import parsso.idman.Repos.ServiceRepo;
+import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -23,6 +28,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.SearchControls;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,6 +44,12 @@ public class GroupRepoImpl implements GroupRepo {
 
     @Autowired
     private LdapTemplate ldapTemplate;
+
+    @Autowired
+    private UserRepo userRepo;
+
+    @Autowired
+    private ServiceRepo serviceRepo;
 
     @Override
     public HttpStatus remove(JSONObject jsonObject) {
@@ -111,7 +123,7 @@ public class GroupRepoImpl implements GroupRepo {
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
         attrs.put("name", group.getName());
-        attrs.put("ou", uid);
+        attrs.put("ou", group.getId());
         if (group.getDescription() != "")
             attrs.put("description", group.getDescription());
         else
@@ -177,6 +189,7 @@ public class GroupRepoImpl implements GroupRepo {
         }
     }
 
+
     @Override
     public HttpStatus update(String id, Group ou) {
         Name dn = buildDn(id);
@@ -184,21 +197,75 @@ public class GroupRepoImpl implements GroupRepo {
         List<Group> groups = retrieve();
 
         for (Group group:groups)
-            if (!group.getId().equals(id) && group.getId().equals(ou.getId()))
+            if (!(id.equals(ou.getId()))&&group.getId().equals(ou.getId()))
                 return  HttpStatus.FOUND;
 
-        Group group = retrieveOu(id);
+        DirContextOperations context = ldapTemplate.lookupContext(dn);
 
-        try {
-            ldapTemplate.rebind(dn, null, buildAttributes(group.getId(), ou));
-            logger.info("Group " + ou.getId() + " updated successfully");
-            return HttpStatus.OK;
 
-        } catch (Exception e) {
-            logger.warn("updating group " + ou.getName() + "  was unsuccessful");
-            return HttpStatus.BAD_REQUEST;
+        if (!(id.equals(ou.getId()))){
+
+            try {
+                ldapTemplate.unbind(dn);
+                create(ou);
+                logger.info("Group " + ou.getId() + " updated successfully");
+
+                for (User user:userRepo.retrieveGroupsUsers(id) ) {
+                    for (String group:user.getMemberOf()) {
+                        if (group.equals(id)){
+                            context.removeAttributeValue("ou", id);
+                            context.addAttributeValue("ou", ou.getId());
+                        }
+
+                    }
+                }
+
+                for (parsso.idman.Models.Service service: serviceRepo.listServicesWithGroups(id)) {
+
+                    //remove old id and add new id
+                    ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).remove(id);
+                    ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).add(ou.getId());
+
+                    // delete old service
+                    org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+                    jsonObject.put("names",((((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1))));
+                    serviceRepo.deleteServices(jsonObject);
+
+                    // create new service
+
+                    serviceRepo.updateOuIdChange(service,service.getId(),service.getName(),id,ou.getId());
+
+                }
+
+                logger.info("Group " + ou.getId() + " updated successfully");
+                return HttpStatus.OK;
+
+            } catch (ParseException parseException) {
+                parseException.printStackTrace();
+                logger.warn("updating group " + ou.getName() + "  was unsuccessful");
+                return HttpStatus.BAD_REQUEST;
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+                logger.warn("updating group " + ou.getName() + "  was unsuccessful");
+                return HttpStatus.BAD_REQUEST;
+            }
+
+        }else {
+
+            try {
+                ldapTemplate.rebind(dn, null, buildAttributes(ou.getId(), ou));
+                logger.info("Group " + ou.getId() + " updated successfully");
+                return HttpStatus.OK;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.warn("updating group " + ou.getName() + "  was unsuccessful");
+                return HttpStatus.BAD_REQUEST;
+            }
         }
     }
+
+
 
 
     private class OUAttributeMapper implements AttributesMapper<Group> {

@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             url: url + '/api/groups/' + id, //
                             headers: {'Content-Type': 'application/json'},
                             data: JSON.stringify({
-                                id: id,
+                                id: document.getElementById('group.idUpdate').value,
                                 name: document.getElementById('group.nameUpdate').value,
                                 description: document.getElementById('group.descriptionUpdate').value,
                             }).replace(/\\\\/g, "\\")
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
             addGroup: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                if(document.getElementById('group.nameCreate').value == ""){
+                if(document.getElementById('group.nameCreate').value == "" || document.getElementById('group.idCreate').value == ""){
                     alert("لطفا قسمت های الزامی را پر کنید.");
                 }else{
                     axios({
@@ -264,6 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         url: url + "/api/groups", //
                         headers: {'Content-Type': 'application/json'},
                         data: JSON.stringify({
+                            id: document.getElementById('group.idCreate').value,
                             name: document.getElementById('group.nameCreate').value,
                             description: document.getElementById('group.descriptionCreate').value,
                         }).replace(/\\\\/g, "\\")

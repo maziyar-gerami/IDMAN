@@ -206,6 +206,9 @@ public class SamlServiceHelper {
         SamlService service = buildSamlService(jo);
         service.setId(new Date().getTime());
         String json = null;
+
+
+
         if (service != null) {
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -225,6 +228,7 @@ public class SamlServiceHelper {
                 String s1 = fileName.replaceAll("\\s+", "");
                 s1 = s1.replaceAll("[-,]", "");
                 String filePath = s1 + "-" + service.getId();
+
 
                 InetAddress[] machines = null;
                 if (!(service.getServiceId().contains("localhost")))

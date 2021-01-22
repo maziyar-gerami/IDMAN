@@ -70,7 +70,7 @@ public class UserController {
     @GetMapping("/api/user")
     public ResponseEntity<User> retrieveUser(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.retrieveUser(principal.getName()), HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.retrieveUsers(principal.getName()), HttpStatus.OK);
     }
 
     /**
@@ -93,7 +93,7 @@ public class UserController {
     public int isAdmin(HttpServletRequest request) {
         try {
             Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUser(principal.getName());
+            User user = userRepo.retrieveUsers(principal.getName());
             List<String> memberOf = user.getMemberOf();
 
 
@@ -120,14 +120,14 @@ public class UserController {
     @GetMapping("/api/user/photo")
     public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException {
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser("hamed");
+        User user = userRepo.retrieveUsers("maziyar");
         return new ResponseEntity<>(userRepo.showProfilePic(response, user), HttpStatus.OK);
     }
 
     @GetMapping("/api/user/photo2")
     public ResponseEntity<String> getImage2(HttpServletResponse response, HttpServletRequest request) throws IOException {
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser("maziyar");
+        User user = userRepo.retrieveUsers("maziyar");
         return new ResponseEntity<>(userRepo.showProfilePic2(response, user), HttpStatus.OK);
     }
 
@@ -163,7 +163,7 @@ public class UserController {
     @GetMapping("/api/user/password/request")
     public ResponseEntity<Integer> requestSMS(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser(principal.getName());
+        User user = userRepo.retrieveUsers(principal.getName());
         int status = userRepo.requestToken(user);
 
         if (status > 0)
@@ -181,8 +181,8 @@ public class UserController {
      */
     @GetMapping("/api/users/u/{uid}")
     public ResponseEntity<User> retrieveUser(@PathVariable("uid") String userId) {
-        if (userRepo.retrieveUser(userId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveUser(userId), HttpStatus.OK);
+        if (userRepo.retrieveUsers(userId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(userRepo.retrieveUsers(userId), HttpStatus.OK);
     }
 
     /**
@@ -195,6 +195,7 @@ public class UserController {
         if (userRepo.retrieveUsersMain() == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(userRepo.retrieveUsersMain(), HttpStatus.OK);
     }
+
 
     /**
      * Retrieve all users user only with main attributes

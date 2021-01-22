@@ -40,7 +40,7 @@ public class DashboardController {
     @GetMapping("/dashboard")
     public String Dashboard(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser(principal.getName());
+        User user = userRepo.retrieveUsers(principal.getName());
 
         return "dashboard";
     }
@@ -54,7 +54,7 @@ public class DashboardController {
     public String Groups(HttpServletRequest request) {
 
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser(principal.getName());
+        User user = userRepo.retrieveUsers(principal.getName());
         if (user.getUserId().equals("su"))
             return "groups";
 
@@ -77,7 +77,7 @@ public class DashboardController {
     public String Services(HttpServletRequest request) {
 
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser(principal.getName());
+        User user = userRepo.retrieveUsers(principal.getName());
         if (user.getUserId().equals("su"))
             return "services";
 
@@ -95,7 +95,7 @@ public class DashboardController {
     public String Users(HttpServletRequest request) {
 
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser(principal.getName());
+        User user = userRepo.retrieveUsers(principal.getName());
         if (user.getUserId().equals("su"))
             return "users";
 

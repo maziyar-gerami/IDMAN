@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,21 +14,25 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Service.CasServiceHelper;
 import parsso.idman.Helpers.Service.Position;
 import parsso.idman.Helpers.Service.SamlServiceHelper;
 import parsso.idman.Helpers.Service.Trim;
+import parsso.idman.Helpers.User.BuildDn;
 import parsso.idman.Models.Service;
 import parsso.idman.Models.ServiceType.MicroService;
 import parsso.idman.Models.ServicesSubModel.ExtraInfo;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.ServiceRepo;
+import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Other.GenerateUUID;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
@@ -38,12 +43,16 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
+    UserRepo userRepo;
+    @Autowired
     CasServiceHelper casServiceHelper;
     @Autowired
     SamlServiceHelper samlServiceHelper;
     Logger logger = LoggerFactory.getLogger(ServiceRepoImpl.class);
     @Autowired
     FilesStorageService storageService;
+    @Autowired
+    LdapTemplate ldapTemplate;
     @Autowired
     Position position;
     String collection = "IDMAN_ServicesExtraInfo";
@@ -52,6 +61,8 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Value("${base.url}")
     private String baseUrl;
 
+    @Autowired
+    private BuildDn buildDn;
 
     @Override
     public List<MicroService> listUserServices(User user) throws IOException {
@@ -122,6 +133,24 @@ public class ServiceRepoImpl implements ServiceRepo {
                 }
         }
         return services;
+    }
+
+    @Override
+    public List<Service> listServicesWithGroups(String ou) throws IOException {
+        List<Service> allServices = listServicesFull();
+
+        List<Service> relatedList = new LinkedList<>();
+
+        for (Service service: allServices) {
+            JSONArray o = (JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou");
+            List <String> attributes = (List<String>) o.get(1);
+
+            if(attributes.contains(ou)) {
+                relatedList.add(service);
+                continue;
+            }
+        }
+        return relatedList;
     }
 
     @Override
@@ -219,6 +248,41 @@ public class ServiceRepoImpl implements ServiceRepo {
         }
 
         return notDeleted;
+    }
+
+    @Override
+    public HttpStatus updateOuIdChange(Service service, long sid, String name, String oldOu, String newOu) throws IOException {
+
+        //Update ou
+        userRepo.updateUsersWithSpecificOU(oldOu,newOu);
+
+        //Update text
+        String fileName = String.valueOf(sid);
+        String s1 = fileName.replaceAll("\\s+", "");
+        s1 = s1.replaceAll("[-,]", "");
+        String filePath = name + "-" + sid+".json";
+
+        ObjectMapper mapper = new ObjectMapper();
+        //Converting the Object to JSONString
+        String jsonString = mapper.writeValueAsString(service);
+
+        FileWriter file = new FileWriter(path + filePath ,false);
+        file.write(jsonString);
+        file.close();
+
+
+        return HttpStatus.OK;
+
+    }
+
+    String getSystem(Service service){
+        if (service.getAtClass().contains("saml"))
+            return "saml";
+        else if (service.getAtClass().contains("cas"))
+            return "cas";
+
+        else
+            return null;
     }
 
 

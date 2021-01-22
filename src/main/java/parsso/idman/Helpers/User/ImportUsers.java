@@ -250,7 +250,7 @@ public class ImportUsers {
         user.setMemberOf(null != entry.getAttributeValue("ou") ? ls : null);
         user.setDescription(entry.getAttributeValue("description"));
         user.setStatus(entry.getAttributeValue("employeeNumber"));
-        user.setPhoto(entry.getAttributeValue("userPassword").getBytes());
+        user.setPhoto(entry.getAttributeValue("st"));
 
         return lsUserConflicts;
     }

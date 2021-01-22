@@ -19,6 +19,8 @@ public interface ServiceRepo {
 
     List<Service> listServicesFull() throws IOException, ParseException;
 
+    List<Service> listServicesWithGroups(String ou) throws IOException, ParseException;
+
     List<MicroService> listServicesMain() throws IOException, ParseException;
 
     Service retrieveService(long id) throws IOException, ParseException;
@@ -27,7 +29,10 @@ public interface ServiceRepo {
 
     String uploadMetadata(MultipartFile file);
 
+    HttpStatus updateOuIdChange(Service service, long sid, String name, String oldOu, String newOu) throws IOException;
+
     HttpStatus createService(JSONObject jsonObject, String system) throws IOException;
+
 
     HttpStatus updateService(long id, JSONObject jsonObject, String system) throws IOException, ParseException;
 

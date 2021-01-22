@@ -54,7 +54,7 @@ public class Message {
             return -1;
         }
         if (checkMobile(mobile).size() > 0) {
-            User user = userRepo.retrieveUser(checkMobile(mobile).get(0).getAsString("userId"));
+            User user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
             if (tokenClass.insertMobileToken(user)) {
                 try {
                     String receptor = mobile;
@@ -81,7 +81,7 @@ public class Message {
     public int sendMessage(String mobile) {
 
         if (checkMobile(mobile).size() > 0) {
-            User user = userRepo.retrieveUser(checkMobile(mobile).get(0).getAsString("userId"));
+            User user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
             if (tokenClass.insertMobileToken(user)) {
                 try {
                     String receptor = mobile;
@@ -130,11 +130,11 @@ public class Message {
             return -1;
         }
 
-        if (checkMobile(mobile) != null & userRepo.retrieveUser(uId).getUserId() != null) {
+        if (checkMobile(mobile) != null & userRepo.retrieveUsers(uId).getUserId() != null) {
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
-            User user = userRepo.retrieveUser(uId);
-            for (JSONObject id : ids) people.add(userRepo.retrieveUser(id.getAsString("userId")));
+            User user = userRepo.retrieveUsers(uId);
+            for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
 
             for (User p : people) {
                 if (p.getUserId().equals(user.getUserId())) {
