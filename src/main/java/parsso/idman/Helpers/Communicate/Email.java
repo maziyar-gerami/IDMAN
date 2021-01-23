@@ -66,7 +66,7 @@ public class Email {
 
             tokenClass.insertEmailToken(user);
 
-            String fullUrl = userRepo.createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
+            String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
 
             Thread thread = new Thread() {
@@ -130,7 +130,7 @@ public class Email {
 
             tokenClass.insertEmailToken(user);
 
-            String fullUrl = userRepo.createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
+            String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
             Thread thread = new Thread() {
                 public void run() {
@@ -168,7 +168,7 @@ public class Email {
 
                     tokenClass.insertEmailToken(user);
 
-                    String fullUrl = userRepoImp.createUrl(user.getUserId(), user.getTokens().getResetPassToken().substring(0, 36));
+                    String fullUrl = userRepoImp.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
                     Thread thread = new Thread() {
                         public void run() {
                             emailSend.sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);

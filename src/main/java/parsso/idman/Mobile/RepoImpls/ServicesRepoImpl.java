@@ -70,7 +70,7 @@ public class ServicesRepoImpl implements ServicesRepo {
     public String ActivationSendMessage(User user) {
         insertMobileToken1(user);
         try {
-            String message = user.getTokens().getMobileToken().substring(0, SMS_VALIDATION_DIGITS);
+            String message = user.getUsersExtraInfo().getMobileToken().substring(0, SMS_VALIDATION_DIGITS);
             KavenegarApi api = new KavenegarApi(SMS_API_KEY);
             api.verifyLookup(user.getMobile(), message, "", "", "mfa");
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
@@ -90,11 +90,11 @@ public class ServicesRepoImpl implements ServicesRepo {
         int token = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)) + rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS - 1) - 1)));
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         long cTimeStamp = currentTimestamp.getTime();
-        user.getTokens().setMobileToken(String.valueOf(token) + cTimeStamp);
+        user.getUsersExtraInfo().setMobileToken(String.valueOf(token) + cTimeStamp);
 
         Query query = new Query(Criteria.where("userId").is(user.getUserId()));
         mongoTemplate.remove(query, Token.collection);
-        mongoTemplate.save(user.getTokens(), Token.collection);
+        mongoTemplate.save(user.getUsersExtraInfo(), Token.collection);
 
         return "Mobile Token for " + user.getUserId() + " is created";
 
@@ -109,7 +109,7 @@ public class ServicesRepoImpl implements ServicesRepo {
 
         User user = userRepo.retrieveUsers(userId);
 
-        String mainDbToken = user.getTokens().getMobileToken();
+        String mainDbToken = user.getUsersExtraInfo().getMobileToken();
         String mainPartToken;
 
         if (token.length() > 30)
@@ -144,49 +144,6 @@ public class ServicesRepoImpl implements ServicesRepo {
         } else
             return HttpStatus.FORBIDDEN;
     }
-
-
-    public DirContextOperations buildAttributes(String uid, User p, Name dn) {
-        DirContextOperations context = ldapTemplate.lookupContext(dn);
-
-        if (p.getFirstName() != null) context.setAttributeValue("givenName", p.getFirstName());
-        if (p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
-        if (p.getDisplayName() != null) context.setAttributeValue("displayName", p.getDisplayName());
-        if (p.getUserPassword() != null) context.setAttributeValue("userPassword", p.getUserPassword());
-        if (p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
-        if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
-        if ((p.getFirstName()) != null || (p.getLastName() != null)) {
-            if (p.getFirstName() == null)
-                context.setAttributeValue("cn", userRepo.retrieveUsers(uid).getFirstName() + ' ' + p.getLastName());
-
-            else if (p.getLastName() == null)
-                context.setAttributeValue("cn", p.getFirstName() + ' ' + userRepo.retrieveUsers(uid).getLastName());
-
-            else context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
-        }
-        if (p.getMail() != null) context.setAttributeValue("st", p.getPhoto());
-
-        if (p.getTokens().getResetPassToken() != null)
-            context.setAttributeValue("resetPassToken", p.getTokens().getResetPassToken());
-
-        if (p.getMemberOf() != null) {
-
-            for (int i = 0; i < p.getMemberOf().size(); i++) {
-                if (i == 0) context.setAttributeValue("ou", p.getMemberOf().get(i));
-                else context.addAttributeValue("ou", p.getMemberOf().get(i));
-            }
-        }
-
-        if (p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
-        if (p.getPhoto() != null) context.setAttributeValue("st", p.getPhoto());
-        if (p.getStatus() != null) context.setAttributeValue("userStatus", p.getStatus());
-        if (p.getTokens().getMobileToken() != null)
-            context.setAttributeValue("mobileToken", p.getTokens().getMobileToken());
-
-
-        return context;
-    }
-
 
     public String randomString(int len) {
         StringBuilder sb = new StringBuilder(len);

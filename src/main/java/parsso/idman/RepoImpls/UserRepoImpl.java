@@ -1,6 +1,8 @@
 package parsso.idman.RepoImpls;
 
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minidev.json.JSONObject;
 import org.apache.commons.compress.utils.IOUtils;
 import org.json.simple.parser.ParseException;
@@ -106,6 +108,7 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     private ImportUsers importUsers;
 
+    String collection = "IDMAN_UsersExtraInfo";
 
     @Override
     public JSONObject create(User p) {
@@ -118,12 +121,13 @@ public class UserRepoImpl implements UserRepo {
                 Name dn = buildDn.buildDn(p.getUserId());
                 ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
                 //logger.info("User "+user.getUserId() + " created");
-                Tokens tokens = new Tokens();
-                tokens.setUserId(p.getUserId());
-                tokens.setQrToken(UUID.randomUUID().toString());
+                UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
+                usersExtraInfo.setUserId(p.getUserId());
+                usersExtraInfo.setQrToken(UUID.randomUUID().toString());
+                usersExtraInfo.setPhotoName(p.getPhoto());
                 Date date = new Date();
-                tokens.setCreationTimeStamp(date.getTime());
-                mongoTemplate.save(tokens, Token.collection);
+                usersExtraInfo.setCreationTimeStamp(date.getTime());
+                mongoTemplate.save(usersExtraInfo, Token.collection);
 
 
                 if (p.getCStatus() != null) {
@@ -158,12 +162,12 @@ public class UserRepoImpl implements UserRepo {
                     Name dn = buildDn.buildDn(p.getUserId());
                     ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
 
-                    Tokens tokens = new Tokens();
-                    tokens.setUserId(p.getUserId());
-                    tokens.setQrToken(UUID.randomUUID().toString());
+                    UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
+                    usersExtraInfo.setUserId(p.getUserId());
+                    usersExtraInfo.setQrToken(UUID.randomUUID().toString());
                     Date date = new Date();
-                    tokens.setCreationTimeStamp(date.getTime());
-                    mongoTemplate.save(tokens, Token.collection);
+                    usersExtraInfo.setCreationTimeStamp(date.getTime());
+                    mongoTemplate.save(usersExtraInfo, Token.collection);
 
                     return new JSONObject();
                 } else {
@@ -195,6 +199,12 @@ public class UserRepoImpl implements UserRepo {
             removeCurrentEndTime(uid);
 
         context = buildAttributes.buildAttributes(uid, p, dn);
+        Query query = new Query(Criteria.where("userId").is(p.getUserId()));
+        if (p.getPhoto()!=null) {
+            UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query,UsersExtraInfo.class,collection);
+            usersExtraInfo.setPhotoName(p.getPhoto());
+            mongoTemplate.save(usersExtraInfo, collection);
+        }
 
         //context.setAttributeValue("createTimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
 
@@ -317,6 +327,8 @@ public class UserRepoImpl implements UserRepo {
                     Name dn = buildDn.buildDn(uId);
                     DirContextOperations context = buildAttributes.buildAttributes(uId, user, dn);
 
+
+
                     try {
                         ldapTemplate.modifyAttributes(context);
                         logger.info("Password for" + uId + " changed successfully");
@@ -428,7 +440,7 @@ public class UserRepoImpl implements UserRepo {
         File oldPic = new File(uploadedFilesPath + user.getPhoto());
 
         //TODO:Should consider
-        //user.setPhoto(s);
+        user.setPhoto(s);
         if (update(user.getUserId(), user) == HttpStatus.OK) {
             oldPic.delete();
             logger.info("Setting profile pic for" + name + " was successful");
@@ -453,6 +465,30 @@ public class UserRepoImpl implements UserRepo {
         }
         Collections.sort(relatedUsers);
         return relatedUsers;
+    }
+
+    public BasicDashboardData retrieveBasicDashboardData() {
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp").where("objectClass").is("person"),
+                new SimpleUserAttributeMapper());
+        List relatedUsers = new LinkedList();
+        for (SimpleUser user : people) {
+            if (user.getDisplayName() != null && !user.getUserId().equals("su") && !user.getDisplayName().equals("Directory Superuser")) {
+                relatedUsers.add(user);
+            }
+        }
+        Collections.sort(relatedUsers);
+        return null;
+    }
+
+    @Setter
+    @Getter
+    private class BasicDashboardData{
+        int nUsers;
+        int nLocked;
+        int nDisabled;
     }
 
     @Override
@@ -611,13 +647,13 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = new User();
-        Tokens tokens = null;
+        UsersExtraInfo usersExtraInfo = null;
         ExtraInfo extraInfo = null;
         if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
             user = ldapTemplate.lookup(buildDn.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
-            tokens = mongoTemplate.findOne(query, Tokens.class, Token.collection);
-            user.setTokens(tokens);
+            usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
+            user.setUsersExtraInfo(usersExtraInfo);
 
         }
         setRole(userId, user);
@@ -632,7 +668,7 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = new User();
-        Tokens tokens = null;
+        UsersExtraInfo usersExtraInfo = null;
         ExtraInfo extraInfo = null;
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("ou", groupId));

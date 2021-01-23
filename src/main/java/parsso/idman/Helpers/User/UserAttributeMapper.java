@@ -1,10 +1,15 @@
 package parsso.idman.Helpers.User;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
+import parsso.idman.Models.UsersExtraInfo;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
@@ -13,6 +18,9 @@ import java.util.List;
 
 @Service
 public class UserAttributeMapper implements AttributesMapper<User> {
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Override
     public User mapFromAttributes(Attributes attributes) throws NamingException {
@@ -30,13 +38,19 @@ public class UserAttributeMapper implements AttributesMapper<User> {
         int nGroups = (null == attributes.get("ou") && !attributes.get("displayName").equals("")) ? 0 : attributes.get("ou").size();
         List<String> ls = new LinkedList<>();
         for (int i = 0; i < nGroups; i++) ls.add(attributes.get("ou").get(i).toString());
-        if (user.getTokens() != null)
-            user.getTokens().setResetPassToken(null != attributes.get("resetPassToken") ? attributes.get("resetPassToken").get().toString() : null);
+        if (user.getUsersExtraInfo() != null)
+            user.getUsersExtraInfo().setResetPassToken(null != attributes.get("resetPassToken") ? attributes.get("resetPassToken").get().toString() : null);
         user.setMemberOf(null != attributes.get("ou") ? ls : null);
-        user.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
-        user.setPhoto(null != attributes.get("st")  ? attributes.get("st").get().toString() : null);
-        if (user.getTokens() != null)
-            user.getTokens().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
+
+        Query query = new Query(Criteria.where("userId").is(user.getUserId()));
+
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
+
+        if (usersExtraInfo.getPhotoName()!=null)
+        user.setPhoto(usersExtraInfo.getPhotoName());
+
+        if (user.getUsersExtraInfo() != null)
+            user.getUsersExtraInfo().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
         user.setEndTime(null != attributes.get("pwdEndTime") ? Time.setEndTime(attributes.get("pwdEndTime").get().toString()) : null);
 
         if (null != attributes.get("pwdAccountLockedTime")) {

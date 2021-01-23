@@ -42,10 +42,8 @@ public class User implements UserDetails, Comparable {
     private List<String> memberOf;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String userPassword;
-
     @JsonIgnore
     private String photo;
-
     @JsonIgnore
     private Role role;
 
@@ -58,7 +56,7 @@ public class User implements UserDetails, Comparable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String cStatus;
     @JsonIgnore
-    private Tokens tokens;
+    private UsersExtraInfo usersExtraInfo;
 
     public User() {
         locked = false;

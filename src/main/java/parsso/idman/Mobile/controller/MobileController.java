@@ -42,7 +42,7 @@ public class MobileController {
     byte[] GetQr(HttpServletRequest request) throws IOException, WriterException {
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUsers(principal.getName());
-        String temp = url + "/api/mobile/sendsms" + "," + user.getUserId() + "," + user.getTokens().getQrToken();
+        String temp = url + "/api/mobile/sendsms" + "," + user.getUserId() + "," + user.getUsersExtraInfo().getQrToken();
 
         return servicesRepo.getQRCodeImage(temp, 500, 500);
     }
@@ -52,7 +52,7 @@ public class MobileController {
     ResponseEntity<String> mobileNumber(@RequestParam("uid") String uid, @RequestParam("qrToken") String QrToken) {
         User user = userRepo.retrieveUsers(uid);
 
-        if (QrToken.equals(user.getTokens().getQrToken())) {
+        if (QrToken.equals(user.getUsersExtraInfo().getQrToken())) {
 
             return new ResponseEntity<>(user.getMobile(), HttpStatus.OK);
         } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -63,7 +63,7 @@ public class MobileController {
     ResponseEntity<HttpStatus> sendSMS(@RequestParam("uid") String uid, @RequestParam("qrToken") String QrToken) {
         User user = userRepo.retrieveUsers(uid);
 
-        if (QrToken.equals(user.getTokens().getQrToken())) {
+        if (QrToken.equals(user.getUsersExtraInfo().getQrToken())) {
             servicesRepo.ActivationSendMessage(user);
             return new ResponseEntity<>(HttpStatus.OK);
         } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -75,9 +75,9 @@ public class MobileController {
     ResponseEntity<String> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) {
         User user = userRepo.retrieveUsers(uid);
 
-        if (QrToken.equals(user.getTokens().getQrToken()))
+        if (QrToken.equals(user.getUsersExtraInfo().getQrToken()))
             if (servicesRepo.verifySMS(uid, smsCode).equals(HttpStatus.OK)) {
-                return new ResponseEntity<>(user.getTokens().getMobileToken(), HttpStatus.OK);
+                return new ResponseEntity<>(user.getUsersExtraInfo().getMobileToken(), HttpStatus.OK);
             }
         return new ResponseEntity<>("BAD", HttpStatus.BAD_REQUEST);
     }
@@ -89,7 +89,7 @@ public class MobileController {
     public @ResponseBody
     ResponseEntity<List<Service>> M_listServices(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
         User user = userRepo.retrieveUsers(uid);
-        if (MobileToken.equals(user.getTokens().getMobileToken()))
+        if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
             return new ResponseEntity<>(serviceRepo.listServicesFull(), HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
@@ -114,7 +114,7 @@ public class MobileController {
                                                    @RequestParam("uid") String uid) throws IOException, ParseException, org.json.simple.parser.ParseException {
 
         User user = userRepo.retrieveUsers(uid);
-        if (MobileToken.equals(user.getTokens().getMobileToken()))
+        if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
             return new ResponseEntity<>(eventRepo.getListSizeEvents(Integer.valueOf(page), Integer.valueOf(n)), HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
@@ -124,7 +124,7 @@ public class MobileController {
     public @ResponseBody
     ResponseEntity<User> M_retrieveUser(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) {
         User user = userRepo.retrieveUsers(uid);
-        if (MobileToken.equals(user.getTokens().getMobileToken()))
+        if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
             return new ResponseEntity<>(user, HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
@@ -134,7 +134,7 @@ public class MobileController {
     public @ResponseBody
     ResponseEntity<byte[]> M_retrieveUserPhoto(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) {
         User user = userRepo.retrieveUsers(uid);
-        if (MobileToken.equals(user.getTokens().getMobileToken()))
+        if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
             return new ResponseEntity<>(userRepo.showProfilePic(user), HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 

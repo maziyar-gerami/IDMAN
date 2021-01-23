@@ -49,7 +49,7 @@ public class LoginwithQR {
     public HttpStatus creatAuthenticationToken(@RequestParam("qrToken") String qrToken, @RequestParam("uid") String uid, @RequestParam("mobileToken") String mobileToken) throws Exception {
         try {
             User user = userRepo.retrieveUsers(uid);
-            if (user.getTokens().getMobileToken().equals(mobileToken) && qrToken.equals(random)) {
+            if (user.getUsersExtraInfo().getMobileToken().equals(mobileToken) && qrToken.equals(random)) {
                 authenticationManager.authenticate
                         (new UsernamePasswordAuthenticationToken(uid, mobileToken));
 

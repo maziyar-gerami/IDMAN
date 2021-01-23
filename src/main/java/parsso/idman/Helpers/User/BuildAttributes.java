@@ -4,6 +4,7 @@ package parsso.idman.Helpers.User;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,10 @@ public class BuildAttributes {
     @Autowired
     private LdapTemplate ldapTemplate;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    String collection = "IDMAN_UsersExtraInfo";
     public Attributes BuildAttributes(User p) {
 
         ZoneId zoneId = ZoneId.of("UTC+03:30");
@@ -51,8 +56,8 @@ public class BuildAttributes {
         attrs.put("employeeNumber", p.getEmployeeNumber() == null || p.getEmployeeNumber().equals("") ? "0" : p.getEmployeeNumber());
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
-        if (p.getTokens() != null && p.getTokens().getResetPassToken() != null)
-            attrs.put("resetPassToken", p.getTokens().getResetPassToken());
+        if (p.getUsersExtraInfo() != null && p.getUsersExtraInfo().getResetPassToken() != null)
+            attrs.put("resetPassToken", p.getUsersExtraInfo().getResetPassToken());
         if (p.getMemberOf() != null && p.getMemberOf().size() != 0) {
             Attribute attr = new BasicAttribute("ou");
             for (int i = 0; i < p.getMemberOf().size(); i++)
@@ -64,10 +69,6 @@ public class BuildAttributes {
         else
             attrs.put("description", " ");
 
-        if (p.getPhoto() != null)
-            attrs.put("st", p.getPhoto());
-        else
-            attrs.put("st", " ");
 
         if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
@@ -110,7 +111,6 @@ public class BuildAttributes {
 
             else context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
         }
-        if (p.getMail() != null) context.setAttributeValue("st", p.getPhoto());
 
         if (p.getCStatus() != null) {
 
@@ -141,10 +141,6 @@ public class BuildAttributes {
 
         if (p.getDescription() != "" && p.getDescription() != null)
             context.setAttributeValue("description", p.getDescription());
-        if (p.getPhoto() != null)
-            context.setAttributeValue("st", p.getPhoto());
-        else
-            context.setAttributeValue("st", old.getPhoto());
 
 
         if (p.getEndTime() != null) {

@@ -58,7 +58,7 @@ public class Message {
             if (tokenClass.insertMobileToken(user)) {
                 try {
                     String receptor = mobile;
-                    String message = user.getTokens().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+                    String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
                     KavenegarApi api = new KavenegarApi(SMS_API_KEY);
                     api.verifyLookup(receptor, message, "", "", "mfa");
                     mongoTemplate.remove(query, collection);
@@ -85,7 +85,7 @@ public class Message {
             if (tokenClass.insertMobileToken(user)) {
                 try {
                     String receptor = mobile;
-                    String message = user.getTokens().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+                    String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
                     KavenegarApi api = new KavenegarApi(SMS_API_KEY);
                     api.verifyLookup(receptor, message, "", "", "mfa");
                     return Integer.valueOf(SMS_VALID_TIME);
@@ -143,7 +143,7 @@ public class Message {
 
                         try {
                             String receptor = mobile;
-                            String message = user.getTokens().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+                            String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
                             KavenegarApi api = new KavenegarApi(SMS_API_KEY);
                             api.verifyLookup(receptor, message, "", "", "mfa");
                             mongoTemplate.remove(query, collection);
