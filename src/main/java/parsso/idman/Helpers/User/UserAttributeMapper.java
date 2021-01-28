@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.AttributesMapper;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
@@ -22,6 +23,8 @@ public class UserAttributeMapper implements AttributesMapper<User> {
     @Autowired
     MongoTemplate mongoTemplate;
 
+    @Autowired
+    LdapTemplate ldapTemplate;
     @Override
     public User mapFromAttributes(Attributes attributes) throws NamingException {
         User user = new User();
@@ -48,6 +51,10 @@ public class UserAttributeMapper implements AttributesMapper<User> {
 
         if (usersExtraInfo.getPhotoName()!=null)
         user.setPhoto(usersExtraInfo.getPhotoName());
+
+
+
+
 
         if (user.getUsersExtraInfo() != null)
             user.getUsersExtraInfo().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);

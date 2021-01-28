@@ -118,8 +118,32 @@ public class UserRepoImpl implements UserRepo {
 
         try {
             if (user == null) {
+                //create user in ldap
                 Name dn = buildDn.buildDn(p.getUserId());
                 ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
+
+                //update it's first pwChangedTime in a new thread
+                Thread thread = new Thread() {
+                    public void run() {
+                        User userTemp = retrieveUsers(p.getUserId());
+
+                        DirContextOperations context = ldapTemplate.lookupContext(dn);
+
+                        context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp()+"Z");
+
+                        try {
+                            ldapTemplate.modifyAttributes(context);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                };
+
+                thread.start();
+
+
                 //logger.info("User "+user.getUserId() + " created");
                 UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
                 usersExtraInfo.setUserId(p.getUserId());
@@ -169,6 +193,27 @@ public class UserRepoImpl implements UserRepo {
                     usersExtraInfo.setCreationTimeStamp(date.getTime());
                     mongoTemplate.save(usersExtraInfo, Token.collection);
 
+                    //update it's first pwChangedTime in a new thread
+                    Thread thread = new Thread() {
+                        public void run() {
+                            User userTemp = retrieveUsers(p.getUserId());
+
+                            DirContextOperations context = ldapTemplate.lookupContext(dn);
+
+                            context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp()+"Z");
+
+                            try {
+                                ldapTemplate.modifyAttributes(context);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    };
+
+                    thread.start();
+
                     return new JSONObject();
                 } else {
                     return importUsers.compareUsers(user, p);
@@ -177,7 +222,10 @@ public class UserRepoImpl implements UserRepo {
                 e.printStackTrace();
                 return null;
             }
+
+
         }
+
         return null;
     }
 
@@ -200,15 +248,30 @@ public class UserRepoImpl implements UserRepo {
 
         context = buildAttributes.buildAttributes(uid, p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
+
         if (p.getPhoto()!=null) {
             UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query,UsersExtraInfo.class,collection);
             usersExtraInfo.setPhotoName(p.getPhoto());
             mongoTemplate.save(usersExtraInfo, collection);
         }
 
-        //context.setAttributeValue("createTimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
+        //update it's pwChangedTime in a new thread if password changed
+        if(p.getUserPassword()!=null) {
+            Thread thread = new Thread(() -> {
+                User userTemp = retrieveUsers(p.getUserId());
 
+                DirContextOperations context1 = ldapTemplate.lookupContext(dn);
 
+                context1.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp() + "Z");
+
+                try {
+                    ldapTemplate.modifyAttributes(context1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            thread.start();
+        }
         try {
             ldapTemplate.modifyAttributes(context);
 
@@ -326,7 +389,8 @@ public class UserRepoImpl implements UserRepo {
 
                     Name dn = buildDn.buildDn(uId);
                     DirContextOperations context = buildAttributes.buildAttributes(uId, user, dn);
-
+                    Date date = new Date();
+                    context.setAttributeValue("pwdChangedTime", date.getTime());
 
 
                     try {
