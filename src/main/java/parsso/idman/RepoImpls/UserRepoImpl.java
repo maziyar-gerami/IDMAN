@@ -375,34 +375,6 @@ public class UserRepoImpl implements UserRepo {
         return "NotExist";
     }
 
-
-    @Override
-    public String showProfilePic2(HttpServletResponse response, User user) {
-        File file = new File(uploadedFilesPath + user.getPhoto());
-        if(user.getPhoto()==null)
-            return "NotExist";
-        else
-            try {
-
-                String contentType = "image/png";
-                response.setContentType(contentType);
-                OutputStream out = response.getOutputStream();
-                FileInputStream in = new FileInputStream(file);
-                // copy from in to out
-                IOUtils.copy(in, out);
-                out.close();
-                in.close();
-                return "OK";
-
-            } catch (Exception e) {
-                return "Problem";
-
-            }
-
-
-    }
-
-
     @Override
     public byte[] showProfilePic(User user) {
         File file = new File(uploadedFilesPath + user.getPhoto());
@@ -603,7 +575,6 @@ public class UserRepoImpl implements UserRepo {
         }
 
         Collections.sort(relatedPeople);
-
 
         return relatedPeople;
     }

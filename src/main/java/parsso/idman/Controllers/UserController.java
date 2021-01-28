@@ -120,17 +120,9 @@ public class UserController {
     @GetMapping("/api/user/photo")
     public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException {
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers("maziyar");
+        User user = userRepo.retrieveUsers(principal.getName());
         return new ResponseEntity<>(userRepo.showProfilePic(response, user), HttpStatus.OK);
     }
-
-    @GetMapping("/api/user/photo2")
-    public ResponseEntity<String> getImage2(HttpServletResponse response, HttpServletRequest request) throws IOException {
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers("maziyar");
-        return new ResponseEntity<>(userRepo.showProfilePic2(response, user), HttpStatus.OK);
-    }
-
 
     /**
      * Post photo for logged-in user
@@ -210,7 +202,7 @@ public class UserController {
                                                        @RequestParam(name = "searchUid", defaultValue = "") String searchuUid,
                                                        @RequestParam(name = "userStatus", defaultValue = "") String userStatus,
                                                        @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName) {
-        if (userRepo.retrieveUsersFull().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        if (userRepo.retrieveUsersMain().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else
             return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
