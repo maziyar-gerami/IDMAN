@@ -32,6 +32,9 @@ public class DashboardData {
     ServiceRepo serviceRepo;
     @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
+    UserAttributeMapper userAttributeMapper;
+
     ZoneId zoneId = ZoneId.of("UTC+03:30");
 
 

@@ -172,4 +172,21 @@ public class Message {
     }
 
 
+    public void sendWarnExpireMessage(User user, String day) {
+
+        System.out.println(day);
+
+        try {
+            String receptor = user.getMobile();
+            KavenegarApi api = new KavenegarApi(SMS_API_KEY);
+            api.verifyLookup(receptor, user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')), day, "", "expirePassReminder");
+        } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+            System.out.print("HttpException  : " + ex.getMessage());
+
+        } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+            System.out.print("ApiException : " + ex.getMessage());
+
+        }
+
+    }
 }

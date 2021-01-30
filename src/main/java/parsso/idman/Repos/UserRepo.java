@@ -41,7 +41,7 @@ public interface UserRepo {
 
     HttpStatus updateUsersWithSpecificOU(String old_ou, String new_ou);
 
-    User retrieveUsers(String groupId);
+    User retrieveUsers(String userId);
 
     List<User> retrieveGroupsUsers(String groupId);
 

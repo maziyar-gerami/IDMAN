@@ -491,7 +491,7 @@ public class UserRepoImpl implements UserRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp").where("objectClass").is("person"),
+        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp","pwdAccountLockedTime").where("objectClass").is("person"),
                 new SimpleUserAttributeMapper());
         List relatedUsers = new LinkedList();
         for (SimpleUser user : people) {
@@ -501,22 +501,6 @@ public class UserRepoImpl implements UserRepo {
         }
         Collections.sort(relatedUsers);
         return relatedUsers;
-    }
-
-    public BasicDashboardData retrieveBasicDashboardData() {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp").where("objectClass").is("person"),
-                new SimpleUserAttributeMapper());
-        List relatedUsers = new LinkedList();
-        for (SimpleUser user : people) {
-            if (user.getDisplayName() != null && !user.getUserId().equals("su") && !user.getDisplayName().equals("Directory Superuser")) {
-                relatedUsers.add(user);
-            }
-        }
-        Collections.sort(relatedUsers);
-        return null;
     }
 
     @Setter
@@ -709,7 +693,6 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("ou", groupId));
 
         return ldapTemplate.search(query().where("ou").is(groupId), userAttributeMapper);
-
 
     }
 

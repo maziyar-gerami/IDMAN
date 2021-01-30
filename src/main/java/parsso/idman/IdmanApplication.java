@@ -1,7 +1,8 @@
 package parsso.idman;
 
 
-import org.apache.commons.io.FileUtils;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator;
 import org.jasig.cas.client.validation.TicketValidator;
@@ -13,6 +14,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,27 +25,38 @@ import org.springframework.security.cas.authentication.CasAuthenticationProvider
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.stereotype.Service;
 import parsso.idman.Configs.CasUserDetailService;
+import parsso.idman.Helpers.Communicate.Message;
+import parsso.idman.Models.User;
+import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.FilesStorageService;
+import parsso.idman.Repos.UserRepo;
 
 import javax.annotation.Resource;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The type Idman application.
  */
 @SpringBootApplication
-
-public class IdmanApplication implements CommandLineRunner {
-
+public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
     @Autowired
     static MongoTemplate mongoTemplate;
+
+    @Autowired
+    static Pullings pullings;
+
+    @Autowired
+    UserRepo userRepo;
     /**
      * The Storage service.
      */
@@ -55,6 +69,7 @@ public class IdmanApplication implements CommandLineRunner {
     @Value("${base.url}")
     private String baseurl;
 
+
     /**
      * The entry point of application.
      *
@@ -62,8 +77,6 @@ public class IdmanApplication implements CommandLineRunner {
      */
     public static void main(String[] args) throws IOException, ParseException, org.json.simple.parser.ParseException {
 
-
-        SpringApplication.run(IdmanApplication.class, args);
 
 
         String command = "wmic csproduct get UUID";
@@ -76,15 +89,62 @@ public class IdmanApplication implements CommandLineRunner {
         while ((line = sNumReader.readLine()) != null) {
             output.append(line + "\n");
         }
-        String MachineID = output.toString().substring(output.indexOf("\n"), output.length()).trim();
+
+
+        Runnable runnable = new Runnable() {
+            @SneakyThrows
+            @Override
+            public void run() {
+                while (true){
+                        pulling(args);
+
+
+                    Thread.sleep(1000000);
+                }
+            }
+        };
+
+        Thread thread = new Thread(runnable);
+        thread.start();
+
+        /*while (true) {
+            Thread thread = new Thread(() -> {
+
+                try {
+                    pulling(args);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            thread.start();
+        }*/
 
 
     }
 
+    private static void pulling(String[] args) throws ParseException {
 
-    private static void copyFileUsingApacheCommonsIO(File s, File d) throws IOException {
-        FileUtils.copyFile(s, d);
+        ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
+
+        long deadline = 864000000; //10 days
+        long message = 259200000; //3 days
+
+        List <User> users = context.getBean(UserRepo.class).retrieveUsersFull();
+
+        Message message1 = context.getBean(Message.class); // <-- here
+
+        for (User user : users) {
+
+            Date pwdChangedTime = new SimpleDateFormat("yyyyMMddHHmmss").parse(String.valueOf(user.getPasswordChangedTime()));
+
+            if ((pwdChangedTime.getTime() + deadline) < new Date().getTime() + message)
+                message1.sendWarnExpireMessage(user,String.valueOf((new Date().getTime() + message)/86400000));
+        }
+
     }
+
+
 
     @Override
     public void run(String... arg) {
@@ -193,6 +253,15 @@ public class IdmanApplication implements CommandLineRunner {
         singleSignOutFilter.setLogoutCallbackPath("/exit/cas");
         singleSignOutFilter.setIgnoreInitConfiguration(true);
         return singleSignOutFilter;
+    }
+
+    @Service
+    @Getter
+    public static class Pullings{
+        @Autowired
+        UserRepoImpl userRepo;
+
+
     }
 
 }

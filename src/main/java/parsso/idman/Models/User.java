@@ -34,6 +34,8 @@ public class User implements UserDetails, Comparable {
     @JsonIgnore
     private long timeStamp;
     @JsonIgnore
+    private long passwordChangedTime;
+    @JsonIgnore
     private boolean locked;
     @JsonIgnore
     private boolean enabled;

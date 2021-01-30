@@ -36,6 +36,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
         user.setMobile(null != attributes.get("mobile")? attributes.get("mobile").get().toString() : null);
         user.setMail(null != attributes.get("mail") ? attributes.get("mail").get().toString() : null);
         user.setTimeStamp(null != attributes.get("createtimestamp") ? Long.valueOf(attributes.get("createtimestamp").get().toString().substring(0, 14)) : 0);
+        user.setPasswordChangedTime(null != attributes.get("pwdChangedTime") ? Long.valueOf(attributes.get("pwdChangedTime").get().toString().substring(0, 14)) : user.getTimeStamp());
         user.setEmployeeNumber((null != attributes.get("employeeNumber") && !attributes.get("employeeNumber").equals("")) ? attributes.get("employeeNumber").get().toString() : "0");
         user.setUserPassword(null != attributes.get("userPassword") ? attributes.get("userPassword").get().toString() : null);
         int nGroups = (null == attributes.get("ou") && !attributes.get("displayName").equals("")) ? 0 : attributes.get("ou").size();
@@ -49,12 +50,8 @@ public class UserAttributeMapper implements AttributesMapper<User> {
 
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
 
-        if (usersExtraInfo.getPhotoName()!=null)
+        if (user.getUsersExtraInfo() != null&&usersExtraInfo.getPhotoName()!=null)
         user.setPhoto(usersExtraInfo.getPhotoName());
-
-
-
-
 
         if (user.getUsersExtraInfo() != null)
             user.getUsersExtraInfo().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
