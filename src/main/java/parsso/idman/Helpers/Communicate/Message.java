@@ -174,7 +174,6 @@ public class Message {
 
     public void sendWarnExpireMessage(User user, String day) {
 
-        System.out.println(day);
 
         try {
             String receptor = user.getMobile();

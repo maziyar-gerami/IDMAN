@@ -19,6 +19,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
@@ -46,6 +47,7 @@ import java.util.List;
  * The type Idman application.
  */
 @SpringBootApplication
+@EnableScheduling
 public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
@@ -60,6 +62,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     /**
      * The Storage service.
      */
+    private static final int millis = 86400000;
     @Resource
     FilesStorageService storageService;
     @Value("${cas.url.logout.path}")
@@ -68,6 +71,13 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private String ticketValidator;
     @Value("${base.url}")
     private String baseurl;
+    @Value("${max.pwd.lifetime.days}")
+    private static long maxPwdLifetime=10;
+    @Value("${expire.pwd.message.days}")
+    private static long expirePwdMessageTime=3;
+    @Value("${interval.check.pass.days}")
+    private static long intervalCheckPassDays=1;
+
 
 
     /**
@@ -91,60 +101,44 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         }
 
 
+
+        ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
+
         Runnable runnable = new Runnable() {
             @SneakyThrows
             @Override
             public void run() {
                 while (true){
-                        pulling(args);
-
-
-                    Thread.sleep(1000000);
+                    Thread.sleep(intervalCheckPassDays*millis);
+                    pulling(context);
                 }
             }
         };
 
+
         Thread thread = new Thread(runnable);
         thread.start();
 
-        /*while (true) {
-            Thread thread = new Thread(() -> {
-
-                try {
-                    pulling(args);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            thread.start();
-        }*/
-
-
     }
 
-    private static void pulling(String[] args) throws ParseException {
+    private static void pulling(ConfigurableApplicationContext context) throws ParseException {
 
-        ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
-
-        long deadline = 864000000; //10 days
-        long message = 259200000; //3 days
+        long deadline = maxPwdLifetime*millis;
+        long message = expirePwdMessageTime*millis;
 
         List <User> users = context.getBean(UserRepo.class).retrieveUsersFull();
 
         Message message1 = context.getBean(Message.class); // <-- here
 
         for (User user : users) {
+            System.out.println(maxPwdLifetime);
+            System.out.println(expirePwdMessageTime);
 
             Date pwdChangedTime = new SimpleDateFormat("yyyyMMddHHmmss").parse(String.valueOf(user.getPasswordChangedTime()));
-
-            if ((pwdChangedTime.getTime() + deadline) < new Date().getTime() + message)
-                message1.sendWarnExpireMessage(user,String.valueOf((new Date().getTime() + message)/86400000));
+            if ((deadline/ millis-((new Date().getTime()-pwdChangedTime.getTime())/ millis))<=(message/ millis))
+                message1.sendWarnExpireMessage(user, String.valueOf(deadline/ millis-((new Date().getTime()-pwdChangedTime.getTime())/ millis)));
         }
-
     }
-
-
 
     @Override
     public void run(String... arg) {

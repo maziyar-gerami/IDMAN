@@ -40,14 +40,14 @@ public class ConfigController {
     @PutMapping("/api/configs")
     public ResponseEntity<String> updateSettings(@RequestBody List<Setting> settings) throws IOException {
         configRepo.updateSettings(settings);
-        passwordRegulation.update();
+        passwordRegulation.update(settings);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/configs/system/{system}")
     public ResponseEntity<String> updateSettingsSystem(@RequestBody List<Setting> settings) throws IOException {
         configRepo.updateSettings(settings);
-        passwordRegulation.update();
+        passwordRegulation.update(settings);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -66,6 +66,4 @@ public class ConfigController {
     public ResponseEntity<HttpStatus> resetFactory() throws IOException {
         return new ResponseEntity<>(configRepo.factoryReset());
     }
-
-
 }

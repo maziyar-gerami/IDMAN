@@ -1,19 +1,22 @@
 package parsso.idman.Helpers.Config;
 
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
+import parsso.idman.Models.Setting;
 
 import javax.naming.Name;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
+import java.util.List;
 
+@Getter
 @Service
 public class PasswordRegulation {
     @Autowired
@@ -46,51 +49,67 @@ public class PasswordRegulation {
     @Value("${pwd.check.quality}")
     String pwd_check_quality;
 
-
-
     private Name buidDn(){
         return LdapNameBuilder.newInstance("ads-pwdId=default,ou=passwordPolicies,ads-interceptorId=authenticationInterceptor,ou=interceptors,ads-directoryServiceId=default,ou=config").build();
     }
 
-    public void update(){
+    public void update(List<Setting> settings){
 
-        DirContextOperations context = ldapTemplate.lookupContext(buidDn());
+        ModificationItem[] items = new ModificationItem[9];
+        Attribute[] attrs = new Attribute[9];
 
-        Attribute attr1 = new BasicAttribute("ads-pwdcheckquality", pwd_check_quality);
-        ModificationItem item1 = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr1);
+        for (Setting setting:settings) {
+            if (setting.getName().equals("pwd.check.quality")) {
+                attrs[0] = new BasicAttribute("ads-pwdcheckquality", setting.getValue());
+                items[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[0]);
+                continue;
 
-        Attribute attr2 = new BasicAttribute("ads-pwdexpirewarning", pwd_expire_warning);
-        ModificationItem item2 = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr2);
+            } else if (setting.getName().equals("pwd.expire.warning")) {
 
-        Attribute attr3 = new BasicAttribute("ads-pwdfailurecountinterval", pwd_failure_count_interval);
-        ModificationItem item3 = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr3);
+                attrs[1] = new BasicAttribute("ads-pwdexpirewarning", setting.getValue());
+                items[1] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[1]);
+                continue;
+            } else if (setting.getName().equals("pwd.failure.count.interval")) {
 
-        Attribute attr4 = new BasicAttribute("ads-pwdgraceauthnlimit", pwd_grace_auth_n_limit);
-        ModificationItem item4 = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr4);
+                attrs[2] = new BasicAttribute("ads-pwdfailurecountinterval", setting.getValue());
+                items[2] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[2]);
+                continue;
+            } else if ((setting.getName().equals("pwd.grace.auth.n.limit"))) {
 
-        Attribute attr5 = new BasicAttribute("ads-pwdinhistory", pwd_in_history);
-        ModificationItem item5 = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr5);
+                attrs[3] = new BasicAttribute("ads-pwdgraceauthnlimit", setting.getValue());
+                items[3] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[3]);
+                continue;
+            } else if ((setting.getName().equals("pwd.in.history"))) {
+                attrs[4] = new BasicAttribute("ads-pwdinhistory", setting.getValue());
+                items[4] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[4]);
+                continue;
+            } else if ((setting.getName().equals("pwd.lockout"))) {
+                attrs[5] = new BasicAttribute("ads-pwdlockout", setting.getValue());
+                items[5] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[5]);
+                continue;
+            } else if ((setting.getName().equals("pwd.lockout.duration"))) {
+                attrs[6] = new BasicAttribute("ads-pwdlockoutduration", setting.getValue());
+                items[6] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[6]);
+                continue;
+            } else if ((setting.getName().equals("pwd.max.failure"))) {
+                attrs[7] = new BasicAttribute("ads-pwdmaxfailure", setting.getValue());
+                items[7] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[7]);
+                continue;
+            } else if ((setting.getName().equals("pwd.min.lentgh"))) {
+                attrs[8] = new BasicAttribute("ads-pwdminlength", setting.getValue());
+                items[8] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[8]);
+                continue;
+            }
 
-        Attribute attr6 = new BasicAttribute("ads-pwdlockout", pwd_lockout);
-        ModificationItem item6 = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr6);
-
-        Attribute attr7 = new BasicAttribute("ads-pwdlockoutduration", pwd_lockout_duration);
-        ModificationItem item7 = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr7);
-
-        Attribute attr8 = new BasicAttribute("ads-pwdmaxfailure", pwd_max_failure);
-        ModificationItem item8 = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr8);
-
-        Attribute attr9 = new BasicAttribute("ads-pwdminlength", pwd_min_lentgh);
-        ModificationItem item9 = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attr9);
-
-
-        ldapTemplate.modifyAttributes(buidDn(), new ModificationItem[] {item1,item2,item3,item4,item5,item6,item7,item8,item9});
+        }
 
         try {
-            ldapTemplate.modifyAttributes(context);
+            ldapTemplate.modifyAttributes(buidDn(), items);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
 }
