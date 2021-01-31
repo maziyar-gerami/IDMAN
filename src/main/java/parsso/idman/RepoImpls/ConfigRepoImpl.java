@@ -11,6 +11,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Config.PasswordRegulation;
 import parsso.idman.Models.Config;
 import parsso.idman.Models.Setting;
 import parsso.idman.Models.Time;
@@ -33,6 +34,9 @@ public class ConfigRepoImpl implements ConfigRepo {
 
     @Autowired
     private ApplicationContext appContext;
+
+    @Autowired
+    PasswordRegulation passwordRegulation;
 
     @Value("${external.config}")
     private String pathToProperties;
@@ -202,6 +206,7 @@ public class ConfigRepoImpl implements ConfigRepo {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
 
 
         return file_properties;
