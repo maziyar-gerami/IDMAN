@@ -190,4 +190,13 @@ public class Email {
     }
 
 
+    public void sendWarnExpireMessage(User user, String day) {
+
+        try {
+            emailSend.sendMail(user, day);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
 }

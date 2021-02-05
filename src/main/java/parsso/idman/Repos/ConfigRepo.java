@@ -22,4 +22,8 @@ public interface ConfigRepo {
     HttpStatus restore(String name) throws IOException, ParseException, java.text.ParseException;
 
     List<Config> listBackedUpConfigs() throws IOException, ParseException;
+
+    HttpStatus emailNotification();
+
+    HttpStatus messageNotification();
 }

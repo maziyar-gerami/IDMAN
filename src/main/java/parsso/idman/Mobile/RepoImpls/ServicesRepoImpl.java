@@ -12,11 +12,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
-import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.Communicate.Message;
+import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Mobile.Repos.ServicesRepo;
 import parsso.idman.Models.User;
@@ -54,7 +53,7 @@ public class ServicesRepoImpl implements ServicesRepo {
     @Autowired
     private UserRepo userRepo;
     @Autowired
-    private Message message;
+    private InstantMessage instantMessage;
     @Autowired
     private MongoTemplate mongoTemplate;
 

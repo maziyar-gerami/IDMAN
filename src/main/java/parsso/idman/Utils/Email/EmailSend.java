@@ -3,6 +3,7 @@ package parsso.idman.Utils.Email;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import parsso.idman.Models.User;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -73,6 +74,64 @@ public class EmailSend {
 
             // Now set the actual message
             message.setText(name + body + stringUid + uid + "\n" + stringLink + token + end, "UTF8");
+
+            // Send message
+            Transport.send(message);
+
+        } catch (MessagingException mex) {
+            mex.printStackTrace();
+        }
+
+    }
+
+    public void sendMail(User user, String day) {
+
+        String subject = "اخطار انقضای رمز عبور پارسو";
+        String start = " عزیز \n" +
+                "رمز عبور شما کمتر از ";
+        String middle = " روز دیگر منقضی می شود.\n";
+        String end = "\n\nبرای جلوگیری از غیرفعال شدن حساب کاربری، هرچه زودتر به تغییر رمز عبور خود از طریق پارسو اقدام فرمایید.";
+
+
+
+        // Get system properties
+        Properties properties = System.getProperties();
+
+        // Setup mail server
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.port", "465");
+        properties.put("mail.smtp.ssl.enable", "true");
+        properties.put("mail.smtp.auth", "true");
+
+        // Get the Session object.// and pass username and password
+        Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+
+            protected PasswordAuthentication getPasswordAuthentication() {
+
+                return new PasswordAuthentication(from, password);
+
+            }
+
+        });
+
+        // Used to debug SMTP issues
+        session.setDebug(false);
+
+        try {
+            // Create a default MimeMessage object.
+            MimeMessage message = new MimeMessage(session);
+
+            // Set From: header field of the header.
+            message.setFrom(new InternetAddress(from));
+
+            // Set To: header field of the header.
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getMail()));
+
+            // Set Subject: header field
+            message.setSubject(subject);
+
+            // Now set the actual message
+            message.setText(user.getDisplayName().substring(0, user.getDisplayName().indexOf(' '))+ start+day+middle+end, "UTF8");
 
             // Send message
             Transport.send(message);

@@ -11,11 +11,15 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.Config.PasswordRegulation;
+import parsso.idman.Helpers.Communicate.Email;
+import parsso.idman.Helpers.Communicate.InstantMessage;
+import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Models.Config;
 import parsso.idman.Models.Setting;
 import parsso.idman.Models.Time;
+import parsso.idman.Models.User;
 import parsso.idman.Repos.ConfigRepo;
+import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Convertor.DateConverter;
 import parsso.idman.Utils.JSON.JSONencoder;
 
@@ -36,7 +40,7 @@ public class ConfigRepoImpl implements ConfigRepo {
     private ApplicationContext appContext;
 
     @Autowired
-    PasswordRegulation passwordRegulation;
+    PasswordSettings passwordSettings;
 
     @Value("${external.config}")
     private String pathToProperties;
@@ -46,6 +50,26 @@ public class ConfigRepoImpl implements ConfigRepo {
 
     @Value("${backup.path}")
     private String backUpPath;
+
+    @Value("${max.pwd.lifetime.days}")
+    private long maxPwdLifetime;
+
+    @Value("${expire.pwd.message.days}")
+    private long expirePwdMessageTime;
+
+    @Value("${interval.check.pass.days}")
+    private static long intervalCheckPassDays;
+
+    private static final int millis = 86400000;
+
+    @Autowired
+    InstantMessage instantMessage;
+
+    @Autowired
+    Email email;
+
+    @Autowired
+    UserRepo userRepo;
 
 
     public static List<Setting> parser(Scanner reader, String system) {
@@ -336,5 +360,53 @@ public class ConfigRepoImpl implements ConfigRepo {
         }
         return configs;
     }
+
+    @Override
+    public HttpStatus emailNotification() {
+        try {
+            startNotification("email");
+            return HttpStatus.OK;
+        }catch (Exception e){
+            return  HttpStatus.FORBIDDEN;
+        }
+    }
+
+    @Override
+    public HttpStatus messageNotification() {
+        try {
+            startNotification("instantMessage");
+            return HttpStatus.OK;
+        }catch (Exception e){
+            return  HttpStatus.FORBIDDEN;
+        }
+    }
+
+    private HttpStatus startNotification(String method){
+        long deadline = maxPwdLifetime * millis;
+        long messageTime = expirePwdMessageTime * millis;
+
+        List<User> users = userRepo.retrieveUsersFull();
+
+        for (User user : users) {
+
+            Date pwdChangedTime = null;
+            try {
+                pwdChangedTime = new SimpleDateFormat("yyyyMMddHHmmss").parse(String.valueOf(user.getPasswordChangedTime()));
+                if ((deadline / millis - ((new Date().getTime() - pwdChangedTime.getTime()) / millis)) <= (messageTime / millis)) {
+                    if (method.equalsIgnoreCase("instantMessage"))
+                        instantMessage.sendWarnExpireMessage(user, String.valueOf(deadline / millis - ((new Date().getTime() - pwdChangedTime.getTime()) / millis)));
+                    else if (method.equalsIgnoreCase("email"))
+                        email.sendWarnExpireMessage(user, String.valueOf(deadline / millis - ((new Date().getTime() - pwdChangedTime.getTime()) / millis)));
+
+                }
+            } catch (java.text.ParseException e) {
+                e.printStackTrace();
+                return  HttpStatus.BAD_REQUEST;
+            }
+
+        }
+        return  HttpStatus.OK;
+    }
+
 
 }

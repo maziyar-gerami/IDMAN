@@ -33,7 +33,7 @@ public class Token {
     @Autowired
     Email emailClass;
     @Autowired
-    Message message;
+    InstantMessage instantMessage;
     @Autowired
     BuildDn buildDn;
     @Autowired
@@ -170,6 +170,6 @@ public class Token {
 
 
     public int requestToken(User user) {
-        return message.sendMessage(user.getMobile());
+        return instantMessage.sendMessage(user.getMobile());
     }
 }

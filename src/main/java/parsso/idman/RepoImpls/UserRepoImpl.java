@@ -3,6 +3,7 @@ package parsso.idman.RepoImpls;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.apache.commons.compress.utils.IOUtils;
 import org.json.simple.parser.ParseException;
@@ -29,11 +30,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Communicate.Email;
-import parsso.idman.Helpers.Communicate.Message;
+import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
-import parsso.idman.Models.*;
+import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.ServicesSubModel.ExtraInfo;
+import parsso.idman.Models.SimpleUser;
+import parsso.idman.Models.User;
+import parsso.idman.Models.UsersExtraInfo;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
@@ -44,7 +48,10 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -58,7 +65,7 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     FilesStorageService storageService;
     @Autowired
-    private Message message;
+    private InstantMessage instantMessage;
     @Autowired
     private UserRepo userRepo;
     @Value("${base.url}")
@@ -195,12 +202,13 @@ public class UserRepoImpl implements UserRepo {
 
                     //update it's first pwChangedTime in a new thread
                     Thread thread = new Thread() {
+                        @SneakyThrows
                         public void run() {
                             User userTemp = retrieveUsers(p.getUserId());
 
                             DirContextOperations context = ldapTemplate.lookupContext(dn);
 
-                            context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp()+"Z");
+                            context.rebind("pwdChangedTime", userTemp.getTimeStamp()+"Z");
 
                             try {
                                 ldapTemplate.modifyAttributes(context);
@@ -255,20 +263,28 @@ public class UserRepoImpl implements UserRepo {
             mongoTemplate.save(usersExtraInfo, collection);
         }
 
+        ModificationItem[] modificationItems;
+        modificationItems = new ModificationItem[2];
+
+
+
+
         //update it's pwChangedTime in a new thread if password changed
         if(p.getUserPassword()!=null) {
             Thread thread = new Thread(() -> {
                 User userTemp = retrieveUsers(p.getUserId());
 
-                DirContextOperations context1 = ldapTemplate.lookupContext(dn);
-
-                context1.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp() + "Z");
+                modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdChangedTime"));
+                modificationItems[1] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdChangedTime",userTemp.getTimeStamp() + "Z"));
 
                 try {
-                    ldapTemplate.modifyAttributes(context1);
+                    ldapTemplate.modifyAttributes(dn, modificationItems);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+
+
             });
             thread.start();
         }
@@ -391,6 +407,7 @@ public class UserRepoImpl implements UserRepo {
                     DirContextOperations context = buildAttributes.buildAttributes(uId, user, dn);
                     Date date = new Date();
                     context.setAttributeValue("pwdChangedTime", date.getTime());
+
 
 
                     try {

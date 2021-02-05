@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Captcha.RepoImp.CaptchaRepoImp;
-import parsso.idman.Helpers.Communicate.Message;
+import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.UsersExcelView;
 import parsso.idman.Models.ListUsers;
@@ -46,7 +46,7 @@ public class UserController {
     @Autowired
     UsersExcelView excelView;
     @Autowired
-    private Message message;
+    private InstantMessage instantMessage;
     @Autowired
     private UserRepo userRepo;
     @Value("${administrator.ou.id}")
@@ -394,7 +394,7 @@ public class UserController {
     public ResponseEntity<Integer> sendMessage(@PathVariable("mobile") String mobile,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
-        int time = message.sendMessage(mobile, cid, answer);
+        int time = instantMessage.sendMessage(mobile, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
@@ -414,7 +414,7 @@ public class UserController {
                                                @PathVariable("uid") String uid,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
-        int time = message.sendMessage(mobile, uid, cid, answer);
+        int time = instantMessage.sendMessage(mobile, uid, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
@@ -456,7 +456,7 @@ public class UserController {
      */
     @GetMapping("/api/public/checkMobile/{mobile}")
     public HttpEntity<List<JSONObject>> checkMobile(@PathVariable("mobile") String mobile) {
-        return new ResponseEntity<List<JSONObject>>(message.checkMobile(mobile), HttpStatus.OK);
+        return new ResponseEntity<List<JSONObject>>(instantMessage.checkMobile(mobile), HttpStatus.OK);
     }
 
 

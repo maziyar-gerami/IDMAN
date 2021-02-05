@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.Config;
+package parsso.idman.Helpers.ReloadConfigs;
 
 
 import lombok.Getter;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @Getter
 @Service
-public class PasswordRegulation {
+public class PasswordSettings {
     @Autowired
     LdapTemplate ldapTemplate;
 

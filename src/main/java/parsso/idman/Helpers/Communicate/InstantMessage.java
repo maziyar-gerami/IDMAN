@@ -23,7 +23,7 @@ import java.util.List;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 @Configuration
-public class Message {
+public class InstantMessage {
 
     private final String collection = "IDMAN_Captchas";
     @Autowired
@@ -173,7 +173,6 @@ public class Message {
 
 
     public void sendWarnExpireMessage(User user, String day) {
-
 
         try {
             String receptor = user.getMobile();

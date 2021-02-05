@@ -1,13 +1,15 @@
 package parsso.idman.Controllers;
 
 
+import lombok.SneakyThrows;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Helpers.Config.PasswordRegulation;
+import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Models.Config;
 import parsso.idman.Models.Setting;
 import parsso.idman.Repos.ConfigRepo;
@@ -24,8 +26,10 @@ public class ConfigController {
     private ConfigRepo configRepo;
 
     @Autowired
-    PasswordRegulation passwordRegulation;
+    PasswordSettings passwordSettings;
 
+    @Value("${interval.check.pass.days}")
+    private long intervalCheckPassDays;
 
     @GetMapping("/api/configs")
     public ResponseEntity<String> retrieveSettings() throws IOException {
@@ -37,17 +41,76 @@ public class ConfigController {
         return new ResponseEntity<>(configRepo.listBackedUpConfigs(), HttpStatus.OK);
     }
 
+    @GetMapping("/api/configs/notification/email")
+    public ResponseEntity<HttpStatus> emailNotification() {
+
+        Runnable runnable = new Runnable() {
+            @SneakyThrows
+            @Override
+            public void run() {
+                while (true) {
+                    //Thread.sleep(20000);
+
+                    configRepo.emailNotification();
+                    Thread.sleep(0200);
+
+                }
+            }
+        };
+
+
+        for (Thread t : Thread.getAllStackTraces().keySet()) {
+            if (t.getName().equals("thread-pulling-passExpire")) {
+                t.interrupt();
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                Thread thread = new Thread(runnable);
+                thread.setName("thread-pulling-passExpire");
+
+                thread.start();
+            }
+        }
+
+            return new ResponseEntity<>(HttpStatus.OK);
+
+
+    }
+
+    @GetMapping("/api/configs/notification/message")
+    public ResponseEntity<List<Config>> messageNotification() {
+        Runnable runnable = new Runnable() {
+            @SneakyThrows
+            @Override
+            public void run() {
+                while (true){
+                    Thread.sleep(intervalCheckPassDays*86400000);
+
+                    configRepo.messageNotification();
+
+                }
+            }
+        };
+        Thread thread = new Thread(runnable);
+
+        if (thread.isAlive())
+            thread.interrupt();
+        else
+            thread.start();
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PutMapping("/api/configs")
     public ResponseEntity<String> updateSettings(@RequestBody List<Setting> settings) throws IOException {
         configRepo.updateSettings(settings);
-        passwordRegulation.update(settings);
+        passwordSettings.update(settings);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/configs/system/{system}")
     public ResponseEntity<String> updateSettingsSystem(@RequestBody List<Setting> settings) throws IOException {
         configRepo.updateSettings(settings);
-        passwordRegulation.update(settings);
+        passwordSettings.update(settings);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

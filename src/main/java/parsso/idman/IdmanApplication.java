@@ -28,7 +28,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import parsso.idman.Configs.CasUserDetailService;
-import parsso.idman.Helpers.Communicate.Message;
+import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Models.User;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.FilesStorageService;
@@ -128,7 +128,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
         List <User> users = context.getBean(UserRepo.class).retrieveUsersFull();
 
-        Message message1 = context.getBean(Message.class); // <-- here
+        InstantMessage instantMessage1 = context.getBean(InstantMessage.class); // <-- here
 
         for (User user : users) {
             System.out.println(maxPwdLifetime);
@@ -136,7 +136,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
             Date pwdChangedTime = new SimpleDateFormat("yyyyMMddHHmmss").parse(String.valueOf(user.getPasswordChangedTime()));
             if ((deadline/ millis-((new Date().getTime()-pwdChangedTime.getTime())/ millis))<=(message/ millis))
-                message1.sendWarnExpireMessage(user, String.valueOf(deadline/ millis-((new Date().getTime()-pwdChangedTime.getTime())/ millis)));
+                instantMessage1.sendWarnExpireMessage(user, String.valueOf(deadline/ millis-((new Date().getTime()-pwdChangedTime.getTime())/ millis)));
         }
     }
 
