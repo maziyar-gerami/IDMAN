@@ -62,7 +62,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     /**
      * The Storage service.
      */
-    private static final int millis = 86400000;
+    private static final int millis = 3600000;
     @Resource
     FilesStorageService storageService;
     @Value("${cas.url.logout.path}")
@@ -71,12 +71,12 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private String ticketValidator;
     @Value("${base.url}")
     private String baseurl;
-    @Value("${max.pwd.lifetime.days}")
+    @Value("${max.pwd.lifetime.hours}")
     private static long maxPwdLifetime=10;
-    @Value("${expire.pwd.message.days}")
-    private static long expirePwdMessageTime=3;
-    @Value("${interval.check.pass.days}")
-    private static long intervalCheckPassDays=1;
+    @Value("${expire.pwd.message.hours}")
+    private static long expirePwdMessageTime;
+    @Value("${interval.check.pass.hours}")
+    private static long intervalCheckPassTime;
 
 
 
@@ -109,8 +109,8 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
             @Override
             public void run() {
                 while (true){
-                    Thread.sleep(intervalCheckPassDays*millis);
-                    pulling(context);
+                    Thread.sleep(intervalCheckPassTime*millis);
+                    //pulling(context);
                 }
             }
         };
@@ -123,16 +123,14 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
     private static void pulling(ConfigurableApplicationContext context) throws ParseException {
 
-        long deadline = maxPwdLifetime*millis;
-        long message = expirePwdMessageTime*millis;
+        long deadline = maxPwdLifetime*24*millis;
+        long message = expirePwdMessageTime*24*millis;
 
         List <User> users = context.getBean(UserRepo.class).retrieveUsersFull();
 
         InstantMessage instantMessage1 = context.getBean(InstantMessage.class); // <-- here
 
         for (User user : users) {
-            System.out.println(maxPwdLifetime);
-            System.out.println(expirePwdMessageTime);
 
             Date pwdChangedTime = new SimpleDateFormat("yyyyMMddHHmmss").parse(String.valueOf(user.getPasswordChangedTime()));
             if ((deadline/ millis-((new Date().getTime()-pwdChangedTime.getTime())/ millis))<=(message/ millis))

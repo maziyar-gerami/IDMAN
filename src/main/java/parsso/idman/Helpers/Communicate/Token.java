@@ -25,7 +25,7 @@ import java.util.UUID;
 @Service
 public class Token {
 
-    public static String collection = "IDMAN_Tokens";
+    public static String collection = "IDMAN_UsersExtraInfo";
     @Autowired
     BuildAttributes buildAttributes;
     @Autowired

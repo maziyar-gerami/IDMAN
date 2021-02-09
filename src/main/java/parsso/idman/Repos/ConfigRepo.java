@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface ConfigRepo {
 
+    List<Setting> retrieveTFSetting() throws IOException;
+
     String retrieveSetting() throws IOException;
 
     String updateSettings(List<Setting> settings) throws IOException;
@@ -23,7 +25,4 @@ public interface ConfigRepo {
 
     List<Config> listBackedUpConfigs() throws IOException, ParseException;
 
-    HttpStatus emailNotification();
-
-    HttpStatus messageNotification();
 }

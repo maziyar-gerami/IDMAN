@@ -36,6 +36,8 @@ public class InstantMessage {
     private String SMS_VALIDATION_DIGITS;
     @Value("${sms.api.key}")
     private String SMS_API_KEY;
+    @Value("${base.url}")
+    private String baseurl;
     @Autowired
     private LdapTemplate ldapTemplate;
     @Autowired
@@ -177,7 +179,11 @@ public class InstantMessage {
         try {
             String receptor = user.getMobile();
             KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-            api.verifyLookup(receptor, user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')), day, "", "expirePassReminder");
+            if (Integer.valueOf(day)>=0)
+                api.verifyLookup(receptor, user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')), day, baseurl+"/resetPass", "expirePassReminder");
+            else
+                api.verifyLookup(receptor, user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')), baseurl+"/resetPass", "", "expirePassNotify");
+
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
             System.out.print("HttpException  : " + ex.getMessage());
 

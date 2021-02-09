@@ -1,7 +1,6 @@
 package parsso.idman.Controllers;
 
 
-import lombok.SneakyThrows;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,8 +27,8 @@ public class ConfigController {
     @Autowired
     PasswordSettings passwordSettings;
 
-    @Value("${interval.check.pass.days}")
-    private long intervalCheckPassDays;
+    @Value("${interval.check.pass.hours}")
+    private long intervalCheckPassTime;
 
     @GetMapping("/api/configs")
     public ResponseEntity<String> retrieveSettings() throws IOException {
@@ -39,65 +38,6 @@ public class ConfigController {
     @GetMapping("/api/configs/list")
     public ResponseEntity<List<Config>> listAllConfigs() throws IOException, ParseException {
         return new ResponseEntity<>(configRepo.listBackedUpConfigs(), HttpStatus.OK);
-    }
-
-    @GetMapping("/api/configs/notification/email")
-    public ResponseEntity<HttpStatus> emailNotification() {
-
-        Runnable runnable = new Runnable() {
-            @SneakyThrows
-            @Override
-            public void run() {
-                while (true) {
-                    //Thread.sleep(20000);
-
-                    configRepo.emailNotification();
-                    Thread.sleep(0200);
-
-                }
-            }
-        };
-
-
-        for (Thread t : Thread.getAllStackTraces().keySet()) {
-            if (t.getName().equals("thread-pulling-passExpire")) {
-                t.interrupt();
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                Thread thread = new Thread(runnable);
-                thread.setName("thread-pulling-passExpire");
-
-                thread.start();
-            }
-        }
-
-            return new ResponseEntity<>(HttpStatus.OK);
-
-
-    }
-
-    @GetMapping("/api/configs/notification/message")
-    public ResponseEntity<List<Config>> messageNotification() {
-        Runnable runnable = new Runnable() {
-            @SneakyThrows
-            @Override
-            public void run() {
-                while (true){
-                    Thread.sleep(intervalCheckPassDays*86400000);
-
-                    configRepo.messageNotification();
-
-                }
-            }
-        };
-        Thread thread = new Thread(runnable);
-
-        if (thread.isAlive())
-            thread.interrupt();
-        else
-            thread.start();
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/configs")
