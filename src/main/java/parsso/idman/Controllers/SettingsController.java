@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 public class SettingsController {
@@ -63,6 +62,8 @@ public class SettingsController {
                 while (true) {
 
                     settingsRepo.emailNotification();
+                    Thread.sleep(intervalCheckPassTime*millis);
+
 
                 }
             }
@@ -70,18 +71,21 @@ public class SettingsController {
 
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().equals("thread-pulling-email-passExpire")) {
-                t.interrupt();
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                Thread thread = new Thread(runnable);
-                thread.setName("thread-pulling-email-passExpire");
+                try {
+                    t.interrupt();
+                }catch (Exception e){
 
-                if (thread.isAlive())
-                    thread.interrupt();
-                else
-                    executor.scheduleWithFixedDelay(runnable,100,intervalCheckPassTime, TimeUnit.HOURS);
+                }
+                return new ResponseEntity<>(HttpStatus.OK);
             }
         }
+        Thread thread = new Thread(runnable);
+        thread.setName("thread-pulling-email-passExpire");
+
+        if (thread.isAlive())
+            thread.interrupt();
+        else
+            thread.start();
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -95,7 +99,7 @@ public class SettingsController {
             public void run() {
                 while (true){
                     settingsRepo.messageNotification();
-                    Thread.sleep(intervalCheckPassTime);
+                    Thread.sleep(intervalCheckPassTime*millis);
                 }
             }
         };
