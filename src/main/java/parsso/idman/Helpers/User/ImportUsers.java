@@ -17,6 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
 
@@ -68,6 +69,9 @@ public class ImportUsers {
             user.setStatus(formatter.formatCellValue(row.getCell(sequence[8])));
             user.setEmployeeNumber(formatter.formatCellValue(row.getCell(sequence[9])));
             user.setUserPassword(formatter.formatCellValue(row.getCell(sequence[10])));
+
+            if((row.getCell(sequence[11])!=null) && !(row.getCell(sequence[11]).equals("")))
+                user.setEndTime(Time.setEndTime(formatter.formatCellValue(row.getCell(sequence[11]))));
 
             temp = userRepo.createUserImport(user);
 

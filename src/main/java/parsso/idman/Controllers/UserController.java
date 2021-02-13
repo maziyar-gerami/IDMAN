@@ -22,6 +22,7 @@ import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
 
+import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -143,12 +144,12 @@ public class UserController {
      */
     @PutMapping("/api/user/password")
     public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
-                                                     @RequestBody JSONObject jsonObject) {
+                                                     @RequestBody JSONObject jsonObject) throws SizeLimitExceededException {
         Principal principal = request.getUserPrincipal();
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");
         if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
-        return new ResponseEntity<>(userRepo.changePassword(principal.getName(), newPassword, token));
+        return new ResponseEntity<>(userRepo.changePassword("maziyar", newPassword, token));
 
     }
 
@@ -206,6 +207,14 @@ public class UserController {
         else
             return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
+
+    /*@GetMapping("/api/users/group/{gid}/{page}/{n}")
+    public ResponseEntity<ListUsers> retrieveUsersOfGroups(@PathVariable("page") int page, @PathVariable("n") int n,
+                                                       @RequestParam(name = "{gid}") String gtoupId){
+        if (userRepo.retrieveUsersMain().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else
+            return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
+    }*/
 
 
     /**
@@ -332,12 +341,15 @@ public class UserController {
         return new ResponseEntity<>(userRepo.sendEmail(jsonObject), HttpStatus.OK);
     }
 
+
     @GetMapping("/api/users/export")
     public ModelAndView downloadExcel() {
 
         // return a view which will be resolved by an excel view resolver
         return new ModelAndView(excelView, "listUsers", null);
     }
+
+
 
 
     //*************************************** Public Controllers ***************************************

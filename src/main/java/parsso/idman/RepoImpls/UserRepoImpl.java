@@ -213,7 +213,6 @@ public class UserRepoImpl implements UserRepo {
                             try {
                                 ldapTemplate.modifyAttributes(context);
                             } catch (Exception e) {
-                                e.printStackTrace();
                             }
 
 
@@ -248,11 +247,11 @@ public class UserRepoImpl implements UserRepo {
         DirContextOperations context;
 
         //remove current pwdEndTime
-        if ((p.getEndTime() == null || p.getEndTime().equals(""))) {
+        /*if ((p.getEndTime() == null || p.getEndTime().equals(""))) {
             if ((user.getEndTime() != null || user.getEndTime() != ""))
                 removeCurrentEndTime(uid);
         } else if (!(p.getEndTime().equals(user.getEndTime())))
-            removeCurrentEndTime(uid);
+            removeCurrentEndTime(uid);*/
 
         context = buildAttributes.buildAttributes(uid, p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
@@ -703,9 +702,6 @@ public class UserRepoImpl implements UserRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        User user = new User();
-        UsersExtraInfo usersExtraInfo = null;
-        ExtraInfo extraInfo = null;
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("ou", groupId));
 
@@ -857,6 +853,7 @@ public class UserRepoImpl implements UserRepo {
 
         return HttpStatus.OK;
     }
+
 
 
     @Override
