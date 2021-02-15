@@ -1,10 +1,7 @@
 package parsso.idman.Models;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +26,8 @@ public class Event implements Serializable {
     public Properties properties = new Properties();
     @JsonProperty("clientIP")
     public String clientip;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("serverIP")
     public String serverip;
     public String eventId;
     @JsonIgnoreProperties
@@ -54,6 +53,8 @@ public class Event implements Serializable {
     @JsonIgnore
     String _class;
     Time time;
+
+
 
     public String getType() {
         ActionInfo actionHelper = new ActionInfo(type);
@@ -87,6 +88,10 @@ public class Event implements Serializable {
 
     }
 
+    public String getServerip() {
+        return this.properties.serverip;
+    }
+
     public AgentInfo getAgentInfo() {
         AgentInfo agentInfo = null;
         try {
@@ -96,6 +101,7 @@ public class Event implements Serializable {
         }
         return agentInfo;
     }
+
 
     @Setter
     @Getter
