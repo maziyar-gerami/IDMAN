@@ -13,7 +13,9 @@
     <link href="css/persian-datepicker.min.css" rel="stylesheet"/>
 
 
-
+    <script src="js/es6-promise.min.js"></script>
+    <script src="js/es6-promise.auto.min.js"></script>
+    <script src="js/polyfill.min.js"></script>
     <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
@@ -23,6 +25,7 @@
     <script src="js/persian-date.min.js"></script>
     <script src="js/persian-datepicker.min.js"></script>
     <script src="js/persian-rex.min.js"></script>
+    <script src="js/vue-spinners-css.min.js"></script>
 
 </head>
 <script type="text/javascript">
@@ -381,86 +384,91 @@
                                                                 </div>
                                             </div>
 
+                                            <div v-if="loader" class="text-center">
+                                                <roller-loader color="#007bff"/>
+                                            </div>
                                             <div v-bind:style="resetPassEmailSent ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                 <p class="rounded" style="background-color:rgba(144, 238, 144, 0.521); padding: 1%;">{{s52}}</p>
                                             </div>
 
-                                            <table id="tableList" class="table table-responsive p-2">
-                                                                <tr>
-                                                                    <th style="border: none;">
-                                                                        <label class="checkboxclass">
-                                                                            <input id="selectAllCheckbox" type="checkbox">
-                                                                            <span v-on:click="allSelected()" class="checkmark"></span>
-                                                                        </label>
-                                                                    </th>
-                                                                    <th style="border: none;">#</th>
-                                                                    <th style="border: none;">
-                                                                        <div style="display: inline-flex;">
-                                                                            {{U2}}
-                                                                            <div class="mt-1 mb-1 mr-2 ml-2">
-                                                                                <div class="up-arrow" v-on:click="userIdm2M()"></div>
-                                                                                <div class="down-arrow" v-on:click="userIdM2m()"></div>
+                                            <div style="overflow: auto;">
+                                                <table class="tableList table table-responsive p-2">
+                                                                    <tr>
+                                                                        <th style="border: none;">
+                                                                            <label class="checkboxclass">
+                                                                                <input id="selectAllCheckbox" type="checkbox">
+                                                                                <span v-on:click="allSelected()" class="checkmark"></span>
+                                                                            </label>
+                                                                        </th>
+                                                                        <th style="border: none;">#</th>
+                                                                        <th style="border: none;">
+                                                                            <div style="display: inline-flex;">
+                                                                                {{U2}}
+                                                                                <div class="mt-1 mb-1 mr-2 ml-2">
+                                                                                    <div class="up-arrow" v-on:click="userIdm2M()"></div>
+                                                                                    <div class="down-arrow" v-on:click="userIdM2m()"></div>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                    </th>
-                                                                    <th style="border: none;">
-                                                                        <div style="display: inline-flex;">
-                                                                            {{U5}}
-                                                                            <div class="mt-1 mb-1 mr-2 ml-2">
-                                                                                <div class="up-arrow" v-on:click="displayNamem2M()"></div>
-                                                                                <div class="down-arrow" v-on:click="displayNameM2m()"></div>
+                                                                        </th>
+                                                                        <th style="border: none;">
+                                                                            <div style="display: inline-flex;">
+                                                                                {{U5}}
+                                                                                <div class="mt-1 mb-1 mr-2 ml-2">
+                                                                                    <div class="up-arrow" v-on:click="displayNamem2M()"></div>
+                                                                                    <div class="down-arrow" v-on:click="displayNameM2m()"></div>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                    </th>
-                                                                    <th style="border: none;">{{U14}}</th>
-                                                                </tr>
-                                                                <tbody id="body">
-                    
-                                                                <tr v-for="user in sortedUsers" v-bind:key="user.userId" :id="'row-' + user.userId">
-                                                                    <td>
-                                                                        <label class="checkboxclass">
-                                                                            <input :id="'checkbox-' + user.userId" type="checkbox">
-                                                                            <span v-on:click="rowSelected(user.userId)" class="checkmark"></span>
-                                                                        </label>                                                                    
-                                                                    </td>
-                                                                    <td>{{user.orderOfRecords}}</td>
-                                                                    <td>{{user.userId}}</td>
-                                                                    <td>{{user.displayName}}</td>
-                                                                    <td>
-                                                                        <span v-for="group in groups">
-                                                                            <span v-for="member in user.memberOf" v-if="member == group.id">
-                                                                                <button style="padding: .2rem .2rem; color: #000000; background-color: #a9a9a975; font-size: 60%; opacity: 1;"
-                                                                                class="btn btn-sm" disabled>
-                                                                                    {{group.name}}
-                                                                                </button>
+                                                                        </th>
+                                                                        <th style="border: none;">{{U14}}</th>
+                                                                    </tr>
+                                                                    <tbody id="body">
+                        
+                                                                    <tr v-for="user in sortedUsers" v-bind:key="user.userId" :id="'row-' + user.userId">
+                                                                        <td>
+                                                                            <label class="checkboxclass">
+                                                                                <input :id="'checkbox-' + user.userId" type="checkbox">
+                                                                                <span v-on:click="rowSelected(user.userId)" class="checkmark"></span>
+                                                                            </label>                                                                    
+                                                                        </td>
+                                                                        <td>{{user.orderOfRecords}}</td>
+                                                                        <td>{{user.userId}}</td>
+                                                                        <td>{{user.displayName}}</td>
+                                                                        <td>
+                                                                            <span v-for="group in groups">
+                                                                                <span v-for="member in user.memberOf" v-if="member == group.id">
+                                                                                    <button style="padding: .2rem .2rem; color: #000000; background-color: #a9a9a975; font-size: 60%; opacity: 1;"
+                                                                                    class="btn btn-sm" disabled>
+                                                                                        {{group.name}}
+                                                                                    </button>
+                                                                                </span>
                                                                             </span>
-                                                                        </span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <button style="padding: .2rem .2rem; color: #28a745; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U22" class="btn btn-sm" v-on:click="sendResetEmail(user.userId)">
-                                                                            <span class="fa-passwd-reset fa-stack">
-                                                                                <i class="fa fa-undo fa-stack-2x"></i>
-                                                                            </span> 
-                                                                        </button>
-                                                                    </td>
-                                                                    <td>
-                                                                        <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editUserS(user.userId)">
-                                                                            <span class="fa-passwd-reset fa-stack">
-                                                                                <i class="fa fa-pencil-square-o fa-stack-2x"></i>
-                                                                            </span>
-                                                                        </button>
-                                                                    </td>
-                                                                    <td>
-                                                                        <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-sm" v-on:click="deleteUser(user.userId)">
-                                                                            <span class="fa-passwd-reset fa-stack">
-                                                                                <i class="fa fa-trash fa-stack-2x"></i>
-                                                                            </span>
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                    
-                                                                </tbody>
-                                            </table>
+                                                                        </td>
+                                                                        <td>
+                                                                            <button style="padding: .2rem .2rem; color: #28a745; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U22" class="btn btn-sm" v-on:click="sendResetEmail(user.userId)">
+                                                                                <span class="fa-passwd-reset fa-stack">
+                                                                                    <i class="fa fa-undo fa-stack-2x"></i>
+                                                                                </span> 
+                                                                            </button>
+                                                                        </td>
+                                                                        <td>
+                                                                            <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editUserS(user.userId)">
+                                                                                <span class="fa-passwd-reset fa-stack">
+                                                                                    <i class="fa fa-pencil-square-o fa-stack-2x"></i>
+                                                                                </span>
+                                                                            </button>
+                                                                        </td>
+                                                                        <td>
+                                                                            <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-sm" v-on:click="deleteUser(user.userId)">
+                                                                                <span class="fa-passwd-reset fa-stack">
+                                                                                    <i class="fa fa-trash fa-stack-2x"></i>
+                                                                                </span>
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                        
+                                                                    </tbody>
+                                                </table>
+                                            </div>
                                             <div class="p-2" style="direction: rtl;">
                                                                 <v-pagination v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
                                                                 :labels="paginationAnchorTexts"></v-pagination>
@@ -548,6 +556,10 @@
                                                         </button>
                                                     </form>
                                                 </div>
+                                            </div>
+
+                                            <div v-if="loader" class="text-center">
+                                                <roller-loader color="#007bff"/>
                                             </div>
 
                                             <div v-bind:style="usersImported ? 'visibility: visible;' : 'visibility: hidden;' ">
@@ -650,7 +662,10 @@
                                                     <div class="form-group">
                                                         <div class="matches" v-bind:style="notSamePasswords ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                             <p class="error" style="font-size: .8rem;">{{s49}}</p>
-                                                        </div> <br> <br>
+                                                        </div>
+                                                        <div class="matches" v-bind:style="duplicatePasswords ? 'visibility: visible;' : 'visibility: hidden;' ">
+                                                            <p class="error" style="font-size: .8rem;">{{s82}}</p>
+                                                        </div> <br>
                                                         <button v-on:click="showUsers()" class="btn btn-danger">{{s17}}</button>
                                                         <button v-on:click="editPass(editInfo.userId)" :disabled="isActiveUserPassUpdate" class="btn btn-primary">{{U13}}</button>
                                                     </div>

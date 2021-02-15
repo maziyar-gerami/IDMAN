@@ -186,6 +186,8 @@ function myFunction() {
         s93: "موقعیت",
         s94: "ممیزی ها",
         s95: "/audits",
+        s96: "دسترسی از راه دور",
+        s97: "کد پاسخ های قابل قبول",
       },
       created: function () {
         this.getUserInfo();
@@ -372,7 +374,13 @@ function myFunction() {
               document.getElementsByName("unauthorizedRedirectUrl")[0].value = res.data.accessStrategy.unauthorizedRedirectUrl;
             }
 
+            if(typeof res.data.accessStrategy.endpointUrl !== 'undefined'){
+              document.getElementsByName("endpointUrl")[0].value = res.data.accessStrategy.endpointUrl;
+            }
 
+            if(typeof res.data.accessStrategy.acceptableResponseCodes !== 'undefined'){
+              document.getElementsByName("acceptableResponseCodes")[0].value = res.data.accessStrategy.acceptableResponseCodes;
+            }
 
             if(typeof res.data.accessStrategy.startingDateTime !== 'undefined'){
               let seTime = res.data.accessStrategy.startingDateTime;
@@ -639,6 +647,22 @@ function myFunction() {
               this.accessStrategy.unauthorizedRedirectUrl = document.getElementsByName('unauthorizedRedirectUrl')[0].value;
             }else{
               this.accessStrategy.unauthorizedRedirectUrl = null;
+            }
+
+            if(document.getElementsByName('endpointUrl')[0].value != ""){
+              this.accessStrategy.endpointUrl = document.getElementsByName('endpointUrl')[0].value;
+            }else{
+              this.accessStrategy.endpointUrl = null;
+            }
+  
+            if(document.getElementsByName('acceptableResponseCodes')[0].value != ""){
+              this.accessStrategy.acceptableResponseCodes = document.getElementsByName('acceptableResponseCodes')[0].value;
+            }else{
+              if(document.getElementsByName('endpointUrl')[0].value != ""){
+                this.accessStrategy.acceptableResponseCodes = "200";
+              }else{
+                this.accessStrategy.acceptableResponseCodes = null;
+              }
             }
 
             if(document.getElementsByName('dateStart')[0].value != "" && 
@@ -1266,6 +1290,8 @@ function myFunction() {
             this.s93 = "Position";
             this.s94 = "Audits";
             this.s95 = "/audits?en";
+            this.s96 = "Remote Access";
+            this.s97 = "Acceptable Response Codes";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
@@ -1367,6 +1393,8 @@ function myFunction() {
               this.s93 = "موقعیت";
               this.s94 = "ممیزی ها";
               this.s95 = "/audits";
+              this.s96 = "دسترسی از راه دور";
+              this.s97 = "کد پاسخ های قابل قبول";
           }
         },
         div: function (a, b) {

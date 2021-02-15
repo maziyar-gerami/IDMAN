@@ -143,6 +143,8 @@ document.addEventListener('DOMContentLoaded', function () {
       s77: "موقعیت",
       s78: "ممیزی ها",
       s79: "/audits",
+      s80: "دسترسی از راه دور",
+      s81: "کد پاسخ های قابل قبول",
     },
     created: function () {
       this.getUserInfo();
@@ -342,6 +344,21 @@ document.addEventListener('DOMContentLoaded', function () {
             this.accessStrategy.unauthorizedRedirectUrl = null;
           }
 
+          if(document.getElementsByName('endpointUrl')[0].value != ""){
+            this.accessStrategy.endpointUrl = document.getElementsByName('endpointUrl')[0].value;
+          }else{
+            this.accessStrategy.endpointUrl = null;
+          }
+
+          if(document.getElementsByName('acceptableResponseCodes')[0].value != ""){
+            this.accessStrategy.acceptableResponseCodes = document.getElementsByName('acceptableResponseCodes')[0].value;
+          }else{
+            if(document.getElementsByName('endpointUrl')[0].value != ""){
+              this.accessStrategy.acceptableResponseCodes = "200";
+            }else{
+              this.accessStrategy.acceptableResponseCodes = null;
+            }
+          }
 
           if(document.getElementsByName('dateStart')[0].value != "" && 
           document.getElementsByName('dateEnd')[0].value != ""){
@@ -851,6 +868,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s77 = "Position";
           this.s78 = "Audits";
           this.s79 = "/audits?en";
+          this.s80 = "Remote Access";
+          this.s81 = "Acceptable Response Codes";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -935,6 +954,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s77 = "موقعیت";
             this.s78 = "ممیزی ها";
             this.s79 = "/audits";
+            this.s80 = "دسترسی از راه دور";
+            this.s81 = "کد پاسخ های قابل قبول";
         }
       },
       setServiceType: function () {

@@ -172,7 +172,7 @@ html,body {
   .desktopView{
     display: "";
   }
-  #tableList{
+  .tableList{
     display: inline-table;
   }
 }
@@ -184,7 +184,7 @@ html,body {
   .desktopView{
     display: none;
   }
-  #tableList{
+  .tableList{
     display: block;
   }
 }

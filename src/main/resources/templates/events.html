@@ -12,11 +12,15 @@
     <link href="fonts/IranSans/font.css" rel="stylesheet">
     
 
+    <script src="js/es6-promise.min.js"></script>
+    <script src="js/es6-promise.auto.min.js"></script>
+    <script src="js/polyfill.min.js"></script>
     <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Events/script.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
+    <script src="js/vue-spinners-css.min.js"></script>
 
 </head>
 
@@ -149,8 +153,16 @@
                                                 <td>{{eve.date}}</td>
                                                 <td>{{eve.clock}}</td>
                                                 <!-- <td>{{eve.service}}</td> -->
-                                                <td>{{eve.os}}</td>
-                                                <td>{{eve.browser}}</td>
+                                                <td class="text-center">
+                                                    <span class="fa-stack" data-toggle="tooltip" data-placement="top" :title="eve.osdes">
+                                                        <i :class="eve.os"></i>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="fa-stack" data-toggle="tooltip" data-placement="top" :title="eve.browserdes">
+                                                        <i :class="eve.browser"></i>
+                                                    </span>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -196,7 +208,10 @@
                                                     <button class="btn btn-primary btn-sm" @click.prevent="getEventsDate()" style="display: inline-block;">{{s27}}</button>
                                                 </li>
                                                 <li class="nav-item" style="margin: 0.25rem;">
-                                                    <button class="btn btn-primary btn-sm" v-on:click="exportEvents()">
+                                                    <div v-if="loader">
+                                                        <roller-loader color="#007bff"/>
+                                                    </div>
+                                                    <button v-else class="btn btn-primary btn-sm" v-on:click="exportEvents()">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-upload fa-stack-1x"></i>
                                                         </span>
@@ -227,8 +242,16 @@
                                                         <td>{{event.date}}</td>
                                                         <td>{{event.clock}}</td>
                                                         <!-- <td>{{event.service}}</td> -->
-                                                        <td>{{event.os}}</td>
-                                                        <td>{{event.browser}}</td>
+                                                        <td class="text-center">
+                                                            <span class="fa-stack" data-toggle="tooltip" data-placement="top" :title="event.osdes">
+                                                                <i :class="event.os"></i>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span class="fa-stack" data-toggle="tooltip" data-placement="top" :title="event.browserdes">
+                                                                <i :class="event.browser"></i>
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -277,8 +300,16 @@
                                                         <td>{{eve.date}}</td>
                                                         <td>{{eve.clock}}</td>
                                                         <!-- <td>{{eve.service}}</td> -->
-                                                        <td>{{eve.os}}</td>
-                                                        <td>{{eve.browser}}</td>
+                                                        <td class="text-center">
+                                                            <span class="fa-stack" data-toggle="tooltip" data-placement="top" :title="eve.osdes">
+                                                                <i :class="eve.os"></i>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span class="fa-stack" data-toggle="tooltip" data-placement="top" :title="eve.browserdes">
+                                                                <i :class="eve.browser"></i>
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>

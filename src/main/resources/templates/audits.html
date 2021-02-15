@@ -12,11 +12,15 @@
     <link href="fonts/IranSans/font.css" rel="stylesheet">
     
 
+    <script src="js/es6-promise.min.js"></script>
+    <script src="js/es6-promise.auto.min.js"></script>
+    <script src="js/polyfill.min.js"></script>
     <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Audits/script.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
+    <script src="js/vue-spinners-css.min.js"></script>
 
 </head>
 
@@ -203,7 +207,10 @@
                                                         <button class="btn btn-primary btn-sm" v-on:click="getAuditsDate()" style="display: inline-block;">{{s27}}</button>
                                                     </li>
                                                     <li class="nav-item" style="margin: 0.25rem;">
-                                                        <button class="btn btn-primary btn-sm" v-on:click="exportAudits()">
+                                                        <div v-if="loader">
+                                                            <roller-loader color="#007bff"/>
+                                                        </div>
+                                                        <button v-else class="btn btn-primary btn-sm" v-on:click="exportAudits()">
                                                             <span class="fa-stack">
                                                                 <i class="fa fa-upload fa-stack-1x"></i>
                                                             </span>

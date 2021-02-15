@@ -125,6 +125,8 @@ document.addEventListener('DOMContentLoaded', function () {
             searchGroup: "none",
             searchStatus: "none",
             promptImportButtons: false,
+            loader: false,
+            duplicatePasswords: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -206,6 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s79: "بله",
             s80: "ممیزی ها",
             s81: "/audits",
+            s82: "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه کاربری",
@@ -302,6 +305,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     var file = document.querySelector('#file');
                     bodyFormData.append("file", file.files[0]);
                     this.userListImport = [];
+                    vm.loader = true;
                     axios({
                         method: 'post',
                         url: url + "/api/users/import",  //
@@ -309,14 +313,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         data: bodyFormData,
                     })
                     .then((res) => {
+                        vm.loader = false;
                         vm.s69 = res.data.nSuccessful;
                         vm.s70 = res.data.nUnSuccessful;
                         vm.usersImported = true;
                         setTimeout(function(){ vm.usersImported = false; }, 10000);
                         vm.filter();
                     }).catch((error) => {
+                        vm.loader = false;
                         if(error.response.status === 302){
-                            console.log(error.response.data);
                             vm.s69 = error.response.data.nSuccessful;
                             vm.s70 = error.response.data.nUnSuccessful;
                             vm.usersImported = true;
@@ -810,14 +815,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         .then((res) => {
                             location.reload();
                         });
-                        
                     }
                 }
             },
             editPass: function (id) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var check = confirm(this.s26);
-
+                var vm = this;
                 if (check == true) {
                     axios({
                         method: 'put',
@@ -829,23 +833,35 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
                     .then((res) => {
                         location.reload();
+                    }).catch((error) => {
+                        if (error.response) {
+                            if(error.response.status === 302){
+                                vm.duplicatePasswords = true;
+                                setTimeout(function(){ vm.duplicatePasswords = false; }, 5000);
+                            }
+                        }
                     });
                 }
 
             },
             exportUsers: function(){
                 url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                vm.loader = true;
                 axios({
                     url: url_ + "/api/users/export",
                     method: "GET",
                     responseType: "blob",
                 }).then((response) => {
+                    vm.loader = false;
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
                     link.setAttribute("download", "users.xls");
                     document.body.appendChild(link);
                     link.click();
+                }).catch((error) => {
+                    vm.loader = false;
                 });
             },
             addUserS: function () {
@@ -861,6 +877,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 let selectedUsers = [];
                 selectedUsers.push(userId.toString());
+                vm.loader = true;
                 axios({
                     method: 'post',
                     url: url + "/api/users/sendMail", //
@@ -870,8 +887,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     }).replace(/\\\\/g, "\\")
                 })
                 .then((res) => {
+                    vm.loader = false;
                     vm.resetPassEmailSent = true;
                     setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
+                }).catch((error) => {
+                    vm.loader = false;
                 });
             },
             sendAllResetEmail() {
@@ -1159,6 +1179,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                     if(selectedUsers.length != 0){
+                        vm.loader = true;
                         axios({
                             method: 'post',
                             url: url + "/api/users/sendMail", //
@@ -1168,8 +1189,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
+                            vm.loader = false;
                             vm.resetPassEmailSent = true;
                             setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
+                        }).catch((error) => {
+                            vm.loader = false;
                         });
                     }else{
                         alert(this.s56);
@@ -1282,6 +1306,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s79 = "Yes";
                     this.s80 = "Audits";
                     this.s81 = "/audits?en";
+                    this.s82 = "New Password Should Not be Same as Old Password.";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1402,6 +1427,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s79 = "بله";
                     this.s80 = "ممیزی ها";
                     this.s81 = "/audits";
+                    this.s82 = "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه کاربری";
@@ -1443,9 +1469,12 @@ document.addEventListener('DOMContentLoaded', function () {
             notSamePasswords () {
                 if (this.passwordsFilled) {
                     return (this.password !== this.checkPassword)
-                } else {
-                    return false
+                }else {
+                    return false;
                 }
+            },
+            duplicatePasswordsComputed () {
+                return this.duplicatePasswords;
             },
             passwordsFilled () {
                 return (this.password !== '' && this.checkPassword !== '')
