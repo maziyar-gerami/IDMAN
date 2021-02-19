@@ -189,6 +189,11 @@ public class UserController {
         else return new ResponseEntity<>(userRepo.retrieveUsersMain(), HttpStatus.OK);
     }
 
+    @GetMapping("/api/users/group/{groupId}")
+    public ResponseEntity<List<SimpleUser>> retrieveUsersMainWithGroupId(@PathVariable(name = "groupId") String groupId) {
+        if (userRepo.retrieveUsersMainWithGroupId(groupId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(userRepo.retrieveUsersMainWithGroupId(groupId), HttpStatus.OK);
+    }
 
     /**
      * Retrieve all users user only with main attributes

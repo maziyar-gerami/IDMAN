@@ -71,7 +71,11 @@ public class ImportUsers {
             user.setUserPassword(formatter.formatCellValue(row.getCell(sequence[10])));
 
             if((row.getCell(sequence[11])!=null) && !(row.getCell(sequence[11]).equals("")))
-                user.setEndTime(Time.setEndTime(formatter.formatCellValue(row.getCell(sequence[11]))));
+                try {
+                    user.setEndTime(Time.setEndTime(formatter.formatCellValue(row.getCell(sequence[11]))));
+                }catch (Exception e){
+
+                }
 
             temp = userRepo.createUserImport(user);
 
@@ -103,7 +107,7 @@ public class ImportUsers {
         if (oldUser.getDisplayName().equals(newUser.getDisplayName())) conflicts.add("displayName");
         if (oldUser.getMail().equals(newUser.getMail())) conflicts.add("mail");
         if (oldUser.getMobile().equals(newUser.getMobile())) conflicts.add("mobile");
-        if (oldUser.getDescription().equals(newUser.getDescription())) conflicts.add("description");
+        if (oldUser.getDescription()!=null&&oldUser.getDescription().equals(newUser.getDescription())) conflicts.add("description");
         if (oldUser.isEnabled() == (newUser.isEnabled())) conflicts.add("status");
 
         JSONObject jsonObject = new JSONObject();

@@ -50,7 +50,7 @@ import java.util.List;
 @EnableScheduling
 public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
 
-    private static final Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
+
     @Autowired
     static MongoTemplate mongoTemplate;
 
@@ -78,6 +78,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Value("${interval.check.pass.hours}")
     private static long intervalCheckPassTime;
 
+    final static Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
 
 
     /**
@@ -86,6 +87,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
      * @param args the input arguments
      */
     public static void main(String[] args) throws IOException, ParseException, org.json.simple.parser.ParseException {
+
 
 
 
@@ -118,6 +120,8 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
         Thread thread = new Thread(runnable);
         thread.start();
+
+        logger.warn("**********");
 
     }
 
@@ -174,7 +178,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
      */
     @Bean
     public ServiceProperties serviceProperties() {
-        logger.info("service properties");
+        logger.warn("service properties");
         ServiceProperties serviceProperties = new ServiceProperties();
         serviceProperties.setService(baseurl + "/login/cas");
         serviceProperties.setSendRenew(false);

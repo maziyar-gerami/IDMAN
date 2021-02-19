@@ -73,4 +73,5 @@ public interface UserRepo {
 
     HttpStatus massUpdate(List<User> users);
 
+    List<SimpleUser> retrieveUsersMainWithGroupId(String groupId);
 }

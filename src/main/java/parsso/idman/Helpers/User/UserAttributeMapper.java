@@ -50,7 +50,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
 
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
 
-        if (usersExtraInfo.getPhotoName()!=null)
+        if (usersExtraInfo!=null&&usersExtraInfo.getPhotoName()!=null)
             user.setPhoto(usersExtraInfo.getPhotoName());
 
         if (user.getUsersExtraInfo() != null)

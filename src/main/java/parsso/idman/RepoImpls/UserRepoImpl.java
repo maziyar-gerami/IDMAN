@@ -151,14 +151,23 @@ public class UserRepoImpl implements UserRepo {
                 thread.start();
 
 
-                //logger.info("User "+user.getUserId() + " created");
-                UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
-                usersExtraInfo.setUserId(p.getUserId());
-                usersExtraInfo.setQrToken(UUID.randomUUID().toString());
-                usersExtraInfo.setPhotoName(p.getPhoto());
-                Date date = new Date();
-                usersExtraInfo.setCreationTimeStamp(date.getTime());
-                mongoTemplate.save(usersExtraInfo, Token.collection);
+                Thread thread1 = new Thread() {
+                    public void run() {
+                        //logger.info("User "+user.getUserId() + " created");
+                        UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
+                        usersExtraInfo.setUserId(p.getUserId());
+                        usersExtraInfo.setQrToken(UUID.randomUUID().toString());
+                        usersExtraInfo.setPhotoName(p.getPhoto());
+                        Date date = new Date();
+                        usersExtraInfo.setCreationTimeStamp(date.getTime());
+                        mongoTemplate.save(usersExtraInfo, Token.collection);
+
+                    }
+                };
+
+                thread1.start();
+
+
 
 
                 if (p.getCStatus() != null) {
@@ -208,10 +217,11 @@ public class UserRepoImpl implements UserRepo {
 
                             DirContextOperations context = ldapTemplate.lookupContext(dn);
 
-                            context.rebind("pwdChangedTime", userTemp.getTimeStamp()+"Z");
 
                             try {
                                 ldapTemplate.modifyAttributes(context);
+                                context.rebind("pwdChangedTime", userTemp.getTimeStamp()+"Z");
+
                             } catch (Exception e) {
                             }
 
@@ -928,6 +938,15 @@ public class UserRepoImpl implements UserRepo {
     @Deprecated
     public PasswordEncoder passwordEncoder() {
         return new LdapShaPasswordEncoder();
+    }
+
+    @Override
+    public List<SimpleUser> retrieveUsersMainWithGroupId(String groupId) {
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        return ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp","pwdAccountLockedTime").where("objectClass").is("person"),
+                new SimpleUserAttributeMapper());
     }
 }
 
