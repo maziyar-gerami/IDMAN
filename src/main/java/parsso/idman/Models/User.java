@@ -48,9 +48,7 @@ public class User implements UserDetails, Comparable {
     private String photo;
     @JsonIgnore
     private Role role;
-
     private String employeeNumber;
-
     @JsonProperty
     private String status;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -59,6 +57,7 @@ public class User implements UserDetails, Comparable {
     private String cStatus;
     @JsonIgnore
     private UsersExtraInfo usersExtraInfo;
+    private boolean unDeletable;
 
     public User() {
         locked = false;

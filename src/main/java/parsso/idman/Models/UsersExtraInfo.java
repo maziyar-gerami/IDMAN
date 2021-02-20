@@ -22,5 +22,6 @@ public class UsersExtraInfo {
     private String qrToken;
     private long creationTimeStamp;
     private String photoName;
+    private  boolean unDeletable;
 
 }

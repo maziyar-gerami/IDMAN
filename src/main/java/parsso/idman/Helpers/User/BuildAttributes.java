@@ -2,12 +2,14 @@ package parsso.idman.Helpers.User;
 
 
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.IdmanApplication;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
@@ -17,10 +19,11 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
-import java.time.ZoneId;
 
 @Service
 public class BuildAttributes {
+
+    final static Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
 
     @Value("${default.user.password}")
     private String defaultPassword;
@@ -30,13 +33,8 @@ public class BuildAttributes {
     @Autowired
     private LdapTemplate ldapTemplate;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
 
-    String collection = "IDMAN_UsersExtraInfo";
     public Attributes BuildAttributes(User p) {
-
-        ZoneId zoneId = ZoneId.of("UTC+03:30");
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
         ocattr.add("top");
@@ -94,8 +92,8 @@ public class BuildAttributes {
         if (p.getLastName() != "" && p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
         if (p.getDisplayName() != "" && p.getDisplayName() != null)
             context.setAttributeValue("displayName", p.getDisplayName());
-        //if (p.getUserPassword() != null && p.getUserPassword() != "")
-            //context.setAttributeValue("userPassword", p.getUserPassword());
+        if (p.getUserPassword() != null && p.getUserPassword() != "")
+            context.setAttributeValue("userPassword", p.getUserPassword());
         if (p.getMobile() != "" && p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
         if (p.getEmployeeNumber() != null && p.getEmployeeNumber() != "") context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
         if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
@@ -122,6 +120,8 @@ public class BuildAttributes {
                 userRepo.disable(uid);
             else if (p.getCStatus().equals("unlock"))
                 userRepo.unlock(uid);
+
+            logger.warn("User \""+p.getUserId()+"\" access level changed from \""+old.getStatus()+"\" to \""+p.getStatus()+"\"");
 
         }
 

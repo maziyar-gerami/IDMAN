@@ -267,8 +267,12 @@ public class UserController {
      * @return the response entity
      */
     @DeleteMapping("/api/users")
-    public ResponseEntity<HttpStatus> unbindAllLdapUser(@RequestBody JSONObject jsonObject) {
-        return new ResponseEntity<>(userRepo.remove(jsonObject), HttpStatus.OK);
+    public ResponseEntity<List<String>> unbindAllLdapUser(@RequestBody JSONObject jsonObject) {
+        List<String> names = userRepo.remove(jsonObject);
+        if (names.size() == 0)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(names, HttpStatus.PARTIAL_CONTENT);
     }
 
     /**

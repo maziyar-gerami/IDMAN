@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface UserRepo {
 
-    HttpStatus remove(JSONObject jsonObject);
+    List<String> remove(JSONObject jsonObject);
 
     HttpStatus changePassword(String uId, String newPassword, String token);
 

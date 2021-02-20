@@ -6,8 +6,6 @@ import lombok.SneakyThrows;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator;
 import org.jasig.cas.client.validation.TicketValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -78,7 +76,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Value("${interval.check.pass.hours}")
     private static long intervalCheckPassTime;
 
-    final static Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
 
 
     /**
@@ -121,7 +118,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         Thread thread = new Thread(runnable);
         thread.start();
 
-        logger.warn("**********");
 
     }
 
@@ -178,7 +174,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
      */
     @Bean
     public ServiceProperties serviceProperties() {
-        logger.warn("service properties");
         ServiceProperties serviceProperties = new ServiceProperties();
         serviceProperties.setService(baseurl + "/login/cas");
         serviceProperties.setSendRenew(false);

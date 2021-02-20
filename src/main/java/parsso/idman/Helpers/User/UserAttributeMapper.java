@@ -50,13 +50,15 @@ public class UserAttributeMapper implements AttributesMapper<User> {
 
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
 
-        if (usersExtraInfo!=null&&usersExtraInfo.getPhotoName()!=null)
-            user.setPhoto(usersExtraInfo.getPhotoName());
+        if (usersExtraInfo!=null) {
 
-        if (user.getUsersExtraInfo() != null)
-            user.getUsersExtraInfo().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
-        user.setEndTime(null != attributes.get("pwdEndTime") ? Time.setEndTime(attributes.get("pwdEndTime").get().toString()) : null);
+            user.setPhoto(null!=usersExtraInfo.getPhotoName()?usersExtraInfo.getPhotoName():null );
+            user.setUnDeletable((boolean) usersExtraInfo.isUnDeletable());
 
+            //user.getUsersExtraInfo().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
+            user.setEndTime(null != attributes.get("pwdEndTime") ? Time.setEndTime(attributes.get("pwdEndTime").get().toString()) : null);
+
+        }
         if (null != attributes.get("pwdAccountLockedTime")) {
 
             if (attributes.get("pwdAccountLockedTime").get().toString().equals("40400404040404.950Z")) {

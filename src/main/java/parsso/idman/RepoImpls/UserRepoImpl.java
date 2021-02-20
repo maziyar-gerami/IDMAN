@@ -160,15 +160,13 @@ public class UserRepoImpl implements UserRepo {
                         usersExtraInfo.setPhotoName(p.getPhoto());
                         Date date = new Date();
                         usersExtraInfo.setCreationTimeStamp(date.getTime());
+                        usersExtraInfo.setUnDeletable(p.isUnDeletable());
                         mongoTemplate.save(usersExtraInfo, Token.collection);
 
                     }
                 };
 
                 thread1.start();
-
-
-
 
                 if (p.getCStatus() != null) {
                     if (p.getCStatus().equals("disable"))
@@ -257,20 +255,22 @@ public class UserRepoImpl implements UserRepo {
         DirContextOperations context;
 
         //remove current pwdEndTime
-        /*if ((p.getEndTime() == null || p.getEndTime().equals(""))) {
+        if ((p.getEndTime() == null || p.getEndTime().equals(""))) {
             if ((user.getEndTime() != null || user.getEndTime() != ""))
                 removeCurrentEndTime(uid);
         } else if (!(p.getEndTime().equals(user.getEndTime())))
-            removeCurrentEndTime(uid);*/
+            removeCurrentEndTime(uid);
 
         context = buildAttributes.buildAttributes(uid, p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query,UsersExtraInfo.class,collection);
 
-        if (p.getPhoto()!=null) {
-            UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query,UsersExtraInfo.class,collection);
+        if (p.getPhoto()!=null)
             usersExtraInfo.setPhotoName(p.getPhoto());
-            mongoTemplate.save(usersExtraInfo, collection);
-        }
+
+        usersExtraInfo.setUnDeletable(p.isUnDeletable());
+        mongoTemplate.save(usersExtraInfo, collection);
+
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[2];
@@ -311,12 +311,12 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus remove(JSONObject jsonObject) {
+    public List<String> remove(JSONObject jsonObject) {
         List<User> people = new LinkedList<>();
+        List<String> undeletables = new LinkedList<>();
         if (jsonObject.size() == 0)
             people = retrieveUsersFull();
         else {
-
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
             Iterator<String> iterator = jsonArray.iterator();
             while (iterator.hasNext()) {
@@ -328,11 +328,14 @@ public class UserRepoImpl implements UserRepo {
 
         if (people != null)
             for (User user : people) {
+                if (user.isUnDeletable()){
+                    undeletables.add(user.getUserId());
+                    continue;
+                }
                 Name dn = buildDn.buildDn(user.getUserId());
                 Query query = new Query(new Criteria("userId").is(user.getUserId()));
 
                 try {
-
                     ldapTemplate.unbind(dn);
                     mongoTemplate.remove(query, User.class, "IDMAN_Tokens");
 
@@ -351,7 +354,7 @@ public class UserRepoImpl implements UserRepo {
             logger.info("Selected users removed successfully");
 
 
-        return HttpStatus.OK;
+        return undeletables;
     }
 
     public void setRole(String uid, User p) {
