@@ -43,7 +43,7 @@ public interface UserRepo {
 
     User retrieveUsers(String userId);
 
-    List<User> retrieveGroupsUsers(String groupId);
+    List<SimpleUser> retrieveGroupsUsers(String groupId);
 
     List<JSONObject> checkMail(String token);
 
@@ -73,5 +73,5 @@ public interface UserRepo {
 
     HttpStatus massUpdate(List<User> users);
 
-    List<SimpleUser> retrieveUsersMainWithGroupId(String groupId);
+    ListUsers retrieveUsersMainWithGroupId(String groupId, String page, String nRec);
 }

@@ -190,9 +190,12 @@ public class UserController {
     }
 
     @GetMapping("/api/users/group/{groupId}")
-    public ResponseEntity<List<SimpleUser>> retrieveUsersMainWithGroupId(@PathVariable(name = "groupId") String groupId) {
-        if (userRepo.retrieveUsersMainWithGroupId(groupId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveUsersMainWithGroupId(groupId), HttpStatus.OK);
+    public ResponseEntity<ListUsers> retrieveUsersMainWithGroupId(@PathVariable(name = "groupId") String groupId,
+                                                                         @RequestParam(name = "page", defaultValue = "") String page,
+                                                                         @RequestParam(name = "nRec", defaultValue = "") String nRec) {
+        ListUsers users = userRepo.retrieveUsersMainWithGroupId(groupId, page,nRec);
+        if (users == null) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     /**
@@ -231,6 +234,12 @@ public class UserController {
     public ResponseEntity<List<User>> retrieveUsers() {
         if (userRepo.retrieveUsersFull().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(userRepo.retrieveUsersFull(), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/test")
+    public ResponseEntity<List<SimpleUser>> retrieveUsersTest() {
+        if (userRepo.retrieveUsersFull().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(userRepo.retrieveGroupsUsers("Staff"), HttpStatus.OK);
     }
 
 

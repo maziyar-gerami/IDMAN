@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.PredicateUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
@@ -104,6 +106,8 @@ public class UserRepoImpl implements UserRepo {
     private MongoTemplate mongoTemplate;
     @Autowired
     private UserAttributeMapper userAttributeMapper;
+    @Autowired
+    private SimpleUserAttributeMapper simpleUserAttributeMapper;
     @Autowired
     private Email emailClass;
     @Autowired
@@ -710,7 +714,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<User> retrieveGroupsUsers(String groupId) {
+    public List<SimpleUser> retrieveGroupsUsers(String groupId) {
 
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
@@ -718,7 +722,9 @@ public class UserRepoImpl implements UserRepo {
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("ou", groupId));
 
-        return ldapTemplate.search(query().where("ou").is(groupId), userAttributeMapper);
+
+            return ldapTemplate.search(query().where("ou").is(groupId), simpleUserAttributeMapper);
+
 
     }
 
@@ -867,6 +873,27 @@ public class UserRepoImpl implements UserRepo {
         return HttpStatus.OK;
     }
 
+    @Override
+    public ListUsers retrieveUsersMainWithGroupId(String groupId, String p, String nRec) {
+
+        List<SimpleUser> users = retrieveGroupsUsers(groupId);
+
+        int page = !p.equals("")?Integer.valueOf(p):1;
+        int number = !nRec.equals("")?Integer.valueOf(nRec):users.size();
+
+        List<SimpleUser> relativeUsers = new LinkedList<>();
+
+
+            for (int i = (page - 1) * number; i < users.size(); i++) {
+                if (i==users.size()) break;
+                relativeUsers.add(users.get(i));
+            }
+
+        CollectionUtils.filter(relativeUsers, PredicateUtils.notNullPredicate());
+
+        return new ListUsers(users.size(), relativeUsers, (int) Math.ceil(users.size() / number)-1);
+
+    }
 
 
     @Override
@@ -881,18 +908,15 @@ public class UserRepoImpl implements UserRepo {
 
         int pages = (int) Math.ceil(size / number);
 
-
         int start = (page - 1) * number;
-
 
         List<SimpleUser> relativeUsers = new LinkedList<>();
 
         for (int i = start; i < n; i++)
             relativeUsers.add(allUsers.get(i));
 
-        ListUsers finalList = new ListUsers(size, relativeUsers, pages);
+        return new ListUsers(size, relativeUsers, pages);
 
-        return finalList;
     }
 
     @Override
@@ -943,13 +967,6 @@ public class UserRepoImpl implements UserRepo {
         return new LdapShaPasswordEncoder();
     }
 
-    @Override
-    public List<SimpleUser> retrieveUsersMainWithGroupId(String groupId) {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        return ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp","pwdAccountLockedTime").where("objectClass").is("person"),
-                new SimpleUserAttributeMapper());
-    }
+
 }
 

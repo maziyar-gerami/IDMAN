@@ -17,6 +17,7 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Group;
+import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.ServiceRepo;
@@ -210,7 +211,7 @@ public class GroupRepoImpl implements GroupRepo {
                 create(ou);
                 logger.info("Group " + ou.getId() + " updated successfully");
 
-                for (User user:userRepo.retrieveGroupsUsers(id) ) {
+                for (SimpleUser user:userRepo.retrieveGroupsUsers(id) ) {
                     for (String group:user.getMemberOf()) {
                         if (group.equals(id)){
                             context.removeAttributeValue("ou", id);
