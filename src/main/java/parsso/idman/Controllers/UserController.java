@@ -198,6 +198,12 @@ public class UserController {
         else return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    @PutMapping("/api/users/group/{groupId}")
+    public ResponseEntity<HttpStatus> massUsersGroupUpdate(@RequestBody JSONObject gu,
+                                                           @PathVariable (name = "groupId") String groupId) {
+        return new ResponseEntity<>(userRepo.massUsersGroupUpdate(groupId, gu));
+    }
+
     /**
      * Retrieve all users user only with main attributes
      * main attributes are as following: userId, displayName, OU
@@ -235,13 +241,6 @@ public class UserController {
         if (userRepo.retrieveUsersFull().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(userRepo.retrieveUsersFull(), HttpStatus.OK);
     }
-
-    @GetMapping("/api/test")
-    public ResponseEntity<List<SimpleUser>> retrieveUsersTest() {
-        if (userRepo.retrieveUsersFull().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveGroupsUsers("Staff"), HttpStatus.OK);
-    }
-
 
     /**
      * Create user

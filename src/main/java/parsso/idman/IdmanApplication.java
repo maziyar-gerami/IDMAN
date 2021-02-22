@@ -70,7 +70,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Value("${base.url}")
     private String baseurl;
     @Value("${max.pwd.lifetime.hours}")
-    private static long maxPwdLifetime=10;
+    private static final long maxPwdLifetime=10;
     @Value("${expire.pwd.message.hours}")
     private static long expirePwdMessageTime;
     @Value("${interval.check.pass.hours}")

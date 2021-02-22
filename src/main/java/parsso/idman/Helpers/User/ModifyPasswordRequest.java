@@ -152,7 +152,7 @@ public class ModifyPasswordRequest
     private static final byte LDAP_TAG_EXOP_X_MODIFY_PASSWD_NEW =
             (byte) 0x82;
     /** The dn we want to change */
-    private String mDn;
+    private final String mDn;
     /** The password to change to */
-    private String mPassword;
+    private final String mPassword;
 }

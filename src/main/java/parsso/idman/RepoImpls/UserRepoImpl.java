@@ -66,6 +66,7 @@ public class UserRepoImpl implements UserRepo {
     Logger logger = LoggerFactory.getLogger(UserRepoImpl.class);
     @Autowired
     FilesStorageService storageService;
+    String collection = "IDMAN_UsersExtraInfo";
     @Autowired
     private InstantMessage instantMessage;
     @Autowired
@@ -81,7 +82,6 @@ public class UserRepoImpl implements UserRepo {
     @Value("${get.users.time.interval}")
     private int apiHours;
     private final int apiMiliseconds = apiHours * 60 * 60000;
-
     @Autowired
     private LdapTemplate ldapTemplate;
     @Value("${pwd.expire.warning}")
@@ -119,8 +119,6 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     private ImportUsers importUsers;
 
-    String collection = "IDMAN_UsersExtraInfo";
-
     @Override
     public JSONObject create(User p) {
 
@@ -140,7 +138,7 @@ public class UserRepoImpl implements UserRepo {
 
                         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
-                        context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp()+"Z");
+                        context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp() + "Z");
 
                         try {
                             ldapTemplate.modifyAttributes(context);
@@ -222,7 +220,7 @@ public class UserRepoImpl implements UserRepo {
 
                             try {
                                 ldapTemplate.modifyAttributes(context);
-                                context.rebind("pwdChangedTime", userTemp.getTimeStamp()+"Z");
+                                context.rebind("pwdChangedTime", userTemp.getTimeStamp() + "Z");
 
                             } catch (Exception e) {
                             }
@@ -267,40 +265,14 @@ public class UserRepoImpl implements UserRepo {
 
         context = buildAttributes.buildAttributes(uid, p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
-        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query,UsersExtraInfo.class,collection);
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
 
-        if (p.getPhoto()!=null)
+        if (p.getPhoto() != null)
             usersExtraInfo.setPhotoName(p.getPhoto());
 
         usersExtraInfo.setUnDeletable(p.isUnDeletable());
         mongoTemplate.save(usersExtraInfo, collection);
 
-
-        ModificationItem[] modificationItems;
-        modificationItems = new ModificationItem[2];
-
-
-
-
-        //update it's pwChangedTime in a new thread if password changed
-        if(p.getUserPassword()!=null) {
-            Thread thread = new Thread(() -> {
-                User userTemp = retrieveUsers(p.getUserId());
-
-                modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdChangedTime"));
-                modificationItems[1] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdChangedTime",userTemp.getTimeStamp() + "Z"));
-
-                try {
-                    ldapTemplate.modifyAttributes(dn, modificationItems);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-
-
-            });
-            thread.start();
-        }
         try {
             ldapTemplate.modifyAttributes(context);
 
@@ -332,7 +304,7 @@ public class UserRepoImpl implements UserRepo {
 
         if (people != null)
             for (User user : people) {
-                if (user.isUnDeletable()){
+                if (user.isUnDeletable()) {
                     undeletables.add(user.getUserId());
                     continue;
                 }
@@ -425,7 +397,6 @@ public class UserRepoImpl implements UserRepo {
                     context.setAttributeValue("pwdChangedTime", date.getTime());
 
 
-
                     try {
                         ldapTemplate.modifyAttributes(context);
                         logger.info("Password for" + uId + " changed successfully");
@@ -448,7 +419,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public String showProfilePic(HttpServletResponse response, User user) {
-        if(user.getPhoto()==null)
+        if (user.getPhoto() == null)
             return "NotExist";
 
         File file = new File(uploadedFilesPath + user.getPhoto());
@@ -524,7 +495,7 @@ public class UserRepoImpl implements UserRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp","pwdAccountLockedTime").where("objectClass").is("person"),
+        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("objectClass").is("person"),
                 new SimpleUserAttributeMapper());
         List relatedUsers = new LinkedList();
         for (SimpleUser user : people) {
@@ -534,14 +505,6 @@ public class UserRepoImpl implements UserRepo {
         }
         Collections.sort(relatedUsers);
         return relatedUsers;
-    }
-
-    @Setter
-    @Getter
-    private class BasicDashboardData{
-        int nUsers;
-        int nLocked;
-        int nDisabled;
     }
 
     @Override
@@ -678,17 +641,17 @@ public class UserRepoImpl implements UserRepo {
 
             for (User user : people) {
 
-                    DirContextOperations context = buildAttributes.buildAttributes(user.getUserId(), user, buildDn.buildDn(user.getUserId()));
+                DirContextOperations context = buildAttributes.buildAttributes(user.getUserId(), user, buildDn.buildDn(user.getUserId()));
 
-                    context.removeAttributeValue("ou", old_ou);
-                    context.addAttributeValue("ou", new_ou);
+                context.removeAttributeValue("ou", old_ou);
+                context.addAttributeValue("ou", new_ou);
 
                 ldapTemplate.modifyAttributes(context);
             }
             return HttpStatus.OK;
-            } catch (Exception e){
-                return  HttpStatus.FORBIDDEN;
-            }
+        } catch (Exception e) {
+            return HttpStatus.FORBIDDEN;
+        }
 
 
     }
@@ -723,7 +686,7 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("ou", groupId));
 
 
-            return ldapTemplate.search(query().where("ou").is(groupId), simpleUserAttributeMapper);
+        return ldapTemplate.search(query().where("ou").is(groupId), simpleUserAttributeMapper);
 
 
     }
@@ -771,7 +734,6 @@ public class UserRepoImpl implements UserRepo {
             return HttpStatus.BAD_REQUEST;
         }
     }
-
 
     public HttpStatus removeCurrentEndTime(String uid) {
 
@@ -878,23 +840,44 @@ public class UserRepoImpl implements UserRepo {
 
         List<SimpleUser> users = retrieveGroupsUsers(groupId);
 
-        int page = !p.equals("")?Integer.valueOf(p):1;
-        int number = !nRec.equals("")?Integer.valueOf(nRec):users.size();
+        int page = !p.equals("") ? Integer.valueOf(p) : 1;
+        int number = !nRec.equals("") ? Integer.valueOf(nRec) : users.size();
 
         List<SimpleUser> relativeUsers = new LinkedList<>();
 
 
-            for (int i = (page - 1) * number; i < users.size(); i++) {
-                if (i==users.size()) break;
-                relativeUsers.add(users.get(i));
-            }
+        for (int i = (page - 1) * number; i < users.size(); i++) {
+            if (i == users.size()) break;
+            relativeUsers.add(users.get(i));
+        }
 
         CollectionUtils.filter(relativeUsers, PredicateUtils.notNullPredicate());
 
-        return new ListUsers(users.size(), relativeUsers, (int) Math.ceil(users.size() / number)-1);
+        return new ListUsers(users.size(), relativeUsers, (int) Math.ceil(users.size() / number) - 1);
 
     }
 
+    @Override
+    public HttpStatus massUsersGroupUpdate(String groupId, JSONObject gu) {
+        List<String> add = (List<String>) gu.get("add");
+        List<String> remove = (List<String>) gu.get("remove");
+        for (String uid : add) {
+            User user = retrieveUsers(uid);
+            if (!user.getMemberOf().contains(groupId)) {
+                user.getMemberOf().add(groupId);
+                update(uid, user);
+            }
+
+        }
+        for (String uid : remove) {
+            User user = retrieveUsers(uid);
+            if (user.getMemberOf().contains(groupId)) {
+                user.getMemberOf().remove(groupId);
+                update(uid, user);
+            }
+        }
+        return HttpStatus.OK;
+    }
 
     @Override
     public ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
@@ -928,7 +911,6 @@ public class UserRepoImpl implements UserRepo {
     public int sendEmail(String email, String uid, String cid, String answer) {
         return emailClass.sendEmail(email, uid, cid, answer);
     }
-
 
     public String createUrl(String userId, String token) {
         return BASE_URL + /*"" +*/ EMAILCONTROLLER + userId + "/" + token;
@@ -965,6 +947,14 @@ public class UserRepoImpl implements UserRepo {
     @Deprecated
     public PasswordEncoder passwordEncoder() {
         return new LdapShaPasswordEncoder();
+    }
+
+    @Setter
+    @Getter
+    private class BasicDashboardData {
+        int nUsers;
+        int nLocked;
+        int nDisabled;
     }
 
 

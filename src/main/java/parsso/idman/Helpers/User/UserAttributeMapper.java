@@ -52,8 +52,8 @@ public class UserAttributeMapper implements AttributesMapper<User> {
 
         if (usersExtraInfo!=null) {
 
-            user.setPhoto(null!=usersExtraInfo.getPhotoName()?usersExtraInfo.getPhotoName():null );
-            user.setUnDeletable((boolean) usersExtraInfo.isUnDeletable());
+            user.setPhoto(usersExtraInfo.getPhotoName());
+            user.setUnDeletable(usersExtraInfo.isUnDeletable());
 
             //user.getUsersExtraInfo().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
             user.setEndTime(null != attributes.get("pwdEndTime") ? Time.setEndTime(attributes.get("pwdEndTime").get().toString()) : null);
