@@ -257,10 +257,9 @@ public class UserRepoImpl implements UserRepo {
         DirContextOperations context;
 
         //remove current pwdEndTime
-        if ((p.getEndTime() == null || p.getEndTime().equals(""))) {
-            if ((user.getEndTime() != null || user.getEndTime() != ""))
+        if ((p.getEndTime() != null && p.getEndTime().equals("")))
                 removeCurrentEndTime(uid);
-        } else if (!(p.getEndTime().equals(user.getEndTime())))
+        else if (p.getEndTime() != null && !(p.getEndTime().equals(user.getEndTime())))
             removeCurrentEndTime(uid);
 
         context = buildAttributes.buildAttributes(uid, p, dn);
