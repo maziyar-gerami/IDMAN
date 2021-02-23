@@ -237,12 +237,16 @@ document.addEventListener('DOMContentLoaded', function () {
             var osName = item.agentInfo.os.toLowerCase();
             tempEvent.osdes = item.agentInfo.os;
             if(osName.search("windows") != -1){
+              tempEvent.oscol = "color: darkblue;";
               tempEvent.os = "fa fa-windows fa-stack-2x";
             }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+              tempEvent.oscol = "color: dimgray;";
               tempEvent.os = "fa fa-apple fa-stack-2x";
             }else if(osName.search("android") != -1){
+              tempEvent.oscol = "color: #56c736;";
               tempEvent.os = "fa fa-android fa-stack-2x";
             }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+              tempEvent.oscol = "color: #f7c600;";
               tempEvent.os = "fa fa-linux fa-stack-2x";
             }else{
               tempEvent.os = "fa fa-question-circle fa-stack-2x";
@@ -251,16 +255,22 @@ document.addEventListener('DOMContentLoaded', function () {
             var browserName = item.agentInfo.browser.toLowerCase();
             tempEvent.browserdes = item.agentInfo.browser;
             if(browserName.search("firefox") != -1){
+              tempEvent.browsercol = "color: #f65d2b;";
               tempEvent.browser = "fa fa-firefox fa-stack-2x";
             }else if(browserName.search("chrome") != -1){
+              tempEvent.browsercol = "color: #109855";
               tempEvent.browser = "fa fa-chrome fa-stack-2x";
             }else if(browserName.search("safari") != -1){
+              tempEvent.browsercol = "color: #1688e2;";
               tempEvent.browser = "fa fa-safari fa-stack-2x";
             }else if(browserName.search("edge") != -1){
+              tempEvent.browsercol = "color: #44ce90;";
               tempEvent.browser = "fa fa-edge fa-stack-2x";
             }else if(browserName.search("opera") != -1){
+              tempEvent.browsercol = "color: #e21126;";
               tempEvent.browser = "fa fa-opera fa-stack-2x";
             }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+              tempEvent.browsercol = "color: #1db5e7;";
               tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
             }else{
               tempEvent.browser = "fa fa-question-circle fa-stack-2x";
@@ -303,12 +313,16 @@ document.addEventListener('DOMContentLoaded', function () {
             var osName = item.agentInfo.os.toLowerCase();
             tempEvent.osdes = item.agentInfo.os;
             if(osName.search("windows") != -1){
+              tempEvent.oscol = "color: darkblue;";
               tempEvent.os = "fa fa-windows fa-stack-2x";
             }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+              tempEvent.oscol = "color: dimgray;";
               tempEvent.os = "fa fa-apple fa-stack-2x";
             }else if(osName.search("android") != -1){
+              tempEvent.oscol = "color: #56c736;";
               tempEvent.os = "fa fa-android fa-stack-2x";
             }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+              tempEvent.oscol = "color: #f7c600;";
               tempEvent.os = "fa fa-linux fa-stack-2x";
             }else{
               tempEvent.os = "fa fa-question-circle fa-stack-2x";
@@ -317,16 +331,22 @@ document.addEventListener('DOMContentLoaded', function () {
             var browserName = item.agentInfo.browser.toLowerCase();
             tempEvent.browserdes = item.agentInfo.browser;
             if(browserName.search("firefox") != -1){
+              tempEvent.browsercol = "color: #f65d2b;";
               tempEvent.browser = "fa fa-firefox fa-stack-2x";
             }else if(browserName.search("chrome") != -1){
+              tempEvent.browsercol = "color: #109855;";
               tempEvent.browser = "fa fa-chrome fa-stack-2x";
             }else if(browserName.search("safari") != -1){
+              tempEvent.browsercol = "color: #1688e2;";
               tempEvent.browser = "fa fa-safari fa-stack-2x";
             }else if(browserName.search("edge") != -1){
+              tempEvent.browsercol = "color: #44ce90;";
               tempEvent.browser = "fa fa-edge fa-stack-2x";
             }else if(browserName.search("opera") != -1){
+              tempEvent.browsercol = "color: #e21126;";
               tempEvent.browser = "fa fa-opera fa-stack-2x";
             }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+              tempEvent.browsercol = "color: #1db5e7;";
               tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
             }else{
               tempEvent.browser = "fa fa-question-circle fa-stack-2x";
@@ -384,12 +404,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 var osName = item.agentInfo.os.toLowerCase();
                 tempEvent.osdes = item.agentInfo.os;
                 if(osName.search("windows") != -1){
+                  tempEvent.oscol = "color: darkblue;";
                   tempEvent.os = "fa fa-windows fa-stack-2x";
                 }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+                  tempEvent.oscol = "color: dimgray;";
                   tempEvent.os = "fa fa-apple fa-stack-2x";
                 }else if(osName.search("android") != -1){
+                  tempEvent.oscol = "color: #56c736;";
                   tempEvent.os = "fa fa-android fa-stack-2x";
                 }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+                  tempEvent.oscol = "color: #f7c600;";
                   tempEvent.os = "fa fa-linux fa-stack-2x";
                 }else{
                   tempEvent.os = "fa fa-question-circle fa-stack-2x";
@@ -398,16 +422,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 var browserName = item.agentInfo.browser.toLowerCase();
                 tempEvent.browserdes = item.agentInfo.browser;
                 if(browserName.search("firefox") != -1){
+                  tempEvent.browsercol = "color: #f65d2b;";
                   tempEvent.browser = "fa fa-firefox fa-stack-2x";
                 }else if(browserName.search("chrome") != -1){
+                  tempEvent.browsercol = "color: #109855;";
                   tempEvent.browser = "fa fa-chrome fa-stack-2x";
                 }else if(browserName.search("safari") != -1){
+                  tempEvent.browsercol = "color: #1688e2;";
                   tempEvent.browser = "fa fa-safari fa-stack-2x";
                 }else if(browserName.search("edge") != -1){
+                  tempEvent.browsercol = "color: #44ce90;";
                   tempEvent.browser = "fa fa-edge fa-stack-2x";
                 }else if(browserName.search("opera") != -1){
+                  tempEvent.browsercol = "color: #e21126;";
                   tempEvent.browser = "fa fa-opera fa-stack-2x";
                 }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+                  tempEvent.browsercol = "color: #1db5e7;";
                   tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
                 }else{
                   tempEvent.browser = "fa fa-question-circle fa-stack-2x";
@@ -458,12 +488,16 @@ document.addEventListener('DOMContentLoaded', function () {
               var osName = item.agentInfo.os.toLowerCase();
               tempEvent.osdes = item.agentInfo.os;
               if(osName.search("windows") != -1){
+                tempEvent.oscol = "color: darkblue;";
                 tempEvent.os = "fa fa-windows fa-stack-2x";
               }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+                tempEvent.oscol = "color: dimgray;";
                 tempEvent.os = "fa fa-apple fa-stack-2x";
               }else if(osName.search("android") != -1){
+                tempEvent.oscol = "color: #56c736;";
                 tempEvent.os = "fa fa-android fa-stack-2x";
               }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+                tempEvent.oscol = "color: #f7c600;";
                 tempEvent.os = "fa fa-linux fa-stack-2x";
               }else{
                 tempEvent.os = "fa fa-question-circle fa-stack-2x";
@@ -472,16 +506,22 @@ document.addEventListener('DOMContentLoaded', function () {
               var browserName = item.agentInfo.browser.toLowerCase();
               tempEvent.browserdes = item.agentInfo.browser;
               if(browserName.search("firefox") != -1){
+                tempEvent.browsercol = "color: #f65d2b;";
                 tempEvent.browser = "fa fa-firefox fa-stack-2x";
               }else if(browserName.search("chrome") != -1){
+                tempEvent.browsercol = "color: #109855;";
                 tempEvent.browser = "fa fa-chrome fa-stack-2x";
               }else if(browserName.search("safari") != -1){
+                tempEvent.browsercol = "color: #1688e2;";
                 tempEvent.browser = "fa fa-safari fa-stack-2x";
               }else if(browserName.search("edge") != -1){
+                tempEvent.browsercol = "color: #44ce90;";
                 tempEvent.browser = "fa fa-edge fa-stack-2x";
               }else if(browserName.search("opera") != -1){
+                tempEvent.browsercol = "color: #e21126;";
                 tempEvent.browser = "fa fa-opera fa-stack-2x";
               }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+                tempEvent.browsercol = "color: #1db5e7;";
                 tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
               }else{
                 tempEvent.browser = "fa fa-question-circle fa-stack-2x";
@@ -547,12 +587,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 var osName = item.agentInfo.os.toLowerCase();
                 tempEvent.osdes = item.agentInfo.os;
                 if(osName.search("windows") != -1){
+                  tempEvent.oscol = "color: darkblue;";
                   tempEvent.os = "fa fa-windows fa-stack-2x";
                 }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+                  tempEvent.oscol = "color: dimgray;";
                   tempEvent.os = "fa fa-apple fa-stack-2x";
                 }else if(osName.search("android") != -1){
+                  tempEvent.oscol = "color: #56c736;";
                   tempEvent.os = "fa fa-android fa-stack-2x";
                 }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+                  tempEvent.oscol = "color: #f7c600;";
                   tempEvent.os = "fa fa-linux fa-stack-2x";
                 }else{
                   tempEvent.os = "fa fa-question-circle fa-stack-2x";
@@ -561,16 +605,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 var browserName = item.agentInfo.browser.toLowerCase();
                 tempEvent.browserdes = item.agentInfo.browser;
                 if(browserName.search("firefox") != -1){
+                  tempEvent.browsercol = "color: #f65d2b;";
                   tempEvent.browser = "fa fa-firefox fa-stack-2x";
                 }else if(browserName.search("chrome") != -1){
+                  tempEvent.browsercol = "color: #109855;";
                   tempEvent.browser = "fa fa-chrome fa-stack-2x";
                 }else if(browserName.search("safari") != -1){
+                  tempEvent.browsercol = "color: #1688e2;";
                   tempEvent.browser = "fa fa-safari fa-stack-2x";
                 }else if(browserName.search("edge") != -1){
+                  tempEvent.browsercol = "color: #44ce90;";
                   tempEvent.browser = "fa fa-edge fa-stack-2x";
                 }else if(browserName.search("opera") != -1){
+                  tempEvent.browsercol = "color: #e21126;";
                   tempEvent.browser = "fa fa-opera fa-stack-2x";
                 }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+                  tempEvent.browsercol = "color: #1db5e7;";
                   tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
                 }else{
                   tempEvent.browser = "fa fa-question-circle fa-stack-2x";
@@ -632,12 +682,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 var osName = item.agentInfo.os.toLowerCase();
                 tempEvent.osdes = item.agentInfo.os;
                 if(osName.search("windows") != -1){
+                  tempEvent.oscol = "color: darkblue;";
                   tempEvent.os = "fa fa-windows fa-stack-2x";
                 }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+                  tempEvent.oscol = "color: dimgray;";
                   tempEvent.os = "fa fa-apple fa-stack-2x";
                 }else if(osName.search("android") != -1){
+                  tempEvent.oscol = "color: #56c736;";
                   tempEvent.os = "fa fa-android fa-stack-2x";
                 }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+                  tempEvent.oscol = "color: #f7c600;";
                   tempEvent.os = "fa fa-linux fa-stack-2x";
                 }else{
                   tempEvent.os = "fa fa-question-circle fa-stack-2x";
@@ -646,16 +700,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 var browserName = item.agentInfo.browser.toLowerCase();
                 tempEvent.browserdes = item.agentInfo.browser;
                 if(browserName.search("firefox") != -1){
+                  tempEvent.browsercol = "color: #f65d2b;";
                   tempEvent.browser = "fa fa-firefox fa-stack-2x";
                 }else if(browserName.search("chrome") != -1){
+                  tempEvent.browsercol = "color: #109855;";
                   tempEvent.browser = "fa fa-chrome fa-stack-2x";
                 }else if(browserName.search("safari") != -1){
+                  tempEvent.browsercol = "color: #1688e2;";
                   tempEvent.browser = "fa fa-safari fa-stack-2x";
                 }else if(browserName.search("edge") != -1){
+                  tempEvent.browsercol = "color: #44ce90;";
                   tempEvent.browser = "fa fa-edge fa-stack-2x";
                 }else if(browserName.search("opera") != -1){
+                  tempEvent.browsercol = "color: #e21126;";
                   tempEvent.browser = "fa fa-opera fa-stack-2x";
                 }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+                  tempEvent.browsercol = "color: #1db5e7;";
                   tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
                 }else{
                   tempEvent.browser = "fa fa-question-circle fa-stack-2x";
@@ -778,7 +838,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s46 = "/audits";
         }
       },
-
       div: function (a, b) {
         return parseInt((a / b));
       },

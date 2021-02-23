@@ -149,7 +149,7 @@ public class UserController {
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");
         if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
-        return new ResponseEntity<>(userRepo.changePassword("maziyar", newPassword, token));
+        return new ResponseEntity<>(userRepo.changePassword(principal.getName(), newPassword, token));
 
     }
 

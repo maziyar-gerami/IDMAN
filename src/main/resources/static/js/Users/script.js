@@ -209,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s80: "ممیزی ها",
             s81: "/audits",
             s82: "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.",
+            s83: "غیرقابل حذف",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه کاربری",
@@ -297,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let fileName = fup.value;
                 if(!re.exec(fileName)){
                     alert(this.s24);
-
+                    return;
                 }else{
                     var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                     var vm = this;
@@ -650,7 +651,15 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
 
-                        if(typeof res.data.endTime !== 'undefined'){ //"20201218135200.000+0330"
+                        if(typeof res.data.unDeletable !== 'undefined'){
+                            if(res.data.unDeletable){
+                                document.getElementsByName("unDeletableUpdate")[0].checked = true;
+                            }else{
+                                document.getElementsByName("unDeletableUpdate")[0].checked = false;
+                            }
+                        }
+
+                        if(typeof res.data.endTime !== 'undefined'){
                             let seTime = res.data.endTime;
                             persianDate.toCalendar('gregorian');
                             let dayWrapper = new persianDate([seTime.substring(0,4), seTime.substring(4,6), seTime.substring(6,8),
@@ -680,10 +689,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 }else{
                     let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                     var check = confirm(this.s26);
+                    var unDeletableVar = false;
 
                     var checkedGroups = [];
                     if(document.getElementById('groupsUpdate').value != ""){
                         checkedGroups = document.getElementById('groupsUpdate').value.split(',');
+                    }
+
+                    if(document.getElementsByName('unDeletableUpdate')[0].checked){
+                        unDeletableVar = true;
+                    }else{
+                        unDeletableVar = false;
                     }
 
                     let endTimeFinal = null;
@@ -809,6 +825,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 employeeNumber: document.getElementById('editInfo.employeeNumberUpdate').value,
                                 description: document.getElementById('editInfo.descriptionUpdate').value,
                                 cStatus: statusValue,
+                                unDeletable: unDeletableVar,
                                 endTime: endTimeFinal
                             }).replace(/\\\\/g, "\\")
                         })
@@ -915,6 +932,7 @@ document.addEventListener('DOMContentLoaded', function () {
             addUser: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                var unDeletableVar = false;
 
                 if(document.getElementById('editInfo.userIdCreate').value == "" ||
                 document.getElementById('editInfo.displayNameCreate').value == "" ||
@@ -928,6 +946,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     var checkedGroups = [];
                     if(document.getElementById('groupsCreate').value != ""){
                         checkedGroups = document.getElementById('groupsCreate').value.split(',');
+                    }
+
+                    if(document.getElementsByName('unDeletableCreate')[0].checked){
+                        unDeletableVar = true;
+                    }else{
+                        unDeletableVar = false;
                     }
 
                     let endTimeFinal = null;
@@ -1032,6 +1056,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     userPassword: document.getElementById('newPasswordCreate').value,
                                     description: document.getElementById('editInfo.descriptionCreate').value,
                                     cStatus: document.getElementById('statusCreate').value,
+                                    unDeletable: unDeletableVar,
                                     endTime: endTimeFinal
                                 }
                             ).replace(/\\\\/g, "\\")
@@ -1307,6 +1332,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s80 = "Audits";
                     this.s81 = "/audits?en";
                     this.s82 = "New Password Should Not be Same as Old Password.";
+                    this.s83 = "Indelible";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1428,6 +1454,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s80 = "ممیزی ها";
                     this.s81 = "/audits";
                     this.s82 = "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.";
+                    this.s83 = "غیرقابل حذف";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه کاربری";
@@ -1538,7 +1565,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(errors.length === 3) return 1;
                 if(errors.length === 4) return 0;
             },
-
             notSamePasswordsCreate () {
                 if (this.passwordsFilledCreate) {
                     return (this.passwordCreate !== this.checkPasswordCreate)

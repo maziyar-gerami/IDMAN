@@ -169,6 +169,10 @@
                                     </div>
 
                                     <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
+                                        <div class="p-2" v-bind:style="showS"  style="direction: rtl;">
+                                            <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                            :labels="paginationAnchorTexts"></v-pagination>
+                                        </div>
                                         <div style="overflow: auto;">
                                             <table class="tableList table table-responsive p-2" v-bind:style="showS">
                                                 <tr>
@@ -226,6 +230,8 @@
                                                         <option value="20" selected>20</option>
                                                         <option value="50">50</option>
                                                         <option value="100">100</option>
+                                                        <option value="300">300</option>
+                                                        <option value="500">500</option>
                                                     </select>
                                                 </div>
                                             </div>

@@ -145,6 +145,10 @@
                                                 <button class="btn btn-primary btn-sm" v-on:click="getAuditDate()" style="display: inline-block;">{{s27}}</button>
                                             </li>
                                         </ul>
+                                        <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
+                                            <v-pagination v-model="currentPageAudit" :page-count="totalAudit" :classes="bootstrapPaginationClasses"
+                                            :labels="paginationAnchorTexts"></v-pagination>
+                                        </div>
                                         <table class="table table-responsive">
                                             <tr>
                                                 <th>{{s28}}</th>
@@ -165,7 +169,7 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-                                        <div style="direction: rtl;">
+                                        <div class="p-2" style="direction: rtl;">
                                             <v-pagination v-model="currentPageAudit" :page-count="totalAudit" :classes="bootstrapPaginationClasses"
                                             :labels="paginationAnchorTexts"></v-pagination>
                                         </div>
@@ -179,6 +183,8 @@
                                                     <option value="20" selected>20</option>
                                                     <option value="50">50</option>
                                                     <option value="100">100</option>
+                                                    <option value="300">300</option>
+                                                    <option value="500">500</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -218,6 +224,10 @@
                                                         </button>
                                                     </li>
                                                 </ul>
+                                                <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
+                                                    <v-pagination  v-model="currentPageAudits" :page-count="totalAudits" :classes="bootstrapPaginationClasses"
+                                                    :labels="paginationAnchorTexts"></v-pagination>
+                                                </div>
                                                 <table class="table table-responsive">
                                                     <tr>
                                                         <th>{{s28}}</th>
@@ -242,7 +252,7 @@
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                                <div style="direction: rtl;">
+                                                <div class="p-2" style="direction: rtl;">
                                                     <v-pagination  v-model="currentPageAudits" :page-count="totalAudits" :classes="bootstrapPaginationClasses"
                                                     :labels="paginationAnchorTexts"></v-pagination>
                                                 </div>
@@ -256,6 +266,8 @@
                                                             <option value="20" selected>20</option>
                                                             <option value="50">50</option>
                                                             <option value="100">100</option>
+                                                            <option value="300">300</option>
+                                                            <option value="500">500</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -268,6 +280,10 @@
                                                         <button class="btn btn-primary btn-sm" v-on:click="getAuditDate()" style="display: inline-block;">{{s27}}</button>
                                                     </li>
                                                 </ul>
+                                                <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
+                                                    <v-pagination v-model="currentPageAudit" :page-count="totalAudit" :classes="bootstrapPaginationClasses"
+                                                    :labels="paginationAnchorTexts"></v-pagination>
+                                                </div>
                                                 <table class="table table-responsive">
                                                     <tr>
                                                         <th>{{s28}}</th>
@@ -288,7 +304,7 @@
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                                <div style="direction: rtl;">
+                                                <div class="p-2" style="direction: rtl;">
                                                     <v-pagination v-model="currentPageAudit" :page-count="totalAudit" :classes="bootstrapPaginationClasses"
                                                     :labels="paginationAnchorTexts"></v-pagination>
                                                 </div>
@@ -302,6 +318,8 @@
                                                             <option value="20" selected>20</option>
                                                             <option value="50">50</option>
                                                             <option value="100">100</option>
+                                                            <option value="300">300</option>
+                                                            <option value="500">500</option>
                                                         </select>
                                                     </div>
                                                 </div>
