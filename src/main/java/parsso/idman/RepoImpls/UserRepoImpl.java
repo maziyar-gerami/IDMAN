@@ -395,7 +395,7 @@ public class UserRepoImpl implements UserRepo {
                     Name dn = buildDn.buildDn(uId);
                     DirContextOperations context = buildAttributes.buildAttributes(uId, user, dn);
                     Date date = new Date();
-                    context.setAttributeValue("pwdChangedTime", date.getTime());
+                    //context.setAttributeValue("pwdChangedTime", date.getTime());
 
 
                     try {

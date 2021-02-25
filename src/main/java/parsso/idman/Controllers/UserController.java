@@ -16,6 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Captcha.RepoImp.CaptchaRepoImp;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
+import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.Helpers.User.UsersExcelView;
 import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
@@ -46,6 +47,8 @@ public class UserController {
     Token tokenClass;
     @Autowired
     UsersExcelView excelView;
+    @Autowired
+    SystemRefreshRepoImpl systemRefreshRepoImpl;
     @Autowired
     private InstantMessage instantMessage;
     @Autowired
@@ -534,6 +537,7 @@ public class UserController {
     public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));
     }
+
 
 
 }

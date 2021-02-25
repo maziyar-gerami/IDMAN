@@ -28,8 +28,10 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Configs.CasUserDetailService;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Models.User;
+import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.FilesStorageService;
+import parsso.idman.Repos.SystemRefresh;
 import parsso.idman.Repos.UserRepo;
 
 import javax.annotation.Resource;
@@ -54,6 +56,10 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
     @Autowired
     static Pullings pullings;
+
+    @Autowired
+    static SystemRefresh systemRefresh;
+
 
     @Autowired
     UserRepo userRepo;
@@ -83,7 +89,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
      *
      * @param args the input arguments
      */
-    public static void main(String[] args) throws IOException, ParseException, org.json.simple.parser.ParseException {
+    public static void main(String[] args) throws IOException, org.json.simple.parser.ParseException {
 
 
 
@@ -102,6 +108,8 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
 
         ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
+        new SystemRefreshRepoImpl();
+
 
         Runnable runnable = new Runnable() {
             @SneakyThrows
