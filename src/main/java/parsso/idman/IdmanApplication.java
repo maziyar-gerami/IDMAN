@@ -16,7 +16,6 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
@@ -50,22 +49,6 @@ import java.util.List;
 @EnableScheduling
 public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
 
-
-    @Autowired
-    static MongoTemplate mongoTemplate;
-
-    @Autowired
-    static Pullings pullings;
-
-    @Autowired
-    static SystemRefresh systemRefresh;
-
-
-    @Autowired
-    UserRepo userRepo;
-    /**
-     * The Storage service.
-     */
     private static final int millis = 3600000;
     @Resource
     FilesStorageService storageService;
@@ -91,9 +74,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
      */
     public static void main(String[] args) throws IOException, org.json.simple.parser.ParseException {
 
-
-
-
         String command = "wmic csproduct get UUID";
         StringBuffer output = new StringBuffer();
 
@@ -104,8 +84,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         while ((line = sNumReader.readLine()) != null) {
             output.append(line + "\n");
         }
-
-
 
         ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
         new SystemRefreshRepoImpl();
@@ -123,10 +101,14 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         };
 
 
+        refresh(context);
         Thread thread = new Thread(runnable);
         thread.start();
 
+    }
 
+    private static void refresh(ConfigurableApplicationContext context) throws IOException, org.json.simple.parser.ParseException {
+        context.getBean(SystemRefresh.class).all();
     }
 
     private static void pulling(ConfigurableApplicationContext context) throws ParseException {
