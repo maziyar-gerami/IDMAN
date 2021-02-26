@@ -68,13 +68,18 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                     userExtraInfo.setQrToken(GenerateUUID.getUUID());
 
                 String photoName = ldapTemplate.search(
-                        query().where("objectclass").is("person"),
+                        query().where("uid").is(user.getUserId()),
                         new AttributesMapper<String>() {
                             public String mapFromAttributes(Attributes attrs)
                                     throws NamingException {
-                                return attrs.get("cn").get().toString();
+                                if(attrs.get("photoName")!=null)
+                                    return attrs.get("photoName").get().toString();
+
+                                return "";
                             }
                         }).get(0);
+
+                userExtraInfo.setPhotoName(photoName);
 
                 mongoTemplate.remove(queryMongo, "IDMAN_UsersExtraInfo");
                 if (userExtraInfo!=null)
