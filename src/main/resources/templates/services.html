@@ -224,111 +224,110 @@
                         <div class="card">
                             <div class="card-body pb-0 pl-0 pr-0" style="background-color: #f8f9fa!important;">
                                 <div class="container">
-                                    <div class="ml-0 mr-0">
-                                        <h3 class="pb-2" id="showS4" v-bind:style="showS"><span>{{s9}}</span></h3>
-                                    </div>
-                                    <div v-bind:style="showS" id="showS2">
-                                        <div class="desktopView row mt-3 mb-3 ml-0 mr-0">
-                                            <div class="col-2 pl-1 pr-1">
-                                                <a v-bind:href="s18" class="w-100 btn btn-success btn-sm">
-                                                    <span class="fa-stack">
-                                                        <i class="fa fa-plus fa-stack-1x"></i>
-                                                    </span>
-                                                    {{s14}}
-                                                </a>
-                                            </div>
-                                            <div class="col-2 pl-1 pr-1">
-                                                <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
-                                                    <span class="fa-stack">
-                                                        <i class="fa fa-trash fa-stack-1x"></i>
-                                                    </span>
-                                                    {{s47}}
-                                                </button>
-                                            </div>
-                                            <div class="col-8"></div>
+                                    <div v-bind:style="showS">
+                                        <div class="ml-0 mr-0">
+                                            <h3 class="pb-2"><span>{{s9}}</span></h3>
                                         </div>
-
+                                        <div class="desktopView row mt-3 mb-3 ml-0 mr-0">
+                                                <div class="col-2 pl-1 pr-1">
+                                                    <a v-bind:href="s18" class="w-100 btn btn-success btn-sm">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-plus fa-stack-1x"></i>
+                                                        </span>
+                                                        {{s14}}
+                                                    </a>
+                                                </div>
+                                                <div class="col-2 pl-1 pr-1">
+                                                    <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-trash fa-stack-1x"></i>
+                                                        </span>
+                                                        {{s47}}
+                                                    </button>
+                                                </div>
+                                                <div class="col-8"></div>
+                                        </div>
                                         <div class="mobileView">
-                                            <div class="row mb-1 mt-1 pl-1 pr-1">
-                                                <a v-bind:href="s18" class="w-100 btn btn-success btn-sm">
-                                                    <span class="fa-stack">
-                                                        <i class="fa fa-plus fa-stack-1x"></i>
-                                                    </span>
-                                                    {{s14}}
-                                                </a>
-                                            </div>
-                                            <div class="row mb-1 mt-1 pl-1 pr-1">
-                                                <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
-                                                    <span class="fa-stack">
-                                                        <i class="fa fa-trash fa-stack-1x"></i>
-                                                    </span>
-                                                    {{s47}}
-                                                </button>
-                                            </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                    <a v-bind:href="s18" class="w-100 btn btn-success btn-sm">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-plus fa-stack-1x"></i>
+                                                        </span>
+                                                        {{s14}}
+                                                    </a>
+                                                </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                    <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-trash fa-stack-1x"></i>
+                                                        </span>
+                                                        {{s47}}
+                                                    </button>
+                                                </div>
                                         </div>
                                     </div>
                                     <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
-                                        <div class="p-2" v-bind:style="showS" id="showS3" style="direction: rtl;">
-                                            <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
-                                            :labels="paginationAnchorTexts"></v-pagination>
-                                        </div>
-                                        <div style="overflow: auto;">
-                                            <div class="table-wrapper">
-                                                <table class="tableList table table-responsive p-2" id="showS5" v-bind:style="showS">
-                                                            <tr>
-                                                                <th style="border: none;">
-                                                                    <label class="checkboxclass">
-                                                                        <input id="selectAllCheckbox" type="checkbox">
-                                                                        <span v-on:click="allSelected()" class="checkmark"></span>
-                                                                    </label>
-                                                                </th>
-                                                                <th style="border: none;">#</th>
-                                                                <th style="border: none;">{{s20}}</th>
-                                                                <th style="border: none;">{{s21}}</th>
-                                                                <th style="border: none;">{{s22}}</th>
-                                                            </tr>
-                                                            <tbody id="body">
-                                                                <tr v-for="service in sortedServices" v-bind:key="service._id" :id="'row-' + service._id">
-                                                                    <td>
-                                                                        <label class="checkboxclass">
-                                                                            <input :id="'checkbox-' + service._id" type="checkbox">
-                                                                            <span v-on:click="rowSelected(service._id)" class="checkmark"></span>
-                                                                        </label>                                                                      
-                                                                    </td>
-                                                                    <td>{{service.orderOfRecords}}</td>
-                                                                    <td>{{service._id}}</td>
-                                                                    <td>{{service.name}}</td>
-                                                                    <td class="enInput"><a v-bind:href="service.url">{{service.url}}</a></td>
-                                                                    <td>
-                                                                        <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-sm" v-on:click="editServiceS(service._id)">
-                                                                            <span class="fa-passwd-reset fa-stack">
-                                                                                <i class="fa fa-pencil-square-o fa-stack-2x"></i>
-                                                                            </span>
-                                                                        </button>
-                                                                    </td>
-                                                                    <td>
-                                                                        <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s24" class="btn btn-sm" v-on:click="deleteService(service._id)">
-                                                                            <span class="fa-passwd-reset fa-stack">
-                                                                                <i class="fa fa-trash fa-stack-2x"></i>
-                                                                            </span>
-                                                                        </button>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="mt-1 mb-1 mr-2 ml-2">
-                                                                            <div class="up-arrow" v-on:click="posInc(service._id)"></div>
-                                                                            <div class="down-arrow" v-on:click="posDec(service._id)"></div>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                </table>
+                                        <div v-bind:style="showS">
+                                            <div class="p-2" style="direction: rtl;">
+                                                <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                                :labels="paginationAnchorTexts"></v-pagination>
                                             </div>
-                                        </div>
-                                        <div class="p-2" v-bind:style="showS" id="showS3" style="direction: rtl;">
-                                            <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
-                                            :labels="paginationAnchorTexts"></v-pagination>
-                                        </div>
-                                        <div v-bind:style="showS" id="showS6">
+                                            <div style="overflow: auto;">
+                                                <div class="table-wrapper" v-bind:style="showS">
+                                                    <table class="tableList table table-responsive p-2">
+                                                                <tr>
+                                                                    <th style="border: none;">
+                                                                        <label class="checkboxclass">
+                                                                            <input id="selectAllCheckbox" type="checkbox">
+                                                                            <span v-on:click="allSelected()" class="checkmark"></span>
+                                                                        </label>
+                                                                    </th>
+                                                                    <th style="border: none;">#</th>
+                                                                    <th style="border: none;">{{s20}}</th>
+                                                                    <th style="border: none;">{{s21}}</th>
+                                                                    <th style="border: none;">{{s22}}</th>
+                                                                </tr>
+                                                                <tbody id="body">
+                                                                    <tr v-for="service in sortedServices" v-bind:key="service._id" :id="'row-' + service._id">
+                                                                        <td>
+                                                                            <label class="checkboxclass">
+                                                                                <input :id="'checkbox-' + service._id" type="checkbox">
+                                                                                <span v-on:click="rowSelected(service._id)" class="checkmark"></span>
+                                                                            </label>                                                                      
+                                                                        </td>
+                                                                        <td>{{service.orderOfRecords}}</td>
+                                                                        <td>{{service._id}}</td>
+                                                                        <td>{{service.name}}</td>
+                                                                        <td class="enInput"><a v-bind:href="service.url">{{service.url}}</a></td>
+                                                                        <td>
+                                                                            <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-sm" v-on:click="editServiceS(service._id)">
+                                                                                <span class="fa-passwd-reset fa-stack">
+                                                                                    <i class="fa fa-pencil-square-o fa-stack-2x"></i>
+                                                                                </span>
+                                                                            </button>
+                                                                        </td>
+                                                                        <td>
+                                                                            <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s24" class="btn btn-sm" v-on:click="deleteService(service._id)">
+                                                                                <span class="fa-passwd-reset fa-stack">
+                                                                                    <i class="fa fa-trash fa-stack-2x"></i>
+                                                                                </span>
+                                                                            </button>
+                                                                        </td>
+                                                                        <td>
+                                                                            <div class="mt-1 mb-1 mr-2 ml-2">
+                                                                                <div class="up-arrow" v-on:click="posInc(service._id)"></div>
+                                                                                <div class="down-arrow" v-on:click="posDec(service._id)"></div>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="p-2" style="direction: rtl;">
+                                                <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                                :labels="paginationAnchorTexts"></v-pagination>
+                                            </div>
                                             <div class="row mt-3" style="text-align: center;">
                                                 <div class="col-8"></div>
                                                 <div class="col-2 pr-0 pl-0">
@@ -345,21 +344,22 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
-                                        <div class="p-3" id="editS" v-bind:style="editS">
-                                                    <ul class="nav nav-tabs nav-justified">
-                                                        <li class="nav-item">
-                                                            <a class="nav-link" @click.prevent="setActive('main')" :class="{ active: isActive('main') }" href="#main">{{s58}}</a>
-                                                        </li>
-                                                        <li class="nav-item">
-                                                            <a class="nav-link" @click.prevent="setActive('accessStrategy')" :class="{ active: isActive('accessStrategy') }" href="#accessStrategy">{{s59}}</a>
-                                                        </li>
-                                                        <li class="nav-item">
-                                                            <a class="nav-link" @click.prevent="setActive('mfa')" :class="{ active: isActive('mfa') }" href="#mfa">MFA</a>
-                                                        </li>
-                                                    </ul>
-                                                    <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
-                                                        <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('main') }" id="main">
+
+                                        <div class="p-3" v-bind:style="editS">
+                                            <h3 class="mb-3 pb-2 border-bottom">{{s98}}</h3>
+                                            <ul class="nav nav-tabs nav-justified">
+                                                <li class="nav-item">
+                                                    <a class="nav-link" @click.prevent="setActive('main')" :class="{ active: isActive('main') }" href="#main">{{s58}}</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" @click.prevent="setActive('accessStrategy')" :class="{ active: isActive('accessStrategy') }" href="#accessStrategy">{{s59}}</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" @click.prevent="setActive('mfa')" :class="{ active: isActive('mfa') }" href="#mfa">MFA</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
+                                                <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('main') }" id="main">
                                                             <div class="form-group">
                                                                 <label>{{s20}}</label>
                                                                 <input name="id" class="form-control" type="text" readonly>
@@ -463,9 +463,9 @@
                                                             </div>
                                                             <button v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
                                                             <button v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
-                                                        </div>
+                                                </div>
 
-                                                        <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('accessStrategy') }" id="accessStrategy">
+                                                <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('accessStrategy') }" id="accessStrategy">
                                                             <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s54}}</span></h4>
                                                             
                                                             <div class="form-group">
@@ -706,9 +706,9 @@
 
                                                             <button v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
                                                             <button v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
-                                                        </div>
+                                                </div>
 
-                                                        <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('mfa') }" id="mfa">
+                                                <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('mfa') }" id="mfa">
                                                             <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s65}}</span></h4>
                                                             <div class="form-group">
                                                                 <label class="form-check-label">{{s66}}</label>
@@ -737,8 +737,8 @@
                         
                                                             <button v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
                                                             <button v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
-                                                        </div>
-                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

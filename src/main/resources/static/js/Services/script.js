@@ -188,6 +188,7 @@ function myFunction() {
         s95: "/audits",
         s96: "دسترسی از راه دور",
         s97: "کد پاسخ های قابل قبول",
+        s98: "ویرایش سرویس",
       },
       created: function () {
         this.getUserInfo();
@@ -322,12 +323,8 @@ function myFunction() {
           location.reload();
         },
         editServiceS: function (id) {
-          document.getElementById("showS2").setAttribute("style", "display:none;");
-          document.getElementById("showS3").setAttribute("style", "display:none;");
-          document.getElementById("showS4").setAttribute("style", "display:none;");
-          document.getElementById("showS5").setAttribute("style", "display:none;");
-          document.getElementById("showS6").setAttribute("style", "display:none;");
-          document.getElementById("editS").setAttribute("style", "");
+          this.showS = "display: none;";
+          this.editS = "";
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
           axios.get(url + `/api/services/${id}`) //
@@ -1292,6 +1289,7 @@ function myFunction() {
             this.s95 = "/audits?en";
             this.s96 = "Remote Access";
             this.s97 = "Acceptable Response Codes";
+            this.s98 = "Edit Service";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
@@ -1395,6 +1393,7 @@ function myFunction() {
               this.s95 = "/audits";
               this.s96 = "دسترسی از راه دور";
               this.s97 = "کد پاسخ های قابل قبول";
+              this.s98 = "ویرایش سرویس";
           }
         },
         div: function (a, b) {
