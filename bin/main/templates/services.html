@@ -13,6 +13,9 @@
     <link href="css/persian-datepicker.min.css" rel="stylesheet"/>
 
 
+    <script src="js/es6-promise.min.js"></script>
+    <script src="js/es6-promise.auto.min.js"></script>
+    <script src="js/polyfill.min.js"></script>
     <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
@@ -265,54 +268,62 @@
                                         </div>
                                     </div>
                                     <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
-                                        <table class="tableList table table-responsive p-2" id="showS5" v-bind:style="showS">
-                                                    <tr>
-                                                        <th style="border: none;">
-                                                            <label class="checkboxclass">
-                                                                <input id="selectAllCheckbox" type="checkbox">
-                                                                <span v-on:click="allSelected()" class="checkmark"></span>
-                                                            </label>
-                                                        </th>
-                                                        <th style="border: none;">#</th>
-                                                        <th style="border: none;">{{s20}}</th>
-                                                        <th style="border: none;">{{s21}}</th>
-                                                        <th style="border: none;">{{s22}}</th>
-                                                    </tr>
-                                                    <tbody id="body">
-                                                        <tr v-for="service in sortedServices" v-bind:key="service._id" :id="'row-' + service._id">
-                                                            <td>
-                                                                <label class="checkboxclass">
-                                                                    <input :id="'checkbox-' + service._id" type="checkbox">
-                                                                    <span v-on:click="rowSelected(service._id)" class="checkmark"></span>
-                                                                </label>                                                                      
-                                                            </td>
-                                                            <td>{{service.orderOfRecords}}</td>
-                                                            <td>{{service._id}}</td>
-                                                            <td>{{service.name}}</td>
-                                                            <td class="enInput"><a v-bind:href="service.url">{{service.url}}</a></td>
-                                                            <td>
-                                                                <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-sm" v-on:click="editServiceS(service._id)">
-                                                                    <span class="fa-passwd-reset fa-stack">
-                                                                        <i class="fa fa-pencil-square-o fa-stack-2x"></i>
-                                                                    </span>
-                                                                </button>
-                                                            </td>
-                                                            <td>
-                                                                <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s24" class="btn btn-sm" v-on:click="deleteService(service._id)">
-                                                                    <span class="fa-passwd-reset fa-stack">
-                                                                        <i class="fa fa-trash fa-stack-2x"></i>
-                                                                    </span>
-                                                                </button>
-                                                            </td>
-                                                            <td>
-                                                                <div class="mt-1 mb-1 mr-2 ml-2">
-                                                                    <div class="up-arrow" v-on:click="posInc(service._id)"></div>
-                                                                    <div class="down-arrow" v-on:click="posDec(service._id)"></div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                        </table>
+                                        <div class="p-2" v-bind:style="showS" id="showS3" style="direction: rtl;">
+                                            <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                            :labels="paginationAnchorTexts"></v-pagination>
+                                        </div>
+                                        <div style="overflow: auto;">
+                                            <div class="table-wrapper">
+                                                <table class="tableList table table-responsive p-2" id="showS5" v-bind:style="showS">
+                                                            <tr>
+                                                                <th style="border: none;">
+                                                                    <label class="checkboxclass">
+                                                                        <input id="selectAllCheckbox" type="checkbox">
+                                                                        <span v-on:click="allSelected()" class="checkmark"></span>
+                                                                    </label>
+                                                                </th>
+                                                                <th style="border: none;">#</th>
+                                                                <th style="border: none;">{{s20}}</th>
+                                                                <th style="border: none;">{{s21}}</th>
+                                                                <th style="border: none;">{{s22}}</th>
+                                                            </tr>
+                                                            <tbody id="body">
+                                                                <tr v-for="service in sortedServices" v-bind:key="service._id" :id="'row-' + service._id">
+                                                                    <td>
+                                                                        <label class="checkboxclass">
+                                                                            <input :id="'checkbox-' + service._id" type="checkbox">
+                                                                            <span v-on:click="rowSelected(service._id)" class="checkmark"></span>
+                                                                        </label>                                                                      
+                                                                    </td>
+                                                                    <td>{{service.orderOfRecords}}</td>
+                                                                    <td>{{service._id}}</td>
+                                                                    <td>{{service.name}}</td>
+                                                                    <td class="enInput"><a v-bind:href="service.url">{{service.url}}</a></td>
+                                                                    <td>
+                                                                        <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-sm" v-on:click="editServiceS(service._id)">
+                                                                            <span class="fa-passwd-reset fa-stack">
+                                                                                <i class="fa fa-pencil-square-o fa-stack-2x"></i>
+                                                                            </span>
+                                                                        </button>
+                                                                    </td>
+                                                                    <td>
+                                                                        <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s24" class="btn btn-sm" v-on:click="deleteService(service._id)">
+                                                                            <span class="fa-passwd-reset fa-stack">
+                                                                                <i class="fa fa-trash fa-stack-2x"></i>
+                                                                            </span>
+                                                                        </button>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="mt-1 mb-1 mr-2 ml-2">
+                                                                            <div class="up-arrow" v-on:click="posInc(service._id)"></div>
+                                                                            <div class="down-arrow" v-on:click="posDec(service._id)"></div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                         <div class="p-2" v-bind:style="showS" id="showS3" style="direction: rtl;">
                                             <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
                                             :labels="paginationAnchorTexts"></v-pagination>
@@ -328,6 +339,8 @@
                                                         <option value="20" selected>20</option>
                                                         <option value="50">50</option>
                                                         <option value="100">100</option>
+                                                        <option value="300">300</option>
+                                                        <option value="500">500</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -639,6 +652,14 @@
                                                                 </div>
                                                             </div>
 
+                                                            <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s96}}</span></h5>
+                                                            <div class="form-group">
+                                                                <label>{{s90}}</label>
+                                                                <input name="endpointUrl" class="form-control enInput mb-3" type="text" placeholder="URL">
+                                                                <label>{{s97}}</label>
+                                                                <input name="acceptableResponseCodes" class="form-control enInput" type="text" placeholder="200,202">
+                                                            </div>
+
                                                             <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s60}}</span></h5>
                                                             <div class="form-group">
                                                                 <ul class="nav nav-tabs nav-justified" style="padding-right: 0; border-bottom: 0;">
@@ -682,19 +703,19 @@
                                                                     <i class="fa fa-plus"></i>
                                                                 </button>
                                                             </div>
+
                                                             <button v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
                                                             <button v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
                                                         </div>
+
                                                         <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('mfa') }" id="mfa">
                                                             <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s65}}</span></h4>
                                                             <div class="form-group">
-                                                                <label>{{s66}}</label>
-                                                                <select name="mfaEnabled" class="form-control">
-                                                                    <option id="option17" value="" selected>{{s97}}</option>
-                                                                    <option id="option14" value="mfa-simple">SMS</option>
-                                                                    <option id="option15" value="mfa-gauth">Google Authenticator</option>
-                                                                    <option id="option16" value="mfa-u2f">{{s96}}</option>
-                                                                </select>
+                                                                <label class="form-check-label">{{s66}}</label>
+                                                                <label class="switch">
+                                                                    <input name="mfaEnabled" type="checkbox">
+                                                                    <span class="slider round"></span>
+                                                                </label>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label class="form-check-label">Bypass Enabled</label>

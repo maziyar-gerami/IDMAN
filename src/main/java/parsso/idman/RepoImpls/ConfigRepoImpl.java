@@ -11,10 +11,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Communicate.Email;
+import parsso.idman.Helpers.Communicate.InstantMessage;
+import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Models.Config;
 import parsso.idman.Models.Setting;
 import parsso.idman.Models.Time;
 import parsso.idman.Repos.ConfigRepo;
+import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Convertor.DateConverter;
 import parsso.idman.Utils.JSON.JSONencoder;
 
@@ -34,6 +38,9 @@ public class ConfigRepoImpl implements ConfigRepo {
     @Autowired
     private ApplicationContext appContext;
 
+    @Autowired
+    PasswordSettings passwordSettings;
+
     @Value("${external.config}")
     private String pathToProperties;
 
@@ -42,6 +49,17 @@ public class ConfigRepoImpl implements ConfigRepo {
 
     @Value("${backup.path}")
     private String backUpPath;
+
+
+    @Autowired
+    InstantMessage instantMessage;
+
+    @Autowired
+    Email email;
+
+    @Autowired
+    UserRepo userRepo;
+
 
 
     public static List<Setting> parser(Scanner reader, String system) {
@@ -117,6 +135,29 @@ public class ConfigRepoImpl implements ConfigRepo {
         }
 
         return settings;
+    }
+
+    @Override
+    public List<Setting> retrieveTFSetting() throws IOException {
+
+        Resource resource = appContext.getResource("file:" + pathToProperties);
+        File file = resource.getFile();
+        String fullFileName = file.getName();
+        int equalIndex = fullFileName.indexOf('.');
+        String system = fullFileName.substring(0, equalIndex);
+
+        Scanner myReader = new Scanner(file);
+
+        List<Setting> allSettings = parser(myReader, system);
+
+        List<Setting> relatedSettings = new LinkedList<>();
+
+        for (Setting setting:allSettings) {
+            if (setting.getValue()!= null && (setting.getValue().equalsIgnoreCase("true") || setting.getValue().equalsIgnoreCase("false")))
+                relatedSettings.add(setting);
+        }
+
+        return relatedSettings;
     }
 
     @Override
@@ -202,6 +243,7 @@ public class ConfigRepoImpl implements ConfigRepo {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
 
 
         return file_properties;

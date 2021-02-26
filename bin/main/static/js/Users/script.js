@@ -125,6 +125,10 @@ document.addEventListener('DOMContentLoaded', function () {
             searchGroup: "none",
             searchStatus: "none",
             promptImportButtons: false,
+            loader: false,
+            duplicatePasswords: false,
+            showUnDeletableList: false,
+            unDeletableList: "",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -206,6 +210,9 @@ document.addEventListener('DOMContentLoaded', function () {
             s79: "بله",
             s80: "ممیزی ها",
             s81: "/audits",
+            s82: "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.",
+            s83: "غیرقابل حذف",
+            s84: "کاربران زیر غیرقابل حذف می باشند.",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه کاربری",
@@ -302,6 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     var file = document.querySelector('#file');
                     bodyFormData.append("file", file.files[0]);
                     this.userListImport = [];
+                    vm.loader = true;
                     axios({
                         method: 'post',
                         url: url + "/api/users/import",  //
@@ -309,14 +317,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         data: bodyFormData,
                     })
                     .then((res) => {
+                        vm.loader = false;
                         vm.s69 = res.data.nSuccessful;
                         vm.s70 = res.data.nUnSuccessful;
                         vm.usersImported = true;
                         setTimeout(function(){ vm.usersImported = false; }, 10000);
                         vm.filter();
                     }).catch((error) => {
+                        vm.loader = false;
                         if(error.response.status === 302){
-                            console.log(error.response.data);
                             vm.s69 = error.response.data.nSuccessful;
                             vm.s70 = error.response.data.nUnSuccessful;
                             vm.usersImported = true;
@@ -645,7 +654,15 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
 
-                        if(typeof res.data.endTime !== 'undefined'){ //"20201218135200.000+0330"
+                        if(typeof res.data.unDeletable !== 'undefined'){
+                            if(res.data.unDeletable){
+                                document.getElementsByName("unDeletableUpdate")[0].checked = true;
+                            }else{
+                                document.getElementsByName("unDeletableUpdate")[0].checked = false;
+                            }
+                        }
+
+                        if(typeof res.data.endTime !== 'undefined'){
                             let seTime = res.data.endTime;
                             persianDate.toCalendar('gregorian');
                             let dayWrapper = new persianDate([seTime.substring(0,4), seTime.substring(4,6), seTime.substring(6,8),
@@ -675,10 +692,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 }else{
                     let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                     var check = confirm(this.s26);
+                    var unDeletableVar = false;
 
                     var checkedGroups = [];
                     if(document.getElementById('groupsUpdate').value != ""){
                         checkedGroups = document.getElementById('groupsUpdate').value.split(',');
+                    }
+
+                    if(document.getElementsByName('unDeletableUpdate')[0].checked){
+                        unDeletableVar = true;
+                    }else{
+                        unDeletableVar = false;
                     }
 
                     let endTimeFinal = null;
@@ -804,20 +828,20 @@ document.addEventListener('DOMContentLoaded', function () {
                                 employeeNumber: document.getElementById('editInfo.employeeNumberUpdate').value,
                                 description: document.getElementById('editInfo.descriptionUpdate').value,
                                 cStatus: statusValue,
+                                unDeletable: unDeletableVar,
                                 endTime: endTimeFinal
                             }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
                             location.reload();
                         });
-                        
                     }
                 }
             },
             editPass: function (id) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var check = confirm(this.s26);
-
+                var vm = this;
                 if (check == true) {
                     axios({
                         method: 'put',
@@ -829,23 +853,35 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
                     .then((res) => {
                         location.reload();
+                    }).catch((error) => {
+                        if (error.response) {
+                            if(error.response.status === 302){
+                                vm.duplicatePasswords = true;
+                                setTimeout(function(){ vm.duplicatePasswords = false; }, 5000);
+                            }
+                        }
                     });
                 }
 
             },
             exportUsers: function(){
                 url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                vm.loader = true;
                 axios({
                     url: url_ + "/api/users/export",
                     method: "GET",
                     responseType: "blob",
                 }).then((response) => {
+                    vm.loader = false;
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
                     link.setAttribute("download", "users.xls");
                     document.body.appendChild(link);
                     link.click();
+                }).catch((error) => {
+                    vm.loader = false;
                 });
             },
             addUserS: function () {
@@ -861,6 +897,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 let selectedUsers = [];
                 selectedUsers.push(userId.toString());
+                vm.loader = true;
                 axios({
                     method: 'post',
                     url: url + "/api/users/sendMail", //
@@ -870,8 +907,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     }).replace(/\\\\/g, "\\")
                 })
                 .then((res) => {
+                    vm.loader = false;
                     vm.resetPassEmailSent = true;
                     setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
+                }).catch((error) => {
+                    vm.loader = false;
                 });
             },
             sendAllResetEmail() {
@@ -895,6 +935,7 @@ document.addEventListener('DOMContentLoaded', function () {
             addUser: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                var unDeletableVar = false;
 
                 if(document.getElementById('editInfo.userIdCreate').value == "" ||
                 document.getElementById('editInfo.displayNameCreate').value == "" ||
@@ -908,6 +949,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     var checkedGroups = [];
                     if(document.getElementById('groupsCreate').value != ""){
                         checkedGroups = document.getElementById('groupsCreate').value.split(',');
+                    }
+
+                    if(document.getElementsByName('unDeletableCreate')[0].checked){
+                        unDeletableVar = true;
+                    }else{
+                        unDeletableVar = false;
                     }
 
                     let endTimeFinal = null;
@@ -1012,6 +1059,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     userPassword: document.getElementById('newPasswordCreate').value,
                                     description: document.getElementById('editInfo.descriptionCreate').value,
                                     cStatus: document.getElementById('statusCreate').value,
+                                    unDeletable: unDeletableVar,
                                     endTime: endTimeFinal
                                 }
                             ).replace(/\\\\/g, "\\")
@@ -1045,6 +1093,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
+                        if(res.status == 206) {
+                            vm.unDeletableList = "";
+                            for(let i = 0; i < res.data.length-1; ++i){
+                                vm.unDeletableList = vm.unDeletableList + res.data[i] + ", ";
+                            }
+                            vm.unDeletableList = vm.unDeletableList + res.data[res.data.length-1];
+                            vm.showUnDeletableList = true;
+                            setTimeout(function(){ vm.showUnDeletableList = false; }, 10000);
+                        }
                         vm.filter();
                     });
                 }
@@ -1145,6 +1202,15 @@ document.addEventListener('DOMContentLoaded', function () {
                                 }).replace(/\\\\/g, "\\")
                             })
                             .then((res) => {
+                                if(res.status == 206) {
+                                    vm.unDeletableList = "";
+                                    for(let i = 0; i < res.data.length-1; ++i){
+                                        vm.unDeletableList = vm.unDeletableList + res.data[i] + ", ";
+                                    }
+                                    vm.unDeletableList = vm.unDeletableList + res.data[res.data.length-1];
+                                    vm.showUnDeletableList = true;
+                                    setTimeout(function(){ vm.showUnDeletableList = false; }, 10000);
+                                }
                                 vm.filter();
                             });
                         }
@@ -1159,6 +1225,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                     if(selectedUsers.length != 0){
+                        vm.loader = true;
                         axios({
                             method: 'post',
                             url: url + "/api/users/sendMail", //
@@ -1168,8 +1235,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
+                            vm.loader = false;
                             vm.resetPassEmailSent = true;
                             setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
+                        }).catch((error) => {
+                            vm.loader = false;
                         });
                     }else{
                         alert(this.s56);
@@ -1282,6 +1352,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s79 = "Yes";
                     this.s80 = "Audits";
                     this.s81 = "/audits?en";
+                    this.s82 = "New Password Should Not be Same as Old Password.";
+                    this.s83 = "Indelible";
+                    this.s84 = "Users Listed Below Are Indelible.";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1402,6 +1475,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s79 = "بله";
                     this.s80 = "ممیزی ها";
                     this.s81 = "/audits";
+                    this.s82 = "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.";
+                    this.s83 = "غیرقابل حذف";
+                    this.s84 = "کاربران زیر غیرقابل حذف می باشند.";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه کاربری";
@@ -1443,9 +1519,12 @@ document.addEventListener('DOMContentLoaded', function () {
             notSamePasswords () {
                 if (this.passwordsFilled) {
                     return (this.password !== this.checkPassword)
-                } else {
-                    return false
+                }else {
+                    return false;
                 }
+            },
+            duplicatePasswordsComputed () {
+                return this.duplicatePasswords;
             },
             passwordsFilled () {
                 return (this.password !== '' && this.checkPassword !== '')
@@ -1509,7 +1588,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(errors.length === 3) return 1;
                 if(errors.length === 4) return 0;
             },
-
             notSamePasswordsCreate () {
                 if (this.passwordsFilledCreate) {
                     return (this.passwordCreate !== this.checkPasswordCreate)

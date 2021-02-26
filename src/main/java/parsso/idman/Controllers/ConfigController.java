@@ -4,9 +4,11 @@ package parsso.idman.Controllers;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Models.Config;
 import parsso.idman.Models.Setting;
 import parsso.idman.Repos.ConfigRepo;
@@ -22,6 +24,11 @@ public class ConfigController {
     @Autowired
     private ConfigRepo configRepo;
 
+    @Autowired
+    PasswordSettings passwordSettings;
+
+    @Value("${interval.check.pass.hours}")
+    private long intervalCheckPassTime;
 
     @GetMapping("/api/configs")
     public ResponseEntity<String> retrieveSettings() throws IOException {
@@ -35,12 +42,16 @@ public class ConfigController {
 
     @PutMapping("/api/configs")
     public ResponseEntity<String> updateSettings(@RequestBody List<Setting> settings) throws IOException {
-        return new ResponseEntity<>(configRepo.updateSettings(settings), HttpStatus.OK);
+        configRepo.updateSettings(settings);
+        passwordSettings.update(settings);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/configs/system/{system}")
     public ResponseEntity<String> updateSettingsSystem(@RequestBody List<Setting> settings) throws IOException {
-        return new ResponseEntity<>(configRepo.updateSettings(settings), HttpStatus.OK);
+        configRepo.updateSettings(settings);
+        passwordSettings.update(settings);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/api/configs/backup")
@@ -58,6 +69,4 @@ public class ConfigController {
     public ResponseEntity<HttpStatus> resetFactory() throws IOException {
         return new ResponseEntity<>(configRepo.factoryReset());
     }
-
-
 }

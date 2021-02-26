@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface UserRepo {
 
-    HttpStatus remove(JSONObject jsonObject);
+    List<String> remove(JSONObject jsonObject);
 
     HttpStatus changePassword(String uId, String newPassword, String token);
 
@@ -39,7 +39,11 @@ public interface UserRepo {
 
     HttpStatus update(String uid, User p);
 
-    User retrieveUser(String userId);
+    HttpStatus updateUsersWithSpecificOU(String old_ou, String new_ou);
+
+    User retrieveUsers(String userId);
+
+    List<SimpleUser> retrieveGroupsUsers(String groupId);
 
     List<JSONObject> checkMail(String token);
 
@@ -68,4 +72,8 @@ public interface UserRepo {
     int requestToken(User user);
 
     HttpStatus massUpdate(List<User> users);
+
+    ListUsers retrieveUsersMainWithGroupId(String groupId, String page, String nRec);
+
+    HttpStatus massUsersGroupUpdate(String groupId, JSONObject gu);
 }

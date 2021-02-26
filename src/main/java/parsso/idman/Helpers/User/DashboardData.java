@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Event;
+import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.Time;
-import parsso.idman.Models.User;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
@@ -32,10 +32,13 @@ public class DashboardData {
     ServiceRepo serviceRepo;
     @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
+    UserAttributeMapper userAttributeMapper;
+
     ZoneId zoneId = ZoneId.of("UTC+03:30");
 
 
-    public JSONObject retrieveDashboardData() throws IOException, java.text.ParseException, java.io.IOException, org.json.simple.parser.ParseException, InterruptedException {
+    public JSONObject retrieveDashboardData() throws IOException, InterruptedException {
 
         JSONObject jsonObject = new JSONObject();
         JSONObject userJson = new JSONObject();
@@ -45,13 +48,13 @@ public class DashboardData {
 
         Thread userData = new Thread(() -> {
             //________users data____________
-            List<User> usersList = userRepo.retrieveUsersFull();
-            int nUsers = userRepo.retrieveUsersMain().size();
+            List<SimpleUser> usersList = userRepo.retrieveUsersMain();
+            int nUsers = usersList.size();
             int nActive = 0;
             int nLocked = 0;
             int nDisabled = 0;
 
-            for (User user : usersList) {
+            for (SimpleUser user : usersList) {
                 if (user.getStatus().equals("active"))
                     nActive++;
                 else if (user.getStatus().equals("disabled"))

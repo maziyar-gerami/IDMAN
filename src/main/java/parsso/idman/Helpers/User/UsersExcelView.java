@@ -72,6 +72,8 @@ public class UsersExcelView extends AbstractXlsView {
         header.createCell(9).setCellValue("employeeNumber");
         header.getCell(9).setCellStyle(style);
 
+        header.createCell(10).setCellValue("end time");
+        header.getCell(10).setCellStyle(style);
 
         // create data rows
         int rowCount = 1;
@@ -88,6 +90,7 @@ public class UsersExcelView extends AbstractXlsView {
             aRow.createCell(7).setCellValue(user.getDescription());
             aRow.createCell(8).setCellValue(user.getStatus());
             aRow.createCell(9).setCellValue(user.getEmployeeNumber());
+            aRow.createCell(10).setCellValue(user.getEndTime());
         }
 
     }

@@ -17,6 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
 
@@ -69,6 +70,13 @@ public class ImportUsers {
             user.setEmployeeNumber(formatter.formatCellValue(row.getCell(sequence[9])));
             user.setUserPassword(formatter.formatCellValue(row.getCell(sequence[10])));
 
+            if((row.getCell(sequence[11])!=null) && !(row.getCell(sequence[11]).equals("")))
+                try {
+                    user.setEndTime(Time.setEndTime(formatter.formatCellValue(row.getCell(sequence[11]))));
+                }catch (Exception e){
+
+                }
+
             temp = userRepo.createUserImport(user);
 
             if (temp != null && temp.size() > 0) {
@@ -99,7 +107,7 @@ public class ImportUsers {
         if (oldUser.getDisplayName().equals(newUser.getDisplayName())) conflicts.add("displayName");
         if (oldUser.getMail().equals(newUser.getMail())) conflicts.add("mail");
         if (oldUser.getMobile().equals(newUser.getMobile())) conflicts.add("mobile");
-        if (oldUser.getDescription().equals(newUser.getDescription())) conflicts.add("description");
+        if (oldUser.getDescription()!=null&&oldUser.getDescription().equals(newUser.getDescription())) conflicts.add("description");
         if (oldUser.isEnabled() == (newUser.isEnabled())) conflicts.add("status");
 
         JSONObject jsonObject = new JSONObject();
@@ -249,9 +257,7 @@ public class ImportUsers {
         for (int i = 0; i < nGroups; i++) ls.add(entry.getAttributeValue("ou"));
         user.setMemberOf(null != entry.getAttributeValue("ou") ? ls : null);
         user.setDescription(entry.getAttributeValue("description"));
-        user.setPhotoName(entry.getAttributeValue("status"));
         user.setStatus(entry.getAttributeValue("employeeNumber"));
-        user.setPhotoName(entry.getAttributeValue("userPassword"));
 
         return lsUserConflicts;
     }

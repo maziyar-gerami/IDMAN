@@ -53,7 +53,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s17: "",
             s18: " عزیز",
             s19: "،",
-            s20: "متاسفانه درخواست شما با مشکل مواجه شده است"
+            s20: "متاسفانه درخواست شما با مشکل مواجه شده است",
+            s21: "سامانه در حال پیکربندی است."
         },
         created: function () {
             this.getName();
@@ -107,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s18 = ",";
                     this.s19 = "Dear ";
                     this.s20 = "Sorry, There Was a Problem With Your Request";
+                    this.s21 = "System is Being Configured.";
                     this.rules[0].message = "- One Lowercase or Uppercase English Letter Required.";
                     this.rules[1].message = "- One special Character or Persian Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
@@ -142,6 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s18 = " عزیز";
                     this.s19 = "،";
                     this.s20 = "متاسفانه درخواست شما با مشکل مواجه شده است";
+                    this.s21 = "سامانه در حال پیکربندی است.";
                     this.rules[0].message = "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ";
                     this.rules[1].message = "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ";
                     this.rules[2].message = "حداقل ۸ کاراکتر باشد. ";

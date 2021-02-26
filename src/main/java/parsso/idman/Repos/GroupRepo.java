@@ -12,6 +12,8 @@ public interface GroupRepo {
 
     List<Group> retrieve();
 
+    List<Group> retrieve(String ou);
+
     HttpStatus create(Group ou);
 
     HttpStatus update(String name, Group ou);
@@ -21,6 +23,5 @@ public interface GroupRepo {
     Group retrieveOu(String name);
 
     List<Group> retrieveCurrentUserGroup(User user);
-
-
+    
 }

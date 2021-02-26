@@ -2,11 +2,14 @@ package parsso.idman.Helpers.User;
 
 
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.IdmanApplication;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
@@ -16,10 +19,11 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
-import java.time.ZoneId;
 
 @Service
 public class BuildAttributes {
+
+    final static Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
 
     @Value("${default.user.password}")
     private String defaultPassword;
@@ -29,15 +33,15 @@ public class BuildAttributes {
     @Autowired
     private LdapTemplate ldapTemplate;
 
-    public Attributes BuildAttributes(User p) {
 
-        ZoneId zoneId = ZoneId.of("UTC+03:30");
+    public Attributes BuildAttributes(User p) {
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
         ocattr.add("top");
         ocattr.add("person");
         ocattr.add("inetOrgPerson");
         ocattr.add("organizationalPerson");
+        ocattr.add("pwdPolicy");
 
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
@@ -51,8 +55,8 @@ public class BuildAttributes {
         attrs.put("employeeNumber", p.getEmployeeNumber() == null || p.getEmployeeNumber().equals("") ? "0" : p.getEmployeeNumber());
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
-        if (p.getTokens() != null && p.getTokens().getResetPassToken() != null)
-            attrs.put("resetPassToken", p.getTokens().getResetPassToken());
+        if (p.getUsersExtraInfo() != null && p.getUsersExtraInfo().getResetPassToken() != null)
+            attrs.put("resetPassToken", p.getUsersExtraInfo().getResetPassToken());
         if (p.getMemberOf() != null && p.getMemberOf().size() != 0) {
             Attribute attr = new BasicAttribute("ou");
             for (int i = 0; i < p.getMemberOf().size(); i++)
@@ -64,11 +68,6 @@ public class BuildAttributes {
         else
             attrs.put("description", " ");
 
-        if (p.getPhotoName() != null)
-            attrs.put("photoName", p.getPhotoName());
-        else
-            attrs.put("photoName", " ");
-
         if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
 
@@ -76,13 +75,15 @@ public class BuildAttributes {
             attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
         }
 
+        attrs.put("pwdAttribute", "userPassword");
+
         return attrs;
     }
 
     @SneakyThrows
     public DirContextOperations buildAttributes(String uid, User p, Name dn) {
 
-        User old = userRepo.retrieveUser(uid);
+        User old = userRepo.retrieveUsers(uid);
 
         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
@@ -103,14 +104,13 @@ public class BuildAttributes {
             if (p.getMail() != "" && p.getFirstName() != null) context.setAttributeValue("mail", p.getMail());
         if ((p.getFirstName()) != null || (p.getLastName() != null)) {
             if (p.getFirstName() == null)
-                context.setAttributeValue("cn", userRepo.retrieveUser(uid).getFirstName() + ' ' + p.getLastName());
+                context.setAttributeValue("cn", userRepo.retrieveUsers(uid).getFirstName() + ' ' + p.getLastName());
 
             else if (p.getLastName() == null)
-                context.setAttributeValue("cn", p.getFirstName() + ' ' + userRepo.retrieveUser(uid).getLastName());
+                context.setAttributeValue("cn", p.getFirstName() + ' ' + userRepo.retrieveUsers(uid).getLastName());
 
             else context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
         }
-        if (p.getMail() != null) context.setAttributeValue("photoName", p.getPhotoName());
 
         if (p.getCStatus() != null) {
 
@@ -120,6 +120,8 @@ public class BuildAttributes {
                 userRepo.disable(uid);
             else if (p.getCStatus().equals("unlock"))
                 userRepo.unlock(uid);
+
+            logger.warn("User \""+p.getUserId()+"\" access level changed from \""+old.getStatus()+"\" to \""+p.getStatus()+"\"");
 
         }
 
@@ -141,10 +143,6 @@ public class BuildAttributes {
 
         if (p.getDescription() != "" && p.getDescription() != null)
             context.setAttributeValue("description", p.getDescription());
-        if (p.getPhotoName() != "" && p.getPhotoName() != null)
-            context.setAttributeValue("photoName", p.getPhotoName());
-        else
-            context.setAttributeValue("photoName", old.getPhotoName());
 
 
         if (p.getEndTime() != null) {

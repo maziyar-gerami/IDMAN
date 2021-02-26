@@ -34,6 +34,8 @@ public class User implements UserDetails, Comparable {
     @JsonIgnore
     private long timeStamp;
     @JsonIgnore
+    private long passwordChangedTime;
+    @JsonIgnore
     private boolean locked;
     @JsonIgnore
     private boolean enabled;
@@ -42,15 +44,11 @@ public class User implements UserDetails, Comparable {
     private List<String> memberOf;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String userPassword;
-
     @JsonIgnore
-    private String photoName;
-
+    private String photo;
     @JsonIgnore
     private Role role;
-
     private String employeeNumber;
-
     @JsonProperty
     private String status;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -58,7 +56,8 @@ public class User implements UserDetails, Comparable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String cStatus;
     @JsonIgnore
-    private Tokens tokens;
+    private UsersExtraInfo usersExtraInfo;
+    private boolean unDeletable;
 
     public User() {
         locked = false;

@@ -69,7 +69,7 @@ public class Time {
         //if is jalali
         if (Integer.valueOf(input.substring(0, 4)) < 2000) {
 
-            if (!(input.contains("-"))) {
+            if (!(input.contains("-")) && !(input.contains("/"))) {
                 String Y = input.substring(0, 4);
                 String M = input.substring(4, 6);
                 String D = input.substring(6, 8);
@@ -88,7 +88,44 @@ public class Time {
                         + String.format("%02d", eventDate.getMinute())
                         + String.format("%02d", eventDate.getSecond())
                         + String.format("%02d", eventDate.getNano());
-            } else {
+            }else if (input.contains("/")) {
+                String Y = input.substring(0, 4);
+                String M = input.substring(5, 7);
+                String D = input.substring(8, 10);
+
+                String H;
+                String m;
+                String s;
+                String S;
+
+                try {
+                    H = input.substring(11, 13);
+                    m = input.substring(14, 16);
+                    s = input.substring(17, 19);
+                    S = input.substring(20, 22);
+                } catch (Exception e){
+                    H="23";
+                    m="59";
+                    s = "59";
+                    S = "99";
+
+                }
+
+                String date = convertDateJalaliToGeorgian(Integer.valueOf(Y), Integer.valueOf(M), Integer.valueOf(D));
+
+
+                ZonedDateTime eventDate = OffsetDateTime.parse(date.substring(0,4) + "-" + date.substring(4,6) + "-" + date.substring(6,8) + 'T' + H + ":" + m + ":" + s + "." + S+"+03:30").atZoneSameInstant(zoneId);
+
+                return eventDate.getYear()
+                        + String.format("%02d", eventDate.getMonthValue())
+                        + String.format("%02d", eventDate.getDayOfMonth())
+                        + String.format("%02d", eventDate.getHour())
+                        + String.format("%02d", eventDate.getMinute());
+                        //+ String.format("%02d", eventDate.getSecond())
+                        //+ String.format("%02d", eventDate.getNano());
+            }
+
+            else {
                 return convertDateTimeJalali(input + "+03:30");
 
             }
@@ -126,7 +163,6 @@ public class Time {
                 String.format("%03d", Integer.valueOf(miliSeconds));
 
         return date + time;
-
 
     }
 

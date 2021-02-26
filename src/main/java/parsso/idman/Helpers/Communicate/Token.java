@@ -11,7 +11,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.BuildAttributes;
 import parsso.idman.Helpers.User.BuildDn;
-import parsso.idman.Models.Tokens;
+import parsso.idman.Models.UsersExtraInfo;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
 
@@ -25,7 +25,7 @@ import java.util.UUID;
 @Service
 public class Token {
 
-    public static String collection = "IDMAN_Tokens";
+    public static String collection = "IDMAN_UsersExtraInfo";
     @Autowired
     BuildAttributes buildAttributes;
     @Autowired
@@ -33,7 +33,7 @@ public class Token {
     @Autowired
     Email emailClass;
     @Autowired
-    Message message;
+    InstantMessage instantMessage;
     @Autowired
     BuildDn buildDn;
     @Autowired
@@ -54,9 +54,9 @@ public class Token {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        User user = userRepo.retrieveUser(userId);
+        User user = userRepo.retrieveUsers(userId);
 
-        String mainDbToken = user.getTokens().getResetPassToken();
+        String mainDbToken = user.getUsersExtraInfo().getResetPassToken();
         String mainPartToken;
 
         if (token.length() > 30)
@@ -72,7 +72,7 @@ public class Token {
 
             if (mainPartToken.length() > 30) {
 
-                String timeStamp = user.getTokens().getResetPassToken().substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
+                String timeStamp = user.getUsersExtraInfo().getResetPassToken().substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
 
                 if ((cTimeStamp - Long.valueOf(timeStamp)) < (60000 * EMAIL_VALID_TIME))
                     return HttpStatus.OK;
@@ -107,21 +107,21 @@ public class Token {
         Query query = new Query(Criteria.where("userId").is(user.getUserId()));
 
         String token = passwordResetToken(user.getUserId());
-        Tokens tokens = mongoTemplate.findOne(query, Tokens.class, collection);
-        tokens.setResetPassToken(token);
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
+        usersExtraInfo.setResetPassToken(token);
 
-        if (user.getTokens() != null)
-            user.getTokens().setResetPassToken(token);
+        if (user.getUsersExtraInfo() != null)
+            user.getUsersExtraInfo().setResetPassToken(token);
         else {
 
-            user.setTokens(tokens);
+            user.setUsersExtraInfo(usersExtraInfo);
         }
         Name dn = buildDn.buildDn(user.getUserId());
         // context = buildAttributes.buildAttributes(user.getUserId(), user, dn);
 
         try {
             //ldapTemplate.modifyAttributes((DirContextOperations) context);
-            mongoTemplate.save(tokens, collection);
+            mongoTemplate.save(usersExtraInfo, collection);
             return HttpStatus.OK;
         } catch (Exception e) {
             e.printStackTrace();
@@ -139,27 +139,27 @@ public class Token {
 
         Query query = new Query(Criteria.where("userId").is(user.getUserId()));
 
-        Tokens tokens = mongoTemplate.findOne(query, Tokens.class, collection);
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
 
         int token = createRandomNum();
 
-        tokens.setResetPassToken(String.valueOf(token) + new Date().getTime());
-        tokens.setUserId(user.getUserId());
+        usersExtraInfo.setResetPassToken(String.valueOf(token) + new Date().getTime());
+        usersExtraInfo.setUserId(user.getUserId());
 
-        if (user.getTokens() != null)
-            user.getTokens().setResetPassToken(String.valueOf(token));
+        if (user.getUsersExtraInfo() != null)
+            user.getUsersExtraInfo().setResetPassToken(String.valueOf(token));
         else {
-            tokens.setResetPassToken(String.valueOf(token));
-            user.setTokens(tokens);
+            usersExtraInfo.setResetPassToken(String.valueOf(token));
+            user.setUsersExtraInfo(usersExtraInfo);
         }
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         long cTimeStamp = currentTimestamp.getTime();
-        user.getTokens().setResetPassToken(String.valueOf(token) + cTimeStamp);
+        user.getUsersExtraInfo().setResetPassToken(String.valueOf(token) + cTimeStamp);
 
 
         try {
             //userRepo.update(user.getUserId(), user);
-            mongoTemplate.save(tokens, collection);
+            mongoTemplate.save(usersExtraInfo, collection);
 
         } catch (Exception e) {
             return false;
@@ -170,6 +170,6 @@ public class Token {
 
 
     public int requestToken(User user) {
-        return message.sendMessage(user.getMobile());
+        return instantMessage.sendMessage(user.getMobile());
     }
 }

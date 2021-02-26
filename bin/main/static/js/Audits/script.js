@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
           next: '>',
           last: '>>'
       },
+      loader: false,
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -197,17 +198,22 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       exportAudits: function(){
         url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        vm.loader = true;
           axios({
             url: url_ + "/api/audits/export",
             method: "GET",
             responseType: "blob",
           }).then((response) => {
+            vm.loader = false;
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute("download", "audits.xls");
             document.body.appendChild(link);
             link.click();
+          }).catch((error) => {
+            vm.loader = false;
           });
       },
       getAudits: function () {

@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
           next: '>',
           last: '>>'
       },
+      loader: false,
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -137,9 +138,6 @@ document.addEventListener('DOMContentLoaded', function () {
         this.recordsShownOnPageEvents = event.target.value;
         this.getEventsDate();
       },
-      connect (add) {
-        window.open(add);
-      },
       isAdmin: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
@@ -188,17 +186,22 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       exportEvents: function(){
         url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        vm.loader = true;
           axios({
             url: url_ + "/api/events/export",
             method: "GET",
             responseType: "blob",
           }).then((response) => {
+            vm.loader = false;
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute("download", "events.xls");
             document.body.appendChild(link);
             link.click();
+          }).catch((error) => {
+            vm.loader = false;
           });
       },
       getEvents: function () {
@@ -217,8 +220,10 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent = {};
             if(item.action == "Successful Login"){
               tempEvent.action = vm.s39;
+              tempEvent.rowStyle = "";
             }else if(item.action == "Unsuccessful Login"){
               tempEvent.action = vm.s40;
+              tempEvent.rowStyle = "color: red;";
             }
 
             tempEvent.userId = item.userId;
@@ -230,8 +235,49 @@ document.addEventListener('DOMContentLoaded', function () {
             let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
             tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
             tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-            tempEvent.os = item.agentInfo.os;
-            tempEvent.browser = item.agentInfo.browser;
+
+            var osName = item.agentInfo.os.toLowerCase();
+            tempEvent.osdes = item.agentInfo.os;
+            if(osName.search("windows") != -1){
+              tempEvent.oscol = "color: darkblue;";
+              tempEvent.os = "fa fa-windows fa-stack-2x";
+            }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+              tempEvent.oscol = "color: dimgray;";
+              tempEvent.os = "fa fa-apple fa-stack-2x";
+            }else if(osName.search("android") != -1){
+              tempEvent.oscol = "color: #56c736;";
+              tempEvent.os = "fa fa-android fa-stack-2x";
+            }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+              tempEvent.oscol = "color: #f7c600;";
+              tempEvent.os = "fa fa-linux fa-stack-2x";
+            }else{
+              tempEvent.os = "fa fa-question-circle fa-stack-2x";
+            }
+
+            var browserName = item.agentInfo.browser.toLowerCase();
+            tempEvent.browserdes = item.agentInfo.browser;
+            if(browserName.search("firefox") != -1){
+              tempEvent.browsercol = "color: #f65d2b;";
+              tempEvent.browser = "fa fa-firefox fa-stack-2x";
+            }else if(browserName.search("chrome") != -1){
+              tempEvent.browsercol = "color: #109855";
+              tempEvent.browser = "fa fa-chrome fa-stack-2x";
+            }else if(browserName.search("safari") != -1){
+              tempEvent.browsercol = "color: #1688e2;";
+              tempEvent.browser = "fa fa-safari fa-stack-2x";
+            }else if(browserName.search("edge") != -1){
+              tempEvent.browsercol = "color: #44ce90;";
+              tempEvent.browser = "fa fa-edge fa-stack-2x";
+            }else if(browserName.search("opera") != -1){
+              tempEvent.browsercol = "color: #e21126;";
+              tempEvent.browser = "fa fa-opera fa-stack-2x";
+            }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+              tempEvent.browsercol = "color: #1db5e7;";
+              tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
+            }else{
+              tempEvent.browser = "fa fa-question-circle fa-stack-2x";
+            }
+
             vm.events.push(tempEvent);
           });
         });
@@ -253,8 +299,10 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent = {};
             if(item.action == "Successful Login"){
               tempEvent.action = vm.s39;
+              tempEvent.rowStyle = "";
             }else if(item.action == "Unsuccessful Login"){
               tempEvent.action = vm.s40;
+              tempEvent.rowStyle = "color: red;";
             }
 
             tempEvent.userId = item.userId;
@@ -265,8 +313,49 @@ document.addEventListener('DOMContentLoaded', function () {
             let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
             tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
             tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-            tempEvent.os = item.agentInfo.os;
-            tempEvent.browser = item.agentInfo.browser;
+
+            var osName = item.agentInfo.os.toLowerCase();
+            tempEvent.osdes = item.agentInfo.os;
+            if(osName.search("windows") != -1){
+              tempEvent.oscol = "color: darkblue;";
+              tempEvent.os = "fa fa-windows fa-stack-2x";
+            }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+              tempEvent.oscol = "color: dimgray;";
+              tempEvent.os = "fa fa-apple fa-stack-2x";
+            }else if(osName.search("android") != -1){
+              tempEvent.oscol = "color: #56c736;";
+              tempEvent.os = "fa fa-android fa-stack-2x";
+            }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+              tempEvent.oscol = "color: #f7c600;";
+              tempEvent.os = "fa fa-linux fa-stack-2x";
+            }else{
+              tempEvent.os = "fa fa-question-circle fa-stack-2x";
+            }
+
+            var browserName = item.agentInfo.browser.toLowerCase();
+            tempEvent.browserdes = item.agentInfo.browser;
+            if(browserName.search("firefox") != -1){
+              tempEvent.browsercol = "color: #f65d2b;";
+              tempEvent.browser = "fa fa-firefox fa-stack-2x";
+            }else if(browserName.search("chrome") != -1){
+              tempEvent.browsercol = "color: #109855;";
+              tempEvent.browser = "fa fa-chrome fa-stack-2x";
+            }else if(browserName.search("safari") != -1){
+              tempEvent.browsercol = "color: #1688e2;";
+              tempEvent.browser = "fa fa-safari fa-stack-2x";
+            }else if(browserName.search("edge") != -1){
+              tempEvent.browsercol = "color: #44ce90;";
+              tempEvent.browser = "fa fa-edge fa-stack-2x";
+            }else if(browserName.search("opera") != -1){
+              tempEvent.browsercol = "color: #e21126;";
+              tempEvent.browser = "fa fa-opera fa-stack-2x";
+            }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+              tempEvent.browsercol = "color: #1db5e7;";
+              tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
+            }else{
+              tempEvent.browser = "fa fa-question-circle fa-stack-2x";
+            }
+
             vm.event.push(tempEvent);
           });
         });
@@ -303,8 +392,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent = {};
                 if(item.action == "Successful Login"){
                   tempEvent.action = vm.s39;
+                  tempEvent.rowStyle = "";
                 }else if(item.action == "Unsuccessful Login"){
                   tempEvent.action = vm.s40;
+                  tempEvent.rowStyle = "color: red;";
                 }
 
                 tempEvent.userId = item.userId;
@@ -315,8 +406,49 @@ document.addEventListener('DOMContentLoaded', function () {
                 let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
                 tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
                 tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-                tempEvent.os = item.agentInfo.os;
-                tempEvent.browser = item.agentInfo.browser;
+
+                var osName = item.agentInfo.os.toLowerCase();
+                tempEvent.osdes = item.agentInfo.os;
+                if(osName.search("windows") != -1){
+                  tempEvent.oscol = "color: darkblue;";
+                  tempEvent.os = "fa fa-windows fa-stack-2x";
+                }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+                  tempEvent.oscol = "color: dimgray;";
+                  tempEvent.os = "fa fa-apple fa-stack-2x";
+                }else if(osName.search("android") != -1){
+                  tempEvent.oscol = "color: #56c736;";
+                  tempEvent.os = "fa fa-android fa-stack-2x";
+                }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+                  tempEvent.oscol = "color: #f7c600;";
+                  tempEvent.os = "fa fa-linux fa-stack-2x";
+                }else{
+                  tempEvent.os = "fa fa-question-circle fa-stack-2x";
+                }
+
+                var browserName = item.agentInfo.browser.toLowerCase();
+                tempEvent.browserdes = item.agentInfo.browser;
+                if(browserName.search("firefox") != -1){
+                  tempEvent.browsercol = "color: #f65d2b;";
+                  tempEvent.browser = "fa fa-firefox fa-stack-2x";
+                }else if(browserName.search("chrome") != -1){
+                  tempEvent.browsercol = "color: #109855;";
+                  tempEvent.browser = "fa fa-chrome fa-stack-2x";
+                }else if(browserName.search("safari") != -1){
+                  tempEvent.browsercol = "color: #1688e2;";
+                  tempEvent.browser = "fa fa-safari fa-stack-2x";
+                }else if(browserName.search("edge") != -1){
+                  tempEvent.browsercol = "color: #44ce90;";
+                  tempEvent.browser = "fa fa-edge fa-stack-2x";
+                }else if(browserName.search("opera") != -1){
+                  tempEvent.browsercol = "color: #e21126;";
+                  tempEvent.browser = "fa fa-opera fa-stack-2x";
+                }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+                  tempEvent.browsercol = "color: #1db5e7;";
+                  tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
+                }else{
+                  tempEvent.browser = "fa fa-question-circle fa-stack-2x";
+                }
+
                 vm.event.push(tempEvent);
               });
             });
@@ -345,8 +477,10 @@ document.addEventListener('DOMContentLoaded', function () {
               tempEvent = {};
               if(item.action == "Successful Login"){
                 tempEvent.action = vm.s39;
+                tempEvent.rowStyle = "";
               }else if(item.action == "Unsuccessful Login"){
                 tempEvent.action = vm.s40;
+                tempEvent.rowStyle = "color: red;";
               }
 
               tempEvent.userId = item.userId;
@@ -358,8 +492,49 @@ document.addEventListener('DOMContentLoaded', function () {
               let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
               tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
               tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-              tempEvent.os = item.agentInfo.os;
-              tempEvent.browser = item.agentInfo.browser;
+
+              var osName = item.agentInfo.os.toLowerCase();
+              tempEvent.osdes = item.agentInfo.os;
+              if(osName.search("windows") != -1){
+                tempEvent.oscol = "color: darkblue;";
+                tempEvent.os = "fa fa-windows fa-stack-2x";
+              }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+                tempEvent.oscol = "color: dimgray;";
+                tempEvent.os = "fa fa-apple fa-stack-2x";
+              }else if(osName.search("android") != -1){
+                tempEvent.oscol = "color: #56c736;";
+                tempEvent.os = "fa fa-android fa-stack-2x";
+              }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+                tempEvent.oscol = "color: #f7c600;";
+                tempEvent.os = "fa fa-linux fa-stack-2x";
+              }else{
+                tempEvent.os = "fa fa-question-circle fa-stack-2x";
+              }
+
+              var browserName = item.agentInfo.browser.toLowerCase();
+              tempEvent.browserdes = item.agentInfo.browser;
+              if(browserName.search("firefox") != -1){
+                tempEvent.browsercol = "color: #f65d2b;";
+                tempEvent.browser = "fa fa-firefox fa-stack-2x";
+              }else if(browserName.search("chrome") != -1){
+                tempEvent.browsercol = "color: #109855;";
+                tempEvent.browser = "fa fa-chrome fa-stack-2x";
+              }else if(browserName.search("safari") != -1){
+                tempEvent.browsercol = "color: #1688e2;";
+                tempEvent.browser = "fa fa-safari fa-stack-2x";
+              }else if(browserName.search("edge") != -1){
+                tempEvent.browsercol = "color: #44ce90;";
+                tempEvent.browser = "fa fa-edge fa-stack-2x";
+              }else if(browserName.search("opera") != -1){
+                tempEvent.browsercol = "color: #e21126;";
+                tempEvent.browser = "fa fa-opera fa-stack-2x";
+              }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+                tempEvent.browsercol = "color: #1db5e7;";
+                tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
+              }else{
+                tempEvent.browser = "fa fa-question-circle fa-stack-2x";
+              }
+
               vm.events.push(tempEvent);
             });
           });
@@ -403,8 +578,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent = {};
                 if(item.action == "Successful Login"){
                   tempEvent.action = vm.s39;
+                  tempEvent.rowStyle = "";
                 }else if(item.action == "Unsuccessful Login"){
                   tempEvent.action = vm.s40;
+                  tempEvent.rowStyle = "color: red;";
                 }
 
                 tempEvent.userId = item.userId;
@@ -416,8 +593,49 @@ document.addEventListener('DOMContentLoaded', function () {
                 let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
                 tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
                 tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-                tempEvent.os = item.agentInfo.os;
-                tempEvent.browser = item.agentInfo.browser;
+
+                var osName = item.agentInfo.os.toLowerCase();
+                tempEvent.osdes = item.agentInfo.os;
+                if(osName.search("windows") != -1){
+                  tempEvent.oscol = "color: darkblue;";
+                  tempEvent.os = "fa fa-windows fa-stack-2x";
+                }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+                  tempEvent.oscol = "color: dimgray;";
+                  tempEvent.os = "fa fa-apple fa-stack-2x";
+                }else if(osName.search("android") != -1){
+                  tempEvent.oscol = "color: #56c736;";
+                  tempEvent.os = "fa fa-android fa-stack-2x";
+                }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+                  tempEvent.oscol = "color: #f7c600;";
+                  tempEvent.os = "fa fa-linux fa-stack-2x";
+                }else{
+                  tempEvent.os = "fa fa-question-circle fa-stack-2x";
+                }
+
+                var browserName = item.agentInfo.browser.toLowerCase();
+                tempEvent.browserdes = item.agentInfo.browser;
+                if(browserName.search("firefox") != -1){
+                  tempEvent.browsercol = "color: #f65d2b;";
+                  tempEvent.browser = "fa fa-firefox fa-stack-2x";
+                }else if(browserName.search("chrome") != -1){
+                  tempEvent.browsercol = "color: #109855;";
+                  tempEvent.browser = "fa fa-chrome fa-stack-2x";
+                }else if(browserName.search("safari") != -1){
+                  tempEvent.browsercol = "color: #1688e2;";
+                  tempEvent.browser = "fa fa-safari fa-stack-2x";
+                }else if(browserName.search("edge") != -1){
+                  tempEvent.browsercol = "color: #44ce90;";
+                  tempEvent.browser = "fa fa-edge fa-stack-2x";
+                }else if(browserName.search("opera") != -1){
+                  tempEvent.browsercol = "color: #e21126;";
+                  tempEvent.browser = "fa fa-opera fa-stack-2x";
+                }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+                  tempEvent.browsercol = "color: #1db5e7;";
+                  tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
+                }else{
+                  tempEvent.browser = "fa fa-question-circle fa-stack-2x";
+                }
+
                 vm.events.push(tempEvent);
               });
             });
@@ -457,8 +675,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent = {};
                 if(item.action == "Successful Login"){
                   tempEvent.action = vm.s39;
+                  tempEvent.rowStyle = "";
                 }else if(item.action == "Unsuccessful Login"){
                   tempEvent.action = vm.s40;
+                  tempEvent.rowStyle = "color: red;";
                 }
 
                 tempEvent.userId = item.userId;
@@ -470,8 +690,49 @@ document.addEventListener('DOMContentLoaded', function () {
                 let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
                 tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
                 tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-                tempEvent.os = item.agentInfo.os;
-                tempEvent.browser = item.agentInfo.browser;
+
+                var osName = item.agentInfo.os.toLowerCase();
+                tempEvent.osdes = item.agentInfo.os;
+                if(osName.search("windows") != -1){
+                  tempEvent.oscol = "color: darkblue;";
+                  tempEvent.os = "fa fa-windows fa-stack-2x";
+                }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+                  tempEvent.oscol = "color: dimgray;";
+                  tempEvent.os = "fa fa-apple fa-stack-2x";
+                }else if(osName.search("android") != -1){
+                  tempEvent.oscol = "color: #56c736;";
+                  tempEvent.os = "fa fa-android fa-stack-2x";
+                }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+                  tempEvent.oscol = "color: #f7c600;";
+                  tempEvent.os = "fa fa-linux fa-stack-2x";
+                }else{
+                  tempEvent.os = "fa fa-question-circle fa-stack-2x";
+                }
+
+                var browserName = item.agentInfo.browser.toLowerCase();
+                tempEvent.browserdes = item.agentInfo.browser;
+                if(browserName.search("firefox") != -1){
+                  tempEvent.browsercol = "color: #f65d2b;";
+                  tempEvent.browser = "fa fa-firefox fa-stack-2x";
+                }else if(browserName.search("chrome") != -1){
+                  tempEvent.browsercol = "color: #109855;";
+                  tempEvent.browser = "fa fa-chrome fa-stack-2x";
+                }else if(browserName.search("safari") != -1){
+                  tempEvent.browsercol = "color: #1688e2;";
+                  tempEvent.browser = "fa fa-safari fa-stack-2x";
+                }else if(browserName.search("edge") != -1){
+                  tempEvent.browsercol = "color: #44ce90;";
+                  tempEvent.browser = "fa fa-edge fa-stack-2x";
+                }else if(browserName.search("opera") != -1){
+                  tempEvent.browsercol = "color: #e21126;";
+                  tempEvent.browser = "fa fa-opera fa-stack-2x";
+                }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+                  tempEvent.browsercol = "color: #1db5e7;";
+                  tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
+                }else{
+                  tempEvent.browser = "fa fa-question-circle fa-stack-2x";
+                }
+
                 vm.events.push(tempEvent);
               });
             });
@@ -589,7 +850,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s46 = "/audits";
         }
       },
-
       div: function (a, b) {
         return parseInt((a / b));
       },

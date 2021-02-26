@@ -9,7 +9,7 @@ import org.bson.types.ObjectId;
 
 @Getter
 @Setter
-public class Tokens {
+public class UsersExtraInfo {
     @JsonIgnore
     private ObjectId _id;
     @JsonIgnore
@@ -21,5 +21,7 @@ public class Tokens {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String qrToken;
     private long creationTimeStamp;
+    private String photoName;
+    private  boolean unDeletable;
 
 }

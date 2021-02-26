@@ -12,6 +12,9 @@
     <link href="fonts/IranSans/font.css" rel="stylesheet">
 
 
+    <script src="js/es6-promise.min.js"></script>
+    <script src="js/es6-promise.auto.min.js"></script>
+    <script src="js/polyfill.min.js"></script>
     <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
@@ -180,7 +183,10 @@
                                             <div class="form-group">
                                                 <div class="matches" v-bind:style="notSamePasswords ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                     <p class="error" style="font-size: .8rem;">{{s21}}</p>
-                                                </div> <br> <br>
+                                                </div>
+                                                <div class="matches" v-bind:style="duplicatePasswords ? 'visibility: visible;' : 'visibility: hidden;' ">
+                                                    <p class="error" style="font-size: .8rem;">{{s43}}</p>
+                                                </div> <br>
                                                 <button v-on:click="backDashboard()" class="btn btn-danger">{{s39}}</button>
                                                 <button v-on:click="editPass()" :disabled="setActivee" class="btn btn-primary">{{U13}}</button>
                                             </div>

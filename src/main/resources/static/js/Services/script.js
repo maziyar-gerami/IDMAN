@@ -186,8 +186,8 @@ function myFunction() {
         s93: "موقعیت",
         s94: "ممیزی ها",
         s95: "/audits",
-        s96: "توکن سخت افزاری",
-        s97: "غیرفعال",
+        s96: "دسترسی از راه دور",
+        s97: "کد پاسخ های قابل قبول",
       },
       created: function () {
         this.getUserInfo();
@@ -374,7 +374,13 @@ function myFunction() {
               document.getElementsByName("unauthorizedRedirectUrl")[0].value = res.data.accessStrategy.unauthorizedRedirectUrl;
             }
 
+            if(typeof res.data.accessStrategy.endpointUrl !== 'undefined'){
+              document.getElementsByName("endpointUrl")[0].value = res.data.accessStrategy.endpointUrl;
+            }
 
+            if(typeof res.data.accessStrategy.acceptableResponseCodes !== 'undefined'){
+              document.getElementsByName("acceptableResponseCodes")[0].value = res.data.accessStrategy.acceptableResponseCodes;
+            }
 
             if(typeof res.data.accessStrategy.startingDateTime !== 'undefined'){
               let seTime = res.data.accessStrategy.startingDateTime;
@@ -440,26 +446,11 @@ function myFunction() {
               if(typeof res.data.multifactorPolicy.multifactorAuthenticationProviders !== 'undefined'){
                 if(res.data.multifactorPolicy.multifactorAuthenticationProviders[0] == "java.util.LinkedHashSet" &&
                 res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] == "[\"java.util.LinkedHashSet\",[\"mfa-simple\"]]"){
-                  document.getElementById("option14").selected = true;
-                  document.getElementById("option15").selected = false;
-                  document.getElementById("option16").selected = false;
-                  document.getElementById("option17").selected = false;
-                }else if(res.data.multifactorPolicy.multifactorAuthenticationProviders[0] == "java.util.LinkedHashSet" &&
-                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] == "[\"java.util.LinkedHashSet\",[\"mfa-gauth\"]]"){
-                  document.getElementById("option14").selected = false;
-                  document.getElementById("option15").selected = true;
-                  document.getElementById("option16").selected = false;
-                  document.getElementById("option17").selected = false;
-                }else if(res.data.multifactorPolicy.multifactorAuthenticationProviders[0] == "java.util.LinkedHashSet" &&
-                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] == "[\"java.util.LinkedHashSet\",[\"mfa-u2f\"]]"){
-                  document.getElementById("option14").selected = false;
-                  document.getElementById("option15").selected = false;
-                  document.getElementById("option16").selected = true;
-                  document.getElementById("option17").selected = false;
+                  document.getElementsByName("mfaEnabled")[0].checked = true;
+                }else{
+                  document.getElementsByName("mfaEnabled")[0].checked = false;
                 }
               }
-
-        
 
               if(typeof res.data.multifactorPolicy.bypassEnabled !== 'undefined'){
 
@@ -656,6 +647,22 @@ function myFunction() {
               this.accessStrategy.unauthorizedRedirectUrl = document.getElementsByName('unauthorizedRedirectUrl')[0].value;
             }else{
               this.accessStrategy.unauthorizedRedirectUrl = null;
+            }
+
+            if(document.getElementsByName('endpointUrl')[0].value != ""){
+              this.accessStrategy.endpointUrl = document.getElementsByName('endpointUrl')[0].value;
+            }else{
+              this.accessStrategy.endpointUrl = null;
+            }
+  
+            if(document.getElementsByName('acceptableResponseCodes')[0].value != ""){
+              this.accessStrategy.acceptableResponseCodes = document.getElementsByName('acceptableResponseCodes')[0].value;
+            }else{
+              if(document.getElementsByName('endpointUrl')[0].value != ""){
+                this.accessStrategy.acceptableResponseCodes = "200";
+              }else{
+                this.accessStrategy.acceptableResponseCodes = null;
+              }
             }
 
             if(document.getElementsByName('dateStart')[0].value != "" && 
@@ -872,9 +879,8 @@ function myFunction() {
             this.contacts[0] = "java.util.ArrayList";
             this.contacts[1] = this.contactsList;
 
-            
-            if(document.getElementsByName('mfaEnabled')[0].value != ""){
-              this.multifactorPolicy.multifactorAuthenticationProviders = document.getElementsByName('mfaEnabled')[0].value;
+            if(document.getElementsByName('mfaEnabled')[0].checked){
+              this.multifactorPolicy.multifactorAuthenticationProviders = "mfa-simple";
             }else{
               this.multifactorPolicy.multifactorAuthenticationProviders = null;
             }
@@ -1284,8 +1290,8 @@ function myFunction() {
             this.s93 = "Position";
             this.s94 = "Audits";
             this.s95 = "/audits?en";
-            this.s96 = "Hardware Token";
-            this.s97 = "Disabled";
+            this.s96 = "Remote Access";
+            this.s97 = "Acceptable Response Codes";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
@@ -1387,8 +1393,8 @@ function myFunction() {
               this.s93 = "موقعیت";
               this.s94 = "ممیزی ها";
               this.s95 = "/audits";
-              this.s96 = "توکن سخت افزاری";
-              this.s97 = "غیرفعال";
+              this.s96 = "دسترسی از راه دور";
+              this.s97 = "کد پاسخ های قابل قبول";
           }
         },
         div: function (a, b) {

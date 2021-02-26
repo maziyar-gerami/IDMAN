@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
             requestSent: false,
             requestSentSuccess: false,
             requestSentFail: false,
+            duplicatePasswords: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -106,6 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s40: "./dashboard",
             s41: "ممیزی ها",
             s42: "/audits",
+            s43: "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -242,6 +244,13 @@ document.addEventListener('DOMContentLoaded', function () {
                             }).replace(/\\\\/g, "\\")
                         }).then((res) => {
                             location.replace(url + "/settings"); //
+                        }).catch((error) => {
+                            if (error.response) {
+                                if(error.response.status === 302){
+                                    vm.duplicatePasswords = true;
+                                    setTimeout(function(){ vm.duplicatePasswords = false; }, 5000);
+                                }
+                            }
                         });
                     }
                 }else{
@@ -349,6 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s40 = "./dashboard?en";
                     this.s41 = "Audits";
                     this.s42 = "/audits?en";
+                    this.s43 = "New Password Should Not be Same as Old Password.";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -419,6 +429,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s40 = "./dashboard";
                     this.s41 = "ممیزی ها";
                     this.s42 = "/audits";
+                    this.s43 = "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";

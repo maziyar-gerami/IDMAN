@@ -48,6 +48,7 @@ public class SimpleUser implements Serializable, Comparable {
     private long timeStamp;
     private List<String> memberOf;
     private String status;
+    private long passwordChangedTime;
 
     @Override
     public int compareTo(Object second) {

@@ -124,8 +124,7 @@ public class AccessStrategy {
     public AccessStrategy parse(JSONObject jsonObject) {
 
         AccessStrategy accessStrategy = new AccessStrategy();
-        if (jsonObject.get("acceptableResponseCodes") != (null))
-            accessStrategy.setAcceptableResponseCodes(jsonObject.get("acceptableResponseCodes").toString());
+
 
         if (jsonObject.get("unauthorizedRedirectUrl") != (null))
             accessStrategy.setUnauthorizedRedirectUrl(jsonObject.get("unauthorizedRedirectUrl").toString());
@@ -152,10 +151,15 @@ public class AccessStrategy {
 
         }
 
+        if (jsonObject.get("endpointUrl") != null && jsonObject.get("acceptableResponseCodes") != (null) ) {
 
-        //accessStrategy.setAtClass(jsonObject.get("@class").toString()););
-        if (jsonObject.get("endpointUrl") != null)
+            accessStrategy.setAtClass("org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
+
             accessStrategy.setEndpointUrl(jsonObject.get("endpointUrl").toString());
+
+            accessStrategy.setAcceptableResponseCodes(jsonObject.get("acceptableResponseCodes").toString());
+        }
+
         accessStrategy.setEnabled(jsonObject.get("enabled") != (null) && (boolean) jsonObject.get("enabled") != false);
 
         accessStrategy.setSsoEnabled(jsonObject.get("ssoEnabled") != (null) && (boolean) jsonObject.get("ssoEnabled") != false);

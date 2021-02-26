@@ -27,18 +27,18 @@ public class GroupsController {
     @GetMapping("/api/groups/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser(principal.getName());
+        User user = userRepo.retrieveUsers(principal.getName());
         return new ResponseEntity<>(groupRepo.retrieveCurrentUserGroup(user), HttpStatus.OK);
     }
 
     @PostMapping("/api/groups")
     public ResponseEntity<HttpStatus> bindLdapGroup(@RequestBody Group ou) {
-        return new ResponseEntity<>(groupRepo.create(ou), HttpStatus.OK);
+        return new ResponseEntity<>(groupRepo.create(ou));
     }
 
     @PutMapping("/api/groups/{id}")
     public ResponseEntity<HttpStatus> rebindLdapUser(@RequestBody Group ou, @PathVariable("id") String id) {
-        return new ResponseEntity<>(groupRepo.update(id, ou), HttpStatus.OK);
+        return new ResponseEntity<>(groupRepo.update(id, ou));
     }
 
     @GetMapping("/api/groups")
@@ -53,7 +53,7 @@ public class GroupsController {
 
     @DeleteMapping("/api/groups")
     public ResponseEntity<HttpStatus> unbindAllLdapOU(@RequestBody JSONObject jsonObject) {
-        return new ResponseEntity<>(groupRepo.remove(jsonObject), HttpStatus.OK);
+        return new ResponseEntity<>(groupRepo.remove(jsonObject));
     }
 
 }

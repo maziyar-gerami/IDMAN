@@ -23,7 +23,7 @@ import java.util.List;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 @Configuration
-public class Message {
+public class InstantMessage {
 
     private final String collection = "IDMAN_Captchas";
     @Autowired
@@ -36,6 +36,8 @@ public class Message {
     private String SMS_VALIDATION_DIGITS;
     @Value("${sms.api.key}")
     private String SMS_API_KEY;
+    @Value("${base.url}")
+    private String baseurl;
     @Autowired
     private LdapTemplate ldapTemplate;
     @Autowired
@@ -54,11 +56,11 @@ public class Message {
             return -1;
         }
         if (checkMobile(mobile).size() > 0) {
-            User user = userRepo.retrieveUser(checkMobile(mobile).get(0).getAsString("userId"));
+            User user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
             if (tokenClass.insertMobileToken(user)) {
                 try {
                     String receptor = mobile;
-                    String message = user.getTokens().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+                    String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
                     KavenegarApi api = new KavenegarApi(SMS_API_KEY);
                     api.verifyLookup(receptor, message, "", "", "mfa");
                     mongoTemplate.remove(query, collection);
@@ -81,11 +83,11 @@ public class Message {
     public int sendMessage(String mobile) {
 
         if (checkMobile(mobile).size() > 0) {
-            User user = userRepo.retrieveUser(checkMobile(mobile).get(0).getAsString("userId"));
+            User user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
             if (tokenClass.insertMobileToken(user)) {
                 try {
                     String receptor = mobile;
-                    String message = user.getTokens().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+                    String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
                     KavenegarApi api = new KavenegarApi(SMS_API_KEY);
                     api.verifyLookup(receptor, message, "", "", "mfa");
                     return Integer.valueOf(SMS_VALID_TIME);
@@ -130,11 +132,11 @@ public class Message {
             return -1;
         }
 
-        if (checkMobile(mobile) != null & userRepo.retrieveUser(uId).getUserId() != null) {
+        if (checkMobile(mobile) != null & userRepo.retrieveUsers(uId).getUserId() != null) {
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
-            User user = userRepo.retrieveUser(uId);
-            for (JSONObject id : ids) people.add(userRepo.retrieveUser(id.getAsString("userId")));
+            User user = userRepo.retrieveUsers(uId);
+            for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
 
             for (User p : people) {
                 if (p.getUserId().equals(user.getUserId())) {
@@ -143,7 +145,7 @@ public class Message {
 
                         try {
                             String receptor = mobile;
-                            String message = user.getTokens().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+                            String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
                             KavenegarApi api = new KavenegarApi(SMS_API_KEY);
                             api.verifyLookup(receptor, message, "", "", "mfa");
                             mongoTemplate.remove(query, collection);
@@ -172,4 +174,23 @@ public class Message {
     }
 
 
+    public void sendWarnExpireMessage(User user, String day) {
+
+        try {
+            String receptor = user.getMobile();
+            KavenegarApi api = new KavenegarApi(SMS_API_KEY);
+            if (Integer.valueOf(day)>=0)
+                api.verifyLookup(receptor, user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')), day, baseurl+"/resetPass", "expirePassReminder");
+            else
+                api.verifyLookup(receptor, user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')), baseurl+"/resetPass", "", "expirePassNotify");
+
+        } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+            System.out.print("HttpException  : " + ex.getMessage());
+
+        } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+            System.out.print("ApiException : " + ex.getMessage());
+
+        }
+
+    }
 }

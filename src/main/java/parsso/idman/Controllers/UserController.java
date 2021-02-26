@@ -14,14 +14,16 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Captcha.RepoImp.CaptchaRepoImp;
-import parsso.idman.Helpers.Communicate.Message;
+import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
+import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.Helpers.User.UsersExcelView;
 import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 import parsso.idman.Repos.UserRepo;
 
+import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -46,7 +48,9 @@ public class UserController {
     @Autowired
     UsersExcelView excelView;
     @Autowired
-    private Message message;
+    SystemRefreshRepoImpl systemRefreshRepoImpl;
+    @Autowired
+    private InstantMessage instantMessage;
     @Autowired
     private UserRepo userRepo;
     @Value("${administrator.ou.id}")
@@ -70,7 +74,7 @@ public class UserController {
     @GetMapping("/api/user")
     public ResponseEntity<User> retrieveUser(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.retrieveUser(principal.getName()), HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.retrieveUsers(principal.getName()), HttpStatus.OK);
     }
 
     /**
@@ -93,7 +97,7 @@ public class UserController {
     public int isAdmin(HttpServletRequest request) {
         try {
             Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUser(principal.getName());
+            User user = userRepo.retrieveUsers(principal.getName());
             List<String> memberOf = user.getMemberOf();
 
 
@@ -120,10 +124,9 @@ public class UserController {
     @GetMapping("/api/user/photo")
     public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException {
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser(principal.getName());
+        User user = userRepo.retrieveUsers(principal.getName());
         return new ResponseEntity<>(userRepo.showProfilePic(response, user), HttpStatus.OK);
     }
-
 
     /**
      * Post photo for logged-in user
@@ -144,7 +147,7 @@ public class UserController {
      */
     @PutMapping("/api/user/password")
     public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
-                                                     @RequestBody JSONObject jsonObject) {
+                                                     @RequestBody JSONObject jsonObject) throws SizeLimitExceededException {
         Principal principal = request.getUserPrincipal();
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");
@@ -156,7 +159,7 @@ public class UserController {
     @GetMapping("/api/user/password/request")
     public ResponseEntity<Integer> requestSMS(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUser(principal.getName());
+        User user = userRepo.retrieveUsers(principal.getName());
         int status = userRepo.requestToken(user);
 
         if (status > 0)
@@ -174,8 +177,8 @@ public class UserController {
      */
     @GetMapping("/api/users/u/{uid}")
     public ResponseEntity<User> retrieveUser(@PathVariable("uid") String userId) {
-        if (userRepo.retrieveUser(userId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveUser(userId), HttpStatus.OK);
+        if (userRepo.retrieveUsers(userId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(userRepo.retrieveUsers(userId), HttpStatus.OK);
     }
 
     /**
@@ -187,6 +190,21 @@ public class UserController {
     public ResponseEntity<List<SimpleUser>> retrieveUsersMain() {
         if (userRepo.retrieveUsersMain() == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(userRepo.retrieveUsersMain(), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/users/group/{groupId}")
+    public ResponseEntity<ListUsers> retrieveUsersMainWithGroupId(@PathVariable(name = "groupId") String groupId,
+                                                                         @RequestParam(name = "page", defaultValue = "") String page,
+                                                                         @RequestParam(name = "nRec", defaultValue = "") String nRec) {
+        ListUsers users = userRepo.retrieveUsersMainWithGroupId(groupId, page,nRec);
+        if (users == null) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @PutMapping("/api/users/group/{groupId}")
+    public ResponseEntity<HttpStatus> massUsersGroupUpdate(@RequestBody JSONObject gu,
+                                                           @PathVariable (name = "groupId") String groupId) {
+        return new ResponseEntity<>(userRepo.massUsersGroupUpdate(groupId, gu));
     }
 
     /**
@@ -202,10 +220,18 @@ public class UserController {
                                                        @RequestParam(name = "searchUid", defaultValue = "") String searchuUid,
                                                        @RequestParam(name = "userStatus", defaultValue = "") String userStatus,
                                                        @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName) {
-        if (userRepo.retrieveUsersFull().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        if (userRepo.retrieveUsersMain().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else
             return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
+
+    /*@GetMapping("/api/users/group/{gid}/{page}/{n}")
+    public ResponseEntity<ListUsers> retrieveUsersOfGroups(@PathVariable("page") int page, @PathVariable("n") int n,
+                                                       @RequestParam(name = "{gid}") String gtoupId){
+        if (userRepo.retrieveUsersMain().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else
+            return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
+    }*/
 
 
     /**
@@ -218,7 +244,6 @@ public class UserController {
         if (userRepo.retrieveUsersFull().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(userRepo.retrieveUsersFull(), HttpStatus.OK);
     }
-
 
     /**
      * Create user
@@ -253,8 +278,12 @@ public class UserController {
      * @return the response entity
      */
     @DeleteMapping("/api/users")
-    public ResponseEntity<HttpStatus> unbindAllLdapUser(@RequestBody JSONObject jsonObject) {
-        return new ResponseEntity<>(userRepo.remove(jsonObject), HttpStatus.OK);
+    public ResponseEntity<List<String>> unbindAllLdapUser(@RequestBody JSONObject jsonObject) {
+        List<String> names = userRepo.remove(jsonObject);
+        if (names.size() == 0)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(names, HttpStatus.PARTIAL_CONTENT);
     }
 
     /**
@@ -332,12 +361,15 @@ public class UserController {
         return new ResponseEntity<>(userRepo.sendEmail(jsonObject), HttpStatus.OK);
     }
 
+
     @GetMapping("/api/users/export")
     public ModelAndView downloadExcel() {
 
         // return a view which will be resolved by an excel view resolver
         return new ModelAndView(excelView, "listUsers", null);
     }
+
+
 
 
     //*************************************** Public Controllers ***************************************
@@ -394,7 +426,7 @@ public class UserController {
     public ResponseEntity<Integer> sendMessage(@PathVariable("mobile") String mobile,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
-        int time = message.sendMessage(mobile, cid, answer);
+        int time = instantMessage.sendMessage(mobile, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
@@ -414,7 +446,7 @@ public class UserController {
                                                @PathVariable("uid") String uid,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
-        int time = message.sendMessage(mobile, uid, cid, answer);
+        int time = instantMessage.sendMessage(mobile, uid, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
@@ -456,7 +488,7 @@ public class UserController {
      */
     @GetMapping("/api/public/checkMobile/{mobile}")
     public HttpEntity<List<JSONObject>> checkMobile(@PathVariable("mobile") String mobile) {
-        return new ResponseEntity<List<JSONObject>>(message.checkMobile(mobile), HttpStatus.OK);
+        return new ResponseEntity<List<JSONObject>>(instantMessage.checkMobile(mobile), HttpStatus.OK);
     }
 
 
@@ -505,6 +537,7 @@ public class UserController {
     public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));
     }
+
 
 
 }
