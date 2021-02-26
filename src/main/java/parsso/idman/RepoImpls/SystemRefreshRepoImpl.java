@@ -64,6 +64,8 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 if (userExtraInfo!=null && userExtraInfo.getQrToken() == null)
                     userExtraInfo.setQrToken(GenerateUUID.getUUID());
 
+                if (ldapTemplate.)
+
                 mongoTemplate.remove(queryMongo, "IDMAN_UsersExtraInfo");
                 if (userExtraInfo!=null)
                     mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");

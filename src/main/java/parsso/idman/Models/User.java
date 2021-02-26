@@ -90,7 +90,7 @@ public class User implements UserDetails, Comparable {
             if (getUserId().equals("su"))
                 list.add(new SimpleGrantedAuthority(PREFIX + "SUPERADMIN"));
 
-            else if (this.memberOf.contains("1598656906150")) {
+            else if (this.memberOf.contains(admidId)) {
                 list.add(new SimpleGrantedAuthority(PREFIX + "ADMIN"));
 
                 list.add(new SimpleGrantedAuthority(PREFIX + "USER"));

@@ -271,8 +271,10 @@ public class UserRepoImpl implements UserRepo {
         if (p.getPhoto() != null)
             usersExtraInfo.setPhotoName(p.getPhoto());
 
-        usersExtraInfo.setUnDeletable(p.isUnDeletable());
-        mongoTemplate.save(usersExtraInfo, collection);
+        if (p.isUnDeletable())
+            usersExtraInfo.setUnDeletable(true);
+        if (usersExtraInfo!=null)
+            mongoTemplate.save(usersExtraInfo, collection);
 
         try {
             ldapTemplate.modifyAttributes(context);
