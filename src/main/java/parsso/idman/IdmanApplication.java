@@ -101,7 +101,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         };
 
 //TODO: enable it
-        //refresh(context);
+        refresh(context);
         Thread thread = new Thread(runnable);
         thread.start();
 
