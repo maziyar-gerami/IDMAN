@@ -60,6 +60,30 @@ document.addEventListener('DOMContentLoaded', function () {
             margin1: "ml-1",
             userPicture: "images/PlaceholderUser.png",
             allIsSelected: false,
+            allUsersListSearchQuery: "",
+            groupUsersListSearchQuery: "",
+            allUsersListSearchQueryC: "",
+            groupUsersListSearchQueryC: "",
+            allUsersSearch:[],
+            groupUsersSearch:[],
+            allUsersSearchC:[],
+            groupUsersSearchC:[],
+            groupsAddedUsersList: [],
+            groupsRemovedUsersList: [],
+            groupsAddedUsersListC: [],
+            groupsRemovedUsersListC: [],
+            allUsersListPage: 1,
+            groupUsersListPage: 1,
+            allUsersShownOnPage: 50,
+            groupUsersShownOnPage: 50,
+            allUsersListSize: 0,
+            groupUsersListSize: 0,
+            editingGroupID: "",
+            numberOfLoadAllUsers: 1,
+            helperArray: [],
+            endOfAllUsersList: true,
+            loader: false,
+            loader1: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -98,6 +122,12 @@ document.addEventListener('DOMContentLoaded', function () {
             s36: "تعداد رکورد ها: ",
             s37: "ممیزی ها",
             s38: "/audits",
+            s39: "لیست کاربران",
+            s40: "جستجو...",
+            s41: "افزودن به گروه",
+            s42: "کاربری یافت نشد",
+            s43: "لیست اعضای گروه",
+            s44: "حذف از گروه",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام",
@@ -218,15 +248,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.showS = "display:none"
                 this.addS = "display:none"
                 this.editS = ""
+                this.editingGroupID = id;
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 axios.get(url + "/api/groups/" + id) //
                     .then((res) => {
                         vm.group = res.data;
+                        vm.getAllUsersList(id);
                     });
             },
             editGroup: function (id) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
                 if(document.getElementById('group.nameUpdate').value == ""){
                     alert("لطفا قسمت های الزامی را پر کنید.");
                 }else{
@@ -243,7 +276,18 @@ document.addEventListener('DOMContentLoaded', function () {
                             }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
-                            location.reload();
+                            axios({
+                                method: 'put',
+                                url: url + '/api/users/group/' + id, //
+                                headers: {'Content-Type': 'application/json'},
+                                data: JSON.stringify({
+                                    add: vm.groupsAddedUsersList,
+                                    remove: vm.groupsRemovedUsersList,
+                                }).replace(/\\\\/g, "\\")
+                            })
+                            .then((resp) => {
+                                location.reload();
+                            });
                         });
                     }
                 }
@@ -252,6 +296,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.showS = "display:none"
                 this.addS = ""
                 this.editS = "display:none"
+                this.getAllUsersListC();
             },
             addGroup: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -270,7 +315,18 @@ document.addEventListener('DOMContentLoaded', function () {
                         }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
-                        location.reload();
+                        axios({
+                            method: 'put',
+                            url: url + '/api/users/group/' + document.getElementById('group.idCreate').value, //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                add: vm.groupsAddedUsersListC,
+                                remove: vm.groupsRemovedUsersListC,
+                            }).replace(/\\\\/g, "\\")
+                        })
+                        .then((resp) => {
+                            location.reload();
+                        });
                     });
                 }
             },
@@ -354,6 +410,168 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById("selectAllCheckbox").click();
                 }
             },
+            getAllUsersListC: function (){
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                this.loader1 = true;
+                axios.get(url + "/api/users/") // + vm.allUsersListPage + "/" + vm.allUsersShownOnPage
+                    .then((res) => {
+                        vm.allUsersSearchC = res.data;
+                        vm.loader1 = false;
+                    });
+            },
+            getAllUsersList: function (id){
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                this.loader = true;
+                axios.get(url + "/api/users/") // + vm.allUsersListPage + "/" + vm.allUsersShownOnPage
+                    .then((res) => {
+                        vm.allUsersListSize = res.data.size;
+                        vm.allUsersSearch = res.data;
+                        vm.getGroupUsersList(id);
+                    });
+            },
+            getGroupUsersList: function (id){
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                axios.get(url + "/api/users/group/" + id)//, {params: { page: vm.groupUsersListPage,  nRec: vm.groupUsersShownOnPage},})
+                    .then((res) => {
+                        vm.groupUsersListSize = res.data.size;
+                        vm.groupUsersSearch = res.data.userList;
+                        if(vm.allUsersSearch.length != 0 || vm.groupUsersSearch.length != 0){
+                            vm.allUsersSearch = vm.allUsersSearch.filter(a => !vm.groupUsersSearch.map(b=>b.userId).includes(a.userId));
+                        }
+                        vm.loader = false;
+                        /*if(vm.groupUsersSearch.length >= vm.groupUsersListSize){
+                            document.getElementById("loadGroupUsersListButton").disabled = true;
+                            document.getElementById("loadAllUsersListButton").disabled = true;
+                        }*/
+                    });
+            },
+            addUserToGroup: function (user){
+                let index = this.groupsRemovedUsersList.indexOf(user.userId);
+                if (index > -1) {
+                    index = this.groupsRemovedUsersList.indexOf(user.userId);
+                    if (index > -1) {
+                        this.groupsRemovedUsersList.splice(index, 1);
+                    }
+                    index = this.allUsersSearch.indexOf(user);
+                    if (index > -1) {
+                        this.allUsersSearch.splice(index, 1);
+                    }
+                    this.groupUsersSearch.push(user);
+                }else{
+                    this.groupsAddedUsersList.push(user.userId);
+                    this.groupUsersSearch.push(user);
+                    index = this.allUsersSearch.indexOf(user);
+                    if (index > -1) {
+                        this.allUsersSearch.splice(index, 1);
+                    }
+                }
+            },
+            removeUserFromGroup: function (user){
+                let index = this.groupsAddedUsersList.indexOf(user.userId);
+                if (index > -1) {
+                    index = this.groupsAddedUsersList.indexOf(user.userId);
+                    if (index > -1) {
+                        this.groupsAddedUsersList.splice(index, 1);
+                    }
+                    index = this.groupUsersSearch.indexOf(user);
+                    if (index > -1) {
+                        this.groupUsersSearch.splice(index, 1);
+                    }
+                    this.allUsersSearch.push(user);
+                }else{
+                    this.groupsRemovedUsersList.push(user.userId);
+                    this.allUsersSearch.push(user);
+                    index = this.groupUsersSearch.indexOf(user);
+                    if (index > -1) {
+                        this.groupUsersSearch.splice(index, 1);
+                    }
+                }
+            },
+            addUserToGroupC: function (user){
+                let index = this.groupsRemovedUsersListC.indexOf(user.userId);
+                if (index > -1) {
+                    index = this.groupsRemovedUsersListC.indexOf(user.userId);
+                    if (index > -1) {
+                        this.groupsRemovedUsersListC.splice(index, 1);
+                    }
+                    index = this.allUsersSearchC.indexOf(user);
+                    if (index > -1) {
+                        this.allUsersSearchC.splice(index, 1);
+                    }
+                    this.groupUsersSearchC.push(user);
+                }else{
+                    this.groupsAddedUsersListC.push(user.userId);
+                    this.groupUsersSearchC.push(user);
+                    index = this.allUsersSearchC.indexOf(user);
+                    if (index > -1) {
+                        this.allUsersSearchC.splice(index, 1);
+                    }
+                }
+            },
+            removeUserFromGroupC: function (user){
+                let index = this.groupsAddedUsersListC.indexOf(user.userId);
+                if (index > -1) {
+                    index = this.groupsAddedUsersListC.indexOf(user.userId);
+                    if (index > -1) {
+                        this.groupsAddedUsersListC.splice(index, 1);
+                    }
+                    index = this.groupUsersSearchC.indexOf(user);
+                    if (index > -1) {
+                        this.groupUsersSearchC.splice(index, 1);
+                    }
+                    this.allUsersSearchC.push(user);
+                }else{
+                    this.groupsRemovedUsersListC.push(user.userId);
+                    this.allUsersSearchC.push(user);
+                    index = this.groupUsersSearchC.indexOf(user);
+                    if (index > -1) {
+                        this.groupUsersSearchC.splice(index, 1);
+                    }
+                }
+            },
+            loadAllUsersList: function (flag){
+                /*var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                if(flag){
+                    this.numberOfLoadAllUsers = this.numberOfLoadAllUsers + 1;
+                }
+                let i = 0;
+                while(i < 10){
+                    this.allUsersListPage = this.allUsersListPage + 1;
+                    axios.get(url + "/api/users/" + vm.allUsersListPage + "/" + vm.allUsersShownOnPage) //
+                        .then((res) => {
+                            if(res.data.userList.length == 0){
+                                document.getElementById("loadAllUsersListButton").disabled = true;
+                                vm.endOfAllUsersList = false;
+                            }else{
+                                vm.helperArray = res.data.userList.filter(a => !vm.groupUsersSearch.map(b=>b.userId).includes(a.userId));
+                                console.log(vm.helperArray);
+                                vm.allUsersSearch = vm.allUsersSearch.concat(vm.helperArray);
+                            }
+                            if(vm.allUsersSearch.length >= (vm.allUsersShownOnPage * vm.numberOfLoadAllUsers)){
+                                vm.endOfAllUsersList = false;
+                            }
+                        });
+                    i = i + 1;
+                }*/         
+            },
+            loadGroupUsersList: function (){
+                /*var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                this.groupUsersListPage = this.groupUsersListPage + 1;
+                axios.get(url + "/api/users/group/" + vm.editingGroupID, {
+                    params: { page: vm.groupUsersListPage,  nRec: vm.groupUsersShownOnPage},
+                    })
+                    .then((res) => {
+                        vm.groupUsersSearch = vm.groupUsersSearch.concat(res.data.userList);
+                        if(vm.groupUsersSearch.length >= vm.groupUsersListSize){
+                            document.getElementById("loadGroupUsersListButton").disabled = true;
+                        }
+                    });*/
+            },
             changeLang: function () {
                 if(this.lang == "EN"){
                     this.placeholder = "text-align: left;"
@@ -399,6 +617,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s36 = "Records a Page: ";
                     this.s37 = "Audits";
                     this.s38 = "/audits?en";
+                    this.s39 = "Users List";
+                    this.s40 = "Search...";
+                    this.s41 = "Add to Group";
+                    this.s42 = "No User Found";
+                    this.s43 = "List of Group Members";
+                    this.s44 = "Remove from Group";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "ID";
@@ -458,6 +682,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s36 = "تعداد رکورد ها: ";
                     this.s37 = "ممیزی ها";
                     this.s38 = "/audits";
+                    this.s39 = "لیست کاربران";
+                    this.s40 = "جستجو...";
+                    this.s41 = "افزودن به گروه";
+                    this.s42 = "کاربری یافت نشد";
+                    this.s43 = "لیست اعضای گروه";
+                    this.s44 = "حذف از گروه";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "شناسه";
@@ -485,7 +715,67 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
                 return this.groupsPage;
-            }
+            },
+            allUsersListResultQuery(){
+                if(this.allUsersListSearchQuery){
+                  let buffer = [];
+                  buffer = buffer.concat(this.allUsersSearch.filter((item)=>{
+                    return this.allUsersListSearchQuery.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
+                  }));
+                  buffer = buffer.concat(this.allUsersSearch.filter((item)=>{
+                    return this.allUsersListSearchQuery.split(' ').every(v => item.displayName.includes(v))
+                  }));
+                  let uniqueBuffer = [...new Set(buffer)];
+                  return uniqueBuffer;
+                }else{
+                  return [];
+                }
+            },
+            groupUsersListResultQuery(){
+                if(this.groupUsersListSearchQuery){
+                  let buffer = [];
+                  buffer = buffer.concat(this.groupUsersSearch.filter((item)=>{
+                    return this.groupUsersListSearchQuery.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
+                  }));
+                  buffer = buffer.concat(this.groupUsersSearch.filter((item)=>{
+                    return this.groupUsersListSearchQuery.split(' ').every(v => item.displayName.includes(v))
+                  }));
+                  let uniqueBuffer = [...new Set(buffer)];
+                  return uniqueBuffer;
+                }else{
+                  return [];
+                }
+            },
+            allUsersListResultQueryC(){
+                if(this.allUsersListSearchQueryC){
+                  let buffer = [];
+                  buffer = buffer.concat(this.allUsersSearchC.filter((item)=>{
+                    return this.allUsersListSearchQueryC.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
+                  }));
+                  buffer = buffer.concat(this.allUsersSearchC.filter((item)=>{
+                    return this.allUsersListSearchQueryC.split(' ').every(v => item.displayName.includes(v))
+                  }));
+                  let uniqueBuffer = [...new Set(buffer)];
+                  return uniqueBuffer;
+                }else{
+                  return [];
+                }
+            },
+            groupUsersListResultQueryC(){
+                if(this.groupUsersListSearchQueryC){
+                  let buffer = [];
+                  buffer = buffer.concat(this.groupUsersSearchC.filter((item)=>{
+                    return this.groupUsersListSearchQueryC.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
+                  }));
+                  buffer = buffer.concat(this.groupUsersSearchC.filter((item)=>{
+                    return this.groupUsersListSearchQueryC.split(' ').every(v => item.displayName.includes(v))
+                  }));
+                  let uniqueBuffer = [...new Set(buffer)];
+                  return uniqueBuffer;
+                }else{
+                  return [];
+                }
+            },
         }
     });
 })

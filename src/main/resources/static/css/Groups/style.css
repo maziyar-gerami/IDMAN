@@ -188,3 +188,13 @@ html,body {
     display: block;
   }
 }
+
+.table-wrapper{
+  overflow-y: auto;
+  height: 70vh;
+}
+
+.frame-wrapper{
+  overflow-y: auto;
+  height: 32vh;
+}

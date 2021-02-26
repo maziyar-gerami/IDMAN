@@ -263,3 +263,8 @@ html,body {
   margin-top: 2px;
   cursor: pointer;
 }
+
+.table-wrapper{
+  overflow-y: auto;
+  height: 70vh;
+}

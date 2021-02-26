@@ -194,8 +194,8 @@ public class UserController {
 
     @GetMapping("/api/users/group/{groupId}")
     public ResponseEntity<ListUsers> retrieveUsersMainWithGroupId(@PathVariable(name = "groupId") String groupId,
-                                                                         @RequestParam(name = "page", defaultValue = "") String page,
-                                                                         @RequestParam(name = "nRec", defaultValue = "") String nRec) {
+                                                                         @RequestParam(name = "page", defaultValue = "1") int page,
+                                                                         @RequestParam(name = "nRec", defaultValue = "90000") int nRec) {
         ListUsers users = userRepo.retrieveUsersMainWithGroupId(groupId, page,nRec);
         if (users == null) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(users, HttpStatus.OK);

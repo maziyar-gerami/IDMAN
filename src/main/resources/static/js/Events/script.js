@@ -220,8 +220,10 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent = {};
             if(item.action == "Successful Login"){
               tempEvent.action = vm.s39;
+              tempEvent.rowStyle = "";
             }else if(item.action == "Unsuccessful Login"){
               tempEvent.action = vm.s40;
+              tempEvent.rowStyle = "color: red;";
             }
 
             tempEvent.userId = item.userId;
@@ -297,8 +299,10 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent = {};
             if(item.action == "Successful Login"){
               tempEvent.action = vm.s39;
+              tempEvent.rowStyle = "";
             }else if(item.action == "Unsuccessful Login"){
               tempEvent.action = vm.s40;
+              tempEvent.rowStyle = "color: red;";
             }
 
             tempEvent.userId = item.userId;
@@ -388,8 +392,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent = {};
                 if(item.action == "Successful Login"){
                   tempEvent.action = vm.s39;
+                  tempEvent.rowStyle = "";
                 }else if(item.action == "Unsuccessful Login"){
                   tempEvent.action = vm.s40;
+                  tempEvent.rowStyle = "color: red;";
                 }
 
                 tempEvent.userId = item.userId;
@@ -471,8 +477,10 @@ document.addEventListener('DOMContentLoaded', function () {
               tempEvent = {};
               if(item.action == "Successful Login"){
                 tempEvent.action = vm.s39;
+                tempEvent.rowStyle = "";
               }else if(item.action == "Unsuccessful Login"){
                 tempEvent.action = vm.s40;
+                tempEvent.rowStyle = "color: red;";
               }
 
               tempEvent.userId = item.userId;
@@ -570,8 +578,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent = {};
                 if(item.action == "Successful Login"){
                   tempEvent.action = vm.s39;
+                  tempEvent.rowStyle = "";
                 }else if(item.action == "Unsuccessful Login"){
                   tempEvent.action = vm.s40;
+                  tempEvent.rowStyle = "color: red;";
                 }
 
                 tempEvent.userId = item.userId;
@@ -665,8 +675,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent = {};
                 if(item.action == "Successful Login"){
                   tempEvent.action = vm.s39;
+                  tempEvent.rowStyle = "";
                 }else if(item.action == "Unsuccessful Login"){
                   tempEvent.action = vm.s40;
+                  tempEvent.rowStyle = "color: red;";
                 }
 
                 tempEvent.userId = item.userId;

@@ -416,3 +416,8 @@ html,body {
   text-align: left;
   direction: ltr;
 }
+
+.table-wrapper{
+  overflow-y: auto;
+  height: 70vh;
+}

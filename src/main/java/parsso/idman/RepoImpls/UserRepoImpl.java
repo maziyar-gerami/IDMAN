@@ -837,39 +837,31 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public ListUsers retrieveUsersMainWithGroupId(String groupId, String p, String nRec) {
+    public ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int number) {
 
         List<SimpleUser> users = retrieveGroupsUsers(groupId);
 
         CollectionUtils.filter(users, PredicateUtils.notNullPredicate());
 
-        int page = !p.equals("") ? Integer.valueOf(p) : 1;
-        int number = 0;
-        if(!nRec.equals(""))
-            if (Integer.valueOf(nRec)>users.size())
-                number = users.size();
-            else
-                number = Integer.valueOf(nRec);
+        int n = (page) * number;
 
-            else
-                number = users.size();
+        if (n > users.size())
+            n = users.size();
 
+        int size = users.size();
+
+        int pages = (int) Math.floor(size / number);
+
+        int start = (page - 1) * number;
 
         List<SimpleUser> relativeUsers = new LinkedList<>();
 
-        int end = (page-1) * number+number;
-
-        if (end>users.size())
-            end = users.size();
-
-        for (int i = (page - 1) * number; i < end; i++) {
+        for (int i = start; i < n; i++)
             relativeUsers.add(users.get(i));
-            if (i == users.size()) break;
-        }
 
         CollectionUtils.filter(relativeUsers, PredicateUtils.notNullPredicate());
 
-        return new ListUsers(users.size(), relativeUsers, (int) Math.ceil(users.size() / number) );
+        return new ListUsers(size, relativeUsers, pages);
 
     }
 

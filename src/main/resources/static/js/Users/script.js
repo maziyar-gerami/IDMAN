@@ -127,6 +127,8 @@ document.addEventListener('DOMContentLoaded', function () {
             promptImportButtons: false,
             loader: false,
             duplicatePasswords: false,
+            showUnDeletableList: false,
+            unDeletableList: "",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -210,6 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s81: "/audits",
             s82: "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.",
             s83: "غیرقابل حذف",
+            s84: "کاربران زیر غیرقابل حذف می باشند.",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه کاربری",
@@ -1090,6 +1093,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
+                        if(res.status == 206) {
+                            vm.unDeletableList = "";
+                            for(let i = 0; i < res.data.length-1; ++i){
+                                vm.unDeletableList = vm.unDeletableList + res.data[i] + ", ";
+                            }
+                            vm.unDeletableList = vm.unDeletableList + res.data[res.data.length-1];
+                            vm.showUnDeletableList = true;
+                            setTimeout(function(){ vm.showUnDeletableList = false; }, 10000);
+                        }
                         vm.filter();
                     });
                 }
@@ -1190,6 +1202,15 @@ document.addEventListener('DOMContentLoaded', function () {
                                 }).replace(/\\\\/g, "\\")
                             })
                             .then((res) => {
+                                if(res.status == 206) {
+                                    vm.unDeletableList = "";
+                                    for(let i = 0; i < res.data.length-1; ++i){
+                                        vm.unDeletableList = vm.unDeletableList + res.data[i] + ", ";
+                                    }
+                                    vm.unDeletableList = vm.unDeletableList + res.data[res.data.length-1];
+                                    vm.showUnDeletableList = true;
+                                    setTimeout(function(){ vm.showUnDeletableList = false; }, 10000);
+                                }
                                 vm.filter();
                             });
                         }
@@ -1333,6 +1354,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s81 = "/audits?en";
                     this.s82 = "New Password Should Not be Same as Old Password.";
                     this.s83 = "Indelible";
+                    this.s84 = "Users Listed Below Are Indelible.";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1455,6 +1477,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s81 = "/audits";
                     this.s82 = "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.";
                     this.s83 = "غیرقابل حذف";
+                    this.s84 = "کاربران زیر غیرقابل حذف می باشند.";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه کاربری";
