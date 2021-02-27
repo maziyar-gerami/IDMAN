@@ -16,6 +16,7 @@ import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.User.BuildDn;
 import parsso.idman.Models.Group;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
@@ -39,16 +40,14 @@ import java.util.List;
 public class GroupRepoImpl implements GroupRepo {
 
     Logger logger = LoggerFactory.getLogger(Group.class);
-
+    @Autowired
+    BuildDn buildDnUser;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-
     @Autowired
     private LdapTemplate ldapTemplate;
-
     @Autowired
     private UserRepo userRepo;
-
     @Autowired
     private ServiceRepo serviceRepo;
 
@@ -60,12 +59,40 @@ public class GroupRepoImpl implements GroupRepo {
             groups = retrieve();
         else {
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+            for (Object string:jsonArray
+                 ) {
+                Group group = retrieveOu((String) string);
+                if (group != null)
+                    groups.add(group);
+                else
+                    continue;
+            }
             Iterator<String> iterator = jsonArray.iterator();
             while (iterator.hasNext()) {
                 Group group = retrieveOu(iterator.next());
                 if (group != null)
                     groups.add(group);
+                else
+                    continue;
+
+                DirContextOperations context;
+
+                String id = group.getId();
+
+                for (SimpleUser user : userRepo.retrieveGroupsUsers(id)) {
+                    if(user!=null && user.getMemberOf()!=null)
+                    for (String groupN : user.getMemberOf()) {
+                        if (groupN.equalsIgnoreCase(id)) {
+                            context = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
+                            context.removeAttributeValue("ou", id);
+                            ldapTemplate.modifyAttributes(context);
+                        }
+
+                    }
+                }
             }
+
+
         }
 
         if (groups != null)
@@ -81,6 +108,8 @@ public class GroupRepoImpl implements GroupRepo {
 
             }
 
+
+
         logger.info("Removing groups ended");
         return HttpStatus.OK;
     }
@@ -94,7 +123,7 @@ public class GroupRepoImpl implements GroupRepo {
         List<Group> groups = retrieve();
 
         for (Group group : groups) {
-            if (group.getId().equals(uid))
+            if (group.getId().equalsIgnoreCase(uid))
                 return group;
         }
         return null;
@@ -155,9 +184,9 @@ public class GroupRepoImpl implements GroupRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        List<Group> gt = ldapTemplate.search(BASE_DN,null, new OUAttributeMapper());
+        List<Group> gt = ldapTemplate.search(BASE_DN, null, new OUAttributeMapper());
 
-        if (gt.size()!=0)
+        if (gt.size() != 0)
             return null;
 
         final AndFilter filter = new AndFilter();
@@ -174,9 +203,9 @@ public class GroupRepoImpl implements GroupRepo {
 
         List<Group> groups = retrieve();
 
-        for (Group group:groups)
+        for (Group group : groups)
             if (group.getId().equals(ou.getId()))
-                return  HttpStatus.FOUND;
+                return HttpStatus.FOUND;
 
         Name dn = buildDn(ou.getId());
         try {
@@ -197,46 +226,50 @@ public class GroupRepoImpl implements GroupRepo {
 
         List<Group> groups = retrieve();
 
-        for (Group group:groups)
-            if (!(id.equals(ou.getId()))&&group.getId().equals(ou.getId()))
-                return  HttpStatus.FOUND;
-
-        DirContextOperations context = ldapTemplate.lookupContext(dn);
+        for (Group group : groups)
+            if (!(id.equals(ou.getId())) && group.getId().equals(ou.getId()))
+                return HttpStatus.FOUND;
 
 
-        if (!(id.equals(ou.getId()))){
+        if (!(id.equals(ou.getId()))) {
 
             try {
                 ldapTemplate.unbind(dn);
                 create(ou);
+                DirContextOperations contextUser;
                 logger.info("Group " + ou.getId() + " updated successfully");
 
-                for (SimpleUser user:userRepo.retrieveGroupsUsers(id) ) {
-                    for (String group:user.getMemberOf()) {
-                        if (group.equals(id)){
-                            context.removeAttributeValue("ou", id);
-                            context.addAttributeValue("ou", ou.getId());
+                for (SimpleUser user : userRepo.retrieveGroupsUsers(id)) {
+                    for (String group : user.getMemberOf()) {
+                        if (group.equalsIgnoreCase(id)) {
+                            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
+                            contextUser.removeAttributeValue("ou", id);
+                            contextUser.addAttributeValue("ou", ou.getId());
+                            ldapTemplate.modifyAttributes(contextUser);
                         }
 
                     }
                 }
 
-                for (parsso.idman.Models.Service service: serviceRepo.listServicesWithGroups(id)) {
 
-                    //remove old id and add new id
-                    ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).remove(id);
-                    ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).add(ou.getId());
+                List<parsso.idman.Models.Service> services = serviceRepo.listServicesWithGroups(id);
+                if (services != null)
+                    for (parsso.idman.Models.Service service : services) {
 
-                    // delete old service
-                    org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-                    jsonObject.put("names",((((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1))));
-                    serviceRepo.deleteServices(jsonObject);
+                        //remove old id and add new id
+                        ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).remove(id);
+                        ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).add(ou.getId());
 
-                    // create new service
+                        // delete old service
+                        org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+                        jsonObject.put("names", ((((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1))));
+                        serviceRepo.deleteServices(jsonObject);
 
-                    serviceRepo.updateOuIdChange(service,service.getId(),service.getName(),id,ou.getId());
+                        // create new service
 
-                }
+                        serviceRepo.updateOuIdChange(service, service.getId(), service.getName(), id, ou.getId());
+
+                    }
 
                 logger.info("Group " + ou.getId() + " updated successfully");
                 return HttpStatus.OK;
@@ -251,7 +284,7 @@ public class GroupRepoImpl implements GroupRepo {
                 return HttpStatus.BAD_REQUEST;
             }
 
-        }else {
+        } else {
 
             try {
                 ldapTemplate.rebind(dn, null, buildAttributes(ou.getId(), ou));
@@ -265,8 +298,6 @@ public class GroupRepoImpl implements GroupRepo {
             }
         }
     }
-
-
 
 
     private class OUAttributeMapper implements AttributesMapper<Group> {

@@ -2,7 +2,6 @@ package parsso.idman.Configs;
 
 
 import org.jasig.cas.client.authentication.AttributePrincipal;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,18 +9,21 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-@Service
 public class CasUserDetailService implements AuthenticationUserDetailsService {
 
-    @Value("${administrator.ou.id}")
-    private final String adminId = "Managers";
+    String adminId;
+    public CasUserDetailService(String Id){
+
+        adminId = Id;
+
+    }
+
 
 
     @Override

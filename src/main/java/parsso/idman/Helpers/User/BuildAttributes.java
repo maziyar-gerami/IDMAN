@@ -24,7 +24,6 @@ import javax.naming.directory.BasicAttributes;
 public class BuildAttributes {
 
     final static Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
-
     @Value("${default.user.password}")
     private String defaultPassword;
     @Autowired
