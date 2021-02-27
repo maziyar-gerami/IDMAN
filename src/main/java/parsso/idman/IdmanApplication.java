@@ -79,6 +79,8 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
      */
     public static void main(String[] args) throws IOException, org.json.simple.parser.ParseException {
 
+        SpringApplication.run(IdmanApplication.class, args);
+
         ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
         new SystemRefreshRepoImpl();
 
@@ -94,7 +96,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
             }
         };
 
-//TODO: enable it
+
         refresh(context);
         Thread thread = new Thread(runnable);
         thread.start();
