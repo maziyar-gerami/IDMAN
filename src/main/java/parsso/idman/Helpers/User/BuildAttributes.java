@@ -91,8 +91,8 @@ public class BuildAttributes {
         if (p.getLastName() != "" && p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
         if (p.getDisplayName() != "" && p.getDisplayName() != null)
             context.setAttributeValue("displayName", p.getDisplayName());
-        if (p.getUserPassword() != null && p.getUserPassword() != "")
-            context.setAttributeValue("userPassword", p.getUserPassword());
+        //if (p.getUserPassword() != null && p.getUserPassword() != "")
+            //context.setAttributeValue("userPassword", p.getUserPassword());
         if (p.getMobile() != "" && p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
         if (p.getEmployeeNumber() != null && p.getEmployeeNumber() != "") context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
         if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());

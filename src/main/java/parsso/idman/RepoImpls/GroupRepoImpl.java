@@ -247,7 +247,6 @@ public class GroupRepoImpl implements GroupRepo {
                             contextUser.addAttributeValue("ou", ou.getId());
                             ldapTemplate.modifyAttributes(contextUser);
                         }
-
                     }
                 }
 

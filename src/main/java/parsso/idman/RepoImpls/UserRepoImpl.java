@@ -250,6 +250,7 @@ public class UserRepoImpl implements UserRepo {
     public HttpStatus update(String uid, User p) {
         Name dn = buildDn.buildDn(uid);
 
+        p.setUserPassword(null);
         setRole(uid, p);
 
         User user = retrieveUsers(uid);
@@ -644,6 +645,8 @@ public class UserRepoImpl implements UserRepo {
 
             for (User user : people) {
 
+                user.setUserPassword(null);
+
                 DirContextOperations context = buildAttributes.buildAttributes(user.getUserId(), user, buildDn.buildDn(user.getUserId()));
 
                 context.removeAttributeValue("ou", old_ou);
@@ -884,7 +887,7 @@ public class UserRepoImpl implements UserRepo {
         List<String> remove = (List<String>) gu.get("remove");
         for (String uid : add) {
             User user = retrieveUsers(uid);
-            if (!user.getMemberOf().contains(groupId)) {
+            if (user.getMemberOf()!=null&&!user.getMemberOf().contains(groupId)) {
                 user.getMemberOf().add(groupId);
                 update(uid, user);
             }

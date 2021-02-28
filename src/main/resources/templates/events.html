@@ -27,19 +27,19 @@
 <body class="h-100">
     <div id="app">
         <div v-bind:class="{rtl: isRtl}" class=" h-100">
-                <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
-                    <div class="container">
-                        <a class="navbar-brand" href="./">{{s0}}</a>
-                        <div class="dropdown">
-                            <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span class="fa fa-caret-down"></span></a>
-                            <div id="myDropdown" class="dropdown-content">
-                                <a href="./logout">{{s2}}</a>
-                            </div>
-                            <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
-                        </div>
-                    </div>
-                </nav>
+            <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
                 <div class="container">
+                    <a class="navbar-brand" href="./">{{s0}}</a>
+                    <div class="dropdown">
+                        <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span class="fa fa-caret-down"></span></a>
+                        <div id="myDropdown" class="dropdown-content">
+                            <a href="./logout">{{s2}}</a>
+                        </div>
+                        <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
+                    </div>
+                </div>
+            </nav>
+            <div class="container">
                 <div class="row">
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
@@ -124,172 +124,11 @@
                     </div>
                     <div class="col-lg-9 page-content">
                         <div class="card">
-                            <div class="card-body" style="background-color: #f8f9fa!important;">
-                                <h3 class="border-bottom pb-3 mb-3"><span>{{s6}}</span></h3>
-                                <div v-if="!menuS" style="font-size: 15px;">
-                                    <ul class="nav nav-tabs nav-justified">
-                                        <li class="nav-item" style="margin: 0.25rem;">
-                                            <p style="display: inline-block;">{{s26}}</p>
-                                            <input v-model="tempEventDate" type="text" :placeholder="s35" style="direction: ltr; display: inline-block;">
-                                            <button class="btn btn-primary btn-sm" @click.prevent="getEventDate()" style="display: inline-block;">{{s27}}</button>
-                                        </li>
-                                    </ul>
-                                    <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
-                                        <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
-                                        :labels="paginationAnchorTexts"></v-pagination>
-                                    </div>
-                                    <div class="table-wrapper">
-                                        <table class="table table-responsive">
-                                            <tr>
-                                                <th>{{s28}}</th>
-                                                <th>{{s29}}</th>
-                                                <th>Client IP</th>
-                                                <th>{{s38}}</th>
-                                                <th>{{s30}}</th>
-                                                <!-- <th>{{s41}}</th> -->
-                                                <th>{{s42}}</th>
-                                                <th>{{s43}}</th>
-                                            </tr>
-                                            <tbody id="body">
-                                                <tr v-for="eve in sortedEvent" :style="eve.rowStyle">
-                                                    <td>{{eve.action}}</td>
-                                                    <td>{{eve.application}}</td>
-                                                    <td>{{eve.clientIP}}</td>
-                                                    <td>{{eve.date}}</td>
-                                                    <td>{{eve.clock}}</td>
-                                                    <!-- <td>{{eve.service}}</td> -->
-                                                    <td class="text-center">
-                                                        <span class="fa-stack" :style="eve.oscol" data-toggle="tooltip" data-placement="top" :title="eve.osdes">
-                                                            <i :class="eve.os"></i>
-                                                        </span>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <span class="fa-stack" :style="eve.browsercol" data-toggle="tooltip" data-placement="top" :title="eve.browserdes">
-                                                            <i :class="eve.browser"></i>
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="p-2" style="direction: rtl;">
-                                        <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
-                                        :labels="paginationAnchorTexts"></v-pagination>
-                                    </div>
-                                    <div class="row mt-3" style="text-align: center;">
-                                        <div class="col-8"></div>
-                                        <div class="col-2 pr-0 pl-0">
-                                            <label>{{s44}}</label>
-                                        </div>
-                                        <div class="col-2 pr-2 pl-3">
-                                            <select class="form-control" v-on:change="changeRecordsEvent($event)">
-                                                <option value="20" selected>20</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                                <option value="300">300</option>
-                                                <option value="500">500</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div v-if="menuS" style="font-size: 15px;">
-                                    <ul class="nav nav-tabs nav-justified">
-                                        <li class="nav-item">
-                                            <a class="nav-link" @click.prevent="setActive('myEvents')" :class="{ active: isActive('myEvents') }" href="#myEvents">{{s31}}</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" @click.prevent="setActive('usersEvents')" :class="{ active: isActive('usersEvents') }" href="#usersEvents">{{s32}}</a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
-                                        <div class="tab-pane fade" :class="{ 'active show': isActive('usersEvents') }" id="usersEvents">
-                                            <ul class="nav nav-tabs nav-justified">
-                                                <li class="nav-item" style="margin: 0.25rem;">
-                                                    <p style="display: inline-block;">{{s33}}</p>
-                                                    <input v-model="eventsUserId" type="text" :placeholder="s34" style="direction: ltr; display: inline-block;">
-                                                    <button class="btn btn-primary btn-sm" @click.prevent="getEventsUserId()" style="display: inline-block;">{{s27}}</button>
-                                                </li>
-                                                <li class="nav-item" style="margin: 0.25rem;">
-                                                    <p style="display: inline-block;">{{s26}}</p>
-                                                    <input v-model="tempEventsDate" type="text" :placeholder="s35" style="direction: ltr; display: inline-block;">
-                                                    <button class="btn btn-primary btn-sm" @click.prevent="getEventsDate()" style="display: inline-block;">{{s27}}</button>
-                                                </li>
-                                                <li class="nav-item" style="margin: 0.25rem;">
-                                                    <div v-if="loader">
-                                                        <roller-loader color="#007bff"/>
-                                                    </div>
-                                                    <button v-else class="btn btn-primary btn-sm" v-on:click="exportEvents()">
-                                                        <span class="fa-stack">
-                                                            <i class="fa fa-upload fa-stack-1x"></i>
-                                                        </span>
-                                                        Export
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                            <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
-                                                <v-pagination  v-model="currentPageEvents" :page-count="totalEvents" :classes="bootstrapPaginationClasses"
-                                                :labels="paginationAnchorTexts"></v-pagination>
-                                            </div>
-                                            <div class="table-wrapper">
-                                                <table class="table table-responsive">
-                                                    <tr>
-                                                        <th>{{s28}}</th>
-                                                        <th>{{s37}}</th>
-                                                        <th>{{s29}}</th>
-                                                        <th>Client IP</th>
-                                                        <th>Server IP</th>
-                                                        <th>{{s38}}</th>
-                                                        <th>{{s30}}</th>
-                                                        <!-- <th>{{s41}}</th> -->
-                                                        <th>{{s42}}</th>
-                                                        <th>{{s43}}</th>
-                                                    </tr>
-                                                    <tbody id="body">
-                                                        <tr v-for="event in sortedEvents" :style="event.rowStyle">
-                                                            <td>{{event.action}}</td>
-                                                            <td>{{event.userId}}</td>
-                                                            <td>{{event.application}}</td>
-                                                            <td>{{event.clientIP}}</td>
-                                                            <td>{{event.serverIP}}</td>
-                                                            <td>{{event.date}}</td>
-                                                            <td>{{event.clock}}</td>
-                                                            <!-- <td>{{event.service}}</td> -->
-                                                            <td class="text-center">
-                                                                <span class="fa-stack" :style="event.oscol" data-toggle="tooltip" data-placement="top" :title="event.osdes">
-                                                                    <i :class="event.os"></i>
-                                                                </span>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <span class="fa-stack" :style="event.browsercol" data-toggle="tooltip" data-placement="top" :title="event.browserdes">
-                                                                    <i :class="event.browser"></i>
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="p-2" style="direction: rtl;">
-                                                <v-pagination  v-model="currentPageEvents" :page-count="totalEvents" :classes="bootstrapPaginationClasses"
-                                                :labels="paginationAnchorTexts"></v-pagination>
-                                            </div>
-                                            <div class="row mt-3" style="text-align: center;">
-                                                <div class="col-8"></div>
-                                                <div class="col-2 pr-0 pl-0">
-                                                    <label>{{s44}}</label>
-                                                </div>
-                                                <div class="col-2 pr-2 pl-3">
-                                                    <select class="form-control" v-on:change="changeRecordsEvents($event)">
-                                                        <option value="20" selected>20</option>
-                                                        <option value="50">50</option>
-                                                        <option value="100">100</option>
-                                                        <option value="300">300</option>
-                                                        <option value="500">500</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade" :class="{ 'active show': isActive('myEvents') }" id="myEvents">
+                            <div class="card-body pb-0 pl-0 pr-0" style="background-color: #f8f9fa!important;">
+                                <div class="container">
+                                    <h3 class="border-bottom pb-3 mb-3"><span>{{s6}}</span></h3>
+                                    <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
+                                        <div v-if="!menuS" style="font-size: 15px;">
                                             <ul class="nav nav-tabs nav-justified">
                                                 <li class="nav-item" style="margin: 0.25rem;">
                                                     <p style="display: inline-block;">{{s26}}</p>
@@ -301,39 +140,41 @@
                                                 <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
                                                 :labels="paginationAnchorTexts"></v-pagination>
                                             </div>
-                                            <div class="table-wrapper">
-                                                <table class="table table-responsive">
-                                                    <tr>
-                                                        <th>{{s28}}</th>
-                                                        <th>{{s29}}</th>
-                                                        <th>Client IP</th>
-                                                        <th>{{s38}}</th>
-                                                        <th>{{s30}}</th>
-                                                        <!-- <th>{{s41}}</th> -->
-                                                        <th>{{s42}}</th>
-                                                        <th>{{s43}}</th>
-                                                    </tr>
-                                                    <tbody id="body">
-                                                        <tr v-for="eve in sortedEvent" :style="eve.rowStyle">
-                                                            <td>{{eve.action}}</td>
-                                                            <td>{{eve.application}}</td>
-                                                            <td>{{eve.clientIP}}</td>
-                                                            <td>{{eve.date}}</td>
-                                                            <td>{{eve.clock}}</td>
-                                                            <!-- <td>{{eve.service}}</td> -->
-                                                            <td class="text-center">
-                                                                <span class="fa-stack" :style="eve.oscol" data-toggle="tooltip" data-placement="top" :title="eve.osdes">
-                                                                    <i :class="eve.os"></i>
-                                                                </span>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <span class="fa-stack" :style="eve.browsercol" data-toggle="tooltip" data-placement="top" :title="eve.browserdes">
-                                                                    <i :class="eve.browser"></i>
-                                                                </span>
-                                                            </td>
+                                            <div style="overflow: auto;">
+                                                <div class="table-wrapper">
+                                                    <table class="tableList table table-responsive p-2">
+                                                        <tr>
+                                                            <th>{{s28}}</th>
+                                                            <th>{{s29}}</th>
+                                                            <th>Client IP</th>
+                                                            <th>{{s38}}</th>
+                                                            <th>{{s30}}</th>
+                                                            <!-- <th>{{s41}}</th> -->
+                                                            <th>{{s42}}</th>
+                                                            <th>{{s43}}</th>
                                                         </tr>
-                                                    </tbody>
-                                                </table>
+                                                        <tbody id="body">
+                                                            <tr v-for="eve in sortedEvent" :style="eve.rowStyle">
+                                                                <td>{{eve.action}}</td>
+                                                                <td>{{eve.application}}</td>
+                                                                <td>{{eve.clientIP}}</td>
+                                                                <td>{{eve.date}}</td>
+                                                                <td>{{eve.clock}}</td>
+                                                                <!-- <td>{{eve.service}}</td> -->
+                                                                <td class="text-center">
+                                                                    <span class="fa-stack" :style="eve.oscol" data-toggle="tooltip" data-placement="top" :title="eve.osdes">
+                                                                        <i :class="eve.os"></i>
+                                                                    </span>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <span class="fa-stack" :style="eve.browsercol" data-toggle="tooltip" data-placement="top" :title="eve.browserdes">
+                                                                        <i :class="eve.browser"></i>
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                             <div class="p-2" style="direction: rtl;">
                                                 <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
@@ -352,6 +193,174 @@
                                                         <option value="300">300</option>
                                                         <option value="500">500</option>
                                                     </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div v-if="menuS" style="font-size: 15px;">
+                                            <ul class="nav nav-tabs nav-justified">
+                                                <li class="nav-item">
+                                                    <a class="nav-link" @click.prevent="setActive('myEvents')" :class="{ active: isActive('myEvents') }" href="#myEvents">{{s31}}</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" @click.prevent="setActive('usersEvents')" :class="{ active: isActive('usersEvents') }" href="#usersEvents">{{s32}}</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
+                                                <div class="tab-pane fade" :class="{ 'active show': isActive('usersEvents') }" id="usersEvents">
+                                                    <ul class="nav nav-tabs nav-justified">
+                                                        <li class="nav-item" style="margin: 0.25rem;">
+                                                            <p style="display: inline-block;">{{s33}}</p>
+                                                            <input v-model="eventsUserId" type="text" :placeholder="s34" style="direction: ltr; display: inline-block;">
+                                                            <button class="btn btn-primary btn-sm" @click.prevent="getEventsUserId()" style="display: inline-block;">{{s27}}</button>
+                                                        </li>
+                                                        <li class="nav-item" style="margin: 0.25rem;">
+                                                            <p style="display: inline-block;">{{s26}}</p>
+                                                            <input v-model="tempEventsDate" type="text" :placeholder="s35" style="direction: ltr; display: inline-block;">
+                                                            <button class="btn btn-primary btn-sm" @click.prevent="getEventsDate()" style="display: inline-block;">{{s27}}</button>
+                                                        </li>
+                                                        <li class="nav-item" style="margin: 0.25rem;">
+                                                            <div v-if="loader">
+                                                                <roller-loader color="#007bff"/>
+                                                            </div>
+                                                            <button v-else class="btn btn-primary btn-sm" v-on:click="exportEvents()">
+                                                                <span class="fa-stack">
+                                                                    <i class="fa fa-upload fa-stack-1x"></i>
+                                                                </span>
+                                                                Export
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
+                                                        <v-pagination  v-model="currentPageEvents" :page-count="totalEvents" :classes="bootstrapPaginationClasses"
+                                                        :labels="paginationAnchorTexts"></v-pagination>
+                                                    </div>
+                                                    <div style="overflow: auto;">
+                                                        <div class="table-wrapper">
+                                                            <table class="tableList table table-responsive p-2">
+                                                                <tr>
+                                                                    <th>{{s28}}</th>
+                                                                    <th>{{s37}}</th>
+                                                                    <th>{{s29}}</th>
+                                                                    <th>Client IP</th>
+                                                                    <th>Server IP</th>
+                                                                    <th>{{s38}}</th>
+                                                                    <th>{{s30}}</th>
+                                                                    <!-- <th>{{s41}}</th> -->
+                                                                    <th>{{s42}}</th>
+                                                                    <th>{{s43}}</th>
+                                                                </tr>
+                                                                <tbody id="body">
+                                                                    <tr v-for="event in sortedEvents" :style="event.rowStyle">
+                                                                        <td>{{event.action}}</td>
+                                                                        <td>{{event.userId}}</td>
+                                                                        <td>{{event.application}}</td>
+                                                                        <td>{{event.clientIP}}</td>
+                                                                        <td>{{event.serverIP}}</td>
+                                                                        <td>{{event.date}}</td>
+                                                                        <td>{{event.clock}}</td>
+                                                                        <!-- <td>{{event.service}}</td> -->
+                                                                        <td class="text-center">
+                                                                            <span class="fa-stack" :style="event.oscol" data-toggle="tooltip" data-placement="top" :title="event.osdes">
+                                                                                <i :class="event.os"></i>
+                                                                            </span>
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            <span class="fa-stack" :style="event.browsercol" data-toggle="tooltip" data-placement="top" :title="event.browserdes">
+                                                                                <i :class="event.browser"></i>
+                                                                            </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <div class="p-2" style="direction: rtl;">
+                                                        <v-pagination  v-model="currentPageEvents" :page-count="totalEvents" :classes="bootstrapPaginationClasses"
+                                                        :labels="paginationAnchorTexts"></v-pagination>
+                                                    </div>
+                                                    <div class="row mt-3" style="text-align: center;">
+                                                        <div class="col-8"></div>
+                                                        <div class="col-2 pr-0 pl-0">
+                                                            <label>{{s44}}</label>
+                                                        </div>
+                                                        <div class="col-2 pr-2 pl-3">
+                                                            <select class="form-control" v-on:change="changeRecordsEvents($event)">
+                                                                <option value="20" selected>20</option>
+                                                                <option value="50">50</option>
+                                                                <option value="100">100</option>
+                                                                <option value="300">300</option>
+                                                                <option value="500">500</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade" :class="{ 'active show': isActive('myEvents') }" id="myEvents">
+                                                    <ul class="nav nav-tabs nav-justified">
+                                                        <li class="nav-item" style="margin: 0.25rem;">
+                                                            <p style="display: inline-block;">{{s26}}</p>
+                                                            <input v-model="tempEventDate" type="text" :placeholder="s35" style="direction: ltr; display: inline-block;">
+                                                            <button class="btn btn-primary btn-sm" @click.prevent="getEventDate()" style="display: inline-block;">{{s27}}</button>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
+                                                        <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
+                                                        :labels="paginationAnchorTexts"></v-pagination>
+                                                    </div>
+                                                    <div style="overflow: auto;">
+                                                        <div class="table-wrapper">
+                                                            <table class="tableList table table-responsive p-2">
+                                                                <tr>
+                                                                    <th>{{s28}}</th>
+                                                                    <th>{{s29}}</th>
+                                                                    <th>Client IP</th>
+                                                                    <th>{{s38}}</th>
+                                                                    <th>{{s30}}</th>
+                                                                    <!-- <th>{{s41}}</th> -->
+                                                                    <th>{{s42}}</th>
+                                                                    <th>{{s43}}</th>
+                                                                </tr>
+                                                                <tbody id="body">
+                                                                    <tr v-for="eve in sortedEvent" :style="eve.rowStyle">
+                                                                        <td>{{eve.action}}</td>
+                                                                        <td>{{eve.application}}</td>
+                                                                        <td>{{eve.clientIP}}</td>
+                                                                        <td>{{eve.date}}</td>
+                                                                        <td>{{eve.clock}}</td>
+                                                                        <!-- <td>{{eve.service}}</td> -->
+                                                                        <td class="text-center">
+                                                                            <span class="fa-stack" :style="eve.oscol" data-toggle="tooltip" data-placement="top" :title="eve.osdes">
+                                                                                <i :class="eve.os"></i>
+                                                                            </span>
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            <span class="fa-stack" :style="eve.browsercol" data-toggle="tooltip" data-placement="top" :title="eve.browserdes">
+                                                                                <i :class="eve.browser"></i>
+                                                                            </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <div class="p-2" style="direction: rtl;">
+                                                        <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
+                                                        :labels="paginationAnchorTexts"></v-pagination>
+                                                    </div>
+                                                    <div class="row mt-3" style="text-align: center;">
+                                                        <div class="col-8"></div>
+                                                        <div class="col-2 pr-0 pl-0">
+                                                            <label>{{s44}}</label>
+                                                        </div>
+                                                        <div class="col-2 pr-2 pl-3">
+                                                            <select class="form-control" v-on:change="changeRecordsEvent($event)">
+                                                                <option value="20" selected>20</option>
+                                                                <option value="50">50</option>
+                                                                <option value="100">100</option>
+                                                                <option value="300">300</option>
+                                                                <option value="500">500</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
