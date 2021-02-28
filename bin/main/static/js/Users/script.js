@@ -553,6 +553,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 let tempUsers = {};
                 this.users = [];
+                console.log(this.users);
                 axios.get(url + "/api/users/" + vm.currentPage + "/" + vm.recordsShownOnPage + searchQuery) //
                     .then((res) => {
                         vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
@@ -563,6 +564,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             tempUsers.memberOf = item.memberOf;
                             vm.users.push(tempUsers);
                         });
+                        console.log(vm.users);
+                        console.log("------------------------");
                         for(let i = 0; i < vm.recordsShownOnPage; ++i){
                             if(i < res.data.size){
                                 vm.users[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
@@ -683,7 +686,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
             },
             editUser: function (id) {
-
                 if(id == "" ||
                 document.getElementById('editInfo.displayNameUpdate').value == "" ||
                 document.getElementById('editInfo.mobileUpdate').value == "" ||

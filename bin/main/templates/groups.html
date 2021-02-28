@@ -25,20 +25,20 @@
 </head>
 <body class="h-100">
     <div id="app">
-        <div  v-bind:class="{rtl: isRtl}" class=" h-100">
-                <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
-                    <div class="container">
-                        <a class="navbar-brand" href="./">{{s0}}</a>
-                        <div class="dropdown">
-                            <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span class="fa fa-caret-down"></span></a>
-                            <div id="myDropdown" class="dropdown-content">
-                                <a href="./logout">{{s2}}</a>
-                            </div>
-                            <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
-                        </div>
-                    </div>
-                </nav>
+        <div v-bind:class="{rtl: isRtl}" class=" h-100">
+            <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
                 <div class="container">
+                    <a class="navbar-brand" href="./">{{s0}}</a>
+                    <div class="dropdown">
+                        <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span class="fa fa-caret-down"></span></a>
+                        <div id="myDropdown" class="dropdown-content">
+                            <a href="./logout">{{s2}}</a>
+                        </div>
+                        <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
+                    </div>
+                </div>
+            </nav>
+            <div class="container">
                 <div class="row">
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
@@ -125,10 +125,11 @@
                         <div class="card">
                             <div class="card-body pb-0 pl-0 pr-0" style="background-color: #f8f9fa!important;">
                                 <div class="container">
-                                    <div class="ml-0 mr-0">
-                                        <h3 class="pb-2" v-bind:style="showS">{{U1}}</h3>
-                                    </div>
                                     <div v-bind:style="showS">
+                                        <div class="ml-0 mr-0">
+                                            <h3 class="pb-2">{{U1}}</h3>
+                                        </div>
+                                    
                                         <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
                                             <div class="col-2 pl-1 pr-1">
                                                 <button class="w-100 btn btn-success btn-sm" v-on:click="addGroupS()">
@@ -170,59 +171,59 @@
                                     </div>
 
                                     <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
-                                        <div class="p-2" v-bind:style="showS"  style="direction: rtl;">
-                                            <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
-                                            :labels="paginationAnchorTexts"></v-pagination>
-                                        </div>
-                                        <div style="overflow: auto;">
-                                            <div class="table-wrapper" v-bind:style="showS">
-                                                <table class="tableList table table-responsive p-2">
-                                                    <tr>
-                                                        <th style="border: none;">
-                                                            <label class="checkboxclass">
-                                                                <input id="selectAllCheckbox" type="checkbox">
-                                                                <span v-on:click="allSelected()" class="checkmark"></span>
-                                                            </label>
-                                                        </th>
-                                                        <th style="border: none;">#</th>
-                                                        <th style="border: none;">{{U2}}</th>
-                                                        <th style="border: none;">{{U3}}</th>
-                                                    </tr>
-                                                    <tbody id="body">
-                                                            <tr v-for="group in sortedGroups" v-bind:key="group.id" :id="'row-' + group.id">
-                                                                <td>
-                                                                    <label class="checkboxclass">
-                                                                        <input :id="'checkbox-' + group.id" type="checkbox">
-                                                                        <span v-on:click="rowSelected(group.id)" class="checkmark"></span>
-                                                                    </label>                                                                      
-                                                                </td>
-                                                                <td>{{group.orderOfRecords}}</td>
-                                                                <td>{{group.id}}</td>
-                                                                <td>{{group.name}}</td>
-                                                                <td>
-                                                                    <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editGroupS(group.id)">
-                                                                        <span class="fa-passwd-reset fa-stack">
-                                                                                <i class="fa fa-pencil-square-o fa-stack-2x"></i>
-                                                                        </span>
-                                                                    </button>
-                                                                </td>
-                                                                <td>
-                                                                    <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-sm" v-on:click="deleteGroup(group.id)">
-                                                                        <span class="fa-passwd-reset fa-stack">
-                                                                            <i class="fa fa-trash fa-stack-2x"></i>
-                                                                        </span>
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="p-2" v-bind:style="showS"  style="direction: rtl;">
-                                            <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
-                                            :labels="paginationAnchorTexts"></v-pagination>
-                                        </div>
                                         <div v-bind:style="showS">
+                                            <div class="p-2" style="direction: rtl;">
+                                                <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                                :labels="paginationAnchorTexts"></v-pagination>
+                                            </div>
+                                            <div style="overflow: auto;">
+                                                <div class="table-wrapper">
+                                                    <table class="tableList table table-responsive p-2">
+                                                        <tr>
+                                                            <th style="border: none;">
+                                                                <label class="checkboxclass">
+                                                                    <input id="selectAllCheckbox" type="checkbox">
+                                                                    <span v-on:click="allSelected()" class="checkmark"></span>
+                                                                </label>
+                                                            </th>
+                                                            <th style="border: none;">#</th>
+                                                            <th style="border: none;">{{U2}}</th>
+                                                            <th style="border: none;">{{U3}}</th>
+                                                        </tr>
+                                                        <tbody id="body">
+                                                                <tr v-for="group in sortedGroups" v-bind:key="group.id" :id="'row-' + group.id">
+                                                                    <td>
+                                                                        <label class="checkboxclass">
+                                                                            <input :id="'checkbox-' + group.id" type="checkbox">
+                                                                            <span v-on:click="rowSelected(group.id)" class="checkmark"></span>
+                                                                        </label>                                                                      
+                                                                    </td>
+                                                                    <td>{{group.orderOfRecords}}</td>
+                                                                    <td>{{group.id}}</td>
+                                                                    <td>{{group.name}}</td>
+                                                                    <td>
+                                                                        <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editGroupS(group.id)">
+                                                                            <span class="fa-passwd-reset fa-stack">
+                                                                                    <i class="fa fa-pencil-square-o fa-stack-2x"></i>
+                                                                            </span>
+                                                                        </button>
+                                                                    </td>
+                                                                    <td>
+                                                                        <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-sm" v-on:click="deleteGroup(group.id)">
+                                                                            <span class="fa-passwd-reset fa-stack">
+                                                                                <i class="fa fa-trash fa-stack-2x"></i>
+                                                                            </span>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="p-2" style="direction: rtl;">
+                                                <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                                :labels="paginationAnchorTexts"></v-pagination>
+                                            </div>
                                             <div class="row mt-3" style="text-align: center;">
                                                 <div class="col-8"></div>
                                                 <div class="col-2 pr-0 pl-0">

@@ -416,10 +416,25 @@ public class ServiceRepoImpl implements ServiceRepo {
         Object obj = jsonParser.parse(reader);
         reader.close();
 
+        Service service;
+        ExtraInfo extraInfo;
+
         if (isCasService((JSONObject) obj))
-            return casServiceHelper.analyze(file);
+            service = casServiceHelper.analyze(file);
         else
-            return samlServiceHelper.analyze(file);
+            service = samlServiceHelper.analyze(file);
+
+        Query query = new Query(Criteria.where("_id").is(service.getId()));
+        try {
+            extraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
+        } catch (Exception e) {
+            extraInfo = new ExtraInfo();
+            logger.warn("Unable to get extra service for service " + service.getId());
+        }
+
+        service.setExtraInfo(extraInfo);
+
+        return service;
     }
 
     boolean isCasService(JSONObject jo) {

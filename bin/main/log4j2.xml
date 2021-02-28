@@ -1,0 +1,20 @@
+<Configuration status="trace" packages="dev.termian.tabula.gazella">
+    <Appenders>
+        <Console name="Console">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS}|%-5level|%t|%msg%n"/>
+        </Console>
+        <NoSql name="Mongo4">
+            <MongoDb4 capped="true" collectionSize="104857600"
+                      connection="mongodb://parssouser:APA00918@parsso2.razi.az.ir:27017/parssodb.IDMAN_Log"
+            />
+        </NoSql>
+        <File name="File1" fileName="output.log" bufferedIO="false" advertiseURI="D:\\app\output.log" advertise="true"/>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Mongo4"/>
+            <AppenderRef ref="File1"/>
+        </Root>
+    </Loggers>
+</Configuration>

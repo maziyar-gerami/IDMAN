@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
@@ -19,6 +20,8 @@ import parsso.idman.Repos.SystemRefresh;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Other.GenerateUUID;
 
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,6 +66,20 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 UsersExtraInfo userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
                 if (userExtraInfo!=null && userExtraInfo.getQrToken() == null)
                     userExtraInfo.setQrToken(GenerateUUID.getUUID());
+
+                String photoName = ldapTemplate.search(
+                        query().where("uid").is(user.getUserId()),
+                        new AttributesMapper<String>() {
+                            public String mapFromAttributes(Attributes attrs)
+                                    throws NamingException {
+                                if(attrs.get("photoName")!=null)
+                                    return attrs.get("photoName").get().toString();
+
+                                return "";
+                            }
+                        }).get(0);
+
+                userExtraInfo.setPhotoName(photoName);
 
                 mongoTemplate.remove(queryMongo, "IDMAN_UsersExtraInfo");
                 if (userExtraInfo!=null)

@@ -21,7 +21,7 @@ import java.util.Map;
 public class CasUserDetailService implements AuthenticationUserDetailsService {
 
     @Value("${administrator.ou.id}")
-    private final String adminId = "1598656906150";
+    private final String adminId = "Managers";
 
 
     @Override
