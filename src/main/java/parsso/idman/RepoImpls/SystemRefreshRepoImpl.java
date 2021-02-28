@@ -182,11 +182,22 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             e.printStackTrace();
         }
 
+
         captchaRefresh();
 
+        logger.info("service refresh started");
         serivceRefresh();
 
+        logger.info("service refresh finished");
+
+        logger.info("user refresh started");
+
         userRefresh();
+
+        logger.info("user refresh started");
+
+        
+        logger.info("System refresh finished");
 
         return HttpStatus.OK;
     }
