@@ -194,7 +194,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         userRefresh();
 
-        logger.info("user refresh started");
+        logger.info("user refresh finished");
 
         
         logger.info("System refresh finished");

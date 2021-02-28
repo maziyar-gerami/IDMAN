@@ -804,20 +804,31 @@ public class UserRepoImpl implements UserRepo {
 
         if (locked) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
-            modificationItems[1] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
 
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
+
+                try {
+                    modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
+                    ldapTemplate.modifyAttributes(dn, modificationItems);
+
+                }catch (Exception e){
+
+                }
+
                 logger.warn("Unlocking" + uid + "was successful");
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                e.printStackTrace();
-                logger.warn("Unlocking user" + uid + " was successful");
+
+                logger.warn("Unlocking user" + uid + " was unsuccessful");
 
                 return HttpStatus.BAD_REQUEST;
             }
+
+
+
         } else {
             return HttpStatus.BAD_REQUEST;
         }
