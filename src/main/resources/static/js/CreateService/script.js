@@ -145,6 +145,8 @@ document.addEventListener('DOMContentLoaded', function () {
       s79: "/audits",
       s80: "دسترسی از راه دور",
       s81: "کد پاسخ های قابل قبول",
+      s82: "توکن سخت افزاری",
+      s83: "غیرفعال",
     },
     created: function () {
       this.getUserInfo();
@@ -576,11 +578,10 @@ document.addEventListener('DOMContentLoaded', function () {
           this.contacts[0] = "java.util.ArrayList";
           this.contacts[1] = this.contactsList;
 
-          
-          if(document.getElementsByName('mfaEnabled')[0].checked){
-            this.multifactorPolicy.multifactorAuthenticationProviders = "mfa-simple";
+          if(document.getElementsByName('mfaEnabled')[0].value != ""){
+            this.multifactorPolicy.multifactorAuthenticationProviders = document.getElementsByName('mfaEnabled')[0].value;
           }else{
-            this.multifactorPolicy.multifactorAuthenticationProviders = null;
+            this.multifactorPolicy.multifactorAuthenticationProviders = "";
           }
 
           if(document.getElementsByName('bypassEnabled')[0].checked){
@@ -870,6 +871,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s79 = "/audits?en";
           this.s80 = "Remote Access";
           this.s81 = "Acceptable Response Codes";
+          this.s82 = "Hardware Token";
+          this.s83 = "Disabled";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -956,6 +959,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s79 = "/audits";
             this.s80 = "دسترسی از راه دور";
             this.s81 = "کد پاسخ های قابل قبول";
+            this.s82 = "توکن سخت افزاری";
+            this.s83 = "غیرفعال";
         }
       },
       setServiceType: function () {

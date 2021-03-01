@@ -178,46 +178,56 @@
                                             </div>
                                             <div style="overflow: auto;">
                                                 <div class="table-wrapper">
-                                                    <table class="tableList table table-responsive p-2">
-                                                        <tr>
-                                                            <th style="border: none;">
-                                                                <label class="checkboxclass">
-                                                                    <input id="selectAllCheckbox" type="checkbox">
-                                                                    <span v-on:click="allSelected()" class="checkmark"></span>
-                                                                </label>
-                                                            </th>
-                                                            <th style="border: none;">#</th>
-                                                            <th style="border: none;">{{U2}}</th>
-                                                            <th style="border: none;">{{U3}}</th>
-                                                        </tr>
-                                                        <tbody id="body">
-                                                                <tr v-for="group in sortedGroups" v-bind:key="group.id" :id="'row-' + group.id">
-                                                                    <td>
-                                                                        <label class="checkboxclass">
-                                                                            <input :id="'checkbox-' + group.id" type="checkbox">
-                                                                            <span v-on:click="rowSelected(group.id)" class="checkmark"></span>
-                                                                        </label>                                                                      
-                                                                    </td>
-                                                                    <td>{{group.orderOfRecords}}</td>
-                                                                    <td>{{group.id}}</td>
-                                                                    <td>{{group.name}}</td>
-                                                                    <td>
-                                                                        <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editGroupS(group.id)">
-                                                                            <span class="fa-passwd-reset fa-stack">
-                                                                                    <i class="fa fa-pencil-square-o fa-stack-2x"></i>
-                                                                            </span>
-                                                                        </button>
-                                                                    </td>
-                                                                    <td>
-                                                                        <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-sm" v-on:click="deleteGroup(group.id)">
-                                                                            <span class="fa-passwd-reset fa-stack">
-                                                                                <i class="fa fa-trash fa-stack-2x"></i>
-                                                                            </span>
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                        </tbody>
-                                                    </table>
+                                                    <div v-if="isListEmpty" class="emptyList">
+                                                        <div>
+                                                            <i class="fa fa-signing fa-2x"></i>
+                                                        </div> 
+                                                        <div>
+                                                            <span>{{s45}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div v-else>
+                                                        <table class="tableList table table-responsive p-2">
+                                                            <tr>
+                                                                <th style="border: none;">
+                                                                    <label class="checkboxclass">
+                                                                        <input id="selectAllCheckbox" type="checkbox">
+                                                                        <span v-on:click="allSelected()" class="checkmark"></span>
+                                                                    </label>
+                                                                </th>
+                                                                <th style="border: none;">#</th>
+                                                                <th style="border: none;">{{U2}}</th>
+                                                                <th style="border: none;">{{U3}}</th>
+                                                            </tr>
+                                                            <tbody id="body">
+                                                                    <tr v-for="group in sortedGroups" v-bind:key="group.id" :id="'row-' + group.id">
+                                                                        <td>
+                                                                            <label class="checkboxclass">
+                                                                                <input :id="'checkbox-' + group.id" type="checkbox">
+                                                                                <span v-on:click="rowSelected(group.id)" class="checkmark"></span>
+                                                                            </label>                                                                      
+                                                                        </td>
+                                                                        <td>{{group.orderOfRecords}}</td>
+                                                                        <td>{{group.id}}</td>
+                                                                        <td>{{group.name}}</td>
+                                                                        <td>
+                                                                            <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editGroupS(group.id)">
+                                                                                <span class="fa-passwd-reset fa-stack">
+                                                                                        <i class="fa fa-pencil-square-o fa-stack-2x"></i>
+                                                                                </span>
+                                                                            </button>
+                                                                        </td>
+                                                                        <td>
+                                                                            <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-sm" v-on:click="deleteGroup(group.id)">
+                                                                                <span class="fa-passwd-reset fa-stack">
+                                                                                    <i class="fa fa-trash fa-stack-2x"></i>
+                                                                                </span>
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="p-2" style="direction: rtl;">

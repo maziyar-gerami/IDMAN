@@ -268,3 +268,13 @@ html,body {
   overflow-y: auto;
   height: 70vh;
 }
+
+.emptyList{
+  color: #856404;
+  background-color: #ffeeba;
+  text-align: center !important;
+  border-top-left-radius: .25rem;
+  border-top-right-radius: .25rem;
+  padding: .75rem 1.25rem;
+  border: 1px solid rgba(0,0,0,.125);
+}

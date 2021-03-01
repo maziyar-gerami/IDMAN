@@ -90,6 +90,7 @@ function myFunction() {
         metaDataAddress: true,
         metaDataFile: false,
         allIsSelected: false,
+        isListEmpty: false,
         s0: "پارسو",
         s1: "",
         s2: "خروج",
@@ -189,6 +190,9 @@ function myFunction() {
         s96: "دسترسی از راه دور",
         s97: "کد پاسخ های قابل قبول",
         s98: "ویرایش سرویس",
+        s99: "توکن سخت افزاری",
+        s100: "غیرفعال",
+        s101: "سرویسی یافت نشد",
       },
       created: function () {
         this.getUserInfo();
@@ -309,8 +313,12 @@ function myFunction() {
         refreshServices: function () {
           var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
           var vm = this;
+          this.isListEmpty = false;
           axios.get(url + "/api/services/main") //
           .then((res) => {
+            if(res.data.length == 0){
+              vm.isListEmpty = true;
+            }
             vm.services = res.data;
             for(let i = 0; i < vm.services.length; ++i){
               vm.services[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
@@ -443,9 +451,28 @@ function myFunction() {
               if(typeof res.data.multifactorPolicy.multifactorAuthenticationProviders !== 'undefined'){
                 if(res.data.multifactorPolicy.multifactorAuthenticationProviders[0] == "java.util.LinkedHashSet" &&
                 res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] == "[\"java.util.LinkedHashSet\",[\"mfa-simple\"]]"){
-                  document.getElementsByName("mfaEnabled")[0].checked = true;
-                }else{
-                  document.getElementsByName("mfaEnabled")[0].checked = false;
+                  document.getElementById("option14").selected = true;
+                  document.getElementById("option15").selected = false;
+                  document.getElementById("option16").selected = false;
+                  document.getElementById("option17").selected = false;
+                }else if(res.data.multifactorPolicy.multifactorAuthenticationProviders[0] == "java.util.LinkedHashSet" &&
+                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] == "[\"java.util.LinkedHashSet\",[\"mfa-gauth\"]]"){
+                  document.getElementById("option14").selected = false;
+                  document.getElementById("option15").selected = true;
+                  document.getElementById("option16").selected = false;
+                  document.getElementById("option17").selected = false;
+                }else if(res.data.multifactorPolicy.multifactorAuthenticationProviders[0] == "java.util.LinkedHashSet" &&
+                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] == "[\"java.util.LinkedHashSet\",[\"mfa-u2f\"]]"){
+                  document.getElementById("option14").selected = false;
+                  document.getElementById("option15").selected = false;
+                  document.getElementById("option16").selected = true;
+                  document.getElementById("option17").selected = false;
+                }else if(res.data.multifactorPolicy.multifactorAuthenticationProviders[0] == "java.util.LinkedHashSet" &&
+                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] == "[\"java.util.LinkedHashSet\",[\"\"]]"){
+                  document.getElementById("option14").selected = false;
+                  document.getElementById("option15").selected = false;
+                  document.getElementById("option16").selected = false;
+                  document.getElementById("option17").selected = true;
                 }
               }
 
@@ -876,10 +903,10 @@ function myFunction() {
             this.contacts[0] = "java.util.ArrayList";
             this.contacts[1] = this.contactsList;
 
-            if(document.getElementsByName('mfaEnabled')[0].checked){
-              this.multifactorPolicy.multifactorAuthenticationProviders = "mfa-simple";
+            if(document.getElementsByName('mfaEnabled')[0].value != ""){
+              this.multifactorPolicy.multifactorAuthenticationProviders = document.getElementsByName('mfaEnabled')[0].value;
             }else{
-              this.multifactorPolicy.multifactorAuthenticationProviders = null;
+              this.multifactorPolicy.multifactorAuthenticationProviders = "";
             }
 
             if(document.getElementsByName('bypassEnabled')[0].checked){
@@ -1290,6 +1317,9 @@ function myFunction() {
             this.s96 = "Remote Access";
             this.s97 = "Acceptable Response Codes";
             this.s98 = "Edit Service";
+            this.s99 = "Hardware Token";
+            this.s100 = "Disabled";
+            this.s101 = "No Service Found";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
@@ -1394,6 +1424,9 @@ function myFunction() {
               this.s96 = "دسترسی از راه دور";
               this.s97 = "کد پاسخ های قابل قبول";
               this.s98 = "ویرایش سرویس";
+              this.s99 = "توکن سخت افزاری";
+              this.s100 = "غیرفعال";
+              this.s101 = "سرویسی یافت نشد";
           }
         },
         div: function (a, b) {

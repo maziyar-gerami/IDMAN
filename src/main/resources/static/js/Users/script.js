@@ -129,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
             duplicatePasswords: false,
             showUnDeletableList: false,
             unDeletableList: "",
+            isListEmpty: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -213,6 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s82: "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.",
             s83: "غیرقابل حذف",
             s84: "کاربران زیر غیرقابل حذف می باشند.",
+            s85: "کاربری یافت نشد",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه کاربری",
@@ -492,8 +494,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 let tempUsers = {};
                 this.users = [];
+                this.isListEmpty = false;
                 axios.get(url + "/api/users/" + vm.currentPage + "/" + vm.recordsShownOnPage) //
                     .then((res) => {
+                        if(res.data.userList.length == 0){
+                            vm.isListEmpty = true;
+                        }
                         vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
                         res.data.userList.forEach(function (item) {
                             tempUsers = {};
@@ -553,9 +559,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 let tempUsers = {};
                 this.users = [];
-                console.log(this.users);
+                this.isListEmpty = false;
                 axios.get(url + "/api/users/" + vm.currentPage + "/" + vm.recordsShownOnPage + searchQuery) //
                     .then((res) => {
+                        if(res.data.userList.length == 0){
+                            vm.isListEmpty = true;
+                        }
                         vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
                         res.data.userList.forEach(function (item) {
                             tempUsers = {};
@@ -564,8 +573,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             tempUsers.memberOf = item.memberOf;
                             vm.users.push(tempUsers);
                         });
-                        console.log(vm.users);
-                        console.log("------------------------");
                         for(let i = 0; i < vm.recordsShownOnPage; ++i){
                             if(i < res.data.size){
                                 vm.users[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
@@ -1357,6 +1364,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s82 = "New Password Should Not be Same as Old Password.";
                     this.s83 = "Indelible";
                     this.s84 = "Users Listed Below Are Indelible.";
+                    this.s85 = "No User Found";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1480,6 +1488,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s82 = "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.";
                     this.s83 = "غیرقابل حذف";
                     this.s84 = "کاربران زیر غیرقابل حذف می باشند.";
+                    this.s85 = "کاربری یافت نشد";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه کاربری";
