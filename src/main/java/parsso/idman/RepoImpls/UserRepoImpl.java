@@ -250,9 +250,6 @@ public class UserRepoImpl implements UserRepo {
     public HttpStatus update(String uid, User p) {
         Name dn = buildDn.buildDn(uid);
 
-        p.setUserPassword(null);
-        setRole(uid, p);
-
         User user = retrieveUsers(uid);
 
         DirContextOperations context;
@@ -281,13 +278,34 @@ public class UserRepoImpl implements UserRepo {
             ldapTemplate.modifyAttributes(context);
 
             logger.info("User " + "\"" + p.getUserId() + "\"" + "in " + new Date() + " updated successfully");
-            return HttpStatus.OK;
+
 
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("Updating user " + "\"" + p.getUserId() + "\"" + "was unsuccessful");
-            return HttpStatus.FORBIDDEN;
         }
+
+        if(p.getUserPassword()!=null) {
+
+            DirContextOperations contextUser = ldapTemplate.lookupContext(buildDn.buildDn(user.getUserId()));
+
+            contextUser.setAttributeValue("userPassword", p.getPassword());
+
+            try {
+                ldapTemplate.modifyAttributes(contextUser);
+                logger.info("Password for" + uid + " changed successfully");
+
+                return HttpStatus.OK;
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.warn("Changing password for " + "\"" + uid + "\"" + " was unsuccessfully");
+
+                return HttpStatus.BAD_REQUEST;
+            }
+        }
+
+
+        return  HttpStatus.OK;
     }
 
     @Override
@@ -699,9 +717,7 @@ public class UserRepoImpl implements UserRepo {
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("ou", groupId));
 
-
         return ldapTemplate.search(query().where("ou").is(groupId), simpleUserAttributeMapper);
-
 
     }
 

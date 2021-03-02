@@ -520,7 +520,6 @@ public class UserController {
 
         if (httpStatus == HttpStatus.OK) {
 
-            userRepo.update(uId,userRepo.retrieveUsers(uId));
             return new RedirectView("/resetPassword");
         }
         return null;
