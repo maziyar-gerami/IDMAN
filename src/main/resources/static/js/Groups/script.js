@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
             endOfAllUsersList: true,
             loader: false,
             loader1: false,
+            isListEmpty: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -128,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s42: "کاربری یافت نشد",
             s43: "لیست اعضای گروه",
             s44: "حذف از گروه",
+            s45: "گروهی یافت نشد",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام",
@@ -230,8 +232,12 @@ document.addEventListener('DOMContentLoaded', function () {
             getGroups: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                this.isListEmpty = false;
                 axios.get(url + "/api/groups") //
                     .then((res) => {
+                        if(res.data.length == 0){
+                            vm.isListEmpty = true;
+                        }
                         vm.groups = res.data;
                         for(let i = 0; i < vm.groups.length; ++i){
                             vm.groups[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
@@ -623,6 +629,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s42 = "No User Found";
                     this.s43 = "List of Group Members";
                     this.s44 = "Remove from Group";
+                    this.s45 = "No Group Found";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "ID";
@@ -688,6 +695,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s42 = "کاربری یافت نشد";
                     this.s43 = "لیست اعضای گروه";
                     this.s44 = "حذف از گروه";
+                    this.s45 = "گروهی یافت نشد";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "شناسه";
