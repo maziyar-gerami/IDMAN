@@ -16,14 +16,13 @@ import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Captcha.RepoImp.CaptchaRepoImp;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
-import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.Helpers.User.UsersExcelView;
 import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
+import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.Repos.UserRepo;
 
-import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -147,12 +146,14 @@ public class UserController {
      */
     @PutMapping("/api/user/password")
     public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
-                                                     @RequestBody JSONObject jsonObject) throws SizeLimitExceededException {
+                                                     @RequestBody JSONObject jsonObject) {
         Principal principal = request.getUserPrincipal();
+        String oldPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");
         if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
-        return new ResponseEntity<>(userRepo.changePassword(principal.getName(), newPassword, token));
+
+        return new ResponseEntity<>(userRepo.changePassword(principal.getName(),oldPassword, newPassword, token));
 
     }
 
@@ -518,9 +519,8 @@ public class UserController {
         HttpStatus httpStatus = tokenClass.checkToken(uId, token);
 
         if (httpStatus == HttpStatus.OK) {
-            attributes.addAttribute("uid", uId);
-            attributes.addAttribute("token", token);
 
+            userRepo.update(uId,userRepo.retrieveUsers(uId));
             return new RedirectView("/resetPassword");
         }
         return null;

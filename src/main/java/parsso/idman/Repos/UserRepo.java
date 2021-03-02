@@ -17,7 +17,7 @@ public interface UserRepo {
 
     List<String> remove(JSONObject jsonObject);
 
-    HttpStatus changePassword(String uId, String newPassword, String token);
+    HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token);
 
     String showProfilePic(HttpServletResponse response, User user);
 
@@ -55,7 +55,7 @@ public interface UserRepo {
 
     int sendEmail(String email, String uid, String cid, String answer);
 
-    HttpStatus updatePass(String userId, String pass, String token);
+    HttpStatus updatePass(String userId,String oldPass, String token);
 
     JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException;
 

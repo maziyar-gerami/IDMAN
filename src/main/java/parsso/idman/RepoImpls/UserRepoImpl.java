@@ -384,25 +384,33 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus changePassword(String uId, String newPassword, String token) {
+    public HttpStatus changePassword(String uId,String oldPassword, String newPassword, String token) {
+
+        System.out.println("***********************************");
+        //System.out.println(ldapTemplate.authenticate(BASE_DN,null,oldPassword));
+        System.out.println("***********************************");
+
 
         //TODO:check current pass
         User user = retrieveUsers(uId);
 
 
+
         if (true) {
             if (token != null) {
                 if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
-                    user.setUserPassword(newPassword);
 
-                    Name dn = buildDn.buildDn(uId);
-                    DirContextOperations context = buildAttributes.buildAttributes(uId, user, dn);
-                    Date date = new Date();
+                    DirContextOperations contextUser;
+
+                    contextUser = ldapTemplate.lookupContext(buildDn.buildDn(user.getUserId()));
+                    contextUser.setAttributeValue("userPassword", newPassword);
+
+
                     //context.setAttributeValue("pwdChangedTime", date.getTime());
 
 
                     try {
-                        ldapTemplate.modifyAttributes(context);
+                        ldapTemplate.modifyAttributes(contextUser);
                         logger.info("Password for" + uId + " changed successfully");
                         return HttpStatus.OK;
                     } catch (Exception e) {
@@ -944,18 +952,19 @@ public class UserRepoImpl implements UserRepo {
     public HttpStatus updatePass(String userId, String pass, String token) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        User user = ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper).get(0);
+        User user = retrieveUsers(userId);
 
         setRole(userId, user);
 
         HttpStatus httpStatus = tokenClass.checkToken(userId, token);
 
         if (httpStatus == HttpStatus.OK) {
-            user.setUserPassword(pass);
-            Name dn = buildDn.buildDn(user.getUserId());
+            DirContextOperations contextUser;
 
-            DirContextOperations context = buildAttributes.buildAttributes(userId, user, dn);
-            ldapTemplate.modifyAttributes(context);
+            contextUser = ldapTemplate.lookupContext(buildDn.buildDn(user.getUserId()));
+            contextUser.setAttributeValue("userPassword", pass);
+            ldapTemplate.modifyAttributes(contextUser);
+
             return HttpStatus.OK;
         } else {
             return HttpStatus.FORBIDDEN;

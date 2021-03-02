@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ public class BuildAttributes {
     private String defaultPassword;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Autowired
     private LdapTemplate ldapTemplate;
@@ -152,6 +155,8 @@ public class BuildAttributes {
         if (p.getEmployeeNumber() != "" && old.getEmployeeNumber() != null)
             context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
 
+        if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null)
+            mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
 
         return context;
     }
