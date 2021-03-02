@@ -247,22 +247,22 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus update(String uid, User p) {
-        Name dn = buildDn.buildDn(uid);
+    public HttpStatus update(String usid, User p) {
+        Name dn = buildDn.buildDn(p.getUserId());
 
-        User user = retrieveUsers(uid);
+        User user = retrieveUsers(p.getUserId());
 
         DirContextOperations context;
 
         //remove current pwdEndTime
         if ((p.getEndTime() != null && p.getEndTime().equals("")))
-                removeCurrentEndTime(uid);
+                removeCurrentEndTime(p.getUserId());
         else if (p.getEndTime() != null &&
                  p.getEndTime().equals("")
                 && user.getEndTime()!=null)
-            removeCurrentEndTime(uid);
+            removeCurrentEndTime(p.getUserId());
 
-        context = buildAttributes.buildAttributes(uid, p, dn);
+        context = buildAttributes.buildAttributes(p.getUserId(), p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
 
@@ -279,7 +279,6 @@ public class UserRepoImpl implements UserRepo {
 
             logger.info("User " + "\"" + p.getUserId() + "\"" + "in " + new Date() + " updated successfully");
 
-
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("Updating user " + "\"" + p.getUserId() + "\"" + "was unsuccessful");
@@ -287,23 +286,20 @@ public class UserRepoImpl implements UserRepo {
 
         if(p.getUserPassword()!=null) {
 
-            DirContextOperations contextUser = ldapTemplate.lookupContext(buildDn.buildDn(user.getUserId()));
-
-            contextUser.setAttributeValue("userPassword", p.getPassword());
+            context.setAttributeValue("userPassword", p.getUserPassword());
 
             try {
-                ldapTemplate.modifyAttributes(contextUser);
-                logger.info("Password for" + uid + " changed successfully");
-
+                ldapTemplate.modifyAttributes(context);
+                logger.info("Password for" + p.getUserId() + " changed successfully");
                 return HttpStatus.OK;
             } catch (Exception e) {
                 e.printStackTrace();
-                logger.warn("Changing password for " + "\"" + uid + "\"" + " was unsuccessfully");
+                logger.warn("Changing password for " + "\"" + p.getUserId() + "\"" + " was unsuccessfully");
 
                 return HttpStatus.BAD_REQUEST;
             }
-        }
 
+        }
 
         return  HttpStatus.OK;
     }

@@ -270,7 +270,15 @@ public class UserController {
      */
     @PutMapping("/api/users/u/{uId}")
     public ResponseEntity<String> rebindLdapUser(@PathVariable("uId") String uid, @RequestBody User user) {
+
+        if (user.getUserId()==null) {
+            String pass = user.getUserPassword();
+            user = userRepo.retrieveUsers(uid);
+            user.setUserPassword(pass);
+        }
+
         return new ResponseEntity<>(userRepo.update(uid, user));
+
     }
 
     /**
