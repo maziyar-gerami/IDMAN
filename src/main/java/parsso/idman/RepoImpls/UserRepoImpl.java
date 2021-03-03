@@ -741,9 +741,9 @@ public class UserRepoImpl implements UserRepo {
         modificationItems = new ModificationItem[1];
 
         User user = retrieveUsers(uid);
-        Boolean status = user.isEnabled();
+        String status = user.getStatus();
 
-        if (!status) {
+        if (status.equalsIgnoreCase("disabled")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
 
             try {
@@ -820,12 +820,12 @@ public class UserRepoImpl implements UserRepo {
         Name dn = buildDn.buildDn(uid);
 
         ModificationItem[] modificationItems;
-        modificationItems = new ModificationItem[2];
+        modificationItems = new ModificationItem[1];
 
         User user = retrieveUsers(uid);
-        Boolean locked = user.isLocked();
+        String locked = user.getStatus();
 
-        if (locked) {
+        if (locked.equalsIgnoreCase("locked")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
 
 
