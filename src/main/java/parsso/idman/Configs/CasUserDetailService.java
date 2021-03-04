@@ -1,6 +1,5 @@
 package parsso.idman.Configs;
 
-
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,10 +20,7 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
     public CasUserDetailService(String Id){
 
         adminId = Id;
-
     }
-
-
 
     @Override
     public UserDetails loadUserDetails(Authentication token) throws UsernameNotFoundException {
@@ -51,7 +47,6 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
 
             if (id != null && id.equals(adminId))
                 collection.add(new SimpleGrantedAuthority("ROLE_" + "ADMIN"));
-
         }
 
         if (role == null)

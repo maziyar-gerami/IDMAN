@@ -19,7 +19,6 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     @Value("${mongo.db}")
     private String databaseName;
 
-
     @Override
     protected String getDatabaseName() {
         return databaseName;
