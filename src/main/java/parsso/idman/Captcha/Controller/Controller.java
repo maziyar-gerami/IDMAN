@@ -12,8 +12,6 @@ import parsso.idman.Captcha.Models.CAPTCHA;
 import parsso.idman.Captcha.Models.CAPTCHAimage;
 import parsso.idman.Captcha.RepoImp.CaptchaRepoImp;
 
-import java.io.IOException;
-
 @RestController
 public class Controller {
     @Autowired
@@ -26,22 +24,17 @@ public class Controller {
     private String captchaAlphabetRate;
 
     @GetMapping("/api/captcha/request")
-    public ResponseEntity<CAPTCHAimage> requestCaptcha() throws IOException {
+    public ResponseEntity<CAPTCHAimage> requestCaptcha() {
 
         CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.valueOf(captchaLenght), Double.valueOf(captchaAlphabetRate));
         if (captchaImage != null)
             return new ResponseEntity<>(captchaImage, HttpStatus.OK);
         else
             return new ResponseEntity<>(captchaImage, HttpStatus.FORBIDDEN);
-
     }
 
     @GetMapping("/api/captcha/validate")
     public ResponseEntity<CAPTCHAimage> validateCaptcha(@RequestBody CAPTCHA captcha) {
-
         return new ResponseEntity<>(captchaRepoImp.validateCaptcha(captcha));
-
-
     }
-
 }

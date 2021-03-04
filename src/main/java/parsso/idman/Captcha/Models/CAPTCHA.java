@@ -19,5 +19,4 @@ public class CAPTCHA {
         long timeStamp = new Date().getTime();
         this.id = (new Random().nextInt(9999)) + 10000 + "" + timeStamp;
     }
-
 }
