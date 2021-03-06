@@ -1,15 +1,15 @@
 package parsso.idman.Models;
 
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import parsso.idman.Helpers.Events.ActionInfo;
 import parsso.idman.Helpers.Events.AgentInfo;
-import parsso.idman.RepoImpls.ServiceRepoImpl;
 import ua_parser.Client;
 import ua_parser.Parser;
 
@@ -35,11 +35,6 @@ public class Event implements Serializable {
     public Client agent;
     public String service;
     public AgentInfo agentInfo;
-    @Autowired
-    ServiceRepoImpl serviceRepo;
-    @JsonIgnore
-    @Autowired
-    MongoTemplate mongoTemplate;
     @JsonIgnore
     String collection = "Agents";
     String _id;

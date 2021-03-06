@@ -76,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-
+/*
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources
@@ -155,7 +155,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //
                 .anyRequest().authenticated()
                 .and()
-
+*/
 
 
                 .formLogin()
@@ -169,8 +169,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/dashboard")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID");
-
-
     }
 
     @Override
@@ -180,7 +178,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     }
-
 
     @Bean
     @Override
@@ -195,6 +192,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         return entryPoint;
     }
-
-
 }

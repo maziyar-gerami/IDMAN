@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Configs.CasUserDetailService;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Models.User;
-import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.SystemRefresh;
@@ -81,7 +80,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
 
         ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
-        new SystemRefreshRepoImpl();
+        //new SystemRefreshRepoImpl();
 
 
         Runnable runnable = new Runnable() {
@@ -90,11 +89,10 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
             public void run() {
                 while (true){
                     Thread.sleep(intervalCheckPassTime*millis);
-                    //pulling(context);
+                    pulling(context);
                 }
             }
         };
-
 
         //refresh(context);
         Thread thread = new Thread(runnable);

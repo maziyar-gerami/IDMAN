@@ -131,7 +131,6 @@ public class ServiceController {
 
     }
 
-
     @GetMapping("/createservice")
     public String CreateService(HttpServletRequest request) {
         try {
@@ -139,7 +138,6 @@ public class ServiceController {
             User user = userRepo.retrieveUsers(principal.getName());
 
             List<String> memberOf = user.getMemberOf();
-
 
             if (user.getUserId().equals("su"))
                 return "createservice";

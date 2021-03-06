@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-import parsso.idman.Captcha.RepoImp.CaptchaRepoImp;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.UsersExcelView;
@@ -37,9 +36,6 @@ public class UserController {
      * The Storage service.
      */
 
-
-    @Value("${api.get.users}")
-    private final static String apiAddress = null;
     // default sequence of variables which can be changed using frontend
     private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
     @Autowired
@@ -56,11 +52,6 @@ public class UserController {
     private String adminOu;
     @Value("${token.valid.email}")
     private String tokenValidEmail;
-    @Value("${token.valid.SMS}")
-    private String tokenValidMessage;
-
-    @Autowired
-    private CaptchaRepoImp captchaRepoImp;
 
 
     //*************************************** User Section ***************************************
@@ -98,7 +89,6 @@ public class UserController {
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUsers(principal.getName());
             List<String> memberOf = user.getMemberOf();
-
 
             if (user.getUserId().equals("su"))
                 return 0;
@@ -225,15 +215,6 @@ public class UserController {
         else
             return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
-
-    /*@GetMapping("/api/users/group/{gid}/{page}/{n}")
-    public ResponseEntity<ListUsers> retrieveUsersOfGroups(@PathVariable("page") int page, @PathVariable("n") int n,
-                                                       @RequestParam(name = "{gid}") String gtoupId){
-        if (userRepo.retrieveUsersMain().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else
-            return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
-    }*/
-
 
     /**
      * Retrieve all users with all attributes
@@ -377,7 +358,6 @@ public class UserController {
         // return a view which will be resolved by an excel view resolver
         return new ModelAndView(excelView, "listUsers", null);
     }
-
 
 
 
@@ -544,7 +524,5 @@ public class UserController {
     public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));
     }
-
-
 
 }

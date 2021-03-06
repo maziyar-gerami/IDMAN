@@ -38,7 +38,6 @@ public class SettingsController {
     @Autowired
     UserRepo userRepo;
 
-
     @Autowired
     InstantMessage instantMessage;
 
@@ -47,7 +46,6 @@ public class SettingsController {
 
     @Autowired
     ConfigRepo configRepo;
-
 
     @GetMapping("/api/settings/notification/email")
     public ResponseEntity<HttpStatus> enableEmailNotification() {
@@ -63,7 +61,6 @@ public class SettingsController {
 
                     settingsRepo.emailNotification();
                     Thread.sleep(intervalCheckPassTime*millis);
-
 
                 }
             }

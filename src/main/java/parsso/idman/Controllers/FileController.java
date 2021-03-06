@@ -19,12 +19,10 @@ import java.util.stream.Collectors;
 
 
 @Controller
-
 public class FileController {
 
     @Autowired
     FilesStorageService storageService;
-
 
     @GetMapping("/files")
     public ResponseEntity<List<FileInfo>> getListFiles() {

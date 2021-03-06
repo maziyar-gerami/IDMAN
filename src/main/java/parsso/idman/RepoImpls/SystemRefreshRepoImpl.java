@@ -161,8 +161,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         for (MicroService microService : microServices) ids.add(microService.get_id());
 
         for (parsso.idman.Models.Service service : serviceList)
-            if (ids.contains(service.getId()))
-                ids.remove(service.getId());
+            ids.remove(service.getId());
 
         Query query;
         for (Long id:ids) {

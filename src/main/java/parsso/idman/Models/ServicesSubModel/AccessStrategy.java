@@ -100,16 +100,12 @@ public class AccessStrategy {
         String minutes = seTime.substring(14, 16);
         String seconds = seTime.substring(17, 19);
 
-        String miliSeconds = seTime.substring(20, 23);
+        String milliSeconds = seTime.substring(20, 23);
 
         String tf = seTime.substring(23);
 
         return (convertDate(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day))) +
-        'T' + hours + ':' + minutes + ':' + seconds + '.' + miliSeconds + tf;
-
-
-
-
+        'T' + hours + ':' + minutes + ':' + seconds + '.' + milliSeconds + tf;
 
     }
 
@@ -165,7 +161,7 @@ public class AccessStrategy {
         accessStrategy.setSsoEnabled(jsonObject.get("ssoEnabled") != (null) && (boolean) jsonObject.get("ssoEnabled") != false);
 
 
-        JSONObject tempreqiredattribute = new JSONObject();
+        JSONObject tempReqiredAttribute = new JSONObject();
         JSONArray obj = null;
         JSONObject t1;
         if (jsonObject.get("requiredAttributes") != (null)) {
@@ -176,20 +172,20 @@ public class AccessStrategy {
                 obj = new JSONArray();
                 obj = (JSONArray) jsonObject.get("requiredAttributes");
                 t1 = (JSONObject) obj.get(0);
-                tempreqiredattribute = t1;
-                tempreqiredattribute.put("@class", "java.util.HashMap");
+                tempReqiredAttribute = t1;
+                tempReqiredAttribute.put("@class", "java.util.HashMap");
 
             } else {
-                tempreqiredattribute = new JSONObject((Map) ob1);
-                tempreqiredattribute.put("@class", "java.util.HashMap");
+                tempReqiredAttribute = new JSONObject((Map) ob1);
+                tempReqiredAttribute.put("@class", "java.util.HashMap");
             }
 
         }
 
-        accessStrategy.setRequiredAttributes(tempreqiredattribute);
+        accessStrategy.setRequiredAttributes(tempReqiredAttribute);
 
 
-        JSONObject temprejecteddattribute = new JSONObject();
+        JSONObject tempRejectedAttribute = new JSONObject();
 
         if (jsonObject.get("rejectedAttributes") != (null)) {
 
@@ -199,17 +195,17 @@ public class AccessStrategy {
                 obj = new JSONArray();
                 obj = (JSONArray) jsonObject.get("rejectedAttributes");
                 t1 = (JSONObject) obj.get(0);
-                temprejecteddattribute = t1;
-                temprejecteddattribute.put("@class", "java.util.HashMap");
+                tempRejectedAttribute = t1;
+                tempRejectedAttribute.put("@class", "java.util.HashMap");
 
             } else {
-                temprejecteddattribute = new JSONObject((Map) ob1);
-                temprejecteddattribute.put("@class", "java.util.HashMap");
+                tempRejectedAttribute = new JSONObject((Map) ob1);
+                tempRejectedAttribute.put("@class", "java.util.HashMap");
             }
 
         }
 
-        accessStrategy.setRejectedAttributes(temprejecteddattribute);
+        accessStrategy.setRejectedAttributes(tempRejectedAttribute);
 
         return accessStrategy;
 

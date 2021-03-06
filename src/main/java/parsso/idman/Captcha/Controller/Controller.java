@@ -24,7 +24,7 @@ public class Controller {
     private String captchaAlphabetRate;
 
     @GetMapping("/api/captcha/request")
-    public ResponseEntity<CAPTCHAimage> requestCaptcha() {
+    private ResponseEntity<CAPTCHAimage> requestCaptcha() {
 
         CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.valueOf(captchaLenght), Double.valueOf(captchaAlphabetRate));
         if (captchaImage != null)
@@ -34,7 +34,7 @@ public class Controller {
     }
 
     @GetMapping("/api/captcha/validate")
-    public ResponseEntity<CAPTCHAimage> validateCaptcha(@RequestBody CAPTCHA captcha) {
+    private ResponseEntity<CAPTCHAimage> validateCaptcha(@RequestBody CAPTCHA captcha) {
         return new ResponseEntity<>(captchaRepoImp.validateCaptcha(captcha));
     }
 }
