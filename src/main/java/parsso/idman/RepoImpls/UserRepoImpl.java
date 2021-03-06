@@ -8,6 +8,14 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,15 +53,9 @@ import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
-import javax.naming.directory.SearchControls;
+import javax.naming.directory.*;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -986,6 +988,117 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
         return importUsers.importFileUsers(file, sequence, hasHeader);
+    }
+
+
+    @Override
+    public List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException {
+        JSONObject lsusers = new JSONObject();
+        InputStream insfile = file.getInputStream();
+
+        if (file.getOriginalFilename().endsWith(".xlsx")) {
+            //Create Workbook instance holding reference to .xlsx file
+            XSSFWorkbook workbookXLSX = null;
+            workbookXLSX = new XSSFWorkbook(insfile);
+
+            //Get first/desired sheet from the workbook
+            XSSFSheet sheet = workbookXLSX.getSheetAt(0);
+
+            return excelSheetAnalyze(sheet, ou,true);
+
+        } else if (file.getOriginalFilename().endsWith(".xls")) {
+            HSSFWorkbook workbookXLS = null;
+
+            workbookXLS = new HSSFWorkbook(insfile);
+
+            HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
+
+            return excelSheetAnalyze(xlssheet, ou,true);
+
+        } else if (file.getOriginalFilename().endsWith(".csv")) {
+
+            BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
+
+            return csvSheet(csvReader, ou, true);
+
+        }
+
+        return null;
+    }
+
+    public List excelSheetAnalyze(Sheet sheet, String ou, boolean hasHeader) {
+
+
+        Iterator<Row> rowIterator = sheet.iterator();
+
+        List<String> notExist = new LinkedList<>();
+
+        if (hasHeader == true) rowIterator.next();
+
+
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+
+            Cell cell = row.getCell(0);
+            //Check the cell type and format accordingly
+
+            if (cell == null) break;
+
+            ModificationItem[] items = new ModificationItem[1];
+            Attribute[] attrs = new Attribute[1];
+
+            DataFormatter formatter = new DataFormatter();
+
+            attrs[0] = new BasicAttribute("ou", ou);
+            items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
+
+            try {
+                ldapTemplate.modifyAttributes(buildDn.buildDn(formatter.formatCellValue(row.getCell(0))), items);
+
+            } catch (Exception e) {
+                if (e.getClass().toString().contains("NameNotFoundException"))
+                    notExist.add(formatter.formatCellValue(row.getCell(0)));
+            }
+
+        }
+
+        return notExist;
+    }
+
+
+
+    public List csvSheet(BufferedReader sheet, String ou, boolean hasHeader) throws IOException {
+
+        String row;
+        int i = 0;
+        List<String> notExist = new LinkedList<>();
+
+        while ((row = sheet.readLine()) != null) {
+            if (i == 0 && hasHeader) {
+                i++;
+                continue;
+            }
+
+            ModificationItem[] items = new ModificationItem[1];
+            Attribute[] attrs = new Attribute[1];
+
+            String[] data = row.split(",");
+
+            attrs[0] = new BasicAttribute("ou", ou);
+            items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
+
+            try {
+                ldapTemplate.modifyAttributes(buildDn.buildDn(data[0]), items);
+
+            } catch (Exception e) {
+                if (e.getClass().toString().contains("NameNotFoundException"))
+                    notExist.add(data[0]);
+            }
+
+            i++;
+
+        }
+        return notExist;
     }
 
     @Bean

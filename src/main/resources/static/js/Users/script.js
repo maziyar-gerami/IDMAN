@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let fileName = fup.value;
                 if(!re.exec(fileName)){
                     alert(this.s24);
-
+                    return;
                 }else{
                     var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                     var vm = this;

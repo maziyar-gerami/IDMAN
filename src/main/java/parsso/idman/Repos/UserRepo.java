@@ -76,4 +76,6 @@ public interface UserRepo {
     ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);
 
     HttpStatus massUsersGroupUpdate(String groupId, JSONObject gu);
+
+    List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException;
 }

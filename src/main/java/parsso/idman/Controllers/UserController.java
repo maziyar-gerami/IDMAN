@@ -359,7 +359,16 @@ public class UserController {
         return new ModelAndView(excelView, "listUsers", null);
     }
 
-
+    @PutMapping("/api/users/ou/{ou}")
+    public ResponseEntity<List<String>> addGroups(@RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException {
+        List<String> notExist = userRepo.addGroupToUsers(file, ou);
+        if (notExist==null)
+            return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (notExist.size()==0)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(notExist, HttpStatus.PARTIAL_CONTENT);
+    }
 
     //*************************************** Public Controllers ***************************************
 
