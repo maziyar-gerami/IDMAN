@@ -8,6 +8,14 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,15 +53,9 @@ import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
-import javax.naming.directory.SearchControls;
+import javax.naming.directory.*;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -247,24 +249,22 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus update(String uid, User p) {
-        Name dn = buildDn.buildDn(uid);
+    public HttpStatus update(String usid, User p) {
+        Name dn = buildDn.buildDn(p.getUserId());
 
-        setRole(uid, p);
-
-        User user = retrieveUsers(uid);
+        User user = retrieveUsers(p.getUserId());
 
         DirContextOperations context;
 
         //remove current pwdEndTime
         if ((p.getEndTime() != null && p.getEndTime().equals("")))
-                removeCurrentEndTime(uid);
+                removeCurrentEndTime(p.getUserId());
         else if (p.getEndTime() != null &&
                  p.getEndTime().equals("")
                 && user.getEndTime()!=null)
-            removeCurrentEndTime(uid);
+            removeCurrentEndTime(p.getUserId());
 
-        context = buildAttributes.buildAttributes(uid, p, dn);
+        context = buildAttributes.buildAttributes(p.getUserId(), p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
 
@@ -280,13 +280,30 @@ public class UserRepoImpl implements UserRepo {
             ldapTemplate.modifyAttributes(context);
 
             logger.info("User " + "\"" + p.getUserId() + "\"" + "in " + new Date() + " updated successfully");
-            return HttpStatus.OK;
 
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("Updating user " + "\"" + p.getUserId() + "\"" + "was unsuccessful");
-            return HttpStatus.FORBIDDEN;
         }
+
+        if(p.getUserPassword()!=null) {
+
+            context.setAttributeValue("userPassword", p.getUserPassword());
+
+            try {
+                ldapTemplate.modifyAttributes(context);
+                logger.info("Password for" + p.getUserId() + " changed successfully");
+                return HttpStatus.OK;
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.warn("Changing password for " + "\"" + p.getUserId() + "\"" + " was unsuccessfully");
+
+                return HttpStatus.BAD_REQUEST;
+            }
+
+        }
+
+        return  HttpStatus.OK;
     }
 
     @Override
@@ -383,25 +400,33 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus changePassword(String uId, String newPassword, String token) {
+    public HttpStatus changePassword(String uId,String oldPassword, String newPassword, String token) {
+
+        System.out.println("***********************************");
+        //System.out.println(ldapTemplate.authenticate(BASE_DN,null,oldPassword));
+        System.out.println("***********************************");
+
 
         //TODO:check current pass
         User user = retrieveUsers(uId);
 
 
+
         if (true) {
             if (token != null) {
                 if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
-                    user.setUserPassword(newPassword);
 
-                    Name dn = buildDn.buildDn(uId);
-                    DirContextOperations context = buildAttributes.buildAttributes(uId, user, dn);
-                    Date date = new Date();
+                    DirContextOperations contextUser;
+
+                    contextUser = ldapTemplate.lookupContext(buildDn.buildDn(user.getUserId()));
+                    contextUser.setAttributeValue("userPassword", newPassword);
+
+
                     //context.setAttributeValue("pwdChangedTime", date.getTime());
 
 
                     try {
-                        ldapTemplate.modifyAttributes(context);
+                        ldapTemplate.modifyAttributes(contextUser);
                         logger.info("Password for" + uId + " changed successfully");
                         return HttpStatus.OK;
                     } catch (Exception e) {
@@ -644,6 +669,8 @@ public class UserRepoImpl implements UserRepo {
 
             for (User user : people) {
 
+                user.setUserPassword(null);
+
                 DirContextOperations context = buildAttributes.buildAttributes(user.getUserId(), user, buildDn.buildDn(user.getUserId()));
 
                 context.removeAttributeValue("ou", old_ou);
@@ -688,9 +715,7 @@ public class UserRepoImpl implements UserRepo {
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("ou", groupId));
 
-
         return ldapTemplate.search(query().where("ou").is(groupId), simpleUserAttributeMapper);
-
 
     }
 
@@ -718,9 +743,9 @@ public class UserRepoImpl implements UserRepo {
         modificationItems = new ModificationItem[1];
 
         User user = retrieveUsers(uid);
-        Boolean status = user.isEnabled();
+        String status = user.getStatus();
 
-        if (!status) {
+        if (status.equalsIgnoreCase("disabled")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
 
             try {
@@ -797,27 +822,38 @@ public class UserRepoImpl implements UserRepo {
         Name dn = buildDn.buildDn(uid);
 
         ModificationItem[] modificationItems;
-        modificationItems = new ModificationItem[2];
+        modificationItems = new ModificationItem[1];
 
         User user = retrieveUsers(uid);
-        Boolean locked = user.isLocked();
+        String locked = user.getStatus();
 
-        if (locked) {
+        if (locked.equalsIgnoreCase("locked")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
-            modificationItems[1] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
 
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
+
+                try {
+                    modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
+                    ldapTemplate.modifyAttributes(dn, modificationItems);
+
+                }catch (Exception e){
+
+                }
+
                 logger.warn("Unlocking" + uid + "was successful");
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                e.printStackTrace();
-                logger.warn("Unlocking user" + uid + " was successful");
+
+                logger.warn("Unlocking user" + uid + " was unsuccessful");
 
                 return HttpStatus.BAD_REQUEST;
             }
+
+
+
         } else {
             return HttpStatus.BAD_REQUEST;
         }
@@ -873,7 +909,7 @@ public class UserRepoImpl implements UserRepo {
         List<String> remove = (List<String>) gu.get("remove");
         for (String uid : add) {
             User user = retrieveUsers(uid);
-            if (!user.getMemberOf().contains(groupId)) {
+            if (user.getMemberOf()!=null&&!user.getMemberOf().contains(groupId)) {
                 user.getMemberOf().add(groupId);
                 update(uid, user);
             }
@@ -930,18 +966,19 @@ public class UserRepoImpl implements UserRepo {
     public HttpStatus updatePass(String userId, String pass, String token) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        User user = ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper).get(0);
+        User user = retrieveUsers(userId);
 
         setRole(userId, user);
 
         HttpStatus httpStatus = tokenClass.checkToken(userId, token);
 
         if (httpStatus == HttpStatus.OK) {
-            user.setUserPassword(pass);
-            Name dn = buildDn.buildDn(user.getUserId());
+            DirContextOperations contextUser;
 
-            DirContextOperations context = buildAttributes.buildAttributes(userId, user, dn);
-            ldapTemplate.modifyAttributes(context);
+            contextUser = ldapTemplate.lookupContext(buildDn.buildDn(user.getUserId()));
+            contextUser.setAttributeValue("userPassword", pass);
+            ldapTemplate.modifyAttributes(contextUser);
+
             return HttpStatus.OK;
         } else {
             return HttpStatus.FORBIDDEN;
@@ -951,6 +988,117 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
         return importUsers.importFileUsers(file, sequence, hasHeader);
+    }
+
+
+    @Override
+    public List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException {
+        JSONObject lsusers = new JSONObject();
+        InputStream insfile = file.getInputStream();
+
+        if (file.getOriginalFilename().endsWith(".xlsx")) {
+            //Create Workbook instance holding reference to .xlsx file
+            XSSFWorkbook workbookXLSX = null;
+            workbookXLSX = new XSSFWorkbook(insfile);
+
+            //Get first/desired sheet from the workbook
+            XSSFSheet sheet = workbookXLSX.getSheetAt(0);
+
+            return excelSheetAnalyze(sheet, ou,true);
+
+        } else if (file.getOriginalFilename().endsWith(".xls")) {
+            HSSFWorkbook workbookXLS = null;
+
+            workbookXLS = new HSSFWorkbook(insfile);
+
+            HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
+
+            return excelSheetAnalyze(xlssheet, ou,true);
+
+        } else if (file.getOriginalFilename().endsWith(".csv")) {
+
+            BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
+
+            return csvSheet(csvReader, ou, true);
+
+        }
+
+        return null;
+    }
+
+    public List excelSheetAnalyze(Sheet sheet, String ou, boolean hasHeader) {
+
+
+        Iterator<Row> rowIterator = sheet.iterator();
+
+        List<String> notExist = new LinkedList<>();
+
+        if (hasHeader == true) rowIterator.next();
+
+
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+
+            Cell cell = row.getCell(0);
+            //Check the cell type and format accordingly
+
+            if (cell == null) break;
+
+            ModificationItem[] items = new ModificationItem[1];
+            Attribute[] attrs = new Attribute[1];
+
+            DataFormatter formatter = new DataFormatter();
+
+            attrs[0] = new BasicAttribute("ou", ou);
+            items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
+
+            try {
+                ldapTemplate.modifyAttributes(buildDn.buildDn(formatter.formatCellValue(row.getCell(0))), items);
+
+            } catch (Exception e) {
+                if (e.getClass().toString().contains("NameNotFoundException"))
+                    notExist.add(formatter.formatCellValue(row.getCell(0)));
+            }
+
+        }
+
+        return notExist;
+    }
+
+
+
+    public List csvSheet(BufferedReader sheet, String ou, boolean hasHeader) throws IOException {
+
+        String row;
+        int i = 0;
+        List<String> notExist = new LinkedList<>();
+
+        while ((row = sheet.readLine()) != null) {
+            if (i == 0 && hasHeader) {
+                i++;
+                continue;
+            }
+
+            ModificationItem[] items = new ModificationItem[1];
+            Attribute[] attrs = new Attribute[1];
+
+            String[] data = row.split(",");
+
+            attrs[0] = new BasicAttribute("ou", ou);
+            items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
+
+            try {
+                ldapTemplate.modifyAttributes(buildDn.buildDn(data[0]), items);
+
+            } catch (Exception e) {
+                if (e.getClass().toString().contains("NameNotFoundException"))
+                    notExist.add(data[0]);
+            }
+
+            i++;
+
+        }
+        return notExist;
     }
 
     @Bean

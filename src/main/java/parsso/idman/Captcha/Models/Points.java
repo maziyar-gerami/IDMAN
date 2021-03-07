@@ -9,7 +9,6 @@ public class Points {
     private final int width;
     private final int height;
 
-
     private int x1 = 0;
     private int y1 = 0;
 
@@ -27,6 +26,4 @@ public class Points {
         y2 = (int) (Math.random() * height);
 
     }
-
-
 }

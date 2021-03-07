@@ -9,18 +9,16 @@ import parsso.idman.Models.Ticket;
 import parsso.idman.Repos.TicketRepo;
 
 import java.util.List;
-
+@RestController
 public class TicketController {
 
     @Autowired
     TicketRepo ticketRepo;
 
-
     @GetMapping("/api/ticket/{ticketID}")
     public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticket") long ticketID) {
         return new ResponseEntity<>(ticketRepo.retrieveTicket(ticketID) != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
-
 
     @DeleteMapping("/api/ticket/{ticketID}")
     public ResponseEntity<HttpStatus> deleteTicket(@PathVariable("ticket") long ticketID) {

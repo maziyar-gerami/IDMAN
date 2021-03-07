@@ -143,6 +143,9 @@ public class ServiceRepoImpl implements ServiceRepo {
 
         for (Service service: allServices) {
             JSONArray o = (JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou");
+
+            if (o==null||o.size()==0)
+                return null;
             List <String> attributes = (List<String>) o.get(1);
 
             if(attributes.contains(ou)) {
@@ -203,7 +206,6 @@ public class ServiceRepoImpl implements ServiceRepo {
                 return service;
             }
         return null;
-
     }
 
     @Override

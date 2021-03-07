@@ -38,12 +38,7 @@ public class DashboardController {
     }
 
     @GetMapping("/dashboard")
-    public String Dashboard(HttpServletRequest request) {
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-
-        return "dashboard";
-    }
+    public String Dashboard() { return "dashboard"; }
 
     @GetMapping("/resetPassword")
     public String resetPassword() {
@@ -60,9 +55,7 @@ public class DashboardController {
 
         try {
 
-            List<String> memberOf = user.getMemberOf();
-
-            for (String group : memberOf) {
+            for (String group : user.getMemberOf()) {
                 if (group.equals(adminOu))
                     return "groups";
             }
@@ -98,7 +91,6 @@ public class DashboardController {
         User user = userRepo.retrieveUsers(principal.getName());
         if (user.getUserId().equals("su"))
             return "users";
-
         try {
 
             List<String> memberOf = user.getMemberOf();
@@ -115,12 +107,12 @@ public class DashboardController {
     }
 
     @GetMapping("/audits")
-    public String Audits(HttpServletRequest request) {
+    public String Audits() {
         return "audits";
     }
 
     @GetMapping("/events")
-    public String Events(HttpServletRequest request) {
+    public String Events() {
         return "events";
     }
 
@@ -129,7 +121,6 @@ public class DashboardController {
         try {
             if (request.getUserPrincipal().getName().equals("su"))
                 return "configs";
-
 
         } catch (Exception e) {
             return "403";
@@ -175,6 +166,4 @@ public class DashboardController {
                 .logout(request, response, auth);
         return "redirect:" + casLogout;
     }
-
-
 }

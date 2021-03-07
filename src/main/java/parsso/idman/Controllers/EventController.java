@@ -20,49 +20,40 @@ import java.text.ParseException;
 @RestController
 public class EventController {
 
-
     @Autowired
     private EventRepo eventRepo;
     @Autowired
     private EventsExcelView eventsExcelView;
 
-    //OK
     @GetMapping("/api/events/{page}/{n}")
-    public ResponseEntity<ListEvents> retrieveAllEvents(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
+    public ResponseEntity<ListEvents> retrieveAllEvents(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
         return new ResponseEntity<>(eventRepo.getListSizeEvents(page, n), HttpStatus.OK);
     }
 
-    //OK
     @GetMapping("/api/events/users/{userId}/{page}/{n}")
-    public ResponseEntity<ListEvents> retrieveByUser(@PathVariable String userId, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
+    public ResponseEntity<ListEvents> retrieveByUser(@PathVariable String userId, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
         return new ResponseEntity<>(eventRepo.getListUserEvents(userId, page, n), HttpStatus.OK);
     }
 
-    //OK
     @GetMapping("/api/events/date/{date}/{page}/{n}")
     public ResponseEntity<ListEvents> retrieveByDate(@PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
         return new ResponseEntity<>(eventRepo.getEventsByDate(date, page, n), HttpStatus.OK);
     }
 
-    //OK
     @GetMapping("/api/events/users/{id}/date/{date}/{page}/{n}")
     public ResponseEntity<ListEvents> retrieveByUserDate(@PathVariable String id, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
         return new ResponseEntity<>(eventRepo.getListUserEventByDate(date, id, page, n), HttpStatus.OK);
     }
 
-    //OK
     @GetMapping("/api/events/user/{page}/{n}")
-
     public ResponseEntity<ListEvents> retrieveCurrentUserEvents(HttpServletRequest request, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
         Principal principal = request.getUserPrincipal();
-
         ListEvents listEvents = eventRepo.getListUserEvents(principal.getName(), page, n);
         for (int i=0; i < listEvents.getEventList().size();i++)
             listEvents.getEventList().get(i).getProperties().setServerip(null);
         return new ResponseEntity<>(listEvents, HttpStatus.OK);
     }
 
-    //OK
     @GetMapping("/api/events/user/date/{date}/{page}/{n}")
     public ResponseEntity<ListEvents> retrieveCurrentUserEventsByDate(HttpServletRequest request, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
         Principal principal = request.getUserPrincipal();
@@ -75,10 +66,9 @@ public class EventController {
 
 
     @GetMapping("/api/events/export")
-    public ModelAndView downloadExcel() throws ParseException, org.json.simple.parser.ParseException, IOException {
+    public ModelAndView downloadExcel() {
 
         // return a view which will be resolved by an excel view resolver
         return new ModelAndView(eventsExcelView, "listEvents", null);
     }
-
 }

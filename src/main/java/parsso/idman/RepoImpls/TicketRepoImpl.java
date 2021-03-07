@@ -3,11 +3,13 @@ package parsso.idman.RepoImpls;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import parsso.idman.Models.Ticket;
 import parsso.idman.Repos.TicketRepo;
 
 import java.util.List;
 
+@Service
 public class TicketRepoImpl implements TicketRepo {
 
     @Autowired

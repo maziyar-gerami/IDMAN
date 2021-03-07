@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,12 @@ import javax.naming.directory.BasicAttributes;
 public class BuildAttributes {
 
     final static Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
-
     @Value("${default.user.password}")
     private String defaultPassword;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Autowired
     private LdapTemplate ldapTemplate;
@@ -66,7 +68,7 @@ public class BuildAttributes {
         if (p.getDescription() != null && !(p.getDescription().equals("")))
             attrs.put("description", p.getDescription());
         else
-            attrs.put("description", "");
+            attrs.put("description", " ");
 
         if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
@@ -92,8 +94,8 @@ public class BuildAttributes {
         if (p.getLastName() != "" && p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
         if (p.getDisplayName() != "" && p.getDisplayName() != null)
             context.setAttributeValue("displayName", p.getDisplayName());
-        if (p.getUserPassword() != null && p.getUserPassword() != "")
-            context.setAttributeValue("userPassword", p.getUserPassword());
+        //if (p.getUserPassword() != null && p.getUserPassword() != "")
+            //context.setAttributeValue("userPassword", p.getUserPassword());
         if (p.getMobile() != "" && p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
         if (p.getEmployeeNumber() != null && p.getEmployeeNumber() != "") context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
         if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
@@ -153,6 +155,8 @@ public class BuildAttributes {
         if (p.getEmployeeNumber() != "" && old.getEmployeeNumber() != null)
             context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
 
+        if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null)
+            mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
 
         return context;
     }

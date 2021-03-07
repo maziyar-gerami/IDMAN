@@ -84,7 +84,12 @@ document.addEventListener('DOMContentLoaded', function () {
             endOfAllUsersList: true,
             loader: false,
             loader1: false,
+            loader2: false,
             isListEmpty: false,
+            activeItem: "listTab",
+            duplicateUsersList: "",
+            usersAddedSuccess: false,
+            usersAddedError: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -130,9 +135,19 @@ document.addEventListener('DOMContentLoaded', function () {
             s43: "لیست اعضای گروه",
             s44: "حذف از گروه",
             s45: "گروهی یافت نشد",
+            s46: "لیست گروه ها",
+            s47: "افزودن کاربران با فایل",
+            s48: "فایل نمونه csv",
+            s49: "فایل نمونه xls",
+            s50: "فایل نمونه xlsx",
+            s51: "انتخاب گروه",
+            s52: "انتخاب فایل",
+            s53: "از لیست ارسال شده کاربران زیر در پایگاه داده وجود نداشتند، و باقی کاربران با موفقیت به گروه افزوده شدند.",
+            s54: "کاربران با موفقیت به گروه افزوده شدند.",
+            s55: " (برای نام انگلیسی گروه تنها حروف انگلیسی و اعداد مجاز می باشد)",
             U0: "رمز عبور",
             U1: "گروه ها",
-            U2: "نام",
+            U2: "نام انگلیسی",
             U3: "نام فارسی",
             U4: "نام خانوادگی (به انگلیسی)",
             U5: "نام کامل (به فارسی)",
@@ -163,6 +178,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         methods: {
+            isActive (menuItem) {
+                return this.activeItem === menuItem
+            },
+            setActive (menuItem) {
+                this.activeItem = menuItem
+            },
             allSelected () {
                 if(this.allIsSelected){
                     this.allIsSelected = false;
@@ -254,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.showS = "display:none"
                 this.addS = "display:none"
                 this.editS = ""
-                this.editingGroupID = id;
+                //this.editingGroupID = id;
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 axios.get(url + "/api/groups/" + id) //
@@ -416,16 +437,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById("selectAllCheckbox").click();
                 }
             },
-            getAllUsersListC: function (){
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                this.loader1 = true;
-                axios.get(url + "/api/users/") // + vm.allUsersListPage + "/" + vm.allUsersShownOnPage
-                    .then((res) => {
-                        vm.allUsersSearchC = res.data;
-                        vm.loader1 = false;
-                    });
-            },
             getAllUsersList: function (id){
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
@@ -496,6 +507,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
+            getAllUsersListC: function (){
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                this.loader1 = true;
+                axios.get(url + "/api/users/") // + vm.allUsersListPage + "/" + vm.allUsersShownOnPage
+                    .then((res) => {
+                        vm.allUsersSearchC = res.data;
+                        vm.loader1 = false;
+                    });
+            },
             addUserToGroupC: function (user){
                 let index = this.groupsRemovedUsersListC.indexOf(user.userId);
                 if (index > -1) {
@@ -538,45 +559,54 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
-            loadAllUsersList: function (flag){
-                /*var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                if(flag){
-                    this.numberOfLoadAllUsers = this.numberOfLoadAllUsers + 1;
-                }
-                let i = 0;
-                while(i < 10){
-                    this.allUsersListPage = this.allUsersListPage + 1;
-                    axios.get(url + "/api/users/" + vm.allUsersListPage + "/" + vm.allUsersShownOnPage) //
-                        .then((res) => {
-                            if(res.data.userList.length == 0){
-                                document.getElementById("loadAllUsersListButton").disabled = true;
-                                vm.endOfAllUsersList = false;
-                            }else{
-                                vm.helperArray = res.data.userList.filter(a => !vm.groupUsersSearch.map(b=>b.userId).includes(a.userId));
-                                console.log(vm.helperArray);
-                                vm.allUsersSearch = vm.allUsersSearch.concat(vm.helperArray);
-                            }
-                            if(vm.allUsersSearch.length >= (vm.allUsersShownOnPage * vm.numberOfLoadAllUsers)){
-                                vm.endOfAllUsersList = false;
-                            }
-                        });
-                    i = i + 1;
-                }*/         
-            },
-            loadGroupUsersList: function (){
-                /*var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                this.groupUsersListPage = this.groupUsersListPage + 1;
-                axios.get(url + "/api/users/group/" + vm.editingGroupID, {
-                    params: { page: vm.groupUsersListPage,  nRec: vm.groupUsersShownOnPage},
+            selectedFile() {
+                let re = /(\.csv|\.xls|\.xlsx)$/i;
+                let fup = document.getElementById('file');
+                let fileName = fup.value;
+                if(!re.exec(fileName)){
+                    alert("از فرمت فایل انتخابی پشتیبانی نمی شود.");
+                    return;
+                }else{
+                    var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                    var vm = this;
+                    var bodyFormData = new FormData();
+                    var file = document.querySelector('#file');
+                    bodyFormData.append("file", file.files[0]);
+                    this.duplicateUsersList = "";
+                    this.loader2 = true;
+                    axios({
+                        method: 'put',
+                        url: url + "/api/users/ou/" + document.getElementById("editingGroupID").value,  //
+                        headers: {'Content-Type': 'multipart/form-data'},
+                        data: bodyFormData,
                     })
                     .then((res) => {
-                        vm.groupUsersSearch = vm.groupUsersSearch.concat(res.data.userList);
-                        if(vm.groupUsersSearch.length >= vm.groupUsersListSize){
-                            document.getElementById("loadGroupUsersListButton").disabled = true;
+                        console.log(res);
+                        if(res.status == 200){
+                            vm.loader2 = false;
+                            vm.usersAddedSuccess = true;
+                            setTimeout(function(){ vm.usersAddedSuccess = false; }, 5000);
+                        }else if(res.status == 206){
+                            for(let i = 0; i < res.data.length - 1; ++i){
+                                vm.duplicateUsersList = vm.duplicateUsersList + res.data[i] + ", ";
+                            }
+                            vm.duplicateUsersList = vm.duplicateUsersList + res.data[res.data.length - 1];
+                            vm.loader2 = false;
+                            vm.usersAddedError = true;
+                            setTimeout(function(){ vm.usersAddedError = false; }, 15000);
                         }
-                    });*/
+                    });
+                }
+            },
+            groupNameValidate ($event) {
+                let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+                if (keyCode < 48 || keyCode > 122) {
+                    $event.preventDefault();
+                }else if (keyCode > 57 && keyCode < 65) {
+                    $event.preventDefault();
+                }else if (keyCode > 90 && keyCode < 97) {
+                    $event.preventDefault();
+                }
             },
             changeLang: function () {
                 if(this.lang == "EN"){
@@ -630,9 +660,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s43 = "List of Group Members";
                     this.s44 = "Remove from Group";
                     this.s45 = "No Group Found";
+                    this.s46 = "Groups List";
+                    this.s47 = "Adding Users With File";
+                    this.s48 = "CSV Sample";
+                    this.s49 = "XLS Sample";
+                    this.s50 = "XLSX Sample";
+                    this.s51 = "Select Group";
+                    this.s52 = "Select File";
+                    this.s53 = "The Following Users From The Submitted List Were Not in The Database, The Rest of The Users Were Successfully Added to The Group.";
+                    this.s54 = "The Users Were Successfully Added to The Group.";
+                    this.s55 = " (Only English Letters And Numbers Are Allowed For Group Name)";
                     this.U0= "Password";
                     this.U1= "Groups";
-                    this.U2= "ID";
+                    this.U2= "English Name";
                     this.U3= "Name";
                     this.U4= "Last Name (In English)";
                     this.U5= "FullName (In Persian)";
@@ -696,9 +736,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s43 = "لیست اعضای گروه";
                     this.s44 = "حذف از گروه";
                     this.s45 = "گروهی یافت نشد";
+                    this.s46 = "لیست گروه ها";
+                    this.s47 = "افزودن کاربران با فایل";
+                    this.s48 = "فایل نمونه csv";
+                    this.s49 = "فایل نمونه xls";
+                    this.s50 = "فایل نمونه xlsx";
+                    this.s51 = "انتخاب گروه";
+                    this.s52 = "انتخاب فایل";
+                    this.s53 = "از لیست ارسال شده کاربران زیر در پایگاه داده وجود نداشتند، و باقی کاربران با موفقیت به گروه افزوده شدند.";
+                    this.s54 = "کاربران با موفقیت به گروه افزوده شدند.";
+                    this.s55 = " (برای نام انگلیسی گروه تنها حروف انگلیسی و اعداد مجاز می باشد)";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
-                    this.U2 = "شناسه";
+                    this.U2 = "نام انگلیسی";
                     this.U3 = "نام";
                     this.U4 = "نام خانوادگی (به انگلیسی)";
                     this.U5 = "نام کامل (به فارسی)";

@@ -20,7 +20,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Random;
@@ -146,11 +145,8 @@ public class CaptchaRepoImp implements CAPTCHARepo {
                 else
                     phrase += (char) (rand.nextInt(123 - 97) + 97 - 32);
 
-
-            } else {
+            } else
                 phrase += rand.nextInt(10);
-            }
-
         }
 
         return phrase;
@@ -163,11 +159,17 @@ public class CaptchaRepoImp implements CAPTCHARepo {
 
         Query query = new Query(Criteria.where("_id").is(captcha.getId()));
 
-
         CAPTCHA actualCaptcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
 
         if (actualCaptcha != null) {
-            mongoTemplate.remove(query, collection);
+            Thread thread = new Thread(){
+                public void run(){
+                    mongoTemplate.remove(query, collection);
+                }
+
+            };
+            thread.start();
+
             if (captcha.getPhrase().equalsIgnoreCase(actualCaptcha.getPhrase())) {
 
                 return HttpStatus.OK;

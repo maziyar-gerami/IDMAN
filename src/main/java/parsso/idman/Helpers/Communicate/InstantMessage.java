@@ -80,13 +80,12 @@ public class InstantMessage {
             return 0;
     }
 
-    public int sendMessage(String mobile) {
+    public int sendMessage(User user) {
 
-        if (checkMobile(mobile).size() > 0) {
-            User user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+        if (checkMobile(user.getMobile()).size() > 0) {
             if (tokenClass.insertMobileToken(user)) {
                 try {
-                    String receptor = mobile;
+                    String receptor = user.getMobile();
                     String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
                     KavenegarApi api = new KavenegarApi(SMS_API_KEY);
                     api.verifyLookup(receptor, message, "", "", "mfa");

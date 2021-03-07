@@ -6,6 +6,8 @@ import lombok.SneakyThrows;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator;
 import org.jasig.cas.client.validation.TicketValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -27,16 +29,13 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Configs.CasUserDetailService;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Models.User;
-import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.SystemRefresh;
 import parsso.idman.Repos.UserRepo;
 
 import javax.annotation.Resource;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -58,6 +57,10 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private String ticketValidator;
     @Value("${base.url}")
     private String baseurl;
+
+    @Value("${administrator.ou.id}")
+    private String adminId;
+
     @Value("${max.pwd.lifetime.hours}")
     private static final long maxPwdLifetime=10;
     @Value("${expire.pwd.message.hours}")
@@ -65,6 +68,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Value("${interval.check.pass.hours}")
     private static long intervalCheckPassTime;
 
+    final static Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
 
 
     /**
@@ -74,19 +78,9 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
      */
     public static void main(String[] args) throws IOException, org.json.simple.parser.ParseException {
 
-        String command = "wmic csproduct get UUID";
-        StringBuffer output = new StringBuffer();
-
-        Process SerNumProcess = Runtime.getRuntime().exec(command);
-        BufferedReader sNumReader = new BufferedReader(new InputStreamReader(SerNumProcess.getInputStream()));
-
-        String line = "";
-        while ((line = sNumReader.readLine()) != null) {
-            output.append(line + "\n");
-        }
 
         ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
-        new SystemRefreshRepoImpl();
+        //new SystemRefreshRepoImpl();
 
 
         Runnable runnable = new Runnable() {
@@ -100,14 +94,15 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
             }
         };
 
-//TODO: enable it
-        refresh(context);
+        //refresh(context);
         Thread thread = new Thread(runnable);
         thread.start();
 
     }
 
     private static void refresh(ConfigurableApplicationContext context) throws IOException, org.json.simple.parser.ParseException {
+
+        logger.error("refresh started");
         context.getBean(SystemRefresh.class).all();
     }
 
@@ -193,7 +188,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         /*provider.setUserDetailsService(
                 s -> new User("test@test.com", "Mellon", true, true, true, true,
                         AuthorityUtils.createAuthorityList("ADMIN")));*/
-        CasUserDetailService casUserDetailService = new CasUserDetailService();
+        CasUserDetailService casUserDetailService = new CasUserDetailService(adminId);
         provider.setAuthenticationUserDetailsService(casUserDetailService);
         provider.setKey("CAS_PROVIDER_LOCALHOST_8900");
         return provider;

@@ -26,9 +26,9 @@ public class AuditRepoImpl implements AuditRepo {
 
     @Override
     public ListAudits getListSizeAudits(int p, int n) {
-        List<Audit> allAuditts = analyze(mainCollection, (p - 1) * n, n);
+        List<Audit> allAudits = analyze(mainCollection, (p - 1) * n, n);
         long size = mongoTemplate.getCollection(mainCollection).countDocuments();
-        return new ListAudits(allAuditts, size, (int) Math.ceil(size / n));
+        return new ListAudits(allAudits, size, (int) Math.ceil(size / n));
     }
 
     @Override

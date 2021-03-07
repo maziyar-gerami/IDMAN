@@ -21,7 +21,7 @@ public class Time {
     private int hours;
     private int minutes;
     private int seconds;
-    private int miliseconds;
+    private int milliSeconds;
 
     public Time(Calendar cal) {
         year = cal.get(Calendar.YEAR);
@@ -41,7 +41,7 @@ public class Time {
         this.hours = hours;
         this.minutes = minutes;
         this.seconds = seconds;
-        this.miliseconds = 0;
+        this.milliSeconds = 0;
     }
 
     public Time(int year, int month, int day) {
@@ -62,7 +62,7 @@ public class Time {
         this.hours = myCal.get(Calendar.HOUR_OF_DAY);
         this.minutes = myCal.get(Calendar.MINUTE);
         this.seconds = myCal.get(Calendar.SECOND);
-        this.miliseconds = myCal.get(Calendar.MILLISECOND);
+        this.milliSeconds = myCal.get(Calendar.MILLISECOND);
     }
 
     public static String setEndTime(String input) {
@@ -121,8 +121,7 @@ public class Time {
                         + String.format("%02d", eventDate.getDayOfMonth())
                         + String.format("%02d", eventDate.getHour())
                         + String.format("%02d", eventDate.getMinute());
-                        //+ String.format("%02d", eventDate.getSecond())
-                        //+ String.format("%02d", eventDate.getNano());
+                
             }
 
             else {
@@ -145,33 +144,18 @@ public class Time {
 
     public static String convertDateTimeJalali(String seTime) {
 
-        String year = seTime.substring(0, 4);
-        String month = seTime.substring(5, 7);
-        String day = seTime.substring(8, 10);
+        Time timeObject = stringToTime(seTime);
 
-        String hours = seTime.substring(11, 13);
-        String minutes = seTime.substring(14, 16);
-        String seconds = seTime.substring(17, 19);
 
-        String miliSeconds = seTime.substring(20, 23);
+        String date = convertDateJalaliToGeorgian(Integer.valueOf(timeObject.getYear()), Integer.valueOf(timeObject.getMonth()), Integer.valueOf(timeObject.getDay()));
 
-        String date = convertDateJalaliToGeorgian(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day));
-
-        String time = String.format("%02d", Integer.valueOf(hours)) +
-                String.format("%02d", Integer.valueOf(minutes)) +
-                String.format("%02d", Integer.valueOf(seconds)) + "." +
-                String.format("%03d", Integer.valueOf(miliSeconds));
+        String time = String.format("%02d", Integer.valueOf(timeObject.getYear())) +
+                String.format("%02d", Integer.valueOf(timeObject.getMinutes())) +
+                String.format("%02d", Integer.valueOf(timeObject.getSeconds())) + "." +
+                String.format("%03d", Integer.valueOf(timeObject.getMilliSeconds()));
 
         return date + time;
 
-    }
-
-    public static String convertDateGeorgianToJalali(int Y, int M, int D) {
-
-        DateConverter dateConverter = new DateConverter();
-        dateConverter.gregorianToPersian(Y, M, D);
-
-        return dateConverter.getYear() + String.format("%02d", dateConverter.getMonth()) + String.format("%02d", dateConverter.getDay());
     }
 
     public static String convertDateJalaliToGeorgian(int Y, int M, int D) {
@@ -182,60 +166,25 @@ public class Time {
         return dateConverter.getYear() + String.format("%02d", dateConverter.getMonth()) + String.format("%02d", dateConverter.getDay());
     }
 
-    public static String convertDateFromNumber(String date) {
-        String y = date.substring(0, 4);
-        String M = date.substring(5, 7);
-        String d = date.substring(8, 10);
-
-        String h = "00";
-        String m = "00";
-        String s = "00";
-        String S = "00";
-
-        return y + "-" + M + "-" + d + "T" + h + ":" + m + ":" + s + "." + S;
-    }
 
     public static String convertDateToNumber(String seTime) {
-        String year = seTime.substring(0, 4);
-        String month = seTime.substring(5, 7);
-        String day = seTime.substring(8, 10);
+        Time timeObject = stringToTime(seTime);
 
-        String hours = seTime.substring(11, 13);
-        String minutes = seTime.substring(14, 16);
-        String seconds = seTime.substring(17, 19);
+        String time = String.format("%02d", Integer.valueOf(timeObject.getHours())) +
+                String.format("%02d", Integer.valueOf(timeObject.getMinutes())) +
+                String.format("%02d", Integer.valueOf(timeObject.seconds)) + "." +
+                String.format("%03d", Integer.valueOf(timeObject.getMilliSeconds())) + "+0330";
 
-        String miliSeconds = seTime.substring(20, 23);
-
-
-        String time = String.format("%02d", Integer.valueOf(hours)) +
-                String.format("%02d", Integer.valueOf(minutes)) +
-                String.format("%02d", Integer.valueOf(seconds)) + "." +
-                String.format("%03d", Integer.valueOf(miliSeconds)) + "+0330";
-
-        return year + month + day + time;
+        return timeObject.getYear() + timeObject.getMonth() + timeObject.getDay() + time;
     }
 
-    public static String convertDateTimeGeorgian(String seTime) {
-
-        String year = seTime.substring(0, 4);
-        String month = seTime.substring(5, 7);
-        String day = seTime.substring(8, 10);
-
-        String hours = seTime.substring(11, 13);
-        String minutes = seTime.substring(14, 16);
-        String seconds = seTime.substring(17, 19);
-
-        String miliSeconds = seTime.substring(20, 23);
-
-        String date = convertDateGeorgianToJalali(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day));
-
-        String time = String.format("%02d", Integer.valueOf(hours)) + "-" +
-                String.format("%02d", Integer.valueOf(minutes)) + "-" +
-                String.format("%02d", Integer.valueOf(seconds)) + "." +
-                String.format("%03d", Integer.valueOf(miliSeconds));
-
-        return date.substring(0, 4) + '-' + date.substring(4, 6) + '-' + date.substring(6, 8) + 'T' + time;
-
+    private static Time stringToTime(String seTime){
+        return new Time(Integer.valueOf(seTime.substring(0, 4)),
+                Integer.valueOf(seTime.substring(5, 7)),
+                Integer.valueOf(seTime.substring(8, 10)),
+                Integer.valueOf(seTime.substring(11, 13)),
+                Integer.valueOf(seTime.substring(14, 16)),
+                Integer.valueOf(seTime.substring(17, 19)));
     }
 
     @Override
@@ -247,15 +196,12 @@ public class Time {
 
     public String toString() {
         return getYear() + "-" + getMonth() + "-" + getDay() + "T"
-                + getHours() + ":" + getMinutes() + ":" + getSeconds() + "." + getMiliseconds();
+                + getHours() + ":" + getMinutes() + ":" + getSeconds() + "." + getMilliSeconds();
     }
 
     public String toStringDate() {
 
-
         return String.format(("%4d"), getYear()) + "-" + String.format(("%02d"), getMonth()) + "-" + String.format(("%02d"), getDay());
 
     }
-
-
 }

@@ -13,17 +13,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-import parsso.idman.Captcha.RepoImp.CaptchaRepoImp;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
-import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.Helpers.User.UsersExcelView;
 import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
+import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.Repos.UserRepo;
 
-import javax.naming.SizeLimitExceededException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -38,9 +36,6 @@ public class UserController {
      * The Storage service.
      */
 
-
-    @Value("${api.get.users}")
-    private final static String apiAddress = null;
     // default sequence of variables which can be changed using frontend
     private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
     @Autowired
@@ -57,11 +52,6 @@ public class UserController {
     private String adminOu;
     @Value("${token.valid.email}")
     private String tokenValidEmail;
-    @Value("${token.valid.SMS}")
-    private String tokenValidMessage;
-
-    @Autowired
-    private CaptchaRepoImp captchaRepoImp;
 
 
     //*************************************** User Section ***************************************
@@ -99,7 +89,6 @@ public class UserController {
             Principal principal = request.getUserPrincipal();
             User user = userRepo.retrieveUsers(principal.getName());
             List<String> memberOf = user.getMemberOf();
-
 
             if (user.getUserId().equals("su"))
                 return 0;
@@ -147,12 +136,14 @@ public class UserController {
      */
     @PutMapping("/api/user/password")
     public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
-                                                     @RequestBody JSONObject jsonObject) throws SizeLimitExceededException {
+                                                     @RequestBody JSONObject jsonObject) {
         Principal principal = request.getUserPrincipal();
+        String oldPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");
         if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
-        return new ResponseEntity<>(userRepo.changePassword(principal.getName(), newPassword, token));
+
+        return new ResponseEntity<>(userRepo.changePassword(principal.getName(),oldPassword, newPassword, token));
 
     }
 
@@ -225,15 +216,6 @@ public class UserController {
             return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
 
-    /*@GetMapping("/api/users/group/{gid}/{page}/{n}")
-    public ResponseEntity<ListUsers> retrieveUsersOfGroups(@PathVariable("page") int page, @PathVariable("n") int n,
-                                                       @RequestParam(name = "{gid}") String gtoupId){
-        if (userRepo.retrieveUsersMain().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else
-            return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
-    }*/
-
-
     /**
      * Retrieve all users with all attributes
      *
@@ -269,7 +251,15 @@ public class UserController {
      */
     @PutMapping("/api/users/u/{uId}")
     public ResponseEntity<String> rebindLdapUser(@PathVariable("uId") String uid, @RequestBody User user) {
+
+        if (user.getUserId()==null) {
+            String pass = user.getUserPassword();
+            user = userRepo.retrieveUsers(uid);
+            user.setUserPassword(pass);
+        }
+
         return new ResponseEntity<>(userRepo.update(uid, user));
+
     }
 
     /**
@@ -369,8 +359,16 @@ public class UserController {
         return new ModelAndView(excelView, "listUsers", null);
     }
 
-
-
+    @PutMapping("/api/users/ou/{ou}")
+    public ResponseEntity<List<String>> addGroups(@RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException {
+        List<String> notExist = userRepo.addGroupToUsers(file, ou);
+        if (notExist==null)
+            return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (notExist.size()==0)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(notExist, HttpStatus.PARTIAL_CONTENT);
+    }
 
     //*************************************** Public Controllers ***************************************
 
@@ -518,8 +516,6 @@ public class UserController {
         HttpStatus httpStatus = tokenClass.checkToken(uId, token);
 
         if (httpStatus == HttpStatus.OK) {
-            attributes.addAttribute("uid", uId);
-            attributes.addAttribute("token", token);
 
             return new RedirectView("/resetPassword");
         }
@@ -537,7 +533,5 @@ public class UserController {
     public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));
     }
-
-
 
 }
