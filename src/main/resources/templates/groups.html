@@ -129,133 +129,227 @@
                                         <div class="ml-0 mr-0">
                                             <h3 class="pb-2">{{U1}}</h3>
                                         </div>
-                                    
-                                        <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
-                                            <div class="col-2 pl-1 pr-1">
-                                                <button class="w-100 btn btn-success btn-sm" v-on:click="addGroupS()">
-                                                    <span class="fa-stack">
-                                                        <i class="fa fa-plus fa-stack-1x"></i>
-                                                    </span>
-                                                    {{U12}}
-                                                </button>
-                                            </div>
-                                            <div class="col-2 pl-1 pr-1">
-                                                <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
-                                                    <span class="fa-stack">
-                                                        <i class="fa fa-trash fa-stack-1x"></i>
-                                                    </span>
-                                                    {{U17}}
-                                                </button>
-                                            </div>
-                                            <div class="col-8"></div>
-                                        </div>
 
-                                        <div class="mobileView">
-                                            <div class="row mb-1 mt-1 pl-1 pr-1">
-                                                <button class="w-100 btn btn-success btn-sm" v-on:click="addGroupS()">
-                                                    <span class="fa-stack">
-                                                        <i class="fa fa-plus fa-stack-1x"></i>
-                                                    </span>
-                                                    {{U12}}
-                                                </button>
+                                        <ul class="nav nav-tabs nav-justified">
+                                            <li class="nav-item">
+                                                <a class="nav-link" @click.prevent="setActive('listTab')" :class="{ active: isActive('listTab') }" href="#listTab">{{s46}}</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" @click.prevent="setActive('fileTab')" :class="{ active: isActive('fileTab') }" href="#fileTab">{{s47}}</a>
+                                            </li>
+                                        </ul>
+
+                                        <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
+                                            <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('listTab') }" id="listTab">
+                                                    <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
+                                                            <div class="col-2 pl-1 pr-1">
+                                                                <button class="w-100 btn btn-success btn-sm" v-on:click="addGroupS()">
+                                                                    <span class="fa-stack">
+                                                                        <i class="fa fa-plus fa-stack-1x"></i>
+                                                                    </span>
+                                                                    {{U12}}
+                                                                </button>
+                                                            </div>
+                                                            <div class="col-2 pl-1 pr-1">
+                                                                <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
+                                                                    <span class="fa-stack">
+                                                                        <i class="fa fa-trash fa-stack-1x"></i>
+                                                                    </span>
+                                                                    {{U17}}
+                                                                </button>
+                                                            </div>
+                                                            <div class="col-8"></div>
+                                                    </div>
+                
+                                                    <div class="mobileView">
+                                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                                <button class="w-100 btn btn-success btn-sm" v-on:click="addGroupS()">
+                                                                    <span class="fa-stack">
+                                                                        <i class="fa fa-plus fa-stack-1x"></i>
+                                                                    </span>
+                                                                    {{U12}}
+                                                                </button>
+                                                            </div>
+                                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                                <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
+                                                                    <span class="fa-stack">
+                                                                        <i class="fa fa-trash fa-stack-1x"></i>
+                                                                    </span>
+                                                                    {{U17}}
+                                                                </button>
+                                                            </div>
+                                                    </div>
+
+                                                    <div class="p-2" style="direction: rtl;">
+                                                        <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                                        :labels="paginationAnchorTexts"></v-pagination>
+                                                    </div>
+                                                    <div style="overflow: auto;">
+                                                            <div class="table-wrapper">
+                                                                <div v-if="isListEmpty" class="emptyList">
+                                                                    <div>
+                                                                        <i class="fa fa-signing fa-2x"></i>
+                                                                    </div> 
+                                                                    <div>
+                                                                        <span>{{s45}}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div v-else>
+                                                                    <table class="tableList table table-responsive p-2">
+                                                                        <tr>
+                                                                            <th style="border: none;">
+                                                                                <label class="checkboxclass">
+                                                                                    <input id="selectAllCheckbox" type="checkbox">
+                                                                                    <span v-on:click="allSelected()" class="checkmark"></span>
+                                                                                </label>
+                                                                            </th>
+                                                                            <th style="border: none;">#</th>
+                                                                            <th style="border: none;">{{U2}}</th>
+                                                                            <th style="border: none;">{{U3}}</th>
+                                                                        </tr>
+                                                                        <tbody id="body">
+                                                                                <tr v-for="group in sortedGroups" v-bind:key="group.id" :id="'row-' + group.id">
+                                                                                    <td>
+                                                                                        <label class="checkboxclass">
+                                                                                            <input :id="'checkbox-' + group.id" type="checkbox">
+                                                                                            <span v-on:click="rowSelected(group.id)" class="checkmark"></span>
+                                                                                        </label>                                                                      
+                                                                                    </td>
+                                                                                    <td>{{group.orderOfRecords}}</td>
+                                                                                    <td>{{group.id}}</td>
+                                                                                    <td>{{group.name}}</td>
+                                                                                    <td>
+                                                                                        <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editGroupS(group.id)">
+                                                                                            <span class="fa-passwd-reset fa-stack">
+                                                                                                    <i class="fa fa-pencil-square-o fa-stack-2x"></i>
+                                                                                            </span>
+                                                                                        </button>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-sm" v-on:click="deleteGroup(group.id)">
+                                                                                            <span class="fa-passwd-reset fa-stack">
+                                                                                                <i class="fa fa-trash fa-stack-2x"></i>
+                                                                                            </span>
+                                                                                        </button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                    </div>
+                                                    <div class="p-2" style="direction: rtl;">
+                                                        <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                                        :labels="paginationAnchorTexts"></v-pagination>
+                                                    </div>
+                                                    <div class="row mt-3" style="text-align: center;">
+                                                            <div class="col-8"></div>
+                                                            <div class="col-2 pr-0 pl-0">
+                                                                <label>{{s36}}</label>
+                                                            </div>
+                                                            <div class="col-2 pr-2 pl-3">
+                                                                <select class="form-control" v-on:change="changeRecords($event)">
+                                                                    <option value="20" selected>20</option>
+                                                                    <option value="50">50</option>
+                                                                    <option value="100">100</option>
+                                                                    <option value="300">300</option>
+                                                                    <option value="500">500</option>
+                                                                </select>
+                                                            </div>
+                                                    </div>
                                             </div>
-                                            <div class="row mb-1 mt-1 pl-1 pr-1">
-                                                <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
-                                                    <span class="fa-stack">
-                                                        <i class="fa fa-trash fa-stack-1x"></i>
-                                                    </span>
-                                                    {{U17}}
-                                                </button>
+                                            <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('fileTab') }" id="fileTab">
+                                                <div class="row pb-3 mt-3 mb-3 ml-0 mr-0">
+                                                    <div class="col-4 pl-1 pr-1">
+                                                        <div class="pl-1 pr-1">
+                                                            <form method="GET" action="template/csv.csv">
+                                                                <button type="submit" class="w-100 btn btn-primary btn-sm">
+                                                                    <span class="fa-stack">
+                                                                        <i class="fa fa-info fa-stack-1x"></i>
+                                                                    </span>
+                                                                    {{s48}}
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4 pl-1 pr-1">
+                                                        <div class="pl-1 pr-1">
+                                                            <form method="GET" action="template/xls.xls">
+                                                                <button type="submit" class="w-100 btn btn-primary btn-sm">
+                                                                    <span class="fa-stack">
+                                                                        <i class="fa fa-info fa-stack-1x"></i>
+                                                                    </span>
+                                                                    {{s49}}
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4 pl-1 pr-1">
+                                                        <div class="pl-1 pr-1">
+                                                            <form method="GET" action="template/xlsx.xlsx">
+                                                                <button type="submit" class="w-100 btn btn-primary btn-sm">
+                                                                    <span class="fa-stack">
+                                                                        <i class="fa fa-info fa-stack-1x"></i>
+                                                                    </span>
+                                                                    {{s50}}
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row pb-3 mt-3 mb-3 ml-0 mr-0 border-bottom">
+                                                    <div class="col-7 pl-1 pr-1">
+                                                        <select id="editingGroupID" name="type" class="w-100 form-control" style="padding-right: 5px; padding-left: 5px;">
+                                                            <option value="none" selected disabled>{{s51}}</option>
+                                                            <option v-for="group in groups" v-bind:id="group" :value="group.id">{{group.name}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-5 pl-1 pr-1">
+                                                        <div class="pl-1 pr-1">
+                                                            <form id="myForm" method="PUT" enctype="multipart/form-data">
+                                                                <input type="file" accept=".xlsx, .xls, .csv" ref="file" @change="selectedFile"
+                                                                class="d-none" name="file" id="file">
+                                                            </form>
+                                                            <button class="w-100 btn btn-success btn-sm" onclick="document.getElementById('file').click()">
+                                                                <span class="fa-stack">
+                                                                    <i class="fa fa-download fa-stack-1x"></i>
+                                                                </span>
+                                                                {{s52}}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+    
+                                                <div v-if="loader2" class="text-center">
+                                                    <roller-loader color="#007bff"/>
+                                                </div>
+                
+                                                <div v-if="usersAddedError">
+                                                    <div class="rounded" style="background-color:rgba(234, 236, 68, 0.637); padding: 1%;">
+                                                            {{s53}}
+                                                        <br>
+                                                        <div class="enInput">
+                                                            {{duplicateUsersList}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div v-if="usersAddedSuccess">
+                                                    <p class="rounded" style="background-color:rgba(80, 233, 80, 0.637); padding: 1%;">
+                                                        {{s54}}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
-                                        <div v-bind:style="showS">
-                                            <div class="p-2" style="direction: rtl;">
-                                                <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
-                                                :labels="paginationAnchorTexts"></v-pagination>
-                                            </div>
-                                            <div style="overflow: auto;">
-                                                <div class="table-wrapper">
-                                                    <div v-if="isListEmpty" class="emptyList">
-                                                        <div>
-                                                            <i class="fa fa-signing fa-2x"></i>
-                                                        </div> 
-                                                        <div>
-                                                            <span>{{s45}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div v-else>
-                                                        <table class="tableList table table-responsive p-2">
-                                                            <tr>
-                                                                <th style="border: none;">
-                                                                    <label class="checkboxclass">
-                                                                        <input id="selectAllCheckbox" type="checkbox">
-                                                                        <span v-on:click="allSelected()" class="checkmark"></span>
-                                                                    </label>
-                                                                </th>
-                                                                <th style="border: none;">#</th>
-                                                                <th style="border: none;">{{U2}}</th>
-                                                                <th style="border: none;">{{U3}}</th>
-                                                            </tr>
-                                                            <tbody id="body">
-                                                                    <tr v-for="group in sortedGroups" v-bind:key="group.id" :id="'row-' + group.id">
-                                                                        <td>
-                                                                            <label class="checkboxclass">
-                                                                                <input :id="'checkbox-' + group.id" type="checkbox">
-                                                                                <span v-on:click="rowSelected(group.id)" class="checkmark"></span>
-                                                                            </label>                                                                      
-                                                                        </td>
-                                                                        <td>{{group.orderOfRecords}}</td>
-                                                                        <td>{{group.id}}</td>
-                                                                        <td>{{group.name}}</td>
-                                                                        <td>
-                                                                            <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editGroupS(group.id)">
-                                                                                <span class="fa-passwd-reset fa-stack">
-                                                                                        <i class="fa fa-pencil-square-o fa-stack-2x"></i>
-                                                                                </span>
-                                                                            </button>
-                                                                        </td>
-                                                                        <td>
-                                                                            <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-sm" v-on:click="deleteGroup(group.id)">
-                                                                                <span class="fa-passwd-reset fa-stack">
-                                                                                    <i class="fa fa-trash fa-stack-2x"></i>
-                                                                                </span>
-                                                                            </button>
-                                                                        </td>
-                                                                    </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="p-2" style="direction: rtl;">
-                                                <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
-                                                :labels="paginationAnchorTexts"></v-pagination>
-                                            </div>
-                                            <div class="row mt-3" style="text-align: center;">
-                                                <div class="col-8"></div>
-                                                <div class="col-2 pr-0 pl-0">
-                                                    <label>{{s36}}</label>
-                                                </div>
-                                                <div class="col-2 pr-2 pl-3">
-                                                    <select class="form-control" v-on:change="changeRecords($event)">
-                                                        <option value="20" selected>20</option>
-                                                        <option value="50">50</option>
-                                                        <option value="100">100</option>
-                                                        <option value="300">300</option>
-                                                        <option value="500">500</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
                                         <div class="p-3" v-bind:style="editS">
                                             <h3 class="mb-3 pb-2 border-bottom">{{s30}}</h3>
                                             <div class="form-group">
-                                                <label>{{U2}}<span style="color: red;"> *</span></label>
-                                                <input v-bind:value="group.id" id="group.idUpdate" type="text" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s55}}</small></label>
+                                                <input v-bind:value="group.id" id="group.idUpdate" type="text" @keypress="groupNameValidate" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                             </div>
                                             <div class="form-group">
                                                 <label>{{U3}}<span style="color: red;"> *</span></label>
@@ -268,153 +362,153 @@
                                             </div>
 
                                             <div class="form-group">
-                                                <div class="card mb-3">
-                                                    <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                                                        <div>
-                                                            <span>{{s39}}</span>
-                                                        </div> 
-                                                        <div class="d-flex">
-                                                            <div style="width: 250px;">
-                                                                <div class="input-group input-group-sm">
-                                                                    <input type="text" :placeholder="s40" class="form-control" v-model="allUsersListSearchQuery">
+                                                        <div class="card mb-3">
+                                                            <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <span>{{s39}}</span>
+                                                                </div> 
+                                                                <div class="d-flex">
+                                                                    <div style="width: 250px;">
+                                                                        <div class="input-group input-group-sm">
+                                                                            <input type="text" :placeholder="s40" class="form-control" v-model="allUsersListSearchQuery">
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="frame-wrapper">
-                                                        <div class="list-group list-group-flush">
-                                                            <div v-if="loader" class="text-center">
-                                                                <br><br>
-                                                                <roller-loader color="#007bff"/>
-                                                            </div>
-                                                            <div v-else>
-                                                                <div v-if="allUsersListResultQuery.length > 0" class="list-group-item">
-                                                                    <div class="row align-items-start">
-                                                                        <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in allUsersListResultQuery" >
-                                                                            <div>
-                                                                                <label>{{user.userId}}</label>
-                                                                                <div class="text-muted text-ellipsis">
-                                                                                    <small>{{user.displayName}}</small>
+                                                            <div class="frame-wrapper">
+                                                                <div class="list-group list-group-flush">
+                                                                    <div v-if="loader" class="text-center">
+                                                                        <br><br>
+                                                                        <roller-loader color="#007bff"/>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <div v-if="allUsersListResultQuery.length > 0" class="list-group-item">
+                                                                            <div class="row align-items-start">
+                                                                                <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in allUsersListResultQuery" >
+                                                                                    <div>
+                                                                                        <label>{{user.userId}}</label>
+                                                                                        <div class="text-muted text-ellipsis">
+                                                                                            <small>{{user.displayName}}</small>
+                                                                                        </div>
+                                                                                        <div class="row">
+                                                                                            <div class="col-12">
+                                                                                                <button @click="addUserToGroup(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s41">
+                                                                                                    <i class="fa fa-plus" style="color: green;"></i>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
-                                                                                <div class="row">
-                                                                                    <div class="col-12">
-                                                                                        <button @click="addUserToGroup(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s41">
-                                                                                            <i class="fa fa-plus" style="color: green;"></i>
-                                                                                        </button>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div v-if="allUsersListResultQuery.length == 0 && allUsersListSearchQuery.length != 0" class="list-group-item text-center">
+                                                                            <div>
+                                                                                <i class="fa fa-times fa-2x"></i>
+                                                                            </div> 
+                                                                            <div>
+                                                                                <span>{{s42}}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div v-if="allUsersListResultQuery.length == 0 && allUsersListSearchQuery.length == 0" class="list-group-item text-center">
+                                                                            <div class="row align-items-start">
+                                                                                <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in allUsersSearch" >
+                                                                                    <div>
+                                                                                        <label>{{user.userId}}</label>
+                                                                                        <div class="text-muted text-ellipsis">
+                                                                                            <small>{{user.displayName}}</small>
+                                                                                        </div>
+                                                                                        <div class="row">
+                                                                                            <div class="col-12">
+                                                                                                <button @click="addUserToGroup(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s41">
+                                                                                                    <i class="fa fa-plus" style="color: green;"></i>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div v-if="allUsersListResultQuery.length == 0 && allUsersListSearchQuery.length != 0" class="list-group-item text-center">
-                                                                    <div>
-                                                                        <i class="fa fa-times fa-2x"></i>
-                                                                    </div> 
-                                                                    <div>
-                                                                        <span>{{s42}}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div v-if="allUsersListResultQuery.length == 0 && allUsersListSearchQuery.length == 0" class="list-group-item text-center">
-                                                                    <div class="row align-items-start">
-                                                                        <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in allUsersSearch" >
-                                                                            <div>
-                                                                                <label>{{user.userId}}</label>
-                                                                                <div class="text-muted text-ellipsis">
-                                                                                    <small>{{user.displayName}}</small>
-                                                                                </div>
-                                                                                <div class="row">
-                                                                                    <div class="col-12">
-                                                                                        <button @click="addUserToGroup(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s41">
-                                                                                            <i class="fa fa-plus" style="color: green;"></i>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
                                                             </div>
+                                                            <!-- <div style="padding-bottom: 0;" class="card-header bg-light py-2 d-flex align-items-center justify-content-center">
+                                                                <button id="loadAllUsersListButton" v-on:click="loadAllUsersList(true)" class="btn btn-success">بارگذاری موارد بیشتر</button>
+                                                            </div> -->
                                                         </div>
-                                                    </div>
-                                                    <!-- <div style="padding-bottom: 0;" class="card-header bg-light py-2 d-flex align-items-center justify-content-center">
-                                                        <button id="loadAllUsersListButton" v-on:click="loadAllUsersList(true)" class="btn btn-success">بارگذاری موارد بیشتر</button>
-                                                    </div> -->
-                                                </div>
 
-                                                <div class="card mb-3">
-                                                    <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                                                        <div>
-                                                            <span>{{s43}}</span>
-                                                        </div> 
-                                                        <div class="d-flex">
-                                                            <div style="width: 250px;">
-                                                                <div class="input-group input-group-sm">
-                                                                    <input type="text" :placeholder="s40" class="form-control" v-model="groupUsersListSearchQuery"> 
+                                                        <div class="card mb-3">
+                                                            <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <span>{{s43}}</span>
+                                                                </div> 
+                                                                <div class="d-flex">
+                                                                    <div style="width: 250px;">
+                                                                        <div class="input-group input-group-sm">
+                                                                            <input type="text" :placeholder="s40" class="form-control" v-model="groupUsersListSearchQuery"> 
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="frame-wrapper">
-                                                        <div class="list-group list-group-flush">
-                                                            <div v-if="loader" class="text-center">
-                                                                <br><br>
-                                                                <roller-loader color="#007bff"/>
-                                                            </div>
-                                                            <div v-else>
-                                                                <div v-if="groupUsersListResultQuery.length > 0" class="list-group-item">
-                                                                    <div class="row align-items-start">
-                                                                        <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in groupUsersListResultQuery" >
-                                                                            <div>
-                                                                                <label>{{user.userId}}</label>
-                                                                                <div class="text-muted text-ellipsis">
-                                                                                    <small>{{user.displayName}}</small>
+                                                            <div class="frame-wrapper">
+                                                                <div class="list-group list-group-flush">
+                                                                    <div v-if="loader" class="text-center">
+                                                                        <br><br>
+                                                                        <roller-loader color="#007bff"/>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <div v-if="groupUsersListResultQuery.length > 0" class="list-group-item">
+                                                                            <div class="row align-items-start">
+                                                                                <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in groupUsersListResultQuery" >
+                                                                                    <div>
+                                                                                        <label>{{user.userId}}</label>
+                                                                                        <div class="text-muted text-ellipsis">
+                                                                                            <small>{{user.displayName}}</small>
+                                                                                        </div>
+                                                                                        <div class="row">
+                                                                                            <div class="col-12">
+                                                                                                <button @click="removeUserFromGroup(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s44">
+                                                                                                    <i class="fa fa-minus" style="color: red;"></i>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
-                                                                                <div class="row">
-                                                                                    <div class="col-12">
-                                                                                        <button @click="removeUserFromGroup(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s44">
-                                                                                            <i class="fa fa-minus" style="color: red;"></i>
-                                                                                        </button>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div v-if="groupUsersListResultQuery.length == 0 && groupUsersListSearchQuery.length != 0" class="list-group-item text-center">
+                                                                            <div>
+                                                                                <i class="fa fa-times fa-2x"></i>
+                                                                            </div> 
+                                                                            <div>
+                                                                                <span>{{s42}}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div v-if="groupUsersListResultQuery.length == 0 && groupUsersListSearchQuery.length == 0" class="list-group-item text-center">
+                                                                            <div class="row align-items-start">
+                                                                                <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in groupUsersSearch" >
+                                                                                    <div>
+                                                                                        <label>{{user.userId}}</label>
+                                                                                        <div class="text-muted text-ellipsis">
+                                                                                            <small>{{user.displayName}}</small>
+                                                                                        </div>
+                                                                                        <div class="row">
+                                                                                            <div class="col-12">
+                                                                                                <button @click="removeUserFromGroup(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s44">
+                                                                                                    <i class="fa fa-minus" style="color: red;"></i>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div v-if="groupUsersListResultQuery.length == 0 && groupUsersListSearchQuery.length != 0" class="list-group-item text-center">
-                                                                    <div>
-                                                                        <i class="fa fa-times fa-2x"></i>
-                                                                    </div> 
-                                                                    <div>
-                                                                        <span>{{s42}}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div v-if="groupUsersListResultQuery.length == 0 && groupUsersListSearchQuery.length == 0" class="list-group-item text-center">
-                                                                    <div class="row align-items-start">
-                                                                        <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in groupUsersSearch" >
-                                                                            <div>
-                                                                                <label>{{user.userId}}</label>
-                                                                                <div class="text-muted text-ellipsis">
-                                                                                    <small>{{user.displayName}}</small>
-                                                                                </div>
-                                                                                <div class="row">
-                                                                                    <div class="col-12">
-                                                                                        <button @click="removeUserFromGroup(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s44">
-                                                                                            <i class="fa fa-minus" style="color: red;"></i>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
                                                             </div>
+                                                            <!-- <div style="padding-bottom: 0;" class="card-header bg-light py-2 d-flex align-items-center justify-content-center">
+                                                                <button id="loadGroupUsersListButton" v-on:click="loadGroupUsersList()" class="btn btn-success">بارگذاری موارد بیشتر</button>
+                                                            </div> -->
                                                         </div>
-                                                    </div>
-                                                    <!-- <div style="padding-bottom: 0;" class="card-header bg-light py-2 d-flex align-items-center justify-content-center">
-                                                        <button id="loadGroupUsersListButton" v-on:click="loadGroupUsersList()" class="btn btn-success">بارگذاری موارد بیشتر</button>
-                                                    </div> -->
-                                                </div>
                                             </div>
 
                                             <button v-on:click="showGroups()" class="btn btn-danger">{{s17}}</button>
@@ -423,8 +517,8 @@
                                         <div class="p-3" v-bind:style="addS">
                                             <h3 class="mb-3 pb-2 border-bottom">{{s29}}</h3>
                                             <div class="form-group">
-                                                <label>{{U2}}<span style="color: red;"> *</span></label>
-                                                <input id="group.idCreate" type="text" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s55}}</small></label>
+                                                <input id="group.idCreate" type="text" @keypress="groupNameValidate" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                             </div>
                                             <div class="form-group">
                                                 <label>{{U3}}<span style="color: red;"> *</span></label>

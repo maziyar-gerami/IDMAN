@@ -110,12 +110,13 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.3.4.RELEASE'
 
-	// https://mvnrepository.com/artifact/commons-configuration/commons-configuration
-	compile group: 'commons-configuration', name: 'commons-configuration', version: '1.10'
+	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.0'
 
-	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.12.1'
+	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.0'
 
-	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.12.1'
+	implementation group: 'org.mongodb', name: 'mongo-java-driver', version: '3.12.8'
+
+
 
 }
 

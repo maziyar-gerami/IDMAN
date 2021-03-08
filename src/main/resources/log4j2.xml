@@ -1,7 +1,7 @@
 <Configuration status="trace" packages="dev.termian.tabula.gazella">
     <Appenders>
         <Console name="Console">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS}|%-5level|%t|%msg%n"/>
+            <PatternLayout pattern="%d{HH:mm:ss}|%-5level|%t|%msg%n"/>
         </Console>
         <NoSql name="Mongo4">
             <MongoDb4 capped="true" collectionSize="104857600"
