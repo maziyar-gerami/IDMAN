@@ -49,7 +49,7 @@ public class DashboardData {
         Thread userData = new Thread(() -> {
             //________users data____________
             List<SimpleUser> usersList = userRepo.retrieveUsersMain();
-            int nUsers = usersList.size();
+            int nUsers = userRepo.retrieveUsersSize();
             int nActive = 0;
             int nLocked = 0;
             int nDisabled = 0;
