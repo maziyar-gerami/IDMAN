@@ -534,6 +534,14 @@ public class UserRepoImpl implements UserRepo {
         List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("objectclass").is("person"),
                 new SimpleUserAttributeMapper());
 
+        List <SimpleUser> relativeUsers =new LinkedList<>();
+
+        for (SimpleUser simpleUser: people)
+            if (!simpleUser.getUserId().equalsIgnoreCase("su")&&!simpleUser.getUserId().equalsIgnoreCase("admin"))
+                relativeUsers.add(simpleUser);
+
+
+
         //SimpleUser su = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is("su"),
                 //new SimpleUserAttributeMapper()).get(0);
 

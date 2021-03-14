@@ -12,7 +12,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.management.relation.Role;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -46,8 +45,7 @@ public class User implements UserDetails, Comparable {
     private String userPassword;
     @JsonIgnore
     private String photo;
-    @JsonIgnore
-    private Role role;
+    private String role;
     private String employeeNumber;
     @JsonProperty
     private String status;
@@ -153,5 +151,9 @@ public class User implements UserDetails, Comparable {
         else
             return 0;
     }
+
+
 }
+
+
 

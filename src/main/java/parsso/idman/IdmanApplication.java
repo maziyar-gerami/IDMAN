@@ -68,7 +68,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Value("${interval.check.pass.hours}")
     private static long intervalCheckPassTime;
 
-    final static Logger logger = LogManager.getLogger(IdmanApplication.class);
+    private static final Logger LOGGER = LogManager.getLogger(IdmanApplication.class.getName());
 
 
     /**
@@ -94,7 +94,9 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
             }
         };
 
-        logger.error("g");
+        LOGGER.debug("Debug Message Logged !!!");
+        LOGGER.info("Info Message Logged !!!");
+        LOGGER.error("Error Message Logged !!!");
         //refresh(context);
         Thread thread = new Thread(runnable);
         thread.start();
@@ -103,7 +105,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
     private static void refresh(ConfigurableApplicationContext context) throws IOException, org.json.simple.parser.ParseException {
 
-        logger.error("refresh started");
+        //logger.error("refresh started");
         context.getBean(SystemRefresh.class).all();
     }
 

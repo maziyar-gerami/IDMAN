@@ -63,7 +63,7 @@ public class DashboardData {
                     nLocked++;
             }
             userJson.put("total", nUsers);
-            userJson.put("active", nActive);
+            userJson.put("active", nActive-2);
             userJson.put("disabled", nDisabled);
             userJson.put("locked", nLocked);
 

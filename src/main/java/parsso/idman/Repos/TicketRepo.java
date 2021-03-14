@@ -10,14 +10,19 @@ import java.util.List;
 @Service
 public interface TicketRepo {
 
-    Ticket retrieveTicket(long ticketID);
+    Ticket retrieveTicket(String ticketID);
 
-    List<Ticket> retrieveTickets(String userId);
+    List<Ticket> retrieveTicketsReceived(String userId);
 
-    HttpStatus deleteTicket(long ticketID);
+    List<Ticket> retrieveChat(String chatID);
+
+    List<Ticket> retrieveTicketsSend(String userId);
+
+    HttpStatus deleteTicket(String ticketID);
+
+    HttpStatus deleteChat(String chatID);
 
     HttpStatus sendTicket(Ticket ticket);
 
-    HttpStatus updateTicket(long ticketId, Ticket ticket);
-
+    HttpStatus updateTicket(String ticketId, Ticket ticket);
 }
