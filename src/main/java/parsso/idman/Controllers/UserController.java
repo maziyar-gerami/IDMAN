@@ -534,4 +534,5 @@ public class UserController {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));
     }
 
+
 }

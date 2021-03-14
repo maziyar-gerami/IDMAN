@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
             username: "",
             name: "",
             nameEN: "",
-            menuSA: false,
             group: [],
             groups: [],
             groupsPage: [],
@@ -111,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s19: "ایمیل",
             s20: "داشبورد",
             s21: "./groups",
-            s22: "./settings",
+            s22: "./profile",
             s23: "آیا از اعمال این تغییرات اطمینان دارید؟",
             s24: "آیا از حذف این گروه اطمینان دارید؟",
             s25: "آیا از حذف تمامی گروه ها اطمینان دارید؟",
@@ -170,7 +169,6 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.getUserInfo();
-            this.isAdmin();
             this.getUserPic();
             this.getGroups();
             if(typeof this.$route.query.en !== 'undefined'){
@@ -218,16 +216,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
                     vm.s1 = vm.name;
                 });
-            },
-            isAdmin: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                axios.get(url + "/api/user/isAdmin") //
-                  .then((res) => {
-                    if(res.data == "0"){
-                      vm.menuSA = true;
-                    }
-                  });
             },
             getUserPic: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -636,7 +624,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s19 = "Email";
                     this.s20 = "Dashboard";
                     this.s21 = "./groups?en";
-                    this.s22 = "./settings?en";
+                    this.s22 = "./profile?en";
                     this.s23 = "Are You Sure You Want To Edit?";
                     this.s24 = "Are You Sure You Want To Delete?";
                     this.s25 = "Are You Sure You Want To Delete All Groups?";
@@ -712,7 +700,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s19 = "ایمیل";
                     this.s20 = "داشبورد";
                     this.s21 = "./groups";
-                    this.s22 = "./settings";
+                    this.s22 = "./profile";
                     this.s23 = "آیا از اعمال این تغییرات اطمینان دارید؟";
                     this.s24 = "آیا از حذف این گروه اطمینان دارید؟";
                     this.s25 = "آیا از حذف تمامی گروه ها اطمینان دارید؟";

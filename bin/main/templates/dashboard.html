@@ -85,17 +85,17 @@
                                         <i class="fa fa-dashboard"></i>
                                         <span>{{s3}}</span>
                                     </a>
-                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s15">
                                         <i class="fa fa-server"></i>
                                         <span>{{s4}}</span>
                                     </a>
-                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s16">
                                         <i class="fa fa-user"></i>
                                         <span>{{s13}}</span>
                                     </a>
-                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s21">
                                         <i class="fa fa-users"></i>
                                         <span>{{s5}}</span>
@@ -115,7 +115,7 @@
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a v-if="menuSA" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s25">
                                         <i class="fa fa-cog"></i>
                                         <span>{{s24}}</span>
@@ -128,7 +128,7 @@
                         <div class="card">
                             <div class="card-body" style="background-color: #f8f9fa!important;">
                                 <h3 class="border-bottom pb-3 mb-3"><span>{{s3}}</span></h3>
-                                <div v-if="menuS" class="container mb-3">
+                                <div sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="container mb-3">
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <vc-donut v-bind="ActiveUsersChart">

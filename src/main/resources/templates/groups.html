@@ -81,17 +81,17 @@
                                         <i class="fa fa-dashboard"></i>
                                         <span>{{s20}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s15">
                                         <i class="fa fa-server"></i>
                                         <span>{{s4}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s16">
                                         <i class="fa fa-user"></i>
                                         <span>{{s13}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s21">
                                         <i class="fa fa-users"></i>
@@ -112,7 +112,7 @@
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a v-if="menuSA" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s28">
                                         <i class="fa fa-cog"></i>
                                         <span>{{s27}}</span>
@@ -242,20 +242,20 @@
                                                         <v-pagination  v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
                                                         :labels="paginationAnchorTexts"></v-pagination>
                                                     </div>
-                                                    <div class="row mt-3" style="text-align: center;">
-                                                            <div class="col-8"></div>
-                                                            <div class="col-2 pr-0 pl-0">
-                                                                <label>{{s36}}</label>
-                                                            </div>
-                                                            <div class="col-2 pr-2 pl-3">
-                                                                <select class="form-control" v-on:change="changeRecords($event)">
-                                                                    <option value="20" selected>20</option>
-                                                                    <option value="50">50</option>
-                                                                    <option value="100">100</option>
-                                                                    <option value="300">300</option>
-                                                                    <option value="500">500</option>
-                                                                </select>
-                                                            </div>
+                                                    <div class="row mt-3">
+                                                        <div class="col-8"></div>
+                                                        <div class="col-2 pr-0 pl-0 d-flex align-items-center justify-content-center">
+                                                            <label style="display: contents;">{{s36}}</label>
+                                                        </div>
+                                                        <div class="col-2 pr-2 pl-3">
+                                                            <select class="form-control" v-on:change="changeRecords($event)">
+                                                                <option value="20" selected>20</option>
+                                                                <option value="50">50</option>
+                                                                <option value="100">100</option>
+                                                                <option value="300">300</option>
+                                                                <option value="500">500</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
                                             </div>
                                             <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('fileTab') }" id="fileTab">

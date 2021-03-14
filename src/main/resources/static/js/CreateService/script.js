@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
       username: "",
       name: "",
       nameEN: "",
-      menuSA: false,
       groups: [],
       users:[],
       searchQuery: "",
@@ -102,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s36: "شناسه سرویس",
       s37: "./users",
       s38: "./groups",
-      s39: "./settings",
+      s39: "./profile",
       s40: "./privacy",
       s41: "پیکربندی",
       s42: "./configs",
@@ -150,7 +149,6 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     created: function () {
       this.getUserInfo();
-      this.isAdmin();
       this.getUserPic();
       this.getGroups();
       this.getUsersList();
@@ -164,16 +162,6 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       setActive (menuItem) {
         this.activeItem = menuItem
-      },
-      isAdmin: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        axios.get(url + "/api/user/isAdmin") //
-          .then((res) => {
-            if(res.data == "0"){
-              vm.menuSA = true;
-            }
-          });
       },
       selectMetaDataAddress: function () {
         this.metaDataAddress = true;
@@ -828,7 +816,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s36 = "ServiceID";
           this.s37 = "./users?en";
           this.s38 = "./groups?en";
-          this.s39 = "./settings?en";
+          this.s39 = "./profile?en";
           this.s40 = "./privacy?en";
           this.s41 = "Configs";
           this.s42 = "./configs?en";
@@ -916,7 +904,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s36 = "شناسه سرویس";
             this.s37 = "./users";
             this.s38 = "./groups";
-            this.s39 = "./settings";
+            this.s39 = "./profile";
             this.s40 = "./privacy";
             this.s41 = "پیکربندی";
             this.s42 = "./configs";

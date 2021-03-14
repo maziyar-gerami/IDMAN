@@ -33,8 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
       activeItem: "services",
       groups: [],
       services: [],
-      menuS: false,
-      menuSA: false,
       userPicture: "images/PlaceholderUser.png",
       ActiveUsersChart: {
         size: 80,
@@ -95,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s19: "توضیحات",
       s20: "اتصال",
       s21: "./groups",
-      s22: "./settings",
+      s22: "./profile",
       s23: "./privacy",
       s24: "پیکربندی",
       s25: "./configs",
@@ -106,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     created: function () {
       this.getUserInfo();
-      this.isAdmin();
       this.getDashboardInfo();
       this.getServices();
       this.getUserPic();
@@ -121,19 +118,6 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       setActive (menuItem) {
         this.activeItem = menuItem
-      },
-      isAdmin: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        axios.get(url + "/api/user/isAdmin") //
-          .then((res) => {
-            if(res.data == "0"){
-              vm.menuS = true;
-              vm.menuSA = true;
-            }else if(res.data == "1"){
-                vm.menuS = true;
-            }
-          });
       },
       getDashboardInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -254,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s19 = "Description";
           this.s20 = "Connect";
           this.s21 = "./groups?en";
-          this.s22 = "./settings?en";
+          this.s22 = "./profile?en";
           this.s23 = "./privacy?en";
           this.s24 = "Configs";
           this.s25 = "./configs?en";
@@ -296,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s19 = "توضیحات";
             this.s20 = "اتصال";
             this.s21 = "./groups";
-            this.s22 = "./settings";
+            this.s22 = "./profile";
             this.s23 = "./privacy";
             this.s24 = "پیکربندی";
             this.s25 = "./configs";

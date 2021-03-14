@@ -28,11 +28,12 @@
 <script type="text/javascript">
     $(document).ready(function() {
       $(".datePickerFa").pDatepicker({
+        inline: false,
         format: "LLLL",
         viewMode: "day",
         initialValue: false,
         initialValueType: "persian",
-        autoClose: false,
+        autoClose: true,
         position: "auto",
         altFormat: "lll",
         altField: ".alt-field",
@@ -179,18 +180,18 @@
                                         <i class="fa fa-dashboard"></i>
                                         <span>{{s3}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s34">
                                         <i class="fa fa-server"></i>
                                         <span>{{s4}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s37">
                                         <i class="fa fa-user"></i>
                                         <span>{{s13}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s38">
                                         <i class="fa fa-users"></i>
                                         <span>{{s5}}</span>
@@ -210,7 +211,7 @@
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a v-if="menuSA" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s42">
                                         <i class="fa fa-cog"></i>
                                         <span>{{s41}}</span>

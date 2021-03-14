@@ -249,6 +249,14 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
+    public int retrieveUsersSize() {
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        return (int)mongoTemplate.count(new Query(),collection);
+    }
+
+    @Override
     public HttpStatus update(String usid, User p) {
         Name dn = buildDn.buildDn(p.getUserId());
 
@@ -523,16 +531,20 @@ public class UserRepoImpl implements UserRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("objectClass").is("person"),
+        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("objectclass").is("person"),
                 new SimpleUserAttributeMapper());
-        List relatedUsers = new LinkedList();
-        for (SimpleUser user : people) {
-            if (user.getDisplayName() != null && !user.getUserId().equals("su") && !user.getDisplayName().equals("Directory Superuser")) {
-                relatedUsers.add(user);
-            }
-        }
-        Collections.sort(relatedUsers);
-        return relatedUsers;
+
+        //SimpleUser su = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is("su"),
+                //new SimpleUserAttributeMapper()).get(0);
+
+        //SimpleUser du = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is("admin"),
+                //new SimpleUserAttributeMapper()).get(0);
+
+        //people.remove(su);
+        //people.remove(du);
+
+        Collections.sort(people);
+        return people;
     }
 
     @Override

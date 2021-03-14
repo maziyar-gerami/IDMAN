@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
             username: "",
             name: "",
             nameEN: "",
-            menuSA: false,
             changePageUsers: false,
             users: [],
             usersPage: [],
@@ -151,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s19: "ایمیل",
             s20: "داشبورد",
             s21: "./groups",
-            s22: "./settings",
+            s22: "./profile",
             s23: "فایلی انتخاب نشده است.",
             s24: "از فرمت فایل انتخابی پشتیبانی نمی شود.",
             s25: "سایز فایل انتخابی بیش از 100M می باشد.",
@@ -243,7 +242,6 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.getUserInfo();
-            this.isAdmin();
             this.getUserPic();
             this.getUsers();
             this.getGroups();
@@ -413,16 +411,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
                         vm.s1 = vm.name;
                     });
-            },
-            isAdmin: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                axios.get(url + "/api/user/isAdmin") //
-                  .then((res) => {
-                    if(res.data == "0"){
-                      vm.menuSA = true;
-                    }
-                  });
             },
             getUserPic: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -1303,7 +1291,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s19 = "Email";
                     this.s20 = "Dashboard";
                     this.s21 = "./groups?en";
-                    this.s22 = "./settings?en";
+                    this.s22 = "./profile?en";
                     this.s23 = "No File Chosen.";
                     this.s24 = "File extension not supported!";
                     this.s25 = "File too big (> 100MB)";
@@ -1427,7 +1415,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s19 = "ایمیل";
                     this.s20 = "داشبورد";
                     this.s21 = "./groups";
-                    this.s22 = "./settings";
+                    this.s22 = "./profile";
                     this.s23 = "فایلی انتخاب نشده است.";
                     this.s24 = "از فرمت فایل انتخابی پشتیبانی نمی شود.";
                     this.s25 = "سایز فایل انتخابی بیش از 100M می باشد.";

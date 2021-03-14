@@ -134,3 +134,26 @@ img:hover {
     display: block;
   }
 }
+
+.icon {
+  position: absolute;
+  top: 25%;
+  z-index: 11;
+  cursor: pointer;
+  color: red
+}
+
+.icon-input {
+  padding-right: 2rem;
+  padding-left: 2rem;
+}
+
+.emptyList{
+  color: #856404;
+  background-color: #ffeeba;
+  text-align: center !important;
+  border-top-left-radius: .25rem;
+  border-top-right-radius: .25rem;
+  padding: .75rem 1.25rem;
+  border: 1px solid rgba(0,0,0,.125);
+}

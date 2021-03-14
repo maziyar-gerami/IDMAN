@@ -7,7 +7,7 @@
     <title>پارسو</title>
 
     <link href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="css/Settings/style.css" rel="stylesheet">
+    <link href="css/Profile/style.css" rel="stylesheet">
     <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="fonts/IranSans/font.css" rel="stylesheet">
 
@@ -18,7 +18,7 @@
     <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
-    <script src="js/Settings/script.js"></script>
+    <script src="js/Profile/script.js"></script>
     <script src="js/persian-rex.min.js"></script>
 
 </head>
@@ -80,17 +80,17 @@
                                         <i class="fa fa-dashboard"></i>
                                         <span>{{s20}}</span>
                                     </a>
-                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s15">
                                         <i class="fa fa-server"></i>
                                         <span>{{s4}}</span>
                                     </a>
-                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s16">
                                         <i class="fa fa-user"></i>
                                         <span>{{s13}}</span>
                                     </a>
-                                    <a v-if="menuS" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s22">
                                         <i class="fa fa-users"></i>
                                         <span>{{s5}}</span>
@@ -111,7 +111,7 @@
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a v-if="menuSA" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s28">
                                         <i class="fa fa-cog"></i>
                                         <span>{{s27}}</span>

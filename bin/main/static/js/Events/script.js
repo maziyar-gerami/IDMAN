@@ -41,15 +41,11 @@ document.addEventListener('DOMContentLoaded', function () {
       events: [],
       eventPage: [],
       eventsPage: [],
-      menuS: false,
-      menuSA: false,
       changePageEvent: false,
       changePageEvents: false,
       userPicture: "images/PlaceholderUser.png",
       eventDate: "",
       eventsDate: "",
-      tempEventDate: "",
-      tempEventsDate: "",
       eventsUserId: "",
       bootstrapPaginationClasses: {
         ul: 'pagination',
@@ -65,6 +61,10 @@ document.addEventListener('DOMContentLoaded', function () {
           last: '>>'
       },
       loader: false,
+      deleteInputIcon: "left: 7%;",
+      deleteInputIcon1: "left: 10%;",
+      isListEmpty: false,
+      isListEmpty1: false,
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -87,18 +87,18 @@ document.addEventListener('DOMContentLoaded', function () {
       s19: "توضیحات",
       s20: "اتصال",
       s21: "./groups",
-      s22: "./settings",
+      s22: "./profile",
       s23: "./privacy",
       s24: "پیکربندی",
       s25: "./configs",
-      s26: "تاریخ: ",
+      s26: "تاریخ",
       s27: "جستجو",
       s28: "نوع رویداد",
       s29: "برنامه",
       s30: "زمان",
       s31: "رویداد های من",
       s32: "رویداد های کاربران",
-      s33: "شناسه: ",
+      s33: "شناسه",
       s34: " مثال: admin ",
       s35: " مثال: 1399/05/01 ",
       s36: "./events",
@@ -112,10 +112,10 @@ document.addEventListener('DOMContentLoaded', function () {
       s44: "تعداد رکورد ها: ",
       s45: "ممیزی ها",
       s46: "/audits",
+      s47: "رکوردی یافت نشد",
     },
     created: function () {
       this.getUserInfo();
-      this.isAdmin();
       this.getUserPic();
       this.getEvent();
       this.getEvents();
@@ -137,19 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
       changeRecordsEvents: function(event) {
         this.recordsShownOnPageEvents = event.target.value;
         this.getEventsDate();
-      },
-      isAdmin: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        axios.get(url + "/api/user/isAdmin") //
-          .then((res) => {
-            if(res.data == "0"){
-              vm.menuS = true;
-              vm.menuSA = true;
-            }else if(res.data == "1"){
-                vm.menuS = true;
-            }
-          });
       },
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -204,17 +191,93 @@ document.addEventListener('DOMContentLoaded', function () {
             vm.loader = false;
           });
       },
+      faMonthtoNumMonth: function (faMonth) {
+        let numMonth = "";
+        switch(faMonth) {
+          case "فروردین":
+            numMonth = "01";
+            break;
+          case "اردیبهشت":
+            numMonth = "02";
+            break;
+          case "خرداد":
+            numMonth = "03";
+            break;
+          case "تیر":
+            numMonth = "04";
+            break;
+          case "مرداد":
+            numMonth = "05";
+            break;
+          case "شهریور":
+            numMonth = "06";
+            break;
+          case "مهر":
+            numMonth = "07";
+            break;
+          case "آبان":
+            numMonth = "08";
+            break;
+          case "آذر":
+            numMonth = "09";
+            break;
+          case "دی":
+            numMonth = "10";
+            break;
+          case "بهمن":
+            numMonth = "11";
+            break;
+          case "اسفند":
+            numMonth = "12";
+            break;
+          default:
+            console.log("Wrong Input for Month");
+        }
+        return numMonth;
+      },
+      faNumToEnNum: function (str) {
+        let s = str.split("");
+        let sEn = "";
+        for(i = 0; i < s.length; ++i){
+          if(s[i] == '۰'){
+            sEn = sEn + '0';
+          }else if(s[i] == '۱'){
+            sEn = sEn + '1';
+          }else if(s[i] == '۲'){
+            sEn = sEn + '2';
+          }else if(s[i] == '۳'){
+            sEn = sEn + '3';
+          }else if(s[i] == '۴'){
+            sEn = sEn + '4';
+          }else if(s[i] == '۵'){
+            sEn = sEn + '5';
+          }else if(s[i] == '۶'){
+            sEn = sEn + '6';
+          }else if(s[i] == '۷'){
+            sEn = sEn + '7';
+          }else if(s[i] == '۸'){
+            sEn = sEn + '8';
+          }else if(s[i] == '۹'){
+            sEn = sEn + '9';
+          }
+        }
+        return sEn;
+      },
       getEvents: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty1 = false;
         if(!this.changePageEvents){
           this.currentPageEvents = 1;
         }
         
-        var tempEvent = {};
+        let tempEvent = {};
         this.events = [];
         axios.get(url + "/api/events/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents)
         .then((res) => {
+          if(res.data.eventList.length == 0){
+            vm.isListEmpty1 = true;
+          }
           vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
           res.data.eventList.forEach(function (item) {
             tempEvent = {};
@@ -286,14 +349,18 @@ document.addEventListener('DOMContentLoaded', function () {
       getEvent: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty = false;
         if(!this.changePageEvent){
           this.currentPageEvent = 1;
         }
         
-        var tempEvent = {};
+        let tempEvent = {};
         this.event = [];
         axios.get(url + "/api/events/user/" + vm.currentPageEvent + "/" + vm.recordsShownOnPage) //
         .then((res) => {
+          if(res.data.eventList.length == 0){
+            vm.isListEmpty = true;
+          }
           vm.totalEvent = Math.ceil(res.data.size / vm.recordsShownOnPage);
           res.data.eventList.forEach(function (item) {
             tempEvent = {};
@@ -364,29 +431,24 @@ document.addEventListener('DOMContentLoaded', function () {
       getEventDate: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty = false;
         if(!this.changePageEvent){
           this.currentPageEvent = 1;
         }
         
-        if(this.tempEventDate == ""){
+        this.eventDate = document.getElementById("eventDate").value;
+        if(this.eventDate == ""){
           this.getEvent();
         }else{
-          if((this.tempEventDate.match(/\//g) || []).length == 2){
-            var tempEvent = {};
-            this.event = [];
-            var date = this.tempEventDate.split('/');
-            if(date[0].length != 4){
-              date[0] = "13" + date[0];
-            }
-            if(date[1].length != 2){
-              date[1] = "0" + date[1];
-            }
-            if(date[2].length != 2){
-              date[2] = "0" + date[2];
-            }
-            this.eventDate = date[2] + date[1] + date[0];
-            axios.get(url + "/api/events/user/date/" + vm.eventDate + "/" + vm.currentPageEvent + "/" + vm.recordsShownOnPage) //
+          let tempArray = this.eventDate.split(" ");
+          this.eventDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+          let tempEvent = {};
+          this.event = [];
+          axios.get(url + "/api/events/user/date/" + vm.eventDate + "/" + vm.currentPageEvent + "/" + vm.recordsShownOnPage) //
             .then((res) => {
+              if(res.data.eventList.length == 0){
+                vm.isListEmpty = true;
+              }
               vm.totalEvent = Math.ceil(res.data.size / vm.recordsShownOnPage);
               res.data.eventList.forEach(function (item) {
                 tempEvent = {};
@@ -452,26 +514,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 vm.event.push(tempEvent);
               });
             });
-          }else{
-            console.log("Date Format is Wrong!");
-          }
         }
         this.changePageEvent = false;
       },
       getEventsUserId: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty1 = false;
         if(!this.changePageEvents){
           this.currentPageEvents = 1;
         }
         
-        if(this.tempEventsDate == "" && this.eventsUserId == ""){
+        this.eventsDate = document.getElementById("eventsDate").value;
+        if(this.eventsDate == "" && this.eventsUserId == ""){
           this.getEvents();
-        }else if(this.tempEventsDate == "" && this.eventsUserId != ""){
-          var tempEvent = {};
+        }else if(this.eventsDate == "" && this.eventsUserId != ""){
+          let tempEvent = {};
           this.events = [];
           axios.get(url + "/api/events/users/" + vm.eventsUserId + "/" + + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
           .then((res) => {
+            if(res.data.eventList.length == 0){
+              vm.isListEmpty1 = true;
+            }
             vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
             res.data.eventList.forEach(function (item) {
               tempEvent = {};
@@ -538,9 +602,9 @@ document.addEventListener('DOMContentLoaded', function () {
               vm.events.push(tempEvent);
             });
           });
-        }else if(this.tempEventsDate != "" && this.eventsUserId == ""){
+        }else if(this.eventsDate != "" && this.eventsUserId == ""){
           this.getEventsDate();
-        }else if(this.tempEventsDate != "" && this.eventsUserId != ""){
+        }else if(this.eventsDate != "" && this.eventsUserId != ""){
           this.getEventsUserIdDate();
         }
         this.changePageEvents = false;
@@ -548,31 +612,26 @@ document.addEventListener('DOMContentLoaded', function () {
       getEventsDate: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty1 = false;
         if(!this.changePageEvents){
           this.currentPageEvents = 1;
         }
         
-        if(this.tempEventsDate == "" && this.eventsUserId == ""){
+        this.eventsDate = document.getElementById("eventsDate").value;
+        if(this.eventsDate == "" && this.eventsUserId == ""){
           this.getEvents();
-        }else if(this.tempEventsDate == "" && this.eventsUserId != ""){
+        }else if(this.eventsDate == "" && this.eventsUserId != ""){
           this.getEventsUserId();
-        }else if(this.tempEventsDate != "" && this.eventsUserId == ""){
-          if((this.tempEventsDate.match(/\//g) || []).length == 2){
-            var tempEvent = {};
-            this.events = [];
-            var date = this.tempEventsDate.split('/');
-            if(date[0].length != 4){
-              date[0] = "13" + date[0];
-            }
-            if(date[1].length != 2){
-              date[1] = "0" + date[1];
-            }
-            if(date[2].length != 2){
-              date[2] = "0" + date[2];
-            }
-            this.eventsDate = date[2] + date[1] + date[0];
-            axios.get(url + "/api/events/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
+        }else if(this.eventsDate != "" && this.eventsUserId == ""){
+          let tempArray = this.eventsDate.split(" ");
+          this.eventsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+          let tempEvent = {};
+          this.events = [];
+          axios.get(url + "/api/events/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
             .then((res) => {
+              if(res.data.eventList.length == 0){
+                vm.isListEmpty1 = true;
+              }
               vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
               res.data.eventList.forEach(function (item) {
                 tempEvent = {};
@@ -639,10 +698,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 vm.events.push(tempEvent);
               });
             });
-          }else{
-            console.log("Date Format is Wrong!");
-          }
-        }else if(this.tempEventsDate != "" && this.eventsUserId != ""){
+        }else if(this.eventsDate != "" && this.eventsUserId != ""){
           this.getEventsUserIdDate();
         }
         this.changePageEvents = false;
@@ -650,26 +706,21 @@ document.addEventListener('DOMContentLoaded', function () {
       getEventsUserIdDate: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty1 = false;
         if(!this.changePageEvents){
           this.currentPageEvents = 1;
         }
         
-        if((this.tempEventsDate.match(/\//g) || []).length == 2){
-            var tempEvent = {};
-            this.events = [];
-            var date = this.tempEventsDate.split('/');
-            if(date[0].length != 4){
-              date[0] = "13" + date[0];
-            }
-            if(date[1].length != 2){
-              date[1] = "0" + date[1];
-            }
-            if(date[2].length != 2){
-              date[2] = "0" + date[2];
-            }
-            this.eventsDate = date[2] + date[1] + date[0];
-            axios.get(url + "/api/events/users/" + vm.eventsUserId + "/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
+        this.eventsDate = document.getElementById("eventsDate").value;
+        let tempArray = this.eventsDate.split(" ");
+        this.eventsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+        let tempEvent = {};
+        this.events = [];
+        axios.get(url + "/api/events/users/" + vm.eventsUserId + "/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
             .then((res) => {
+              if(res.data.eventList.length == 0){
+                vm.isListEmpty1 = true;
+              }
               vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
               res.data.eventList.forEach(function (item) {
                 tempEvent = {};
@@ -736,10 +787,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 vm.events.push(tempEvent);
               });
             });
-          }else{
-            console.log("Date Format is Wrong!");
-          }
         this.changePageEvents = false;
+      },
+      removeEventDate: function () {
+        document.getElementById("eventDate").value = "";
+        this.getEventDate();
+      },
+      removeEventsUserId: function () {
+        this.eventsUserId = "";
+        this.getEventsDate();
+      },
+      removeEventsDate: function () {
+        document.getElementById("eventsDate").value = "";
+        this.getEventsDate();
       },
       changeLang: function () {
         if(this.lang == "EN"){
@@ -748,6 +808,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
           this.isRtl = false;
+          this.deleteInputIcon = "right: 7%;";
+          this.deleteInputIcon1 = "right: 10%;";
           this.s0 = "Parsso";
           this.s1 = this.nameEN;
           this.s2 = "Exit";
@@ -770,18 +832,18 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s19 = "Description";
           this.s20 = "Connect";
           this.s21 = "./groups?en";
-          this.s22 = "./settings?en";
+          this.s22 = "./profile?en";
           this.s23 = "./privacy?en";
           this.s24 = "Configs";
           this.s25 = "./configs?en";
-          this.s26 = "Date: ";
+          this.s26 = "Date";
           this.s27 = "Search";
           this.s28 = "Event Type";
           this.s29 = "Application";
           this.s30 = "Time";
           this.s31 = "My Events";
           this.s32 = "Users Events";
-          this.s33 = "UserId: ";
+          this.s33 = "UserId";
           this.s34 = "Example: admin";
           this.s35 = "Example: 1399/05/01";
           this.s36 = "./events?en";
@@ -795,12 +857,15 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s44 = "Records a Page: ";
           this.s45 = "Audits";
           this.s46 = "/audits?en";
+          this.s47 = "No Records Found";
         } else{
             this.getEvents();
             this.getEvent();
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
             this.isRtl = true;
+            this.deleteInputIcon = "left: 7%;";
+            this.deleteInputIcon1 = "left: 10%;";
             this.s0 = "پارسو";
             this.s1 = this.name;
             this.s2 = "خروج";
@@ -823,18 +888,18 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s19 = "توضیحات";
             this.s20 = "اتصال";
             this.s21 = "./groups";
-            this.s22 = "./settings";
+            this.s22 = "./profile";
             this.s23 = "./privacy";
             this.s24 = "پیکربندی";
             this.s25 = "./configs";
-            this.s26 = "تاریخ: ";
+            this.s26 = "تاریخ";
             this.s27 = "جستجو";
             this.s28 = "نوع رویداد";
             this.s29 = "برنامه";
             this.s30 = "زمان";
             this.s31 = "رویداد های من";
             this.s32 = "رویداد های کاربران";
-            this.s33 = "شناسه: ";
+            this.s33 = "شناسه";
             this.s34 = "مثال: admin";
             this.s35 = " مثال: 1399/05/01";
             this.s36 = "./events";
@@ -848,6 +913,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s44 = "تعداد رکورد ها: ";
             this.s45 = "ممیزی ها";
             this.s46 = "/audits";
+            this.s47 = "رکوردی یافت نشد";
         }
       },
       div: function (a, b) {

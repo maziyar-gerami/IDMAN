@@ -54,8 +54,6 @@ document.addEventListener('DOMContentLoaded', function () {
             margin: "margin-right: 30px;",
             lang: "EN",
             isRtl: true,
-            menuS: false,
-            menuSA: false,
             activeItem: "info",
             eye: "right: 1%;",
             userPicture: "images/PlaceholderUser.png",
@@ -87,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s20: "داشبورد",
             s21: "رمز عبور های وارد شده یکسان نمی باشند",
             s22: "./groups",
-            s23: "./settings",
+            s23: "./profile",
             s24: "آیا از اعمال این تغییرات اطمینان دارید؟",
             s25: "./privacy",
             s26: "رمز عبور فعلی",
@@ -131,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function () {
         created: function () {
             this.getUserInfo();
             this.getUserPic();
-            this.isAdmin();
             if(typeof this.$route.query.en !== 'undefined'){
                 this.changeLang();
             }
@@ -146,19 +143,6 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             backDashboard: function () {
                 window.location.href = this.s40;
-            },
-            isAdmin: function () {
-            var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-            var vm = this;
-            axios.get(url + "/api/user/isAdmin") //
-                .then((res) => {
-                    if(res.data == "0"){
-                        vm.menuS = true;
-                        vm.menuSA = true;
-                    }else if(res.data == "1"){
-                        vm.menuS = true;
-                    }
-                });
             },
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -223,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 description: document.getElementById('userInfo.descriptionUpdate').value
                             }).replace(/\\\\/g, "\\")
                         }).then((res) => {
-                            location.replace(url + "/settings"); //
+                            location.replace(url + "/profile"); //
                         });
                     }
                 }
@@ -243,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 token: document.getElementById('token').value
                             }).replace(/\\\\/g, "\\")
                         }).then((res) => {
-                            location.replace(url + "/settings"); //
+                            location.replace(url + "/profile"); //
                         }).catch((error) => {
                             if (error.response) {
                                 if(error.response.status === 302){
@@ -338,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s20 = "Dashboard";
                     this.s21 = "Passwords Don't Match";
                     this.s22 = "./groups?en";
-                    this.s23 = "./settings?en";
+                    this.s23 = "./profile?en";
                     this.s24 = "Are You Sure You Want To Edit?";
                     this.s25 = "./privacy?en";
                     this.s26 = "Current Password";
@@ -409,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s20 = "داشبورد";
                     this.s21 = "رمز عبور های وارد شده یکسان نمی باشند";
                     this.s22 = "./groups";
-                    this.s23 = "./settings";
+                    this.s23 = "./profile";
                     this.s24 = "آیا از اعمال این تغییرات اطمینان دارید؟";
                     this.s25 = "./privacy";
                     this.s26 = "رمز عبور فعلی";

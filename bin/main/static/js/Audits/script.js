@@ -41,15 +41,11 @@ document.addEventListener('DOMContentLoaded', function () {
       audits: [],
       auditPage: [],
       auditsPage: [],
-      menuS: false,
-      menuSA: false,
       changePageAudit: false,
       changePageAudits: false,
       userPicture: "images/PlaceholderUser.png",
       auditDate: "",
       auditsDate: "",
-      tempAuditDate: "",
-      tempAuditsDate: "",
       auditsUserId: "",
       auditMore: "",
       bootstrapPaginationClasses: {
@@ -66,6 +62,10 @@ document.addEventListener('DOMContentLoaded', function () {
           last: '>>'
       },
       loader: false,
+      deleteInputIcon: "left: 7%;",
+      deleteInputIcon1: "left: 10%;",
+      isListEmpty: false,
+      isListEmpty1: false,
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -88,18 +88,18 @@ document.addEventListener('DOMContentLoaded', function () {
       s19: "توضیحات",
       s20: "اتصال",
       s21: "./groups",
-      s22: "./settings",
+      s22: "./profile",
       s23: "./privacy",
       s24: "پیکربندی",
       s25: "./configs",
-      s26: "تاریخ: ",
+      s26: "تاریخ",
       s27: "جستجو",
       s28: "عملیات",
       s29: "برنامه",
       s30: "زمان",
       s31: "ممیزی های من",
       s32: "ممیزی های کاربران",
-      s33: "شناسه: ",
+      s33: "شناسه",
       s34: " مثال: admin ",
       s35: " مثال: 1399/05/01 ",
       s36: "./events",
@@ -114,10 +114,10 @@ document.addEventListener('DOMContentLoaded', function () {
       s45: "ممیزی ها",
       s46: "/audits",
       s47: "بازگشت",
+      s48: "رکوردی یافت نشد",
     },
     created: function () {
       this.getUserInfo();
-      this.isAdmin();
       this.getUserPic();
       this.getAudit();
       this.getAudits();
@@ -149,19 +149,6 @@ document.addEventListener('DOMContentLoaded', function () {
       changeRecordsAudits: function(event) {
         this.recordsShownOnPageAudits = event.target.value;
         this.getAuditsDate();
-      },
-      isAdmin: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        axios.get(url + "/api/user/isAdmin") //
-          .then((res) => {
-            if(res.data == "0"){
-              vm.menuS = true;
-              vm.menuSA = true;
-            }else if(res.data == "1"){
-                vm.menuS = true;
-            }
-          });
       },
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -196,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
       },
-      exportAudits: function(){
+      exportAudits: function () {
         url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         vm.loader = true;
@@ -216,17 +203,93 @@ document.addEventListener('DOMContentLoaded', function () {
             vm.loader = false;
           });
       },
+      faMonthtoNumMonth: function (faMonth) {
+        let numMonth = "";
+        switch(faMonth) {
+          case "فروردین":
+            numMonth = "01";
+            break;
+          case "اردیبهشت":
+            numMonth = "02";
+            break;
+          case "خرداد":
+            numMonth = "03";
+            break;
+          case "تیر":
+            numMonth = "04";
+            break;
+          case "مرداد":
+            numMonth = "05";
+            break;
+          case "شهریور":
+            numMonth = "06";
+            break;
+          case "مهر":
+            numMonth = "07";
+            break;
+          case "آبان":
+            numMonth = "08";
+            break;
+          case "آذر":
+            numMonth = "09";
+            break;
+          case "دی":
+            numMonth = "10";
+            break;
+          case "بهمن":
+            numMonth = "11";
+            break;
+          case "اسفند":
+            numMonth = "12";
+            break;
+          default:
+            console.log("Wrong Input for Month");
+        }
+        return numMonth;
+      },
+      faNumToEnNum: function (str) {
+        let s = str.split("");
+        let sEn = "";
+        for(i = 0; i < s.length; ++i){
+          if(s[i] == '۰'){
+            sEn = sEn + '0';
+          }else if(s[i] == '۱'){
+            sEn = sEn + '1';
+          }else if(s[i] == '۲'){
+            sEn = sEn + '2';
+          }else if(s[i] == '۳'){
+            sEn = sEn + '3';
+          }else if(s[i] == '۴'){
+            sEn = sEn + '4';
+          }else if(s[i] == '۵'){
+            sEn = sEn + '5';
+          }else if(s[i] == '۶'){
+            sEn = sEn + '6';
+          }else if(s[i] == '۷'){
+            sEn = sEn + '7';
+          }else if(s[i] == '۸'){
+            sEn = sEn + '8';
+          }else if(s[i] == '۹'){
+            sEn = sEn + '9';
+          }
+        }
+        return sEn;
+      },
       getAudits: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty1 = false;
         if(!this.changePageAudits){
           this.currentPageAudits = 1;
         }
         
-        var tempEvent = {};
+        let tempEvent = {};
         this.audits = [];
         axios.get(url + "/api/audits/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits)
         .then((res) => {
+          if(res.data.auditList.length == 0){
+            vm.isListEmpty1 = true;
+          }
           vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
           res.data.auditList.forEach(function (item) {
             tempEvent = {};
@@ -252,14 +315,18 @@ document.addEventListener('DOMContentLoaded', function () {
       getAudit: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty = false;
         if(!this.changePageAudit){
           this.currentPageAudit = 1;
         }
         
-        var tempEvent = {};
+        let tempEvent = {};
         this.audit = [];
         axios.get(url + "/api/audits/user/" + vm.currentPageAudit + "/" + vm.recordsShownOnPage) //
         .then((res) => {
+          if(res.data.auditList.length == 0){
+            vm.isListEmpty = true;
+          }
           vm.totalAudit = Math.ceil(res.data.size / vm.recordsShownOnPage);
           res.data.auditList.forEach(function (item) {
             tempEvent = {};
@@ -282,66 +349,63 @@ document.addEventListener('DOMContentLoaded', function () {
       getAuditDate: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty = false;
         if(!this.changePageAudit){
           this.currentPageAudit = 1;
         }
-        
-        if(this.tempAuditDate == ""){
+
+        this.auditDate = document.getElementById("auditDate").value;
+        if(this.auditDate == ""){
           this.getAudit();
         }else{
-          if((this.tempAuditDate.match(/\//g) || []).length == 2){
-            var tempEvent = {};
-            this.audit = [];
-            var date = this.tempAuditDate.split('/');
-            if(date[0].length != 4){
-              date[0] = "13" + date[0];
+          let tempArray = this.auditDate.split(" ");
+          this.auditDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+          let tempEvent = {};
+          this.audit = [];
+          axios.get(url + "/api/audits/user/date/" + vm.auditDate + "/" + vm.currentPageAudit + "/" + vm.recordsShownOnPage) //
+          .then((res) => {
+            if(res.data.auditList.length == 0){
+              vm.isListEmpty = true;
             }
-            if(date[1].length != 2){
-              date[1] = "0" + date[1];
-            }
-            if(date[2].length != 2){
-              date[2] = "0" + date[2];
-            }
-            this.auditDate = date[2] + date[1] + date[0];
-            axios.get(url + "/api/audits/user/date/" + vm.auditDate + "/" + vm.currentPageAudit + "/" + vm.recordsShownOnPage) //
-            .then((res) => {
-              vm.totalAudit = Math.ceil(res.data.size / vm.recordsShownOnPage);
-              res.data.auditList.forEach(function (item) {
-                tempEvent = {};
+            vm.totalAudit = Math.ceil(res.data.size / vm.recordsShownOnPage);
+            res.data.auditList.forEach(function (item) {
+              tempEvent = {};
 
-                tempEvent.actionPerformed = item.actionPerformed;
-                tempEvent.principal = item.principal.replace("audit:", "");
-                tempEvent.applicationCode = item.applicationCode;
-                tempEvent.clientIpAddress = item.clientIpAddress;
-                tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
+              tempEvent.actionPerformed = item.actionPerformed;
+              tempEvent.principal = item.principal.replace("audit:", "");
+              tempEvent.applicationCode = item.applicationCode;
+              tempEvent.clientIpAddress = item.clientIpAddress;
+              tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
 
-                let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-                tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
-                tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+              let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
+              tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+              tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
                 
-                vm.audit.push(tempEvent);
-              });
+              vm.audit.push(tempEvent);
             });
-          }else{
-            console.log("Date Format is Wrong!");
-          }
+          });
         }
         this.changePageAudit = false;
       },
       getAuditsUserId: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty1 = false;
         if(!this.changePageAudits){
           this.currentPageAudits = 1;
         }
-        
-        if(this.tempAuditsDate == "" && this.auditsUserId == ""){
+
+        this.auditsDate = document.getElementById("auditsDate").value;
+        if(this.auditsDate == "" && this.auditsUserId == ""){
           this.getAudits();
-        }else if(this.tempAuditsDate == "" && this.auditsUserId != ""){
-          var tempEvent = {};
+        }else if(this.auditsDate == "" && this.auditsUserId != ""){
+          let tempEvent = {};
           this.audits = [];
           axios.get(url + "/api/audits/users/" + vm.auditsUserId + "/" + + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
           .then((res) => {
+            if(res.data.auditList.length == 0){
+              vm.isListEmpty1 = true;
+            }
             vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
             res.data.auditList.forEach(function (item) {
               tempEvent = {};
@@ -360,9 +424,9 @@ document.addEventListener('DOMContentLoaded', function () {
               vm.audits.push(tempEvent);
             });
           });
-        }else if(this.tempAuditsDate != "" && this.auditsUserId == ""){
+        }else if(this.auditsDate != "" && this.auditsUserId == ""){
           this.getAuditsDate();
-        }else if(this.tempAuditsDate != "" && this.auditsUserId != ""){
+        }else if(this.auditsDate != "" && this.auditsUserId != ""){
           this.getAuditsUserIdDate();
         }
         this.changePageAudits = false;
@@ -370,31 +434,26 @@ document.addEventListener('DOMContentLoaded', function () {
       getAuditsDate: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty1 = false;
         if(!this.changePageAudits){
           this.currentPageAudits = 1;
         }
-        
-        if(this.tempAuditsDate == "" && this.auditsUserId == ""){
+
+        this.auditsDate = document.getElementById("auditsDate").value;
+        if(this.auditsDate == "" && this.auditsUserId == ""){
           this.getAudits();
-        }else if(this.tempAuditsDate == "" && this.auditsUserId != ""){
+        }else if(this.auditsDate == "" && this.auditsUserId != ""){
           this.getAuditsUserId();
-        }else if(this.tempAuditsDate != "" && this.auditsUserId == ""){
-          if((this.tempAuditsDate.match(/\//g) || []).length == 2){
-            var tempEvent = {};
-            this.audits = [];
-            var date = this.tempAuditsDate.split('/');
-            if(date[0].length != 4){
-              date[0] = "13" + date[0];
-            }
-            if(date[1].length != 2){
-              date[1] = "0" + date[1];
-            }
-            if(date[2].length != 2){
-              date[2] = "0" + date[2];
-            }
-            this.auditsDate = date[2] + date[1] + date[0];
-            axios.get(url + "/api/audits/date/" + vm.auditsDate + "/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
+        }else if(this.auditsDate != "" && this.auditsUserId == ""){
+          let tempArray = this.auditsDate.split(" ");
+          this.auditsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+          let tempEvent = {};
+          this.audits = [];
+          axios.get(url + "/api/audits/date/" + vm.auditsDate + "/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
             .then((res) => {
+              if(res.data.auditList.length == 0){
+                vm.isListEmpty1 = true;
+              }
               vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
               res.data.auditList.forEach(function (item) {
                 tempEvent = {};
@@ -413,10 +472,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 vm.audits.push(tempEvent);
               });
             });
-          }else{
-            console.log("Date Format is Wrong!");
-          }
-        }else if(this.tempAuditsDate != "" && this.auditsUserId != ""){
+        }else if(this.auditsDate != "" && this.auditsUserId != ""){
           this.getAuditsUserIdDate();
         }
         this.changePageAudits = false;
@@ -424,54 +480,60 @@ document.addEventListener('DOMContentLoaded', function () {
       getAuditsUserIdDate: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
+        this.isListEmpty1 = false;
         if(!this.changePageAudits){
           this.currentPageAudits = 1;
         }
         
-        if((this.tempAuditsDate.match(/\//g) || []).length == 2){
-            var tempEvent = {};
-            this.audits = [];
-            var date = this.tempAuditsDate.split('/');
-            if(date[0].length != 4){
-              date[0] = "13" + date[0];
+        this.auditsDate = document.getElementById("auditsDate").value;
+        let tempArray = this.auditsDate.split(" ");
+        this.auditsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);  
+        let tempEvent = {};
+        this.audits = [];
+        axios.get(url + "/api/audits/users/" + vm.auditsUserId + "/date/" + vm.auditsDate + "/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
+          .then((res) => {
+            if(res.data.auditList.length == 0){
+              vm.isListEmpty1 = true;
             }
-            if(date[1].length != 2){
-              date[1] = "0" + date[1];
-            }
-            if(date[2].length != 2){
-              date[2] = "0" + date[2];
-            }
-            this.auditsDate = date[2] + date[1] + date[0];
-            axios.get(url + "/api/audits/users/" + vm.auditsUserId + "/date/" + vm.auditsDate + "/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
-            .then((res) => {
-              vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
-              res.data.auditList.forEach(function (item) {
-                tempEvent = {};
+            vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
+            res.data.auditList.forEach(function (item) {
+              tempEvent = {};
 
-                tempEvent.actionPerformed = item.actionPerformed;
-                tempEvent.principal = item.principal.replace("audit:", "");
-                tempEvent.applicationCode = item.applicationCode;
-                tempEvent.clientIpAddress = item.clientIpAddress;
-                tempEvent.serverIpAddress = item.serverIpAddress;
-                tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
+              tempEvent.actionPerformed = item.actionPerformed;
+              tempEvent.principal = item.principal.replace("audit:", "");
+              tempEvent.applicationCode = item.applicationCode;
+              tempEvent.clientIpAddress = item.clientIpAddress;
+              tempEvent.serverIpAddress = item.serverIpAddress;
+              tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
 
-                let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-                tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
-                tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+              let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
+              tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+              tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
                 
-                vm.audits.push(tempEvent);
-              });
+              vm.audits.push(tempEvent);
             });
-          }else{
-            console.log("Date Format is Wrong!");
-          }
+          });
         this.changePageAudits = false;
+      },
+      removeAuditDate: function () {
+        document.getElementById("auditDate").value = "";
+        this.getAuditDate();
+      },
+      removeAuditsUserId: function () {
+        this.auditsUserId = "";
+        this.getAuditsDate();
+      },
+      removeAuditsDate: function () {
+        document.getElementById("auditsDate").value = "";
+        this.getAuditsDate();
       },
       changeLang: function () {
         if(this.lang == "EN"){
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
           this.isRtl = false;
+          this.deleteInputIcon = "right: 7%;";
+          this.deleteInputIcon1 = "right: 10%;";
           this.s0 = "Parsso";
           this.s1 = this.nameEN;
           this.s2 = "Exit";
@@ -494,18 +556,18 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s19 = "Description";
           this.s20 = "Connect";
           this.s21 = "./groups?en";
-          this.s22 = "./settings?en";
+          this.s22 = "./profile?en";
           this.s23 = "./privacy?en";
           this.s24 = "Configs";
           this.s25 = "./configs?en";
-          this.s26 = "Date: ";
+          this.s26 = "Date";
           this.s27 = "Search";
           this.s28 = "Action";
           this.s29 = "Application";
           this.s30 = "Time";
           this.s31 = "My Audits";
           this.s32 = "Users Audits";
-          this.s33 = "UserId: ";
+          this.s33 = "UserId";
           this.s34 = "Example: admin";
           this.s35 = "Example: 1399/05/01";
           this.s36 = "./events?en";
@@ -520,10 +582,13 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s45 = "Audits";
           this.s46 = "/audits?en";
           this.s47 = "Go Back";
+          this.s48 = "No Records Found";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
             this.isRtl = true;
+            this.deleteInputIcon = "left: 7%;";
+            this.deleteInputIcon1 = "left: 10%;";
             this.s0 = "پارسو";
             this.s1 = this.name;
             this.s2 = "خروج";
@@ -546,18 +611,18 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s19 = "توضیحات";
             this.s20 = "اتصال";
             this.s21 = "./groups";
-            this.s22 = "./settings";
+            this.s22 = "./profile";
             this.s23 = "./privacy";
             this.s24 = "پیکربندی";
             this.s25 = "./configs";
-            this.s26 = "تاریخ: ";
+            this.s26 = "تاریخ";
             this.s27 = "جستجو";
             this.s28 = "عملیات";
             this.s29 = "برنامه";
             this.s30 = "زمان";
             this.s31 = "ممیزی های من";
             this.s32 = "ممیزی های کاربران";
-            this.s33 = "شناسه: ";
+            this.s33 = "شناسه";
             this.s34 = "مثال: admin";
             this.s35 = " مثال: 1399/05/01";
             this.s36 = "./events";
@@ -572,9 +637,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s45 = "ممیزی ها";
             this.s46 = "/audits";
             this.s47 = "بازگشت";
+            this.s48 = "رکوردی یافت نشد";
         }
       },
-
       div: function (a, b) {
         return parseInt((a / b));
       },
