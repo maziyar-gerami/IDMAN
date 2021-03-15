@@ -76,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-/*
+
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources
@@ -112,41 +112,50 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 
                 //******************ADMIN Objects************************
                 //pages
-                .antMatchers("/createservice").hasAnyRole("ADMIN","SUPERADMIN")
-                .antMatchers("/dashboard").hasAnyRole("ADMIN","SUPERADMIN")
-                .antMatchers("/events").hasAnyRole("ADMIN","SUPERADMIN")
-                .antMatchers("/groups").hasAnyRole("ADMIN","SUPERADMIN")
-                .antMatchers("/privacy").hasAnyRole("ADMIN","SUPERADMIN")
-                .antMatchers("/services").hasAnyRole("ADMIN","SUPERADMIN")
-                .antMatchers("/users").hasAnyRole("ADMIN","SUPERADMIN")
+                .antMatchers("/createservice").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/dashboard").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/events").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/groups").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/privacy").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/services").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/users").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
 
                 //APIs
-                .antMatchers("/api/users/**").hasAnyRole("ADMIN","SUPERADMIN")
-                .antMatchers("/api/groups").hasAnyRole("ADMIN","SUPERADMIN")
-                .antMatchers("/api/services").hasAnyRole("ADMIN","SUPERADMIN")
-                .antMatchers("/api/services").hasAnyRole("ADMIN","SUPERADMIN")
+                .antMatchers("/api/users/**").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/api/groups").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/api/services").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/api/services").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
 
-                .antMatchers("/api/groups/user").hasAnyRole("ADMIN","SUPERADMIN")
-                .antMatchers("/api/groups/**").hasAnyRole("ADMIN","SUPERADMIN")
+                .antMatchers("/api/groups/user").permitAll()
+                .antMatchers("/api/groups/**").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
 
 
                 //******************User Objects************************
                 //pages
-                .antMatchers("/dashboard").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                .antMatchers("/events").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                .antMatchers("/services").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                .antMatchers("/events").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                .antMatchers("/dashboard").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/events").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/services").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/events").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
 
-                .antMatchers("/privacy").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                .antMatchers("/privacy").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
                 //APIs
-                .antMatchers("/api/user/**").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                .antMatchers("/api/events/**").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                .antMatchers("/api/groups/user").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                .antMatchers("/api/services/user").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                //.antMatchers("/api/mobile/profile").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                //.antMatchers("/api/mobile/services").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                //.antMatchers("/api/mobile/events").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                .antMatchers("/api/dashboard").hasAnyRole("USER","ADMIN", "SUPERADMIN")
+                .antMatchers("/api/user/**").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/api/events/**").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/api/groups/user").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/api/services/user").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                //.antMatchers("/api/mobile/profile").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                //.antMatchers("/api/mobile/services").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                //.antMatchers("/api/mobile/events").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/api/dashboard").hasAnyRole("USER","ADMIN" , "SUPPORTER", "SUPERADMIN")
+
+                .antMatchers("/api/roles").hasRole("SUPPORTER")
+                .antMatchers("/roles").hasRole("SUPPORTER")
+
+
+                .antMatchers("/api/refresh**").hasRole("SUPERADMIN")
+
+
+
 
                 //Excepts
                 .antMatchers("/api/mobile/**").permitAll()
@@ -155,7 +164,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //
                 .anyRequest().authenticated()
                 .and()
-*/
+
 
 
                 .formLogin()

@@ -128,9 +128,9 @@ public class DashboardController {
         return "403";
     }
 
-    @GetMapping("/settings")
-    public String Settings() {
-        return "settings";
+    @GetMapping("/profile")
+    public String Profile() {
+        return "profile";
     }
 
     @GetMapping("/errorpage")

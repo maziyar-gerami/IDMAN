@@ -62,7 +62,7 @@ public class DashboardData {
                 else if (user.getStatus().equals("locked"))
                     nLocked++;
             }
-            userJson.put("total", nUsers);
+            userJson.put("total", nUsers-2);
             userJson.put("active", nActive-2);
             userJson.put("disabled", nDisabled);
             userJson.put("locked", nLocked);

@@ -28,7 +28,6 @@ function myFunction() {
         username: "",
         name: "",
         nameEN: "",
-        menuSA: false,
         service: {},
         services: [],
         servicesPage: [],
@@ -140,7 +139,7 @@ function myFunction() {
         s46: "بازگشت",
         s47: "حذف",
         s48: "./groups",
-        s49: "./settings",
+        s49: "./profile",
         s50: "./privacy",
         s51: "پیکربندی",
         s52: "./configs",
@@ -196,7 +195,6 @@ function myFunction() {
       },
       created: function () {
         this.getUserInfo();
-        this.isAdmin();
         this.getUserPic();
         this.refreshServices();
         this.getGroups();
@@ -253,16 +251,6 @@ function myFunction() {
                 vm.name = vm.userInfo.displayName;
                 vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
                 vm.s1 = vm.name;
-            });
-        },
-        isAdmin: function () {
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          var vm = this;
-          axios.get(url + "/api/user/isAdmin") //
-            .then((res) => {
-              if(res.data == "0"){
-                vm.menuSA = true;
-              }
             });
         },
         getUserPic: function () {
@@ -1267,7 +1255,7 @@ function myFunction() {
             this.s46 = "Go Back";
             this.s47 = "Delete";
             this.s48 = "./groups?en";
-            this.s49 = "./settings?en";
+            this.s49 = "./profile?en";
             this.s50 = "./privacy?en";
             this.s51 = "Configs";
             this.s52 = "./configs?en";
@@ -1374,7 +1362,7 @@ function myFunction() {
               this.s46 = "بازگشت";
               this.s47 = "حذف";
               this.s48 = "./groups";
-              this.s49 = "./settings";
+              this.s49 = "./profile";
               this.s50 = "./privacy";
               this.s51 = "پیکربندی";
               this.s52 = "./configs";

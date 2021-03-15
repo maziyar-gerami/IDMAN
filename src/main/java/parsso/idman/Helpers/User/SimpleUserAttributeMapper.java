@@ -22,7 +22,7 @@ public class SimpleUserAttributeMapper implements AttributesMapper<SimpleUser> {
             return  null;
         user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
         user.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
-        user.setPasswordChangedTime(null != attributes.get("pwdChangedTime") ? Long.valueOf(attributes.get("pwdChangedTime").get().toString().substring(0, 14)) : Long.valueOf(attributes.get("createtimestamp").get().toString().substring(0, 14)));
+        //user.setPasswordChangedTime(null != attributes.get("pwdChangedTime") ? Long.valueOf(attributes.get("pwdChangedTime").get().toString().substring(0, 14)) : Long.valueOf(attributes.get("createtimestamp").get().toString().substring(0, 14)));
 
         int nGroups = (null == attributes.get("ou") ? 0 : attributes.get("ou").size());
         List<String> ls = new LinkedList<>();
