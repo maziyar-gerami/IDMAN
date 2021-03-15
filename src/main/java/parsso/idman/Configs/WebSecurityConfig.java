@@ -148,8 +148,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers("/api/mobile/events").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/dashboard").hasAnyRole("USER","ADMIN" , "SUPPORTER", "SUPERADMIN")
 
-                .antMatchers("/api/roles").hasRole("SUPPORTER")
-                .antMatchers("/roles").hasRole("SUPPORTER")
+                .antMatchers("/api/roles").hasAnyRole("SUPPORTER", "SUPERADMIN")
+                .antMatchers("/roles").hasAnyRole("SUPPORTER", "SUPERADMIN")
 
 
                 .antMatchers("/api/refresh**").hasRole("SUPERADMIN")
