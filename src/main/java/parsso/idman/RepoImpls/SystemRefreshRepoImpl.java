@@ -67,7 +67,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             mongoTemplate.createCollection("IDMAN_UsersExtraInfo");
 
         //1. create documents
-        for (SimpleUser user : userRepo.retrieveUsersMain()) {
+        for (SimpleUser user : userRepo.retrieveUsersMain(-1,-1)) {
             Query queryMongo = new Query(new Criteria("userId").is(user.getUserId()));
             if (mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, "IDMAN_UsersExtraInfo") != null) {
 

@@ -179,8 +179,7 @@ public class UserController {
      */
     @GetMapping("/api/users")
     public ResponseEntity<List<SimpleUser>> retrieveUsersMain() {
-        if (userRepo.retrieveUsersMain() == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveUsersMain(), HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.retrieveUsersMain(-1,-1), HttpStatus.OK);
     }
 
     @GetMapping("/api/users/group/{groupId}")
@@ -211,8 +210,6 @@ public class UserController {
                                                        @RequestParam(name = "searchUid", defaultValue = "") String searchuUid,
                                                        @RequestParam(name = "userStatus", defaultValue = "") String userStatus,
                                                        @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName) {
-        if (userRepo.retrieveUsersMain().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else
             return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
 

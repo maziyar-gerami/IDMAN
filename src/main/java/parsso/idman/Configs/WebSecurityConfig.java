@@ -75,7 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
 
 
-
+/*
 
                 .authorizeRequests()
                 //****************Public Objects*********************
@@ -148,8 +148,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers("/api/mobile/events").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/dashboard").hasAnyRole("USER","ADMIN" , "SUPPORTER", "SUPERADMIN")
 
-                .antMatchers("/api/roles").hasAnyRole("SUPPORTER", "SUPERADMIN")
-                .antMatchers("/roles").hasAnyRole("SUPPORTER", "SUPERADMIN")
+                .antMatchers("/api/roles").hasAnyRole("SUPERADMIN")
+                .antMatchers("/roles").hasAnyRole("SUPERADMIN")
 
 
                 .antMatchers("/api/refresh**").hasRole("SUPERADMIN")
@@ -165,7 +165,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
 
-
+*/
 
                 .formLogin()
                 .loginPage("/login")

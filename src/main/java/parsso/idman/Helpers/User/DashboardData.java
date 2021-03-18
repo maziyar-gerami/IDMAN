@@ -48,7 +48,7 @@ public class DashboardData {
 
         Thread userData = new Thread(() -> {
             //________users data____________
-            List<SimpleUser> usersList = userRepo.retrieveUsersMain();
+            List<SimpleUser> usersList = userRepo.retrieveUsersMain(-1,-1);
             int nUsers = userRepo.retrieveUsersSize();
             int nActive = 0;
             int nLocked = 0;
@@ -62,8 +62,8 @@ public class DashboardData {
                 else if (user.getStatus().equals("locked"))
                     nLocked++;
             }
-            userJson.put("total", nUsers-2);
-            userJson.put("active", nActive-2);
+            userJson.put("total", nUsers);
+            userJson.put("active", nActive>nUsers?nUsers:nActive);
             userJson.put("disabled", nDisabled);
             userJson.put("locked", nLocked);
 

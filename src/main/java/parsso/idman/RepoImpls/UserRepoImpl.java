@@ -49,7 +49,6 @@ import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 import parsso.idman.Models.UsersExtraInfo;
 import parsso.idman.Repos.FilesStorageService;
-import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
@@ -71,29 +70,16 @@ public class UserRepoImpl implements UserRepo {
     String collection = "IDMAN_UsersExtraInfo";
     @Autowired
     private InstantMessage instantMessage;
-    @Autowired
-    private UserRepo userRepo;
     @Value("${base.url}")
     private String BASE_URL;
     @Value("${email.controller}")
     private String EMAILCONTROLLER;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-    @Value("${api.get.users}")
-    private String apiAddress;
     @Value("${get.users.time.interval}")
     private int apiHours;
-    private final int apiMiliseconds = apiHours * 60 * 60000;
     @Autowired
     private LdapTemplate ldapTemplate;
-    @Value("${pwd.expire.warning}")
-    private String pwdExpireWarning;
-    @Value("${pwd.failure.count.interval}")
-    private String pwdFaiilureCount;
-    @Value("${pwd.in.history}")
-    private String pwdInHistory;
-    @Value("${pwd.check.quality}")
-    private String pwdCheckQuality;
     @Value("${default.user.password}")
     private String defaultPassword;
     @Value("${profile.photo.path}")
@@ -117,17 +103,13 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     private DashboardData dashboardData;
     @Autowired
-    private GroupRepo groupRepo;
-    @Autowired
     private ImportUsers importUsers;
 
     @Override
     public JSONObject create(User p) {
 
-        User user = retrieveUsers(p.getUserId());
-        DirContextOperations context;
-
         try {
+            User user = retrieveUsers(p.getUserId());
             if (user == null) {
                 //create user in ldap
                 Name dn = buildDn.buildDn(p.getUserId());
@@ -162,8 +144,8 @@ public class UserRepoImpl implements UserRepo {
                         usersExtraInfo.setUserId(p.getUserId());
                         usersExtraInfo.setQrToken(UUID.randomUUID().toString());
                         usersExtraInfo.setPhotoName(p.getPhoto());
-                        Date date = new Date();
-                        usersExtraInfo.setCreationTimeStamp(date.getTime());
+                        usersExtraInfo.setCreationTimeStamp(new
+                                Date().getTime());
                         usersExtraInfo.setUnDeletable(p.isUnDeletable());
                         mongoTemplate.save(usersExtraInfo, Token.collection);
 
@@ -172,10 +154,10 @@ public class UserRepoImpl implements UserRepo {
 
                 thread1.start();
 
-                if (p.getCStatus() != null) {
+                if (p.getCStatus() != null)
                     if (p.getCStatus().equals("disable"))
                         disable(p.getUserId());
-                }
+
 
                 logger.info("User " + "\"" + p.getUserId() + "\"" + " in " + new Date() + " created successfully");
                 return new JSONObject();
@@ -207,8 +189,7 @@ public class UserRepoImpl implements UserRepo {
                     UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
                     usersExtraInfo.setUserId(p.getUserId());
                     usersExtraInfo.setQrToken(UUID.randomUUID().toString());
-                    Date date = new Date();
-                    usersExtraInfo.setCreationTimeStamp(date.getTime());
+                    usersExtraInfo.setCreationTimeStamp(new Date().getTime());
                     mongoTemplate.save(usersExtraInfo, Token.collection);
 
                     //update it's first pwChangedTime in a new thread
@@ -250,10 +231,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public int retrieveUsersSize() {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        return (int)mongoTemplate.count(new Query(),collection);
+        return (int)mongoTemplate.count(new Query(Criteria.where("role").ne("SUPERADMIN")),collection);
     }
 
     @Override
@@ -479,26 +457,7 @@ public class UserRepoImpl implements UserRepo {
         return "NotExist";
     }
 
-    @Override
-    public byte[] showProfilePic(User user) {
-        File file = new File(uploadedFilesPath + user.getPhoto());
-        byte[] media = null;
 
-
-        if (file.exists()) {
-            try {
-                String contentType = "image/png";
-                FileInputStream out = new FileInputStream(file);
-                // copy from in to out
-                media = IOUtils.toByteArray(out);
-                out.close();
-                return media;
-            } catch (Exception e) {
-                return media;
-            }
-        }
-        return media;
-    }
 
 
     @Override
@@ -527,12 +486,21 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<SimpleUser> retrieveUsersMain() {
+    public List<SimpleUser> retrieveUsersMain(int page, int number) {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("objectclass").is("person"),
-                new SimpleUserAttributeMapper());
+
+        int limit = number==-1?retrieveUsersSize():number;
+        int skip = page==-1?0:(page-1)*limit;
+
+        List<UsersExtraInfo> usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(limit),UsersExtraInfo.class,collection);
+
+        List<SimpleUser> people = new LinkedList<>();
+            for (UsersExtraInfo usersExtraInfo:usersExtraInfos)
+                people.add(ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is(usersExtraInfo.getUserId()),
+                        new SimpleUserAttributeMapper()).get(0));
+
 
         List <SimpleUser> relativeUsers =new LinkedList<>();
 
@@ -557,7 +525,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public List<SimpleUser> retrieveUsersMain(String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
-        List<SimpleUser> users = retrieveUsersMain();
+        List<SimpleUser> users = retrieveUsersMain(-1,-1);
         List<SimpleUser> sortTypeUsers;
         if (!sortType.equals("")) {
             if (sortType.equals("uid_m2M"))

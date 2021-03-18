@@ -49,7 +49,7 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
 
         System.out.println(usersExtraInfo.getUserId());
         String role = null;
-        if (principal.getName().equals("su"))
+        if (usersExtraInfo.getRole().equals("SUPERADMIN"))
             collection.add(new SimpleGrantedAuthority("ROLE_" + "SUPERADMIN"));
 
         if (usersExtraInfo.getRole()!=null)
