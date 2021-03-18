@@ -524,8 +524,8 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<SimpleUser> retrieveUsersMain(String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
-        List<SimpleUser> users = retrieveUsersMain(-1,-1);
+    public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
+        List<SimpleUser> users = retrieveUsersMain(page,nCount);
         List<SimpleUser> sortTypeUsers;
         if (!sortType.equals("")) {
             if (sortType.equals("uid_m2M"))
@@ -600,8 +600,10 @@ public class UserRepoImpl implements UserRepo {
         } else
             userStatusUsers = searchDisplayNameUsers;
 
+        int size = retrieveUsersSize();
 
-        return userStatusUsers;
+        return new ListUsers(size,userStatusUsers, (int) Math.ceil(size/nCount));
+
     }
 
     @Override
@@ -913,28 +915,28 @@ public class UserRepoImpl implements UserRepo {
         return HttpStatus.OK;
     }
 
-    @Override
-    public ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
-        List<SimpleUser> allUsers = retrieveUsersMain(sortType, groupFilter, searchUid, searchDisplayName, userStatus);
-        int n = (page) * number;
-
-        if (n > allUsers.size())
-            n = allUsers.size();
-
-        int size = allUsers.size();
-
-        int pages = (int) Math.ceil(size / number);
-
-        int start = (page - 1) * number;
-
-        List<SimpleUser> relativeUsers = new LinkedList<>();
-
-        for (int i = start; i < n; i++)
-            relativeUsers.add(allUsers.get(i));
-
-        return new ListUsers(size, relativeUsers, pages);
-
-    }
+//    @Override
+//    public ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
+//        List<SimpleUser> allUsers = retrieveUsersMain(sortType, groupFilter, searchUid, searchDisplayName, userStatus);
+//        int n = (page) * number;
+//
+//        if (n > allUsers.size())
+//            n = allUsers.size();
+//
+//        int size = allUsers.size();
+//
+//        int pages = (int) Math.ceil(size / number);
+//
+//        int start = (page - 1) * number;
+//
+//        List<SimpleUser> relativeUsers = new LinkedList<>();
+//
+//        for (int i = start; i < n; i++)
+//            relativeUsers.add(allUsers.get(i));
+//
+//        return new ListUsers(size, relativeUsers, pages);
+//
+//    }
 
     @Override
     public int sendEmail(String email, String cid, String answer) {
