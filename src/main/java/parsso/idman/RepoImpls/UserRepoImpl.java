@@ -30,6 +30,7 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -496,28 +497,12 @@ public class UserRepoImpl implements UserRepo {
 
         List<UsersExtraInfo> usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(limit),UsersExtraInfo.class,collection);
 
-        List<SimpleUser> people = new LinkedList<>();
-            for (UsersExtraInfo usersExtraInfo:usersExtraInfos)
-                people.add(ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is(usersExtraInfo.getUserId()),
-                        new SimpleUserAttributeMapper()).get(0));
+        ContainerCriteria query = query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is(usersExtraInfos.get(0).getUserId());
 
+        for (int i=1 ; i<usersExtraInfos.size();i++)
+            query.or("uid").is(usersExtraInfos.get(i).getUserId());
 
-        List <SimpleUser> relativeUsers =new LinkedList<>();
-
-        for (SimpleUser simpleUser: people)
-            if (!simpleUser.getUserId().equalsIgnoreCase("su")&&!simpleUser.getUserId().equalsIgnoreCase("admin"))
-                relativeUsers.add(simpleUser);
-
-
-
-        //SimpleUser su = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is("su"),
-                //new SimpleUserAttributeMapper()).get(0);
-
-        //SimpleUser du = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is("admin"),
-                //new SimpleUserAttributeMapper()).get(0);
-
-        //people.remove(su);
-        //people.remove(du);
+        List<SimpleUser> people = ldapTemplate.search(query, new SimpleUserAttributeMapper());
 
         Collections.sort(people);
         return people;

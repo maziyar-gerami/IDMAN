@@ -1,14 +1,12 @@
 package parsso.idman.Helpers.User;
 
-
 import io.jsonwebtoken.io.IOException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Event;
-import parsso.idman.Models.SimpleUser;
-import parsso.idman.Models.Time;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
@@ -20,6 +18,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 @Service
 public class DashboardData {
@@ -34,6 +33,10 @@ public class DashboardData {
     MongoTemplate mongoTemplate;
     @Autowired
     UserAttributeMapper userAttributeMapper;
+    @Autowired
+    SimpleUserAttributeMapper simpleUserAttributeMapper;
+    @Autowired
+    LdapTemplate ldapTemplate;
 
     ZoneId zoneId = ZoneId.of("UTC+03:30");
 
@@ -48,22 +51,15 @@ public class DashboardData {
 
         Thread userData = new Thread(() -> {
             //________users data____________
-            List<SimpleUser> usersList = userRepo.retrieveUsersMain(-1,-1);
             int nUsers = userRepo.retrieveUsersSize();
-            int nActive = 0;
-            int nLocked = 0;
-            int nDisabled = 0;
 
-            for (SimpleUser user : usersList) {
-                if (user.getStatus().equals("active"))
-                    nActive++;
-                else if (user.getStatus().equals("disabled"))
-                    nDisabled++;
-                else if (user.getStatus().equals("locked"))
-                    nLocked++;
-            }
+            int nDisabled = ldapTemplate.search(query().where("pwdAccountLockedTime").is("40400404040404.950Z"), simpleUserAttributeMapper).size();
+            int nLocked = ldapTemplate.search(query().where("pwdAccountLockedTime").lte("40400404040404.950Z"), simpleUserAttributeMapper).size();;
+            int temp = nUsers-nLocked-nDisabled;
+            int nActive = (temp)>nUsers?nUsers:temp;
+
             userJson.put("total", nUsers);
-            userJson.put("active", nActive>nUsers?nUsers:nActive);
+            userJson.put("active", nActive);
             userJson.put("disabled", nDisabled);
             userJson.put("locked", nLocked);
 
@@ -103,7 +99,6 @@ public class DashboardData {
             int nUnSucceful = 0;
 
             LocalDateTime now = LocalDateTime.now();
-            Time time = new Time(now.getDayOfYear(), now.getMonthValue(), now.getDayOfMonth());
 
             for (Event event : events) {
                 //TODO: This is date
@@ -118,16 +113,16 @@ public class DashboardData {
             loginJson.put("total", nSuccessful + nUnSucceful);
             loginJson.put("unsuccessful", nUnSucceful);
             loginJson.put("successful", nSuccessful);
-        });
 
+        });
 
         //_________summary________________
         jsonObject.put("users", userJson);
         jsonObject.put("services", servicesJson);
         jsonObject.put("logins", loginJson);
 
-        loginData.start();
         userData.start();
+        loginData.start();
         servicesData.start();
 
         loginData.join();
