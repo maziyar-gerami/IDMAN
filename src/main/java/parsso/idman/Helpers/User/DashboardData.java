@@ -63,9 +63,6 @@ public class DashboardData {
             userJson.put("disabled", nDisabled);
             userJson.put("locked", nLocked);
 
-            System.out.println("users");
-
-
         });
         userData.start();
 
@@ -95,8 +92,6 @@ public class DashboardData {
             servicesJson.put("enabled", nEnabledServices);
             servicesJson.put("disabled", nDisabledServices);
 
-            System.out.println("services");
-
         });
 
         Thread loginData = new Thread(() -> {
@@ -119,10 +114,6 @@ public class DashboardData {
             loginJson.put("total", nSuccessful + nUnSucceful);
             loginJson.put("unsuccessful", nUnSucceful);
             loginJson.put("successful", nSuccessful);
-
-
-            System.out.println("logins");
-
         });
 
         //_________summary________________
