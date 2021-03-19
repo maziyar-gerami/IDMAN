@@ -1,8 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
@@ -10,10 +8,6 @@ import org.apache.commons.collections4.PredicateUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.parser.ParseException;
@@ -21,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -36,8 +29,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Communicate.Email;
@@ -45,7 +36,6 @@ import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.ListUsers;
-import parsso.idman.Models.ServicesSubModel.ExtraInfo;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 import parsso.idman.Models.UsersExtraInfo;
@@ -53,7 +43,10 @@ import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
-import javax.naming.directory.*;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
+import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -105,6 +98,8 @@ public class UserRepoImpl implements UserRepo {
     private DashboardData dashboardData;
     @Autowired
     private ImportUsers importUsers;
+    @Autowired
+    ExcelAnalyzer excelAnalyzer;
 
     @Override
     public JSONObject create(User p) {
@@ -120,7 +115,6 @@ public class UserRepoImpl implements UserRepo {
                 Thread thread = new Thread() {
                     public void run() {
                         User userTemp = retrieveUsers(p.getUserId());
-
                         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
                         context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp() + "Z");
@@ -131,14 +125,12 @@ public class UserRepoImpl implements UserRepo {
                             e.printStackTrace();
                         }
 
-
                     }
                 };
 
                 thread.start();
 
-
-                Thread thread1 = new Thread() {
+                new Thread() {
                     public void run() {
                         //logger.info("User "+user.getUserId() + " created");
                         UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
@@ -149,16 +141,12 @@ public class UserRepoImpl implements UserRepo {
                                 Date().getTime());
                         usersExtraInfo.setUnDeletable(p.isUnDeletable());
                         mongoTemplate.save(usersExtraInfo, Token.collection);
-
                     }
-                };
-
-                thread1.start();
+                }.start();
 
                 if (p.getCStatus() != null)
                     if (p.getCStatus().equals("disable"))
                         disable(p.getUserId());
-
 
                 logger.info("User " + "\"" + p.getUserId() + "\"" + " in " + new Date() + " created successfully");
                 return new JSONObject();
@@ -232,7 +220,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public int retrieveUsersSize() {
-        return (int)mongoTemplate.count(new Query(Criteria.where("role").ne("SUPERADMIN")),collection);
+        return (int)mongoTemplate.count(new Query(Criteria.where("role").is("SUPERADMIN")),collection);
+
     }
 
     @Override
@@ -389,15 +378,8 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public HttpStatus changePassword(String uId,String oldPassword, String newPassword, String token) {
 
-        System.out.println("***********************************");
-        //System.out.println(ldapTemplate.authenticate(BASE_DN,null,oldPassword));
-        System.out.println("***********************************");
-
-
         //TODO:check current pass
         User user = retrieveUsers(uId);
-
-
 
         if (true) {
             if (token != null) {
@@ -407,10 +389,6 @@ public class UserRepoImpl implements UserRepo {
 
                     contextUser = ldapTemplate.lookupContext(buildDn.buildDn(user.getUserId()));
                     contextUser.setAttributeValue("userPassword", newPassword);
-
-
-                    //context.setAttributeValue("pwdChangedTime", date.getTime());
-
 
                     try {
                         ldapTemplate.modifyAttributes(contextUser);
@@ -457,9 +435,6 @@ public class UserRepoImpl implements UserRepo {
         }
         return "NotExist";
     }
-
-
-
 
     @Override
     public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException {
@@ -543,16 +518,13 @@ public class UserRepoImpl implements UserRepo {
 
             searchUid = searchUid.toLowerCase();
 
-            for (SimpleUser user : groupFilterUsers) {
+            for (SimpleUser user : groupFilterUsers)
 
                 if (user.getUserId().contains(searchUid))
                     searchUidUsers.add(user);
 
-            }
-
         } else
             searchUidUsers = groupFilterUsers;
-
 
         List<SimpleUser> searchDisplayNameUsers = new LinkedList<>();
 
@@ -560,27 +532,22 @@ public class UserRepoImpl implements UserRepo {
 
             searchDisplayName = searchDisplayName.toLowerCase();
 
-            for (SimpleUser user : searchUidUsers) {
+            for (SimpleUser user : searchUidUsers)
 
                 if (user.getDisplayName().contains(searchDisplayName))
                     searchDisplayNameUsers.add(user);
 
-            }
 
         } else
             searchDisplayNameUsers = searchUidUsers;
 
-
         List<SimpleUser> userStatusUsers = new LinkedList<>();
 
         if (!userStatus.equals("")) {
-
-            for (SimpleUser user : searchDisplayNameUsers) {
-
+            for (SimpleUser user : searchDisplayNameUsers)
                 if (user.getStatus().equals(userStatus))
                     userStatusUsers.add(user);
 
-            }
 
         } else
             userStatusUsers = searchDisplayNameUsers;
@@ -588,7 +555,6 @@ public class UserRepoImpl implements UserRepo {
         int size = retrieveUsersSize();
 
         return new ListUsers(size,userStatusUsers, (int) Math.ceil(size/nCount));
-
     }
 
     @Override
@@ -638,7 +604,6 @@ public class UserRepoImpl implements UserRepo {
 
         List<User> people = ldapTemplate.search(BASE_DN, andFilter.toString(), searchControls,
                 userAttributeMapper);
-        List<User> relatedPeople = new LinkedList<>();
 
         try {
 
@@ -657,8 +622,6 @@ public class UserRepoImpl implements UserRepo {
         } catch (Exception e) {
             return HttpStatus.FORBIDDEN;
         }
-
-
     }
 
     @Override
@@ -668,13 +631,11 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = new User();
         UsersExtraInfo usersExtraInfo = null;
-        ExtraInfo extraInfo = null;
         if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
             user = ldapTemplate.lookup(buildDn.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
             usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
             user.setUsersExtraInfo(usersExtraInfo);
-
         }
         setRole(userId, user);
         if (user.getUserId() == null) return null;
@@ -691,7 +652,6 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("ou", groupId));
 
         return ldapTemplate.search(query().where("ou").is(groupId), simpleUserAttributeMapper);
-
     }
 
     @Override
@@ -805,7 +765,6 @@ public class UserRepoImpl implements UserRepo {
         if (locked.equalsIgnoreCase("locked")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
 
-
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
 
@@ -826,8 +785,6 @@ public class UserRepoImpl implements UserRepo {
 
                 return HttpStatus.BAD_REQUEST;
             }
-
-
 
         } else {
             return HttpStatus.BAD_REQUEST;
@@ -856,15 +813,10 @@ public class UserRepoImpl implements UserRepo {
 
         CollectionUtils.filter(users, PredicateUtils.notNullPredicate());
 
-        int n = (page) * number;
-
-        if (n > users.size())
-            n = users.size();
+        int n = (page) * number>users.size()?(page) * number:users.size();
 
         int size = users.size();
-
         int pages = (int) Math.floor(size / number);
-
         int start = (page - 1) * number;
 
         List<SimpleUser> relativeUsers = new LinkedList<>();
@@ -900,42 +852,15 @@ public class UserRepoImpl implements UserRepo {
         return HttpStatus.OK;
     }
 
-//    @Override
-//    public ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
-//        List<SimpleUser> allUsers = retrieveUsersMain(sortType, groupFilter, searchUid, searchDisplayName, userStatus);
-//        int n = (page) * number;
-//
-//        if (n > allUsers.size())
-//            n = allUsers.size();
-//
-//        int size = allUsers.size();
-//
-//        int pages = (int) Math.ceil(size / number);
-//
-//        int start = (page - 1) * number;
-//
-//        List<SimpleUser> relativeUsers = new LinkedList<>();
-//
-//        for (int i = start; i < n; i++)
-//            relativeUsers.add(allUsers.get(i));
-//
-//        return new ListUsers(size, relativeUsers, pages);
-//
-//    }
-
-    @Override
-    public int sendEmail(String email, String cid, String answer) {
-        return emailClass.sendEmail(email, cid, answer);
-    }
-
     @Override
     public int sendEmail(String email, String uid, String cid, String answer) {
-        return emailClass.sendEmail(email, uid, cid, answer);
+        if (uid!=null)
+            return emailClass.sendEmail(email, uid, cid, answer);
+        return emailClass.sendEmail(email, cid, answer);
     }
 
     public String createUrl(String userId, String token) {
         return BASE_URL + /*"" +*/ EMAILCONTROLLER + userId + "/" + token;
-
     }
 
     public HttpStatus updatePass(String userId, String pass, String token) {
@@ -965,10 +890,8 @@ public class UserRepoImpl implements UserRepo {
         return importUsers.importFileUsers(file, sequence, hasHeader);
     }
 
-
     @Override
     public List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException {
-        JSONObject lsusers = new JSONObject();
         InputStream insfile = file.getInputStream();
 
         if (file.getOriginalFilename().endsWith(".xlsx")) {
@@ -979,7 +902,7 @@ public class UserRepoImpl implements UserRepo {
             //Get first/desired sheet from the workbook
             XSSFSheet sheet = workbookXLSX.getSheetAt(0);
 
-            return excelSheetAnalyze(sheet, ou,true);
+            return excelAnalyzer.excelSheetAnalyze(sheet, ou,true);
 
         } else if (file.getOriginalFilename().endsWith(".xls")) {
             HSSFWorkbook workbookXLS = null;
@@ -988,108 +911,16 @@ public class UserRepoImpl implements UserRepo {
 
             HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
-            return excelSheetAnalyze(xlssheet, ou,true);
+            return excelAnalyzer.excelSheetAnalyze(xlssheet, ou,true);
 
         } else if (file.getOriginalFilename().endsWith(".csv")) {
 
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-            return csvSheet(csvReader, ou, true);
-
+            return excelAnalyzer.csvSheet(csvReader, ou, true);
         }
 
         return null;
     }
-
-    public List excelSheetAnalyze(Sheet sheet, String ou, boolean hasHeader) {
-
-
-        Iterator<Row> rowIterator = sheet.iterator();
-
-        List<String> notExist = new LinkedList<>();
-
-        if (hasHeader == true) rowIterator.next();
-
-
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
-
-            Cell cell = row.getCell(0);
-            //Check the cell type and format accordingly
-
-            if (cell == null) break;
-
-            ModificationItem[] items = new ModificationItem[1];
-            Attribute[] attrs = new Attribute[1];
-
-            DataFormatter formatter = new DataFormatter();
-
-            attrs[0] = new BasicAttribute("ou", ou);
-            items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
-
-            try {
-                ldapTemplate.modifyAttributes(buildDn.buildDn(formatter.formatCellValue(row.getCell(0))), items);
-
-            } catch (Exception e) {
-                if (e.getClass().toString().contains("NameNotFoundException"))
-                    notExist.add(formatter.formatCellValue(row.getCell(0)));
-            }
-
-        }
-
-        return notExist;
-    }
-
-
-
-    public List csvSheet(BufferedReader sheet, String ou, boolean hasHeader) throws IOException {
-
-        String row;
-        int i = 0;
-        List<String> notExist = new LinkedList<>();
-
-        while ((row = sheet.readLine()) != null) {
-            if (i == 0 && hasHeader) {
-                i++;
-                continue;
-            }
-
-            ModificationItem[] items = new ModificationItem[1];
-            Attribute[] attrs = new Attribute[1];
-
-            String[] data = row.split(",");
-
-            attrs[0] = new BasicAttribute("ou", ou);
-            items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
-
-            try {
-                ldapTemplate.modifyAttributes(buildDn.buildDn(data[0]), items);
-
-            } catch (Exception e) {
-                if (e.getClass().toString().contains("NameNotFoundException"))
-                    notExist.add(data[0]);
-            }
-
-            i++;
-
-        }
-        return notExist;
-    }
-
-    @Bean
-    @Deprecated
-    public PasswordEncoder passwordEncoder() {
-        return new LdapShaPasswordEncoder();
-    }
-
-    @Setter
-    @Getter
-    private class BasicDashboardData {
-        int nUsers;
-        int nLocked;
-        int nDisabled;
-    }
-
-
 }
 

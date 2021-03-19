@@ -1,5 +1,6 @@
 package parsso.idman.Helpers.User;
 
+
 import io.jsonwebtoken.io.IOException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Convertor.DateUtils;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -63,7 +63,12 @@ public class DashboardData {
             userJson.put("disabled", nDisabled);
             userJson.put("locked", nLocked);
 
+            System.out.println("users");
+
+
         });
+        userData.start();
+
 
         Thread servicesData = new Thread(() -> {
 
@@ -90,15 +95,16 @@ public class DashboardData {
             servicesJson.put("enabled", nEnabledServices);
             servicesJson.put("disabled", nDisabledServices);
 
+            System.out.println("services");
+
         });
 
         Thread loginData = new Thread(() -> {
             //__________________login data____________
+
             List<Event> events = eventRepo.analyze(mainCollection, 0, 0);
             int nSuccessful = 0;
             int nUnSucceful = 0;
-
-            LocalDateTime now = LocalDateTime.now();
 
             for (Event event : events) {
                 //TODO: This is date
@@ -114,6 +120,9 @@ public class DashboardData {
             loginJson.put("unsuccessful", nUnSucceful);
             loginJson.put("successful", nSuccessful);
 
+
+            System.out.println("logins");
+
         });
 
         //_________summary________________
@@ -121,7 +130,6 @@ public class DashboardData {
         jsonObject.put("services", servicesJson);
         jsonObject.put("logins", loginJson);
 
-        userData.start();
         loginData.start();
         servicesData.start();
 
@@ -132,6 +140,4 @@ public class DashboardData {
         return jsonObject;
 
     }
-
-
 }

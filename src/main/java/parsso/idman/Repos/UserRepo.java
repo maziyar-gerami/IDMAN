@@ -28,8 +28,6 @@ public interface UserRepo {
 
     int retrieveUsersSize();
 
-    //List<SimpleUser> retrieveUsersMain(String sortType, String groupFilter, String searchuUid, String searchUid, String userStatus);
-
     User getName(String uid, String token);
 
     List<User> retrieveUsersFull();
@@ -51,8 +49,6 @@ public interface UserRepo {
     HttpStatus sendEmail(JSONObject jsonObject);
 
     ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus);
-
-    int sendEmail(String email, String cid, String answer);
 
     int sendEmail(String email, String uid, String cid, String answer);
 

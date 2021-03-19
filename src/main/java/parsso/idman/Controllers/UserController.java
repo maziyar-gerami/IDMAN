@@ -401,7 +401,7 @@ public class UserController {
                                             @PathVariable("cid") String cid,
                                             @PathVariable("answer") String answer) {
 
-        int time = userRepo.sendEmail(email, cid, answer);
+        int time = userRepo.sendEmail(email,null, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
