@@ -17,7 +17,6 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 public class DashboardController {
@@ -28,9 +27,6 @@ public class DashboardController {
 
     @Value("${cas.url.logout.path}")
     private String casLogout;
-
-    @Value("${administrator.ou.id}")
-    private String adminOu;
 
     @GetMapping("/")
     public String Root() {
@@ -55,8 +51,9 @@ public class DashboardController {
 
         try {
 
-            for (String group : user.getMemberOf()) {
-                if (group.equals(adminOu))
+            if (user.getUsersExtraInfo().getRole().equals("ADMIN")
+            || user.getUsersExtraInfo().getRole().equals("SEPERADMIN")
+            || user.getUsersExtraInfo().getRole().equals("SUPPORTER")) {
                     return "groups";
             }
 
@@ -75,7 +72,9 @@ public class DashboardController {
             return "services";
 
         try {
-            if (user.getMemberOf().contains(adminOu))
+            if (user.getUsersExtraInfo().getRole().equals("ADMIN")
+                    || user.getUsersExtraInfo().getRole().equals("SEPERADMIN")
+                    || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
                 return "services";
 
         } catch (Exception e) {
@@ -89,21 +88,13 @@ public class DashboardController {
 
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUsers(principal.getName());
-        if (user.getUserId().equals("su"))
+        System.out.println(user.getUsersExtraInfo().getRole());
+        if (user.getUsersExtraInfo().getRole().equals("ADMIN")
+                || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
+                || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
             return "users";
-        try {
-
-            List<String> memberOf = user.getMemberOf();
-
-            for (String group : memberOf) {
-                if (group.equals(adminOu))
-                    return "users";
-            }
-
-        } catch (Exception e) {
             return "403";
-        }
-        return "403";
+
     }
 
     @GetMapping("/audits")

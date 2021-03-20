@@ -78,8 +78,6 @@ public class UserRepoImpl implements UserRepo {
     private String defaultPassword;
     @Value("${profile.photo.path}")
     private String uploadedFilesPath;
-    @Value("${administrator.ou.id}")
-    private String adminId;
     @Autowired
     private BuildAttributes buildAttributes;
     @Autowired
@@ -329,31 +327,15 @@ public class UserRepoImpl implements UserRepo {
         return undeletables;
     }
 
-    public void setRole(String uid, User p) {
-        String role = null;
+    public User setRole(User p) {
+        String role;
 
-        if (uid.equals("su")) {
-            role = "SUPERADMIN";
+        try {
+            role = p.getUsersExtraInfo().getRole();
 
-        } else {
-            try {
-                List<String> lst = p.getMemberOf();
-                for (String id : lst) {
-
-                    if (id.equals(adminId)) {
-                        role = "ADMIN";
-                        break;
-                    }
-                }
-            } catch (Exception e) {
-
-                if (uid.equals(adminId))
-                    role = "ADMIN";
-            }
-        }
-
-        if (role == null)
+        }catch (Exception e) {
             role = "USER";
+        }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -372,6 +354,9 @@ public class UserRepoImpl implements UserRepo {
                 SecurityContextHolder.getContext().setAuthentication(newAuth);
             }
         }
+        p.setRole(role);
+
+        return p;
 
     }
 
@@ -637,7 +622,9 @@ public class UserRepoImpl implements UserRepo {
             usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
             user.setUsersExtraInfo(usersExtraInfo);
         }
-        setRole(userId, user);
+
+        if(user.getRole()==null)
+            return setRole(user);
         if (user.getUserId() == null) return null;
         else return user;
     }
@@ -869,7 +856,7 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = retrieveUsers(userId);
 
-        setRole(userId, user);
+        user=setRole(user);
 
         HttpStatus httpStatus = tokenClass.checkToken(userId, token);
 
