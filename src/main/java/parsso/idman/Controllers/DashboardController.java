@@ -52,7 +52,7 @@ public class DashboardController {
         try {
 
             if (user.getUsersExtraInfo().getRole().equals("ADMIN")
-            || user.getUsersExtraInfo().getRole().equals("SEPERADMIN")
+            || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
             || user.getUsersExtraInfo().getRole().equals("SUPPORTER")) {
                     return "groups";
             }
@@ -73,7 +73,7 @@ public class DashboardController {
 
         try {
             if (user.getUsersExtraInfo().getRole().equals("ADMIN")
-                    || user.getUsersExtraInfo().getRole().equals("SEPERADMIN")
+                    || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
                     || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
                 return "services";
 
@@ -88,7 +88,6 @@ public class DashboardController {
 
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUsers(principal.getName());
-        System.out.println(user.getUsersExtraInfo().getRole());
         if (user.getUsersExtraInfo().getRole().equals("ADMIN")
                 || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
                 || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))

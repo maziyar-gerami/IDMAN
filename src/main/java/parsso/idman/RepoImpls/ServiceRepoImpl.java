@@ -177,7 +177,6 @@ public class ServiceRepoImpl implements ServiceRepo {
                 microService = mongoTemplate.findOne(query, MicroService.class, collection);
             } catch (Exception e) {
                 microService = new MicroService(service.getId(), service.getServiceId());
-                System.out.println("hi");
             } finally {
                 services.add(new MicroService(service, microService));
             }
