@@ -16,6 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.UsersExcelView;
+import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
@@ -332,7 +333,7 @@ public class UserController {
      * @return a json file containing tha data
      */
     @GetMapping("/api/dashboard")
-    public ResponseEntity<org.json.simple.JSONObject> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException, InterruptedException {
+    public ResponseEntity<Dashboard> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException, InterruptedException {
         return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
     }
 

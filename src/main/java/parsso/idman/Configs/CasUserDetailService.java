@@ -37,15 +37,11 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
         Map attributes = principal.getAttributes();
         Query query = new Query(Criteria.where("userId").is(principal.getName()));
         String collection1 = "IDMAN_UsersExtraInfo";
-        System.out.println("********************************");
 
         String mongoURI = "mongodb://" + "parssouser:APA00918" + "@" + "parsso2.razi.ac.ir:27017" + "/" + "parssodb";
         MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(mongoURI), "parssodb");
 
         UsersExtraInfo usersExtraInfo =  mongoTemplate.findOne(query, UsersExtraInfo.class, collection1);
-
-        System.out.println("********************************");
-
 
         System.out.println(usersExtraInfo.getUserId());
         String role = null;

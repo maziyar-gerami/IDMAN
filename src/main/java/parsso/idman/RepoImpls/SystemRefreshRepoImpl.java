@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.IdmanApplication;
@@ -55,6 +56,9 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
     @Autowired
     SimpleUserAttributeMapper simpleUserAttributeMapper;
+
+    @Autowired
+    DashboardData dashboardData;
 
     @Value("${administrator.ou.id}")
     private String admidId;
@@ -120,6 +124,12 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
 
 
+        }
+
+        try {
+            dashboardData.updateDashboardData();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         //2. cleanUp mongo

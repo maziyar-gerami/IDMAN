@@ -2,11 +2,17 @@ package parsso.idman.Helpers.User;
 
 
 import io.jsonwebtoken.io.IOException;
-import org.json.simple.JSONObject;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.Models.DashboardData.Dashboard;
+import parsso.idman.Models.DashboardData.Logins;
+import parsso.idman.Models.DashboardData.Services;
+import parsso.idman.Models.DashboardData.Users;
 import parsso.idman.Models.Event;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
@@ -19,6 +25,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
+
 
 @Service
 public class DashboardData {
@@ -40,32 +47,44 @@ public class DashboardData {
 
     ZoneId zoneId = ZoneId.of("UTC+03:30");
 
+    Users fUsers;
+    Services fServices;
+    Logins fLogins;
 
-    public JSONObject retrieveDashboardData() throws IOException, InterruptedException {
 
-        JSONObject jsonObject = new JSONObject();
-        JSONObject userJson = new JSONObject();
-        JSONObject servicesJson = new JSONObject();
-        JSONObject loginJson = new JSONObject();
 
+    public Dashboard retrieveDashboardData() throws IOException, InterruptedException {
+
+
+        Thread thread = new Thread(){
+            @SneakyThrows
+            public void run(){
+                updateDashboardData();
+            }
+        };
+
+        thread.start();
+
+        return mongoTemplate.findOne(new Query(Criteria.where("_id").is("Dashboard")),Dashboard.class,
+                "IDMAN_ExtraInfo");
+
+    }
+
+    public void updateDashboardData() throws InterruptedException {
 
         Thread userData = new Thread(() -> {
             //________users data____________
             int nUsers = userRepo.retrieveUsersSize();
 
             int nDisabled = ldapTemplate.search(query().where("pwdAccountLockedTime").is("40400404040404.950Z"), simpleUserAttributeMapper).size();
-            int nLocked = ldapTemplate.search(query().where("pwdAccountLockedTime").lte("40400404040404.950Z"), simpleUserAttributeMapper).size();;
+            int nLocked = ldapTemplate.search(query().where("pwdAccountLockedTime").lte("40400404040404.950Z"), simpleUserAttributeMapper).size();
             int temp = nUsers-nLocked-nDisabled;
             int nActive = (temp)>nUsers?nUsers:temp;
 
-            userJson.put("total", nUsers);
-            userJson.put("active", nActive);
-            userJson.put("disabled", nDisabled);
-            userJson.put("locked", nLocked);
+            fUsers = new Users(nUsers,nActive,nDisabled,nLocked);
 
         });
         userData.start();
-
 
         Thread servicesData = new Thread(() -> {
 
@@ -88,9 +107,7 @@ public class DashboardData {
 
             int nDisabledServices = nServices - nEnabledServices;
 
-            servicesJson.put("total", nServices);
-            servicesJson.put("enabled", nEnabledServices);
-            servicesJson.put("disabled", nDisabledServices);
+            fServices =new Services(nServices,nDisabledServices,nEnabledServices);
 
         });
 
@@ -111,15 +128,10 @@ public class DashboardData {
                 } else if (event.getType().equals("Successful Login") && DateUtils.isToday(eventDate))
                     nSuccessful++;
             }
-            loginJson.put("total", nSuccessful + nUnSucceful);
-            loginJson.put("unsuccessful", nUnSucceful);
-            loginJson.put("successful", nSuccessful);
+
+            fLogins = new Logins (nSuccessful+nUnSucceful,nUnSucceful,nSuccessful);
         });
 
-        //_________summary________________
-        jsonObject.put("users", userJson);
-        jsonObject.put("services", servicesJson);
-        jsonObject.put("logins", loginJson);
 
         loginData.start();
         servicesData.start();
@@ -128,7 +140,15 @@ public class DashboardData {
         userData.join();
         servicesData.join();
 
-        return jsonObject;
+        Dashboard dashboard = new Dashboard(fServices,fLogins,fUsers);
+
+        dashboard.setId("Dashboard");
+
+
+        mongoTemplate.remove(new Query(Criteria.where("_id").is("id")),
+                "IDMAN_ExtraInfo");
+
+        mongoTemplate.save(dashboard, "IDMAN_ExtraInfo");
 
     }
 }

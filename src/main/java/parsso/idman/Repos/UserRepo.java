@@ -5,6 +5,7 @@ import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
@@ -56,7 +57,7 @@ public interface UserRepo {
 
     JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException;
 
-    org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException;
+    Dashboard retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException;
 
     HttpStatus enable(String uid);
 

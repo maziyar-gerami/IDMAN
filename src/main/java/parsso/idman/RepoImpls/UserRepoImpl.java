@@ -10,7 +10,6 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +34,7 @@ import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
+import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
@@ -220,8 +220,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public int retrieveUsersSize() {
-        return (int)mongoTemplate.count(new Query(Criteria.where("role").is("SUPERADMIN")),collection);
 
+        return (int) mongoTemplate.count(new Query(),collection);
     }
 
     @Override
@@ -665,7 +665,8 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException {
+    public Dashboard retrieveDashboardData() throws InterruptedException {
+
         return dashboardData.retrieveDashboardData();
     }
 
