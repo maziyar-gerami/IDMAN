@@ -3,8 +3,6 @@ package parsso.idman;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator;
 import org.jasig.cas.client.validation.TicketValidator;
@@ -68,7 +66,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Value("${interval.check.pass.hours}")
     private static long intervalCheckPassTime;
 
-    private static final Logger LOGGER = LogManager.getLogger(IdmanApplication.class.getName());
 
 
     /**
@@ -77,6 +74,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
      * @param args the input arguments
      */
     public static void main(String[] args) throws IOException, org.json.simple.parser.ParseException {
+
 
 
         ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
@@ -94,12 +92,11 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
             }
         };
 
-        LOGGER.debug("Debug Message Logged !!!");
-        LOGGER.info("Info Message Logged !!!");
-        LOGGER.error("Error Message Logged !!!");
         //refresh(context);
         Thread thread = new Thread(runnable);
         thread.start();
+
+
 
     }
 

@@ -6,6 +6,7 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.logging.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -653,6 +654,10 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public Dashboard retrieveDashboardData() throws InterruptedException {
+
+        org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(UserRepoImpl.class.getName());
+
+        LOGGER.error("***********************");
 
         return dashboardData.retrieveDashboardData();
     }

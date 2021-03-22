@@ -21,6 +21,7 @@ repositories {
 	maven {
 		url "https://git.captcha.com/botdetect-java-captcha.git/blob_plain/HEAD:/"
 	}
+	jcenter()
 }
 
 dependencies {
@@ -107,6 +108,12 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework/spring-websocket
 	compile group: 'org.springframework', name: 'spring-websocket', version: '5.2.9.RELEASE'
 
+	implementation 'org.slf4j:slf4j-api:1.7.30'
+	implementation 'org.apache.logging.log4j:log4j-api:2.14.0'
+	implementation 'org.apache.logging.log4j:log4j-core:2.14.0'
+	implementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.14.0'
+	implementation 'org.apache.logging.log4j:log4j-mongodb4:2.14.0'
+	implementation 'org.mongodb:mongodb-driver-sync:4.1.1'
 
 }
 

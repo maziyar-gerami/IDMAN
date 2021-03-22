@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="trace" packages="parsso.idman">
+    <Appenders>
+        <NoSql name="Mongo4">
+            <MongoDb4 capped="true" collectionSize="104857600"
+                      connection="mongodb://parssouser:APA00918@parsso2.razi.ac.ir:27017/parssodb.IDMAN_Log"
+                      disabled="true"
+            />
+        </NoSql>
+    </Appenders>
+    <Loggers>
+        <Root level="DEBUG">
+            <Root level="DEBUG">
+                <AppenderRef ref="Console"/>
+            </Root>
+
+            <Logger name="parsso.idman" level="DEBUG">
+                <AppenderRef ref="Mongo4"/>
+            </Logger>
+
+        </Root>
+
+    </Loggers>
+</Configuration>

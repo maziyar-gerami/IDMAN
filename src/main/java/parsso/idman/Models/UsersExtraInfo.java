@@ -25,5 +25,8 @@ public class UsersExtraInfo {
     private  boolean unDeletable;
     @JsonIgnore
     private String role;
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String category;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String subCategory;
 }

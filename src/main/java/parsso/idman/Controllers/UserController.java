@@ -2,6 +2,8 @@ package parsso.idman.Controllers;
 
 
 import net.minidev.json.JSONObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.UsersExcelView;
+import parsso.idman.IdmanApplication;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
@@ -334,8 +337,11 @@ public class UserController {
      */
     @GetMapping("/api/dashboard")
     public ResponseEntity<Dashboard> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException, InterruptedException {
+        final Logger LOGGER = LogManager.getLogger(IdmanApplication.class.getName());
+
         return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
     }
+
 
 
     /**
