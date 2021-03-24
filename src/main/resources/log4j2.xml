@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="trace" packages="parsso.idman">
+<Configuration status="WARN">
     <Appenders>
-        <NoSql name="Mongo4">
-            <MongoDb4 capped="true" collectionSize="104857600"
-                      connection="mongodb://parssouser:APA00918@parsso2.razi.ac.ir:27017/parssodb.IDMAN_Log"
-                      disabled="true"
-            />
-        </NoSql>
+        <Console name="LogToConsole" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
     </Appenders>
     <Loggers>
-        <Root level="DEBUG">
-            <Root level="DEBUG">
-                <AppenderRef ref="Console"/>
-            </Root>
 
-            <Logger name="parsso.idman" level="DEBUG">
-                <AppenderRef ref="Mongo4"/>
-            </Logger>
-
+        <Root level="error">
+            <AppenderRef ref="LogToConsole"/>
         </Root>
-
     </Loggers>
 </Configuration>
