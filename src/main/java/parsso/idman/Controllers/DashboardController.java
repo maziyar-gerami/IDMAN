@@ -68,9 +68,6 @@ public class DashboardController {
 
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUsers(principal.getName());
-        if (user.getUserId().equals("su"))
-            return "services";
-
         try {
             if (user.getUsersExtraInfo().getRole().equals("ADMIN")
                     || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
