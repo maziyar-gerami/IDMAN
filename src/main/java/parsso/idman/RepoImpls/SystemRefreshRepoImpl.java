@@ -91,10 +91,10 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                             }
                         }).get(0);
 
-                userExtraInfo.setPhotoName(photoName);
-
-                if (userExtraInfo!=null)
+                if (photoName!=null) {
+                    userExtraInfo.setPhotoName(photoName);
                     mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");
+                }
 
             } else {
                 UsersExtraInfo userExtraInfo = new UsersExtraInfo();
