@@ -114,6 +114,18 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework/spring-websocket
 	compile group: 'org.springframework', name: 'spring-websocket', version: '5.2.9.RELEASE'
 
+	// https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver
+	implementation group: 'org.mongodb', name: 'mongo-java-driver', version: '3.12.8'
+
+	// https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+
+	// https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-sync
+	implementation group: 'org.mongodb', name: 'mongodb-driver-sync', version: '4.2.2'
+
+	// https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+
 
 	configurations.all {
 		resolutionStrategy.dependencySubstitution.all { dependency ->

@@ -13,6 +13,13 @@
             <TimeBasedTriggeringPolicy />
         </RollingFile>
 
+
+            <NoSql name="databaseAppender">
+                <MongoDb databaseName="applicationDb" collectionName="applicationLog" server="mongo.example.org"
+                          username="loggingUser" password="abc123" />
+            </NoSql>
+
+
     </Appenders>
     <Loggers>
 

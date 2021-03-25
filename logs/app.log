@@ -1,1 +1,5 @@
-2021-03-25 18:58:25,888 ERROR p.i.IdmanApplication [main] Hello from Log4j 2
+2021-03-26 00:42:12,818 ERROR p.i.IdmanApplication [main] Hello from Log4j 2
+2021-03-26 00:50:50,948 ERROR p.i.IdmanApplication [main] Hello from Log4j 2
+2021-03-26 00:51:54,671 ERROR p.i.IdmanApplication [main] Hello from Log4j 2
+2021-03-26 00:53:11,107 ERROR p.i.IdmanApplication [main] Hello from Log4j 2
+2021-03-26 01:01:23,975 ERROR p.i.IdmanApplication [main] Hello from Log4j 2

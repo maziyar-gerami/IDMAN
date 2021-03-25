@@ -506,7 +506,7 @@ public class UserRepoImpl implements UserRepo {
 
             for (SimpleUser user : groupFilterUsers)
 
-                if (user.getUserId().contains(searchUid))
+                if ((user.getUserId().toLowerCase()).contains(searchUid))
                     searchUidUsers.add(user);
 
         } else
