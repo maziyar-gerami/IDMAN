@@ -119,11 +119,6 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");
 
             }
-
-
-
-
-
         }
 
         try {
@@ -133,12 +128,13 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         }
 
         //2. cleanUp mongo
-        List<SimpleUser> usersMongo = mongoTemplate.findAll(SimpleUser.class, "IDMAN_UsersExtraInfo");
+        //TODO:Enable it
+        /*List<SimpleUser> usersMongo = mongoTemplate.findAll(SimpleUser.class, "IDMAN_UsersExtraInfo");
         if (usersMongo!=null)
         for (SimpleUser simpleUser : usersMongo) {
             if (ldapTemplate.search(query().where("uid").is(simpleUser.getUserId()), simpleUserAttributeMapper).size()==0)
                 mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(simpleUser.getUserId())), UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
-        }
+        }*/
 
         return  HttpStatus.OK;
     }
