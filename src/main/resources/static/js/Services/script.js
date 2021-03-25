@@ -192,6 +192,8 @@ function myFunction() {
         s99: "توکن سخت افزاری",
         s100: "غیرفعال",
         s101: "سرویسی یافت نشد",
+        rolesText: "نقش ها",
+        rolesURLText: "./roles",
       },
       created: function () {
         this.getUserInfo();
@@ -1308,6 +1310,8 @@ function myFunction() {
             this.s99 = "Hardware Token";
             this.s100 = "Disabled";
             this.s101 = "No Service Found";
+            this.rolesText = "Roles";
+            this.rolesURLText = "./roles?en";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
@@ -1415,6 +1419,8 @@ function myFunction() {
               this.s99 = "توکن سخت افزاری";
               this.s100 = "غیرفعال";
               this.s101 = "سرویسی یافت نشد";
+              this.rolesText = "نقش ها";
+              this.rolesURLText = "./roles";
           }
         },
         div: function (a, b) {

@@ -31,9 +31,10 @@ document.addEventListener('DOMContentLoaded', function () {
             userPicture: "images/PlaceholderUser.png",
             margin: "margin-right: 30px;",
             loader: false,
-            isListEmpty: false,
             userListSearch: "",
             userList: [],
+            editList: [],
+            editUserIdList: [],
             parssoTitleText: "پارسو",
             usernameText: "",
             exitText: "خروج",
@@ -63,13 +64,17 @@ document.addEventListener('DOMContentLoaded', function () {
             rulesURLText: "./rules",
             privacyURLText: "./privacy",
             guideURLText: "./guide",
-            s23: "آیا از اعمال این تغییرات اطمینان دارید؟",
             userListText: "لیست کاربران",
             searchText: "جستجو...",
             addToListText: "افزودن به لیست",
             userNotFoundText: "کاربری یافت نشد",
-            s43: "لیست اعضای گروه",
-            s44: "حذف از لیست",
+            chooseRoleText: "انتخاب نقش",
+            submitText: "تایید",
+            removeFromListText: "حذف از لیست",
+            noUserAddedText: "کاربری در لیست وجود ندارد",
+            confirmationText: "آیا از اعمال این تغییرات اطمینان دارید؟",
+            noUserAddedAlertText: "کاربری انتخاب نشده است.",
+            noRoleSelectedAlertText: "نقشی انتخاب نشده است.",
         },
         created: function () {
             this.getUserInfo();
@@ -112,56 +117,63 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
             },
-            getUsers: function (){
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
+            getUsers: function () {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
                 this.loader = true;
-                axios.get(url + "/api/roles") //
-                    .then((res) => {
-                        vm.userList = res.data;
-                        vm.loader = false;
-                    });
+                axios({
+                    method: 'get',
+                    url: url + "/api/roles", //
+                })
+                .then((res) => {
+                    vm.userList = res.data;
+                    vm.loader = false;
+                });
             },
-            addUserToList: function (user){
-                let index = this.groupsRemovedUsersList.indexOf(user.userId);
-                if (index > -1) {
-                    index = this.groupsRemovedUsersList.indexOf(user.userId);
-                    if (index > -1) {
-                        this.groupsRemovedUsersList.splice(index, 1);
-                    }
-                    index = this.allUsersSearch.indexOf(user);
-                    if (index > -1) {
-                        this.allUsersSearch.splice(index, 1);
-                    }
-                    this.groupUsersSearch.push(user);
+            editRole: function () {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
+                let role = document.getElementById("role").value;
+                if(role == ""){
+                    alert(this.noRoleSelectedAlertText);
+                }else if(this.editUserIdList.length == 0){
+                    alert(this.noUserAddedAlertText);
                 }else{
-                    this.groupsAddedUsersList.push(user.userId);
-                    this.groupUsersSearch.push(user);
-                    index = this.allUsersSearch.indexOf(user);
-                    if (index > -1) {
-                        this.allUsersSearch.splice(index, 1);
+                    let check = confirm(this.confirmationText);
+                    if(check){
+                        axios({
+                            method: 'put',
+                            url: url + "/api/roles/" + role, //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                names: vm.editUserIdList
+                            }).replace(/\\\\/g, "\\")
+                        })
+                        .then((res) => {
+                            vm.userListSearch = "";
+                            vm.userList = [];
+                            vm.editList = [];
+                            vm.editUserIdList = [];
+                            document.getElementById("role").value = "";
+                            vm.getUsers();
+                        });
                     }
                 }
             },
-            removeUserFromList: function (user){
-                let index = this.groupsAddedUsersList.indexOf(user.userId);
+            addUserToList: function (user) {
+                let index = this.userList.indexOf(user);
                 if (index > -1) {
-                    index = this.groupsAddedUsersList.indexOf(user.userId);
-                    if (index > -1) {
-                        this.groupsAddedUsersList.splice(index, 1);
-                    }
-                    index = this.groupUsersSearch.indexOf(user);
-                    if (index > -1) {
-                        this.groupUsersSearch.splice(index, 1);
-                    }
-                    this.allUsersSearch.push(user);
-                }else{
-                    this.groupsRemovedUsersList.push(user.userId);
-                    this.allUsersSearch.push(user);
-                    index = this.groupUsersSearch.indexOf(user);
-                    if (index > -1) {
-                        this.groupUsersSearch.splice(index, 1);
-                    }
+                    this.editList.unshift(user);
+                    this.editUserIdList.unshift(user.userId);
+                    this.userList.splice(index, 1);
+                }
+            },
+            removeUserFromList: function (user) {
+                let index = this.editList.indexOf(user);
+                if (index > -1) {
+                    this.editList.splice(index, 1);
+                    this.editUserIdList.splice(index, 1);
+                    this.userList.unshift(user);
                 }
             },
             changeLang: function () {
@@ -198,13 +210,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rulesURLText = "./rules?en";
                     this.privacyURLText = "./privacy?en";
                     this.guideURLText = "./guide?en";
-                    this.s23 = "Are You Sure You Want To Edit?";
-                    this.s39 = "Users List";
-                    this.s40 = "Search...";
-                    this.s41 = "Add to Group";
-                    this.s42 = "No User Found";
-                    this.s43 = "List of Group Members";
-                    this.s44 = "Remove from Group";
+                    this.userListText = "Users List";
+                    this.searchText = "Search...";
+                    this.addToListText = "Add To List";
+                    this.userNotFoundText = "No User Found";
+                    this.chooseRoleText = "Select Role";
+                    this.submitText = "Submit";
+                    this.removeFromListText = "Remove From List";
+                    this.noUserAddedText = "No User In The List";
+                    this.confirmationText = "Are You Sure You Want To Edit?";
+                    this.noUserAddedAlertText = "No User Selected.";
+                    this.noRoleSelectedAlertText = "No Role Selected.";
                 } else{
                     this.lang = "EN";
                     this.isRtl = true;
@@ -238,13 +254,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rulesURLText = "./rules";
                     this.privacyURLText = "./privacy";
                     this.guideURLText = "./guide";
-                    this.s23 = "آیا از اعمال این تغییرات اطمینان دارید؟";
-                    this.s39 = "لیست کاربران";
-                    this.s40 = "جستجو...";
-                    this.s41 = "افزودن به گروه";
-                    this.s42 = "کاربری یافت نشد";
-                    this.s43 = "لیست اعضای گروه";
-                    this.s44 = "حذف از گروه";
+                    this.userListText = "لیست کاربران";
+                    this.searchText = "جستجو...";
+                    this.addToListText = "افزودن به لیست";
+                    this.userNotFoundText = "کاربری یافت نشد";
+                    this.chooseRoleText = "انتخاب نقش";
+                    this.submitText = "تایید";
+                    this.removeFromListText = "حذف از لیست";
+                    this.noUserAddedText = "کاربری در لیست وجود ندارد";
+                    this.confirmationText = "آیا از اعمال این تغییرات اطمینان دارید؟";
+                    this.noUserAddedAlertText = "کاربری انتخاب نشده است.";
+                    this.noRoleSelectedAlertText = "نقشی انتخاب نشده است.";
                 }
             }
         },

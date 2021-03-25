@@ -105,8 +105,7 @@ public class DashboardController {
             return "roles";
 
         try {
-            if (user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
-                    || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
+            if (user.getUsersExtraInfo().getRole().equals("SUPERADMIN"))
                 return "roles";
 
         } catch (Exception e) {

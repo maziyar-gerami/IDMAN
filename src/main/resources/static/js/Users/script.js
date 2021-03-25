@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
         data: {
             recordsShownOnPage: 20,
             currentPage: 1,
+            paginationCurrentPage: 1,
             currentSort: "id",
             currentSortDir: "asc",
             userInfo: [],
@@ -214,6 +215,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s83: "غیرقابل حذف",
             s84: "کاربران زیر غیرقابل حذف می باشند.",
             s85: "کاربری یافت نشد",
+            rolesText: "نقش ها",
+            rolesURLText: "./roles",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه کاربری",
@@ -503,14 +506,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
             },
-            filter: function () {
+            filter: function (p) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 let searchQuery = "?";
-                if(!this.changePageUsers){
-                    this.currentPage = 1;
-                }
-                this.users = [];
                 searchQuery = searchQuery + "searchUid=";
                 if(this.searchUserId != ""){
                     searchQuery = searchQuery + this.searchUserId + "&";
@@ -545,6 +544,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 }else if(this.displayNameM2mFlag){
                     searchQuery = searchQuery + "displayName_M2m";
                 }
+                if(p != "paginationCurrentPage"){
+                    this.currentPage = 1;
+                    this.paginationCurrentPage = this.currentPage;
+                }
                 let tempUsers = {};
                 this.users = [];
                 this.isListEmpty = false;
@@ -553,7 +556,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         if(res.data.userList.length == 0){
                             vm.isListEmpty = true;
                         }
+                        console.log(vm.users);
                         vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
+                        console.log(vm.total);
+                        console.log(res.data.size);
                         res.data.userList.forEach(function (item) {
                             tempUsers = {};
                             tempUsers.userId = item.userId;
@@ -1353,6 +1359,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s83 = "Indelible";
                     this.s84 = "Users Listed Below Are Indelible.";
                     this.s85 = "No User Found";
+                    this.rolesText = "Roles";
+                    this.rolesURLText = "./roles?en";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1477,6 +1485,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s83 = "غیرقابل حذف";
                     this.s84 = "کاربران زیر غیرقابل حذف می باشند.";
                     this.s85 = "کاربری یافت نشد";
+                    this.rolesText = "نقش ها";
+                    this.rolesURLText = "./roles";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه کاربری";
@@ -1658,9 +1668,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         watch : {
-            currentPage : function () {
-              this.changePageUsers = true;
-              this.filter();
+            paginationCurrentPage : function () {
+                if(this.paginationCurrentPage != this.currentPage){
+                    this.currentPage = this.paginationCurrentPage;
+                    this.filter("paginationCurrentPage");
+                }
             }
         }
     });

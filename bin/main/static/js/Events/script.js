@@ -113,6 +113,8 @@ document.addEventListener('DOMContentLoaded', function () {
       s45: "ممیزی ها",
       s46: "/audits",
       s47: "رکوردی یافت نشد",
+      rolesText: "نقش ها",
+      rolesURLText: "./roles",
     },
     created: function () {
       this.getUserInfo();
@@ -858,6 +860,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s45 = "Audits";
           this.s46 = "/audits?en";
           this.s47 = "No Records Found";
+          this.rolesText = "Roles";
+          this.rolesURLText = "./roles?en";
         } else{
             this.getEvents();
             this.getEvent();
@@ -914,6 +918,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s45 = "ممیزی ها";
             this.s46 = "/audits";
             this.s47 = "رکوردی یافت نشد";
+            this.rolesText = "نقش ها";
+            this.rolesURLText = "./roles";
         }
       },
       div: function (a, b) {

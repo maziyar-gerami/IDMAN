@@ -185,21 +185,26 @@
                                     <i class="fa fa-dashboard"></i>
                                     <span>{{s20}}</span>
                                 </a>
-                                <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                    v-bind:href="s15">
                                     <i class="fa fa-server"></i>
                                     <span>{{s4}}</span>
                                 </a>
-                                <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                 style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                    v-bind:href="s16">
                                     <i class="fa fa-user"></i>
                                     <span>{{s13}}</span>
                                 </a>
-                                <a sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                    v-bind:href="s21">
                                     <i class="fa fa-users"></i>
                                     <span>{{s5}}</span>
+                                </a>
+                                <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                v-bind:href="rolesURLText">
+                                    <i class="fa fa-user-circle-o"></i>
+                                    <span>{{rolesText}}</span>
                                 </a>
                                 <a class="list-group-item list-group-item-action py-2 "
                                    v-bind:href="s39">
@@ -399,7 +404,7 @@
                                                 <p class="rounded" style="background-color:rgba(144, 238, 144, 0.521); padding: 1%;">{{s52}}</p>
                                             </div>
                                             <div class="p-2" style="direction: rtl;">
-                                                <v-pagination v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                                <v-pagination v-model="paginationCurrentPage" :page-count="total" :classes="bootstrapPaginationClasses"
                                                 :labels="paginationAnchorTexts"></v-pagination>
                                             </div>
                                             <div style="overflow: auto;">
@@ -491,7 +496,7 @@
                                                 </div>
                                             </div>
                                             <div class="p-2" style="direction: rtl;">
-                                                <v-pagination v-model="currentPage" :page-count="total" :classes="bootstrapPaginationClasses"
+                                                <v-pagination v-model="paginationCurrentPage" :page-count="total" :classes="bootstrapPaginationClasses"
                                                 :labels="paginationAnchorTexts"></v-pagination>
                                             </div>
                                             <div class="row mt-3">

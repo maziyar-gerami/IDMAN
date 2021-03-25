@@ -83,6 +83,8 @@ document.addEventListener('DOMContentLoaded', function () {
       s40: "به‌روزرسانی کاربران با موفقیت انجام شد.",
       s41: "به‌روزرسانی CAPTCHA با موفقیت انجام شد.",
       s42: "به‌روزرسانی کلی با موفقیت انجام شد.",
+      rolesText: "نقش ها",
+      rolesURLText: "./roles",
     },
     created: function () {
       this.getConfigs();
@@ -324,6 +326,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s40 = "Users Refreshed Successfully.";
           this.s41 = "CAPTCHA Refreshed Successfully.";
           this.s42 = "All Refreshed Successfully.";
+          this.rolesText = "Roles";
+          this.rolesURLText = "./roles?en";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -371,6 +375,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s40 = "به‌روزرسانی کاربران با موفقیت انجام شد.";
             this.s41 = "به‌روزرسانی CAPTCHA با موفقیت انجام شد.";
             this.s42 = "به‌روزرسانی کلی با موفقیت انجام شد.";
+            this.rolesText = "نقش ها";
+            this.rolesURLText = "./roles";
         }
       }
     },

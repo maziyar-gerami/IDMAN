@@ -101,6 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
       s27: "لاگین های امروز",
       s28: "ممیزی ها",
       s29: "/audits",
+      rolesText: "نقش ها",
+      rolesURLText: "./roles",
     },
     created: function () {
       this.getUserInfo();
@@ -246,6 +248,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s27 = "Today's Logins";
           this.s28 = "Audits";
           this.s29 = "/audits?en";
+          this.rolesText = "Roles";
+          this.rolesURLText = "./roles?en";
           this.ActiveUsersChart.sections[0].label = "Active";
           this.ActiveUsersChart.sections[1].label = "Disabled";
           this.ActiveUsersChart.sections[2].label = "Locked";
@@ -288,6 +292,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s27 = "لاگین های امروز";
             this.s28 = "ممیزی ها";
             this.s29 = "/audits";
+            this.rolesText = "نقش ها";
+            this.rolesURLText = "./roles";
             this.ActiveUsersChart.sections[0].label = "فعال";
             this.ActiveUsersChart.sections[1].label = "غیرفعال";
             this.ActiveUsersChart.sections[2].label = "قفل شده";

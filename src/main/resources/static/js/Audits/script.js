@@ -115,6 +115,8 @@ document.addEventListener('DOMContentLoaded', function () {
       s46: "/audits",
       s47: "بازگشت",
       s48: "رکوردی یافت نشد",
+      rolesText: "نقش ها",
+      rolesURLText: "./roles",
     },
     created: function () {
       this.getUserInfo();
@@ -583,6 +585,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s46 = "/audits?en";
           this.s47 = "Go Back";
           this.s48 = "No Records Found";
+          this.rolesText = "Roles";
+          this.rolesURLText = "./roles?en";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -638,6 +642,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s46 = "/audits";
             this.s47 = "بازگشت";
             this.s48 = "رکوردی یافت نشد";
+            this.rolesText = "نقش ها";
+            this.rolesURLText = "./roles";
         }
       },
       div: function (a, b) {
