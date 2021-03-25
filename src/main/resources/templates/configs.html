@@ -7,7 +7,7 @@
     <title>پارسو</title>
 
     <link href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="css/Dashboard/style.css" rel="stylesheet">
+    <link href="css/Configs/style.css" rel="stylesheet">
     <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="fonts/IranSans/font.css" rel="stylesheet">
 
@@ -19,6 +19,7 @@
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/Configs/script.js"></script>
+    <script src="js/vue-spinners-css.min.js"></script>
 
 </head>
 <body class="h-100">
@@ -121,64 +122,164 @@
                     </div>
                     <div class="col-lg-9 page-content">
                         <div class="card">
-                            <div class="card-body" style="background-color: #f8f9fa!important;">
-                                <h3 class="border-bottom pb-3 mb-3"><span>{{s24}}</span></h3>
+                            <div class="card-body pb-0 pl-0 pr-0" style="background-color: #f8f9fa!important;">
+                                <div class="container">
+                                    <div class="ml-0 mr-0">
+                                        <h3 class="border-bottom pb-2">{{s24}}</h3>
+                                    </div>
 
-                                <div class="container mb-3">
-                                    <div class="row">
-                                        <div class="col-6" style="text-align: center;">
-                                            <button class="btn btn-success btn-sm" v-on:click="saveRestorePoint()">
-                                                {{s28}}
-                                            </button>
-                                        </div>
-                                        <div class="col-6" style="text-align: center;">
-                                            <button class="btn btn-warning btn-sm" v-on:click="restoreInitialPoint()">
-                                                {{s29}}
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-3">
-                                        <div class="col-12" style="text-align: center; display: inline-flex;">
-                                            <select id="restorePointID" class="form-control enInput ml-1 mr-1">
-                                                <option v-for="point in restorePoints" v-bind:id="point" v-model="point">{{point}}</option>
-                                                <option v-if="storePointsExists" selected disabled>{{s30}}</option>
-                                            </select>
-                                            <button class="btn btn-success btn-sm ml-1 mr-1" v-on:click="restorePoint()">
-                                                {{s31}}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div v-if="configsLoaded">
-                                    <ul class="nav nav-tabs nav-justified" style="font-size: 15px;">
-                                        <li class="nav-item" v-for="groups in configsGroupNames" v-bind:key="groups">
-                                            <a class="nav-link" @click.prevent="setActive(groups)" :class="{ active: isActive(groups) }" v-bind:href="'#'+ groups" style="outline: 0;"><p style="font-size: 15px;">{{groups}}</p></a>
+                                    <ul class="nav nav-tabs nav-justified">
+                                        <li class="nav-item">
+                                            <a class="nav-link" @click.prevent="setActiveMain('mainConfigsPSI')" :class="{ active: isActiveMain('mainConfigsPSI') }" href="#mainConfigsPSI">{{s24}}</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" @click.prevent="setActiveMain('refreshConfigsPSI')" :class="{ active: isActiveMain('refreshConfigsPSI') }" href="#refreshConfigsPSI">{{s34}}</a>
                                         </li>
                                     </ul>
-                                    <div class="tab-content py-3" id="myTabContent" style="background-color: white; padding: 2%; font-size: 15px; direction: rtl;">
-                                        
-                                            <div class="tab-pane fade" v-for="groups in configsGroupNames" v-bind:key="groups" :class="{ 'active show': isActive(groups) }" v-bind:id="groups">
-                                                <div v-for="description in configsDescription" v-if="groupSearchDescription(groups,description)">
-                                                    <h5 class="border-bottom pb-1 pt-1 mb-3 mt-5 config-head"><span>{{description}}</span></h5>
-                                                    <div v-for="config in configsList" v-bind:key="config" class="form-group" v-if="config.description === description">
-                                                        <table class="table">
-                                                            <tbody id="body">
-                                                                <tr>
-                                                                    <td style="width: 50%;">
-                                                                        <input class="form-control enInput" type="text" v-model="config.value">
-                                                                    </td>
-                                                                    <td style="width: 50%;">
-                                                                        <p style="text-align: center; margin-top: 4%;">{{config.name}}</p>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
+
+                                    <div class="tab-content py-3 mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
+                                        <div class="tab-pane fade" :class="{ 'active show': isActiveMain('mainConfigsPSI') }" id="mainConfigsPSI">
+                                            <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
+                                                <div class="col-6 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-success form-control" v-on:click="saveRestorePoint()">
+                                                        {{s28}}
+                                                    </button>
+                                                </div>
+                                                <div class="col-6 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-warning form-control" v-on:click="restoreInitialPoint()">
+                                                        {{s29}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
+                                                <div class="d-inline-flex col-12 pl-1 pr-1" style="text-align: center;">
+                                                    <select id="restorePointID" class="form-control enInput ml-1 mr-1">
+                                                        <option v-for="point in restorePoints" v-bind:id="point" v-model="point">{{point}}</option>
+                                                        <option v-if="storePointsExists" selected disabled>{{s30}}</option>
+                                                    </select>
+                                                    <button class="btn btn-success ml-1 mr-1" v-on:click="restorePoint()">
+                                                        {{s31}}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="mobileView">
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-success form-control" v-on:click="saveRestorePoint()">
+                                                        {{s28}}
+                                                    </button>
+                                                </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-warning form-control" v-on:click="restoreInitialPoint()">
+                                                        {{s29}}
+                                                    </button>
+                                                </div>
+                                                <div class="row mb-1 mt-5 pl-1 pr-1" style="text-align: center;">
+                                                    <select id="restorePointID" class="form-control enInput">
+                                                        <option v-for="point in restorePoints" v-bind:id="point" v-model="point">{{point}}</option>
+                                                        <option v-if="storePointsExists" selected disabled>{{s30}}</option>
+                                                    </select>
+                                                </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-success form-control" v-on:click="restorePoint()">
+                                                        {{s31}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div v-if="configsLoaded">
+                                                <ul class="nav nav-tabs nav-justified" style="font-size: 15px;">
+                                                    <li class="nav-item" v-for="groups in configsGroupNames" v-bind:key="groups">
+                                                        <a class="nav-link" @click.prevent="setActive(groups)" :class="{ active: isActive(groups) }" v-bind:href="'#'+ groups" style="outline: 0;"><p style="font-size: 15px;">{{groups}}</p></a>
+                                                    </li>
+                                                </ul>
+                                                <div style="overflow: auto;">
+                                                    <div class="table-wrapper">
+                                                        <div class="tab-content py-3" style="background-color: white; padding: 2%; font-size: 15px; direction: rtl;">
+                                                            <div class="tab-pane fade" v-for="groups in configsGroupNames" v-bind:key="groups" :class="{ 'active show': isActive(groups) }" v-bind:id="groups">
+                                                                <div v-for="description in configsDescription" v-if="groupSearchDescription(groups,description)">
+                                                                    <h5 class="border-bottom pb-1 pt-1 mb-3 mt-5 config-head"><span>{{description}}</span></h5>
+                                                                    <div v-for="config in configsList" v-bind:key="config" class="form-group" v-if="config.description === description">
+                                                                        <table class="table">
+                                                                            <tbody id="body">
+                                                                                <tr>
+                                                                                    <td style="width: 50%;">
+                                                                                        <input class="form-control enInput" type="text" v-model="config.value">
+                                                                                    </td>
+                                                                                    <td style="width: 50%;">
+                                                                                        <p style="text-align: center; margin-top: 4%;">{{config.name}}</p>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <button v-on:click="editConfigs()" class="btn btn-primary">{{s26}}</button>
+                                                <button v-on:click="editConfigs()" class="btn btn-primary mt-3">{{s26}}</button>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" :class="{ 'active show': isActiveMain('refreshConfigsPSI') }" id="refreshConfigsPSI">
+                                            <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
+                                                <div class="col-4 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshServices()">
+                                                        {{s35}}
+                                                    </button>
+                                                </div>
+                                                <div class="col-4 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshUsers()">
+                                                        {{s36}}
+                                                    </button>
+                                                </div>
+                                                <div class="col-4 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshCaptchas()">
+                                                        {{s37}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
+                                                <div class="col-12 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshAll()">
+                                                        {{s38}}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="mobileView">
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshServices()">
+                                                        {{s35}}
+                                                    </button>
+                                                </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshUsers()">
+                                                        {{s36}}
+                                                    </button>
+                                                </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshCaptchas()">
+                                                        {{s37}}
+                                                    </button>
+                                                </div>
+                                                <div class="row mb-1 mt-5 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshAll()">
+                                                        {{s38}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div v-if="loader" class="text-center">
+                                                <roller-loader color="#007bff"/>
+                                            </div>
+                                            <div v-if="refreshSuccess">
+                                                <p class="rounded" style="background-color:rgba(80, 233, 80, 0.637); padding: 1%;">
+                                                    {{refreshSuccessText}}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
                             </div>
                         </div>
                     </div>

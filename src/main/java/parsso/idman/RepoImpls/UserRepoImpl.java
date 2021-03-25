@@ -1,27 +1,20 @@
 package parsso.idman.RepoImpls;
 
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.logging.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -30,30 +23,31 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
+import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.ListUsers;
-import parsso.idman.Models.ServicesSubModel.ExtraInfo;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
 import parsso.idman.Models.UsersExtraInfo;
 import parsso.idman.Repos.FilesStorageService;
-import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
-import javax.naming.directory.*;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
+import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -71,35 +65,20 @@ public class UserRepoImpl implements UserRepo {
     String collection = "IDMAN_UsersExtraInfo";
     @Autowired
     private InstantMessage instantMessage;
-    @Autowired
-    private UserRepo userRepo;
     @Value("${base.url}")
     private String BASE_URL;
     @Value("${email.controller}")
     private String EMAILCONTROLLER;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-    @Value("${api.get.users}")
-    private String apiAddress;
     @Value("${get.users.time.interval}")
     private int apiHours;
-    private final int apiMiliseconds = apiHours * 60 * 60000;
     @Autowired
     private LdapTemplate ldapTemplate;
-    @Value("${pwd.expire.warning}")
-    private String pwdExpireWarning;
-    @Value("${pwd.failure.count.interval}")
-    private String pwdFaiilureCount;
-    @Value("${pwd.in.history}")
-    private String pwdInHistory;
-    @Value("${pwd.check.quality}")
-    private String pwdCheckQuality;
     @Value("${default.user.password}")
     private String defaultPassword;
     @Value("${profile.photo.path}")
     private String uploadedFilesPath;
-    @Value("${administrator.ou.id}")
-    private String adminId;
     @Autowired
     private BuildAttributes buildAttributes;
     @Autowired
@@ -117,17 +96,15 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     private DashboardData dashboardData;
     @Autowired
-    private GroupRepo groupRepo;
-    @Autowired
     private ImportUsers importUsers;
+    @Autowired
+    ExcelAnalyzer excelAnalyzer;
 
     @Override
     public JSONObject create(User p) {
 
-        User user = retrieveUsers(p.getUserId());
-        DirContextOperations context;
-
         try {
+            User user = retrieveUsers(p.getUserId());
             if (user == null) {
                 //create user in ldap
                 Name dn = buildDn.buildDn(p.getUserId());
@@ -137,7 +114,6 @@ public class UserRepoImpl implements UserRepo {
                 Thread thread = new Thread() {
                     public void run() {
                         User userTemp = retrieveUsers(p.getUserId());
-
                         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
                         context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp() + "Z");
@@ -148,34 +124,28 @@ public class UserRepoImpl implements UserRepo {
                             e.printStackTrace();
                         }
 
-
                     }
                 };
 
                 thread.start();
 
-
-                Thread thread1 = new Thread() {
+                new Thread() {
                     public void run() {
                         //logger.info("User "+user.getUserId() + " created");
                         UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
                         usersExtraInfo.setUserId(p.getUserId());
                         usersExtraInfo.setQrToken(UUID.randomUUID().toString());
                         usersExtraInfo.setPhotoName(p.getPhoto());
-                        Date date = new Date();
-                        usersExtraInfo.setCreationTimeStamp(date.getTime());
+                        usersExtraInfo.setCreationTimeStamp(new
+                                Date().getTime());
                         usersExtraInfo.setUnDeletable(p.isUnDeletable());
                         mongoTemplate.save(usersExtraInfo, Token.collection);
-
                     }
-                };
+                }.start();
 
-                thread1.start();
-
-                if (p.getCStatus() != null) {
+                if (p.getCStatus() != null)
                     if (p.getCStatus().equals("disable"))
                         disable(p.getUserId());
-                }
 
                 logger.info("User " + "\"" + p.getUserId() + "\"" + " in " + new Date() + " created successfully");
                 return new JSONObject();
@@ -207,8 +177,7 @@ public class UserRepoImpl implements UserRepo {
                     UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
                     usersExtraInfo.setUserId(p.getUserId());
                     usersExtraInfo.setQrToken(UUID.randomUUID().toString());
-                    Date date = new Date();
-                    usersExtraInfo.setCreationTimeStamp(date.getTime());
+                    usersExtraInfo.setCreationTimeStamp(new Date().getTime());
                     mongoTemplate.save(usersExtraInfo, Token.collection);
 
                     //update it's first pwChangedTime in a new thread
@@ -250,10 +219,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public int retrieveUsersSize() {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        return (int)mongoTemplate.count(new Query(),collection);
+
+        return (int) mongoTemplate.count(new Query(),collection);
     }
 
     @Override
@@ -361,31 +328,15 @@ public class UserRepoImpl implements UserRepo {
         return undeletables;
     }
 
-    public void setRole(String uid, User p) {
-        String role = null;
+    public User setRole(User p) {
+        String role;
 
-        if (uid.equals("su")) {
-            role = "SUPERADMIN";
+        try {
+            role = p.getUsersExtraInfo().getRole();
 
-        } else {
-            try {
-                List<String> lst = p.getMemberOf();
-                for (String id : lst) {
-
-                    if (id.equals(adminId)) {
-                        role = "ADMIN";
-                        break;
-                    }
-                }
-            } catch (Exception e) {
-
-                if (uid.equals(adminId))
-                    role = "ADMIN";
-            }
-        }
-
-        if (role == null)
+        }catch (Exception e) {
             role = "USER";
+        }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -404,21 +355,17 @@ public class UserRepoImpl implements UserRepo {
                 SecurityContextHolder.getContext().setAuthentication(newAuth);
             }
         }
+        p.setRole(role);
+
+        return p;
 
     }
 
     @Override
     public HttpStatus changePassword(String uId,String oldPassword, String newPassword, String token) {
 
-        System.out.println("***********************************");
-        //System.out.println(ldapTemplate.authenticate(BASE_DN,null,oldPassword));
-        System.out.println("***********************************");
-
-
         //TODO:check current pass
         User user = retrieveUsers(uId);
-
-
 
         if (true) {
             if (token != null) {
@@ -428,10 +375,6 @@ public class UserRepoImpl implements UserRepo {
 
                     contextUser = ldapTemplate.lookupContext(buildDn.buildDn(user.getUserId()));
                     contextUser.setAttributeValue("userPassword", newPassword);
-
-
-                    //context.setAttributeValue("pwdChangedTime", date.getTime());
-
 
                     try {
                         ldapTemplate.modifyAttributes(contextUser);
@@ -480,28 +423,6 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public byte[] showProfilePic(User user) {
-        File file = new File(uploadedFilesPath + user.getPhoto());
-        byte[] media = null;
-
-
-        if (file.exists()) {
-            try {
-                String contentType = "image/png";
-                FileInputStream out = new FileInputStream(file);
-                // copy from in to out
-                media = IOUtils.toByteArray(out);
-                out.close();
-                return media;
-            } catch (Exception e) {
-                return media;
-            }
-        }
-        return media;
-    }
-
-
-    @Override
     public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException {
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
@@ -527,29 +448,30 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<SimpleUser> retrieveUsersMain() {
+    public List<SimpleUser> retrieveUsersMain(int page, int number) {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        List<SimpleUser> people = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("objectclass").is("person"),
-                new SimpleUserAttributeMapper());
 
-        //SimpleUser su = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is("su"),
-                //new SimpleUserAttributeMapper()).get(0);
+        int limit = number==-1?retrieveUsersSize():number;
+        int skip = page==-1?0:(page-1)*limit;
 
-        //SimpleUser du = ldapTemplate.search(query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is("admin"),
-                //new SimpleUserAttributeMapper()).get(0);
+        List<UsersExtraInfo> usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(limit),UsersExtraInfo.class,collection);
 
-        //people.remove(su);
-        //people.remove(du);
+        ContainerCriteria query = query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is(usersExtraInfos.get(0).getUserId());
+
+        for (int i=1 ; i<usersExtraInfos.size();i++)
+            query.or("uid").is(usersExtraInfos.get(i).getUserId());
+
+        List<SimpleUser> people = ldapTemplate.search(query, new SimpleUserAttributeMapper());
 
         Collections.sort(people);
         return people;
     }
 
     @Override
-    public List<SimpleUser> retrieveUsersMain(String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
-        List<SimpleUser> users = retrieveUsersMain();
+    public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
+        List<SimpleUser> users = retrieveUsersMain(page,nCount);
         List<SimpleUser> sortTypeUsers;
         if (!sortType.equals("")) {
             if (sortType.equals("uid_m2M"))
@@ -582,16 +504,13 @@ public class UserRepoImpl implements UserRepo {
 
             searchUid = searchUid.toLowerCase();
 
-            for (SimpleUser user : groupFilterUsers) {
+            for (SimpleUser user : groupFilterUsers)
 
                 if (user.getUserId().contains(searchUid))
                     searchUidUsers.add(user);
 
-            }
-
         } else
             searchUidUsers = groupFilterUsers;
-
 
         List<SimpleUser> searchDisplayNameUsers = new LinkedList<>();
 
@@ -599,33 +518,29 @@ public class UserRepoImpl implements UserRepo {
 
             searchDisplayName = searchDisplayName.toLowerCase();
 
-            for (SimpleUser user : searchUidUsers) {
+            for (SimpleUser user : searchUidUsers)
 
                 if (user.getDisplayName().contains(searchDisplayName))
                     searchDisplayNameUsers.add(user);
 
-            }
 
         } else
             searchDisplayNameUsers = searchUidUsers;
 
-
         List<SimpleUser> userStatusUsers = new LinkedList<>();
 
         if (!userStatus.equals("")) {
-
-            for (SimpleUser user : searchDisplayNameUsers) {
-
+            for (SimpleUser user : searchDisplayNameUsers)
                 if (user.getStatus().equals(userStatus))
                     userStatusUsers.add(user);
 
-            }
 
         } else
             userStatusUsers = searchDisplayNameUsers;
 
+        int size = retrieveUsersSize();
 
-        return userStatusUsers;
+        return new ListUsers(size,userStatusUsers, (int) Math.ceil(size/nCount));
     }
 
     @Override
@@ -675,7 +590,6 @@ public class UserRepoImpl implements UserRepo {
 
         List<User> people = ldapTemplate.search(BASE_DN, andFilter.toString(), searchControls,
                 userAttributeMapper);
-        List<User> relatedPeople = new LinkedList<>();
 
         try {
 
@@ -694,8 +608,6 @@ public class UserRepoImpl implements UserRepo {
         } catch (Exception e) {
             return HttpStatus.FORBIDDEN;
         }
-
-
     }
 
     @Override
@@ -705,15 +617,15 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = new User();
         UsersExtraInfo usersExtraInfo = null;
-        ExtraInfo extraInfo = null;
         if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
             user = ldapTemplate.lookup(buildDn.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
             usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
             user.setUsersExtraInfo(usersExtraInfo);
-
         }
-        setRole(userId, user);
+
+        if(user.getRole()==null)
+            return setRole(user);
         if (user.getUserId() == null) return null;
         else return user;
     }
@@ -728,7 +640,6 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("ou", groupId));
 
         return ldapTemplate.search(query().where("ou").is(groupId), simpleUserAttributeMapper);
-
     }
 
     @Override
@@ -742,7 +653,12 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException {
+    public Dashboard retrieveDashboardData() throws InterruptedException {
+
+        org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(UserRepoImpl.class.getName());
+
+        LOGGER.error("***********************");
+
         return dashboardData.retrieveDashboardData();
     }
 
@@ -842,7 +758,6 @@ public class UserRepoImpl implements UserRepo {
         if (locked.equalsIgnoreCase("locked")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
 
-
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
 
@@ -863,8 +778,6 @@ public class UserRepoImpl implements UserRepo {
 
                 return HttpStatus.BAD_REQUEST;
             }
-
-
 
         } else {
             return HttpStatus.BAD_REQUEST;
@@ -893,15 +806,10 @@ public class UserRepoImpl implements UserRepo {
 
         CollectionUtils.filter(users, PredicateUtils.notNullPredicate());
 
-        int n = (page) * number;
-
-        if (n > users.size())
-            n = users.size();
+        int n = (page) * number>users.size()?(page) * number:users.size();
 
         int size = users.size();
-
         int pages = (int) Math.floor(size / number);
-
         int start = (page - 1) * number;
 
         List<SimpleUser> relativeUsers = new LinkedList<>();
@@ -938,41 +846,14 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
-        List<SimpleUser> allUsers = retrieveUsersMain(sortType, groupFilter, searchUid, searchDisplayName, userStatus);
-        int n = (page) * number;
-
-        if (n > allUsers.size())
-            n = allUsers.size();
-
-        int size = allUsers.size();
-
-        int pages = (int) Math.ceil(size / number);
-
-        int start = (page - 1) * number;
-
-        List<SimpleUser> relativeUsers = new LinkedList<>();
-
-        for (int i = start; i < n; i++)
-            relativeUsers.add(allUsers.get(i));
-
-        return new ListUsers(size, relativeUsers, pages);
-
-    }
-
-    @Override
-    public int sendEmail(String email, String cid, String answer) {
-        return emailClass.sendEmail(email, cid, answer);
-    }
-
-    @Override
     public int sendEmail(String email, String uid, String cid, String answer) {
-        return emailClass.sendEmail(email, uid, cid, answer);
+        if (uid!=null)
+            return emailClass.sendEmail(email, uid, cid, answer);
+        return emailClass.sendEmail(email, cid, answer);
     }
 
     public String createUrl(String userId, String token) {
         return BASE_URL + /*"" +*/ EMAILCONTROLLER + userId + "/" + token;
-
     }
 
     public HttpStatus updatePass(String userId, String pass, String token) {
@@ -980,7 +861,7 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = retrieveUsers(userId);
 
-        setRole(userId, user);
+        user=setRole(user);
 
         HttpStatus httpStatus = tokenClass.checkToken(userId, token);
 
@@ -1002,10 +883,8 @@ public class UserRepoImpl implements UserRepo {
         return importUsers.importFileUsers(file, sequence, hasHeader);
     }
 
-
     @Override
     public List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException {
-        JSONObject lsusers = new JSONObject();
         InputStream insfile = file.getInputStream();
 
         if (file.getOriginalFilename().endsWith(".xlsx")) {
@@ -1016,7 +895,7 @@ public class UserRepoImpl implements UserRepo {
             //Get first/desired sheet from the workbook
             XSSFSheet sheet = workbookXLSX.getSheetAt(0);
 
-            return excelSheetAnalyze(sheet, ou,true);
+            return excelAnalyzer.excelSheetAnalyze(sheet, ou,true);
 
         } else if (file.getOriginalFilename().endsWith(".xls")) {
             HSSFWorkbook workbookXLS = null;
@@ -1025,108 +904,16 @@ public class UserRepoImpl implements UserRepo {
 
             HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
-            return excelSheetAnalyze(xlssheet, ou,true);
+            return excelAnalyzer.excelSheetAnalyze(xlssheet, ou,true);
 
         } else if (file.getOriginalFilename().endsWith(".csv")) {
 
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-            return csvSheet(csvReader, ou, true);
-
+            return excelAnalyzer.csvSheet(csvReader, ou, true);
         }
 
         return null;
     }
-
-    public List excelSheetAnalyze(Sheet sheet, String ou, boolean hasHeader) {
-
-
-        Iterator<Row> rowIterator = sheet.iterator();
-
-        List<String> notExist = new LinkedList<>();
-
-        if (hasHeader == true) rowIterator.next();
-
-
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
-
-            Cell cell = row.getCell(0);
-            //Check the cell type and format accordingly
-
-            if (cell == null) break;
-
-            ModificationItem[] items = new ModificationItem[1];
-            Attribute[] attrs = new Attribute[1];
-
-            DataFormatter formatter = new DataFormatter();
-
-            attrs[0] = new BasicAttribute("ou", ou);
-            items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
-
-            try {
-                ldapTemplate.modifyAttributes(buildDn.buildDn(formatter.formatCellValue(row.getCell(0))), items);
-
-            } catch (Exception e) {
-                if (e.getClass().toString().contains("NameNotFoundException"))
-                    notExist.add(formatter.formatCellValue(row.getCell(0)));
-            }
-
-        }
-
-        return notExist;
-    }
-
-
-
-    public List csvSheet(BufferedReader sheet, String ou, boolean hasHeader) throws IOException {
-
-        String row;
-        int i = 0;
-        List<String> notExist = new LinkedList<>();
-
-        while ((row = sheet.readLine()) != null) {
-            if (i == 0 && hasHeader) {
-                i++;
-                continue;
-            }
-
-            ModificationItem[] items = new ModificationItem[1];
-            Attribute[] attrs = new Attribute[1];
-
-            String[] data = row.split(",");
-
-            attrs[0] = new BasicAttribute("ou", ou);
-            items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
-
-            try {
-                ldapTemplate.modifyAttributes(buildDn.buildDn(data[0]), items);
-
-            } catch (Exception e) {
-                if (e.getClass().toString().contains("NameNotFoundException"))
-                    notExist.add(data[0]);
-            }
-
-            i++;
-
-        }
-        return notExist;
-    }
-
-    @Bean
-    @Deprecated
-    public PasswordEncoder passwordEncoder() {
-        return new LdapShaPasswordEncoder();
-    }
-
-    @Setter
-    @Getter
-    private class BasicDashboardData {
-        int nUsers;
-        int nLocked;
-        int nDisabled;
-    }
-
-
 }
 

@@ -5,6 +5,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.IdmanApplication;
@@ -55,16 +57,21 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     @Autowired
     SimpleUserAttributeMapper simpleUserAttributeMapper;
 
-    @Override
-    public HttpStatus userRefresh() throws IOException {
-        //0. crete collection, if not exist
+    @Autowired
+    DashboardData dashboardData;
 
+    @Value("${administrator.ou.id}")
+    private String admidId;
+
+    @Override
+    public HttpStatus userRefresh()  {
+        //0. crete collection, if not exist
 
         if (mongoTemplate.getCollection("IDMAN_UsersExtraInfo") == null)
             mongoTemplate.createCollection("IDMAN_UsersExtraInfo");
 
         //1. create documents
-        for (SimpleUser user : userRepo.retrieveUsersMain()) {
+        for (SimpleUser user : userRepo.retrieveUsersMain(-1,-1)) {
             Query queryMongo = new Query(new Criteria("userId").is(user.getUserId()));
             if (mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, "IDMAN_UsersExtraInfo") != null) {
 
@@ -97,11 +104,37 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                 mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");
             }
+            UsersExtraInfo  userExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
 
+            if (userExtraInfo!=null) {
+                if (userExtraInfo.getUserId().equalsIgnoreCase("su"))
+                    userExtraInfo.setRole("SUPERADMIN");
+                else if (user.getMemberOf().contains(admidId))
+                    userExtraInfo.setRole("ADMIN");
+                else if (userExtraInfo.getRole() == null)
+                    userExtraInfo.setRole("USER");
+                else
+                    userExtraInfo.setRole(userExtraInfo.getRole());
+
+                mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");
+
+            }
+
+
+
+
+
+        }
+
+        try {
+            dashboardData.updateDashboardData();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         //2. cleanUp mongo
         List<SimpleUser> usersMongo = mongoTemplate.findAll(SimpleUser.class, "IDMAN_UsersExtraInfo");
+        if (usersMongo!=null)
         for (SimpleUser simpleUser : usersMongo) {
             if (ldapTemplate.search(query().where("uid").is(simpleUser.getUserId()), simpleUserAttributeMapper).size()==0)
                 mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(simpleUser.getUserId())), UsersExtraInfo.class, "IDMAN_UsersExtraInfo");

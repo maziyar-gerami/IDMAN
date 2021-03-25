@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.User;
 import parsso.idman.Models.UsersExtraInfo;
+import parsso.idman.Repos.UserRepo;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
@@ -25,6 +26,10 @@ public class UserAttributeMapper implements AttributesMapper<User> {
 
     @Autowired
     LdapTemplate ldapTemplate;
+
+    @Autowired
+    UserRepo userRepo;
+
     @Override
     public User mapFromAttributes(Attributes attributes) throws NamingException {
         User user = new User();
@@ -48,6 +53,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
 
         Query query = new Query(Criteria.where("userId").is(user.getUserId()));
 
+
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
 
         if (usersExtraInfo!=null) {
@@ -58,6 +64,11 @@ public class UserAttributeMapper implements AttributesMapper<User> {
             //user.getUsersExtraInfo().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
             user.setEndTime(null != attributes.get("pwdEndTime") ? Time.setEndTime(attributes.get("pwdEndTime").get().toString()) : null);
 
+            if (usersExtraInfo.getRole()==null)
+                user.setRole(usersExtraInfo.getRole());
+            else {
+
+            }
         }
         if (null != attributes.get("pwdAccountLockedTime")) {
 

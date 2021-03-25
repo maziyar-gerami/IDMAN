@@ -5,6 +5,12 @@ plugins {
 	id 'war'
 }
 
+dependencyManagement {
+	imports {
+		mavenBom 'org.apache.logging.log4j:log4j-bom:2.14.1'
+	}
+}
+
 group = 'parsso'
 version = 'idman'
 sourceCompatibility = '1.8'
@@ -21,6 +27,7 @@ repositories {
 	maven {
 		url "https://git.captcha.com/botdetect-java-captcha.git/blob_plain/HEAD:/"
 	}
+	jcenter()
 }
 
 dependencies {
@@ -107,13 +114,11 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework/spring-websocket
 	compile group: 'org.springframework', name: 'spring-websocket', version: '5.2.9.RELEASE'
 
-	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
-	compile group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.3.4.RELEASE'
+	// https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 
-	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.0'
-
-	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.0'
-
+	// https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
 
 }
 

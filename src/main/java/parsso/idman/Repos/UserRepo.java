@@ -5,6 +5,7 @@ import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.ListUsers;
 import parsso.idman.Models.SimpleUser;
 import parsso.idman.Models.User;
@@ -21,15 +22,12 @@ public interface UserRepo {
 
     String showProfilePic(HttpServletResponse response, User user);
 
-    byte[] showProfilePic(User user);
 
     HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException;
 
-    List<SimpleUser> retrieveUsersMain();
+    List<SimpleUser> retrieveUsersMain(int page, int number);
 
     int retrieveUsersSize();
-
-    List<SimpleUser> retrieveUsersMain(String sortType, String groupFilter, String searchuUid, String searchUid, String userStatus);
 
     User getName(String uid, String token);
 
@@ -53,15 +51,13 @@ public interface UserRepo {
 
     ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus);
 
-    int sendEmail(String email, String cid, String answer);
-
     int sendEmail(String email, String uid, String cid, String answer);
 
     HttpStatus updatePass(String userId,String oldPass, String token);
 
     JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException;
 
-    org.json.simple.JSONObject retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException;
+    Dashboard retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException;
 
     HttpStatus enable(String uid);
 

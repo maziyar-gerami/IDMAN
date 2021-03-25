@@ -1,7 +1,6 @@
 package parsso.idman.Captcha.RepoImp;
 
 
-import com.mongodb.client.MongoClients;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,9 +65,6 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         CAPTCHA captcha = new CAPTCHA(phrase);
 
         try {
-
-            String mongoURI = "mongodb://" + mongoCreds + "@" + mongoHosts + "/" + mongodb + "?" + mongoOpts;
-            MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(mongoURI), mongodb);
 
             mongoTemplate.save(captcha, collection);
             return createImage(phrase, captcha);

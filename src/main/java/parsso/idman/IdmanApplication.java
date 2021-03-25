@@ -68,16 +68,15 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Value("${interval.check.pass.hours}")
     private static long intervalCheckPassTime;
 
-    final static Logger logger = LogManager.getLogger(IdmanApplication.class);
 
+    private static final Logger logger = LogManager.getLogger(IdmanApplication.class);
 
     /**
      * The entry point of application.
      *
      * @param args the input arguments
      */
-    public static void main(String[] args) throws IOException, org.json.simple.parser.ParseException {
-
+    public static void main(String[] args) throws  Exception {
 
         ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
         //new SystemRefreshRepoImpl();
@@ -94,7 +93,16 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
             }
         };
 
-        logger.error("g");
+
+        logger.error("Hello from Log4j 2");
+
+        // in old days, we need to check the log level to increase performance
+        /*if (logger.isDebugEnabled()) {
+            logger.debug("{}", getNumber());
+        }*/
+
+        // with Java 8, we can do this, no need to check the log level
+
         //refresh(context);
         Thread thread = new Thread(runnable);
         thread.start();
@@ -103,7 +111,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
     private static void refresh(ConfigurableApplicationContext context) throws IOException, org.json.simple.parser.ParseException {
 
-        logger.error("refresh started");
+        //logger.error("refresh started");
         context.getBean(SystemRefresh.class).all();
     }
 

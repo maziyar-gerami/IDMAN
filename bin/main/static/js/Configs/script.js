@@ -30,12 +30,16 @@ document.addEventListener('DOMContentLoaded', function () {
       lang: "EN",
       isRtl: true,
       activeItem: "",
+      activeItemMain: "mainConfigsPSI",
       configsList: [],
       configsDescription: [],
       configsGroupNames: [],
       restorePoints: [],
       configsLoaded: false,
       userPicture: "images/PlaceholderUser.png",
+      loader: false,
+      refreshSuccess: false,
+      refreshSuccessText: "",
       s0: "پارسو",
       s1: "",
       s2: "خروج",
@@ -70,6 +74,15 @@ document.addEventListener('DOMContentLoaded', function () {
       s31: "بازگردانی",
       s32: "ممیزی ها",
       s33: "/audits",
+      s34: "به‌روزرسانی",
+      s35: "به‌روزرسانی سرویس ها",
+      s36: "به‌روزرسانی کاربران",
+      s37: "به‌روزرسانی CAPTCHA",
+      s38: "به‌روزرسانی کلی",
+      s39: "به‌روزرسانی سرویس ها با موفقیت انجام شد.",
+      s40: "به‌روزرسانی کاربران با موفقیت انجام شد.",
+      s41: "به‌روزرسانی CAPTCHA با موفقیت انجام شد.",
+      s42: "به‌روزرسانی کلی با موفقیت انجام شد.",
     },
     created: function () {
       this.getConfigs();
@@ -82,13 +95,16 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     methods: {
       isActive (menuItem) {
-        return this.activeItem === menuItem
+        return this.activeItem === menuItem;
       },
       setActive (menuItem) {
-        this.activeItem = menuItem
+        this.activeItem = menuItem;
       },
-      connect (add) {
-        window.open(add);
+      isActiveMain (menuItem) {
+        return this.activeItemMain === menuItem;
+      },
+      setActiveMain (menuItem) {
+        this.activeItemMain = menuItem;
       },
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -212,6 +228,54 @@ document.addEventListener('DOMContentLoaded', function () {
           alert(this.s30);
         }
       },
+      refreshServices: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        this.loader = true;
+        axios.get(url + "/api/refresh/services") //
+          .then((res) => {
+            vm.loader = false;
+            vm.refreshSuccessText = vm.s39;
+            vm.refreshSuccess = true;
+            setTimeout(function(){ vm.refreshSuccess = false; }, 3000);
+          });
+      },
+      refreshUsers: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        this.loader = true;
+        axios.get(url + "/api/refresh/users") //
+          .then((res) => {
+            vm.loader = false;
+            vm.refreshSuccessText = vm.s40;
+            vm.refreshSuccess = true;
+            setTimeout(function(){ vm.refreshSuccess = false; }, 3000);
+          });
+      },
+      refreshCaptchas: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        this.loader = true;
+        axios.get(url + "/api/refresh/captchas") //
+          .then((res) => {
+            vm.loader = false;
+            vm.refreshSuccessText = vm.s41;
+            vm.refreshSuccess = true;
+            setTimeout(function(){ vm.refreshSuccess = false; }, 3000);
+          });
+      },
+      refreshAll: function () {
+        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        var vm = this;
+        this.loader = true;
+        axios.get(url + "/api/refresh/all") //
+          .then((res) => {
+            vm.loader = false;
+            vm.refreshSuccessText = vm.s42;
+            vm.refreshSuccess = true;
+            setTimeout(function(){ vm.refreshSuccess = false; }, 3000);
+          });
+      },
       changeLang: function () {
         if(this.lang == "EN"){
           this.margin = "margin-left: 30px;";
@@ -251,6 +315,15 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s31 = "Restore";
           this.s32 = "Audits";
           this.s33 = "/audits?en";
+          this.s34 = "Refresh";
+          this.s35 = "Refresh Services";
+          this.s36 = "Refresh Users";
+          this.s37 = "Refresh CAPTCHA";
+          this.s38 = "Refresh All";
+          this.s39 = "Services Refreshed Successfully.";
+          this.s40 = "Users Refreshed Successfully.";
+          this.s41 = "CAPTCHA Refreshed Successfully.";
+          this.s42 = "All Refreshed Successfully.";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -289,6 +362,15 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s31 = "بازگردانی";
             this.s32 = "ممیزی ها";
             this.s33 = "/audits";
+            this.s34 = "به‌روزرسانی";
+            this.s35 = "به‌روزرسانی سرویس ها";
+            this.s36 = "به‌روزرسانی کاربران";
+            this.s37 = "به‌روزرسانی CAPTCHA";
+            this.s38 = "به‌روزرسانی کلی";
+            this.s39 = "به‌روزرسانی سرویس ها با موفقیت انجام شد.";
+            this.s40 = "به‌روزرسانی کاربران با موفقیت انجام شد.";
+            this.s41 = "به‌روزرسانی CAPTCHA با موفقیت انجام شد.";
+            this.s42 = "به‌روزرسانی کلی با موفقیت انجام شد.";
         }
       }
     },
