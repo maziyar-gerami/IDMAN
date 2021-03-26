@@ -130,26 +130,4 @@ public class ServiceController {
         return new HttpEntity<>(IOUtils.toByteArray(in), header);
 
     }
-
-    @GetMapping("/createservice")
-    public String CreateService(HttpServletRequest request) {
-        try {
-            Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUsers(principal.getName());
-
-            List<String> memberOf = user.getMemberOf();
-
-            if (user.getUserId().equals("su"))
-                return "createservice";
-
-            for (String group : memberOf) {
-                if (group.equals(adminOu))
-                    return "createservice";
-            }
-
-        } catch (Exception e) {
-            return "403";
-        }
-        return "403";
-    }
 }

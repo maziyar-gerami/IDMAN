@@ -556,10 +556,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         if(res.data.userList.length == 0){
                             vm.isListEmpty = true;
                         }
-                        console.log(vm.users);
                         vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
-                        console.log(vm.total);
-                        console.log(res.data.size);
                         res.data.userList.forEach(function (item) {
                             tempUsers = {};
                             tempUsers.userId = item.userId;

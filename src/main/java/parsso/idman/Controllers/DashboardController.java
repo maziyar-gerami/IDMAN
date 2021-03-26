@@ -65,17 +65,35 @@ public class DashboardController {
 
     @GetMapping("/services")
     public String Services(HttpServletRequest request) {
-
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-        if (user.getUserId().equals("su"))
-            return "services";
-
         try {
+            Principal principal = request.getUserPrincipal();
+            User user = userRepo.retrieveUsers(principal.getName());
+            if (user.getUserId().equals("su"))
+                return "services";
+        
             if (user.getUsersExtraInfo().getRole().equals("ADMIN")
                     || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
                     || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
                 return "services";
+
+        } catch (Exception e) {
+            return "403";
+        }
+        return "403";
+    }
+
+    @GetMapping("/createservice")
+    public String CreateService(HttpServletRequest request) {
+        try {
+            Principal principal = request.getUserPrincipal();
+            User user = userRepo.retrieveUsers(principal.getName());
+            if (user.getUserId().equals("su"))
+                return "createservice";
+        
+            if (user.getUsersExtraInfo().getRole().equals("ADMIN")
+                    || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
+                    || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
+                return "createservice";
 
         } catch (Exception e) {
             return "403";

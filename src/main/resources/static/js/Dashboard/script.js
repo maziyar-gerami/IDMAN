@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
       s17: "شناسه",
       s18: "نام",
       s19: "توضیحات",
-      s20: "اتصال",
+      s20: "ورود",
       s21: "./groups",
       s22: "./profile",
       s23: "./privacy",
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s17 = "ID";
           this.s18 = "Name";
           this.s19 = "Description";
-          this.s20 = "Connect";
+          this.s20 = "Login";
           this.s21 = "./groups?en";
           this.s22 = "./profile?en";
           this.s23 = "./privacy?en";
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s17 = "شناسه";
             this.s18 = "نام";
             this.s19 = "توضیحات";
-            this.s20 = "اتصال";
+            this.s20 = "ورود";
             this.s21 = "./groups";
             this.s22 = "./profile";
             this.s23 = "./privacy";

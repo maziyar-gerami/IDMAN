@@ -194,6 +194,9 @@ function myFunction() {
         s101: "سرویسی یافت نشد",
         rolesText: "نقش ها",
         rolesURLText: "./roles",
+        addAllGroupsText: "انتخاب همه",
+        removeAllGroupsText: "لغو انتخاب همه",
+        allGroupsHolderText: "انتخاب همه",
       },
       created: function () {
         this.getUserInfo();
@@ -555,12 +558,17 @@ function myFunction() {
               }
 
               if(typeof res.data.accessStrategy.requiredAttributes.ou !== 'undefined'){
-                for(let i = 0; i < res.data.accessStrategy.requiredAttributes.ou[1].length; ++i){
-                  document.getElementById("groupNameId" + res.data.accessStrategy.requiredAttributes.ou[1][i]).checked = true;
-                  if(vm.groupList === ""){
-                    vm.groupList += res.data.accessStrategy.requiredAttributes.ou[1][i];
-                  }else{
-                    vm.groupList += ',' + res.data.accessStrategy.requiredAttributes.ou[1][i];
+                if(res.data.accessStrategy.requiredAttributes.ou[1].length == vm.groups.length){
+                  document.getElementById("selectAllGroups").click();
+                }else{
+                  for(let i = 0; i < res.data.accessStrategy.requiredAttributes.ou[1].length; ++i){
+                    document.getElementById("groupNameId" + res.data.accessStrategy.requiredAttributes.ou[1][i]).click();
+                    /* document.getElementById("groupNameId" + res.data.accessStrategy.requiredAttributes.ou[1][i]).checked = true;
+                    if(vm.groupList === ""){
+                      vm.groupList += res.data.accessStrategy.requiredAttributes.ou[1][i];
+                    }else{
+                      vm.groupList += ',' + res.data.accessStrategy.requiredAttributes.ou[1][i];
+                    } */
                   }
                 }
               }
@@ -1064,7 +1072,7 @@ function myFunction() {
           });
         },
         addGroup: function (n) {
-          n = n.split("'").join("");
+          //n = n.split("'").join("");
           if(this.groupList.includes(n)){
             if(this.groupList.includes(n + ',')){
               this.groupList = this.groupList.replace(n + ',', "");
@@ -1079,6 +1087,24 @@ function myFunction() {
             }else{
               this.groupList += ',' + n;
             }
+          }
+          console.log(this.groupList);
+        },
+        allGroups: function () {
+          if(this.allGroupsHolderText == this.addAllGroupsText){
+            for(let i = 0; i < this.groups.length; ++i){
+              if(!this.groupList.includes(this.groups[i].id)){
+                document.getElementById("groupNameId" + this.groups[i].id).click();
+              }
+            }
+            this.allGroupsHolderText = this.removeAllGroupsText;
+          }else{
+            for(let i = 0; i < this.groups.length; ++i){
+              if(this.groupList.includes(this.groups[i].id)){
+                document.getElementById("groupNameId" + this.groups[i].id).click();
+              }
+            }
+            this.allGroupsHolderText = this.addAllGroupsText;
           }
         },
         serviceNameValidate ($event) {
@@ -1312,6 +1338,8 @@ function myFunction() {
             this.s101 = "No Service Found";
             this.rolesText = "Roles";
             this.rolesURLText = "./roles?en";
+            this.addAllGroupsText = "Select All";
+            this.removeAllGroupsText = "Unselect All";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
@@ -1421,6 +1449,8 @@ function myFunction() {
               this.s101 = "سرویسی یافت نشد";
               this.rolesText = "نقش ها";
               this.rolesURLText = "./roles";
+              this.addAllGroupsText = "انتخاب همه";
+              this.removeAllGroupsText = "لغو انتخاب همه";
           }
         },
         div: function (a, b) {

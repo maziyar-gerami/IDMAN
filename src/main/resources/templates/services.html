@@ -489,16 +489,21 @@
                                                                 <input name="unauthorizedRedirectUrl" class="form-control enInput" type="text" placeholder="URL">
                                                             </div>
                             
-                                                            <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s32}}</span></h4>
+                                                            <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s32}}</span></h5>
                                                             <div class="form-group">
                                                                 <input type="hidden" name="groups" v-bind:value="groupList">
+                                                                <label class="form-check-label">{{allGroupsHolderText}}</label>
+                                                                <label class="switch">
+                                                                    <input type="checkbox">
+                                                                    <span id="selectAllGroups" v-on:click="allGroups()" class="slider round"></span>                                                      
+                                                                </label> <br>
                                                                 <ul>   
                                                                     <li v-for="group in groups" :key="group.name">
                                                                         <label class="form-check-label">{{group.name}}</label>
                                                                         <label class="form-check-label" style="font-size: 80%; color: #0000008c;"> ( <small>{{group.id}}</small> ) </label>
                                                                         <label class="switch">
-                                                                            <input type="checkbox" v-bind:id="'groupNameId' + group.id">
-                                                                            <span v-on:click="addGroup(group.id)" class="slider round"></span>  
+                                                                            <input type="checkbox">
+                                                                            <span :id="'groupNameId' + group.id" v-on:click="addGroup(group.id)" class="slider round"></span>  
                                                                         </label>
                                                                     </li>
                                                                 </ul>
