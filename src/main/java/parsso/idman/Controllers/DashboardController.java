@@ -46,15 +46,13 @@ public class DashboardController {
 
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUsers(principal.getName());
-        if (user.getUserId().equals("su"))
-            return "groups";
 
         try {
 
             if (user.getUsersExtraInfo().getRole().equals("ADMIN")
-            || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
-            || user.getUsersExtraInfo().getRole().equals("SUPPORTER")) {
-                    return "groups";
+                    || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
+                    || user.getUsersExtraInfo().getRole().equals("SUPPORTER")) {
+                return "groups";
             }
 
         } catch (Exception e) {
@@ -68,6 +66,7 @@ public class DashboardController {
 
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUsers(principal.getName());
+
         try {
             if (user.getUsersExtraInfo().getRole().equals("ADMIN")
                     || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
@@ -89,8 +88,21 @@ public class DashboardController {
                 || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
                 || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
             return "users";
-            return "403";
+        return "403";
 
+    }
+
+    @GetMapping("/roles")
+    public String Roles(HttpServletRequest request) {
+
+            try {
+                if (request.getUserPrincipal().getName().equals("su"))
+                    return "roles";
+
+            } catch (Exception e) {
+                return "403";
+            }
+            return "403";
     }
 
     @GetMapping("/audits")
@@ -153,4 +165,5 @@ public class DashboardController {
                 .logout(request, response, auth);
         return "redirect:" + casLogout;
     }
+
 }

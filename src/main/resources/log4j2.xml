@@ -14,10 +14,12 @@
         </RollingFile>
 
 
-            <NoSql name="databaseAppender">
-                <MongoDb databaseName="applicationDb" collectionName="applicationLog" server="mongo.example.org"
-                          username="loggingUser" password="abc123" />
-            </NoSql>
+        <NoSql name="Mongo4">
+            <MongoDb4 capped="true" collectionSize="104857600"
+                      connection="mongodb://localhost:27017/admin.logs"
+
+            />
+        </NoSql>
 
 
     </Appenders>
