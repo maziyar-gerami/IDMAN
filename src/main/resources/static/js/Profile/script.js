@@ -106,6 +106,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s41: "ممیزی ها",
             s42: "/audits",
             s43: "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.",
+            rolesText: "نقش ها",
+            rolesURLText: "./roles",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -343,6 +345,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s41 = "Audits";
                     this.s42 = "/audits?en";
                     this.s43 = "New Password Should Not be Same as Old Password.";
+                    this.rolesText = "Roles";
+                    this.rolesURLText = "./roles?en";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -414,6 +418,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s41 = "ممیزی ها";
                     this.s42 = "/audits";
                     this.s43 = "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.";
+                    this.rolesText = "نقش ها";
+                    this.rolesURLText = "./roles";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";

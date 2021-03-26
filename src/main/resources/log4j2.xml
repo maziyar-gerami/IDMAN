@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration>
     <Appenders>
         <Console name="LogToConsole" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
@@ -14,19 +14,19 @@
         </RollingFile>
 
 
-        <NoSql name="Mongo4">
-            <MongoDb4 capped="true" collectionSize="104857600"
-                      connection="mongodb://localhost:27017/admin.logs"
-
+        <NoSql name="MongoDbAppender">
+            <MongoDb4 connection="mongodb://parssouser:APA00918@parsso2.razi.ac.ir:27017/parssodb.IDMAN_Log"
+                      capped="true"
+                      collectionSize="1073741824"/>
             />
         </NoSql>
-
 
     </Appenders>
     <Loggers>
 
-        <Root level="error">
+        <Root level="warn">
             <AppenderRef ref="RollingFile" />
+            <AppenderRef ref="MongoDbAppender"/>
             <AppenderRef ref="LogToConsole"/>
         </Root>
     </Loggers>

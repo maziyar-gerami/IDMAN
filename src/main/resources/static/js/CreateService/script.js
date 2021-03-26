@@ -146,6 +146,11 @@ document.addEventListener('DOMContentLoaded', function () {
       s81: "کد پاسخ های قابل قبول",
       s82: "توکن سخت افزاری",
       s83: "غیرفعال",
+      rolesText: "نقش ها",
+      rolesURLText: "./roles",
+      addAllGroupsText: "انتخاب همه",
+      removeAllGroupsText: "لغو انتخاب همه",
+      allGroupsHolderText: "انتخاب همه",
     },
     created: function () {
       this.getUserInfo();
@@ -221,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       },
       addGroup: function (n) {
-        n = n.split("'").join("");
+        //n = n.split("'").join("");
         if(this.groupList.includes(n)){
           if(this.groupList.includes(n + ',')){
             this.groupList = this.groupList.replace(n + ',', "");
@@ -236,6 +241,23 @@ document.addEventListener('DOMContentLoaded', function () {
           }else{
             this.groupList += ',' + n;
           }
+        }
+      },
+      allGroups: function () {
+        if(this.allGroupsHolderText == this.addAllGroupsText){
+          for(let i = 0; i < this.groups.length; ++i){
+            if(!this.groupList.includes(this.groups[i].id)){
+              document.getElementById("groupNameId" + this.groups[i].id).click();
+            }
+          }
+          this.allGroupsHolderText = this.removeAllGroupsText;
+        }else{
+          for(let i = 0; i < this.groups.length; ++i){
+            if(this.groupList.includes(this.groups[i].id)){
+              document.getElementById("groupNameId" + this.groups[i].id).click();
+            }
+          }
+          this.allGroupsHolderText = this.addAllGroupsText;
         }
       },
       addService: function () {
@@ -861,6 +883,15 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s81 = "Acceptable Response Codes";
           this.s82 = "Hardware Token";
           this.s83 = "Disabled";
+          this.rolesText = "Roles";
+          this.rolesURLText = "./roles?en";
+          if(this.allGroupsHolderText == this.addAllGroupsText){
+            this.allGroupsHolderText = "Select All";
+          }else{
+            this.allGroupsHolderText = "Unselect All";
+          }
+          this.addAllGroupsText = "Select All";
+          this.removeAllGroupsText = "Unselect All";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -949,6 +980,15 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s81 = "کد پاسخ های قابل قبول";
             this.s82 = "توکن سخت افزاری";
             this.s83 = "غیرفعال";
+            this.rolesText = "نقش ها";
+            this.rolesURLText = "./roles";
+            if(this.allGroupsHolderText == this.addAllGroupsText){
+              this.allGroupsHolderText = "انتخاب همه";
+            }else{
+              this.allGroupsHolderText = "لغو انتخاب همه";
+            }
+            this.addAllGroupsText = "انتخاب همه";
+            this.removeAllGroupsText = "لغو انتخاب همه";
         }
       },
       setServiceType: function () {

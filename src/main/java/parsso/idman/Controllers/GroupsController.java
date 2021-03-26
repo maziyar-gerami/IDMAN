@@ -37,8 +37,9 @@ public class GroupsController {
     }
 
     @PutMapping("/api/groups/{id}")
-    public ResponseEntity<HttpStatus> rebindLdapUser(@RequestBody Group ou, @PathVariable("id") String id) {
-        return new ResponseEntity<>(groupRepo.update(id, ou));
+    public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request,@RequestBody Group ou, @PathVariable("id") String id) {
+        Principal principal = request.getUserPrincipal();
+        return new ResponseEntity<>(groupRepo.update(principal.getName(),id, ou));
     }
 
     @GetMapping("/api/groups")

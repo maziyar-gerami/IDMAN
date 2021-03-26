@@ -50,9 +50,9 @@ public class DashboardController {
         try {
 
             if (user.getUsersExtraInfo().getRole().equals("ADMIN")
-                    || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
-                    || user.getUsersExtraInfo().getRole().equals("SUPPORTER")) {
-                return "groups";
+            || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
+            || user.getUsersExtraInfo().getRole().equals("SUPPORTER")) {
+                    return "groups";
             }
 
         } catch (Exception e) {
@@ -63,15 +63,31 @@ public class DashboardController {
 
     @GetMapping("/services")
     public String Services(HttpServletRequest request) {
-
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-
         try {
+            Principal principal = request.getUserPrincipal();
+            User user = userRepo.retrieveUsers(principal.getName());
+        
             if (user.getUsersExtraInfo().getRole().equals("ADMIN")
                     || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
                     || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
                 return "services";
+
+        } catch (Exception e) {
+            return "403";
+        }
+        return "403";
+    }
+
+    @GetMapping("/createservice")
+    public String CreateService(HttpServletRequest request) {
+        try {
+            Principal principal = request.getUserPrincipal();
+            User user = userRepo.retrieveUsers(principal.getName());
+
+            if (user.getUsersExtraInfo().getRole().equals("ADMIN")
+                    || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
+                    || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
+                return "createservice";
 
         } catch (Exception e) {
             return "403";
@@ -88,21 +104,23 @@ public class DashboardController {
                 || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
                 || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
             return "users";
-        return "403";
+            return "403";
 
     }
 
     @GetMapping("/roles")
     public String Roles(HttpServletRequest request) {
 
-            try {
-                if (request.getUserPrincipal().getName().equals("su"))
-                    return "roles";
+        Principal principal = request.getUserPrincipal();
+        User user = userRepo.retrieveUsers(principal.getName());
+        try {
+            if (user.getUsersExtraInfo().getRole().equals("SUPERADMIN"))
+                return "roles";
 
-            } catch (Exception e) {
-                return "403";
-            }
+        } catch (Exception e) {
             return "403";
+        }
+        return "403";
     }
 
     @GetMapping("/audits")
@@ -117,8 +135,11 @@ public class DashboardController {
 
     @GetMapping("/configs")
     public String Configs(HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
+        User user = userRepo.retrieveUsers(principal.getName());
+
         try {
-            if (request.getUserPrincipal().getName().equals("su"))
+            if (user.getRole().equals("SUPERADMIN"))
                 return "configs";
 
         } catch (Exception e) {
@@ -165,5 +186,4 @@ public class DashboardController {
                 .logout(request, response, auth);
         return "redirect:" + casLogout;
     }
-
 }

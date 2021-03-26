@@ -69,7 +69,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private static long intervalCheckPassTime;
 
 
-    private static final Logger logger = LogManager.getLogger(IdmanApplication.class);
+    private static final Logger logger = LogManager.getLogger("********* Parsso IDMAN *********");
 
     /**
      * The entry point of application.
@@ -94,7 +94,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         };
 
 
-        logger.error("Hello from Log4j 2");
+        logger.warn("Started!");
 
         // in old days, we need to check the log level to increase performance
         /*if (logger.isDebugEnabled()) {

@@ -29,7 +29,7 @@ public interface ServiceRepo {
 
     String uploadMetadata(MultipartFile file);
 
-    HttpStatus updateOuIdChange(Service service, long sid, String name, String oldOu, String newOu) throws IOException;
+    HttpStatus updateOuIdChange(String doer,Service service, long sid, String name, String oldOu, String newOu) throws IOException;
 
     HttpStatus createService(JSONObject jsonObject, String system) throws IOException;
 

@@ -2,14 +2,6 @@ package parsso.idman.RepoImpls;
 
 
 import net.minidev.json.JSONObject;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
@@ -24,7 +16,6 @@ import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.User.BuildDn;
 import parsso.idman.Models.Group;
 import parsso.idman.Models.SimpleUser;
@@ -35,11 +26,11 @@ import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
-import javax.naming.directory.*;
-import java.io.BufferedReader;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.SearchControls;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -108,7 +99,7 @@ public class GroupRepoImpl implements GroupRepo {
             for (Group group : groups) {
                 Name dn = buildDn(group.getId());
                 try {
-                    logger.info("All groups removed");
+                    logger.warn("All groups removed");
                     ldapTemplate.unbind(dn);
 
                 } catch (Exception e) {
@@ -119,7 +110,7 @@ public class GroupRepoImpl implements GroupRepo {
 
 
 
-        logger.info("Removing groups ended");
+        logger.warn("Removing groups ended");
         return HttpStatus.OK;
     }
 
@@ -221,7 +212,7 @@ public class GroupRepoImpl implements GroupRepo {
         Name dn = buildDn(ou.getId());
         try {
             ldapTemplate.bind(dn, null, buildAttributes(ou.getId(), ou));
-            logger.info("Group " + ou.getName() + " created successfully");
+            logger.warn("Group " + ou.getName() + " created successfully");
             return HttpStatus.OK;
 
         } catch (Exception e) {
@@ -232,7 +223,7 @@ public class GroupRepoImpl implements GroupRepo {
 
 
     @Override
-    public HttpStatus update(String id, Group ou) {
+    public HttpStatus update(String doerID, String id, Group ou) {
         Name dn = buildDn(id);
 
         List<Group> groups = retrieve();
@@ -248,7 +239,7 @@ public class GroupRepoImpl implements GroupRepo {
                 ldapTemplate.unbind(dn);
                 create(ou);
                 DirContextOperations contextUser;
-                logger.info("Group " + ou.getId() + " updated successfully");
+                logger.warn("Group " + ou.getId() + " updated successfully");
 
                 for (SimpleUser user : userRepo.retrieveGroupsUsers(id)) {
                     for (String group : user.getMemberOf()) {
@@ -277,11 +268,11 @@ public class GroupRepoImpl implements GroupRepo {
 
                         // create new service
 
-                        serviceRepo.updateOuIdChange(service, service.getId(), service.getName(), id, ou.getId());
+                        serviceRepo.updateOuIdChange(doerID,service, service.getId(), service.getName(), id, ou.getId());
 
                     }
 
-                logger.info("Group " + ou.getId() + " updated successfully");
+                logger.warn("Group " + ou.getId() + " updated successfully");
                 return HttpStatus.OK;
 
             } catch (ParseException parseException) {
@@ -298,7 +289,7 @@ public class GroupRepoImpl implements GroupRepo {
 
             try {
                 ldapTemplate.rebind(dn, null, buildAttributes(ou.getId(), ou));
-                logger.info("Group " + ou.getId() + " updated successfully");
+                logger.warn("Group " + ou.getId() + " updated successfully");
                 return HttpStatus.OK;
 
             } catch (Exception e) {

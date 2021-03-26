@@ -155,7 +155,7 @@ public class Token {
 
 
         try {
-            userRepo.update(user.getUserId(), user);
+            userRepo.update(user.getUserId(),user.getUserId(), user);
             mongoTemplate.save(usersExtraInfo, collection);
 
         } catch (Exception e) {

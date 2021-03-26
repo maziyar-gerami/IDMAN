@@ -1,32 +1,15 @@
-2021-03-26 00:42:12,818 ERROR p.i.IdmanApplication [main] Hello from Log4j 2
-2021-03-26 00:50:50,948 ERROR p.i.IdmanApplication [main] Hello from Log4j 2
-2021-03-26 00:51:54,671 ERROR p.i.IdmanApplication [main] Hello from Log4j 2
-2021-03-26 00:53:11,107 ERROR p.i.IdmanApplication [main] Hello from Log4j 2
-2021-03-26 01:01:23,975 ERROR p.i.IdmanApplication [main] Hello from Log4j 2
-2021-03-26 01:01:47,602 ERROR p.i.IdmanApplication [main] Hello from Log4j 2
-2021-03-26 01:24:41,250 ERROR o.a.c.c.C.[.[.[.[dispatcherServlet] [http-nio-8080-exec-2] Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is com.mongodb.MongoTimeoutException: Timed out after 30000 ms while waiting to connect. Client view of cluster state is {type=UNKNOWN, servers=[{address=parsso2.razi.ac.ir:27017, type=UNKNOWN, state=CONNECTING, exception={com.mongodb.MongoSocketOpenException: Exception opening socket}, caused by {java.net.SocketTimeoutException: connect timed out}}]] with root cause
-com.mongodb.MongoTimeoutException: Timed out after 30000 ms while waiting to connect. Client view of cluster state is {type=UNKNOWN, servers=[{address=parsso2.razi.ac.ir:27017, type=UNKNOWN, state=CONNECTING, exception={com.mongodb.MongoSocketOpenException: Exception opening socket}, caused by {java.net.SocketTimeoutException: connect timed out}}]
-	at com.mongodb.internal.connection.BaseCluster.getDescription(BaseCluster.java:182) ~[mongo-java-driver-3.12.8.jar:?]
-	at com.mongodb.internal.connection.SingleServerCluster.getDescription(SingleServerCluster.java:41) ~[mongo-java-driver-3.12.8.jar:?]
-	at com.mongodb.client.internal.MongoClientDelegate.getConnectedClusterDescription(MongoClientDelegate.java:150) ~[mongo-java-driver-3.12.8.jar:?]
-	at com.mongodb.client.internal.MongoClientDelegate.createClientSession(MongoClientDelegate.java:102) ~[mongo-java-driver-3.12.8.jar:?]
-	at com.mongodb.client.internal.MongoClientDelegate$DelegateOperationExecutor.getClientSession(MongoClientDelegate.java:282) ~[mongo-java-driver-3.12.8.jar:?]
-	at com.mongodb.client.internal.MongoClientDelegate$DelegateOperationExecutor.execute(MongoClientDelegate.java:206) ~[mongo-java-driver-3.12.8.jar:?]
-	at com.mongodb.client.internal.MongoCollectionImpl.executeDrop(MongoCollectionImpl.java:844) ~[mongo-java-driver-3.12.8.jar:?]
-	at com.mongodb.client.internal.MongoCollectionImpl.drop(MongoCollectionImpl.java:834) ~[mongo-java-driver-3.12.8.jar:?]
-	at parsso.idman.RepoImpls.SystemRefreshRepoImpl.captchaRefresh(SystemRefreshRepoImpl.java:151) ~[main/:?]
-	at parsso.idman.Controllers.SystemRefreshController.captchas(SystemRefreshController.java:32) ~[main/:?]
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_251]
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_251]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_251]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_251]
-	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:190) ~[spring-web-5.2.6.RELEASE.jar:5.2.6.RELEASE]
-	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:138) ~[spring-web-5.2.6.RELEASE.jar:5.2.6.RELEASE]
-	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:105) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:879) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
-	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:793) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
-	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
-	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1040) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
+2021-03-27 00:05:50,496 ERROR o.a.c.c.C.[.[.[.[dispatcherServlet] [http-nio-8080-exec-3] Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is java.time.format.DateTimeParseException: Text 'Fri Mar 26 23:58:42 IRDT 2021' could not be parsed at index 0] with root cause
+java.time.format.DateTimeParseException: Text 'Fri Mar 26 23:58:42 IRDT 2021' could not be parsed at index 0
+	at java.time.format.DateTimeFormatter.parseResolved0(DateTimeFormatter.java:1949) ~[?:1.8.0_251]
+	at java.time.format.DateTimeFormatter.parse(DateTimeFormatter.java:1851) ~[?:1.8.0_251]
+	at java.time.OffsetDateTime.parse(OffsetDateTime.java:402) ~[?:1.8.0_251]
+	at java.time.OffsetDateTime.parse(OffsetDateTime.java:387) ~[?:1.8.0_251]
+	at parsso.idman.Helpers.LogsExcelView.buildExcelDocument(LogsExcelView.java:82) ~[main/:?]
+	at org.springframework.web.servlet.view.document.AbstractXlsView.renderMergedOutputModel(AbstractXlsView.java:68) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
+	at org.springframework.web.servlet.view.AbstractView.render(AbstractView.java:316) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1373) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.processDispatchResult(DispatcherServlet.java:1118) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1057) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
 	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
 	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898) ~[spring-webmvc-5.2.6.RELEASE.jar:5.2.6.RELEASE]
@@ -114,3 +97,4 @@ com.mongodb.MongoTimeoutException: Timed out after 30000 ms while waiting to con
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_251]
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) [tomcat-embed-core-9.0.35.jar:9.0.35]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_251]
+2021-03-27 00:06:04,095 WARN ********* Parsso IDMAN ********* [main] Started!

@@ -7,12 +7,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -32,7 +31,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Communicate.Email;
-import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
@@ -59,12 +57,9 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 public class UserRepoImpl implements UserRepo {
 
 
-    Logger logger = LoggerFactory.getLogger(UserRepoImpl.class);
     @Autowired
     FilesStorageService storageService;
     String collection = "IDMAN_UsersExtraInfo";
-    @Autowired
-    private InstantMessage instantMessage;
     @Value("${base.url}")
     private String BASE_URL;
     @Value("${email.controller}")
@@ -101,7 +96,9 @@ public class UserRepoImpl implements UserRepo {
     ExcelAnalyzer excelAnalyzer;
 
     @Override
-    public JSONObject create(User p) {
+    public JSONObject create(String doerID,User p) {
+
+        Logger logger = LogManager.getLogger(doerID);
 
         try {
             User user = retrieveUsers(p.getUserId());
@@ -131,7 +128,7 @@ public class UserRepoImpl implements UserRepo {
 
                 new Thread() {
                     public void run() {
-                        //logger.info("User "+user.getUserId() + " created");
+                        //logger.warn("User "+user.getUserId() + " created");
                         UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
                         usersExtraInfo.setUserId(p.getUserId());
                         usersExtraInfo.setQrToken(UUID.randomUUID().toString());
@@ -145,24 +142,24 @@ public class UserRepoImpl implements UserRepo {
 
                 if (p.getCStatus() != null)
                     if (p.getCStatus().equals("disable"))
-                        disable(p.getUserId());
+                        disable(doerID, p.getUserId());
 
-                logger.info("User " + "\"" + p.getUserId() + "\"" + " in " + new Date() + " created successfully");
+                logger.warn("User " + "\"" + p.getUserId() + "\"" + " in " + new Date() + " created successfully");
                 return new JSONObject();
             } else {
                 logger.warn("User " + "\"" + p.getUserId() + "\"" + " is exist. So it cannot be created");
-
                 return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
             logger.warn("Creating user " + "\"" + p.getUserId() + "\"" + " was unsuccessful");
-            e.printStackTrace();
             return null;
         }
     }
 
     @Override
     public JSONObject createUserImport(User p) {
+
+        Logger logger = LogManager.getLogger(p.getUserId());
 
         if (p.getUserId() != null && !p.getUserId().equals("")) {
             User user = retrieveUsers(p.getUserId());
@@ -207,7 +204,6 @@ public class UserRepoImpl implements UserRepo {
                     return importUsers.compareUsers(user, p);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 return null;
             }
 
@@ -224,7 +220,10 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus update(String usid, User p) {
+    public HttpStatus update(String doerID,String usid, User p) {
+
+        Logger logger = LogManager.getLogger(doerID);
+
         Name dn = buildDn.buildDn(p.getUserId());
 
         User user = retrieveUsers(p.getUserId());
@@ -239,7 +238,7 @@ public class UserRepoImpl implements UserRepo {
                 && user.getEndTime()!=null)
             removeCurrentEndTime(p.getUserId());
 
-        context = buildAttributes.buildAttributes(p.getUserId(), p, dn);
+        context = buildAttributes.buildAttributes(doerID, p.getUserId(), p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
 
@@ -254,7 +253,7 @@ public class UserRepoImpl implements UserRepo {
         try {
             ldapTemplate.modifyAttributes(context);
 
-            logger.info("User " + "\"" + p.getUserId() + "\"" + "in " + new Date() + " updated successfully");
+            logger.warn("User " + "\"" + p.getUserId() + "\"" + "in " + new Date() + " updated successfully");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -267,7 +266,7 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(context);
-                logger.info("Password for" + p.getUserId() + " changed successfully");
+                logger.warn("Password for" + p.getUserId() + " changed successfully");
                 return HttpStatus.OK;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -282,7 +281,10 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<String> remove(JSONObject jsonObject) {
+    public List<String> remove(String doer, JSONObject jsonObject) {
+
+        Logger logger = LogManager.getLogger(doer);
+
         List<User> people = new LinkedList<>();
         List<String> undeletables = new LinkedList<>();
         if (jsonObject.size() == 0)
@@ -318,11 +320,12 @@ public class UserRepoImpl implements UserRepo {
             }
 
         if (people.size() == 0)
-            logger.info("All users removed successfully");
+            logger.warn("All users removed successfully");
         if (people.size() == 1)
-            logger.info("User " + people.get(0).getUserId() + " removed successfully");
+            logger.warn("User " + people.get(0).getUserId() + " removed successfully");
         else
-            logger.info("Selected users removed successfully");
+            logger.warn("Selected users removed successfully");
+
 
 
         return undeletables;
@@ -364,6 +367,8 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public HttpStatus changePassword(String uId,String oldPassword, String newPassword, String token) {
 
+        Logger logger = LogManager.getLogger(uId);
+
         //TODO:check current pass
         User user = retrieveUsers(uId);
 
@@ -378,7 +383,7 @@ public class UserRepoImpl implements UserRepo {
 
                     try {
                         ldapTemplate.modifyAttributes(contextUser);
-                        logger.info("Password for" + uId + " changed successfully");
+                        logger.warn("Password for" + uId + " changed successfully");
                         return HttpStatus.OK;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -425,6 +430,7 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException {
 
+
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
 
         String s = timeStamp + file.getOriginalFilename();
@@ -438,9 +444,8 @@ public class UserRepoImpl implements UserRepo {
 
         //TODO:Should consider
         user.setPhoto(s);
-        if (update(user.getUserId(), user) == HttpStatus.OK) {
+        if (update(user.getUserId(),user.getUserId(), user) == HttpStatus.OK) {
             oldPic.delete();
-            logger.info("Setting profile pic for" + name + " was successful");
             return HttpStatus.OK;
 
         }
@@ -538,7 +543,7 @@ public class UserRepoImpl implements UserRepo {
         } else
             userStatusUsers = searchDisplayNameUsers;
 
-        int size = retrieveUsersSize();
+        int size = userStatus.length();
 
         return new ListUsers(size,userStatusUsers, (int) Math.ceil(size/nCount));
     }
@@ -579,7 +584,9 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus updateUsersWithSpecificOU(String old_ou, String new_ou) {
+    public HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) {
+        Logger logger = LogManager.getLogger(doerID);
+
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -597,7 +604,7 @@ public class UserRepoImpl implements UserRepo {
 
                 user.setUserPassword(null);
 
-                DirContextOperations context = buildAttributes.buildAttributes(user.getUserId(), user, buildDn.buildDn(user.getUserId()));
+                DirContextOperations context = buildAttributes.buildAttributes(doerID,user.getUserId(), user, buildDn.buildDn(user.getUserId()));
 
                 context.removeAttributeValue("ou", old_ou);
                 context.addAttributeValue("ou", new_ou);
@@ -655,15 +662,14 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public Dashboard retrieveDashboardData() throws InterruptedException {
 
-        org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(UserRepoImpl.class.getName());
-
-        LOGGER.error("***********************");
-
         return dashboardData.retrieveDashboardData();
     }
 
     @Override
-    public HttpStatus enable(String uid) {
+    public HttpStatus enable(String doer,String uid) {
+
+        Logger logger = LogManager.getLogger(doer);
+
 
         Name dn = buildDn.buildDn(uid);
 
@@ -678,7 +684,7 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.info("Enabling " + uid + " was successful");
+                logger.warn("Enabling " + uid + " was successful");
                 return HttpStatus.OK;
 
             } catch (Exception e) {
@@ -717,7 +723,9 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus disable(String uid) {
+    public HttpStatus disable(String doerID, String uid) {
+        Logger logger = LogManager.getLogger(doerID);
+
 
         Name dn = buildDn.buildDn(uid);
 
@@ -731,7 +739,7 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.info("Disabling " + uid + " was successful");
+                logger.warn("Disabling " + uid + " was successful");
                 return HttpStatus.OK;
 
             } catch (Exception e) {
@@ -745,7 +753,10 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus unlock(String uid) {
+    public HttpStatus unlock(String doerID,String uid) {
+
+        Logger logger = LogManager.getLogger(doerID);
+
 
         Name dn = buildDn.buildDn(uid);
 
@@ -791,10 +802,10 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus massUpdate(List<User> users) {
+    public HttpStatus massUpdate(String doerID, List<User> users) {
         for (User user : users)
             if (user != null && user.getUserId() != null)
-                update(user.getUserId(), user);
+                update(doerID, user.getUserId(), user);
 
         return HttpStatus.OK;
     }
@@ -824,14 +835,14 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus massUsersGroupUpdate(String groupId, JSONObject gu) {
+    public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
         List<String> add = (List<String>) gu.get("add");
         List<String> remove = (List<String>) gu.get("remove");
         for (String uid : add) {
             User user = retrieveUsers(uid);
             if (user.getMemberOf()!=null&&!user.getMemberOf().contains(groupId)) {
                 user.getMemberOf().add(groupId);
-                update(uid, user);
+                update(doerID, uid, user);
             }
 
         }
@@ -839,7 +850,7 @@ public class UserRepoImpl implements UserRepo {
             User user = retrieveUsers(uid);
             if (user.getMemberOf().contains(groupId)) {
                 user.getMemberOf().remove(groupId);
-                update(uid, user);
+                update(doerID,uid, user);
             }
         }
         return HttpStatus.OK;
@@ -857,6 +868,9 @@ public class UserRepoImpl implements UserRepo {
     }
 
     public HttpStatus updatePass(String userId, String pass, String token) {
+
+        //Logger logger = LogManager.getLogger(doerID);
+
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = retrieveUsers(userId);

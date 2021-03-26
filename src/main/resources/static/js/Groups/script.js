@@ -144,6 +144,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s53: "از لیست ارسال شده کاربران زیر در پایگاه داده وجود نداشتند، و باقی کاربران با موفقیت به گروه افزوده شدند.",
             s54: "کاربران با موفقیت به گروه افزوده شدند.",
             s55: " (برای نام انگلیسی گروه تنها حروف انگلیسی و اعداد مجاز می باشد)",
+            rolesText: "نقش ها",
+            rolesURLText: "./roles",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام انگلیسی",
@@ -553,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let fileName = fup.value;
                 if(!re.exec(fileName)){
                     alert("از فرمت فایل انتخابی پشتیبانی نمی شود.");
-
+                    return;
                 }else{
                     var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                     var vm = this;
@@ -658,6 +660,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s53 = "The Following Users From The Submitted List Were Not in The Database, The Rest of The Users Were Successfully Added to The Group.";
                     this.s54 = "The Users Were Successfully Added to The Group.";
                     this.s55 = " (Only English Letters And Numbers Are Allowed For Group Name)";
+                    this.rolesText = "Roles";
+                    this.rolesURLText = "./roles?en";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
@@ -734,6 +738,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s53 = "از لیست ارسال شده کاربران زیر در پایگاه داده وجود نداشتند، و باقی کاربران با موفقیت به گروه افزوده شدند.";
                     this.s54 = "کاربران با موفقیت به گروه افزوده شدند.";
                     this.s55 = " (برای نام انگلیسی گروه تنها حروف انگلیسی و اعداد مجاز می باشد)";
+                    this.rolesText = "نقش ها";
+                    this.rolesURLText = "./roles";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";

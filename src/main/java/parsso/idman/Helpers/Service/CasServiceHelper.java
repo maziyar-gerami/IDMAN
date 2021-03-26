@@ -300,7 +300,7 @@ public class CasServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            logger.info("Service " + "\"" + service.getId() + "\"" + " deleted successfully");
+            logger.warn("Service " + "\"" + service.getId() + "\"" + " deleted successfully");
             return HttpStatus.OK;
         } catch (IOException e) {
             e.printStackTrace();
@@ -353,7 +353,7 @@ public class CasServiceHelper {
                 file.close();
 
                 mongoTemplate.save(microService, collection);
-                logger.info("Service " + "\"" + service.getId() + "\"" + " created successfully");
+                logger.warn("Service " + "\"" + service.getId() + "\"" + " created successfully");
 
                 return service.getId();
             } catch (IOException e) {

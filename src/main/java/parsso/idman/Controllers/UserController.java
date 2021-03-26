@@ -79,7 +79,7 @@ public class UserController {
     @PutMapping("/api/user")
     public ResponseEntity<HttpStatus> updateUser(HttpServletRequest request, @RequestBody User user) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.update(principal.getName(), user));
+        return new ResponseEntity<>(userRepo.update(principal.getName(),principal.getName(), user));
     }
 
     /**
@@ -196,9 +196,11 @@ public class UserController {
     }
 
     @PutMapping("/api/users/group/{groupId}")
-    public ResponseEntity<HttpStatus> massUsersGroupUpdate(@RequestBody JSONObject gu,
+    public ResponseEntity<HttpStatus> massUsersGroupUpdate(HttpServletRequest request,
+                                                           @RequestBody JSONObject gu,
                                                            @PathVariable (name = "groupId") String groupId) {
-        return new ResponseEntity<>(userRepo.massUsersGroupUpdate(groupId, gu));
+        Principal principal = request.getUserPrincipal();
+        return new ResponseEntity<>(userRepo.massUsersGroupUpdate(principal.getName(),groupId, gu));
     }
 
     /**
@@ -235,9 +237,11 @@ public class UserController {
      * @return the response entity
      */
     @PostMapping("/api/users")
-    public ResponseEntity<JSONObject> bindLdapUser(@RequestBody User user) {
-        JSONObject jsonObject = userRepo.create(user);
-        if (jsonObject.size() == 0)
+    public ResponseEntity<JSONObject> bindLdapUser(HttpServletRequest request,@RequestBody User user) {
+        Principal principal = request.getUserPrincipal();
+        JSONObject jsonObject = userRepo.create(principal.getName(), user);
+
+        if (jsonObject==null || jsonObject.size() == 0)
             return new ResponseEntity<>(null, HttpStatus.OK);
         else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
 
@@ -251,7 +255,7 @@ public class UserController {
      * @return the response entity
      */
     @PutMapping("/api/users/u/{uId}")
-    public ResponseEntity<String> rebindLdapUser(@PathVariable("uId") String uid, @RequestBody User user) {
+    public ResponseEntity<String> rebindLdapUser(HttpServletRequest request,@PathVariable("uId") String uid, @RequestBody User user) {
 
         if (user.getUserId()==null) {
             String pass = user.getUserPassword();
@@ -259,7 +263,8 @@ public class UserController {
             user.setUserPassword(pass);
         }
 
-        return new ResponseEntity<>(userRepo.update(uid, user));
+        Principal principal = request.getUserPrincipal();
+        return new ResponseEntity<>(userRepo.update(principal.getName(),uid, user));
 
     }
 
@@ -269,8 +274,9 @@ public class UserController {
      * @return the response entity
      */
     @DeleteMapping("/api/users")
-    public ResponseEntity<List<String>> unbindAllLdapUser(@RequestBody JSONObject jsonObject) {
-        List<String> names = userRepo.remove(jsonObject);
+    public ResponseEntity<List<String>> unbindAllLdapUser(HttpServletRequest request,@RequestBody JSONObject jsonObject) {
+        Principal principal = request.getUserPrincipal();
+        List<String> names = userRepo.remove(principal.getName(),jsonObject);
         if (names.size() == 0)
             return new ResponseEntity<>(HttpStatus.OK);
         else
@@ -283,8 +289,9 @@ public class UserController {
      * @return the response entity
      */
     @PutMapping("/api/users/enable/u/{id}")
-    public ResponseEntity<HttpStatus> enable(@PathVariable("id") String uid) {
-        return new ResponseEntity<>(userRepo.enable(uid));
+    public ResponseEntity<HttpStatus> enable(HttpServletRequest request, @PathVariable("id") String uid) {
+        Principal principal = request.getUserPrincipal();
+        return new ResponseEntity<>(userRepo.enable(principal.getName(),uid));
     }
 
     /**
@@ -293,8 +300,9 @@ public class UserController {
      * @return the response entity
      */
     @PutMapping("/api/users/disable/u/{id}")
-    public ResponseEntity<HttpStatus> disable(@PathVariable("id") String uid) {
-        return new ResponseEntity<>(userRepo.disable(uid));
+    public ResponseEntity<HttpStatus> disable(HttpServletRequest request, @PathVariable("id") String uid) {
+        Principal principal = request.getUserPrincipal();
+        return new ResponseEntity<>(userRepo.disable(principal.getName(),uid));
     }
 
 
@@ -304,8 +312,9 @@ public class UserController {
      * @return the response entity
      */
     @PutMapping("/api/users/unlock/u/{id}")
-    public ResponseEntity<HttpStatus> lockUnlock(@PathVariable("id") String uid) {
-        return new ResponseEntity<>(userRepo.unlock(uid));
+    public ResponseEntity<HttpStatus> lockUnlock(HttpServletRequest request, @PathVariable("id") String uid) {
+        Principal principal = request.getUserPrincipal();
+        return new ResponseEntity<>(userRepo.unlock(principal.getName(),uid));
     }
 
     /**
@@ -326,8 +335,9 @@ public class UserController {
     }
 
     @PutMapping("/api/users/import/massUpdate")
-    public ResponseEntity<JSONObject> updateConflicts(@RequestBody List<User> users) {
-        return new ResponseEntity<>(userRepo.massUpdate(users));
+    public ResponseEntity<JSONObject> updateConflicts(HttpServletRequest request,@RequestBody List<User> users) {
+        Principal principal = request.getUserPrincipal();
+        return new ResponseEntity<>(userRepo.massUpdate(principal.getName(),users));
     }
 
     /**

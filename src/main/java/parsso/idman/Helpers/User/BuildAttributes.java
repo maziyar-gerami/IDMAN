@@ -83,7 +83,7 @@ public class BuildAttributes {
     }
 
     @SneakyThrows
-    public DirContextOperations buildAttributes(String uid, User p, Name dn) {
+    public DirContextOperations buildAttributes(String doerID, String uid, User p, Name dn) {
 
         User old = userRepo.retrieveUsers(uid);
 
@@ -117,11 +117,11 @@ public class BuildAttributes {
         if (p.getCStatus() != null) {
 
             if (p.getCStatus().equals("enable"))
-                userRepo.enable(uid);
+                userRepo.enable(doerID, uid);
             else if (p.getCStatus().equals("disable"))
-                userRepo.disable(uid);
+                userRepo.disable(doerID, uid);
             else if (p.getCStatus().equals("unlock"))
-                userRepo.unlock(uid);
+                userRepo.unlock(doerID, uid);
 
             logger.warn("User \""+p.getUserId()+"\" access level changed from \""+old.getStatus()+"\" to \""+p.getStatus()+"\"");
 

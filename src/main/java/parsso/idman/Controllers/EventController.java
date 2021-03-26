@@ -61,7 +61,7 @@ public class EventController {
         for (int i=0; i < listEvents.getEventList().size();i++)
             listEvents.getEventList().get(i).getProperties().setServerip(null);
 
-        return new ResponseEntity<>(eventRepo.getListUserEventByDate(date, principal.getName(), page, n), HttpStatus.OK);
+        return new ResponseEntity<>(listEvents, HttpStatus.OK);
     }
 
 

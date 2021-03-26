@@ -142,16 +142,16 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     @Override
     public HttpStatus captchaRefresh() {
 
-        logger.info("Captcha refresh started");
+        logger.warn("Captcha refresh started");
         if (mongoTemplate.getCollection("IDMAN_Captchas") != null) {
             mongoTemplate.getCollection("IDMAN_Captchas").drop();
-            logger.info("IDMAN_captchas collection dropped");
+            logger.warn("IDMAN_captchas collection dropped");
         }
 
         mongoTemplate.createCollection("IDMAN_Captchas");
-        logger.info("IDMAN_captchas collection created");
+        logger.warn("IDMAN_captchas collection created");
 
-        logger.info("IDMAN_captchas collection refreshed");
+        logger.warn("IDMAN_captchas collection refreshed");
 
         return HttpStatus.OK;
     }
@@ -213,19 +213,19 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         captchaRefresh();
 
-        logger.info("service refresh started");
+        logger.warn("service refresh started");
         serivceRefresh();
 
-        logger.info("service refresh finished");
+        logger.warn("service refresh finished");
 
-        logger.info("user refresh started");
+        logger.warn("user refresh started");
 
         userRefresh();
 
-        logger.info("user refresh finished");
+        logger.warn("user refresh finished");
 
         
-        logger.info("System refresh finished");
+        logger.warn("System refresh finished");
 
         return HttpStatus.OK;
     }

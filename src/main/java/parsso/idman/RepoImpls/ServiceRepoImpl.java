@@ -252,10 +252,10 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
     @Override
-    public HttpStatus updateOuIdChange(Service service, long sid, String name, String oldOu, String newOu) throws IOException {
+    public HttpStatus updateOuIdChange(String doerID,Service service, long sid, String name, String oldOu, String newOu) throws IOException {
 
         //Update ou
-        userRepo.updateUsersWithSpecificOU(oldOu,newOu);
+        userRepo.updateUsersWithSpecificOU(doerID, oldOu,newOu);
 
         //Update text
         String fileName = String.valueOf(sid);
