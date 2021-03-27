@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
@@ -43,10 +44,8 @@ import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
-import javax.naming.directory.SearchControls;
+import javax.naming.NamingException;
+import javax.naming.directory.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -223,12 +222,17 @@ public class UserRepoImpl implements UserRepo {
 
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("objectclass", "person"));
-        if(groupFilter!= null) andFilter.and(new EqualsFilter("ou", groupFilter));
-        if(searchUid!= null) andFilter.and(new LikeFilter("uid", searchUid));
-        if(searchDisplayName!= null) andFilter.and(new LikeFilter("displayName", searchDisplayName));
+        if(groupFilter!= null && !groupFilter.equals("")) andFilter.and(new EqualsFilter("ou", groupFilter));
+        if(searchUid!= null && !searchUid.equals("")) andFilter.and(new LikeFilter("uid", searchUid));
+        if(searchDisplayName!= null && !searchDisplayName.equals("")) andFilter.and(new LikeFilter("displayName", searchDisplayName));
 
         return ldapTemplate.search(BASE_DN, andFilter.toString(), searchControls,
-                userAttributeMapper).size();
+                new AttributesMapper<Object>() {
+                    @Override
+                    public Object mapFromAttributes(Attributes attributes) throws NamingException {
+                        return null;
+                    }
+                }).size();
     }
 
     @Override
@@ -655,8 +659,7 @@ public class UserRepoImpl implements UserRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        final AndFilter andFilter = new AndFilter();
-        andFilter.and(new EqualsFilter("ou", groupId));
+        
 
         return ldapTemplate.search(query().where("ou").is(groupId), simpleUserAttributeMapper);
     }
