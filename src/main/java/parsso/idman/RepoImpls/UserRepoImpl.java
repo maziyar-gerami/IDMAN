@@ -22,6 +22,7 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.LikeFilter;
 import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -214,9 +215,20 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public int retrieveUsersSize() {
+    public int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
-        return (int) mongoTemplate.count(new Query(),collection);
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+        final AndFilter andFilter = new AndFilter();
+        andFilter.and(new EqualsFilter("objectclass", "person"));
+        if(groupFilter!= null) andFilter.and(new EqualsFilter("ou", groupFilter));
+        if(searchUid!= null) andFilter.and(new LikeFilter("uid", searchUid));
+        if(searchDisplayName!= null) andFilter.and(new LikeFilter("displayName", searchDisplayName));
+
+        return ldapTemplate.search(BASE_DN, andFilter.toString(), searchControls,
+                userAttributeMapper).size();
     }
 
     @Override
@@ -224,6 +236,7 @@ public class UserRepoImpl implements UserRepo {
 
         Logger logger = LogManager.getLogger(doerID);
 
+        p.setUserId(usid);
         Name dn = buildDn.buildDn(p.getUserId());
 
         User user = retrieveUsers(p.getUserId());
@@ -458,7 +471,7 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        int limit = number==-1?retrieveUsersSize():number;
+        int limit = number==-1?retrieveUsersSize(null,null,null,null):number;
         int skip = page==-1?0:(page-1)*limit;
 
         List<UsersExtraInfo> usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(limit),UsersExtraInfo.class,collection);
@@ -511,7 +524,7 @@ public class UserRepoImpl implements UserRepo {
 
             for (SimpleUser user : groupFilterUsers)
 
-                if ((user.getUserId().toLowerCase()).contains(searchUid))
+                if (user.getUserId().contains(searchUid))
                     searchUidUsers.add(user);
 
         } else
@@ -543,9 +556,10 @@ public class UserRepoImpl implements UserRepo {
         } else
             userStatusUsers = searchDisplayNameUsers;
 
-        int size = userStatus.length();
+        int size = retrieveUsersSize(groupFilter, searchUid, searchDisplayName,userStatus);
 
         return new ListUsers(size,userStatusUsers, (int) Math.ceil(size/nCount));
+
     }
 
     @Override
@@ -601,8 +615,6 @@ public class UserRepoImpl implements UserRepo {
         try {
 
             for (User user : people) {
-
-                user.setUserPassword(null);
 
                 DirContextOperations context = buildAttributes.buildAttributes(doerID,user.getUserId(), user, buildDn.buildDn(user.getUserId()));
 

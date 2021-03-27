@@ -27,7 +27,7 @@ public interface UserRepo {
 
     List<SimpleUser> retrieveUsersMain(int page, int number);
 
-    int retrieveUsersSize();
+    int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus);
 
     User getName(String uid, String token);
 
