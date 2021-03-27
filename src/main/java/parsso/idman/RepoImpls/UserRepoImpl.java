@@ -572,7 +572,7 @@ public class UserRepoImpl implements UserRepo {
         List<User> relatedPeople = new LinkedList<>();
 
         for (User user : people) {
-            if (user.getDisplayName() != null && !user.getUserId().equals("su")) {
+            if (user.getDisplayName() != null && !user.getUsersExtraInfo().getRole().equals("SUPERADMIN")) {
                 relatedPeople.add(user);
             }
 
@@ -817,11 +817,13 @@ public class UserRepoImpl implements UserRepo {
 
         CollectionUtils.filter(users, PredicateUtils.notNullPredicate());
 
-        int n = (page) * number>users.size()?(page) * number:users.size();
+        int n = (page) * number>users.size()?users.size():(page) * number;
 
         int size = users.size();
         int pages = (int) Math.floor(size / number);
         int start = (page - 1) * number;
+
+
 
         List<SimpleUser> relativeUsers = new LinkedList<>();
 

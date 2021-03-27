@@ -88,7 +88,7 @@ public class Email {
             List<User> users = userRepo.retrieveUsersFull();
 
             for (User user : users)
-                if (user.getUserId() != "su" && user.getMail() != null && user.getMail() != null && user.getMail() != "" && user.getMail() != " ")
+                if (!user.getUsersExtraInfo().getRole().equals("SUPERADMIN")  && user.getMail() != null && user.getMail() != null && user.getMail() != "" && user.getMail() != " ")
                     sendEmail(user.getMail());
 
         } else {

@@ -85,7 +85,7 @@ public class User implements UserDetails, Comparable {
 
 
         else {
-            if (getUserId().equals("su"))
+            if (this.getUsersExtraInfo().getRole().equals("SUPPERADMIN"))
                 list.add(new SimpleGrantedAuthority(PREFIX + "SUPERADMIN"));
 
             else if (this.memberOf.contains(admidId)) {

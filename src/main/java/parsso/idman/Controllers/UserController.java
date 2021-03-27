@@ -87,6 +87,7 @@ public class UserController {
      *
      * @return whether logged-in user is admin or not
      */
+    @Deprecated
     @GetMapping("/api/user/isAdmin")
     public int isAdmin(HttpServletRequest request) {
         try {
@@ -94,7 +95,7 @@ public class UserController {
             User user = userRepo.retrieveUsers(principal.getName());
             List<String> memberOf = user.getMemberOf();
 
-            if (user.getUserId().equals("su"))
+            if (user.getUsersExtraInfo().getRole().equals("SUPERADMIN"))
                 return 0;
 
             else if (memberOf.contains(adminOu))
