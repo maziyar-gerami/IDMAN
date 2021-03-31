@@ -23,7 +23,6 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
-import org.springframework.ldap.filter.LikeFilter;
 import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -220,13 +219,8 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        final AndFilter andFilter = new AndFilter();
-        andFilter.and(new EqualsFilter("objectclass", "person"));
-        if(groupFilter!= null && !groupFilter.equals("")) andFilter.and(new EqualsFilter("ou", groupFilter));
-        if(searchUid!= null && !searchUid.equals("")) andFilter.and(new LikeFilter("uid", searchUid));
-        if(searchDisplayName!= null && !searchDisplayName.equals("")) andFilter.and(new LikeFilter("displayName", searchDisplayName));
 
-        return ldapTemplate.search(BASE_DN, andFilter.toString(), searchControls,
+        return  ldapTemplate.search(BASE_DN, MakeFilter.makeUsersFilter(groupFilter, searchUid, searchDisplayName, userStatus).encode(), searchControls,
                 new AttributesMapper<Object>() {
                     @Override
                     public Object mapFromAttributes(Attributes attributes) throws NamingException {
@@ -493,76 +487,43 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
-        List<SimpleUser> users = retrieveUsersMain(page,nCount);
-        List<SimpleUser> sortTypeUsers;
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+        int limit = nCount==-1?retrieveUsersSize(null,null,null,null):nCount;
+
+        List<SimpleUser> userList = ldapTemplate.search(BASE_DN, MakeFilter.makeUsersFilter(groupFilter, searchUid, searchDisplayName, userStatus).encode(), searchControls,
+                simpleUserAttributeMapper);
+
         if (!sortType.equals("")) {
             if (sortType.equals("uid_m2M"))
-                Collections.sort(users, SimpleUser.uidMinToMaxComparator);
+                Collections.sort(userList, SimpleUser.uidMinToMaxComparator);
             else if (sortType.equals("uid_M2m"))
-                Collections.sort(users, SimpleUser.uidMaxToMinComparator);
+                Collections.sort(userList, SimpleUser.uidMaxToMinComparator);
             else if (sortType.equals("displayName_m2M"))
-                Collections.sort(users, SimpleUser.displayNameMinToMaxComparator);
+                Collections.sort(userList, SimpleUser.displayNameMinToMaxComparator);
             else if (sortType.equals("displayName_M2m"))
-                Collections.sort(users, SimpleUser.displayNameMaxToMinComparator);
+                Collections.sort(userList, SimpleUser.displayNameMaxToMinComparator);
         }
-        sortTypeUsers = users;
 
 
-        List<SimpleUser> groupFilterUsers = new LinkedList<>();
-        if (!groupFilter.equals("")) {
+        List<SimpleUser> relativePeople = new LinkedList<>();
 
-            for (SimpleUser user : sortTypeUsers) {
+        int size = retrieveUsersSize(groupFilter,searchUid,searchDisplayName,userStatus);
 
-                if (user.getMemberOf().contains(groupFilter))
-                    groupFilterUsers.add(user);
-            }
+        int ls = 0;
+        if (nCount < userList.size())
+            ls= nCount;
+        else
+            ls=userList.size();
 
-        } else
-            groupFilterUsers = sortTypeUsers;
+        for (int i= 0; i<ls; i++) {
+            relativePeople.add(userList.get(i));
 
-        List<SimpleUser> searchUidUsers = new LinkedList<>();
+        }
 
-        if (!searchUid.equals("")) {
-
-            searchUid = searchUid.toLowerCase();
-
-            for (SimpleUser user : groupFilterUsers)
-
-                if (user.getUserId().contains(searchUid))
-                    searchUidUsers.add(user);
-
-        } else
-            searchUidUsers = groupFilterUsers;
-
-        List<SimpleUser> searchDisplayNameUsers = new LinkedList<>();
-
-        if (!searchDisplayName.equals("")) {
-
-            searchDisplayName = searchDisplayName.toLowerCase();
-
-            for (SimpleUser user : searchUidUsers)
-
-                if (user.getDisplayName().contains(searchDisplayName))
-                    searchDisplayNameUsers.add(user);
-
-
-        } else
-            searchDisplayNameUsers = searchUidUsers;
-
-        List<SimpleUser> userStatusUsers = new LinkedList<>();
-
-        if (!userStatus.equals("")) {
-            for (SimpleUser user : searchDisplayNameUsers)
-                if (user.getStatus().equals(userStatus))
-                    userStatusUsers.add(user);
-
-
-        } else
-            userStatusUsers = searchDisplayNameUsers;
-
-        int size = retrieveUsersSize(groupFilter, searchUid, searchDisplayName,userStatus);
-
-        return new ListUsers(size,userStatusUsers, (int) Math.ceil(size/nCount));
+        return new ListUsers(size , relativePeople, size/nCount);
 
     }
 
