@@ -25,6 +25,17 @@ public class AuditController {
     @Autowired
     private AuditsExcelView auditsExcelView;
 
+    //*************************************** Pages ***************************************
+
+
+    @GetMapping("/audits")
+    public String Audits() {
+        return "audits";
+    }
+
+    //*************************************** APIs ***************************************
+
+
     @GetMapping("/api/audits/{page}/{n}")
     public ResponseEntity<ListAudits> retrieveAllAudits(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
         return new ResponseEntity<>(auditRepo.getListSizeAudits(page, n), HttpStatus.OK);

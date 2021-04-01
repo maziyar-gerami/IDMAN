@@ -10,9 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Models.Config;
 import parsso.idman.Models.Setting;
+import parsso.idman.Models.User;
 import parsso.idman.Repos.ConfigRepo;
+import parsso.idman.Repos.UserRepo;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -25,6 +29,26 @@ public class ConfigController {
 
     @Autowired
     PasswordSettings passwordSettings;
+
+    @Autowired
+    UserRepo userRepo;
+
+    //*************************************** Pages ***************************************
+
+    @GetMapping("/configs")
+    public String Configs(HttpServletRequest request) {
+
+            Principal principal = request.getUserPrincipal();
+            User user = userRepo.retrieveUsers(principal.getName());
+
+            if (user.getUsersExtraInfo().getRole().equals("SUPERADMIN"))
+                return "configs";
+
+        return null;
+    }
+
+    //*************************************** APIs ***************************************
+
 
     @GetMapping("/api/configs")
     public ResponseEntity<String> retrieveSettings() throws IOException {

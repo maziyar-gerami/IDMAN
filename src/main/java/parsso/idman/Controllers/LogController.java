@@ -25,6 +25,16 @@ public class LogController {
     @Autowired
     private LogsExcelView logsExcelView;
 
+    //*************************************** Pages ***************************************
+
+    @GetMapping("/reports")
+    public String Reports() {
+        return "reports";
+    }
+
+    //*************************************** APIs ***************************************
+
+
     @GetMapping("/api/logs/{page}/{n}")
     public ResponseEntity<ListLogs> retrieveAllLogs(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
         return new ResponseEntity<>(logRepo.getListSizeLogs(page, n), HttpStatus.OK);

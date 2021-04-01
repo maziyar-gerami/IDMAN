@@ -24,6 +24,21 @@ public class GroupsController {
     @Autowired
     private UserRepo userRepo;
 
+    //*************************************** Pages ***************************************
+
+    @GetMapping("/groups")
+    public String Groups(HttpServletRequest request) {
+
+            Principal principal = request.getUserPrincipal();
+            User user = userRepo.retrieveUsers(principal.getName());
+            if (user.getUserId().equals("su"))
+                return "groups";
+
+        return null;
+    }
+
+    //*************************************** APIs ***************************************
+
     @GetMapping("/api/groups/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();

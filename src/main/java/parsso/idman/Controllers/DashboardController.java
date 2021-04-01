@@ -1,9 +1,14 @@
 package parsso.idman.Controllers;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
@@ -11,12 +16,13 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import parsso.idman.Models.User;
+import parsso.idman.IdmanApplication;
+import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.security.Principal;
+import java.io.IOException;
 
 @Controller
 public class DashboardController {
@@ -28,134 +34,28 @@ public class DashboardController {
     @Value("${cas.url.logout.path}")
     private String casLogout;
 
+    //*************************************** Pages ***************************************
+
+
     @GetMapping("/")
     public String Root() {
         return "redirect:/dashboard";
     }
 
     @GetMapping("/dashboard")
-    public String Dashboard() { return "dashboard"; }
+    public String Dashboard() {
+        return "dashboard";
+    }
+
+
+    @GetMapping("/resetPass")
+    public String resetPass() {
+        return "resetPass";
+    }
 
     @GetMapping("/resetPassword")
     public String resetPassword() {
         return "resetPassword";
-    }
-
-    @GetMapping("/groups")
-    public String Groups(HttpServletRequest request) {
-
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-
-        try {
-
-            if (user.getUsersExtraInfo().getRole().equals("ADMIN")
-            || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
-            || user.getUsersExtraInfo().getRole().equals("SUPPORTER")) {
-                    return "groups";
-            }
-
-        } catch (Exception e) {
-            return "403";
-        }
-        return "403";
-    }
-
-    @GetMapping("/services")
-    public String Services(HttpServletRequest request) {
-        try {
-            Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUsers(principal.getName());
-        
-            if (user.getUsersExtraInfo().getRole().equals("ADMIN")
-                    || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
-                    || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
-                return "services";
-
-        } catch (Exception e) {
-            return "403";
-        }
-        return "403";
-    }
-
-    @GetMapping("/createservice")
-    public String CreateService(HttpServletRequest request) {
-        try {
-            Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUsers(principal.getName());
-
-            if (user.getUsersExtraInfo().getRole().equals("ADMIN")
-                    || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
-                    || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
-                return "createservice";
-
-        } catch (Exception e) {
-            return "403";
-        }
-        return "403";
-    }
-
-    @GetMapping("/users")
-    public String Users(HttpServletRequest request) {
-
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-        if (user.getUsersExtraInfo().getRole().equals("ADMIN")
-                || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
-                || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
-            return "users";
-            return "403";
-
-    }
-
-    @GetMapping("/roles")
-    public String Roles(HttpServletRequest request) {
-
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-        try {
-            if (user.getUsersExtraInfo().getRole().equals("SUPERADMIN"))
-                return "roles";
-
-        } catch (Exception e) {
-            return "403";
-        }
-        return "403";
-    }
-
-    @GetMapping("/audits")
-    public String Audits() {
-        return "audits";
-    }
-
-    @GetMapping("/events")
-    public String Events() {
-        return "events";
-    }
-
-    @GetMapping("/configs")
-    public String Configs(HttpServletRequest request) {
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-
-        try {
-            if (user.getRole().equals("SUPERADMIN"))
-                return "configs";
-
-        } catch (Exception e) {
-            return "403";
-        }
-        return "403";
-    }
-
-    @GetMapping("/profile")
-    public String Profile() {
-        return "profile";
-    }
-
-    @GetMapping("/errorpage")
-    public String Error() {
-        return "error";
     }
 
     @GetMapping("/privacy")
@@ -163,14 +63,14 @@ public class DashboardController {
         return "privacy";
     }
 
+    @GetMapping("/errorpage")
+    public String Error() {
+        return "error";
+    }
+
     @GetMapping("/login")
     public String Login() {
         return "redirect:/login/cas";
-    }
-
-    @GetMapping("/resetPass")
-    public String resetPass() {
-        return "resetPass";
     }
 
     @GetMapping("/logout")
@@ -186,4 +86,20 @@ public class DashboardController {
                 .logout(request, response, auth);
         return "redirect:" + casLogout;
     }
+
+    //*************************************** APIs ***************************************
+
+    /**
+     * get the information for dashboard
+     *
+     * @return a json file containing tha data
+     */
+    @GetMapping("/api/dashboard")
+    public ResponseEntity<Dashboard> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException, InterruptedException {
+        final Logger LOGGER = LogManager.getLogger(IdmanApplication.class.getName());
+
+        return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
+    }
+
+
 }
