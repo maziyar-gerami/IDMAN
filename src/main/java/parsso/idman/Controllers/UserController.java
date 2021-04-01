@@ -214,10 +214,10 @@ public class UserController {
     public ResponseEntity<ListUsers> retrieveUsersMain(@PathVariable("page") int page, @PathVariable("n") int n,
                                                        @RequestParam(name = "sortType", defaultValue = "") String sortType,
                                                        @RequestParam(name = "groupFilter", defaultValue = "") String groupFilter,
-                                                       @RequestParam(name = "searchUid", defaultValue = "") String searchuUid,
+                                                       @RequestParam(name = "searchUid", defaultValue = "") String searchUid,
                                                        @RequestParam(name = "userStatus", defaultValue = "") String userStatus,
                                                        @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName) {
-            return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchuUid, searchDisplayName, userStatus), HttpStatus.OK);
+            return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
 
     /**

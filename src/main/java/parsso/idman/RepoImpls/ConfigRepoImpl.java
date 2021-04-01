@@ -114,7 +114,6 @@ public class ConfigRepoImpl implements ConfigRepo {
 
             int equalIndex = line.indexOf('=');
 
-
             name = line.substring(0, equalIndex);
 
             value = line.substring(equalIndex + 1);

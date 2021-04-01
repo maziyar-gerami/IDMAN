@@ -17,10 +17,10 @@ public class MakeFilter {
 
         if(userStatus!= null && !userStatus.equals("")) {
 
-            if (userStatus.equals("Locked"))
+            if (userStatus.equalsIgnoreCase("Disabled"))
                 andFilter.and(new EqualsFilter("pwdAccountLockedTime", "40400404040404.950Z"));
 
-            if (userStatus.equals("Disabled")) {
+            if (userStatus.equalsIgnoreCase("Locked")) {
                 andFilter.and(new PresentFilter("pwdAccountLockedTime"));
                 andFilter.and(new NotFilter(new EqualsFilter("pwdAccountLockedTime", "40400404040404.950Z")));
             }

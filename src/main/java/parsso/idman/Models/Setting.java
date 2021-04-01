@@ -12,5 +12,6 @@ public class Setting {
     private String value;
     private String description;
     private String group;
+    private String sub_group;
     private String system;
 }

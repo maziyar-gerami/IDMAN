@@ -94,16 +94,13 @@ public class BuildAttributes {
         if (p.getLastName() != "" && p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
         if (p.getDisplayName() != "" && p.getDisplayName() != null)
             context.setAttributeValue("displayName", p.getDisplayName());
-        //if (p.getUserPassword() != null && p.getUserPassword() != "")
-            //context.setAttributeValue("userPassword", p.getUserPassword());
         if (p.getMobile() != "" && p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
-        if (p.getEmployeeNumber() != null && p.getEmployeeNumber() != "") context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
+        if (p.getEmployeeNumber() != null && !p.getEmployeeNumber().equals("")) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
         if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
 
         //if (p.getTimeStamp() > 0)
             //context.setAttributeValue("createtimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
 
-            if (p.getMail() != "" && p.getFirstName() != null) context.setAttributeValue("mail", p.getMail());
         if ((p.getFirstName()) != null || (p.getLastName() != null)) {
             if (p.getFirstName() == null)
                 context.setAttributeValue("cn", userRepo.retrieveUsers(uid).getFirstName() + ' ' + p.getLastName());
@@ -116,20 +113,13 @@ public class BuildAttributes {
 
         if (p.getCStatus() != null) {
 
-            if (p.getCStatus().equals("enable"))
-                userRepo.enable(doerID, uid);
-            else if (p.getCStatus().equals("disable"))
-                userRepo.disable(doerID, uid);
-            else if (p.getCStatus().equals("unlock"))
-                userRepo.unlock(doerID, uid);
+            if (p.getCStatus().equals("enable")) userRepo.enable(doerID, uid);
+            else if (p.getCStatus().equals("disable")) userRepo.disable(doerID, uid);
+            else if (p.getCStatus().equals("unlock")) userRepo.unlock(doerID, uid);
 
             logger.warn("User \""+p.getUserId()+"\" access level changed from \""+old.getStatus()+"\" to \""+p.getStatus()+"\"");
 
         }
-
-
-        //if (p.getTokens()!=null && p.getTokens().getResetPassToken() != null) context.setAttributeValue("resetPassToken", p.getTokens().getResetPassToken());
-
 
         if (p.getMemberOf() != null) {
             if (p.getMemberOf().size() != 0) {
@@ -143,8 +133,7 @@ public class BuildAttributes {
                 }
         }
 
-        if (p.getDescription() != "" && p.getDescription() != null)
-            context.setAttributeValue("description", p.getDescription());
+        if (p.getDescription() != "" && p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
 
 
         if (p.getEndTime() != null) {
@@ -152,11 +141,9 @@ public class BuildAttributes {
             context.setAttributeValue("pwdEndTime", time + "Z");
         }
 
-        if (p.getEmployeeNumber() != "" && old.getEmployeeNumber() != null)
-            context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
+        if (p.getEmployeeNumber() != "" && old.getEmployeeNumber() != null) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
 
-        if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null)
-            mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
+        if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null) mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
 
         return context;
     }

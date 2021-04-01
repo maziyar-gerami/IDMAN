@@ -219,7 +219,6 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-
         return  ldapTemplate.search(BASE_DN, MakeFilter.makeUsersFilter(groupFilter, searchUid, searchDisplayName, userStatus).encode(), searchControls,
                 new AttributesMapper<Object>() {
                     @Override
@@ -481,8 +480,16 @@ public class UserRepoImpl implements UserRepo {
 
         List<SimpleUser> people = ldapTemplate.search(query, new SimpleUserAttributeMapper());
 
-        Collections.sort(people);
-        return people;
+        List<SimpleUser> relativePeople = new LinkedList<>();
+
+        int ls;
+        if (number < people.size()) ls= number;
+        else ls=people.size();
+
+        for (int i= 0; i<ls; i++) relativePeople.add(people.get(i));
+
+        return relativePeople;
+
     }
 
     @Override
@@ -490,8 +497,6 @@ public class UserRepoImpl implements UserRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-
-        int limit = nCount==-1?retrieveUsersSize(null,null,null,null):nCount;
 
         List<SimpleUser> userList = ldapTemplate.search(BASE_DN, MakeFilter.makeUsersFilter(groupFilter, searchUid, searchDisplayName, userStatus).encode(), searchControls,
                 simpleUserAttributeMapper);
@@ -507,24 +512,20 @@ public class UserRepoImpl implements UserRepo {
                 Collections.sort(userList, SimpleUser.displayNameMaxToMinComparator);
         }
 
-
         List<SimpleUser> relativePeople = new LinkedList<>();
 
-        int size = retrieveUsersSize(groupFilter,searchUid,searchDisplayName,userStatus);
+        int size = userList.size();
 
-        int ls = 0;
+        int ls;
         if (nCount < userList.size())
             ls= nCount;
         else
             ls=userList.size();
 
-        for (int i= 0; i<ls; i++) {
+        for (int i= 0; i<ls; i++)
             relativePeople.add(userList.get(i));
 
-        }
-
         return new ListUsers(size , relativePeople, size/nCount);
-
     }
 
     @Override
