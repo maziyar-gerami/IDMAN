@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Models.Logs.Report;
-import parsso.idman.Repos.LogRepo;
+import parsso.idman.Repos.ReportRepo;
 import parsso.idman.Utils.Convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +24,7 @@ public class LogsExcelView extends AbstractXlsView {
 
     public static String mainCollection = "IDMAN_Log";
     @Autowired
-    LogRepo logRepo;
+    ReportRepo reportRepo;
     ZoneId zoneId = ZoneId.of("UTC+03:30");
 
 
@@ -32,7 +32,7 @@ public class LogsExcelView extends AbstractXlsView {
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // get data model which is passed by the Spring container
-        List<Report> reports = logRepo.analyze(mainCollection, 0, 0);
+        List<Report> reports = reportRepo.analyze(mainCollection, 0, 0);
 
         // create a new Excel sheet
         HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Logs");

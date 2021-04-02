@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
-public interface LogRepo {
+public interface ReportRepo {
 
 
     ListReports getListSizeLogs(int page, int n) throws IOException, org.json.simple.parser.ParseException;

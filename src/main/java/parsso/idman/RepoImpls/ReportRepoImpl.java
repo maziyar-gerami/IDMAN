@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Models.Logs.ListReports;
 import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Time;
-import parsso.idman.Repos.LogRepo;
+import parsso.idman.Repos.ReportRepo;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -18,7 +18,7 @@ import java.time.ZoneId;
 import java.util.List;
 
 @Service
-public class LogRepoImpl implements LogRepo {
+public class ReportRepoImpl implements ReportRepo {
 
     private static final String mainCollection = "IDMAN_Log";
     ZoneId zoneId = ZoneId.of("UTC+03:30");
@@ -114,8 +114,7 @@ public class LogRepoImpl implements LogRepo {
             report.setDateTime(time1);
         }
 
-        int pages = (int) Math.ceil(size / limit) + 1;
-        ListReports listReports = new ListReports(size, pages, reportList);
+        ListReports listReports = new ListReports(size, (int) Math.ceil(size / limit), reportList);
         return listReports;
     }
 

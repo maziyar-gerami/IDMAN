@@ -522,10 +522,10 @@ public class UserRepoImpl implements UserRepo {
         else
             ls=userList.size();
 
-        for (int i= 0; i<ls; i++)
-            relativePeople.add(userList.get(i));
+        for (int i=0 ; i<ls; i++)
+            relativePeople.add(userList.get((page-1)*nCount+i));
 
-        return new ListUsers(size , relativePeople, size/nCount);
+        return new ListUsers(size , relativePeople, (int) Math.ceil(size/nCount));
     }
 
     @Override
@@ -797,10 +797,8 @@ public class UserRepoImpl implements UserRepo {
         int n = (page) * number>users.size()?users.size():(page) * number;
 
         int size = users.size();
-        int pages = (int) Math.floor(size / number);
+        int pages = (int) Math.ceil(size / number);
         int start = (page - 1) * number;
-
-
 
         List<SimpleUser> relativeUsers = new LinkedList<>();
 
