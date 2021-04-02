@@ -4,6 +4,7 @@ package parsso.idman.Controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.Ticket;
 import parsso.idman.Models.Users.User;
@@ -13,7 +14,7 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
-@RestController
+@Controller
 public class TicketsController {
 
     @Autowired
@@ -21,6 +22,15 @@ public class TicketsController {
 
     @Autowired
     UserRepo userRepo;
+
+    //*************************************** Pages ***************************************
+
+    @GetMapping("/ticketing")
+    public String Reports() {
+        return "ticketing";
+    }
+
+    //*************************************** APIs ***************************************
 
     @GetMapping("/api/ticket/{ticketID}")
     public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID) {
