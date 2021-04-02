@@ -12,7 +12,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.IdmanApplication;
 import parsso.idman.Models.Time;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;

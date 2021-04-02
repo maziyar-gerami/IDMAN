@@ -1,8 +1,6 @@
 package parsso.idman.Controllers;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,7 +14,6 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import parsso.idman.IdmanApplication;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Repos.UserRepo;
 
@@ -36,7 +33,6 @@ public class DashboardController {
 
     //*************************************** Pages ***************************************
 
-
     @GetMapping("/")
     public String Root() {
         return "redirect:/dashboard";
@@ -45,17 +41,6 @@ public class DashboardController {
     @GetMapping("/dashboard")
     public String Dashboard() {
         return "dashboard";
-    }
-
-
-    @GetMapping("/resetPass")
-    public String resetPass() {
-        return "resetPass";
-    }
-
-    @GetMapping("/resetPassword")
-    public String resetPassword() {
-        return "resetPassword";
     }
 
     @GetMapping("/privacy")
@@ -96,10 +81,8 @@ public class DashboardController {
      */
     @GetMapping("/api/dashboard")
     public ResponseEntity<Dashboard> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException, InterruptedException {
-        final Logger LOGGER = LogManager.getLogger(IdmanApplication.class.getName());
 
         return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
     }
-
 
 }

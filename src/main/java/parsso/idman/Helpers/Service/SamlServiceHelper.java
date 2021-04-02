@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import parsso.idman.Models.Service;
-import parsso.idman.Models.ServiceType.MicroService;
-import parsso.idman.Models.ServiceType.SamlService;
-import parsso.idman.Models.ServicesSubModel.*;
+import parsso.idman.Models.Services.Service;
+import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.Models.Services.ServiceType.SamlService;
+import parsso.idman.Models.Services.ServicesSubModel.*;
 import parsso.idman.Repos.ServiceRepo;
 
 import java.io.File;

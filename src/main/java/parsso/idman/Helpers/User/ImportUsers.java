@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Time;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
 
 import java.io.BufferedReader;

@@ -9,13 +9,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
-import parsso.idman.Models.Config;
-import parsso.idman.Models.Setting;
+import parsso.idman.Models.Logs.Config;
+import parsso.idman.Models.Logs.Setting;
 import parsso.idman.Models.Time;
 import parsso.idman.Repos.ConfigRepo;
 import parsso.idman.Repos.UserRepo;
@@ -41,6 +42,9 @@ public class ConfigRepoImpl implements ConfigRepo {
 
     @Autowired
     PasswordSettings passwordSettings;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Value("${external.config}")
     private String pathToProperties;
@@ -372,6 +376,34 @@ public class ConfigRepoImpl implements ConfigRepo {
             configs.add(config);
         }
         return configs;
+    }
+
+    @Override
+    public HttpStatus saveToMongo() throws IOException {
+
+        Resource resource = appContext.getResource("file:" + pathToProperties);
+        File file = resource.getFile();
+        String fullFileName = file.getName();
+        int equalIndex = fullFileName.indexOf('.');
+        String system = fullFileName.substring(0, equalIndex);
+
+        Scanner myReader = new Scanner(file);
+
+        List<Setting> settings = parser(myReader, system);
+
+        for (Setting setting: settings) {
+            if (setting.getGroup() != null) {
+                if (setting.getGroup().equalsIgnoreCase("Main"))
+                    setting.setChangable(false);
+                else
+                    setting.setChangable(true);
+
+
+                mongoTemplate.save(setting, "IDMAN_Properties");
+            }
+        }
+
+        return HttpStatus.OK;
     }
 
 }

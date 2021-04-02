@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.ServiceType.MicroService;
+import parsso.idman.Models.Services.ServiceType.MicroService;
 
 import java.util.Collections;
 import java.util.List;

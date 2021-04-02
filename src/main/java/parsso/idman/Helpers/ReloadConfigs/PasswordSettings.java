@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Setting;
+import parsso.idman.Models.Logs.Setting;
 
 import javax.naming.Name;
 import javax.naming.directory.Attribute;

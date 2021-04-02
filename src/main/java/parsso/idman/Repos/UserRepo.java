@@ -6,9 +6,9 @@ import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.DashboardData.Dashboard;
-import parsso.idman.Models.ListUsers;
-import parsso.idman.Models.SimpleUser;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Users.ListUsers;
+import parsso.idman.Models.Users.SimpleUser;
+import parsso.idman.Models.Users.User;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

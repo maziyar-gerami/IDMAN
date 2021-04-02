@@ -1,6 +1,6 @@
 **IDMAN Overview**
 
-IDMAN is a client for Parsso-core (a Centralized Authentication System) that is deployed for managing users and services connected to the Parsso-core. It also provides useful features like password policy management, self-service password management, user activity log reports, etc.
+IDMAN is a client for Parsso-core (a Centralized Authentication System) that is deployed for managing users and services connected to the Parsso-core. It also provides useful features like password policy management, self-service password management, user activity report reports, etc.
 
 **Prerequisites**
 

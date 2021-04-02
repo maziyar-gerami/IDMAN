@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import parsso.idman.Models.Service;
-import parsso.idman.Models.ServiceType.CasService;
-import parsso.idman.Models.ServiceType.MicroService;
-import parsso.idman.Models.ServicesSubModel.*;
+import parsso.idman.Models.Services.Service;
+import parsso.idman.Models.Services.ServiceType.CasService;
+import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.Models.Services.ServicesSubModel.*;
 import parsso.idman.Repos.ServiceRepo;
 
 import java.io.File;
@@ -41,7 +41,7 @@ public class CasServiceHelper {
 
     public CasService buildCasService(JSONObject jo) {
 
-        CasService service = new parsso.idman.Models.ServiceType.CasService();
+        CasService service = new parsso.idman.Models.Services.ServiceType.CasService();
         if (jo.get("id") != null)
             service.setId(Long.valueOf(jo.get("id").toString()));
 

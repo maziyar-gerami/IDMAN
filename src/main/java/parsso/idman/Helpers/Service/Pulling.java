@@ -3,7 +3,7 @@ package parsso.idman.Helpers.Service;
 
 import com.mongodb.client.MongoClients;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import parsso.idman.Models.ServiceType.MicroService;
+import parsso.idman.Models.Services.ServiceType.MicroService;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

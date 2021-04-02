@@ -2,8 +2,8 @@ package parsso.idman.Repos;
 
 
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Audit;
-import parsso.idman.Models.ListAudits;
+import parsso.idman.Models.Logs.Audit;
+import parsso.idman.Models.Logs.ListAudits;
 
 import java.io.IOException;
 import java.text.ParseException;

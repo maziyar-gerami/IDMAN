@@ -35,10 +35,10 @@ import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
-import parsso.idman.Models.ListUsers;
-import parsso.idman.Models.SimpleUser;
-import parsso.idman.Models.User;
-import parsso.idman.Models.UsersExtraInfo;
+import parsso.idman.Models.Users.ListUsers;
+import parsso.idman.Models.Users.SimpleUser;
+import parsso.idman.Models.Users.User;
+import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.UserRepo;
 

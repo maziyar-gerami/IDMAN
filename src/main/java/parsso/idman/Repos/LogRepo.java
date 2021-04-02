@@ -1,8 +1,8 @@
 package parsso.idman.Repos;
 
 
-import parsso.idman.Models.Log;
-import parsso.idman.Models.ListLogs;
+import parsso.idman.Models.Logs.ListReports;
+import parsso.idman.Models.Logs.Report;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -11,13 +11,13 @@ import java.util.List;
 public interface LogRepo {
 
 
-    ListLogs getListSizeLogs(int page, int n) throws IOException, org.json.simple.parser.ParseException;
+    ListReports getListSizeLogs(int page, int n) throws IOException, org.json.simple.parser.ParseException;
 
-    ListLogs getListUserLogs(String userId, int page, int n) throws IOException, org.json.simple.parser.ParseException;
+    ListReports getListUserLogs(String userId, int page, int n) throws IOException, org.json.simple.parser.ParseException;
 
-    ListLogs getLogsByDate(String date, int page, int n) throws ParseException, IOException, org.json.simple.parser.ParseException;
+    ListReports getLogsByDate(String date, int page, int n) throws ParseException, IOException, org.json.simple.parser.ParseException;
 
-    ListLogs getListUserLogByDate(String date, String userId, int page, int n) throws ParseException, IOException, org.json.simple.parser.ParseException;
+    ListReports getListUserLogByDate(String date, String userId, int page, int n) throws ParseException, IOException, org.json.simple.parser.ParseException;
 
-    List<Log> analyze(String collection, int skip, int limit);
+    List<Report> analyze(String collection, int skip, int limit);
 }

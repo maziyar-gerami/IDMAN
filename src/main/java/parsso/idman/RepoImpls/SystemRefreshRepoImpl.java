@@ -17,9 +17,9 @@ import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.IdmanApplication;
-import parsso.idman.Models.ServiceType.MicroService;
-import parsso.idman.Models.SimpleUser;
-import parsso.idman.Models.UsersExtraInfo;
+import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.Models.Users.SimpleUser;
+import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.SystemRefresh;
 import parsso.idman.Repos.UserRepo;
@@ -162,7 +162,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             mongoTemplate.createCollection("IDMAN_ServicesExtraInfo");
         int i = 1;
 
-        for (parsso.idman.Models.Service service : serviceRepo.listServicesFull()) {
+        for (parsso.idman.Models.Services.Service service : serviceRepo.listServicesFull()) {
             Query query = new Query(Criteria.where("_id").is(service.getId()));
             MicroService serviceExtraInfo = mongoTemplate.findOne(query, MicroService.class, "IDMAN_ServicesExtraInfo");
             MicroService newServiceExtraInfo = new MicroService();
@@ -181,7 +181,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             mongoTemplate.save(serviceExtraInfo, "IDMAN_ServicesExtraInfo");
         }
 
-        List<parsso.idman.Models.Service> serviceList = serviceRepo.listServicesFull();
+        List<parsso.idman.Models.Services.Service> serviceList = serviceRepo.listServicesFull();
         List<Long> ids = new LinkedList<>();
 
 
@@ -189,7 +189,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         for (MicroService microService : microServices) ids.add(microService.get_id());
 
-        for (parsso.idman.Models.Service service : serviceList)
+        for (parsso.idman.Models.Services.Service service : serviceList)
             ids.remove(service.getId());
 
         Query query;

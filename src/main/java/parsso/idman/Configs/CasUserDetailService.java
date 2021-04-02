@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import parsso.idman.Models.UsersExtraInfo;
+import parsso.idman.Models.Users.UsersExtraInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;

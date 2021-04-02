@@ -9,7 +9,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
-import parsso.idman.Models.Log;
+import parsso.idman.Models.Logs.Report;
 import parsso.idman.Repos.LogRepo;
 import parsso.idman.Utils.Convertor.DateConverter;
 
@@ -32,7 +32,7 @@ public class LogsExcelView extends AbstractXlsView {
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // get data model which is passed by the Spring container
-        List<Log> logs = logRepo.analyze(mainCollection, 0, 0);
+        List<Report> reports = logRepo.analyze(mainCollection, 0, 0);
 
         // create a new Excel sheet
         HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Logs");
@@ -67,14 +67,14 @@ public class LogsExcelView extends AbstractXlsView {
         int rowCount = 1;
         DateConverter dateConverter = new DateConverter();
 
-        for (Log log : logs) {
-            dateConverter.gregorianToPersian(log.getDateTime().getYear(), log.getDateTime().getMonth(), log.getDateTime().getDay());
+        for (Report report : reports) {
+            dateConverter.gregorianToPersian(report.getDateTime().getYear(), report.getDateTime().getMonth(), report.getDateTime().getDay());
             HSSFRow aRow = sheet.createRow(rowCount++);
-            aRow.createCell(0).setCellValue(log.getLoggerName());
-            aRow.createCell(1).setCellValue(log.getMessage());
+            aRow.createCell(0).setCellValue(report.getLoggerName());
+            aRow.createCell(1).setCellValue(report.getMessage());
             aRow.createCell(2).setCellValue(dateConverter.getYear() + "/" + dateConverter.getMonth() + "/" + dateConverter.getDay());
-            aRow.createCell(3).setCellValue(log.getDateTime().getHours() + ":" + log.getDateTime().getMinutes() + ":" + log.getDateTime().getSeconds());
-            aRow.createCell(4).setCellValue(log.getDetails());
+            aRow.createCell(3).setCellValue(report.getDateTime().getHours() + ":" + report.getDateTime().getMinutes() + ":" + report.getDateTime().getSeconds());
+            aRow.createCell(4).setCellValue(report.getDetails());
         }
 
     }

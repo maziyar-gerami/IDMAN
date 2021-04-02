@@ -17,9 +17,9 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.BuildDn;
-import parsso.idman.Models.Group;
-import parsso.idman.Models.SimpleUser;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Groups.Group;
+import parsso.idman.Models.Users.SimpleUser;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
@@ -144,7 +144,6 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
 
-
     private Attributes buildAttributes(String uid, Group group) {
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
@@ -253,9 +252,9 @@ public class GroupRepoImpl implements GroupRepo {
                 }
 
 
-                List<parsso.idman.Models.Service> services = serviceRepo.listServicesWithGroups(id);
+                List<parsso.idman.Models.Services.Service> services = serviceRepo.listServicesWithGroups(id);
                 if (services != null)
-                    for (parsso.idman.Models.Service service : services) {
+                    for (parsso.idman.Models.Services.Service service : services) {
 
                         //remove old id and add new id
                         ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).remove(id);

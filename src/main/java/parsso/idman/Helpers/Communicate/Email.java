@@ -12,7 +12,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Captcha.Models.CAPTCHA;
 import parsso.idman.Helpers.User.UserAttributeMapper;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Users.User;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Email.EmailSend;

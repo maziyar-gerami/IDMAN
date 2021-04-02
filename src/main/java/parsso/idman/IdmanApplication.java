@@ -28,7 +28,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Service;
 import parsso.idman.Configs.CasUserDetailService;
 import parsso.idman.Helpers.Communicate.InstantMessage;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Users.User;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.SystemRefresh;

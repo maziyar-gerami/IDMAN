@@ -5,9 +5,10 @@ import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Models.Group;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Groups.Group;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 
-@RestController
+@Controller
 public class GroupsController {
 
     @Autowired
@@ -42,7 +43,7 @@ public class GroupsController {
     @GetMapping("/api/groups/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
+        User user = userRepo.retrieveUsers("5005");
         return new ResponseEntity<>(groupRepo.retrieveCurrentUserGroup(user), HttpStatus.OK);
     }
 

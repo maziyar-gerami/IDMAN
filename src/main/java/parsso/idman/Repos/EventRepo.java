@@ -1,8 +1,8 @@
 package parsso.idman.Repos;
 
 
-import parsso.idman.Models.Event;
-import parsso.idman.Models.ListEvents;
+import parsso.idman.Models.Logs.Event;
+import parsso.idman.Models.Logs.ListEvents;
 
 import java.io.IOException;
 import java.text.ParseException;

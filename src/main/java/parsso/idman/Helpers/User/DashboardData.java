@@ -13,7 +13,7 @@ import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.DashboardData.Logins;
 import parsso.idman.Models.DashboardData.Services;
 import parsso.idman.Models.DashboardData.Users;
-import parsso.idman.Models.Event;
+import parsso.idman.Models.Logs.Event;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
@@ -89,7 +89,7 @@ public class DashboardData {
         Thread servicesData = new Thread(() -> {
 
             //________services data____________
-            List<parsso.idman.Models.Service> services = null;
+            List<parsso.idman.Models.Services.Service> services = null;
             try {
                 services = serviceRepo.listServicesFull();
             } catch (java.io.IOException e) {
@@ -100,7 +100,7 @@ public class DashboardData {
             int nServices = services.size();
             int nEnabledServices = 0;
 
-            for (parsso.idman.Models.Service service : services) {
+            for (parsso.idman.Models.Services.Service service : services) {
                 if (service.getAccessStrategy() != null && service.getAccessStrategy().isEnabled())
                     nEnabledServices++;
             }
