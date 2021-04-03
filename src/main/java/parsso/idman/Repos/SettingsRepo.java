@@ -3,7 +3,7 @@ package parsso.idman.Repos;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Setting;
+import parsso.idman.Models.Logs.Setting;
 
 import java.io.IOException;
 import java.util.List;

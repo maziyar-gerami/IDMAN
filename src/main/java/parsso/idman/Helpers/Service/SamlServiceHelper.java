@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import parsso.idman.Models.Service;
-import parsso.idman.Models.ServiceType.MicroService;
-import parsso.idman.Models.ServiceType.SamlService;
-import parsso.idman.Models.ServicesSubModel.*;
+import parsso.idman.Models.Services.Service;
+import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.Models.Services.ServiceType.SamlService;
+import parsso.idman.Models.Services.ServicesSubModel.*;
 import parsso.idman.Repos.ServiceRepo;
 
 import java.io.File;
@@ -215,9 +215,9 @@ public class SamlServiceHelper {
             try {
                 mongoTemplate.save(service, collection);
                 json = ow.writeValueAsString(service);
-                logger.info("Service " + "\"" + service.getId() + "\"" + " deleted successfully");
+                logger.warn("Service " + "\"" + service.getId() + "\"" + " deleted successfully");
             } catch (JsonProcessingException e) {
-                logger.info("Deleting Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
+                logger.warn("Deleting Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
 
                 e.printStackTrace();
             }
@@ -252,10 +252,10 @@ public class SamlServiceHelper {
                 MicroService microService = new MicroService(service.getServiceId(), IPaddresses);
 
                 mongoTemplate.save(microService, collection);
-                logger.info("Service " + "\"" + service.getId() + "\"" + " created successfully");
+                logger.warn("Service " + "\"" + service.getId() + "\"" + " created successfully");
                 return service.getId();
             } catch (IOException e) {
-                logger.info("Creating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
+                logger.warn("Creating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
                 return 0;
             }
 
@@ -293,11 +293,11 @@ public class SamlServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            logger.info("Service " + "\"" + service.getId() + "\"" + " updated successfully");
+            logger.warn("Service " + "\"" + service.getId() + "\"" + " updated successfully");
             return HttpStatus.OK;
         } catch (IOException e) {
             e.printStackTrace();
-            logger.info("Updating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
+            logger.warn("Updating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
             return HttpStatus.FORBIDDEN;
         }
 

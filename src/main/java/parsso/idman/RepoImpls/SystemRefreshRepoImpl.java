@@ -17,9 +17,9 @@ import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.IdmanApplication;
-import parsso.idman.Models.ServiceType.MicroService;
-import parsso.idman.Models.SimpleUser;
-import parsso.idman.Models.UsersExtraInfo;
+import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.Models.Users.SimpleUser;
+import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.SystemRefresh;
 import parsso.idman.Repos.UserRepo;
@@ -91,10 +91,10 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                             }
                         }).get(0);
 
-                userExtraInfo.setPhotoName(photoName);
-
-                if (userExtraInfo!=null)
+                if (photoName!=null) {
+                    userExtraInfo.setPhotoName(photoName);
                     mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");
+                }
 
             } else {
                 UsersExtraInfo userExtraInfo = new UsersExtraInfo();
@@ -119,11 +119,6 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");
 
             }
-
-
-
-
-
         }
 
         try {
@@ -133,12 +128,13 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         }
 
         //2. cleanUp mongo
-        List<SimpleUser> usersMongo = mongoTemplate.findAll(SimpleUser.class, "IDMAN_UsersExtraInfo");
+        //TODO:Enable it
+        /*List<SimpleUser> usersMongo = mongoTemplate.findAll(SimpleUser.class, "IDMAN_UsersExtraInfo");
         if (usersMongo!=null)
         for (SimpleUser simpleUser : usersMongo) {
             if (ldapTemplate.search(query().where("uid").is(simpleUser.getUserId()), simpleUserAttributeMapper).size()==0)
                 mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(simpleUser.getUserId())), UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
-        }
+        }*/
 
         return  HttpStatus.OK;
     }
@@ -146,16 +142,16 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     @Override
     public HttpStatus captchaRefresh() {
 
-        logger.info("Captcha refresh started");
+        logger.warn("Captcha refresh started");
         if (mongoTemplate.getCollection("IDMAN_Captchas") != null) {
             mongoTemplate.getCollection("IDMAN_Captchas").drop();
-            logger.info("IDMAN_captchas collection dropped");
+            logger.warn("IDMAN_captchas collection dropped");
         }
 
         mongoTemplate.createCollection("IDMAN_Captchas");
-        logger.info("IDMAN_captchas collection created");
+        logger.warn("IDMAN_captchas collection created");
 
-        logger.info("IDMAN_captchas collection refreshed");
+        logger.warn("IDMAN_captchas collection refreshed");
 
         return HttpStatus.OK;
     }
@@ -166,7 +162,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             mongoTemplate.createCollection("IDMAN_ServicesExtraInfo");
         int i = 1;
 
-        for (parsso.idman.Models.Service service : serviceRepo.listServicesFull()) {
+        for (parsso.idman.Models.Services.Service service : serviceRepo.listServicesFull()) {
             Query query = new Query(Criteria.where("_id").is(service.getId()));
             MicroService serviceExtraInfo = mongoTemplate.findOne(query, MicroService.class, "IDMAN_ServicesExtraInfo");
             MicroService newServiceExtraInfo = new MicroService();
@@ -185,7 +181,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             mongoTemplate.save(serviceExtraInfo, "IDMAN_ServicesExtraInfo");
         }
 
-        List<parsso.idman.Models.Service> serviceList = serviceRepo.listServicesFull();
+        List<parsso.idman.Models.Services.Service> serviceList = serviceRepo.listServicesFull();
         List<Long> ids = new LinkedList<>();
 
 
@@ -193,7 +189,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         for (MicroService microService : microServices) ids.add(microService.get_id());
 
-        for (parsso.idman.Models.Service service : serviceList)
+        for (parsso.idman.Models.Services.Service service : serviceList)
             ids.remove(service.getId());
 
         Query query;
@@ -217,19 +213,19 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         captchaRefresh();
 
-        logger.info("service refresh started");
+        logger.warn("service refresh started");
         serivceRefresh();
 
-        logger.info("service refresh finished");
+        logger.warn("service refresh finished");
 
-        logger.info("user refresh started");
+        logger.warn("user refresh started");
 
         userRefresh();
 
-        logger.info("user refresh finished");
+        logger.warn("user refresh finished");
 
         
-        logger.info("System refresh finished");
+        logger.warn("System refresh finished");
 
         return HttpStatus.OK;
     }

@@ -1,18 +1,3 @@
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; ++i) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
-        }
-      }
-  }
-}
 document.addEventListener('DOMContentLoaded', function () {
   var router = new VueRouter({
     mode: 'history',
@@ -23,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
     router,
     el: '#app',
     data: {
+      dropdownMenu: false,
+      dateNav: "",
+      dateNavEn: "",
+      dateNavText: "",
       recordsShownOnPage: 20,
       recordsShownOnPageAudits: 20,
       currentPageAudits: 1,
@@ -117,17 +106,46 @@ document.addEventListener('DOMContentLoaded', function () {
       s48: "رکوردی یافت نشد",
       rolesText: "نقش ها",
       rolesURLText: "./roles",
+      reportsText: "گزارش ها",
+      reportsURLText: "./reports",
     },
     created: function () {
+      this.setDateNav();
       this.getUserInfo();
       this.getUserPic();
       this.getAudit();
       this.getAudits();
-      if(typeof this.$route.query.en !== 'undefined'){
-        this.changeLang()
+      if(window.localStorage.getItem("lang") === null) {
+        window.localStorage.setItem("lang", "FA");
+      }else if(window.localStorage.getItem("lang") === "EN") {
+        this.changeLang();
       }
     },
     methods: {
+      setDateNav: function () {
+        this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+        persianDate.toCalendar("gregorian");
+        persianDate.toLocale("en");
+        this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+        persianDate.toCalendar("persian");
+        persianDate.toLocale("fa");
+        this.dateNavText = this.dateNav;
+      },
+      dropdownNavbar: function () {
+        if(this.dropdownMenu){
+          let dropdowns = document.getElementsByClassName("dropdown-content");
+          for (let i = 0; i < dropdowns.length; ++i) {
+            let openDropdown = dropdowns[i];
+            if(openDropdown.classList.contains("show")) {
+              openDropdown.classList.remove("show");
+            }
+          }
+          this.dropdownMenu = false;
+        }else{
+          document.getElementById("dropdownMenu").classList.toggle("show");
+          this.dropdownMenu = true;
+        }
+      },
       isActive (menuItem) {
         return this.activeItem === menuItem
       },
@@ -157,11 +175,14 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/api/user") //
           .then((res) => {
-            vm.userInfo = res.data;
-            vm.username = vm.userInfo.userId;
-            vm.name = vm.userInfo.displayName;
-            vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
-            vm.s1 = vm.name;
+            vm.username = res.data.userId;
+            vm.name = res.data.displayName;
+            vm.nameEN = res.data.firstName + " " + res.data.lastName;
+            if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+              vm.s1 = vm.name;
+            }else if(window.localStorage.getItem("lang") === "EN") {
+              vm.s1 = vm.nameEN;
+            }
           });
       },
       getUserPic: function () {
@@ -190,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         vm.loader = true;
           axios({
-            url: url_ + "/api/audits/export",
+            url: url_ + "/api/audits/users/export",
             method: "GET",
             responseType: "blob",
           }).then((response) => {
@@ -287,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         let tempEvent = {};
         this.audits = [];
-        axios.get(url + "/api/audits/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits)
+        axios.get(url + "/api/audits/users/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits)
         .then((res) => {
           if(res.data.auditList.length == 0){
             vm.isListEmpty1 = true;
@@ -451,7 +472,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.auditsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
           let tempEvent = {};
           this.audits = [];
-          axios.get(url + "/api/audits/date/" + vm.auditsDate + "/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
+          axios.get(url + "/api/audits/users/date/" + vm.auditsDate + "/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
             .then((res) => {
               if(res.data.auditList.length == 0){
                 vm.isListEmpty1 = true;
@@ -531,11 +552,13 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       changeLang: function () {
         if(this.lang == "EN"){
+          window.localStorage.setItem("lang", "EN");
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
           this.isRtl = false;
           this.deleteInputIcon = "right: 7%;";
           this.deleteInputIcon1 = "right: 10%;";
+          this.dateNavText = this.dateNavEn;
           this.s0 = "Parsso";
           this.s1 = this.nameEN;
           this.s2 = "Exit";
@@ -550,18 +573,11 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s11 = "Privacy";
           this.s12 = "Guide";
           this.s13 = "Users";
-          this.s14 = "./dashboard?en";
-          this.s15 = "./services?en";
-          this.s16 = "./users?en";
           this.s17 = "ID";
           this.s18 = "Name";
           this.s19 = "Description";
           this.s20 = "Connect";
-          this.s21 = "./groups?en";
-          this.s22 = "./profile?en";
-          this.s23 = "./privacy?en";
           this.s24 = "Configs";
-          this.s25 = "./configs?en";
           this.s26 = "Date";
           this.s27 = "Search";
           this.s28 = "Action";
@@ -572,7 +588,6 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s33 = "UserId";
           this.s34 = "Example: admin";
           this.s35 = "Example: 1399/05/01";
-          this.s36 = "./events?en";
           this.s37 = "UserId";
           this.s38 = "Date";
           this.s39 = "Successful Login";
@@ -582,17 +597,18 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s43 = "Browser";
           this.s44 = "Records a Page: ";
           this.s45 = "Audits";
-          this.s46 = "/audits?en";
           this.s47 = "Go Back";
           this.s48 = "No Records Found";
           this.rolesText = "Roles";
-          this.rolesURLText = "./roles?en";
-        } else{
+          this.reportsText = "Reports";
+        }else {
+            window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
             this.isRtl = true;
             this.deleteInputIcon = "left: 7%;";
             this.deleteInputIcon1 = "left: 10%;";
+            this.dateNavText = this.dateNav;
             this.s0 = "پارسو";
             this.s1 = this.name;
             this.s2 = "خروج";
@@ -607,18 +623,11 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s11 = "حریم خصوصی";
             this.s12 = "راهنما";
             this.s13 = "کاربران";
-            this.s14 = "./dashboard";
-            this.s15 = "./services";
-            this.s16 = "./users";
             this.s17 = "شناسه";
             this.s18 = "نام";
             this.s19 = "توضیحات";
             this.s20 = "اتصال";
-            this.s21 = "./groups";
-            this.s22 = "./profile";
-            this.s23 = "./privacy";
             this.s24 = "پیکربندی";
-            this.s25 = "./configs";
             this.s26 = "تاریخ";
             this.s27 = "جستجو";
             this.s28 = "عملیات";
@@ -629,7 +638,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s33 = "شناسه";
             this.s34 = "مثال: admin";
             this.s35 = " مثال: 1399/05/01";
-            this.s36 = "./events";
             this.s37 = "شناسه";
             this.s38 = "تاریخ";
             this.s39 = "ورود موفق";
@@ -639,11 +647,10 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s43 = "مرورگر";
             this.s44 = "تعداد رکورد ها: ";
             this.s45 = "ممیزی ها";
-            this.s46 = "/audits";
             this.s47 = "بازگشت";
             this.s48 = "رکوردی یافت نشد";
             this.rolesText = "نقش ها";
-            this.rolesURLText = "./roles";
+            this.reportsText = "گزارش ها";
         }
       },
       div: function (a, b) {

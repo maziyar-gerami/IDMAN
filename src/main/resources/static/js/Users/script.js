@@ -1,19 +1,3 @@
-function myFunction() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
-
-window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; ++i) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
-        }
-    }
-}
 document.addEventListener('DOMContentLoaded', function () {
     var router = new VueRouter({
         mode: 'history',
@@ -24,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
         router,
         el: '#app',
         data: {
+            dropdownMenu: false,
+            dateNav: "",
+            dateNavEn: "",
+            dateNavText: "",
             recordsShownOnPage: 20,
             currentPage: 1,
             paginationCurrentPage: 1,
@@ -217,6 +205,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s85: "کاربری یافت نشد",
             rolesText: "نقش ها",
             rolesURLText: "./roles",
+            reportsText: "گزارش ها",
+            reportsURLText: "./reports",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه کاربری",
@@ -244,15 +234,42 @@ document.addEventListener('DOMContentLoaded', function () {
             U24: "کد پرسنلی"
         },
         created: function () {
+            this.setDateNav();
             this.getUserInfo();
             this.getUserPic();
             this.getUsers();
             this.getGroups();
-            if(typeof this.$route.query.en !== 'undefined'){
+            if(window.localStorage.getItem("lang") === null){
+                window.localStorage.setItem("lang", "FA");
+            }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
         methods: {
+            setDateNav: function () {
+                this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("gregorian");
+                persianDate.toLocale("en");
+                this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("persian");
+                persianDate.toLocale("fa");
+                this.dateNavText = this.dateNav;
+            },
+            dropdownNavbar: function () {
+                if(this.dropdownMenu){
+                    let dropdowns = document.getElementsByClassName("dropdown-content");
+                    for (let i = 0; i < dropdowns.length; ++i) {
+                        let openDropdown = dropdowns[i];
+                        if(openDropdown.classList.contains("show")) {
+                            openDropdown.classList.remove("show");
+                        }
+                    }
+                    this.dropdownMenu = false;
+                }else{
+                    document.getElementById("dropdownMenu").classList.toggle("show");
+                    this.dropdownMenu = true;
+                }
+            },
             allSelected () {
                 if(this.allIsSelected){
                     this.allIsSelected = false;
@@ -408,11 +425,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 axios.get(url + "/api/user") //
                     .then((res) => {
-                        vm.userInfo = res.data;
-                        vm.username = vm.userInfo.userId;
-                        vm.name = vm.userInfo.displayName;
-                        vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
-                        vm.s1 = vm.name;
+                        vm.username = res.data.userId;
+                        vm.name = res.data.displayName;
+                        vm.nameEN = res.data.firstName + " " + res.data.lastName;
+                        if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+                            vm.s1 = vm.name;
+                        }else if(window.localStorage.getItem("lang") === "EN") {
+                            vm.s1 = vm.nameEN;
+                        }
                     });
             },
             getUserPic: function () {
@@ -1260,6 +1280,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             changeLang: function () {
                 if(this.lang == "EN"){
+                    window.localStorage.setItem("lang", "EN");
                     this.placeholder = "text-align: left;"
                     this.margin = "margin-left: 30px;";
                     this.lang = "فارسی";
@@ -1273,6 +1294,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.padding0Right = "padding-left: 0rem;";
                     this.eye = "left: 1%;";
                     this.font = "font-size: 0.9em; text-align: left;"
+                    this.dateNavText = this.dateNavEn;
                     this.s0 = "Parsso";
                     this.s1 = this.nameEN;
                     this.s2 = "Exit";
@@ -1286,15 +1308,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s11 = "Privacy";
                     this.s12 = "Guide";
                     this.s13 = "Users";
-                    this.s14 = "./dashboard?en";
-                    this.s15 = "./services?en";
-                    this.s16 = "./users?en";
                     this.s17 = "Go Back";
                     this.s18 = "Submit";
                     this.s19 = "Email";
                     this.s20 = "Dashboard";
-                    this.s21 = "./groups?en";
-                    this.s22 = "./profile?en";
                     this.s23 = "No File Chosen.";
                     this.s24 = "File extension not supported!";
                     this.s25 = "File too big (> 100MB)";
@@ -1302,16 +1319,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s27 = "Are You Sure You Want To Add This User?";
                     this.s28 = "Are You Sure You Want To Delete?";
                     this.s29 = "Are You Sure You Want To Delete All Users?";
-                    this.s30 = "./privacy?en";
                     this.s31 = "Configs";
-                    this.s32 = "./configs?en";
                     this.s33 = "Resolve Conflicts While Importing Users";
                     this.s34 = "Old User";
                     this.s35 = "New User";
                     this.s36 = "Submit";
                     this.s37 = "Edit User";
                     this.s38 = "Add User";
-                    this.s39 = "./events?en";
                     this.s40 = "Status";
                     this.s41 = "Active";
                     this.s42 = "Disabled";
@@ -1351,13 +1365,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s78 = "No";
                     this.s79 = "Yes";
                     this.s80 = "Audits";
-                    this.s81 = "/audits?en";
                     this.s82 = "New Password Should Not be Same as Old Password.";
                     this.s83 = "Indelible";
                     this.s84 = "Users Listed Below Are Indelible.";
                     this.s85 = "No User Found";
                     this.rolesText = "Roles";
-                    this.rolesURLText = "./roles?en";
+                    this.reportsText = "Reports";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1385,7 +1398,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rules[1].message = "- One special Character or Persian Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
                     this.rules[3].message = "- One Number Required.";
-                } else{
+                }else {
+                    window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
                     this.lang = "EN";
@@ -1399,6 +1413,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.padding0Right = "padding-right: 0rem;";
                     this.eye = "right: 1%;";
                     this.font = "font-size: 0.74em; text-align: right;"
+                    this.dateNavText = this.dateNav;
                     this.s0 = "پارسو";
                     this.s1 = this.name;
                     this.s2 = "خروج";
@@ -1412,15 +1427,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s11 = "حریم خصوصی";
                     this.s12 = "راهنما";
                     this.s13 = "کاربران";
-                    this.s14 = "./dashboard";
-                    this.s15 = "./services";
-                    this.s16 = "./users";
                     this.s17 = "بازگشت";
                     this.s18 = "تایید";
                     this.s19 = "ایمیل";
                     this.s20 = "داشبورد";
-                    this.s21 = "./groups";
-                    this.s22 = "./profile";
                     this.s23 = "فایلی انتخاب نشده است.";
                     this.s24 = "از فرمت فایل انتخابی پشتیبانی نمی شود.";
                     this.s25 = "سایز فایل انتخابی بیش از 100M می باشد.";
@@ -1428,16 +1438,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s27 = "آیا از افزودن این کاربر اطمینان دارید؟";
                     this.s28 = "آیا از حذف این کاربر اطمینان دارید؟";
                     this.s29 = "آیا از حذف تمامی کاربران اطمینان دارید؟";
-                    this.s30 = "./privacy";
                     this.s31 = "پیکربندی";
-                    this.s32 = "./configs";
                     this.s33 = "رفع تناقض وارد کردن کاربران جدید";
                     this.s34 = "کاربر قدیمی";
                     this.s35 = "کاربر جدید";
                     this.s36 = "اعمال تغییرات";
                     this.s37 = "ویرایش کاربر";
                     this.s38 = "ایجاد کاربر";
-                    this.s39 = "./events";
                     this.s40 = "وضعیت کاربر";
                     this.s41 = "فعال";
                     this.s42 = "غیر فعال";
@@ -1477,13 +1484,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s78 = "خیر";
                     this.s79 = "بله";
                     this.s80 = "ممیزی ها";
-                    this.s81 = "/audits";
                     this.s82 = "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.";
                     this.s83 = "غیرقابل حذف";
                     this.s84 = "کاربران زیر غیرقابل حذف می باشند.";
                     this.s85 = "کاربری یافت نشد";
                     this.rolesText = "نقش ها";
-                    this.rolesURLText = "./roles";
+                    this.reportsText = "گزارش ها";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه کاربری";

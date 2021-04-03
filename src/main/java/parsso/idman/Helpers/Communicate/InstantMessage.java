@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import parsso.idman.Captcha.Models.CAPTCHA;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.SMS.sdk.KavenegarApi;
 import parsso.idman.Utils.SMS.sdk.excepctions.ApiException;

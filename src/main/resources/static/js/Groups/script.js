@@ -1,18 +1,3 @@
-function myFunction() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
-window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; ++i) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
-        }
-    }
-}
 document.addEventListener('DOMContentLoaded', function () {
     var router = new VueRouter({
         mode: 'history',
@@ -23,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
         router,
         el: '#app',
         data: {
+            dropdownMenu: false,
+            dateNav: "",
+            dateNavEn: "",
+            dateNavText: "",
             recordsShownOnPage: 20,
             userInfo: [],
             email: "",
@@ -146,6 +135,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s55: " (برای نام انگلیسی گروه تنها حروف انگلیسی و اعداد مجاز می باشد)",
             rolesText: "نقش ها",
             rolesURLText: "./roles",
+            reportsText: "گزارش ها",
+            reportsURLText: "./reports",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام انگلیسی",
@@ -170,14 +161,41 @@ document.addEventListener('DOMContentLoaded', function () {
             p3: "قوی"
         },
         created: function () {
+            this.setDateNav();
             this.getUserInfo();
             this.getUserPic();
             this.getGroups();
-            if(typeof this.$route.query.en !== 'undefined'){
+            if(window.localStorage.getItem("lang") === null){
+                window.localStorage.setItem("lang", "FA");
+            }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
         methods: {
+            setDateNav: function () {
+                this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("gregorian");
+                persianDate.toLocale("en");
+                this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("persian");
+                persianDate.toLocale("fa");
+                this.dateNavText = this.dateNav;
+            },
+            dropdownNavbar: function () {
+                if(this.dropdownMenu){
+                    let dropdowns = document.getElementsByClassName("dropdown-content");
+                    for (let i = 0; i < dropdowns.length; ++i) {
+                        let openDropdown = dropdowns[i];
+                        if(openDropdown.classList.contains("show")) {
+                            openDropdown.classList.remove("show");
+                        }
+                    }
+                    this.dropdownMenu = false;
+                }else{
+                    document.getElementById("dropdownMenu").classList.toggle("show");
+                    this.dropdownMenu = true;
+                }
+            },
             isActive (menuItem) {
                 return this.activeItem === menuItem
             },
@@ -212,11 +230,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 axios.get(url + "/api/user") //
                 .then((res) => {
-                    vm.userInfo = res.data;
-                    vm.username = vm.userInfo.userId;
-                    vm.name = vm.userInfo.displayName;
-                    vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
-                    vm.s1 = vm.name;
+                    vm.username = res.data.userId;
+                    vm.name = res.data.displayName;
+                    vm.nameEN = res.data.firstName + " " + res.data.lastName;
+                    if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+                        vm.s1 = vm.name;
+                    }else if(window.localStorage.getItem("lang") === "EN") {
+                        vm.s1 = vm.nameEN;
+                    }
                 });
             },
             getUserPic: function () {
@@ -600,11 +621,13 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             changeLang: function () {
                 if(this.lang == "EN"){
+                    window.localStorage.setItem("lang", "EN");
                     this.placeholder = "text-align: left;"
                     this.margin = "margin-left: 30px;";
                     this.lang = "فارسی";
                     this.isRtl = false;
                     this.margin1 = "mr-1";
+                    this.dateNavText = this.dateNavEn;
                     this.s0 = "Parsso";
                     this.s1 = this.nameEN;
                     this.s2 = "Exit";
@@ -618,31 +641,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s11 = "Privacy";
                     this.s12 = "Guide";
                     this.s13 = "Users";
-                    this.s14 = "./dashboard?en";
-                    this.s15 = "./services?en";
-                    this.s16 = "./users?en";
                     this.s17 = "Go Back";
                     this.s18 = "Submit";
                     this.s19 = "Email";
                     this.s20 = "Dashboard";
-                    this.s21 = "./groups?en";
-                    this.s22 = "./profile?en";
                     this.s23 = "Are You Sure You Want To Edit?";
                     this.s24 = "Are You Sure You Want To Delete?";
                     this.s25 = "Are You Sure You Want To Delete All Groups?";
-                    this.s26 = "./privacy?en";
                     this.s27 = "Configs";
-                    this.s28 = "./configs?en";
                     this.s29 = "Add Group";
                     this.s30 = "Edit Group";
-                    this.s31 = "./events?en";
                     this.s32 = "Delete Group";
                     this.s33 = "Action";
                     this.s34 = "Are You Sure You Want To Delete Selected Groups?";
                     this.s35 = "No Group is Selected.";
                     this.s36 = "Records a Page: ";
                     this.s37 = "Audits";
-                    this.s38 = "/audits?en";
                     this.s39 = "Users List";
                     this.s40 = "Search...";
                     this.s41 = "Add to Group";
@@ -661,7 +675,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s54 = "The Users Were Successfully Added to The Group.";
                     this.s55 = " (Only English Letters And Numbers Are Allowed For Group Name)";
                     this.rolesText = "Roles";
-                    this.rolesURLText = "./roles?en";
+                    this.reportsText = "Reports";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
@@ -677,12 +691,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U12 = "New";
                     this.U13 = "Edit";
                     this.U17 = "Delete";
-                } else{
+                }else {
+                    window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
                     this.lang = "EN";
                     this.isRtl = true;
                     this.margin1 = "ml-1";
+                    this.dateNavText = this.dateNav;
                     this.s0 = "پارسو";
                     this.s1 = this.name;
                     this.s2 = "خروج";
@@ -696,31 +712,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s11 = "حریم خصوصی";
                     this.s12 = "راهنما";
                     this.s13 = "کاربران";
-                    this.s14 = "./dashboard";
-                    this.s15 = "./services";
-                    this.s16 = "./users";
                     this.s17 = "بازگشت";
                     this.s18 = "تایید";
                     this.s19 = "ایمیل";
                     this.s20 = "داشبورد";
-                    this.s21 = "./groups";
-                    this.s22 = "./profile";
                     this.s23 = "آیا از اعمال این تغییرات اطمینان دارید؟";
                     this.s24 = "آیا از حذف این گروه اطمینان دارید؟";
                     this.s25 = "آیا از حذف تمامی گروه ها اطمینان دارید؟";
                     this.s26 = "./privacy";
                     this.s27 = "پیکربندی";
-                    this.s28 = "./configs";
                     this.s29 = "افزودن گروه";
                     this.s30 = "ویرایش گروه";
-                    this.s31 = "./events";
                     this.s32 = "حذف گروه";
                     this.s33 = "اعمال";
                     this.s34 = "آیا از حذف گروه های انتخاب شده اطمینان دارید؟";
                     this.s35 = "هیچ گروهی انتخاب نشده است.";
                     this.s36 = "تعداد رکورد ها: ";
                     this.s37 = "ممیزی ها";
-                    this.s38 = "/audits";
                     this.s39 = "لیست کاربران";
                     this.s40 = "جستجو...";
                     this.s41 = "افزودن به گروه";
@@ -739,7 +747,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s54 = "کاربران با موفقیت به گروه افزوده شدند.";
                     this.s55 = " (برای نام انگلیسی گروه تنها حروف انگلیسی و اعداد مجاز می باشد)";
                     this.rolesText = "نقش ها";
-                    this.rolesURLText = "./roles";
+                    this.reportsText = "گزارش ها";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";

@@ -5,9 +5,10 @@ import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Models.Group;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Groups.Group;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 
-@RestController
+@Controller
 public class GroupsController {
 
     @Autowired
@@ -24,10 +25,25 @@ public class GroupsController {
     @Autowired
     private UserRepo userRepo;
 
+    //*************************************** Pages ***************************************
+
+    @GetMapping("/groups")
+    public String Groups(HttpServletRequest request) {
+
+            Principal principal = request.getUserPrincipal();
+            User user = userRepo.retrieveUsers(principal.getName());
+            if (user.getUserId().equals("su"))
+                return "groups";
+
+        return null;
+    }
+
+    //*************************************** APIs ***************************************
+
     @GetMapping("/api/groups/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
+        User user = userRepo.retrieveUsers("5005");
         return new ResponseEntity<>(groupRepo.retrieveCurrentUserGroup(user), HttpStatus.OK);
     }
 
@@ -37,8 +53,9 @@ public class GroupsController {
     }
 
     @PutMapping("/api/groups/{id}")
-    public ResponseEntity<HttpStatus> rebindLdapUser(@RequestBody Group ou, @PathVariable("id") String id) {
-        return new ResponseEntity<>(groupRepo.update(id, ou));
+    public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request,@RequestBody Group ou, @PathVariable("id") String id) {
+        Principal principal = request.getUserPrincipal();
+        return new ResponseEntity<>(groupRepo.update(principal.getName(),id, ou));
     }
 
     @GetMapping("/api/groups")

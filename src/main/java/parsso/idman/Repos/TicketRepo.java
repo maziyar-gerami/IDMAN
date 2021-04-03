@@ -4,7 +4,7 @@ package parsso.idman.Repos;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Ticket;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Users.User;
 
 import java.util.List;
 

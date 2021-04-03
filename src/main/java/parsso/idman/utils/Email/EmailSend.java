@@ -3,7 +3,7 @@ package parsso.idman.Utils.Email;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Users.User;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;

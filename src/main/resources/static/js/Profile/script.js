@@ -1,19 +1,3 @@
-function myFunction() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
-
-window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; ++i) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
-        }
-    }
-}
 document.addEventListener('DOMContentLoaded', function () {
     var router = new VueRouter({
         mode: 'history',
@@ -23,6 +7,10 @@ document.addEventListener('DOMContentLoaded', function () {
         router,
         el: '#app',
         data: {
+            dropdownMenu: false,
+            dateNav: "",
+            dateNavEn: "",
+            dateNavText: "",
             rules: [
                 { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ", regex:/[a-zA-Z]+/, fa:false},
                 { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ",  regex:/[!@#\$%\^\&*\)\(+=\[\]._-]+/, fa:true},
@@ -108,6 +96,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s43: "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.",
             rolesText: "نقش ها",
             rolesURLText: "./roles",
+            reportsText: "گزارش ها",
+            reportsURLText: "./reports",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -129,14 +119,41 @@ document.addEventListener('DOMContentLoaded', function () {
             U18: "کد پرسنلی"
         },
         created: function () {
+            this.setDateNav();
             this.getUserInfo();
             this.getUserPic();
-            if(typeof this.$route.query.en !== 'undefined'){
+            this.getQR();
+            if(window.localStorage.getItem("lang") === null){
+                window.localStorage.setItem("lang", "FA");
+            }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
-            this.getQR();
         },
         methods: {
+            setDateNav: function () {
+                this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("gregorian");
+                persianDate.toLocale("en");
+                this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("persian");
+                persianDate.toLocale("fa");
+                this.dateNavText = this.dateNav;
+            },
+            dropdownNavbar: function () {
+                if(this.dropdownMenu){
+                    let dropdowns = document.getElementsByClassName("dropdown-content");
+                    for (let i = 0; i < dropdowns.length; ++i) {
+                        let openDropdown = dropdowns[i];
+                        if(openDropdown.classList.contains("show")) {
+                            openDropdown.classList.remove("show");
+                        }
+                    }
+                    this.dropdownMenu = false;
+                }else{
+                    document.getElementById("dropdownMenu").classList.toggle("show");
+                    this.dropdownMenu = true;
+                }
+            },
             isActive (menuItem) {
                 return this.activeItem === menuItem
             },
@@ -152,10 +169,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 axios.get(url + "/api/user") //
                     .then((res) => {
                         vm.userInfo = res.data;
-                        vm.username = vm.userInfo.userId;
-                        vm.name = vm.userInfo.displayName;
-                        vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
-                        vm.s1 = vm.name;
+                        vm.username = res.data.userId;
+                        vm.name = res.data.displayName;
+                        vm.nameEN = res.data.firstName + " " + res.data.lastName;
+                        if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+                            vm.s1 = vm.name;
+                        }else if(window.localStorage.getItem("lang") === "EN") {
+                            vm.s1 = vm.nameEN;
+                        }
                     });
             },
             getUserPic: function () {
@@ -296,12 +317,14 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             changeLang: function () {
                 if(this.lang == "EN"){
-                    this.placeholder = "text-align: left;"
+                    window.localStorage.setItem("lang", "EN");
+                    this.placeholder = "text-align: left;";
                     this.margin = "margin-left: 30px;";
                     this.lang = "فارسی";
-                    this.font = "font-size: 0.9em; text-align: left;"
+                    this.font = "font-size: 0.9em; text-align: left;";
                     this.isRtl = false;
                     this.eye = "left: 1%;";
+                    this.dateNavText = this.dateNavEn;
                     this.s0 = "Parsso";
                     this.s1 = this.nameEN;
                     this.s2 = "Exit";
@@ -315,22 +338,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s11 = "Privacy";
                     this.s12 = "Guide";
                     this.s13 = "Users";
-                    this.s14 = "./dashboard?en";
-                    this.s15 = "./services?en";
-                    this.s16 = "./users?en";
                     this.s17 = "New Password";
                     this.s18 = "Repeat New Password";
                     this.s19 = "Your Password Must Meet All Of The Following Criteria:";
                     this.s20 = "Dashboard";
                     this.s21 = "Passwords Don't Match";
-                    this.s22 = "./groups?en";
-                    this.s23 = "./profile?en";
                     this.s24 = "Are You Sure You Want To Edit?";
-                    this.s25 = "./privacy?en";
                     this.s26 = "Current Password";
                     this.s27 = "Configs";
-                    this.s28 = "./configs?en";
-                    this.s29 = "./events?en";
                     this.s30 = "Mobile Application";
                     this.s31 = "Please Scan The QR Code To Activate The App.";
                     this.s32 = "Verification Code Sent Successfully. Please Go To Your SMS Inbox And Enter The Code We Sent You.";
@@ -341,12 +356,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s37 = "An Error Has Occurred. Please Make Sure Your Mobile Number Is Valid.";
                     this.s38 = "Please Click On The Link Below To Download The App.";
                     this.s39 = "Go Back";
-                    this.s40 = "./dashboard?en";
                     this.s41 = "Audits";
-                    this.s42 = "/audits?en";
                     this.s43 = "New Password Should Not be Same as Old Password.";
                     this.rolesText = "Roles";
-                    this.rolesURLText = "./roles?en";
+                    this.reportsText = "Reports";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -368,13 +381,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rules[1].message = "- One special Character or Persian Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
                     this.rules[3].message = "- One Number Required.";
-                } else{
-                    this.placeholder = "text-align: right;"
+                }else {
+                    window.localStorage.setItem("lang", "FA");
+                    this.placeholder = "text-align: right;";
                     this.margin = "margin-right: 30px;";
                     this.lang = "EN";
-                    this.font = "font-size: 0.74em; text-align: right;"
+                    this.font = "font-size: 0.74em; text-align: right;";
                     this.isRtl = true;
                     this.eye = "right: 1%;";
+                    this.dateNavText = this.dateNav;
                     this.s0 = "پارسو";
                     this.s1 = this.name;
                     this.s2 = "خروج";
@@ -388,22 +403,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s11 = "حریم خصوصی";
                     this.s12 = "راهنما";
                     this.s13 = "کاربران";
-                    this.s14 = "./dashboard";
-                    this.s15 = "./services";
-                    this.s16 = "./users";
                     this.s17 = "رمز عبور جدید";
                     this.s18 = "تکرار رمز عبور جدید";
                     this.s19 = "رمز عبور شما باید شامل موارد زیر باشد:";
                     this.s20 = "داشبورد";
                     this.s21 = "رمز عبور های وارد شده یکسان نمی باشند";
-                    this.s22 = "./groups";
-                    this.s23 = "./profile";
                     this.s24 = "آیا از اعمال این تغییرات اطمینان دارید؟";
-                    this.s25 = "./privacy";
                     this.s26 = "رمز عبور فعلی";
                     this.s27 = "پیکربندی";
-                    this.s28 = "./configs";
-                    this.s29 = "./events";
                     this.s30 = "برنامه موبایل";
                     this.s31 = "لطفا کد QR را جهت فعال سازی برنامه موبایل، اسکن کنید.";
                     this.s32 = "کد تایید با موفقیت ارسال شد. لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.";
@@ -414,12 +421,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s37 = "خطایی رخ داده است. لطفا از صحت شماره موبایل خود اطمینان حاصل فرمایید.";
                     this.s38 = "لطفا برای دریافت برنامه موبایل بر روی لینک زیر کلیک کنید.";
                     this.s39 = "بازگشت";
-                    this.s40 = "./dashboard";
                     this.s41 = "ممیزی ها";
-                    this.s42 = "/audits";
                     this.s43 = "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.";
                     this.rolesText = "نقش ها";
-                    this.rolesURLText = "./roles";
+                    this.reportsText = "گزارش ها";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";

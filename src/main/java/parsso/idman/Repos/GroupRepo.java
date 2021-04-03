@@ -3,11 +3,9 @@ package parsso.idman.Repos;
 
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Models.Group;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Groups.Group;
+import parsso.idman.Models.Users.User;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface GroupRepo {
@@ -18,7 +16,7 @@ public interface GroupRepo {
 
     HttpStatus create(Group ou);
 
-    HttpStatus update(String name, Group ou);
+    HttpStatus update(String doerID,String name, Group ou);
 
     HttpStatus remove(JSONObject jsonObject);
 

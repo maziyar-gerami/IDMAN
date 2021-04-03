@@ -7,8 +7,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Audit;
-import parsso.idman.Models.ListAudits;
+import parsso.idman.Models.Logs.Audit;
+import parsso.idman.Models.Logs.ListAudits;
 import parsso.idman.Models.Time;
 import parsso.idman.Repos.AuditRepo;
 

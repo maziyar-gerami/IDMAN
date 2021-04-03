@@ -6,9 +6,9 @@ import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.DashboardData.Dashboard;
-import parsso.idman.Models.ListUsers;
-import parsso.idman.Models.SimpleUser;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Users.ListUsers;
+import parsso.idman.Models.Users.SimpleUser;
+import parsso.idman.Models.Users.User;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public interface UserRepo {
 
-    List<String> remove(JSONObject jsonObject);
+    List<String> remove(String doerID, JSONObject jsonObject);
 
     HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token);
 
@@ -27,19 +27,19 @@ public interface UserRepo {
 
     List<SimpleUser> retrieveUsersMain(int page, int number);
 
-    int retrieveUsersSize();
+    int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus);
 
     User getName(String uid, String token);
 
     List<User> retrieveUsersFull();
 
-    JSONObject create(User p);
+    JSONObject create(String doerID, User p);
 
     JSONObject createUserImport(User p);
 
-    HttpStatus update(String uid, User p);
+    HttpStatus update(String doer, String uid, User p);
 
-    HttpStatus updateUsersWithSpecificOU(String old_ou, String new_ou);
+    HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou);
 
     User retrieveUsers(String userId);
 
@@ -59,21 +59,21 @@ public interface UserRepo {
 
     Dashboard retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException;
 
-    HttpStatus enable(String uid);
+    HttpStatus enable(String doerID,String uid);
 
     String createUrl(String userId, String token);
 
-    HttpStatus disable(String uid);
+    HttpStatus disable(String doerID,String uid);
 
-    HttpStatus unlock(String uid);
+    HttpStatus unlock(String doerID,String uid);
 
     int requestToken(User user);
 
-    HttpStatus massUpdate(List<User> users);
+    HttpStatus massUpdate(String doerID,List<User> users);
 
     ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);
 
-    HttpStatus massUsersGroupUpdate(String groupId, JSONObject gu);
+    HttpStatus massUsersGroupUpdate(String doerID,String groupId, JSONObject gu);
 
     List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException;
 }

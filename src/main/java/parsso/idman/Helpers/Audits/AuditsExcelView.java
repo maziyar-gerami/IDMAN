@@ -9,7 +9,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
-import parsso.idman.Models.Audit;
+import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Time;
 import parsso.idman.Repos.AuditRepo;
 

@@ -5,9 +5,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Models.Service;
-import parsso.idman.Models.ServiceType.MicroService;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Services.Service;
+import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.Models.Users.User;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -29,7 +29,7 @@ public interface ServiceRepo {
 
     String uploadMetadata(MultipartFile file);
 
-    HttpStatus updateOuIdChange(Service service, long sid, String name, String oldOu, String newOu) throws IOException;
+    HttpStatus updateOuIdChange(String doer,Service service, long sid, String name, String oldOu, String newOu) throws IOException;
 
     HttpStatus createService(JSONObject jsonObject, String system) throws IOException;
 

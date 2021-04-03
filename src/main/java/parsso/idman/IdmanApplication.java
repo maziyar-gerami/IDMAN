@@ -28,7 +28,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Service;
 import parsso.idman.Configs.CasUserDetailService;
 import parsso.idman.Helpers.Communicate.InstantMessage;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Users.User;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.SystemRefresh;
@@ -69,7 +69,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private static long intervalCheckPassTime;
 
 
-    private static final Logger logger = LogManager.getLogger(IdmanApplication.class);
+    private static final Logger logger = LogManager.getLogger("System");
 
     /**
      * The entry point of application.
@@ -94,7 +94,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         };
 
 
-        logger.error("Hello from Log4j 2");
+        logger.warn("Started!");
 
         // in old days, we need to check the log level to increase performance
         /*if (logger.isDebugEnabled()) {

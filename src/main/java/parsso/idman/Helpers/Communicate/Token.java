@@ -11,8 +11,8 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.BuildAttributes;
 import parsso.idman.Helpers.User.BuildDn;
-import parsso.idman.Models.User;
-import parsso.idman.Models.UsersExtraInfo;
+import parsso.idman.Models.Users.User;
+import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
@@ -155,7 +155,7 @@ public class Token {
 
 
         try {
-            userRepo.update(user.getUserId(), user);
+            userRepo.update(user.getUserId(),user.getUserId(), user);
             mongoTemplate.save(usersExtraInfo, collection);
 
         } catch (Exception e) {

@@ -3,7 +3,7 @@ package parsso.idman.Helpers.User;
 
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.SimpleUser;
+import parsso.idman.Models.Users.SimpleUser;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;

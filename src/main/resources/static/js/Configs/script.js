@@ -1,18 +1,3 @@
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; ++i) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
-        }
-      }
-  }
-} 
 document.addEventListener('DOMContentLoaded', function () {
   var router = new VueRouter({
     mode: 'history',
@@ -22,6 +7,10 @@ document.addEventListener('DOMContentLoaded', function () {
     router,
     el: '#app',
     data: {
+      dropdownMenu: false,
+      dateNav: "",
+      dateNavEn: "",
+      dateNavText: "",
       userInfo: [],
       username: "",
       name: "",
@@ -85,17 +74,46 @@ document.addEventListener('DOMContentLoaded', function () {
       s42: "به‌روزرسانی کلی با موفقیت انجام شد.",
       rolesText: "نقش ها",
       rolesURLText: "./roles",
+      reportsText: "گزارش ها",
+      reportsURLText: "./reports",
     },
     created: function () {
-      this.getConfigs();
+      this.setDateNav();
       this.getUserInfo();
       this.getUserPic();
+      this.getConfigs();
       this.getRestorePoints();
-      if(typeof this.$route.query.en !== 'undefined'){
-        this.changeLang()
+      if(window.localStorage.getItem("lang") === null){
+        window.localStorage.setItem("lang", "FA");
+      }else if(window.localStorage.getItem("lang") === "EN") {
+        this.changeLang();
       }
     },
     methods: {
+      setDateNav: function () {
+            this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+            persianDate.toCalendar("gregorian");
+            persianDate.toLocale("en");
+            this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+            persianDate.toCalendar("persian");
+            persianDate.toLocale("fa");
+            this.dateNavText = this.dateNav;
+      },
+      dropdownNavbar: function () {
+            if(this.dropdownMenu){
+                let dropdowns = document.getElementsByClassName("dropdown-content");
+                for (let i = 0; i < dropdowns.length; ++i) {
+                    let openDropdown = dropdowns[i];
+                    if(openDropdown.classList.contains("show")) {
+                        openDropdown.classList.remove("show");
+                    }
+                }
+                this.dropdownMenu = false;
+            }else{
+                document.getElementById("dropdownMenu").classList.toggle("show");
+                this.dropdownMenu = true;
+            }
+      },
       isActive (menuItem) {
         return this.activeItem === menuItem;
       },
@@ -113,11 +131,14 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/api/user") //
           .then((res) => {
-            vm.userInfo = res.data;
-            vm.username = vm.userInfo.userId;
-            vm.name = vm.userInfo.displayName;
-            vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
-            vm.s1 = vm.name;
+            vm.username = res.data.userId;
+            vm.name = res.data.displayName;
+            vm.nameEN = res.data.firstName + " " + res.data.lastName;
+            if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+                vm.s1 = vm.name;
+            }else if(window.localStorage.getItem("lang") === "EN") {
+                vm.s1 = vm.nameEN;
+            }
           });
       },
       getUserPic: function () {
@@ -280,9 +301,11 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       changeLang: function () {
         if(this.lang == "EN"){
+          window.localStorage.setItem("lang", "EN");
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
           this.isRtl = false;
+          this.dateNavText = this.dateNavEn;
           this.s0 = "Parsso";
           this.s1 = this.nameEN;
           this.s2 = "Exit";
@@ -297,26 +320,17 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s11 = "Privacy";
           this.s12 = "Guide";
           this.s13 = "Users";
-          this.s14 = "./dashboard?en";
-          this.s15 = "./services?en";
-          this.s16 = "./users?en";
           this.s17 = "ID";
           this.s18 = "Name";
           this.s19 = "Description";
           this.s20 = "Connect";
-          this.s21 = "./groups?en";
-          this.s22 = "./profile?en";
-          this.s23 = "./privacy?en";
           this.s24 = "Configs";
-          this.s25 = "./configs?en";
           this.s26 = "Edit";
-          this.s27 = "./events?en";
           this.s28 = "Backup Current Configs";
           this.s29 = "Restore Initial Configs";
           this.s30 = "There Are No Restore Points";
           this.s31 = "Restore";
           this.s32 = "Audits";
-          this.s33 = "/audits?en";
           this.s34 = "Refresh";
           this.s35 = "Refresh Services";
           this.s36 = "Refresh Users";
@@ -327,11 +341,13 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s41 = "CAPTCHA Refreshed Successfully.";
           this.s42 = "All Refreshed Successfully.";
           this.rolesText = "Roles";
-          this.rolesURLText = "./roles?en";
-        } else{
+          this.reportsText = "Reports";
+        }else {
+            window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
             this.isRtl = true;
+            this.dateNavText = this.dateNav;
             this.s0 = "پارسو";
             this.s1 = this.name;
             this.s2 = "خروج";
@@ -346,26 +362,17 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s11 = "حریم خصوصی";
             this.s12 = "راهنما";
             this.s13 = "کاربران";
-            this.s14 = "./dashboard";
-            this.s15 = "./services";
-            this.s16 = "./users";
             this.s17 = "شناسه";
             this.s18 = "نام";
             this.s19 = "توضیحات";
             this.s20 = "اتصال";
-            this.s21 = "./groups";
-            this.s22 = "./profile";
-            this.s23 = "./privacy";
             this.s24 = "پیکربندی";
-            this.s25 = "./configs";
             this.s26 = "ویرایش";
-            this.s27 = "./events";
             this.s28 = "ذخیره پیکربندی کنونی";
             this.s29 = "بازگردانی پیکربندی اولیه";
             this.s30 = "نقطه بازگردانی قبلی وجود ندارد";
             this.s31 = "بازگردانی";
             this.s32 = "ممیزی ها";
-            this.s33 = "/audits";
             this.s34 = "به‌روزرسانی";
             this.s35 = "به‌روزرسانی سرویس ها";
             this.s36 = "به‌روزرسانی کاربران";
@@ -376,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s41 = "به‌روزرسانی CAPTCHA با موفقیت انجام شد.";
             this.s42 = "به‌روزرسانی کلی با موفقیت انجام شد.";
             this.rolesText = "نقش ها";
-            this.rolesURLText = "./roles";
+            this.reportsText = "گزارش ها";
         }
       }
     },

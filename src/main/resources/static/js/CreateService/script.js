@@ -1,18 +1,3 @@
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; ++i) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
-        }
-      }
-  }
-}
 document.addEventListener('DOMContentLoaded', function () {
   var router = new VueRouter({
     mode: 'history',
@@ -22,6 +7,10 @@ document.addEventListener('DOMContentLoaded', function () {
     router,
     el: '#app',
     data: {
+      dropdownMenu: false,
+      dateNav: "",
+      dateNavEn: "",
+      dateNavText: "",
       userInfo: [],
       username: "",
       name: "",
@@ -151,17 +140,46 @@ document.addEventListener('DOMContentLoaded', function () {
       addAllGroupsText: "انتخاب همه",
       removeAllGroupsText: "لغو انتخاب همه",
       allGroupsHolderText: "انتخاب همه",
+      reportsText: "گزارش ها",
+      reportsURLText: "./reports",
     },
     created: function () {
+      this.setDateNav();
       this.getUserInfo();
       this.getUserPic();
       this.getGroups();
       this.getUsersList();
-      if(typeof this.$route.query.en !== 'undefined'){
+      if(window.localStorage.getItem("lang") === null){
+        window.localStorage.setItem("lang", "FA");
+      }else if(window.localStorage.getItem("lang") === "EN") {
         this.changeLang();
       }
     },
     methods: {
+      setDateNav: function () {
+        this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+        persianDate.toCalendar("gregorian");
+        persianDate.toLocale("en");
+        this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+        persianDate.toCalendar("persian");
+        persianDate.toLocale("fa");
+        this.dateNavText = this.dateNav;
+      },
+      dropdownNavbar: function () {
+        if(this.dropdownMenu){
+          let dropdowns = document.getElementsByClassName("dropdown-content");
+          for (let i = 0; i < dropdowns.length; ++i) {
+            let openDropdown = dropdowns[i];
+            if(openDropdown.classList.contains("show")) {
+              openDropdown.classList.remove("show");
+            }
+          }
+          this.dropdownMenu = false;
+        }else{
+          document.getElementById("dropdownMenu").classList.toggle("show");
+          this.dropdownMenu = true;
+        }
+      },
       isActive (menuItem) {
         return this.activeItem === menuItem
       },
@@ -181,11 +199,14 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/api/user") //
           .then((res) => {
-              vm.userInfo = res.data;
-              vm.username = vm.userInfo.userId;
-              vm.name = vm.userInfo.displayName;
-              vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
+            vm.username = res.data.userId;
+            vm.name = res.data.displayName;
+            vm.nameEN = res.data.firstName + " " + res.data.lastName;
+            if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
               vm.s1 = vm.name;
+            }else if(window.localStorage.getItem("lang") === "EN") {
+              vm.s1 = vm.nameEN;
+            }
           });
       },
       getUserPic: function () {
@@ -796,9 +817,11 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       changeLang: function () {
         if(this.lang == "EN"){
+          window.localStorage.setItem("lang", "EN");
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
           this.isRtl = false;
+          this.dateNavText = this.dateNavEn;
           this.s0 = "Parsso";
           this.s1 = this.nameEN;
           this.s2 = "Exit";
@@ -832,17 +855,9 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s30 = "Logout URL";
           this.s31 = "Logout Type";
           this.s32 = "Submit";
-          this.s33 = "./dashboard?en";
-          this.s34 = "./services?en";
           this.s35 = "Groups Access";
           this.s36 = "ServiceID";
-          this.s37 = "./users?en";
-          this.s38 = "./groups?en";
-          this.s39 = "./profile?en";
-          this.s40 = "./privacy?en";
           this.s41 = "Configs";
-          this.s42 = "./configs?en";
-          this.s43 = "./events?en";
           this.s44 = "Access Strategy";
           this.s45 = "Allow SSO";
           this.s46 = "Unauthorized Redirect Url";
@@ -878,13 +893,12 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s76 = "Go Back";
           this.s77 = "Position";
           this.s78 = "Audits";
-          this.s79 = "/audits?en";
           this.s80 = "Remote Access";
           this.s81 = "Acceptable Response Codes";
           this.s82 = "Hardware Token";
           this.s83 = "Disabled";
           this.rolesText = "Roles";
-          this.rolesURLText = "./roles?en";
+          this.reportsText = "Reports";
           if(this.allGroupsHolderText == this.addAllGroupsText){
             this.allGroupsHolderText = "Select All";
           }else{
@@ -892,10 +906,12 @@ document.addEventListener('DOMContentLoaded', function () {
           }
           this.addAllGroupsText = "Select All";
           this.removeAllGroupsText = "Unselect All";
-        } else{
+        }else {
+            window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
             this.isRtl = true;
+            this.dateNavText = this.dateNav;
             this.s0 = "پارسو";
             this.s1 = this.name;
             this.s2 = "خروج";
@@ -929,17 +945,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s30 = "آدرس خروج";
             this.s31 = "نوع خروج";
             this.s32 = "تایید";
-            this.s33 = "./dashboard";
-            this.s34 = "./services";
             this.s35 = "دسترسی گروه ها";
             this.s36 = "شناسه سرویس";
-            this.s37 = "./users";
-            this.s38 = "./groups";
-            this.s39 = "./profile";
-            this.s40 = "./privacy";
             this.s41 = "پیکربندی";
-            this.s42 = "./configs";
-            this.s43 = "./events";
             this.s44 = "استراتژی دسترسی";
             this.s45 = "فعال سازی SSO";
             this.s46 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
@@ -975,13 +983,12 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s76 = "بازگشت";
             this.s77 = "موقعیت";
             this.s78 = "ممیزی ها";
-            this.s79 = "/audits";
             this.s80 = "دسترسی از راه دور";
             this.s81 = "کد پاسخ های قابل قبول";
             this.s82 = "توکن سخت افزاری";
             this.s83 = "غیرفعال";
             this.rolesText = "نقش ها";
-            this.rolesURLText = "./roles";
+            this.reportsText = "گزارش ها";
             if(this.allGroupsHolderText == this.addAllGroupsText){
               this.allGroupsHolderText = "انتخاب همه";
             }else{

@@ -3,7 +3,7 @@ package parsso.idman.Utils.JSON;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import parsso.idman.Models.Setting;
+import parsso.idman.Models.Logs.Setting;
 
 import java.util.List;
 

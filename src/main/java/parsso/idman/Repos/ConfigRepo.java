@@ -3,8 +3,8 @@ package parsso.idman.Repos;
 
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
-import parsso.idman.Models.Config;
-import parsso.idman.Models.Setting;
+import parsso.idman.Models.Logs.Config;
+import parsso.idman.Models.Logs.Setting;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,4 +25,5 @@ public interface ConfigRepo {
 
     List<Config> listBackedUpConfigs() throws IOException, ParseException;
 
+    HttpStatus saveToMongo() throws IOException;
 }

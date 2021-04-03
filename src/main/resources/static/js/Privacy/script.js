@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', function () {
         router,
         el: '#app',
         data: {
+            dateNav: "",
+            dateNavEn: "",
+            dateNavText: "",
             show: false,
             showR: false,
             isRtl: true,
@@ -70,13 +73,26 @@ document.addEventListener('DOMContentLoaded', function () {
             s50: "مراجعه نمایید."
         },
         created: function () {
-            if (typeof this.$route.query.en !== 'undefined') {
+            this.setDateNav();
+            if(window.localStorage.getItem("lang") === null){
+                window.localStorage.setItem("lang", "FA");
+            }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
         methods: {
+            setDateNav: function () {
+                this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("gregorian");
+                persianDate.toLocale("en");
+                this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("persian");
+                persianDate.toLocale("fa");
+                this.dateNavText = this.dateNav;
+            },
             changeLang: function () {
                 if (this.lang == "EN") {
+                    window.localStorage.setItem("lang", "EN");
                     this.placeholder = "text-align: left;"
                     this.isRtl = false;
                     this.margin = "margin-left: 30px;";
@@ -85,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.lang = "فارسی";
                     this.rtl = "direction: ltr;";
                     this.eye = "left: 3%;";
+                    this.dateNavText = this.dateNavEn;
                     this.s0 = "Parsso";
                     this.s1 = "Enter Your Username and Password";
                     this.s2 = "Username";
@@ -136,7 +153,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s49 = "If you have any questions about these policies or have suggestions for changes and improvements, please contact Parsso team using the Contact Us form.",
                     this.s50 = " for more information."
 
-                } else {
+                }else {
+                    window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
                     this.isRtl = true;
                     this.margin = "margin-right: 30px;";
@@ -145,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.lang = "EN";
                     this.rtl = "direction: rtl;";
                     this.eye = "right: 3%;";
+                    this.dateNavText = this.dateNav;
                     this.s0 = "پارسو";
                     this.s1 = "نام کاربری و رمز عبور خود را وارد کنید";
                     this.s2 = "نام کاربری";

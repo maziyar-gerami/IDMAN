@@ -21,10 +21,10 @@ import parsso.idman.Helpers.Service.Position;
 import parsso.idman.Helpers.Service.SamlServiceHelper;
 import parsso.idman.Helpers.Service.Trim;
 import parsso.idman.Helpers.User.BuildDn;
-import parsso.idman.Models.Service;
-import parsso.idman.Models.ServiceType.MicroService;
-import parsso.idman.Models.ServicesSubModel.ExtraInfo;
-import parsso.idman.Models.User;
+import parsso.idman.Models.Services.Service;
+import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.Models.Services.ServicesSubModel.ExtraInfo;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
@@ -252,10 +252,10 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
     @Override
-    public HttpStatus updateOuIdChange(Service service, long sid, String name, String oldOu, String newOu) throws IOException {
+    public HttpStatus updateOuIdChange(String doerID,Service service, long sid, String name, String oldOu, String newOu) throws IOException {
 
         //Update ou
-        userRepo.updateUsersWithSpecificOU(oldOu,newOu);
+        userRepo.updateUsersWithSpecificOU(doerID, oldOu,newOu);
 
         //Update text
         String fileName = String.valueOf(sid);

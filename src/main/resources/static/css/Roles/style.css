@@ -104,12 +104,12 @@ html,body {
   .show {display:block;}
   
   .checkboxclass {
-    display: block;
+    /* display: block; */
     position: relative;
     padding-left: 35px;
     margin-bottom: 12px;
     cursor: pointer;
-    font-size: 22px;
+    /* font-size: 22px; */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -154,8 +154,8 @@ html,body {
 }
 
 .checkboxclass .checkmark:after {
-  left: 9px;
-  top: 5px;
+  left: 10px;
+  top: 6px;
   width: 5px;
   height: 10px;
   border: solid white;

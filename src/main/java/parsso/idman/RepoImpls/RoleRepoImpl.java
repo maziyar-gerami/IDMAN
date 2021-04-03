@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.UserRole;
-import parsso.idman.Models.UsersExtraInfo;
+import parsso.idman.Models.Users.UserRole;
+import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.RolesRepo;
 
 import java.util.List;

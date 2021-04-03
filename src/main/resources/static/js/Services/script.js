@@ -1,19 +1,4 @@
-function myFunction() {
-    document.getElementById("myDropdown").classList.toggle("show");
-  }
-  window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; i++) {
-          var openDropdown = dropdowns[i];
-          if (openDropdown.classList.contains('show')) {
-            openDropdown.classList.remove('show');
-          }
-        }
-    }
-  } 
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     var router = new VueRouter({
       mode: 'history',
       routes: []
@@ -23,6 +8,10 @@ function myFunction() {
       router,
       el: '#app',
       data: {
+        dropdownMenu: false,
+        dateNav: "",
+        dateNavEn: "",
+        dateNavText: "",
         recordsShownOnPage: 20,
         userInfo: [],
         username: "",
@@ -197,18 +186,48 @@ function myFunction() {
         addAllGroupsText: "انتخاب همه",
         removeAllGroupsText: "لغو انتخاب همه",
         allGroupsHolderText: "انتخاب همه",
+        serviceFaNameText: "نام فارسی",
+        reportsText: "گزارش ها",
+        reportsURLText: "./reports",
       },
       created: function () {
+        this.setDateNav();
         this.getUserInfo();
         this.getUserPic();
         this.refreshServices();
         this.getGroups();
         this.getUsersList();
-        if(typeof this.$route.query.en !== 'undefined'){
-          this.changeLang()
+        if(window.localStorage.getItem("lang") === null){
+          window.localStorage.setItem("lang", "FA");
+        }else if(window.localStorage.getItem("lang") === "EN") {
+          this.changeLang();
         }
       },
       methods: {
+        setDateNav: function () {
+          this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+          persianDate.toCalendar("gregorian");
+          persianDate.toLocale("en");
+          this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+          persianDate.toCalendar("persian");
+          persianDate.toLocale("fa");
+          this.dateNavText = this.dateNav;
+        },
+        dropdownNavbar: function () {
+          if(this.dropdownMenu){
+            let dropdowns = document.getElementsByClassName("dropdown-content");
+            for (let i = 0; i < dropdowns.length; ++i) {
+              let openDropdown = dropdowns[i];
+              if(openDropdown.classList.contains("show")) {
+                openDropdown.classList.remove("show");
+              }
+            }
+            this.dropdownMenu = false;
+          }else{
+            document.getElementById("dropdownMenu").classList.toggle("show");
+            this.dropdownMenu = true;
+          }
+        },
         allSelected () {
           if(this.allIsSelected){
               this.allIsSelected = false;
@@ -251,11 +270,14 @@ function myFunction() {
           var vm = this;
           axios.get(url + "/api/user") //
             .then((res) => {
-                vm.userInfo = res.data;
-                vm.username = vm.userInfo.userId;
-                vm.name = vm.userInfo.displayName;
-                vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
+              vm.username = res.data.userId;
+              vm.name = res.data.displayName;
+              vm.nameEN = res.data.firstName + " " + res.data.lastName;
+              if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
                 vm.s1 = vm.name;
+              }else if(window.localStorage.getItem("lang") === "EN") {
+                vm.s1 = vm.nameEN;
+              }
             });
         },
         getUserPic: function () {
@@ -1230,10 +1252,12 @@ function myFunction() {
         },
         changeLang: function () {
           if(this.lang == "EN"){
+            window.localStorage.setItem("lang", "EN");
             this.margin = "margin-left: 30px;";
             this.margin1 = "mr-1";
             this.lang = "فارسی";
             this.isRtl = false;
+            this.dateNavText = this.dateNavEn;
             this.s0 = "Parsso";
             this.s1 = this.nameEN;
             this.s2 = "Exit";
@@ -1250,10 +1274,6 @@ function myFunction() {
             this.s13 = "Create New Service";
             this.s14 = "New";
             this.s15 = "Users";
-            this.s16 = "./dashboard?en";
-            this.s17 = "./services?en";
-            this.s18 = "./createservice?en";
-            this.s19 = "./users?en";
             this.s20 = "ID";
             this.s21 = "Name";
             this.s22 = "URL";
@@ -1282,12 +1302,7 @@ function myFunction() {
             this.s45 = "Submit";
             this.s46 = "Go Back";
             this.s47 = "Delete";
-            this.s48 = "./groups?en";
-            this.s49 = "./profile?en";
-            this.s50 = "./privacy?en";
             this.s51 = "Configs";
-            this.s52 = "./configs?en";
-            this.s53 = "./events?en";
             this.s54 = "Access Strategy";
             this.s55 = "Allow SSO";
             this.s56 = "Unauthorized Redirect Url";
@@ -1329,7 +1344,6 @@ function myFunction() {
             this.s92 = "Records a Page: ";
             this.s93 = "Position";
             this.s94 = "Audits";
-            this.s95 = "/audits?en";
             this.s96 = "Remote Access";
             this.s97 = "Acceptable Response Codes";
             this.s98 = "Edit Service";
@@ -1337,14 +1351,16 @@ function myFunction() {
             this.s100 = "Disabled";
             this.s101 = "No Service Found";
             this.rolesText = "Roles";
-            this.rolesURLText = "./roles?en";
             this.addAllGroupsText = "Select All";
             this.removeAllGroupsText = "Unselect All";
-          } else{
+            this.reportsText = "Reports";
+          }else {
+              window.localStorage.setItem("lang", "FA");
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
               this.lang = "EN";
               this.isRtl = true;
+              this.dateNavText = this.dateNav;
               this.s0 = "پارسو";
               this.s1 = this.name;
               this.s2 = "خروج";
@@ -1361,10 +1377,6 @@ function myFunction() {
               this.s13 = "ایجاد سرویس جدید";
               this.s14 = "جدید";
               this.s15 = "کاربران";
-              this.s16 = "./dashboard";
-              this.s17 = "./services";
-              this.s18 = "./createservice";
-              this.s19 = "./users";
               this.s20 = "شناسه";
               this.s21 = "نام";
               this.s22 = "آدرس";
@@ -1393,12 +1405,7 @@ function myFunction() {
               this.s45 = "تایید";
               this.s46 = "بازگشت";
               this.s47 = "حذف";
-              this.s48 = "./groups";
-              this.s49 = "./profile";
-              this.s50 = "./privacy";
               this.s51 = "پیکربندی";
-              this.s52 = "./configs";
-              this.s53 = "./events";
               this.s54 = "استراتژی دسترسی";
               this.s55 = "فعال سازی SSO";
               this.s56 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
@@ -1440,7 +1447,6 @@ function myFunction() {
               this.s92 = "تعداد رکورد ها: ";
               this.s93 = "موقعیت";
               this.s94 = "ممیزی ها";
-              this.s95 = "/audits";
               this.s96 = "دسترسی از راه دور";
               this.s97 = "کد پاسخ های قابل قبول";
               this.s98 = "ویرایش سرویس";
@@ -1448,9 +1454,9 @@ function myFunction() {
               this.s100 = "غیرفعال";
               this.s101 = "سرویسی یافت نشد";
               this.rolesText = "نقش ها";
-              this.rolesURLText = "./roles";
               this.addAllGroupsText = "انتخاب همه";
               this.removeAllGroupsText = "لغو انتخاب همه";
+              this.reportsText = "گزارش ها";
           }
         },
         div: function (a, b) {

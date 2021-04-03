@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+
+
+<Configuration>
+
     <Appenders>
         <Console name="LogToConsole" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
+
+        <RollingFile name="RollingFile" fileName="reports/app.report" filePattern="reports/app-%d{MM-dd-yyyy}.report.gz"
+                     ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+            <TimeBasedTriggeringPolicy />
+        </RollingFile>
+
+
+        <NoSql name="MongoDbAppender">
+            <MongoDb4 connection="mongodb://parssouser:APA00918@parsso2.razi.ac.ir:27017/parssodb.IDMAN_Log"
+                      capped="true"
+                      collectionSize="1073741824"/>
+            />
+        </NoSql>
+
     </Appenders>
     <Loggers>
 
-        <Root level="error">
+        <Root level="warn">
+            <AppenderRef ref="MongoDbAppender"/>
             <AppenderRef ref="LogToConsole"/>
         </Root>
     </Loggers>
