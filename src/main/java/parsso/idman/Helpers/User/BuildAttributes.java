@@ -141,7 +141,7 @@ public class BuildAttributes {
             context.setAttributeValue("pwdEndTime", time + "Z");
         }
 
-        if (p.getEmployeeNumber() != "" && old.getEmployeeNumber() != null) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
+        if ( old.getEmployeeNumber() != null && p.getEmployeeNumber() != "") context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
 
         if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null) mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
 
