@@ -45,10 +45,9 @@ public class ReportsController {
         return new ResponseEntity<>(reportRepo.getListUserLogs(userId, page, n), HttpStatus.OK);
     }
 
-    @GetMapping("/api/reports/user/date/{date}/{page}/{n}")
+    @GetMapping("/api/reports/users/date/{date}/{page}/{n}")
     public ResponseEntity<ListReports> retrieveByDate(HttpServletRequest request, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(reportRepo.getListUserLogByDate(date, principal.getName(), page, n), HttpStatus.OK);
+        return new ResponseEntity<>(reportRepo.getLogsByDate(date,page,n), HttpStatus.OK);
     }
 
     @GetMapping("/api/reports/users/{id}/date/{date}/{page}/{n}")
@@ -63,11 +62,11 @@ public class ReportsController {
         return new ResponseEntity<>(listReports, HttpStatus.OK);
     }
 
-    /*@GetMapping("/api/reports/user/date/{date}/{page}/{n}")
+    @GetMapping("/api/reports/user/date/{date}/{page}/{n}")
     public ResponseEntity<ListReports> retrieveCurrentUserLogsByDate(HttpServletRequest request, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(reportRepo.getListUserLogByDate(date, principal.getName(), page, n), HttpStatus.OK);
-    }*/
+    }
 
 
     @GetMapping("/api/reports/users/export")

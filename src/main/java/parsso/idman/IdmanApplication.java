@@ -69,7 +69,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private static long intervalCheckPassTime;
 
 
-    private static final Logger logger = LogManager.getLogger("********* Parsso IDMAN *********");
+    private static final Logger logger = LogManager.getLogger("System");
 
     /**
      * The entry point of application.

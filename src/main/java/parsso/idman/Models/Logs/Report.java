@@ -16,6 +16,7 @@ public class Report {
     Time dateTime;
     String loggerName;
     String message;
+    @JsonIgnore
     String details;
     @JsonIgnore
     Source source;
