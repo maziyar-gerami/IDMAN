@@ -1,19 +1,3 @@
-function myFunction() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
-
-window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; ++i) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
-        }
-    }
-}
 document.addEventListener('DOMContentLoaded', function () {
     var router = new VueRouter({
         mode: 'history',
@@ -24,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
         router,
         el: '#app',
         data: {
+            dropdownMenu: false,
+            dateNav: "",
+            dateNavEn: "",
+            dateNavText: "",
             recordsShownOnPage: 20,
             currentPage: 1,
             paginationCurrentPage: 1,
@@ -217,6 +205,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s85: "کاربری یافت نشد",
             rolesText: "نقش ها",
             rolesURLText: "./roles",
+            reportsText: "گزارش ها",
+            reportsURLText: "./reports",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه کاربری",
@@ -244,6 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
             U24: "کد پرسنلی"
         },
         created: function () {
+            this.setDateNav();
             this.getUserInfo();
             this.getUserPic();
             this.getUsers();
@@ -253,6 +244,30 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         methods: {
+            setDateNav: function () {
+                this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("gregorian");
+                persianDate.toLocale("en");
+                this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("persian");
+                persianDate.toLocale("fa");
+                this.dateNavText = this.dateNav;
+            },
+            dropdownNavbar: function () {
+                if(this.dropdownMenu){
+                    let dropdowns = document.getElementsByClassName("dropdown-content");
+                    for (let i = 0; i < dropdowns.length; ++i) {
+                        let openDropdown = dropdowns[i];
+                        if(openDropdown.classList.contains("show")) {
+                            openDropdown.classList.remove("show");
+                        }
+                    }
+                    this.dropdownMenu = false;
+                }else{
+                    document.getElementById("dropdownMenu").classList.toggle("show");
+                    this.dropdownMenu = true;
+                }
+            },
             allSelected () {
                 if(this.allIsSelected){
                     this.allIsSelected = false;
@@ -408,10 +423,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 axios.get(url + "/api/user") //
                     .then((res) => {
-                        vm.userInfo = res.data;
-                        vm.username = vm.userInfo.userId;
-                        vm.name = vm.userInfo.displayName;
-                        vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
+                        vm.username = res.data.userId;
+                        vm.name = res.data.displayName;
+                        vm.nameEN = res.data.firstName + " " + res.data.lastName;
                         vm.s1 = vm.name;
                     });
             },
@@ -1273,6 +1287,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.padding0Right = "padding-left: 0rem;";
                     this.eye = "left: 1%;";
                     this.font = "font-size: 0.9em; text-align: left;"
+                    this.dateNavText = this.dateNavEn;
                     this.s0 = "Parsso";
                     this.s1 = this.nameEN;
                     this.s2 = "Exit";
@@ -1358,6 +1373,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s85 = "No User Found";
                     this.rolesText = "Roles";
                     this.rolesURLText = "./roles?en";
+                    this.reportsText = "Reports";
+                    this.reportsURLText = "./reports?en";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1399,6 +1416,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.padding0Right = "padding-right: 0rem;";
                     this.eye = "right: 1%;";
                     this.font = "font-size: 0.74em; text-align: right;"
+                    this.dateNavText = this.dateNav;
                     this.s0 = "پارسو";
                     this.s1 = this.name;
                     this.s2 = "خروج";
@@ -1484,6 +1502,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s85 = "کاربری یافت نشد";
                     this.rolesText = "نقش ها";
                     this.rolesURLText = "./roles";
+                    this.reportsText = "گزارش ها";
+                    this.reportsURLText = "./reports";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه کاربری";

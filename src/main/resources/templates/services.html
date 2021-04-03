@@ -19,10 +19,10 @@
     <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
+    <script src="js/persian-date.min.js"></script>
     <script src="js/Services/script.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
     <script src="js/jquery.js"></script>
-    <script src="js/persian-date.min.js"></script>
     <script src="js/persian-datepicker.min.js"></script>
 
 </head>
@@ -128,10 +128,16 @@
         <div v-bind:class="{rtl: isRtl}" class=" h-100">
             <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
                 <div class="container">
-                    <a class="navbar-brand" href="./">{{s0}}</a>
                     <div class="dropdown">
-                        <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span class="fa fa-caret-down"></span></a>
-                        <div id="myDropdown" class="dropdown-content">
+                        <a class="navbar-brand" href="./">{{s0}}</a>
+                        <a v-bind:style="margin"><small style="color: #FFFFFF;">{{dateNavText}}</small></a>
+                    </div>
+                    <div class="dropdown">
+                        <a id="btn" class="dropbtn" v-on:click="dropdownNavbar">
+                            {{s1}}
+                            <span class="fa fa-caret-down ml-1 mr-1"></span>
+                        </a>
+                        <div id="dropdownMenu" class="dropdown-content">
                             <a href="./logout">{{s2}}</a>
                         </div>
                         <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
@@ -178,48 +184,53 @@
                                 <div class="list-group list-group-flush">
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s16">
-                                        <i class="fa fa-dashboard"></i>
+                                        <i class="fa fa-dashboard fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s3}}</span>
                                     </a>
                                     <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s17">
-                                        <i class="fa fa-server"></i>
+                                        <i class="fa fa-server fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s4}}</span>
                                     </a>
                                     <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s19">
-                                        <i class="fa fa-user"></i>
+                                        <i class="fa fa-user fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s15}}</span>
                                     </a>
                                     <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s48">
-                                        <i class="fa fa-users"></i>
+                                        <i class="fa fa-users fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s5}}</span>
                                     </a>
                                     <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="rolesURLText">
-                                        <i class="fa fa-user-circle-o"></i>
+                                        <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{rolesText}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s53">
-                                        <i class="fa fa-calendar"></i>
+                                        <i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s6}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s95">
-                                        <i class="fa fa-history"></i>
+                                        <i class="fa fa-history fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s94}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2"
+                                       v-bind:href="reportsURLText">
+                                        <i class="fa fa-file fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{reportsText}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s49">
-                                        <i class="fa fa-cogs"></i>
+                                        <i class="fa fa-cogs fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s7}}</span>
                                     </a>
                                     <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s52">
-                                        <i class="fa fa-cog"></i>
+                                        <i class="fa fa-cog fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s51}}</span>
                                     </a>
                                 </div>
@@ -289,53 +300,54 @@
                                                         </div>
                                                     </div>
                                                     <div v-else>
-                                                        <table class="tableList table table-responsive p-2">
-                                                                    <tr>
-                                                                        <th style="border: none;">
-                                                                            <label class="checkboxclass">
-                                                                                <input id="selectAllCheckbox" type="checkbox">
-                                                                                <span v-on:click="allSelected()" class="checkmark"></span>
-                                                                            </label>
-                                                                        </th>
-                                                                        <th style="border: none;">#</th>
-                                                                        <th style="border: none;">{{s20}}</th>
-                                                                        <th style="border: none;">{{s21}}</th>
-                                                                        <th style="border: none;">{{s22}}</th>
-                                                                    </tr>
-                                                                    <tbody id="body">
-                                                                        <tr v-for="service in sortedServices" v-bind:key="service._id" :id="'row-' + service._id">
-                                                                            <td>
-                                                                                <label class="checkboxclass">
-                                                                                    <input :id="'checkbox-' + service._id" type="checkbox">
-                                                                                    <span v-on:click="rowSelected(service._id)" class="checkmark"></span>
-                                                                                </label>                                                                      
-                                                                            </td>
-                                                                            <td>{{service.orderOfRecords}}</td>
-                                                                            <td>{{service._id}}</td>
-                                                                            <td>{{service.name}}</td>
-                                                                            <td class="enInput"><a v-bind:href="service.url">{{service.url}}</a></td>
-                                                                            <td>
-                                                                                <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-sm" v-on:click="editServiceS(service._id)">
-                                                                                    <span class="fa-passwd-reset fa-stack">
-                                                                                        <i class="fa fa-pencil-square-o fa-stack-2x"></i>
-                                                                                    </span>
-                                                                                </button>
-                                                                            </td>
-                                                                            <td>
-                                                                                <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s24" class="btn btn-sm" v-on:click="deleteService(service._id)">
-                                                                                    <span class="fa-passwd-reset fa-stack">
-                                                                                        <i class="fa fa-trash fa-stack-2x"></i>
-                                                                                    </span>
-                                                                                </button>
-                                                                            </td>
-                                                                            <td>
-                                                                                <div class="mt-1 mb-1 mr-2 ml-2">
-                                                                                    <div class="up-arrow" v-on:click="posInc(service._id)"></div>
-                                                                                    <div class="down-arrow" v-on:click="posDec(service._id)"></div>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
+                                                        <table class="tableList table table-responsive p-2 text-center">
+                                                            <tr>
+                                                                <th style="border: none;">
+                                                                    <label class="checkboxclass">
+                                                                        <input id="selectAllCheckbox" type="checkbox">
+                                                                        <span v-on:click="allSelected()" class="checkmark"></span>
+                                                                    </label>
+                                                                </th>
+                                                                <th style="border: none;">#</th>
+                                                                <th style="border: none;">{{s21}}</th>
+                                                                <th style="border: none;">{{serviceFaNameText}}</th>
+                                                                <th style="border: none;">{{s22}}</th>
+                                                            </tr>
+                                                            <tbody id="body">
+                                                                <tr v-for="service in sortedServices" v-bind:key="service._id" :id="'row-' + service._id"
+                                                                data-toggle="tooltip" data-placement="top" :title="service._id">
+                                                                    <td>
+                                                                        <label class="checkboxclass">
+                                                                            <input :id="'checkbox-' + service._id" type="checkbox">
+                                                                            <span v-on:click="rowSelected(service._id)" class="checkmark"></span>
+                                                                        </label>                                                                      
+                                                                    </td>
+                                                                    <td>{{service.orderOfRecords}}</td>
+                                                                    <td>{{service.name}}</td>
+                                                                    <td>{{service.description}}</td>
+                                                                    <td class="enInput"><a v-bind:href="service.url">{{service.url}}</a></td>
+                                                                    <td>
+                                                                        <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s23" class="btn btn-sm" v-on:click="editServiceS(service._id)">
+                                                                            <span class="fa-passwd-reset fa-stack">
+                                                                                <i class="fa fa-pencil-square-o fa-stack-2x"></i>
+                                                                            </span>
+                                                                        </button>
+                                                                    </td>
+                                                                    <td>
+                                                                        <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="s24" class="btn btn-sm" v-on:click="deleteService(service._id)">
+                                                                            <span class="fa-passwd-reset fa-stack">
+                                                                                <i class="fa fa-trash fa-stack-2x"></i>
+                                                                            </span>
+                                                                        </button>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="mt-1 mb-1 mr-2 ml-2">
+                                                                            <div class="up-arrow" v-on:click="posInc(service._id)"></div>
+                                                                            <div class="down-arrow" v-on:click="posDec(service._id)"></div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
                                                         </table>
                                                     </div>
                                                 </div>

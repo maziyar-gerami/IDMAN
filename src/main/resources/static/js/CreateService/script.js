@@ -1,18 +1,3 @@
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; ++i) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
-        }
-      }
-  }
-}
 document.addEventListener('DOMContentLoaded', function () {
   var router = new VueRouter({
     mode: 'history',
@@ -22,6 +7,10 @@ document.addEventListener('DOMContentLoaded', function () {
     router,
     el: '#app',
     data: {
+      dropdownMenu: false,
+      dateNav: "",
+      dateNavEn: "",
+      dateNavText: "",
       userInfo: [],
       username: "",
       name: "",
@@ -151,8 +140,11 @@ document.addEventListener('DOMContentLoaded', function () {
       addAllGroupsText: "انتخاب همه",
       removeAllGroupsText: "لغو انتخاب همه",
       allGroupsHolderText: "انتخاب همه",
+      reportsText: "گزارش ها",
+      reportsURLText: "./reports",
     },
     created: function () {
+      this.setDateNav();
       this.getUserInfo();
       this.getUserPic();
       this.getGroups();
@@ -162,6 +154,30 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     },
     methods: {
+      setDateNav: function () {
+        this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+        persianDate.toCalendar("gregorian");
+        persianDate.toLocale("en");
+        this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+        persianDate.toCalendar("persian");
+        persianDate.toLocale("fa");
+        this.dateNavText = this.dateNav;
+      },
+      dropdownNavbar: function () {
+        if(this.dropdownMenu){
+          let dropdowns = document.getElementsByClassName("dropdown-content");
+          for (let i = 0; i < dropdowns.length; ++i) {
+            let openDropdown = dropdowns[i];
+            if(openDropdown.classList.contains("show")) {
+              openDropdown.classList.remove("show");
+            }
+          }
+          this.dropdownMenu = false;
+        }else{
+          document.getElementById("dropdownMenu").classList.toggle("show");
+          this.dropdownMenu = true;
+        }
+      },
       isActive (menuItem) {
         return this.activeItem === menuItem
       },
@@ -181,11 +197,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/api/user") //
           .then((res) => {
-              vm.userInfo = res.data;
-              vm.username = vm.userInfo.userId;
-              vm.name = vm.userInfo.displayName;
-              vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
-              vm.s1 = vm.name;
+            vm.username = res.data.userId;
+            vm.name = res.data.displayName;
+            vm.nameEN = res.data.firstName + " " + res.data.lastName;
+            vm.s1 = vm.name;
           });
       },
       getUserPic: function () {
@@ -799,6 +814,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
           this.isRtl = false;
+          this.dateNavText = this.dateNavEn;
           this.s0 = "Parsso";
           this.s1 = this.nameEN;
           this.s2 = "Exit";
@@ -885,6 +901,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s83 = "Disabled";
           this.rolesText = "Roles";
           this.rolesURLText = "./roles?en";
+          this.reportsText = "Reports";
+          this.reportsURLText = "./reports?en";
           if(this.allGroupsHolderText == this.addAllGroupsText){
             this.allGroupsHolderText = "Select All";
           }else{
@@ -896,6 +914,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
             this.isRtl = true;
+            this.dateNavText = this.dateNav;
             this.s0 = "پارسو";
             this.s1 = this.name;
             this.s2 = "خروج";
@@ -982,6 +1001,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s83 = "غیرفعال";
             this.rolesText = "نقش ها";
             this.rolesURLText = "./roles";
+            this.reportsText = "گزارش ها";
+            this.reportsURLText = "./reports";
             if(this.allGroupsHolderText == this.addAllGroupsText){
               this.allGroupsHolderText = "انتخاب همه";
             }else{

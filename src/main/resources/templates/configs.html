@@ -18,6 +18,7 @@
     <script src="js/vue.min.js"></script>
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
+    <script src="js/persian-date.min.js"></script>
     <script src="js/Configs/script.js"></script>
     <script src="js/vue-spinners-css.min.js"></script>
 
@@ -27,10 +28,16 @@
         <div  v-bind:class="{rtl: isRtl}" class=" h-100">
                 <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
                     <div class="container">
-                        <a class="navbar-brand" href="./">{{s0}}</a>
                         <div class="dropdown">
-                            <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span class="fa fa-caret-down"></span></a>
-                            <div id="myDropdown" class="dropdown-content">
+                            <a class="navbar-brand" href="./">{{s0}}</a>
+                            <a v-bind:style="margin"><small style="color: #FFFFFF;">{{dateNavText}}</small></a>
+                        </div>
+                        <div class="dropdown">
+                            <a id="btn" class="dropbtn" v-on:click="dropdownNavbar">
+                                {{s1}}
+                                <span class="fa fa-caret-down ml-1 mr-1"></span>
+                            </a>
+                            <div id="dropdownMenu" class="dropdown-content">
                                 <a href="./logout">{{s2}}</a>
                             </div>
                             <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
@@ -77,48 +84,53 @@
                                 <div class="list-group list-group-flush">
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s14">
-                                        <i class="fa fa-dashboard"></i>
+                                        <i class="fa fa-dashboard fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s3}}</span>
                                     </a>
                                     <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s15">
-                                        <i class="fa fa-server"></i>
+                                        <i class="fa fa-server fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s4}}</span>
                                     </a>
                                     <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s16">
-                                        <i class="fa fa-user"></i>
+                                        <i class="fa fa-user fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s13}}</span>
                                     </a>
                                     <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s21">
-                                        <i class="fa fa-users"></i>
+                                        <i class="fa fa-users fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s5}}</span>
                                     </a>
                                     <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="rolesURLText">
-                                        <i class="fa fa-user-circle-o"></i>
+                                        <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{rolesText}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s27">
-                                        <i class="fa fa-calendar"></i>
+                                        <i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s6}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s33">
-                                        <i class="fa fa-history"></i>
+                                        <i class="fa fa-history fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s32}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2"
+                                       v-bind:href="reportsURLText">
+                                        <i class="fa fa-file fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{reportsText}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s22">
-                                        <i class="fa fa-cogs"></i>
+                                        <i class="fa fa-cogs fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s7}}</span>
                                     </a>
                                     <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s25">
-                                        <i class="fa fa-cog"></i>
+                                        <i class="fa fa-cog fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s24}}</span>
                                     </a>
                                 </div>

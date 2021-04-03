@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', function () {
         router,
         el: '#app',
         data: {
+            dateNav: "",
+            dateNavEn: "",
+            dateNavText: "",
             show: false,
             showR: false,
             isRtl: true,
@@ -70,11 +73,21 @@ document.addEventListener('DOMContentLoaded', function () {
             s50: "مراجعه نمایید."
         },
         created: function () {
+            this.setDateNav();
             if (typeof this.$route.query.en !== 'undefined') {
                 this.changeLang();
             }
         },
         methods: {
+            setDateNav: function () {
+                this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("gregorian");
+                persianDate.toLocale("en");
+                this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("persian");
+                persianDate.toLocale("fa");
+                this.dateNavText = this.dateNav;
+            },
             changeLang: function () {
                 if (this.lang == "EN") {
                     this.placeholder = "text-align: left;"
@@ -85,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.lang = "فارسی";
                     this.rtl = "direction: ltr;";
                     this.eye = "left: 3%;";
+                    this.dateNavText = this.dateNavEn;
                     this.s0 = "Parsso";
                     this.s1 = "Enter Your Username and Password";
                     this.s2 = "Username";
@@ -145,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.lang = "EN";
                     this.rtl = "direction: rtl;";
                     this.eye = "right: 3%;";
+                    this.dateNavText = this.dateNav;
                     this.s0 = "پارسو";
                     this.s1 = "نام کاربری و رمز عبور خود را وارد کنید";
                     this.s2 = "نام کاربری";

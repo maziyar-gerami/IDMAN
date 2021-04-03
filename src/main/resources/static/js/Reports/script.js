@@ -13,11 +13,11 @@ document.addEventListener('DOMContentLoaded', function () {
       dateNavEn: "",
       dateNavText: "",
       recordsShownOnPage: 20,
-      recordsShownOnPageAudits: 20,
-      currentPageAudits: 1,
-      totalAudits: 1,
-      currentPageAudit: 1,
-      totalAudit: 1,
+      recordsShownOnPageReports: 20,
+      currentPageReports: 1,
+      totalReports: 1,
+      currentPageReport: 1,
+      totalReport: 1,
       userInfo: [],
       username: "",
       name: "",
@@ -25,18 +25,18 @@ document.addEventListener('DOMContentLoaded', function () {
       margin: "margin-right: 30px;",
       lang: "EN",
       isRtl: true,
-      activeItem: "myAudits",
-      audit: [],
-      audits: [],
-      auditPage: [],
-      auditsPage: [],
-      changePageAudit: false,
-      changePageAudits: false,
+      activeItem: "myReports",
+      report: [],
+      reports: [],
+      reportPage: [],
+      reportsPage: [],
+      changePageReport: false,
+      changePageReports: false,
       userPicture: "images/PlaceholderUser.png",
-      auditDate: "",
-      auditsDate: "",
-      auditsUserId: "",
-      auditMore: "",
+      reportDate: "",
+      reportsDate: "",
+      reportsUserId: "",
+      reportMore: "",
       bootstrapPaginationClasses: {
         ul: 'pagination',
         li: 'page-item',
@@ -72,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
       s14: "./dashboard",
       s15: "./services",
       s16: "./users",
-      s17: "شناسه",
       s18: "نام",
       s19: "توضیحات",
       s20: "اتصال",
@@ -86,8 +85,8 @@ document.addEventListener('DOMContentLoaded', function () {
       s28: "عملیات",
       s29: "برنامه",
       s30: "زمان",
-      s31: "ممیزی های من",
-      s32: "ممیزی های کاربران",
+      s31: "گزارش های من",
+      s32: "گزارش های کاربران",
       s33: "شناسه",
       s34: " مثال: admin ",
       s35: " مثال: 1399/05/01 ",
@@ -108,13 +107,15 @@ document.addEventListener('DOMContentLoaded', function () {
       rolesURLText: "./roles",
       reportsText: "گزارش ها",
       reportsURLText: "./reports",
+      messageText: "پیام",
+      userIdText: "شناسه کاربری",
     },
     created: function () {
       this.setDateNav();
       this.getUserInfo();
       this.getUserPic();
-      this.getAudit();
-      this.getAudits();
+      this.getReport();
+      this.getReports();
       if(typeof this.$route.query.en !== 'undefined'){
         this.changeLang()
       }
@@ -150,23 +151,13 @@ document.addEventListener('DOMContentLoaded', function () {
       setActive (menuItem) {
         this.activeItem = menuItem
       },
-      showMore: function(info) {
-        this.auditMore = info;
-        document.getElementById("auditList").style = "display: none;";
-        document.getElementById("auditMore").style = "";
-      },
-      showList: function() {
-        document.getElementById("auditList").style = "";
-        document.getElementById("auditMore").style = "display: none;";
-        this.auditMore = "";
-      },
-      changeRecordsAudit: function(event) {
+      changeRecordsReport: function(event) {
         this.recordsShownOnPage = event.target.value;
-        this.getAuditDate();
+        this.getReportDate();
       },
-      changeRecordsAudits: function(event) {
-        this.recordsShownOnPageAudits = event.target.value;
-        this.getAuditsDate();
+      changeRecordsReports: function(event) {
+        this.recordsShownOnPageReports = event.target.value;
+        this.getReportsDate();
       },
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -200,12 +191,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
       },
-      exportAudits: function () {
+      exportReports: function () {
         url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         vm.loader = true;
           axios({
-            url: url_ + "/api/audits/users/export",
+            url: url_ + "/api/reports/users/export",
             method: "GET",
             responseType: "blob",
           }).then((response) => {
@@ -213,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute("download", "audits.xls");
+            link.setAttribute("download", "reports.xls");
             document.body.appendChild(link);
             link.click();
           }).catch((error) => {
@@ -292,257 +283,239 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return sEn;
       },
-      getAudits: function () {
+      getReports: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         this.isListEmpty1 = false;
-        if(!this.changePageAudits){
-          this.currentPageAudits = 1;
+        if(!this.changePageReports){
+          this.currentPageReports = 1;
         }
         
         let tempEvent = {};
-        this.audits = [];
-        axios.get(url + "/api/audits/users/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits)
+        this.reports = [];
+        axios.get(url + "/api/reports/users/" + vm.currentPageReports + "/" + vm.recordsShownOnPageReports)
         .then((res) => {
-          if(res.data.auditList.length == 0){
+          if(res.data.reportsList.length == 0){
             vm.isListEmpty1 = true;
           }
-          vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
-          res.data.auditList.forEach(function (item) {
+          vm.totalReports = Math.ceil(res.data.size / vm.recordsShownOnPageReports);
+          res.data.reportsList.forEach(function (item) {
             tempEvent = {};
 
-            let f = item.actionPerformed.indexOf("_", item.actionPerformed.indexOf("_") + 1);
-            let l = item.actionPerformed.length;
-            tempEvent.actionPerformed = item.actionPerformed.substr(0, f+1) + "\n" + item.actionPerformed.substr(f+1, l-(f+1));
-            tempEvent.principal = item.principal.replace("audit:", "");
-            tempEvent.applicationCode = item.applicationCode;
-            tempEvent.clientIpAddress = item.clientIpAddress;
-            tempEvent.serverIpAddress = item.serverIpAddress;
-            tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
+            tempEvent.loggerName = item.loggerName;
+            tempEvent.message = item.message;
+            /*tempEvent.details = item.details;*/
 
-            let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
+            let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
             tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
-            tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+            tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
             
-            vm.audits.push(tempEvent);
+            vm.reports.push(tempEvent);
           });
         });
-        this.changePageAudits = false;
+        this.changePageReports = false;
       },
-      getAudit: function () {
+      getReport: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         this.isListEmpty = false;
-        if(!this.changePageAudit){
-          this.currentPageAudit = 1;
+        if(!this.changePageReport){
+          this.currentPageReport = 1;
         }
         
         let tempEvent = {};
-        this.audit = [];
-        axios.get(url + "/api/audits/user/" + vm.currentPageAudit + "/" + vm.recordsShownOnPage) //
+        this.report = [];
+        axios.get(url + "/api/reports/user/" + vm.currentPageReport + "/" + vm.recordsShownOnPage) //
         .then((res) => {
-          if(res.data.auditList.length == 0){
+          if(res.data.reportsList.length == 0){
             vm.isListEmpty = true;
           }
-          vm.totalAudit = Math.ceil(res.data.size / vm.recordsShownOnPage);
-          res.data.auditList.forEach(function (item) {
+          vm.totalReport = Math.ceil(res.data.size / vm.recordsShownOnPage);
+          res.data.reportsList.forEach(function (item) {
             tempEvent = {};
 
-            tempEvent.actionPerformed = item.actionPerformed;
-            tempEvent.principal = item.principal.replace("audit:", "");
-            tempEvent.applicationCode = item.applicationCode;
-            tempEvent.clientIpAddress = item.clientIpAddress;
-            tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
+            tempEvent.loggerName = item.loggerName;
+            tempEvent.message = item.message;
+            /*tempEvent.details = item.details;*/
 
-            let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
+            let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
             tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
-            tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+            tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
             
-            vm.audit.push(tempEvent);
+            vm.report.push(tempEvent);
           });
         });
-        this.changePageAudit = false;
+        this.changePageReport = false;
       },
-      getAuditDate: function () {
+      getReportDate: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         this.isListEmpty = false;
-        if(!this.changePageAudit){
-          this.currentPageAudit = 1;
+        if(!this.changePageReport){
+          this.currentPageReport = 1;
         }
 
-        this.auditDate = document.getElementById("auditDate").value;
-        if(this.auditDate == ""){
-          this.getAudit();
+        this.reportDate = document.getElementById("reportDate").value;
+        if(this.reportDate == ""){
+          this.getReport();
         }else{
-          let tempArray = this.auditDate.split(" ");
-          this.auditDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+          let tempArray = this.reportDate.split(" ");
+          this.reportDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
           let tempEvent = {};
-          this.audit = [];
-          axios.get(url + "/api/audits/user/date/" + vm.auditDate + "/" + vm.currentPageAudit + "/" + vm.recordsShownOnPage) //
+          this.report = [];
+          axios.get(url + "/api/reports/user/date/" + vm.reportDate + "/" + vm.currentPageReport + "/" + vm.recordsShownOnPage) //
           .then((res) => {
-            if(res.data.auditList.length == 0){
+            if(res.data.reportsList.length == 0){
               vm.isListEmpty = true;
             }
-            vm.totalAudit = Math.ceil(res.data.size / vm.recordsShownOnPage);
-            res.data.auditList.forEach(function (item) {
+            vm.totalReport = Math.ceil(res.data.size / vm.recordsShownOnPage);
+            res.data.reportsList.forEach(function (item) {
               tempEvent = {};
 
-              tempEvent.actionPerformed = item.actionPerformed;
-              tempEvent.principal = item.principal.replace("audit:", "");
-              tempEvent.applicationCode = item.applicationCode;
-              tempEvent.clientIpAddress = item.clientIpAddress;
-              tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
+              tempEvent.loggerName = item.loggerName;
+              tempEvent.message = item.message;
+              /*tempEvent.details = item.details;*/
 
-              let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
+              let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
               tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
-              tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+              tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
                 
-              vm.audit.push(tempEvent);
+              vm.report.push(tempEvent);
             });
           });
         }
-        this.changePageAudit = false;
+        this.changePageReport = false;
       },
-      getAuditsUserId: function () {
+      getReportsUserId: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         this.isListEmpty1 = false;
-        if(!this.changePageAudits){
-          this.currentPageAudits = 1;
+        if(!this.changePageReports){
+          this.currentPageReports = 1;
         }
 
-        this.auditsDate = document.getElementById("auditsDate").value;
-        if(this.auditsDate == "" && this.auditsUserId == ""){
-          this.getAudits();
-        }else if(this.auditsDate == "" && this.auditsUserId != ""){
+        this.reportsDate = document.getElementById("reportsDate").value;
+        if(this.reportsDate == "" && this.reportsUserId == ""){
+          this.getReports();
+        }else if(this.reportsDate == "" && this.reportsUserId != ""){
           let tempEvent = {};
-          this.audits = [];
-          axios.get(url + "/api/audits/users/" + vm.auditsUserId + "/" + + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
+          this.reports = [];
+          axios.get(url + "/api/reports/users/" + vm.reportsUserId + "/" + + vm.currentPageReports + "/" + vm.recordsShownOnPageReports) //
           .then((res) => {
-            if(res.data.auditList.length == 0){
+            if(res.data.reportsList.length == 0){
               vm.isListEmpty1 = true;
             }
-            vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
-            res.data.auditList.forEach(function (item) {
+            vm.totalReports = Math.ceil(res.data.size / vm.recordsShownOnPageReports);
+            res.data.reportsList.forEach(function (item) {
               tempEvent = {};
 
-              tempEvent.actionPerformed = item.actionPerformed;
-              tempEvent.principal = item.principal.replace("audit:", "");
-              tempEvent.applicationCode = item.applicationCode;
-              tempEvent.clientIpAddress = item.clientIpAddress;
-              tempEvent.serverIpAddress = item.serverIpAddress;
-              tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
+              tempEvent.loggerName = item.loggerName;
+              tempEvent.message = item.message;
+              /*tempEvent.details = item.details;*/
 
-              let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
+              let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
               tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
-              tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+              tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
               
-              vm.audits.push(tempEvent);
+              vm.reports.push(tempEvent);
             });
           });
-        }else if(this.auditsDate != "" && this.auditsUserId == ""){
-          this.getAuditsDate();
-        }else if(this.auditsDate != "" && this.auditsUserId != ""){
-          this.getAuditsUserIdDate();
+        }else if(this.reportsDate != "" && this.reportsUserId == ""){
+          this.getReportsDate();
+        }else if(this.reportsDate != "" && this.reportsUserId != ""){
+          this.getReportsUserIdDate();
         }
-        this.changePageAudits = false;
+        this.changePageReports = false;
       },
-      getAuditsDate: function () {
+      getReportsDate: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         this.isListEmpty1 = false;
-        if(!this.changePageAudits){
-          this.currentPageAudits = 1;
+        if(!this.changePageReports){
+          this.currentPageReports = 1;
         }
 
-        this.auditsDate = document.getElementById("auditsDate").value;
-        if(this.auditsDate == "" && this.auditsUserId == ""){
-          this.getAudits();
-        }else if(this.auditsDate == "" && this.auditsUserId != ""){
-          this.getAuditsUserId();
-        }else if(this.auditsDate != "" && this.auditsUserId == ""){
-          let tempArray = this.auditsDate.split(" ");
-          this.auditsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+        this.reportsDate = document.getElementById("reportsDate").value;
+        if(this.reportsDate == "" && this.reportsUserId == ""){
+          this.getReports();
+        }else if(this.reportsDate == "" && this.reportsUserId != ""){
+          this.getReportsUserId();
+        }else if(this.reportsDate != "" && this.reportsUserId == ""){
+          let tempArray = this.reportsDate.split(" ");
+          this.reportsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
           let tempEvent = {};
-          this.audits = [];
-          axios.get(url + "/api/audits/users/date/" + vm.auditsDate + "/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
+          this.reports = [];
+          axios.get(url + "/api/reports/users/date/" + vm.reportsDate + "/" + vm.currentPageReports + "/" + vm.recordsShownOnPageReports) //
             .then((res) => {
-              if(res.data.auditList.length == 0){
+              if(res.data.reportsList.length == 0){
                 vm.isListEmpty1 = true;
               }
-              vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
-              res.data.auditList.forEach(function (item) {
+              vm.totalReports = Math.ceil(res.data.size / vm.recordsShownOnPageReports);
+              res.data.reportsList.forEach(function (item) {
                 tempEvent = {};
 
-                tempEvent.actionPerformed = item.actionPerformed;
-                tempEvent.principal = item.principal.replace("audit:", "");
-                tempEvent.applicationCode = item.applicationCode;
-                tempEvent.clientIpAddress = item.clientIpAddress;
-                tempEvent.serverIpAddress = item.serverIpAddress;
-                tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
+                tempEvent.loggerName = item.loggerName;
+                tempEvent.message = item.message;
+                /*tempEvent.details = item.details;*/
 
-                let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
+                let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
                 tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
-                tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+                tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
                 
-                vm.audits.push(tempEvent);
+                vm.reports.push(tempEvent);
               });
             });
-        }else if(this.auditsDate != "" && this.auditsUserId != ""){
-          this.getAuditsUserIdDate();
+        }else if(this.reportsDate != "" && this.reportsUserId != ""){
+          this.getReportsUserIdDate();
         }
-        this.changePageAudits = false;
+        this.changePageReports = false;
       },
-      getAuditsUserIdDate: function () {
+      getReportsUserIdDate: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         this.isListEmpty1 = false;
-        if(!this.changePageAudits){
-          this.currentPageAudits = 1;
+        if(!this.changePageReports){
+          this.currentPageReports = 1;
         }
         
-        this.auditsDate = document.getElementById("auditsDate").value;
-        let tempArray = this.auditsDate.split(" ");
-        this.auditsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);  
+        this.reportsDate = document.getElementById("reportsDate").value;
+        let tempArray = this.reportsDate.split(" ");
+        this.reportsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);  
         let tempEvent = {};
-        this.audits = [];
-        axios.get(url + "/api/audits/users/" + vm.auditsUserId + "/date/" + vm.auditsDate + "/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
+        this.reports = [];
+        axios.get(url + "/api/reports/users/" + vm.reportsUserId + "/date/" + vm.reportsDate + "/" + vm.currentPageReports + "/" + vm.recordsShownOnPageReports) //
           .then((res) => {
-            if(res.data.auditList.length == 0){
+            if(res.data.reportsList.length == 0){
               vm.isListEmpty1 = true;
             }
-            vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
-            res.data.auditList.forEach(function (item) {
+            vm.totalReports = Math.ceil(res.data.size / vm.recordsShownOnPageReports);
+            res.data.reportsList.forEach(function (item) {
               tempEvent = {};
 
-              tempEvent.actionPerformed = item.actionPerformed;
-              tempEvent.principal = item.principal.replace("audit:", "");
-              tempEvent.applicationCode = item.applicationCode;
-              tempEvent.clientIpAddress = item.clientIpAddress;
-              tempEvent.serverIpAddress = item.serverIpAddress;
-              tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
+              tempEvent.loggerName = item.loggerName;
+              tempEvent.message = item.message;
+              /*tempEvent.details = item.details;*/
 
-              let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
+              let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
               tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
-              tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+              tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
                 
-              vm.audits.push(tempEvent);
+              vm.reports.push(tempEvent);
             });
           });
-        this.changePageAudits = false;
+        this.changePageReports = false;
       },
-      removeAuditDate: function () {
-        document.getElementById("auditDate").value = "";
-        this.getAuditDate();
+      removeReportDate: function () {
+        document.getElementById("reportDate").value = "";
+        this.getReportDate();
       },
-      removeAuditsUserId: function () {
-        this.auditsUserId = "";
-        this.getAuditsDate();
+      removeReportsUserId: function () {
+        this.reportsUserId = "";
+        this.getReportsDate();
       },
-      removeAuditsDate: function () {
-        document.getElementById("auditsDate").value = "";
-        this.getAuditsDate();
+      removeReportsDate: function () {
+        document.getElementById("reportsDate").value = "";
+        this.getReportsDate();
       },
       changeLang: function () {
         if(this.lang == "EN"){
@@ -583,8 +556,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s28 = "Action";
           this.s29 = "Application";
           this.s30 = "Time";
-          this.s31 = "My Audits";
-          this.s32 = "Users Audits";
+          this.s31 = "My Reports";
+          this.s32 = "Users Reports";
           this.s33 = "UserId";
           this.s34 = "Example: admin";
           this.s35 = "Example: 1399/05/01";
@@ -605,6 +578,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.rolesURLText = "./roles?en";
           this.reportsText = "Reports";
           this.reportsURLText = "./reports?en";
+          this.messageText = "Message";
+          this.userIdText = "UserId";
         } else{
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
@@ -643,8 +618,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s28 = "عملیات";
             this.s29 = "برنامه";
             this.s30 = "زمان";
-            this.s31 = "ممیزی های من";
-            this.s32 = "ممیزی های کاربران";
+            this.s31 = "گزارش های من";
+            this.s32 = "گزارش های کاربران";
             this.s33 = "شناسه";
             this.s34 = "مثال: admin";
             this.s35 = " مثال: 1399/05/01";
@@ -665,6 +640,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.rolesURLText = "./roles";
             this.reportsText = "گزارش ها";
             this.reportsURLText = "./reports";
+            this.messageText = "پیام";
+            this.userIdText = "شناسه کاربری";
         }
       },
       div: function (a, b) {
@@ -711,24 +688,24 @@ document.addEventListener('DOMContentLoaded', function () {
     },
 
     computed:{
-      sortedAudit:function() {
-          this.auditPage = this.audit;
-          return this.auditPage;
+      sortedReport:function() {
+          this.reportPage = this.report;
+          return this.reportPage;
       },
-      sortedAudits:function() {
-        this.auditsPage = this.audits;
-        return this.auditsPage;
+      sortedReports:function() {
+        this.reportsPage = this.reports;
+        return this.reportsPage;
       }
     },
 
     watch : {
-      currentPageAudit : function() {
-        this.changePageAudit = true;
-        this.getAuditDate();
+      currentPageReport : function() {
+        this.changePageReport = true;
+        this.getReportDate();
       },
-      currentPageAudits : function () {
-        this.changePageAudits = true;
-        this.getAuditsDate();
+      currentPageReports : function () {
+        this.changePageReports = true;
+        this.getReportsDate();
       }
     }
   })

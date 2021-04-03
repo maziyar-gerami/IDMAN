@@ -75,7 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
 
 
-/*
+
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources
@@ -157,9 +157,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .anyRequest().authenticated()
                 .and()
-
-
-*/
 
 
 

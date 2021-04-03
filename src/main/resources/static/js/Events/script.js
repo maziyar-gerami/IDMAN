@@ -1,18 +1,3 @@
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; ++i) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
-        }
-      }
-  }
-}
 document.addEventListener('DOMContentLoaded', function () {
   var router = new VueRouter({
     mode: 'history',
@@ -23,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
     router,
     el: '#app',
     data: {
+      dropdownMenu: false,
+      dateNav: "",
+      dateNavEn: "",
+      dateNavText: "",
       recordsShownOnPage: 20,
       recordsShownOnPageEvents: 20,
       currentPageEvents: 1,
@@ -115,8 +104,11 @@ document.addEventListener('DOMContentLoaded', function () {
       s47: "رکوردی یافت نشد",
       rolesText: "نقش ها",
       rolesURLText: "./roles",
+      reportsText: "گزارش ها",
+      reportsURLText: "./reports",
     },
     created: function () {
+      this.setDateNav();
       this.getUserInfo();
       this.getUserPic();
       this.getEvent();
@@ -126,6 +118,30 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     },
     methods: {
+      setDateNav: function () {
+        this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+        persianDate.toCalendar("gregorian");
+        persianDate.toLocale("en");
+        this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+        persianDate.toCalendar("persian");
+        persianDate.toLocale("fa");
+        this.dateNavText = this.dateNav;
+      },
+      dropdownNavbar: function () {
+        if(this.dropdownMenu){
+          let dropdowns = document.getElementsByClassName("dropdown-content");
+          for (let i = 0; i < dropdowns.length; ++i) {
+            let openDropdown = dropdowns[i];
+            if(openDropdown.classList.contains("show")) {
+              openDropdown.classList.remove("show");
+            }
+          }
+          this.dropdownMenu = false;
+        }else{
+          document.getElementById("dropdownMenu").classList.toggle("show");
+          this.dropdownMenu = true;
+        }
+      },
       isActive (menuItem) {
         return this.activeItem === menuItem
       },
@@ -145,10 +161,9 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         axios.get(url + "/api/user") //
           .then((res) => {
-            vm.userInfo = res.data;
-            vm.username = vm.userInfo.userId;
-            vm.name = vm.userInfo.displayName;
-            vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
+            vm.username = res.data.userId;
+            vm.name = res.data.displayName;
+            vm.nameEN = res.data.firstName + " " + res.data.lastName;
             vm.s1 = vm.name;
           });
       },
@@ -178,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var vm = this;
         vm.loader = true;
           axios({
-            url: url_ + "/api/events/export",
+            url: url_ + "/api/events/users/export",
             method: "GET",
             responseType: "blob",
           }).then((response) => {
@@ -275,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         let tempEvent = {};
         this.events = [];
-        axios.get(url + "/api/events/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents)
+        axios.get(url + "/api/events/users/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents)
         .then((res) => {
           if(res.data.eventList.length == 0){
             vm.isListEmpty1 = true;
@@ -629,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.eventsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
           let tempEvent = {};
           this.events = [];
-          axios.get(url + "/api/events/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
+          axios.get(url + "/api/events/users/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
             .then((res) => {
               if(res.data.eventList.length == 0){
                 vm.isListEmpty1 = true;
@@ -812,6 +827,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.isRtl = false;
           this.deleteInputIcon = "right: 7%;";
           this.deleteInputIcon1 = "right: 10%;";
+          this.dateNavText = this.dateNavEn;
           this.s0 = "Parsso";
           this.s1 = this.nameEN;
           this.s2 = "Exit";
@@ -862,6 +878,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s47 = "No Records Found";
           this.rolesText = "Roles";
           this.rolesURLText = "./roles?en";
+          this.reportsText = "Reports";
+          this.reportsURLText = "./reports?en";
         } else{
             this.getEvents();
             this.getEvent();
@@ -870,6 +888,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.isRtl = true;
             this.deleteInputIcon = "left: 7%;";
             this.deleteInputIcon1 = "left: 10%;";
+            this.dateNavText = this.dateNav;
             this.s0 = "پارسو";
             this.s1 = this.name;
             this.s2 = "خروج";
@@ -920,6 +939,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s47 = "رکوردی یافت نشد";
             this.rolesText = "نقش ها";
             this.rolesURLText = "./roles";
+            this.reportsText = "گزارش ها";
+            this.reportsURLText = "./reports";
         }
       },
       div: function (a, b) {

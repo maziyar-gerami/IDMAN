@@ -1,19 +1,4 @@
-function myFunction() {
-    document.getElementById("myDropdown").classList.toggle("show");
-  }
-  window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; i++) {
-          var openDropdown = dropdowns[i];
-          if (openDropdown.classList.contains('show')) {
-            openDropdown.classList.remove('show');
-          }
-        }
-    }
-  } 
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     var router = new VueRouter({
       mode: 'history',
       routes: []
@@ -23,6 +8,10 @@ function myFunction() {
       router,
       el: '#app',
       data: {
+        dropdownMenu: false,
+        dateNav: "",
+        dateNavEn: "",
+        dateNavText: "",
         recordsShownOnPage: 20,
         userInfo: [],
         username: "",
@@ -197,8 +186,12 @@ function myFunction() {
         addAllGroupsText: "انتخاب همه",
         removeAllGroupsText: "لغو انتخاب همه",
         allGroupsHolderText: "انتخاب همه",
+        serviceFaNameText: "نام فارسی",
+        reportsText: "گزارش ها",
+        reportsURLText: "./reports",
       },
       created: function () {
+        this.setDateNav();
         this.getUserInfo();
         this.getUserPic();
         this.refreshServices();
@@ -209,6 +202,30 @@ function myFunction() {
         }
       },
       methods: {
+        setDateNav: function () {
+          this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+          persianDate.toCalendar("gregorian");
+          persianDate.toLocale("en");
+          this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+          persianDate.toCalendar("persian");
+          persianDate.toLocale("fa");
+          this.dateNavText = this.dateNav;
+        },
+        dropdownNavbar: function () {
+          if(this.dropdownMenu){
+            let dropdowns = document.getElementsByClassName("dropdown-content");
+            for (let i = 0; i < dropdowns.length; ++i) {
+              let openDropdown = dropdowns[i];
+              if(openDropdown.classList.contains("show")) {
+                openDropdown.classList.remove("show");
+              }
+            }
+            this.dropdownMenu = false;
+          }else{
+            document.getElementById("dropdownMenu").classList.toggle("show");
+            this.dropdownMenu = true;
+          }
+        },
         allSelected () {
           if(this.allIsSelected){
               this.allIsSelected = false;
@@ -251,11 +268,10 @@ function myFunction() {
           var vm = this;
           axios.get(url + "/api/user") //
             .then((res) => {
-                vm.userInfo = res.data;
-                vm.username = vm.userInfo.userId;
-                vm.name = vm.userInfo.displayName;
-                vm.nameEN = vm.userInfo.firstName + vm.userInfo.lastName;
-                vm.s1 = vm.name;
+              vm.username = res.data.userId;
+              vm.name = res.data.displayName;
+              vm.nameEN = res.data.firstName + " " + res.data.lastName;
+              vm.s1 = vm.name;
             });
         },
         getUserPic: function () {
@@ -1234,6 +1250,7 @@ function myFunction() {
             this.margin1 = "mr-1";
             this.lang = "فارسی";
             this.isRtl = false;
+            this.dateNavText = this.dateNavEn;
             this.s0 = "Parsso";
             this.s1 = this.nameEN;
             this.s2 = "Exit";
@@ -1340,11 +1357,14 @@ function myFunction() {
             this.rolesURLText = "./roles?en";
             this.addAllGroupsText = "Select All";
             this.removeAllGroupsText = "Unselect All";
+            this.reportsText = "Reports";
+            this.reportsURLText = "./reports?en";
           } else{
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
               this.lang = "EN";
               this.isRtl = true;
+              this.dateNavText = this.dateNav;
               this.s0 = "پارسو";
               this.s1 = this.name;
               this.s2 = "خروج";
@@ -1451,6 +1471,8 @@ function myFunction() {
               this.rolesURLText = "./roles";
               this.addAllGroupsText = "انتخاب همه";
               this.removeAllGroupsText = "لغو انتخاب همه";
+              this.reportsText = "گزارش ها";
+              this.reportsURLText = "./reports";
           }
         },
         div: function (a, b) {

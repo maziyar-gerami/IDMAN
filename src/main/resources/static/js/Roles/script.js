@@ -1,18 +1,3 @@
-function myFunction() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
-window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; ++i) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
-        }
-    }
-}
 document.addEventListener('DOMContentLoaded', function () {
     var router = new VueRouter({
         mode: 'history',
@@ -25,6 +10,10 @@ document.addEventListener('DOMContentLoaded', function () {
         data: {
             lang: "EN",
             isRtl: true,
+            dropdownMenu: false,
+            dateNav: "",
+            dateNavEn: "",
+            dateNavText: "",
             username: "",
             name: "",
             nameEN: "",
@@ -34,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function () {
             userListSearch: "",
             userList: [],
             editList: [],
-            editUserIdList: [],
             parssoTitleText: "پارسو",
             usernameText: "",
             exitText: "خروج",
@@ -45,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesText: "نقش ها",
             eventsText: "رویداد ها",
             auditsText: "ممیزی ها",
+            reportsText: "گزارش ها",
             profileText: "پروفایل",
             settingsText: "تنظیمات",
             configsText: "پیکربندی",
@@ -58,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesURLText: "./roles",
             eventsURLText: "./events",
             auditsURLText: "./audits",
+            reportsURLText: "./reports",
             profileURLText: "./profile",
             settingsURLText: "./settings",
             configsURLText: "./configs",
@@ -75,8 +65,15 @@ document.addEventListener('DOMContentLoaded', function () {
             confirmationText: "آیا از اعمال این تغییرات اطمینان دارید؟",
             noUserAddedAlertText: "کاربری انتخاب نشده است.",
             noRoleSelectedAlertText: "نقشی انتخاب نشده است.",
+            userIdText: "شناسه",
+            roleText: "نقش",
+            superAdminText: "مدیر کل",
+            supporterText: "پشتیبانی",
+            adminText: "مدیر",
+            userText: "کاربر",
         },
         created: function () {
+            this.setDateNav();
             this.getUserInfo();
             this.getUserPic();
             this.getUsers();
@@ -85,20 +82,44 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         methods: {
+            setDateNav: function () {
+                this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("gregorian");
+                persianDate.toLocale("en");
+                this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+                persianDate.toCalendar("persian");
+                persianDate.toLocale("fa");
+                this.dateNavText = this.dateNav;
+            },
+            dropdownNavbar: function () {
+                if(this.dropdownMenu){
+                    let dropdowns = document.getElementsByClassName("dropdown-content");
+                    for (let i = 0; i < dropdowns.length; ++i) {
+                        let openDropdown = dropdowns[i];
+                        if(openDropdown.classList.contains("show")) {
+                            openDropdown.classList.remove("show");
+                        }
+                    }
+                    this.dropdownMenu = false;
+                }else{
+                    document.getElementById("dropdownMenu").classList.toggle("show");
+                    this.dropdownMenu = true;
+                }
+            },
             getUserInfo: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
                 axios.get(url + "/api/user") //
                 .then((res) => {
                     vm.username = res.data.userId;
                     vm.name = res.data.displayName;
-                    vm.nameEN = res.data.firstName + res.data.lastName;
+                    vm.nameEN = res.data.firstName + " " + res.data.lastName;
                     vm.usernameText = vm.name;
                 });
             },
             getUserPic: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
                 axios.get(url + "/api/user/photo") //
                     .then((res) => {
                         if(res.data == "Problem" || res.data == "NotExist"){
@@ -120,13 +141,37 @@ document.addEventListener('DOMContentLoaded', function () {
             getUsers: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
+                let superAdminTempList = [];
+                let supporterTempList = [];
+                let adminTempList = [];
+                let userTempList = [];
                 this.loader = true;
                 axios({
                     method: 'get',
                     url: url + "/api/roles", //
                 })
                 .then((res) => {
-                    vm.userList = res.data;
+                    for(let i = 0; i < res.data.length; ++i){
+                        res.data[i].checked = false;
+                        if(res.data[i].role == "SUPERADMIN"){
+                            res.data[i].roleFa = "مدیر کل";
+                            res.data[i].icon = "color: #dc3545;";
+                            superAdminTempList.push(res.data[i]);
+                        }else if(res.data[i].role == "SUPPORTER"){
+                            res.data[i].roleFa = "پشتیبانی";
+                            res.data[i].icon = "color: #28a745;";
+                            supporterTempList.push(res.data[i]);
+                        }else if(res.data[i].role == "ADMIN"){
+                            res.data[i].roleFa = "مدیر";
+                            res.data[i].icon = "color: #007bff;";
+                            adminTempList.push(res.data[i]);
+                        }else if(res.data[i].role == "USER"){
+                            res.data[i].roleFa = "کاربر";
+                            res.data[i].icon = "color: #ffc107;";
+                            userTempList.push(res.data[i]);
+                        }
+                    }
+                    vm.userList = superAdminTempList.concat(supporterTempList, adminTempList, userTempList);
                     vm.loader = false;
                 });
             },
@@ -136,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let role = document.getElementById("role").value;
                 if(role == ""){
                     alert(this.noRoleSelectedAlertText);
-                }else if(this.editUserIdList.length == 0){
+                }else if(this.editList.length == 0){
                     alert(this.noUserAddedAlertText);
                 }else{
                     let check = confirm(this.confirmationText);
@@ -146,41 +191,40 @@ document.addEventListener('DOMContentLoaded', function () {
                             url: url + "/api/roles/" + role, //
                             headers: {'Content-Type': 'application/json'},
                             data: JSON.stringify({
-                                names: vm.editUserIdList
+                                names: vm.editList
                             }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
                             vm.userListSearch = "";
                             vm.userList = [];
                             vm.editList = [];
-                            vm.editUserIdList = [];
                             document.getElementById("role").value = "";
                             vm.getUsers();
                         });
                     }
                 }
             },
-            addUserToList: function (user) {
-                let index = this.userList.indexOf(user);
-                if (index > -1) {
-                    this.editList.unshift(user);
-                    this.editUserIdList.unshift(user.userId);
-                    this.userList.splice(index, 1);
+            selectUser: function (user) {
+                let editListIndex = this.editList.indexOf(user.userId);
+                let userListIndex = this.userList.indexOf(user);
+
+                if (editListIndex > -1) {
+                    this.editList.splice(editListIndex, 1);
+                    this.userList[userListIndex].checked = false;
+                }else{
+                    this.editList.push(user.userId);
+                    this.userList[userListIndex].checked = true;
                 }
             },
-            removeUserFromList: function (user) {
-                let index = this.editList.indexOf(user);
-                if (index > -1) {
-                    this.editList.splice(index, 1);
-                    this.editUserIdList.splice(index, 1);
-                    this.userList.unshift(user);
-                }
+            preventCheckbox(e){
+                e.preventDefault();
             },
             changeLang: function () {
                 if(this.lang == "EN"){
                     this.lang = "فارسی";
                     this.isRtl = false;
                     this.margin = "margin-left: 30px;";
+                    this.dateNavText = this.dateNavEn;
                     this.parssoTitleText = "Parsso";
                     this.usernameText = this.nameEN;
                     this.exitText = "Exit";
@@ -191,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesText = "Roles";
                     this.eventsText = "Events";
                     this.auditsText = "Audits";
+                    this.reportsText = "Reports";
                     this.profileText = "Profile";
                     this.settingsText = "Settings";
                     this.configsText = "Configs";
@@ -204,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesURLText = "./roles?en";
                     this.eventsURLText = "./events?en";
                     this.auditsURLText = "./audits?en";
+                    this.reportsURLText = "./reports?en";
                     this.profileURLText = "./profile?en";
                     this.settingsURLText = "./settings?en";
                     this.configsURLText = "./configs?en";
@@ -221,10 +267,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.confirmationText = "Are You Sure You Want To Edit?";
                     this.noUserAddedAlertText = "No User Selected.";
                     this.noRoleSelectedAlertText = "No Role Selected.";
+                    this.userIdText = "UserId";
+                    this.roleText = "Role";
+                    this.superAdminText = "SUPERADMIN";
+                    this.supporterText = "SUPPORTER";
+                    this.adminText = "ADMIN";
+                    this.userText = "USER";
                 } else{
                     this.lang = "EN";
                     this.isRtl = true;
                     this.margin = "margin-right: 30px;";
+                    this.dateNavText = this.dateNav;
                     this.parssoTitleText = "پارسو";
                     this.usernameText = this.name;
                     this.exitText = "خروج";
@@ -235,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesText = "نقش ها";
                     this.eventsText = "رویداد ها";
                     this.auditsText = "ممیزی ها";
+                    this.reportsText = "گزارش ها";
                     this.profileText = "پروفایل";
                     this.settingsText = "تنظیمات";
                     this.configsText = "پیکربندی";
@@ -248,6 +302,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesURLText = "./roles";
                     this.eventsURLText = "./events";
                     this.auditsURLText = "./audits";
+                    this.reportsURLText = "./reports";
                     this.profileURLText = "./profile";
                     this.settingsURLText = "./settings";
                     this.configsURLText = "./configs";
@@ -265,6 +320,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.confirmationText = "آیا از اعمال این تغییرات اطمینان دارید؟";
                     this.noUserAddedAlertText = "کاربری انتخاب نشده است.";
                     this.noRoleSelectedAlertText = "نقشی انتخاب نشده است.";
+                    this.userIdText = "شناسه";
+                    this.roleText = "نقش";
+                    this.superAdminText = "مدیر کل";
+                    this.supporterText = "پشتیبانی";
+                    this.adminText = "مدیر";
+                    this.userText = "کاربر";
+
+
                 }
             }
         },

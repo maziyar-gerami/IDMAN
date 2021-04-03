@@ -20,7 +20,7 @@
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/persian-date.min.js"></script>
-    <script src="js/Audits/script.js"></script>
+    <script src="js/Reports/script.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
     <script src="js/jquery.js"></script>
     <script src="js/persian-datepicker.min.js"></script>
@@ -214,13 +214,13 @@
                                         <span>{{s6}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2"
-                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s46">
                                         <i class="fa fa-history fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s45}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2"
-                                       v-bind:href="reportsURLText">
+                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
+                                    v-bind:href="reportsURLText">
                                         <i class="fa fa-file fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{reportsText}}</span>
                                     </a>
@@ -243,32 +243,24 @@
                             <div class="card-body pb-0 pl-0 pr-0" style="background-color: #f8f9fa!important;">
                                 <div class="container">
                                     <div class="ml-0 mr-0">
-                                        <h3 class="border-bottom pb-2">{{s45}}</h3>
+                                        <h3 class="border-bottom pb-2">{{reportsText}}</h3>
                                     </div>
                                     <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
-                                        <div id="auditMore" style="display: none;">
-                                            <div class="form-group">
-                                                <label>{{s19}}</label>
-                                                <textarea v-bind:value="auditMore" rows="5" type="text" class="form-control enInput" readonly>
-                                                </textarea>
-                                            </div>
-                                            <button v-on:click="showList()" class="btn btn-danger">{{s47}}</button>
-                                        </div>
-                                        <div id="auditList">
+                                        <div id="reportList">
                                             <div sec:authorize="hasRole('USER')" style="font-size: 15px;">
                                                 <div class="row justify-content-center">
                                                     <div class="col-2"></div>
                                                     <div class="col-5">
-                                                        <input id="auditDate" type="text" :placeholder="s26" class="datePickerFa form-control icon-input">
-                                                        <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeAuditDate()"></i>
+                                                        <input id="reportDate" type="text" :placeholder="s26" class="datePickerFa form-control icon-input">
+                                                        <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeReportDate()"></i>
                                                     </div>
                                                     <div class="col-3">
-                                                        <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getAuditDate()">{{s27}}</button>
+                                                        <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getReportDate()">{{s27}}</button>
                                                     </div>
                                                     <div class="col-2"></div>
                                                 </div>
                                                 <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
-                                                    <v-pagination v-model="currentPageAudit" :page-count="totalAudit" :classes="bootstrapPaginationClasses"
+                                                    <v-pagination v-model="currentPageReport" :page-count="totalReport" :classes="bootstrapPaginationClasses"
                                                     :labels="paginationAnchorTexts"></v-pagination>
                                                 </div>
                                                 <div style="overflow: auto;">
@@ -284,21 +276,15 @@
                                                         <div v-else>
                                                             <table class="tableList table table-responsive p-2 text-center">
                                                                 <tr>
-                                                                    <th>{{s28}}</th>
-                                                                    <th>{{s29}}</th>
-                                                                    <th>Client IP</th>
+                                                                    <th>{{messageText}}</th>
                                                                     <th>{{s38}}</th>
                                                                     <th>{{s30}}</th>
-                                                                    <th></th>
                                                                 </tr>
                                                                 <tbody id="body">
-                                                                    <tr v-for="eve in sortedAudit" >
-                                                                        <td>{{eve.actionPerformed}}</td>
-                                                                        <td>{{eve.applicationCode}}</td>
-                                                                        <td>{{eve.clientIpAddress}}</td>
+                                                                    <tr v-for="eve in sortedReport" >
+                                                                        <td>{{eve.message}}</td>
                                                                         <td>{{eve.date}}</td>
                                                                         <td>{{eve.clock}}</td>
-                                                                        <td><button class="btn btn-primary btn-sm" v-on:click="showMore(eve.resourceOperatedUpon)">{{s19}}</button></td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
@@ -306,7 +292,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="p-2" style="direction: rtl;">
-                                                    <v-pagination v-model="currentPageAudit" :page-count="totalAudit" :classes="bootstrapPaginationClasses"
+                                                    <v-pagination v-model="currentPageReport" :page-count="totalReport" :classes="bootstrapPaginationClasses"
                                                     :labels="paginationAnchorTexts"></v-pagination>
                                                 </div>
                                                 <div class="row mt-3">
@@ -315,7 +301,7 @@
                                                         <label style="display: contents;">{{s44}}</label>
                                                     </div>
                                                     <div class="col-2 pr-2 pl-3">
-                                                        <select class="form-control" v-on:change="changeRecordsAudit($event)">
+                                                        <select class="form-control" v-on:change="changeRecordsReport($event)">
                                                             <option value="20" selected>20</option>
                                                             <option value="50">50</option>
                                                             <option value="100">100</option>
@@ -329,28 +315,28 @@
                                             <div sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" style="font-size: 15px;">
                                                 <ul class="nav nav-tabs nav-justified">
                                                     <li class="nav-item">
-                                                        <a class="nav-link" @click.prevent="setActive('myAudits')" :class="{ active: isActive('myAudits') }" href="#myAudits">{{s31}}</a>
+                                                        <a class="nav-link" @click.prevent="setActive('myReports')" :class="{ active: isActive('myReports') }" href="#myReports">{{s31}}</a>
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link" @click.prevent="setActive('usersAudits')" :class="{ active: isActive('usersAudits') }" href="#usersAudits">{{s32}}</a>
+                                                        <a class="nav-link" @click.prevent="setActive('usersReports')" :class="{ active: isActive('usersReports') }" href="#usersReports">{{s32}}</a>
                                                     </li>
                                                 </ul>
                                                 <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
-                                                    <div class="tab-pane fade" :class="{ 'active show': isActive('usersAudits') }" id="usersAudits">
+                                                    <div class="tab-pane fade" :class="{ 'active show': isActive('usersReports') }" id="usersReports">
                                                         <div class="row justify-content-center">
                                                             <div class="col-4">
-                                                                <input v-model="auditsUserId" type="text" :placeholder="s33" class="form-control icon-input">
-                                                                <i class="fa fa-times icon" v-bind:style="deleteInputIcon1" v-on:click="removeAuditsUserId()"></i>
+                                                                <input v-model="reportsUserId" type="text" :placeholder="s33" class="form-control icon-input">
+                                                                <i class="fa fa-times icon" v-bind:style="deleteInputIcon1" v-on:click="removeReportsUserId()"></i>
                                                             </div>
                                                             <div class="col-2">
-                                                                <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getAuditsUserId()">{{s27}}</button>
+                                                                <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getReportsUserId()">{{s27}}</button>
                                                             </div>
                                                             <div class="col-4">
-                                                                <input id="auditsDate" type="text" :placeholder="s26" class="datePickerFa form-control icon-input">
-                                                                <i class="fa fa-times icon" v-bind:style="deleteInputIcon1" v-on:click="removeAuditsDate()"></i>
+                                                                <input id="reportsDate" type="text" :placeholder="s26" class="datePickerFa form-control icon-input">
+                                                                <i class="fa fa-times icon" v-bind:style="deleteInputIcon1" v-on:click="removeReportsDate()"></i>
                                                             </div>
                                                             <div class="col-2">
-                                                                <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getAuditsDate()">{{s27}}</button>
+                                                                <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getReportsDate()">{{s27}}</button>
                                                             </div>
                                                         </div>
                                                         <div class="row justify-content-center mt-3">
@@ -359,7 +345,7 @@
                                                                 <div v-if="loader">
                                                                     <roller-loader color="#007bff"/>
                                                                 </div>
-                                                                <button v-else class="btn btn-primary btn-sm w-100 h-100" v-on:click="exportAudits()">
+                                                                <button v-else class="btn btn-primary btn-sm w-100 h-100" v-on:click="exportReports()">
                                                                     <span class="fa-stack">
                                                                         <i class="fa fa-upload fa-stack-1x"></i>
                                                                     </span>
@@ -368,7 +354,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="p-2" style="direction: rtl;">
-                                                            <v-pagination  v-model="currentPageAudits" :page-count="totalAudits" :classes="bootstrapPaginationClasses"
+                                                            <v-pagination  v-model="currentPageReports" :page-count="totalReports" :classes="bootstrapPaginationClasses"
                                                             :labels="paginationAnchorTexts"></v-pagination>
                                                         </div>
                                                         <div style="overflow: auto;">
@@ -384,25 +370,17 @@
                                                                 <div v-else>
                                                                     <table class="tableList table table-responsive p-2 text-center">
                                                                         <tr>
-                                                                            <th>{{s28}}</th>
-                                                                            <th>{{s37}}</th>
-                                                                            <th>{{s29}}</th>
-                                                                            <th>Client IP</th>
-                                                                            <th>Server IP</th>
+                                                                            <th>{{userIdText}}</th>
+                                                                            <th>{{messageText}}</th>
                                                                             <th>{{s38}}</th>
                                                                             <th>{{s30}}</th>
-                                                                            <th></th>
                                                                         </tr>
                                                                         <tbody id="body" style="font-size: .8rem;">
-                                                                            <tr v-for="event in sortedAudits">
-                                                                                <td>{{event.actionPerformed}}</td>
-                                                                                <td>{{event.principal}}</td>
-                                                                                <td>{{event.applicationCode}}</td>
-                                                                                <td>{{event.clientIpAddress}}</td>
-                                                                                <td>{{event.serverIpAddress}}</td>
+                                                                            <tr v-for="event in sortedReports">
+                                                                                <td>{{event.loggerName}}</td>
+                                                                                <td>{{event.message}}</td>
                                                                                 <td>{{event.date}}</td>
                                                                                 <td>{{event.clock}}</td>
-                                                                                <td><button class="btn btn-primary btn-sm" v-on:click="showMore(event.resourceOperatedUpon)">{{s19}}</button></td>
                                                                             </tr>
                                                                         </tbody>
                                                                     </table>
@@ -410,7 +388,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="p-2" style="direction: rtl;">
-                                                            <v-pagination  v-model="currentPageAudits" :page-count="totalAudits" :classes="bootstrapPaginationClasses"
+                                                            <v-pagination  v-model="currentPageReports" :page-count="totalReports" :classes="bootstrapPaginationClasses"
                                                             :labels="paginationAnchorTexts"></v-pagination>
                                                         </div>
                                                         <div class="row mt-3">
@@ -419,7 +397,7 @@
                                                                 <label style="display: contents;">{{s44}}</label>
                                                             </div>
                                                             <div class="col-2 pr-2 pl-3">
-                                                                <select class="form-control" v-on:change="changeRecordsAudits($event)">
+                                                                <select class="form-control" v-on:change="changeRecordsReports($event)">
                                                                     <option value="20" selected>20</option>
                                                                     <option value="50">50</option>
                                                                     <option value="100">100</option>
@@ -429,20 +407,20 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="tab-pane fade" :class="{ 'active show': isActive('myAudits') }" id="myAudits">
+                                                    <div class="tab-pane fade" :class="{ 'active show': isActive('myReports') }" id="myReports">
                                                         <div class="row justify-content-center">
                                                             <div class="col-2"></div>
                                                             <div class="col-5">
-                                                                <input id="auditDate" type="text" :placeholder="s26" class="datePickerFa form-control icon-input">
-                                                                <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeAuditDate()"></i>
+                                                                <input id="reportDate" type="text" :placeholder="s26" class="datePickerFa form-control icon-input">
+                                                                <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeReportDate()"></i>
                                                             </div>
                                                             <div class="col-3">
-                                                                <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getAuditDate()">{{s27}}</button>
+                                                                <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getReportDate()">{{s27}}</button>
                                                             </div>
                                                             <div class="col-2"></div>
                                                         </div>
                                                         <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
-                                                            <v-pagination v-model="currentPageAudit" :page-count="totalAudit" :classes="bootstrapPaginationClasses"
+                                                            <v-pagination v-model="currentPageReport" :page-count="totalReport" :classes="bootstrapPaginationClasses"
                                                             :labels="paginationAnchorTexts"></v-pagination>
                                                         </div>
                                                         <div style="overflow: auto;">
@@ -458,21 +436,15 @@
                                                                 <div v-else>
                                                                     <table class="tableList table table-responsive p-2 text-center">
                                                                         <tr>
-                                                                            <th>{{s28}}</th>
-                                                                            <th>{{s29}}</th>
-                                                                            <th>Client IP</th>
+                                                                            <th>{{messageText}}</th>
                                                                             <th>{{s38}}</th>
                                                                             <th>{{s30}}</th>
-                                                                            <th></th>
                                                                         </tr>
                                                                         <tbody id="body">
-                                                                            <tr v-for="eve in sortedAudit">
-                                                                                <td>{{eve.actionPerformed}}</td>
-                                                                                <td>{{eve.applicationCode}}</td>
-                                                                                <td>{{eve.clientIpAddress}}</td>
+                                                                            <tr v-for="eve in sortedReport">
+                                                                                <td>{{eve.message}}</td>
                                                                                 <td>{{eve.date}}</td>
                                                                                 <td>{{eve.clock}}</td>
-                                                                                <td><button class="btn btn-primary btn-sm" v-on:click="showMore(eve.resourceOperatedUpon)">{{s19}}</button></td>
                                                                             </tr>
                                                                         </tbody>
                                                                     </table>
@@ -480,7 +452,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
-                                                            <v-pagination v-model="currentPageAudit" :page-count="totalAudit" :classes="bootstrapPaginationClasses"
+                                                            <v-pagination v-model="currentPageReport" :page-count="totalReport" :classes="bootstrapPaginationClasses"
                                                             :labels="paginationAnchorTexts"></v-pagination>
                                                         </div>
                                                         <div class="row mt-3">
@@ -489,7 +461,7 @@
                                                                 <label style="display: contents;">{{s44}}</label>
                                                             </div>
                                                             <div class="col-2 pr-2 pl-3">
-                                                                <select class="form-control" v-on:change="changeRecordsAudit($event)">
+                                                                <select class="form-control" v-on:change="changeRecordsReport($event)">
                                                                     <option value="20" selected>20</option>
                                                                     <option value="50">50</option>
                                                                     <option value="100">100</option>
