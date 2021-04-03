@@ -438,6 +438,27 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
+    public byte[] showProfilePic(User user) {
+        File file = new File(uploadedFilesPath + user.getUsersExtraInfo().getPhotoName());
+        byte[] media = null;
+
+        if (file.exists()) {
+            try {
+                String contentType = "image/png";
+                FileInputStream out = new FileInputStream(file);
+                // copy from in to out
+                media = IOUtils.toByteArray(out);
+                out.close();
+                return media;
+            } catch (Exception e) {
+                return media;
+            }
+        }
+        return media;
+    }
+
+
+    @Override
     public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException {
 
 

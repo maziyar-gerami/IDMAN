@@ -109,12 +109,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //APIs
                 .antMatchers("/api/groups/user").hasAnyRole("USER","ADMIN" , "SUPPORTER","SUPERADMIN")
-                .antMatchers("/api/events/**").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/api/events/user/**").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/audits/user/**").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/reports/user/**").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/services/user").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/user/**").hasAnyRole("USER","ADMIN" , "SUPPORTER", "SUPERADMIN")
-                .antMatchers("/api/events/user/**").hasAnyRole("USER" ,"ADMIN" , "SUPPORTER", "SUPERADMIN")
 
 
                 //****************** SUPERADMIN & ADMIN & SUPPORTER Objects************************
@@ -167,6 +166,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .defaultSuccessUrl("/dashboard", true)
                 .permitAll()
+
+                .and()
+                .exceptionHandling().accessDeniedPage("/403")
+
                 .and()
                 .logout()
                 .logoutUrl(casLogout)

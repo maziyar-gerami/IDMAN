@@ -22,6 +22,7 @@ public interface UserRepo {
 
     String showProfilePic(HttpServletResponse response, User user);
 
+    byte[] showProfilePic(User user);
 
     HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException;
 

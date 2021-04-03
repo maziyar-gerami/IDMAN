@@ -56,16 +56,8 @@ public class UsersController {
     //*************************************** Pages ***************************************
 
     @GetMapping("/users")
-    public String Users(HttpServletRequest request) {
-
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-        if (user.getUsersExtraInfo().getRole().equals("ADMIN")
-                || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
-                || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
+    public String Users() {
             return "users";
-
-        return null;
     }
 
     @GetMapping("/profile")

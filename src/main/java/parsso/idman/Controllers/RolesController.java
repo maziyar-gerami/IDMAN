@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import parsso.idman.Models.Users.User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import parsso.idman.Models.Users.UserRole;
 import parsso.idman.Repos.RolesRepo;
 import parsso.idman.Repos.UserRepo;
 
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.util.List;
 
 
@@ -31,14 +31,7 @@ public class RolesController {
     //*************************************** Pages ***************************************
 
     @GetMapping("/roles")
-    public String Roles(HttpServletRequest request) {
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-        if (user.getUsersExtraInfo().getRole().equals("SUPERADMIN"))
-                return "roles";
-
-        return null;
-    }
+    public String Roles() { return "roles"; }
 
     //*************************************** APIs ***************************************
 
