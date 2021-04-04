@@ -85,4 +85,32 @@ public class DashboardController {
         return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
     }
 
+
+
+
+
+
+
+    //*************************************** Pages ***************************************
+
+    @GetMapping("/users")
+    public String Users() {
+        return "users";
+    }
+
+    @GetMapping("/profile")
+    public String Profile() {
+        return "profile";
+    }
+
+    @GetMapping("/resetpassword")
+    public String resetPass() {
+        return "resetpassword";
+    }
+
+    @GetMapping("/newpassword")
+    public String resetPassword() {
+        return "newpassword";
+    }
+
 }
