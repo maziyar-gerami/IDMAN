@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-@Controller
+@RestController
 public class SettingsController {
 
     int millis= 3600000;

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -50,17 +49,7 @@ public class ServicesController {
     public String Services() {return "services"; }
 
     @GetMapping("/createservice")
-    public String CreateService(HttpServletRequest request) {
-
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-
-        if (user.getUsersExtraInfo().getRole().equals("ADMIN")
-                || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
-                || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
-            return "createservice";
-        return null;
-    }
+    public String CreateService() {return "createservice";}
 
     @GetMapping("/api/services/user")
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {

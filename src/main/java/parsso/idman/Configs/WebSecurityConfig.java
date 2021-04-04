@@ -66,6 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .addFilterBefore(logoutFilter, LogoutFilter.class)
 
+                /*
 
                 .authorizeRequests().antMatchers("/dashboard", "/login")
                 .authenticated()
@@ -158,7 +159,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
 
-
+*/
 
 
                 .formLogin()

@@ -35,6 +35,7 @@ import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.User;
@@ -54,7 +55,6 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 @Service
 public class UserRepoImpl implements UserRepo {
-
 
     @Autowired
     FilesStorageService storageService;
@@ -93,6 +93,8 @@ public class UserRepoImpl implements UserRepo {
     private ImportUsers importUsers;
     @Autowired
     ExcelAnalyzer excelAnalyzer;
+    String model = "User";
+
 
     @Override
     public JSONObject create(String doerID,User p) {
@@ -117,7 +119,7 @@ public class UserRepoImpl implements UserRepo {
                         try {
                             ldapTemplate.modifyAttributes(context);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","due to writing to ldap").toString());
                         }
 
                     }
@@ -143,22 +145,102 @@ public class UserRepoImpl implements UserRepo {
                     if (p.getCStatus().equals("disable"))
                         disable(doerID, p.getUserId());
 
-                logger.warn("User " + "\"" + p.getUserId() + "\"" + " in " + new Date() + " created successfully");
+                logger.warn(new ReportMessage(model,p.getUserId(),"","create", "success","").toString());
                 return new JSONObject();
             } else {
-                logger.warn("User " + "\"" + p.getUserId() + "\"" + " is exist. So it cannot be created");
+                logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","already exist").toString());
                 return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
-            logger.warn("Creating user " + "\"" + p.getUserId() + "\"" + " was unsuccessful");
+            logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown reason").toString());
             return null;
         }
     }
 
     @Override
-    public JSONObject createUserImport(User p) {
+    public int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
-        Logger logger = LogManager.getLogger(p.getUserId());
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+        return  ldapTemplate.search(BASE_DN, MakeFilter.makeUsersFilter(groupFilter, searchUid, searchDisplayName, userStatus).encode(), searchControls,
+                new AttributesMapper<Object>() {
+                    @Override
+                    public Object mapFromAttributes(Attributes attributes) throws NamingException {
+                        return null;
+                    }
+                }).size();
+    }
+
+    @Override
+    public HttpStatus update(String doerID,String usid, User p) {
+
+        Logger logger = LogManager.getLogger(doerID);
+
+        p.setUserId(usid);
+        Name dn = buildDn.buildDn(p.getUserId());
+
+        User user = retrieveUsers(p.getUserId());
+
+        DirContextOperations context;
+
+        //remove current pwdEndTime
+        if ((p.getEndTime() != null && p.getEndTime().equals("")))
+            removeCurrentEndTime(p.getUserId());
+        else if (p.getEndTime() != null &&
+                p.getEndTime().equals("")
+                && user.getEndTime()!=null)
+            removeCurrentEndTime(p.getUserId());
+
+        context = buildAttributes.buildAttributes(doerID, p.getUserId(), p, dn);
+        Query query = new Query(Criteria.where("userId").is(p.getUserId()));
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
+
+        if (p.getPhoto() != null)
+            usersExtraInfo.setPhotoName(p.getPhoto());
+
+        if (p.isUnDeletable())
+            usersExtraInfo.setUnDeletable(true);
+        if (usersExtraInfo!=null)
+            mongoTemplate.save(usersExtraInfo, collection);
+
+        try {
+            ldapTemplate.modifyAttributes(context);
+
+            logger.warn(new ReportMessage(model,usid,"","update", "success","").toString());
+
+        } catch (Exception e) {
+            logger.warn(new ReportMessage(model,usid,"","update", "failed","unknown error").toString());
+
+        }
+
+        if(p.getUserPassword()!=null) {
+
+            context.setAttributeValue("userPassword", p.getUserPassword());
+
+            try {
+                ldapTemplate.modifyAttributes(context);
+                logger.warn(new ReportMessage(model,usid,"password","update", "success","").toString());
+
+                return HttpStatus.OK;
+            } catch (Exception e) {
+
+                logger.warn(new ReportMessage(model,usid,"password","update", "failed","unknown error").toString());
+
+                return HttpStatus.BAD_REQUEST;
+            }
+
+        }
+
+        return  HttpStatus.OK;
+    }
+
+
+    @Override
+    public JSONObject createUserImport(String doerID, User p) {
+
+        Logger logger = LogManager.getLogger(doerID);
 
         if (p.getUserId() != null && !p.getUserId().equals("")) {
             User user = retrieveUsers(p.getUserId());
@@ -198,96 +280,22 @@ public class UserRepoImpl implements UserRepo {
 
                     thread.start();
 
+                    logger.warn(new ReportMessage(model,p.getUserId(),"","create", "success","").toString());
                     return new JSONObject();
                 } else {
+                    logger.warn(new ReportMessage(model,doerID,"","create", "failed","repetitive").toString());
+
                     return importUsers.compareUsers(user, p);
                 }
             } catch (Exception e) {
+                logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown error").toString());
                 return null;
             }
 
-
         }
 
+        logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","userId is empty").toString());
         return null;
-    }
-
-    @Override
-    public int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
-
-        SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-
-        return  ldapTemplate.search(BASE_DN, MakeFilter.makeUsersFilter(groupFilter, searchUid, searchDisplayName, userStatus).encode(), searchControls,
-                new AttributesMapper<Object>() {
-                    @Override
-                    public Object mapFromAttributes(Attributes attributes) throws NamingException {
-                        return null;
-                    }
-                }).size();
-    }
-
-    @Override
-    public HttpStatus update(String doerID,String usid, User p) {
-
-        Logger logger = LogManager.getLogger(doerID);
-
-        p.setUserId(usid);
-        Name dn = buildDn.buildDn(p.getUserId());
-
-        User user = retrieveUsers(p.getUserId());
-
-        DirContextOperations context;
-
-        //remove current pwdEndTime
-        if ((p.getEndTime() != null && p.getEndTime().equals("")))
-                removeCurrentEndTime(p.getUserId());
-        else if (p.getEndTime() != null &&
-                 p.getEndTime().equals("")
-                && user.getEndTime()!=null)
-            removeCurrentEndTime(p.getUserId());
-
-        context = buildAttributes.buildAttributes(doerID, p.getUserId(), p, dn);
-        Query query = new Query(Criteria.where("userId").is(p.getUserId()));
-        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
-
-        if (p.getPhoto() != null)
-            usersExtraInfo.setPhotoName(p.getPhoto());
-
-        if (p.isUnDeletable())
-            usersExtraInfo.setUnDeletable(true);
-        if (usersExtraInfo!=null)
-            mongoTemplate.save(usersExtraInfo, collection);
-
-        try {
-            ldapTemplate.modifyAttributes(context);
-
-            logger.warn("User " + "\"" + p.getUserId() + "\"" + "in " + new Date() + " updated successfully");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.warn("Updating user " + "\"" + p.getUserId() + "\"" + "was unsuccessful");
-        }
-
-        if(p.getUserPassword()!=null) {
-
-            context.setAttributeValue("userPassword", p.getUserPassword());
-
-            try {
-                ldapTemplate.modifyAttributes(context);
-                logger.warn("Password for" + p.getUserId() + " changed successfully");
-                return HttpStatus.OK;
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.warn("Changing password for " + "\"" + p.getUserId() + "\"" + " was unsuccessfully");
-
-                return HttpStatus.BAD_REQUEST;
-            }
-
-        }
-
-        return  HttpStatus.OK;
     }
 
     @Override
@@ -320,23 +328,15 @@ public class UserRepoImpl implements UserRepo {
 
                 try {
                     ldapTemplate.unbind(dn);
-                    mongoTemplate.remove(query, User.class, "IDMAN_Tokens");
+                    mongoTemplate.remove(query, User.class, "IDMAN_UsersExtraIno");
+                    logger.warn(new ReportMessage(model,user.getUserId(),"","remove", "success","").toString());
 
                 } catch (Exception e) {
-                    logger.warn("Deleting User " + user.getUserId() + " was unsuccessfully");
-                    e.printStackTrace();
+                    logger.warn(new ReportMessage(model,user.getUserId(),"","remove", "failed","unknown reason").toString());
+
                 }
 
             }
-
-        if (people.size() == 0)
-            logger.warn("All users removed successfully");
-        if (people.size() == 1)
-            logger.warn("User " + people.get(0).getUserId() + " removed successfully");
-        else
-            logger.warn("Selected users removed successfully");
-
-
 
         return undeletables;
     }
@@ -393,12 +393,10 @@ public class UserRepoImpl implements UserRepo {
 
                     try {
                         ldapTemplate.modifyAttributes(contextUser);
-                        logger.warn("Password for" + uId + " changed successfully");
+                        logger.warn(new ReportMessage(model,uId,"password","update", "success","").toString());
                         return HttpStatus.OK;
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        logger.warn("Changing password for " + "\"" + uId + "\"" + " was unsuccessfully");
-
+                        logger.warn(new ReportMessage(model,uId,"password","update", "failed","writing to LDAP").toString());
                         return HttpStatus.BAD_REQUEST;
                     }
 
@@ -461,6 +459,8 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException {
 
+        Logger logger = LogManager.getLogger(name);
+
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
 
@@ -475,8 +475,10 @@ public class UserRepoImpl implements UserRepo {
 
         //TODO:Should consider
         user.setPhoto(s);
+        logger.warn(new ReportMessage(model,name,"profile image","change", "success","").toString());
         if (update(user.getUserId(),user.getUserId(), user) == HttpStatus.OK) {
             oldPic.delete();
+
             return HttpStatus.OK;
 
         }
@@ -608,10 +610,19 @@ public class UserRepoImpl implements UserRepo {
                 context.removeAttributeValue("ou", old_ou);
                 context.addAttributeValue("ou", new_ou);
 
-                ldapTemplate.modifyAttributes(context);
+                try {
+                    ldapTemplate.modifyAttributes(context);
+                }catch (Exception e){
+                    logger.warn(new ReportMessage(model,user.getUserId(),"group","update", "failed","writing to ldap").toString());
+
+                }
             }
+            logger.warn(new ReportMessage(model,doerID,"groups","update", "success","").toString());
+
             return HttpStatus.OK;
         } catch (Exception e) {
+            logger.warn(new ReportMessage(model,doerID,"groups","update", "failed","writing to ldap").toString());
+
             return HttpStatus.FORBIDDEN;
         }
     }
@@ -682,12 +693,12 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.warn("Enabling " + uid + " was successful");
+                logger.warn(new ReportMessage(model,user.getUserId(),"","enable", "success","").toString());
+
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                e.printStackTrace();
-                logger.warn("Enabling " + uid + " was unsuccessful");
+                logger.warn(new ReportMessage(model,user.getUserId(),"","enable", "failed","writing to ldap").toString());
                 return HttpStatus.BAD_REQUEST;
             }
         } else {
@@ -737,12 +748,12 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.warn("Disabling " + uid + " was successful");
+                logger.warn(new ReportMessage(model,user.getUserId(),"","disable", "success","").toString());
                 return HttpStatus.OK;
 
             } catch (Exception e) {
                 e.printStackTrace();
-                logger.warn("Disabling " + uid + " was unsuccessful");
+                logger.warn(new ReportMessage(model,user.getUserId(),"","disable", "failed","writing to ldap").toString());
                 return HttpStatus.BAD_REQUEST;
             }
         } else {
@@ -774,17 +785,16 @@ public class UserRepoImpl implements UserRepo {
                     modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
                     ldapTemplate.modifyAttributes(dn, modificationItems);
 
+
                 }catch (Exception e){
 
                 }
-
-                logger.warn("Unlocking" + uid + "was successful");
+                logger.warn(new ReportMessage(model,user.getUserId(),"","unlock", "success","").toString());
                 return HttpStatus.OK;
 
             } catch (Exception e) {
 
-                logger.warn("Unlocking user" + uid + " was unsuccessful");
-
+                logger.warn(new ReportMessage(model,user.getUserId(),"","unlock", "failed","writing to ldap").toString());
                 return HttpStatus.BAD_REQUEST;
             }
 
@@ -891,8 +901,8 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
-        return importUsers.importFileUsers(file, sequence, hasHeader);
+    public JSONObject importFileUsers(String doerId, MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
+        return importUsers.importFileUsers(doerId, file, sequence, hasHeader);
     }
 
     @Override
