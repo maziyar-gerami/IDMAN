@@ -4,6 +4,7 @@ package parsso.idman.Controllers;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
+@ComponentScan
 public class UsersController {
 
 

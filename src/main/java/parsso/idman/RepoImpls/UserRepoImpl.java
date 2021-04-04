@@ -205,8 +205,11 @@ public class UserRepoImpl implements UserRepo {
         if (usersExtraInfo!=null)
             mongoTemplate.save(usersExtraInfo, collection);
 
+
         try {
             ldapTemplate.modifyAttributes(context);
+
+
 
             logger.warn(new ReportMessage(model,usid,"","update", "success","").toString());
 
@@ -221,12 +224,12 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(context);
-                logger.warn(new ReportMessage(model,usid,"password","update", "success","").toString());
+                //logger.warn(new ReportMessage(model,usid,"password","update", "success","").toString());
 
                 return HttpStatus.OK;
             } catch (Exception e) {
 
-                logger.warn(new ReportMessage(model,usid,"password","update", "failed","unknown error").toString());
+                //logger.warn(new ReportMessage(model,usid,"password","update", "failed","unknown error").toString());
 
                 return HttpStatus.BAD_REQUEST;
             }
