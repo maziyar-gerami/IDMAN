@@ -34,9 +34,9 @@ public class ReportMessage {
                 result + separator +
                 description;
         String last = first.replaceAll(String.valueOf(separator)+String.valueOf(separator), String.valueOf(separator));
-        last = last.replaceAll(String.valueOf(separator), separator+" ");
-        if ((last.charAt(last.length()-1))==separator)
-            return last.substring(0,last.length()-1);
+        last = last.replaceAll(String.valueOf(separator), " " + separator+" ");
+        if ((last.charAt(last.length()-2))==separator)
+            return last.substring(0,last.length()-3);
         return last;
     }
 }

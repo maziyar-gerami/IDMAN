@@ -386,7 +386,12 @@ public class UserRepoImpl implements UserRepo {
         //TODO:check current pass
         User user = retrieveUsers(uId);
 
-        if (true) {
+        AndFilter andFilter = new AndFilter();
+        andFilter.and(new EqualsFilter("objectclass", "person"));
+        andFilter.and(new EqualsFilter("uid", uId));
+
+
+        if (ldapTemplate.authenticate(BASE_DN,andFilter.toString(),oldPassword)) {
             if (token != null) {
                 if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
 
@@ -397,15 +402,15 @@ public class UserRepoImpl implements UserRepo {
 
                     try {
                         ldapTemplate.modifyAttributes(contextUser);
-                        //logger.warn(new ReportMessage(model,uId,"password","update", "success","").toString());
+                        logger.warn(new ReportMessage(model,uId,"password","change", "success","").toString());
                         return HttpStatus.OK;
                     } catch (Exception e) {
-                        //logger.warn(new ReportMessage(model,uId,"password","update", "failed","writing to LDAP").toString());
+                        logger.warn(new ReportMessage(model,uId,"password","change", "failed","writing to LDAP").toString());
                         return HttpStatus.BAD_REQUEST;
                     }
 
                 } else
-                    return HttpStatus.FORBIDDEN;
+                    return HttpStatus.METHOD_NOT_ALLOWED;
             } else {
                 return HttpStatus.BAD_REQUEST;
             }
