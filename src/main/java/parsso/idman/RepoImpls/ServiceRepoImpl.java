@@ -418,7 +418,12 @@ public class ServiceRepoImpl implements ServiceRepo {
                     JsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
 
             extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
-            extraInfo.setPosition(oldExtraInfo.getPosition());
+            try {
+                extraInfo.setPosition(oldExtraInfo.getPosition());
+
+            }catch (Exception e){
+                
+            }
             extraInfo.setId(id);
 
             try {
