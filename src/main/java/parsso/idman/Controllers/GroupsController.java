@@ -42,8 +42,8 @@ public class GroupsController {
     }
 
     @PostMapping("/api/groups")
-    public ResponseEntity<HttpStatus> bindLdapGroup(@RequestBody Group ou) {
-        return new ResponseEntity<>(groupRepo.create(ou));
+    public ResponseEntity<HttpStatus> bindLdapGroup(HttpServletRequest request,@RequestBody Group ou) {
+        return new ResponseEntity<>(groupRepo.create(request.getUserPrincipal().getName(),ou));
     }
 
     @PutMapping("/api/groups/{id}")
@@ -63,8 +63,8 @@ public class GroupsController {
     }
 
     @DeleteMapping("/api/groups")
-    public ResponseEntity<HttpStatus> unbindAllLdapOU(@RequestBody JSONObject jsonObject) {
-        return new ResponseEntity<>(groupRepo.remove(jsonObject));
+    public ResponseEntity<HttpStatus> unbindAllLdapOU(HttpServletRequest request,@RequestBody JSONObject jsonObject) {
+        return new ResponseEntity<>(groupRepo.remove(request.getUserPrincipal().getName(), jsonObject));
     }
 
 

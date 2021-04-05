@@ -2,10 +2,9 @@ package parsso.idman.RepoImpls;
 
 
 import net.minidev.json.JSONObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,6 +17,7 @@ import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.BuildDn;
 import parsso.idman.Models.Groups.Group;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.GroupRepo;
@@ -39,7 +39,7 @@ import java.util.List;
 @Service
 public class GroupRepoImpl implements GroupRepo {
 
-    Logger logger = LoggerFactory.getLogger(Group.class);
+
     @Autowired
     BuildDn buildDnUser;
     @Value("${spring.ldap.base.dn}")
@@ -51,8 +51,12 @@ public class GroupRepoImpl implements GroupRepo {
     @Autowired
     private ServiceRepo serviceRepo;
 
+    private String model = "Groups";
+
     @Override
-    public HttpStatus remove(JSONObject jsonObject) {
+    public HttpStatus remove(String doerID, JSONObject jsonObject) {
+
+        Logger logger = LogManager.getLogger(doerID);
 
         List<Group> groups = new LinkedList<>();
         if (jsonObject.size() == 0)
@@ -85,7 +89,12 @@ public class GroupRepoImpl implements GroupRepo {
                         if (groupN.equalsIgnoreCase(id)) {
                             context = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
                             context.removeAttributeValue("ou", id);
-                            ldapTemplate.modifyAttributes(context);
+                            try {
+                                ldapTemplate.modifyAttributes(context);
+
+                            } catch (Exception e){
+                                logger.warn(new ReportMessage(model,user.getUserId(),"Group","remove", "success","").toString());
+                            }
                         }
 
                     }
@@ -95,22 +104,26 @@ public class GroupRepoImpl implements GroupRepo {
 
         }
 
+        int j=0;
         if (groups != null)
             for (Group group : groups) {
                 Name dn = buildDn(group.getId());
                 try {
-                    logger.warn("All groups removed");
                     ldapTemplate.unbind(dn);
+                    logger.warn(new ReportMessage(model,doerID,"Group","remove", "success","all groups").toString());
 
                 } catch (Exception e) {
-                    logger.warn("removing group " + group.getName() + "  was unsuccessful");
+                    j++;
+                    logger.warn(new ReportMessage(model,doerID,"Group","remove", "failed","writing to ldap").toString());
                 }
 
             }
 
+        if (j>0)
+            logger.warn(new ReportMessage(model,doerID,"Group","remove all", "success","").toString());
+        else
+            logger.warn(new ReportMessage(model,doerID,"ou","remove all", "success","partially").toString());
 
-
-        logger.warn("Removing groups ended");
         return HttpStatus.OK;
     }
 
@@ -164,7 +177,7 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
     public Name buildDn(String id) {
-        return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").add("ou", id).build();
+        return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").add("Group", id).build();
     }
 
     @Override
@@ -200,7 +213,9 @@ public class GroupRepoImpl implements GroupRepo {
 
 
     @Override
-    public HttpStatus create(Group ou) {
+    public HttpStatus create(String doerID, Group ou) {
+
+        Logger logger = LogManager.getLogger(doerID);
 
         List<Group> groups = retrieve();
 
@@ -211,11 +226,14 @@ public class GroupRepoImpl implements GroupRepo {
         Name dn = buildDn(ou.getId());
         try {
             ldapTemplate.bind(dn, null, buildAttributes(ou.getId(), ou));
-            logger.warn("Group " + ou.getName() + " created successfully");
+
+            logger.warn(new ReportMessage(model,doerID,"Group","create", "success","").toString());
+
             return HttpStatus.OK;
 
         } catch (Exception e) {
-            logger.warn("Creating group " + ou.getName() + " was unsuccessful");
+            logger.warn(new ReportMessage(model,doerID,"Group","create", "failed","writing to ldap").toString());
+
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -223,6 +241,10 @@ public class GroupRepoImpl implements GroupRepo {
 
     @Override
     public HttpStatus update(String doerID, String id, Group ou) {
+
+        Logger logger = LogManager.getLogger(doerID);
+
+
         Name dn = buildDn(id);
 
         List<Group> groups = retrieve();
@@ -236,9 +258,10 @@ public class GroupRepoImpl implements GroupRepo {
 
             try {
                 ldapTemplate.unbind(dn);
-                create(ou);
+                create(doerID,ou);
                 DirContextOperations contextUser;
-                logger.warn("Group " + ou.getId() + " updated successfully");
+                logger.warn(new ReportMessage(model,doerID,"Group","update", "success","").toString());
+
 
                 for (SimpleUser user : userRepo.retrieveGroupsUsers(id)) {
                     for (String group : user.getMemberOf()) {
@@ -271,16 +294,16 @@ public class GroupRepoImpl implements GroupRepo {
 
                     }
 
-                logger.warn("Group " + ou.getId() + " updated successfully");
+                logger.warn(new ReportMessage(model,doerID,"Group","update", "success","").toString());
+
                 return HttpStatus.OK;
 
-            } catch (ParseException parseException) {
-                parseException.printStackTrace();
-                logger.warn("updating group " + ou.getName() + "  was unsuccessful");
+            }  catch (IOException ioException) {
+
+                logger.warn(new ReportMessage(model,doerID,"Group","update", "failed","ioException").toString());
                 return HttpStatus.BAD_REQUEST;
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-                logger.warn("updating group " + ou.getName() + "  was unsuccessful");
+            } catch (org.json.simple.parser.ParseException e) {
+                logger.warn(new ReportMessage(model,doerID,"Group","update", "failed","parsing").toString());
                 return HttpStatus.BAD_REQUEST;
             }
 
@@ -288,12 +311,13 @@ public class GroupRepoImpl implements GroupRepo {
 
             try {
                 ldapTemplate.rebind(dn, null, buildAttributes(ou.getId(), ou));
-                logger.warn("Group " + ou.getId() + " updated successfully");
+                logger.warn(new ReportMessage(model,doerID,"Group","update", "success","").toString());
+
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                e.printStackTrace();
-                logger.warn("updating group " + ou.getName() + "  was unsuccessful");
+                logger.warn(new ReportMessage(model,doerID,"Group","update", "failed","writing to ldap").toString());
+
                 return HttpStatus.BAD_REQUEST;
             }
         }
