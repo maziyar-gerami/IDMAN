@@ -209,8 +209,9 @@ public class UserRepoImpl implements UserRepo {
         try {
             ldapTemplate.modifyAttributes(context);
 
+            if(!user.getStatus().equals(p.getStatus()))
+                logger.warn(new ReportMessage("User",usid,"Status","change", "success","from "+user.getStatus()+ " to "+p.getStatus()).toString());
 
-            logger.warn(new ReportMessage("User",usid,"Status","change", "success","from "+user.getStatus()+ " to "+p.getStatus()).toString());
             logger.warn(new ReportMessage(model,usid,"","update", "success","").toString());
 
         } catch (Exception e) {

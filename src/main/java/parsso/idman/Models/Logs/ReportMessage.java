@@ -33,7 +33,6 @@ public class ReportMessage {
                 action + separator +
                 result + separator +
                 description;
-        System.out.println(separator+separator);
         String last = first.replaceAll(String.valueOf(separator)+String.valueOf(separator), String.valueOf(separator));
         last = last.replaceAll(String.valueOf(separator), separator+" ");
         if ((last.charAt(last.length()-1))==separator)
