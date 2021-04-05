@@ -28,14 +28,8 @@ public class GroupsController {
     //*************************************** Pages ***************************************
 
     @GetMapping("/groups")
-    public String Groups(HttpServletRequest request) {
-
-            Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUsers(principal.getName());
-            if (user.getUserId().equals("su"))
-                return "groups";
-
-        return null;
+    public String Groups() {
+        return "groups";
     }
 
     //*************************************** APIs ***************************************

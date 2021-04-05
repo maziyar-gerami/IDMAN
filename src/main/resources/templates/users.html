@@ -420,13 +420,9 @@
                                             </div>
                                             <div style="overflow: auto;">
                                                 <div class="table-wrapper">
-                                                    <div v-if="isListEmpty" class="emptyList">
-                                                        <div>
-                                                            <i class="fa fa-signing fa-2x"></i>
-                                                        </div> 
-                                                        <div>
-                                                            <span>{{s85}}</span>
-                                                        </div>
+                                                    <div v-if="loader1" class="text-center">
+                                                        <br><br>
+                                                        <roller-loader color="#007bff"/>
                                                     </div>
                                                     <div v-else>
                                                         <table class="tableList table table-responsive p-2 text-center">
@@ -459,50 +455,58 @@
                                                                 <th style="border: none;">{{U14}}</th>
                                                             </tr>
                                                             <tbody id="body">
-                                                                <tr v-for="user in sortedUsers" v-bind:key="user.userId" :id="'row-' + user.userId">
-                                                                    <td>
-                                                                        <label class="checkboxclass">
-                                                                            <input :id="'checkbox-' + user.userId" type="checkbox">
-                                                                            <span v-on:click="rowSelected(user.userId)" class="checkmark"></span>
-                                                                        </label>                                                                    
-                                                                    </td>
-                                                                    <td>{{user.orderOfRecords}}</td>
-                                                                    <td>{{user.userId}}</td>
-                                                                    <td>{{user.displayName}}</td>
-                                                                    <td>
+                                                            <tr v-for="user in sortedUsers" v-bind:key="user.userId" :id="'row-' + user.userId">
+                                                                <td>
+                                                                    <label class="checkboxclass">
+                                                                        <input :id="'checkbox-' + user.userId" type="checkbox">
+                                                                        <span v-on:click="rowSelected(user.userId)" class="checkmark"></span>
+                                                                    </label>
+                                                                </td>
+                                                                <td>{{user.orderOfRecords}}</td>
+                                                                <td>{{user.userId}}</td>
+                                                                <td>{{user.displayName}}</td>
+                                                                <td>
                                                                         <span v-for="group in groups">
                                                                             <span v-for="member in user.memberOf" v-if="member == group.id">
                                                                                 <button style="padding: .2rem .2rem; color: #000000; background-color: #a9a9a975; font-size: 60%; opacity: 1;"
-                                                                                class="btn btn-sm" disabled>
+                                                                                        class="btn btn-sm" disabled>
                                                                                     {{group.name}}
                                                                                 </button>
                                                                             </span>
                                                                         </span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <button style="padding: .2rem .2rem; color: #28a745; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U22" class="btn btn-sm" v-on:click="sendResetEmail(user.userId)">
+                                                                </td>
+                                                                <td>
+                                                                    <button style="padding: .2rem .2rem; color: #28a745; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U22" class="btn btn-sm" v-on:click="sendResetEmail(user.userId)">
                                                                             <span class="fa-passwd-reset fa-stack">
                                                                                 <i class="fa fa-undo fa-stack-2x"></i>
-                                                                            </span> 
-                                                                        </button>
-                                                                    </td>
-                                                                    <td>
-                                                                        <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editUserS(user.userId)">
+                                                                            </span>
+                                                                    </button>
+                                                                </td>
+                                                                <td>
+                                                                    <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editUserS(user.userId)">
                                                                             <span class="fa-passwd-reset fa-stack">
                                                                                 <i class="fa fa-pencil-square-o fa-stack-2x"></i>
                                                                             </span>
-                                                                        </button>
-                                                                    </td>
-                                                                    <td>
-                                                                        <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-sm" v-on:click="deleteUser(user.userId)">
+                                                                    </button>
+                                                                </td>
+                                                                <td>
+                                                                    <button style="padding: .2rem .2rem; color: #dc3545; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U11" class="btn btn-sm" v-on:click="deleteUser(user.userId)">
                                                                             <span class="fa-passwd-reset fa-stack">
                                                                                 <i class="fa fa-trash fa-stack-2x"></i>
                                                                             </span>
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
                                                             </tbody>
                                                         </table>
+                                                        <div v-if="isListEmpty" class="emptyList">
+                                                            <div>
+                                                                <i class="fa fa-signing fa-2x"></i>
+                                                            </div>
+                                                            <div>
+                                                                <span>{{s85}}</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -627,36 +631,6 @@
                                 </div>
                                 
                                 <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" v-bind:style="ShowSExtra" style="background-color: white; font-size: 15px;">
-                                    <div class="p-3" v-bind:style="importConflictS">
-                                        <h3 class="mb-3 pb-2 border-bottom">{{s33}}</h3>
-                                        <ul class="nav nav-tabs nav-justified">
-                                            <li class="nav-item">
-                                                <h5 class="mb-2">{{s34}}</h5>
-                                            </li>
-                                            <li class="nav-item">
-                                                <h5 class="mb-2">{{s35}}</h5>
-                                            </li>
-                                        </ul>
-                                        <div v-for="username in usernameList">
-                                            <ul class="nav nav-tabs nav-justified">
-                                                <li class="nav-item">
-                                                    <h6 class="mt-2">{{username.old.userId}}</h6>
-                                                </li>
-                                            </ul>
-                                            <ul v-for="conflict in usersConflictList" v-if="conflict[0].userId === username.old.userId" class="nav nav-tabs nav-justified">
-                                                <li class="nav-item">
-                                                    <h6 class="mt-2">{{conflict[1].name}}</h6>
-                                                    <button v-bind:id="username.old.userId + '-' + conflict[1].name + '-' + conflict[2].oldValue" v-on:click="selectConflict(username.old.userId + '-' + conflict[1].name + '-' + conflict[2].oldValue, username.old.userId + '-' + conflict[1].name + '-' + conflict[3].newValue)" class="btn btn-notSelected mb-2">{{conflict[2].oldValue}}</button>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <h6 class="mt-2">{{conflict[1].name}}</h6>
-                                                    <button v-bind:id="username.old.userId + '-' + conflict[1].name + '-' + conflict[3].newValue" v-on:click="selectConflict(username.old.userId + '-' + conflict[1].name + '-' + conflict[3].newValue, username.old.userId + '-' + conflict[1].name + '-' + conflict[2].oldValue)" class="btn btn-notSelected mb-2">{{conflict[3].newValue}}</button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <button v-on:click="resolveConflicts()" class="btn btn-primary mt-3">{{s36}}</button>
-                                        <button v-on:click="showUsers()" class="btn btn-danger mt-3">{{s17}}</button>
-                                    </div>
                                     <div class="p-3" v-bind:style="editS">
                                         <h3 class="mb-3 pb-2 border-bottom">{{s37}}</h3>
                                         <ul class="nav nav-tabs nav-justified" style="font-size: 15px;">

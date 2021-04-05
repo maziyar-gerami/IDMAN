@@ -47,9 +47,7 @@ public class ServicesController {
     private String metadataPath;
 
     @GetMapping("/services")
-    public String Services() {
-            return "services";
-    }
+    public String Services() {return "services"; }
 
     @GetMapping("/createservice")
     public String CreateService(HttpServletRequest request) {
