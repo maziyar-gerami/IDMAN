@@ -301,10 +301,10 @@ public class ConfigRepoImpl implements ConfigRepo {
                 Path originalPath = Paths.get(s);
                 try {
                     Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
-                    logger.warn(new ReportMessage(model,"","","restore", "success","config  "+config.getName()).toString());
+                    logger.warn(new ReportMessage(model,config.getName(),"","restore", "success",""));
 
                 } catch (Exception e) {
-                    logger.warn(new ReportMessage(model,"","","restore", "failed","config "+config.getName()).toString());
+                    logger.warn(new ReportMessage(model,config.getName().toString(),"","restore", "failed","config "+config.getName()).toString());
 
                 }
                 return HttpStatus.OK;

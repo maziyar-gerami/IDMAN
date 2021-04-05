@@ -93,7 +93,7 @@ public class GroupRepoImpl implements GroupRepo {
                                 ldapTemplate.modifyAttributes(context);
 
                             } catch (Exception e){
-                                logger.warn(new ReportMessage(model,user.getUserId(),"Group","remove", "success","").toString());
+                                logger.warn(new ReportMessage(model,user.getUserId(),groupN,"remove", "success","").toString());
                             }
                         }
 
@@ -110,19 +110,19 @@ public class GroupRepoImpl implements GroupRepo {
                 Name dn = buildDn(group.getId());
                 try {
                     ldapTemplate.unbind(dn);
-                    logger.warn(new ReportMessage(model,doerID,"Group","remove", "success","all groups").toString());
+                    logger.warn(new ReportMessage(model,group.getId(),"Group","remove", "success","all groups").toString());
 
                 } catch (Exception e) {
                     j++;
-                    logger.warn(new ReportMessage(model,doerID,"Group","remove", "failed","writing to ldap").toString());
+                    logger.warn(new ReportMessage(model,group.getId(),"Group","remove", "failed","writing to ldap").toString());
                 }
 
             }
 
         if (j>0)
-            logger.warn(new ReportMessage(model,doerID,"Group","remove all", "success","").toString());
+            logger.warn(new ReportMessage(model,"all groups","","remove", "success","").toString());
         else
-            logger.warn(new ReportMessage(model,doerID,"ou","remove all", "success","partially").toString());
+            logger.warn(new ReportMessage(model,"all groups","","remove", "success","partially").toString());
 
         return HttpStatus.OK;
     }
@@ -227,12 +227,12 @@ public class GroupRepoImpl implements GroupRepo {
         try {
             ldapTemplate.bind(dn, null, buildAttributes(ou.getId(), ou));
 
-            logger.warn(new ReportMessage(model,doerID,"Group","create", "success","").toString());
+            logger.warn(new ReportMessage(model,ou.getId(),"Group","create", "success","").toString());
 
             return HttpStatus.OK;
 
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model,doerID,"Group","create", "failed","writing to ldap").toString());
+            logger.warn(new ReportMessage(model,ou.getId(),"Group","create", "failed","writing to ldap").toString());
 
             return HttpStatus.BAD_REQUEST;
         }
@@ -260,7 +260,7 @@ public class GroupRepoImpl implements GroupRepo {
                 ldapTemplate.unbind(dn);
                 create(doerID,ou);
                 DirContextOperations contextUser;
-                logger.warn(new ReportMessage(model,doerID,"Group","update", "success","").toString());
+                logger.warn(new ReportMessage(model,id,"Group","update", "success","").toString());
 
 
                 for (SimpleUser user : userRepo.retrieveGroupsUsers(id)) {
@@ -286,7 +286,7 @@ public class GroupRepoImpl implements GroupRepo {
                         // delete old service
                         org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
                         jsonObject.put("names", ((((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1))));
-                        serviceRepo.deleteServices(jsonObject);
+                        serviceRepo.deleteServices(doerID,jsonObject);
 
                         // create new service
 
@@ -294,16 +294,16 @@ public class GroupRepoImpl implements GroupRepo {
 
                     }
 
-                logger.warn(new ReportMessage(model,doerID,"Group","update", "success","").toString());
+                logger.warn(new ReportMessage(model,id,"","update", "success","").toString());
 
                 return HttpStatus.OK;
 
             }  catch (IOException ioException) {
 
-                logger.warn(new ReportMessage(model,doerID,"Group","update", "failed","ioException").toString());
+                logger.warn(new ReportMessage(model,id,"Group","update", "failed","ioException").toString());
                 return HttpStatus.BAD_REQUEST;
             } catch (org.json.simple.parser.ParseException e) {
-                logger.warn(new ReportMessage(model,doerID,"Group","update", "failed","parsing").toString());
+                logger.warn(new ReportMessage(model,id,"Group","update", "failed","parsing").toString());
                 return HttpStatus.BAD_REQUEST;
             }
 
@@ -316,7 +316,7 @@ public class GroupRepoImpl implements GroupRepo {
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model,doerID,"Group","update", "failed","writing to ldap").toString());
+                logger.warn(new ReportMessage(model,doerID,ou.getId(),"update", "failed","writing to ldap").toString());
 
                 return HttpStatus.BAD_REQUEST;
             }
