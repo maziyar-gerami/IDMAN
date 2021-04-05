@@ -14,6 +14,7 @@ import parsso.idman.Models.Users.UserRole;
 import parsso.idman.Repos.RolesRepo;
 import parsso.idman.Repos.UserRepo;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -42,8 +43,8 @@ public class RolesController {
     }
 
     @PutMapping("/api/roles/{role}")
-    public ResponseEntity<HttpStatus> updateTicket(@RequestBody JSONObject users, @PathVariable("role") String role) {
-        return new ResponseEntity<>(rolesRepo.updateRole(role, users));
+    public ResponseEntity<HttpStatus> updateTicket(HttpServletRequest request, @RequestBody JSONObject users, @PathVariable("role") String role) {
+        return new ResponseEntity<>(rolesRepo.updateRole(request.getUserPrincipal().getName(),role, users));
     }
 
 }

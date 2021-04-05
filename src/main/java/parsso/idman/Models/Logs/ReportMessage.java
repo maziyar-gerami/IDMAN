@@ -66,6 +66,7 @@ public class ReportMessage {
                 result + separator +
                 reason;
         String last = first.replaceAll(",,", String.valueOf(separator));
+        last = last.replaceAll(String.valueOf(separator), separator+" ");
         if ((last.charAt(last.length()-1))==separator)
             return last.substring(0,last.length()-1);
         return last;
