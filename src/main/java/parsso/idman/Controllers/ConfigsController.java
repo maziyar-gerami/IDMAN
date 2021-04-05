@@ -59,15 +59,15 @@ public class ConfigsController {
     }
 
     @PutMapping("/api/configs")
-    public ResponseEntity<String> updateSettings(@RequestBody List<Setting> settings) throws IOException {
-        configRepo.updateSettings(settings);
+    public ResponseEntity<String> updateSettings(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException {
+        configRepo.updateSettings(request.getUserPrincipal().getName(),settings);
         passwordSettings.update(settings);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/configs/system/{system}")
-    public ResponseEntity<String> updateSettingsSystem(@RequestBody List<Setting> settings) throws IOException {
-        configRepo.updateSettings(settings);
+    public ResponseEntity<String> updateSettingsSystem(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException {
+        configRepo.updateSettings(request.getUserPrincipal().getName(),settings);
         passwordSettings.update(settings);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -78,13 +78,13 @@ public class ConfigsController {
     }
 
     @GetMapping("/api/configs/restore/{cname}")
-    public ResponseEntity<HttpStatus> restoreSettings(@PathVariable String cname)
+    public ResponseEntity<HttpStatus> restoreSettings(HttpServletRequest request,@PathVariable String cname)
             throws IOException, ParseException, java.text.ParseException {
-        return new ResponseEntity<>(configRepo.restore(cname));
+        return new ResponseEntity<>(configRepo.restore(request.getUserPrincipal().getName(),cname));
     }
 
     @GetMapping("/api/configs/reset")
-    public ResponseEntity<HttpStatus> resetFactory() throws IOException {
-        return new ResponseEntity<>(configRepo.factoryReset());
+    public ResponseEntity<HttpStatus> resetFactory(HttpServletRequest request) throws IOException {
+        return new ResponseEntity<>(configRepo.factoryReset(request.getUserPrincipal().getName()));
     }
 }

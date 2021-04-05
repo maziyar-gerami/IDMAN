@@ -210,7 +210,7 @@ public class UserRepoImpl implements UserRepo {
             ldapTemplate.modifyAttributes(context);
 
 
-
+            logger.warn(new ReportMessage("User",usid,"Status","change", "success","from "+user.getStatus()+ " to "+p.getStatus()).toString());
             logger.warn(new ReportMessage(model,usid,"","update", "success","").toString());
 
         } catch (Exception e) {
@@ -396,10 +396,10 @@ public class UserRepoImpl implements UserRepo {
 
                     try {
                         ldapTemplate.modifyAttributes(contextUser);
-                        logger.warn(new ReportMessage(model,uId,"password","update", "success","").toString());
+                        //logger.warn(new ReportMessage(model,uId,"password","update", "success","").toString());
                         return HttpStatus.OK;
                     } catch (Exception e) {
-                        logger.warn(new ReportMessage(model,uId,"password","update", "failed","writing to LDAP").toString());
+                        //logger.warn(new ReportMessage(model,uId,"password","update", "failed","writing to LDAP").toString());
                         return HttpStatus.BAD_REQUEST;
                     }
 
