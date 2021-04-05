@@ -197,8 +197,10 @@ document.addEventListener('DOMContentLoaded', function () {
         this.refreshServices();
         this.getGroups();
         this.getUsersList();
-        if(typeof this.$route.query.en !== 'undefined'){
-          this.changeLang()
+        if(window.localStorage.getItem("lang") === null){
+          window.localStorage.setItem("lang", "FA");
+        }else if(window.localStorage.getItem("lang") === "EN") {
+          this.changeLang();
         }
       },
       methods: {
@@ -271,7 +273,11 @@ document.addEventListener('DOMContentLoaded', function () {
               vm.username = res.data.userId;
               vm.name = res.data.displayName;
               vm.nameEN = res.data.firstName + " " + res.data.lastName;
-              vm.s1 = vm.name;
+              if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+                vm.s1 = vm.name;
+              }else if(window.localStorage.getItem("lang") === "EN") {
+                vm.s1 = vm.nameEN;
+              }
             });
         },
         getUserPic: function () {
@@ -1246,6 +1252,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         changeLang: function () {
           if(this.lang == "EN"){
+            window.localStorage.setItem("lang", "EN");
             this.margin = "margin-left: 30px;";
             this.margin1 = "mr-1";
             this.lang = "فارسی";
@@ -1267,10 +1274,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s13 = "Create New Service";
             this.s14 = "New";
             this.s15 = "Users";
-            this.s16 = "./dashboard?en";
-            this.s17 = "./services?en";
-            this.s18 = "./createservice?en";
-            this.s19 = "./users?en";
             this.s20 = "ID";
             this.s21 = "Name";
             this.s22 = "URL";
@@ -1299,12 +1302,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s45 = "Submit";
             this.s46 = "Go Back";
             this.s47 = "Delete";
-            this.s48 = "./groups?en";
-            this.s49 = "./profile?en";
-            this.s50 = "./privacy?en";
             this.s51 = "Configs";
-            this.s52 = "./configs?en";
-            this.s53 = "./events?en";
             this.s54 = "Access Strategy";
             this.s55 = "Allow SSO";
             this.s56 = "Unauthorized Redirect Url";
@@ -1346,7 +1344,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s92 = "Records a Page: ";
             this.s93 = "Position";
             this.s94 = "Audits";
-            this.s95 = "/audits?en";
             this.s96 = "Remote Access";
             this.s97 = "Acceptable Response Codes";
             this.s98 = "Edit Service";
@@ -1354,12 +1351,11 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s100 = "Disabled";
             this.s101 = "No Service Found";
             this.rolesText = "Roles";
-            this.rolesURLText = "./roles?en";
             this.addAllGroupsText = "Select All";
             this.removeAllGroupsText = "Unselect All";
             this.reportsText = "Reports";
-            this.reportsURLText = "./reports?en";
-          } else{
+          }else {
+              window.localStorage.setItem("lang", "FA");
               this.margin = "margin-right: 30px;";
               this.margin1 = "ml-1";
               this.lang = "EN";
@@ -1381,10 +1377,6 @@ document.addEventListener('DOMContentLoaded', function () {
               this.s13 = "ایجاد سرویس جدید";
               this.s14 = "جدید";
               this.s15 = "کاربران";
-              this.s16 = "./dashboard";
-              this.s17 = "./services";
-              this.s18 = "./createservice";
-              this.s19 = "./users";
               this.s20 = "شناسه";
               this.s21 = "نام";
               this.s22 = "آدرس";
@@ -1413,12 +1405,7 @@ document.addEventListener('DOMContentLoaded', function () {
               this.s45 = "تایید";
               this.s46 = "بازگشت";
               this.s47 = "حذف";
-              this.s48 = "./groups";
-              this.s49 = "./profile";
-              this.s50 = "./privacy";
               this.s51 = "پیکربندی";
-              this.s52 = "./configs";
-              this.s53 = "./events";
               this.s54 = "استراتژی دسترسی";
               this.s55 = "فعال سازی SSO";
               this.s56 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
@@ -1460,7 +1447,6 @@ document.addEventListener('DOMContentLoaded', function () {
               this.s92 = "تعداد رکورد ها: ";
               this.s93 = "موقعیت";
               this.s94 = "ممیزی ها";
-              this.s95 = "/audits";
               this.s96 = "دسترسی از راه دور";
               this.s97 = "کد پاسخ های قابل قبول";
               this.s98 = "ویرایش سرویس";
@@ -1468,11 +1454,9 @@ document.addEventListener('DOMContentLoaded', function () {
               this.s100 = "غیرفعال";
               this.s101 = "سرویسی یافت نشد";
               this.rolesText = "نقش ها";
-              this.rolesURLText = "./roles";
               this.addAllGroupsText = "انتخاب همه";
               this.removeAllGroupsText = "لغو انتخاب همه";
               this.reportsText = "گزارش ها";
-              this.reportsURLText = "./reports";
           }
         },
         div: function (a, b) {

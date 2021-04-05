@@ -63,7 +63,9 @@ document.addEventListener('DOMContentLoaded', function () {
         created: function () {
             this.setDateNav();
             this.getName();
-            if (typeof this.$route.query.en !== 'undefined') {
+            if(window.localStorage.getItem("lang") === null){
+                window.localStorage.setItem("lang", "FA");
+            }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
@@ -81,15 +83,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 const redirectedUrl = new URL(location.href);
                 var vm = this;
-                var str = window.location.pathname;
-                var inf = str.split("/");
-                if(!inf.includes("login")){
-                    axios.get(url + "/api/public/getName/" + redirectedUrl.searchParams.get('uid') + "/" + redirectedUrl.searchParams.get('token')) //
-                        .then((res) => {
-                            vm.userInfo = res.data;
-                            vm.s17 = vm.userInfo.displayName;
-                        });
-                }
+                axios.get(url + "/api/public/getName/" + redirectedUrl.searchParams.get('uid') + "/" + redirectedUrl.searchParams.get('token')) //
+                    .then((res) => {
+                    vm.userInfo = res.data;
+                    vm.s17 = vm.userInfo.displayName;
+                });
             },
             passwordCheck () {
                 this.has_number    = /[0-9]+/.test(this.password);
@@ -129,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             changeLang: function () {
                 if (this.lang == "EN") {
+                    window.localStorage.setItem("lang", "EN");
                     this.placeholder = "text-align: left;"
                     this.isRtl = false;
                     this.margin = "margin-left: 30px;";
@@ -165,7 +164,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rules[2].message = "- 8 Characters Minimum.";
                     this.rules[3].message = "- One Number Required.";
 
-                } else {
+                }else {
+                    window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
                     this.isRtl = true;
                     this.margin = "margin-right: 30px;";

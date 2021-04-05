@@ -149,7 +149,9 @@ document.addEventListener('DOMContentLoaded', function () {
       this.getUserPic();
       this.getGroups();
       this.getUsersList();
-      if(typeof this.$route.query.en !== 'undefined'){
+      if(window.localStorage.getItem("lang") === null){
+        window.localStorage.setItem("lang", "FA");
+      }else if(window.localStorage.getItem("lang") === "EN") {
         this.changeLang();
       }
     },
@@ -200,7 +202,11 @@ document.addEventListener('DOMContentLoaded', function () {
             vm.username = res.data.userId;
             vm.name = res.data.displayName;
             vm.nameEN = res.data.firstName + " " + res.data.lastName;
-            vm.s1 = vm.name;
+            if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+              vm.s1 = vm.name;
+            }else if(window.localStorage.getItem("lang") === "EN") {
+              vm.s1 = vm.nameEN;
+            }
           });
       },
       getUserPic: function () {
@@ -811,6 +817,7 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       changeLang: function () {
         if(this.lang == "EN"){
+          window.localStorage.setItem("lang", "EN");
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
           this.isRtl = false;
@@ -848,17 +855,9 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s30 = "Logout URL";
           this.s31 = "Logout Type";
           this.s32 = "Submit";
-          this.s33 = "./dashboard?en";
-          this.s34 = "./services?en";
           this.s35 = "Groups Access";
           this.s36 = "ServiceID";
-          this.s37 = "./users?en";
-          this.s38 = "./groups?en";
-          this.s39 = "./profile?en";
-          this.s40 = "./privacy?en";
           this.s41 = "Configs";
-          this.s42 = "./configs?en";
-          this.s43 = "./events?en";
           this.s44 = "Access Strategy";
           this.s45 = "Allow SSO";
           this.s46 = "Unauthorized Redirect Url";
@@ -894,15 +893,12 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s76 = "Go Back";
           this.s77 = "Position";
           this.s78 = "Audits";
-          this.s79 = "/audits?en";
           this.s80 = "Remote Access";
           this.s81 = "Acceptable Response Codes";
           this.s82 = "Hardware Token";
           this.s83 = "Disabled";
           this.rolesText = "Roles";
-          this.rolesURLText = "./roles?en";
           this.reportsText = "Reports";
-          this.reportsURLText = "./reports?en";
           if(this.allGroupsHolderText == this.addAllGroupsText){
             this.allGroupsHolderText = "Select All";
           }else{
@@ -910,7 +906,8 @@ document.addEventListener('DOMContentLoaded', function () {
           }
           this.addAllGroupsText = "Select All";
           this.removeAllGroupsText = "Unselect All";
-        } else{
+        }else {
+            window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
             this.isRtl = true;
@@ -948,17 +945,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s30 = "آدرس خروج";
             this.s31 = "نوع خروج";
             this.s32 = "تایید";
-            this.s33 = "./dashboard";
-            this.s34 = "./services";
             this.s35 = "دسترسی گروه ها";
             this.s36 = "شناسه سرویس";
-            this.s37 = "./users";
-            this.s38 = "./groups";
-            this.s39 = "./profile";
-            this.s40 = "./privacy";
             this.s41 = "پیکربندی";
-            this.s42 = "./configs";
-            this.s43 = "./events";
             this.s44 = "استراتژی دسترسی";
             this.s45 = "فعال سازی SSO";
             this.s46 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
@@ -994,15 +983,12 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s76 = "بازگشت";
             this.s77 = "موقعیت";
             this.s78 = "ممیزی ها";
-            this.s79 = "/audits";
             this.s80 = "دسترسی از راه دور";
             this.s81 = "کد پاسخ های قابل قبول";
             this.s82 = "توکن سخت افزاری";
             this.s83 = "غیرفعال";
             this.rolesText = "نقش ها";
-            this.rolesURLText = "./roles";
             this.reportsText = "گزارش ها";
-            this.reportsURLText = "./reports";
             if(this.allGroupsHolderText == this.addAllGroupsText){
               this.allGroupsHolderText = "انتخاب همه";
             }else{

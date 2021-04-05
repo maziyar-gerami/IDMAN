@@ -113,8 +113,10 @@ document.addEventListener('DOMContentLoaded', function () {
       this.getUserPic();
       this.getEvent();
       this.getEvents();
-      if(typeof this.$route.query.en !== 'undefined'){
-        this.changeLang()
+      if(window.localStorage.getItem("lang") === null){
+        window.localStorage.setItem("lang", "FA");
+      }else if(window.localStorage.getItem("lang") === "EN") {
+        this.changeLang();
       }
     },
     methods: {
@@ -164,7 +166,11 @@ document.addEventListener('DOMContentLoaded', function () {
             vm.username = res.data.userId;
             vm.name = res.data.displayName;
             vm.nameEN = res.data.firstName + " " + res.data.lastName;
-            vm.s1 = vm.name;
+            if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+              vm.s1 = vm.name;
+            }else if(window.localStorage.getItem("lang") === "EN") {
+              vm.s1 = vm.nameEN;
+            }
           });
       },
       getUserPic: function () {
@@ -820,6 +826,7 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       changeLang: function () {
         if(this.lang == "EN"){
+          window.localStorage.setItem("lang", "EN");
           this.getEvents();
           this.getEvent();
           this.margin = "margin-left: 30px;";
@@ -842,18 +849,11 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s11 = "Privacy";
           this.s12 = "Guide";
           this.s13 = "Users";
-          this.s14 = "./dashboard?en";
-          this.s15 = "./services?en";
-          this.s16 = "./users?en";
           this.s17 = "ID";
           this.s18 = "Name";
           this.s19 = "Description";
           this.s20 = "Connect";
-          this.s21 = "./groups?en";
-          this.s22 = "./profile?en";
-          this.s23 = "./privacy?en";
           this.s24 = "Configs";
-          this.s25 = "./configs?en";
           this.s26 = "Date";
           this.s27 = "Search";
           this.s28 = "Event Type";
@@ -864,7 +864,6 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s33 = "UserId";
           this.s34 = "Example: admin";
           this.s35 = "Example: 1399/05/01";
-          this.s36 = "./events?en";
           this.s37 = "UserId";
           this.s38 = "Date";
           this.s39 = "Successful Login";
@@ -874,13 +873,11 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s43 = "Browser";
           this.s44 = "Records a Page: ";
           this.s45 = "Audits";
-          this.s46 = "/audits?en";
           this.s47 = "No Records Found";
           this.rolesText = "Roles";
-          this.rolesURLText = "./roles?en";
           this.reportsText = "Reports";
-          this.reportsURLText = "./reports?en";
-        } else{
+        }else {
+            window.localStorage.setItem("lang", "FA");
             this.getEvents();
             this.getEvent();
             this.margin = "margin-right: 30px;";
@@ -903,18 +900,11 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s11 = "حریم خصوصی";
             this.s12 = "راهنما";
             this.s13 = "کاربران";
-            this.s14 = "./dashboard";
-            this.s15 = "./services";
-            this.s16 = "./users";
             this.s17 = "شناسه";
             this.s18 = "نام";
             this.s19 = "توضیحات";
             this.s20 = "اتصال";
-            this.s21 = "./groups";
-            this.s22 = "./profile";
-            this.s23 = "./privacy";
             this.s24 = "پیکربندی";
-            this.s25 = "./configs";
             this.s26 = "تاریخ";
             this.s27 = "جستجو";
             this.s28 = "نوع رویداد";
@@ -925,7 +915,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s33 = "شناسه";
             this.s34 = "مثال: admin";
             this.s35 = " مثال: 1399/05/01";
-            this.s36 = "./events";
             this.s37 = "شناسه";
             this.s38 = "تاریخ";
             this.s39 = "ورود موفق";
@@ -935,12 +924,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s43 = "مرورگر";
             this.s44 = "تعداد رکورد ها: ";
             this.s45 = "ممیزی ها";
-            this.s46 = "/audits";
             this.s47 = "رکوردی یافت نشد";
             this.rolesText = "نقش ها";
-            this.rolesURLText = "./roles";
             this.reportsText = "گزارش ها";
-            this.reportsURLText = "./reports";
         }
       },
       div: function (a, b) {

@@ -74,7 +74,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.setDateNav();
-            if (typeof this.$route.query.en !== 'undefined') {
+            if(window.localStorage.getItem("lang") === null){
+                window.localStorage.setItem("lang", "FA");
+            }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
@@ -90,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             changeLang: function () {
                 if (this.lang == "EN") {
+                    window.localStorage.setItem("lang", "EN");
                     this.placeholder = "text-align: left;"
                     this.isRtl = false;
                     this.margin = "margin-left: 30px;";
@@ -150,7 +153,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s49 = "If you have any questions about these policies or have suggestions for changes and improvements, please contact Parsso team using the Contact Us form.",
                     this.s50 = " for more information."
 
-                } else {
+                }else {
+                    window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
                     this.isRtl = true;
                     this.margin = "margin-right: 30px;";

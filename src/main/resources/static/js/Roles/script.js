@@ -77,7 +77,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.getUserInfo();
             this.getUserPic();
             this.getUsers();
-            if(typeof this.$route.query.en !== 'undefined'){
+            if(window.localStorage.getItem("lang") === null){
+                window.localStorage.setItem("lang", "FA");
+            }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
@@ -114,7 +116,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     vm.username = res.data.userId;
                     vm.name = res.data.displayName;
                     vm.nameEN = res.data.firstName + " " + res.data.lastName;
-                    vm.usernameText = vm.name;
+                    if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+                        vm.usernameText = vm.name;
+                    }else if(window.localStorage.getItem("lang") === "EN") {
+                        vm.usernameText = vm.nameEN;
+                    }
                 });
             },
             getUserPic: function () {
@@ -221,6 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             changeLang: function () {
                 if(this.lang == "EN"){
+                    window.localStorage.setItem("lang", "EN");
                     this.lang = "فارسی";
                     this.isRtl = false;
                     this.margin = "margin-left: 30px;";
@@ -242,20 +249,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rulesText = "Rules";
                     this.privacyText = "Privacy";
                     this.guideText = "Guide";
-                    this.dashboardURLText = "./dashboard?en";
-                    this.servicesURLText = "./services?en";
-                    this.usersURLText = "./users?en";
-                    this.groupsURLText = "./groups?en";
-                    this.rolesURLText = "./roles?en";
-                    this.eventsURLText = "./events?en";
-                    this.auditsURLText = "./audits?en";
-                    this.reportsURLText = "./reports?en";
-                    this.profileURLText = "./profile?en";
-                    this.settingsURLText = "./settings?en";
-                    this.configsURLText = "./configs?en";
-                    this.rulesURLText = "./rules?en";
-                    this.privacyURLText = "./privacy?en";
-                    this.guideURLText = "./guide?en";
                     this.userListText = "Users List";
                     this.searchText = "Search...";
                     this.addToListText = "Add To List";
@@ -274,6 +267,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.adminText = "ADMIN";
                     this.userText = "USER";
                 } else{
+                    window.localStorage.setItem("lang", "FA");
                     this.lang = "EN";
                     this.isRtl = true;
                     this.margin = "margin-right: 30px;";
@@ -295,20 +289,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rulesText = "قوانین";
                     this.privacyText = "حریم خصوصی";
                     this.guideText = "راهنما";
-                    this.dashboardURLText = "./dashboard";
-                    this.servicesURLText = "./services";
-                    this.usersURLText = "./users";
-                    this.groupsURLText = "./groups";
-                    this.rolesURLText = "./roles";
-                    this.eventsURLText = "./events";
-                    this.auditsURLText = "./audits";
-                    this.reportsURLText = "./reports";
-                    this.profileURLText = "./profile";
-                    this.settingsURLText = "./settings";
-                    this.configsURLText = "./configs";
-                    this.rulesURLText = "./rules";
-                    this.privacyURLText = "./privacy";
-                    this.guideURLText = "./guide";
                     this.userListText = "لیست کاربران";
                     this.searchText = "جستجو...";
                     this.addToListText = "افزودن به لیست";

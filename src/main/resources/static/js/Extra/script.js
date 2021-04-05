@@ -61,8 +61,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.setDateNav();
-            this.getName();
-            if (typeof this.$route.query.en !== 'undefined') {
+            if(window.localStorage.getItem("lang") === null){
+                window.localStorage.setItem("lang", "FA");
+            }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
@@ -76,22 +77,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 persianDate.toLocale("fa");
                 this.dateNavText = this.dateNav;
             },
-            getName: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                const redirectedUrl = new URL(location.href);
-                var vm = this;
-                var str = window.location.pathname;
-                var inf = str.split("/");
-                if(!inf.includes("login")){
-                    axios.get(url + "/api/public/getName/" + redirectedUrl.searchParams.get('uid') + "/" + redirectedUrl.searchParams.get('token')) //
-                        .then((res) => {
-                            vm.userInfo = res.data;
-                            vm.s17 = vm.userInfo.displayName;
-                        });
-                }
-            },
             changeLang: function () {
                 if (this.lang == "EN") {
+                    window.localStorage.setItem("lang", "EN");
                     this.placeholder = "text-align: left;"
                     this.isRtl = false;
                     this.dateNavText = this.dateNavEn;
@@ -128,7 +116,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rules[2].message = "- 8 Characters Minimum.";
                     this.rules[3].message = "- One Number Required.";
 
-                } else {
+                }else {
+                    window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
                     this.isRtl = true;
                     this.dateNavText = this.dateNav;
@@ -166,111 +155,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rules[3].message = "حداقل شامل یک عدد باشد. ";
 
                 }
-            },
-            passwordCheck () {
-                this.has_number    = /[0-9]+/.test(this.password);
-                this.has_lowerUPPERcase = /[a-zA-Z]/.test(this.password);
-                this.has_specialchar = /[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password);
-                this.has_char   = /.{8,}/.test(this.password);
-            },
-            persianTextCheck (s) {
-                for (let i = 0; i < s.length; ++i) {
-                    if(persianRex.text.test(s.charAt(i))){
-                        return true;
-                    }
-                }
-                return false;
-            },
-            resetPasswords () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                const redirectedUrl = new URL(location.href); 
-                const formData = new FormData();
-                formData.append('newPassword', this.password);
-                var vm = this;               
-                axios({
-                    method: 'put',
-                    url: url + '/api/public/resetPass/' + redirectedUrl.searchParams.get('uid') + "/" + redirectedUrl.searchParams.get('token'),  //
-                    headers: {'Content-Type': 'application/json'},
-                    data: formData
-                }).then((res) => {
-                    location.replace(url);
-                });
-            }
-        },
-        computed: {
-            infoError () {
-                if (typeof this.$route.query.error !== 'undefined') {
-                    return true
-                }
-            },
-            notSamePasswords () {
-                if (this.passwordsFilled) {
-                    return (this.password !== this.checkPassword)
-                } else {
-                    return false
-                }
-            },
-            passwordsFilled () {
-                return (this.password !== '' && this.checkPassword !== '')
-            },
-            setActive () {
-                if(this.password !== '' && this.checkPassword !== ''){
-                    let errors = []
-                    for (let condition of this.rules) {
-                        if (!condition.regex.test(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }
-                    if(errors.length === 0){
-                        if(this.password === this.checkPassword){
-                            return false
-                        }else{
-                            return true
-                        }
-                    }else{
-                        return true
-                    }
-                }else{
-                    return true
-                }
-            },
-            passwordValidation () {
-                let errors = []
-                for (let condition of this.rules) {
-                    if(condition.fa){
-                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }else{
-                        if (!condition.regex.test(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }
-                }
-                if (errors.length === 0) {
-                    return { valid:true, errors }
-                } else {
-                    return { valid:false, errors }
-                }
-            },
-            strengthLevel() {
-                let errors = []
-                for (let condition of this.rules) {
-                    if(condition.fa){
-                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }else{
-                        if (!condition.regex.test(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }
-                }
-                if(errors.length === 0) return 4;
-                if(errors.length === 1) return 3;
-                if(errors.length === 2) return 2;
-                if(errors.length === 3) return 1;
-                if(errors.length === 4) return 0;
             }
         }
     });

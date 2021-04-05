@@ -102,8 +102,10 @@ document.addEventListener('DOMContentLoaded', function () {
       this.getServices();
       this.getUserPic();
       this.getGroups();
-      if(typeof this.$route.query.en !== 'undefined'){
-        this.changeLang()
+      if(window.localStorage.getItem("lang") === null){
+          window.localStorage.setItem("lang", "FA");
+      }else if(window.localStorage.getItem("lang") === "EN") {
+          this.changeLang();
       }
     },
     methods: {
@@ -164,7 +166,11 @@ document.addEventListener('DOMContentLoaded', function () {
             vm.username = res.data.userId;
             vm.name = res.data.displayName;
             vm.nameEN = res.data.firstName + " " + res.data.lastName;
-            vm.s1 = vm.name;
+            if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+                vm.s1 = vm.name;
+            }else if(window.localStorage.getItem("lang") === "EN") {
+                vm.s1 = vm.nameEN;
+            }
           });
       },
       getUserPic: function () {
@@ -229,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       changeLang: function () {
         if(this.lang == "EN"){
+          window.localStorage.setItem("lang", "EN");
           this.margin = "margin-left: 30px;";
           this.marginServiceBox = "mr-3";
           this.lang = "فارسی";
@@ -248,26 +255,15 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s11 = "Privacy";
           this.s12 = "Guide";
           this.s13 = "Users";
-          this.s14 = "./dashboard?en";
-          this.s15 = "./services?en";
-          this.s16 = "./users?en";
           this.s17 = "ID";
           this.s18 = "Name";
           this.s19 = "Description";
           this.s20 = "Login";
-          this.s21 = "./groups?en";
-          this.s22 = "./profile?en";
-          this.s23 = "./privacy?en";
           this.s24 = "Configs";
-          this.s25 = "./configs?en";
-          this.s26 = "./events?en";
           this.s27 = "Today's Logins";
           this.s28 = "Audits";
-          this.s29 = "/audits?en";
           this.rolesText = "Roles";
-          this.rolesURLText = "./roles?en";
           this.reportsText = "Reports";
-          this.reportsURLText = "./reports?en";
           this.ActiveUsersChart.sections[0].label = "Active";
           this.ActiveUsersChart.sections[1].label = "Disabled";
           this.ActiveUsersChart.sections[2].label = "Locked";
@@ -275,7 +271,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.ActiveServicesChart.sections[1].label = "Disabled";
           this.SuccessfulLoginsChart.sections[0].label = "Successful";
           this.SuccessfulLoginsChart.sections[1].label = "Unsuccessful";
-        } else{
+        }else {
+            window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
             this.marginServiceBox = "ml-3";
             this.lang = "EN";
@@ -295,26 +292,15 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s11 = "حریم خصوصی";
             this.s12 = "راهنما";
             this.s13 = "کاربران";
-            this.s14 = "./dashboard";
-            this.s15 = "./services";
-            this.s16 = "./users";
             this.s17 = "شناسه";
             this.s18 = "نام";
             this.s19 = "توضیحات";
             this.s20 = "ورود";
-            this.s21 = "./groups";
-            this.s22 = "./profile";
-            this.s23 = "./privacy";
             this.s24 = "پیکربندی";
-            this.s25 = "./configs";
-            this.s26 = "./events";
             this.s27 = "لاگین های امروز";
             this.s28 = "ممیزی ها";
-            this.s29 = "/audits";
             this.rolesText = "نقش ها";
-            this.rolesURLText = "./roles";
             this.reportsText = "گزارش ها";
-            this.reportsURLText = "./reports";
             this.ActiveUsersChart.sections[0].label = "فعال";
             this.ActiveUsersChart.sections[1].label = "غیرفعال";
             this.ActiveUsersChart.sections[2].label = "قفل شده";

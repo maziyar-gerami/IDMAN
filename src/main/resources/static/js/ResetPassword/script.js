@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s19: "ایمیل",
             s20: "داشبورد",
             s21: "./groups",
-            s22: "./settings",
+            s22: "./profile",
             s23: "لطفا جهت بازنشانی رمز عبور، آدرس ایمیل خود را وارد کنید:",
             s24: "ارسال موفقیت آمیز بود.",
             s25: "لطفا به mailbox خود مراجعه نموده و طبق راهنما، باقی مراحل را انجام دهید.",
@@ -100,7 +100,9 @@ document.addEventListener('DOMContentLoaded', function () {
         created: function () {
             this.setDateNav();
             this.getCaptcha();
-            if(typeof this.$route.query.en !== 'undefined'){
+            if(window.localStorage.getItem("lang") === null){
+                window.localStorage.setItem("lang", "FA");
+            }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
@@ -410,6 +412,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             changeLang: function () {
                 if(this.lang == "EN"){
+                    window.localStorage.setItem("lang", "EN");
                     this.placeholder = "text-align: left;"
                     this.margin = "margin-left: 30px;";
                     this.lang = "فارسی";
@@ -428,15 +431,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s11 = "Privacy";
                     this.s12 = "Guide";
                     this.s13 = "Users";
-                    this.s14 = "./dashboard?en";
-                    this.s15 = "./services?en";
-                    this.s16 = "./users?en";
                     this.s17 = "Go Back";
                     this.s18 = "Submit";
                     this.s19 = "Email";
                     this.s20 = "Dashboard";
-                    this.s21 = "./groups?en";
-                    this.s22 = "./settings?en";
                     this.s23 = "Please Enter Your Email Address To Reset Your Password:";
                     this.s24 = "Submission Was Successful.";
                     this.s25 = "Please Go To Your mailbox And Follow The Instructions.";
@@ -457,6 +455,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s45 = "Security Code Answer Is Incorrect, Try Again.";
                     this.s46 = "Security Code";
                 } else{
+                    window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
                     this.lang = "EN";
@@ -475,15 +474,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s11 = "حریم خصوصی";
                     this.s12 = "راهنما";
                     this.s13 = "کاربران";
-                    this.s14 = "./dashboard";
-                    this.s15 = "./services";
-                    this.s16 = "./users";
                     this.s17 = "بازگشت";
                     this.s18 = "تایید";
                     this.s19 = "ایمیل";
                     this.s20 = "داشبورد";
-                    this.s21 = "./groups";
-                    this.s22 = "./settings";
                     this.s23 = "لطفا جهت بازنشانی رمز عبور، آدرس ایمیل خود را وارد کنید:";
                     this.s24 = "ارسال موفقیت آمیز بود.";
                     this.s25 = "لطفا به mailbox خود مراجعه نموده و طبق راهنما، باقی مراحل را انجام دهید.";
