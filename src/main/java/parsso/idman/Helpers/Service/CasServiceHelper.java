@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.CasService;
 import parsso.idman.Models.Services.ServiceType.MicroService;
@@ -38,6 +39,7 @@ public class CasServiceHelper {
     @Autowired
     ServiceRepo serviceRepo;
     Logger logger = LoggerFactory.getLogger(CasServiceHelper.class);
+    final String model = "Service";
 
     public CasService buildCasService(JSONObject jo) {
 
@@ -284,7 +286,9 @@ public class CasServiceHelper {
         try {
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.warn(new ReportMessage(model,String.valueOf(id),"","update",
+                    "failed","opening file").toString());
+            return HttpStatus.FORBIDDEN;
         }
 
         FileWriter file;
@@ -300,11 +304,11 @@ public class CasServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            logger.warn("Service " + "\"" + service.getId() + "\"" + " deleted successfully");
+            logger.warn(new ReportMessage(model,String.valueOf(id),"","update", "success","").toString());
             return HttpStatus.OK;
         } catch (IOException e) {
-            e.printStackTrace();
-            logger.warn("Updating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
+            logger.warn(new ReportMessage(model,String.valueOf(id),"","update",
+                    "failed","writing file").toString());
             return HttpStatus.FORBIDDEN;
         }
 

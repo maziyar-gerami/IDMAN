@@ -351,7 +351,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
             }
         } else if (system.equalsIgnoreCase("saml"))
-            id = samlServiceHelper.create(jsonObject);
+            id = samlServiceHelper.create(doerID, jsonObject);
         if (id > 0)
             if (extraInfo != null) {
                 extraInfo.setId(id);
@@ -396,7 +396,6 @@ public class ServiceRepoImpl implements ServiceRepo {
 
         Logger logger = LogManager.getLogger(doerID);
 
-
         JSONObject JsonExtraInfo = null;
 
         ExtraInfo extraInfo = new ExtraInfo();
@@ -422,27 +421,37 @@ public class ServiceRepoImpl implements ServiceRepo {
                 extraInfo.setPosition(oldExtraInfo.getPosition());
 
             }catch (Exception e){
-                
+
             }
             extraInfo.setId(id);
 
+
+        }
+
+
+
+        if (system.equalsIgnoreCase("cas")) {
             try {
                 mongoTemplate.save(extraInfo, collection);
-                logger.warn(new ReportMessage(model,String.valueOf(extraInfo.getId()),"","update", "success","").toString());
-                return HttpStatus.OK;
+
             }catch (Exception e){
                 logger.warn(new ReportMessage(model,String.valueOf(extraInfo.getId()),"","update", "failed","writing to mongoDB").toString());
                 return HttpStatus.FORBIDDEN;
             }
-        }
-
-        if (system.equalsIgnoreCase("cas"))
             return casServiceHelper.update(id, jsonObject);
 
-        else if (system.equalsIgnoreCase("saml"))
-            return samlServiceHelper.update(id, jsonObject);
+        }
 
-        return HttpStatus.FORBIDDEN;
+        else if (system.equalsIgnoreCase("saml"))
+            try {
+                mongoTemplate.save(extraInfo, collection);
+
+            }catch (Exception e){
+                logger.warn(new ReportMessage(model,String.valueOf(extraInfo.getId()),"","update", "failed","writing to mongoDB").toString());
+                return HttpStatus.FORBIDDEN;
+            }
+            return samlServiceHelper.update(doerID,id, jsonObject);
+            
     }
 
     @Override
