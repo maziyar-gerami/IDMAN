@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,6 +26,8 @@ public class User implements UserDetails, Comparable {
     @JsonIgnore
     @Value("${administrator.ou.id}")
     private String admidId;
+    @JsonIgnore
+    ObjectId _id;
     private String userId;
     private String firstName;
     private String lastName;

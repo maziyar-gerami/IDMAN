@@ -44,6 +44,21 @@ public class SimpleUser implements Serializable, Comparable {
         }
 
     };
+
+    public SimpleUser(User user) {
+        this._id = user.get_id();
+        this.userId = user.getUserId();
+        this.displayName = user.getDisplayName();
+        this.memberOf = user.getMemberOf();
+        this.passwordChangedTime = user.getPasswordChangedTime();
+        this.status = user.getStatus();
+        this.timeStamp = user.getTimeStamp();
+    }
+
+    public SimpleUser() {
+
+    }
+
     private ObjectId _id;
     private String userId;
     private String displayName;

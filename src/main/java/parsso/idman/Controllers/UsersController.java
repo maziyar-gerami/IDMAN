@@ -238,9 +238,8 @@ public class UsersController {
      * @return the response entity
      */
     @PostMapping("/api/users")
-    public ResponseEntity<JSONObject> bindLdapUser(HttpServletRequest request,@RequestBody User user) {
-        Principal principal = request.getUserPrincipal();
-        JSONObject jsonObject = userRepo.create(principal.getName(), user);
+    public ResponseEntity<JSONObject> bindLdapUser(@RequestBody User user) {
+        JSONObject jsonObject = userRepo.create("maziyar", user);
 
         if (jsonObject==null || jsonObject.size() == 0)
             return new ResponseEntity<>(null, HttpStatus.OK);

@@ -58,7 +58,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Autowired
     FilesStorageService storageService;
-    String collection = "IDMAN_UsersExtraInfo";
+    String userExtraInfoCollection = "IDMAN_UsersExtraInfo";
     String simpleCollection = "IDMAN_SimpleUsers";
     @Value("${base.url}")
     private String BASE_URL;
@@ -108,6 +108,7 @@ public class UserRepoImpl implements UserRepo {
                 //create user in ldap
                 Name dn = buildDn.buildDn(p.getUserId());
                 ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
+                mongoTemplate.save(new SimpleUser(user),simpleCollection);
 
                 //update it's first pwChangedTime in a new thread
                 Thread thread = new Thread() {
@@ -196,7 +197,7 @@ public class UserRepoImpl implements UserRepo {
 
         context = buildAttributes.buildAttributes(doerID, p.getUserId(), p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
-        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
 
         if (p.getPhoto() != null)
             usersExtraInfo.setPhotoName(p.getPhoto());
@@ -204,11 +205,12 @@ public class UserRepoImpl implements UserRepo {
         if (p.isUnDeletable())
             usersExtraInfo.setUnDeletable(true);
         if (usersExtraInfo!=null)
-            mongoTemplate.save(usersExtraInfo, collection);
+            mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
 
         try {
             ldapTemplate.modifyAttributes(context);
+            mongoTemplate.save(new SimpleUser(user), simpleCollection);
 
             if(!user.getStatus().equals(p.getStatus()))
                 logger.warn(new ReportMessage("User",usid,"Status","change", "success","from "+user.getStatus()+ " to "+p.getStatus()).toString());
@@ -333,7 +335,8 @@ public class UserRepoImpl implements UserRepo {
 
                 try {
                     ldapTemplate.unbind(dn);
-                    mongoTemplate.remove(query, User.class, "IDMAN_UsersExtraIno");
+                    mongoTemplate.remove(query, User.class, userExtraInfoCollection);
+                    mongoTemplate.remove(query, SimpleUser.class, simpleCollection);
                     logger.warn(new ReportMessage(model,user.getUserId(),"","remove", "success","").toString());
 
                 } catch (Exception e) {
@@ -507,9 +510,9 @@ public class UserRepoImpl implements UserRepo {
         List<UsersExtraInfo> usersExtraInfos=null;
 
         if(page==-1 && number==-1)
-            usersExtraInfos = mongoTemplate.find(new Query(),UsersExtraInfo.class,collection);
+            usersExtraInfos = mongoTemplate.find(new Query(),UsersExtraInfo.class, userExtraInfoCollection);
         else
-            usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(limit),UsersExtraInfo.class,collection);
+            usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(limit),UsersExtraInfo.class, userExtraInfoCollection);
 
         ContainerCriteria query = query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is(usersExtraInfos.get(0).getUserId());
 
