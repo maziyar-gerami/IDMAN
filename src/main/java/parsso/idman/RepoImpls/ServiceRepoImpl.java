@@ -400,7 +400,6 @@ public class ServiceRepoImpl implements ServiceRepo {
 
         ExtraInfo extraInfo = new ExtraInfo();
 
-
         Query query = new Query(Criteria.where("_id").is(id));
 
         ExtraInfo oldExtraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
@@ -451,7 +450,7 @@ public class ServiceRepoImpl implements ServiceRepo {
                 return HttpStatus.FORBIDDEN;
             }
             return samlServiceHelper.update(doerID,id, jsonObject);
-            
+
     }
 
     @Override

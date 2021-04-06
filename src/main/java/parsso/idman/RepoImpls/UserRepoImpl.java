@@ -59,6 +59,7 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     FilesStorageService storageService;
     String collection = "IDMAN_UsersExtraInfo";
+    String simpleCollection = "IDMAN_SimpleUsers";
     @Value("${base.url}")
     private String BASE_URL;
     @Value("${email.controller}")
@@ -500,27 +501,22 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        int limit = number==-1?retrieveUsersSize(null,null,null,null):number;
-        int skip = page==-1?0:(page-1)*limit;
+        int limit = number;
+        int skip =(page-1)*limit;
 
-        List<UsersExtraInfo> usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(limit),UsersExtraInfo.class,collection);
+        List<UsersExtraInfo> usersExtraInfos=null;
+
+        if(page==-1 && number==-1)
+            usersExtraInfos = mongoTemplate.find(new Query(),UsersExtraInfo.class,collection);
+        else
+            usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(limit),UsersExtraInfo.class,collection);
 
         ContainerCriteria query = query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is(usersExtraInfos.get(0).getUserId());
 
         for (int i=1 ; i<usersExtraInfos.size();i++)
             query.or("uid").is(usersExtraInfos.get(i).getUserId());
 
-        List<SimpleUser> people = ldapTemplate.search(query, new SimpleUserAttributeMapper());
-
-        List<SimpleUser> relativePeople = new LinkedList<>();
-
-        int ls;
-        if (number < people.size()) ls= number;
-        else ls=people.size();
-
-        for (int i= 0; i<ls; i++) relativePeople.add(people.get(i));
-
-        return relativePeople;
+        return ldapTemplate.search(query, new SimpleUserAttributeMapper());
 
     }
 
@@ -530,8 +526,11 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        List<SimpleUser> userList = ldapTemplate.search(BASE_DN, MakeFilter.makeUsersFilter(groupFilter, searchUid, searchDisplayName, userStatus).encode(), searchControls,
-                simpleUserAttributeMapper);
+        int limit = nCount;
+        int skip =(page-1)*limit;
+
+        List<SimpleUser> userList = mongoTemplate.find(queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus).skip(skip).limit(limit),
+                SimpleUser.class, simpleCollection);
 
         if (!sortType.equals("")) {
             if (sortType.equals("uid_m2M"))
@@ -542,22 +541,27 @@ public class UserRepoImpl implements UserRepo {
                 Collections.sort(userList, SimpleUser.displayNameMinToMaxComparator);
             else if (sortType.equals("displayName_M2m"))
                 Collections.sort(userList, SimpleUser.displayNameMaxToMinComparator);
-        }
+        } else
+            Collections.sort(userList, SimpleUser.uidMinToMaxComparator);
 
-        List<SimpleUser> relativePeople = new LinkedList<>();
 
-        int size = userList.size();
+        int size = (int) mongoTemplate.count(queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus), SimpleUser.class, simpleCollection);
 
-        int ls;
-        if (nCount < userList.size())
-            ls= nCount;
-        else
-            ls=userList.size();
+        return new ListUsers(size , userList, (int) Math.ceil(size/nCount));
+    }
 
-        for (int i=0 ; i<ls; i++)
-            relativePeople.add(userList.get((page-1)*nCount+i));
+    private Query queryBuilder(String groupFilter, String searchUid, String searchDisplayName, String userStatus){
+        Query query = new Query();
+        if(!searchUid.equals(""))
+            query.addCriteria(Criteria.where("userId").regex(searchUid));
+        if(!searchDisplayName.equals(""))
+            query.addCriteria(Criteria.where("displayName").regex(searchDisplayName));
+        if(!userStatus.equals(""))
+            query.addCriteria(Criteria.where("status").is(userStatus));
+        if(!groupFilter.equals(""))
+            query.addCriteria(Criteria.where("memberOf").all(groupFilter));
+        return query;
 
-        return new ListUsers(size , relativePeople, (int) Math.ceil(size/nCount));
     }
 
     @Override
@@ -870,6 +874,19 @@ public class UserRepoImpl implements UserRepo {
                 update(doerID,uid, user);
             }
         }
+        return HttpStatus.OK;
+    }
+
+    @Override
+    public HttpStatus syncUsersDBs() {
+        List<SimpleUser> simpleUsers = retrieveUsersMain(-1,-1);
+
+        if (!mongoTemplate.collectionExists(simpleCollection))
+            mongoTemplate.createCollection(simpleCollection);
+
+        for (SimpleUser simpleUser:simpleUsers)
+            mongoTemplate.save(simpleUser, simpleCollection);
+
         return HttpStatus.OK;
     }
 

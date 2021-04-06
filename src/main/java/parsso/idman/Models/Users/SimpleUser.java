@@ -3,6 +3,7 @@ package parsso.idman.Models.Users;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -43,6 +44,7 @@ public class SimpleUser implements Serializable, Comparable {
         }
 
     };
+    private ObjectId _id;
     private String userId;
     private String displayName;
     private long timeStamp;

@@ -350,8 +350,12 @@ public class UsersController {
     @GetMapping("/api/users/export")
     public ModelAndView downloadExcel() {
 
-        // return a view which will be resolved by an excel view resolver
         return new ModelAndView(excelView, "listUsers", null);
+    }
+
+    @GetMapping("/api/users/sync")
+    public ResponseEntity<HttpStatus> simpleUsersSync() {
+        return new ResponseEntity<>(userRepo.syncUsersDBs());
     }
 
     @PutMapping("/api/users/ou/{ou}")
