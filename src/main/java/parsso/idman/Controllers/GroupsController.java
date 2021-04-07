@@ -36,8 +36,7 @@ public class GroupsController {
 
     @GetMapping("/api/groups/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers("5005");
+        User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
         return new ResponseEntity<>(groupRepo.retrieveCurrentUserGroup(user), HttpStatus.OK);
     }
 

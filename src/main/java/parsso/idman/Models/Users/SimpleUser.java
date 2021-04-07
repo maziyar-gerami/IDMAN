@@ -19,6 +19,7 @@ public class SimpleUser implements Serializable, Comparable {
             return o1.getUserId().compareTo(o2.getUserId());
         }
 
+
     };
     public static Comparator<SimpleUser> uidMaxToMinComparator = new Comparator<SimpleUser>() {
 
