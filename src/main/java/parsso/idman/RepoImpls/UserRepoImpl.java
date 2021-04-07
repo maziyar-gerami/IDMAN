@@ -102,13 +102,15 @@ public class UserRepoImpl implements UserRepo {
 
         Logger logger = LogManager.getLogger(doerID);
 
+
         try {
             User user = retrieveUsers(p.getUserId());
-            if (user == null) {
+            if (user == null || user.getUserId() == null) {
+                Query query = new Query(Criteria.where("userId").is(p.getUserId()));
                 //create user in ldap
                 Name dn = buildDn.buildDn(p.getUserId());
                 ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
-                mongoTemplate.save(new SimpleUser(user),simpleCollection);
+                mongoTemplate.save(new SimpleUser(p),simpleCollection);
 
                 //update it's first pwChangedTime in a new thread
                 Thread thread = new Thread() {
@@ -187,6 +189,8 @@ public class UserRepoImpl implements UserRepo {
 
         DirContextOperations context;
 
+
+
         //remove current pwdEndTime
         if ((p.getEndTime() != null && p.getEndTime().equals("")))
             removeCurrentEndTime(p.getUserId());
@@ -210,7 +214,8 @@ public class UserRepoImpl implements UserRepo {
 
         try {
             ldapTemplate.modifyAttributes(context);
-            mongoTemplate.save(new SimpleUser(user), simpleCollection);
+            mongoTemplate.remove(query, simpleCollection);
+            mongoTemplate.save(new SimpleUser(p), simpleCollection);
 
             if(!user.getStatus().equals(p.getStatus()))
                 logger.warn(new ReportMessage("User",usid,"Status","change", "success","from "+user.getStatus()+ " to "+p.getStatus()).toString());

@@ -81,7 +81,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-/*
 
                 .authorizeRequests()
                 //****************Public Objects*********************
@@ -161,17 +160,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
                 .anyRequest().authenticated()
-
                 .and()
+
+
+
+
+
+
+
+
+
+
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .csrf().disable()
-
-
-
-*/
-
-
-
 
                 .formLogin()
                 .loginPage("/login")

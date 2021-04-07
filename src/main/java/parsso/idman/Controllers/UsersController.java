@@ -4,10 +4,10 @@ package parsso.idman.Controllers;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,8 +28,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
-@RestController
-@ComponentScan
+@Controller
 public class UsersController {
 
 
@@ -238,8 +237,8 @@ public class UsersController {
      * @return the response entity
      */
     @PostMapping("/api/users")
-    public ResponseEntity<JSONObject> bindLdapUser(@RequestBody User user) {
-        JSONObject jsonObject = userRepo.create("maziyar", user);
+    public ResponseEntity<JSONObject> bindLdapUser(HttpServletRequest request,@RequestBody User user) {
+        JSONObject jsonObject = userRepo.create(request.getUserPrincipal().getName(), user);
 
         if (jsonObject==null || jsonObject.size() == 0)
             return new ResponseEntity<>(null, HttpStatus.OK);
