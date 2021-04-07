@@ -51,11 +51,9 @@ public class TicketsController {
 
     @PostMapping("/api/ticket/reply/{ticketID}")
     public ResponseEntity<HttpStatus> replyTicket(@PathVariable ("ticketID") String ticketID,
-                                                  @PathVariable ("supporter") String supporter,
                                             @RequestBody Ticket ticket, HttpServletRequest request){
-        Principal principal = request.getUserPrincipal();
 
-        return new ResponseEntity<>(ticketRepo.reply(ticketID, principal.getName(),ticket));
+        return new ResponseEntity<>(ticketRepo.reply(ticketID, request.getUserPrincipal().getName(),ticket));
     }
 
     @GetMapping("/api/tickets/outbox")

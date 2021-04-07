@@ -74,7 +74,7 @@ public class DashboardData {
 
         Thread userData = new Thread(() -> {
             //________users data____________
-            int nUsers = userRepo.retrieveUsersSize(null,null,null,null);
+            int nUsers = userRepo.retrieveUsersSize("","","","");
 
             int nDisabled = ldapTemplate.search(query().where("pwdAccountLockedTime").is("40400404040404.950Z"), simpleUserAttributeMapper).size();
             int nLocked = ldapTemplate.search(query().where("pwdAccountLockedTime").lte("40400404040404.950Z"), simpleUserAttributeMapper).size();

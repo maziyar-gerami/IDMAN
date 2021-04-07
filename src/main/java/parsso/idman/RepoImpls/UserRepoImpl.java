@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
@@ -205,8 +206,10 @@ public class UserRepoImpl implements UserRepo {
 
         try {
             ldapTemplate.modifyAttributes(context);
-            mongoTemplate.remove(query, simpleCollection);
-            mongoTemplate.save(new SimpleUser(p), simpleCollection);
+            Update update = new Update();
+            update.set("photoName", p.getPhoto());
+            update.set("unDeletable", p.isUnDeletable());
+            mongoTemplate.upsert(query, update, userExtraInfoCollection);
 
             if(!user.getStatus().equals(p.getStatus()))
                 logger.warn(new ReportMessage("User",usid,"Status","change", "success","from "+user.getStatus()+ " to "+p.getStatus()).toString());
@@ -331,7 +334,7 @@ public class UserRepoImpl implements UserRepo {
 
                 try {
                     ldapTemplate.unbind(dn);
-                    mongoTemplate.remove(query, User.class, userExtraInfoCollection);
+                    mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
                     mongoTemplate.remove(query, SimpleUser.class, simpleCollection);
                     logger.warn(new ReportMessage(model,user.getUserId(),"","remove", "success","").toString());
 

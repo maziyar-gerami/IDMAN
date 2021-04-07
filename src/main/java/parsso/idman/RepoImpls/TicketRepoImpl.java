@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Ticket;
@@ -52,10 +53,11 @@ public class TicketRepoImpl implements TicketRepo {
     @Override
     public HttpStatus reply(String ticketID, String supporter,Ticket ticket) {
         Ticket firstTicket = retrieveTicket(ticketID);
-        firstTicket.setTo("supporter.getUserId()");
+        firstTicket.setTo(supporter);
         firstTicket.setStatus(1);
-        mongoTemplate.remove(new Query(Criteria.where("ID").is(ticketID)));
-        mongoTemplate.save(firstTicket,collection);
+        Update update = new Update();
+        update.set("ID", ticketID);
+        mongoTemplate.upsert(new Query(Criteria.where("ID").is(ticketID)), update,collection);
 
         //2
         ticket.setStatus(1);
