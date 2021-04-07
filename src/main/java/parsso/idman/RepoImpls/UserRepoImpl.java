@@ -653,7 +653,8 @@ public class UserRepoImpl implements UserRepo {
             user = ldapTemplate.lookup(buildDn.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
             usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
-            user.setUsersExtraInfo(usersExtraInfo);
+            user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
+            user.setUnDeletable(usersExtraInfo.isUnDeletable());
         }
 
         if(user.getRole()==null)
