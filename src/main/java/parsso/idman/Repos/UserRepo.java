@@ -36,7 +36,7 @@ public interface UserRepo {
 
     JSONObject create(String doerID, User p);
 
-    JSONObject createUserImport(User p);
+    JSONObject createUserImport(String doerId, User p);
 
     HttpStatus update(String doer, String uid, User p);
 
@@ -56,7 +56,7 @@ public interface UserRepo {
 
     HttpStatus updatePass(String userId,String oldPass, String token);
 
-    JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException;
+    JSONObject importFileUsers(String doerId, MultipartFile file, int[] sequence, boolean hasHeader) throws IOException;
 
     Dashboard retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException;
 
@@ -75,6 +75,8 @@ public interface UserRepo {
     ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);
 
     HttpStatus massUsersGroupUpdate(String doerID,String groupId, JSONObject gu);
+
+    HttpStatus syncUsersDBs();
 
     List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException;
 }

@@ -1,8 +1,9 @@
 package parsso.idman.RepoImpls;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Models.Logs.Config;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Logs.Setting;
 import parsso.idman.Models.Time;
 import parsso.idman.Repos.ConfigRepo;
@@ -55,7 +57,6 @@ public class ConfigRepoImpl implements ConfigRepo {
     @Value("${backup.path}")
     private String backUpPath;
 
-
     @Autowired
     InstantMessage instantMessage;
 
@@ -65,7 +66,7 @@ public class ConfigRepoImpl implements ConfigRepo {
     @Autowired
     UserRepo userRepo;
 
-
+    String model = "Config";
 
     public static List<Setting> parser(Scanner reader, String system) {
 
@@ -187,10 +188,11 @@ public class ConfigRepoImpl implements ConfigRepo {
     }
 
     @Override
-    public String updateSettings(List<Setting> settings) throws IOException {
+    public String updateSettings(String doerID, List<Setting> settings) {
+
+        Logger logger = LogManager.getLogger(doerID);
 
         String file_properties = "";
-
 
         for (Setting setting : settings) {
 
@@ -211,33 +213,28 @@ public class ConfigRepoImpl implements ConfigRepo {
 
             file_properties = file_properties.substring(0, index) + temp + file_properties.substring(index);
 
-
         }
 
 
         String date = LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 
-
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("application.properties")) {
             Files.copy(is, Paths.get(this.getClass().getClassLoader() + "/backup/" + date + "_application.properties"));
+            logger.warn(new ReportMessage(model,"","","update", "success","").toString());
+
         } catch (IOException e) {
-            // An error occurred copying the resource
+            logger.warn(new ReportMessage(model,"","","update", "failed","unknown error").toString());
+
         }
 
-
         try {
-            //File file = new File("d:/new folder/t1.txt");
-
 
             File newFile = new File(pathToProperties);
 
-
             newFile.createNewFile();
 
-
             FileWriter fw = new FileWriter(newFile);
-
 
             BufferedWriter out = new BufferedWriter(fw);
 
@@ -247,8 +244,6 @@ public class ConfigRepoImpl implements ConfigRepo {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-
 
         return file_properties;
     }
@@ -263,7 +258,6 @@ public class ConfigRepoImpl implements ConfigRepo {
         String s = backUpPath + date + "_application.properties";
         Path originalPath = Paths.get(s);
         try {
-            File file = new File(s);
             Files.copy(copied, originalPath);
 
         } catch (Exception e) {
@@ -274,8 +268,9 @@ public class ConfigRepoImpl implements ConfigRepo {
     }
 
     @Override
-    public HttpStatus factoryReset() throws IOException {
+    public HttpStatus factoryReset(String doerID) throws IOException {
 
+        Logger logger = LogManager.getLogger(doerID);
 
         Path copied = Paths.get(pathToProperties);
         Resource resource = new ClassPathResource(backUpOfProperties);
@@ -283,35 +278,36 @@ public class ConfigRepoImpl implements ConfigRepo {
         Path originalPath = Paths.get(file.getAbsolutePath());
         try {
             Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
+            logger.warn(new ReportMessage(model,"","","resetFactory", "success","").toString());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn(new ReportMessage(model,"","","resetFactory", "failed","").toString());
+
         }
         return HttpStatus.OK;
     }
 
-
     @Override
-    public HttpStatus restore(String name) throws IOException, ParseException, java.text.ParseException {
-        List<Config> configs = listBackedUpConfigs();
+    public HttpStatus restore(String doerID, String name) throws IOException, ParseException {
+        Logger logger = LogManager.getLogger(doerID);
 
+        List<Config> configs = listBackedUpConfigs();
 
         for (Config config : configs) {
             if (config.getName().equals(name)) {
-                List<Setting> settings = config.getSettingList();
 
                 Path copied = Paths.get(pathToProperties);
                 String s = backUpPath + config.getName();
                 Path originalPath = Paths.get(s);
                 try {
                     Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
+                    logger.warn(new ReportMessage(model,config.getName(),"","restore", "success",""));
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.warn(new ReportMessage(model,config.getName().toString(),"","restore", "failed","config "+config.getName()).toString());
+
                 }
                 return HttpStatus.OK;
-
-
             }
         }
         return HttpStatus.OK;
@@ -321,13 +317,11 @@ public class ConfigRepoImpl implements ConfigRepo {
     public List<Config> listBackedUpConfigs() throws IOException, ParseException {
         File folder = new File(backUpPath); // ./services/
         String[] files = folder.list();
-        JSONParser jsonParser = new JSONParser();
         List<Config> configs = new LinkedList<>();
         Config config = null;
         for (String file : files) {
             if (file.endsWith(".properties"))
                 config = new Config();
-
 
             try {
 
@@ -347,7 +341,6 @@ public class ConfigRepoImpl implements ConfigRepo {
                 int inPersianDay = dateConverter.getDay();
                 int inPersianMonth = dateConverter.getMonth();
                 int inPersianYear = dateConverter.getYear();
-
 
                 Time time = new Time(
                         inPersianYear,

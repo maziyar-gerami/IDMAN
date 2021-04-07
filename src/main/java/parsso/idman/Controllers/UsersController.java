@@ -53,27 +53,7 @@ public class UsersController {
     @Value("${token.valid.email}")
     private String tokenValidEmail;
 
-    //*************************************** Pages ***************************************
 
-    @GetMapping("/users")
-    public String Users() {
-            return "users";
-    }
-
-    @GetMapping("/profile")
-    public String Profile() {
-        return "profile";
-    }
-
-    @GetMapping("/resetpassword")
-    public String resetPass() {
-        return "resetpassword";
-    }
-
-    @GetMapping("/newpassword")
-    public String resetPassword() {
-        return "newpassword";
-    }
 
     //*************************************** APIs ***************************************
 
@@ -258,8 +238,7 @@ public class UsersController {
      */
     @PostMapping("/api/users")
     public ResponseEntity<JSONObject> bindLdapUser(HttpServletRequest request,@RequestBody User user) {
-        Principal principal = request.getUserPrincipal();
-        JSONObject jsonObject = userRepo.create(principal.getName(), user);
+        JSONObject jsonObject = userRepo.create(request.getUserPrincipal().getName(), user);
 
         if (jsonObject==null || jsonObject.size() == 0)
             return new ResponseEntity<>(null, HttpStatus.OK);
@@ -340,9 +319,9 @@ public class UsersController {
      * @throws IOException the io exception
      */
     @PostMapping("/api/users/import")
-    public ResponseEntity<JSONObject> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request,@RequestParam("file") MultipartFile file) throws IOException {
 
-        JSONObject jsonObject = userRepo.importFileUsers(file, defaultSequence, true);
+        JSONObject jsonObject = userRepo.importFileUsers(request.getUserPrincipal().getName(),file, defaultSequence, true);
         if (Integer.valueOf(jsonObject.getAsString("nUnSuccessful")) == 0)
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
@@ -369,8 +348,12 @@ public class UsersController {
     @GetMapping("/api/users/export")
     public ModelAndView downloadExcel() {
 
-        // return a view which will be resolved by an excel view resolver
         return new ModelAndView(excelView, "listUsers", null);
+    }
+
+    @GetMapping("/api/users/sync")
+    public ResponseEntity<HttpStatus> simpleUsersSync() {
+        return new ResponseEntity<>(userRepo.syncUsersDBs());
     }
 
     @PutMapping("/api/users/ou/{ou}")

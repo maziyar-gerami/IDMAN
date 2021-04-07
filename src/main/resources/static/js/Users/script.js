@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.loader1 = true;
                 axios.get(url + "/api/users/" + vm.currentPage + "/" + vm.recordsShownOnPage) //
                     .then((res) => {
-                        vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
+                        vm.total = res.data.pages;
                         res.data.userList.forEach(function (item) {
                             tempUsers = {};
                             tempUsers.userId = item.userId;
@@ -500,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.loader1 = true;
                 axios.get(url + "/api/users/" + vm.currentPage + "/" + vm.recordsShownOnPage + searchQuery) //
                     .then((res) => {
-                        vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
+                        vm.total = res.data.pages;
                         res.data.userList.forEach(function (item) {
                             tempUsers = {};
                             tempUsers.userId = item.userId;
@@ -598,30 +598,50 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.userIdM2mFlag = false;
                 this.displayNamem2MFlag = false;
                 this.displayNameM2mFlag = false;
+                document.getElementById("userIdmin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("userIdMax2min").style = "border-top: solid 7px black;";
+                document.getElementById("displayNamemin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("displayNameMax2min").style = "border-top: solid 7px black;";
                 this.filter();
             },
             userIdm2M: function () {
-                this.userIdm2MFlag = true,
-                this.userIdM2mFlag = false,
-                this.displayNamem2MFlag = false,
-                this.displayNameM2mFlag = false,
+                document.getElementById("userIdmin2Max").style = "border-bottom: solid 7px #007bff;";
+                document.getElementById("userIdMax2min").style = "border-top: solid 7px black;";
+                document.getElementById("displayNamemin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("displayNameMax2min").style = "border-top: solid 7px black;";
+                this.userIdm2MFlag = true;
+                this.userIdM2mFlag = false;
+                this.displayNamem2MFlag = false;
+                this.displayNameM2mFlag = false;
                 this.filter();
             },
             userIdM2m: function () {
-                this.userIdm2MFlag = false,
-                this.userIdM2mFlag = true,
-                this.displayNamem2MFlag = false,
-                this.displayNameM2mFlag = false,
+                document.getElementById("userIdmin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("userIdMax2min").style = "border-top: solid 7px #007bff;";
+                document.getElementById("displayNamemin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("displayNameMax2min").style = "border-top: solid 7px black;";
+                this.userIdm2MFlag = false;
+                this.userIdM2mFlag = true;
+                this.displayNamem2MFlag = false;
+                this.displayNameM2mFlag = false;
                 this.filter();
             },
             displayNamem2M: function () {
-                this.userIdm2MFlag = false,
-                this.userIdM2mFlag = false,
-                this.displayNamem2MFlag = true,
-                this.displayNameM2mFlag = false,
+                document.getElementById("userIdmin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("userIdMax2min").style = "border-top: solid 7px black;";
+                document.getElementById("displayNamemin2Max").style = "border-bottom: solid 7px #007bff;";
+                document.getElementById("displayNameMax2min").style = "border-top: solid 7px black;";
+                this.userIdm2MFlag = false;
+                this.userIdM2mFlag = false;
+                this.displayNamem2MFlag = true;
+                this.displayNameM2mFlag = false;
                 this.filter();
             },
             displayNameM2m: function () {
+                document.getElementById("userIdmin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("userIdMax2min").style = "border-top: solid 7px black;";
+                document.getElementById("displayNamemin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("displayNameMax2min").style = "border-top: solid 7px #007bff;";
                 this.userIdm2MFlag = false;
                 this.userIdM2mFlag = false;
                 this.displayNamem2MFlag = false;

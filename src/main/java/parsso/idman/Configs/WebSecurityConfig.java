@@ -42,6 +42,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${spring.ldap.urls}")
     private String ldapUrl;
 
+
+
     @Autowired
     public WebSecurityConfig(SingleSignOutFilter singleSignOutFilter, LogoutFilter logoutFilter,
                              CasAuthenticationProvider casAuthenticationProvider,
@@ -67,12 +69,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(logoutFilter, LogoutFilter.class)
 
 
-                .authorizeRequests().antMatchers("/dashboard", "/login")
+
+                .authorizeRequests().antMatchers("/dashboard", "/login" )
                 .authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .and()
-                .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
-                .csrf().disable()
+
+
+
+
+
 
 
 
@@ -153,13 +159,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/tickets").hasAnyRole("SUPPORTER", "SUPERADMIN")
 
 
-
                 .anyRequest().authenticated()
                 .and()
 
 
 
 
+
+
+
+
+
+
+                .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
+                .csrf().disable()
 
                 .formLogin()
                 .loginPage("/login")

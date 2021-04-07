@@ -12,5 +12,5 @@ public interface RolesRepo {
 
     List<UserRole> retrieve();
 
-    HttpStatus updateRole(String role, JSONObject userIDs);
+    HttpStatus updateRole(String doerId, String role, JSONObject userIDs);
 }

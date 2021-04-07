@@ -4,16 +4,17 @@ package parsso.idman.Helpers.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Services.ServiceType.SamlService;
@@ -37,7 +38,9 @@ public class SamlServiceHelper {
     MongoTemplate mongoTemplate;
     @Autowired
     ServiceRepo serviceRepo;
-    Logger logger = LoggerFactory.getLogger(SamlServiceHelper.class);
+
+
+    final String model = "Service";
 
     public SamlService buildSamlService(JSONObject jo) {
 
@@ -202,7 +205,8 @@ public class SamlServiceHelper {
         return service;
     }
 
-    public long create(JSONObject jo) {
+    public long create(String doerID, JSONObject jo) {
+        Logger logger = LogManager.getLogger(doerID);
         SamlService service = buildSamlService(jo);
         service.setId(new Date().getTime());
         String json = null;
@@ -264,7 +268,8 @@ public class SamlServiceHelper {
         return service.getId();
     }
 
-    public HttpStatus update(long id, JSONObject jsonObject) throws IOException, ParseException {
+    public HttpStatus update(String doerID, long id, JSONObject jsonObject) throws IOException, ParseException {
+        Logger logger = LogManager.getLogger(doerID);
         Service oldService = serviceRepo.retrieveService(id);
 
 
@@ -277,7 +282,8 @@ public class SamlServiceHelper {
         try {
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.warn(new ReportMessage(model,String.valueOf(id),"","update",
+                    "failed","writing file").toString());
         }
 
         FileWriter file;
@@ -293,11 +299,11 @@ public class SamlServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            logger.warn("Service " + "\"" + service.getId() + "\"" + " updated successfully");
+            logger.warn(new ReportMessage(model,String.valueOf(id),"","update", "success","").toString());
             return HttpStatus.OK;
         } catch (IOException e) {
-            e.printStackTrace();
-            logger.warn("Updating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
+            logger.warn(new ReportMessage(model,String.valueOf(id),"","update",
+                    "failed","writing file").toString());
             return HttpStatus.FORBIDDEN;
         }
 

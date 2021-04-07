@@ -14,11 +14,11 @@ public interface GroupRepo {
 
     List<Group> retrieve(String ou);
 
-    HttpStatus create(Group ou);
+    HttpStatus create(String doerId, Group ou);
 
     HttpStatus update(String doerID,String name, Group ou);
 
-    HttpStatus remove(JSONObject jsonObject);
+    HttpStatus remove(String doerId, JSONObject jsonObject);
 
     Group retrieveOu(String name);
 

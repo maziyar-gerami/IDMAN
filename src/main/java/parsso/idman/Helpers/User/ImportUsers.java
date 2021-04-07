@@ -35,7 +35,7 @@ public class ImportUsers {
     @Autowired
     private UserRepo userRepo;
 
-    public JSONObject excelSheetAnalyze(Sheet sheet, int[] sequence, boolean hasHeader) {
+    public JSONObject excelSheetAnalyze(String doerId, Sheet sheet, int[] sequence, boolean hasHeader) {
         JSONArray jsonArray = new JSONArray();
 
         Iterator<Row> rowIterator = sheet.iterator();
@@ -77,7 +77,7 @@ public class ImportUsers {
 
                 }
 
-            temp = userRepo.createUserImport(user);
+            temp = userRepo.createUserImport(doerId,user);
 
             if (temp != null && temp.size() > 0) {
                 jsonArray.add(temp);
@@ -118,7 +118,7 @@ public class ImportUsers {
         return jsonObject;
     }
 
-    public JSONObject csvSheetAnalyze(BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException {
+    public JSONObject csvSheetAnalyze(String doerId,BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException {
 
         String row;
         JSONArray jsonArray = new JSONArray();
@@ -152,7 +152,7 @@ public class ImportUsers {
 
             i++;
 
-            JSONObject temp = userRepo.createUserImport(user);
+            JSONObject temp = userRepo.createUserImport(doerId, user);
 
             if (temp.size() > 0) {
                 jsonArray.add(temp);
@@ -179,7 +179,7 @@ public class ImportUsers {
         return ls;
     }
 
-    public JSONObject importFileUsers(MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
+    public JSONObject importFileUsers(String doerId,MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
 
         JSONObject lsusers = new JSONObject();
         InputStream insfile = file.getInputStream();
@@ -192,7 +192,7 @@ public class ImportUsers {
             //Get first/desired sheet from the workbook
             XSSFSheet sheet = workbookXLSX.getSheetAt(0);
 
-            lsusers = excelSheetAnalyze(sheet, sequence, hasHeader);
+            lsusers = excelSheetAnalyze(doerId,sheet, sequence, hasHeader);
 
         } else if (file.getOriginalFilename().endsWith(".xls")) {
             HSSFWorkbook workbookXLS = null;
@@ -201,13 +201,13 @@ public class ImportUsers {
 
             HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
-            lsusers = excelSheetAnalyze(xlssheet, sequence, hasHeader);
+            lsusers = excelSheetAnalyze(doerId,xlssheet, sequence, hasHeader);
 
         } else if (file.getOriginalFilename().endsWith(".csv")) {
 
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-            lsusers = csvSheetAnalyze(csvReader, sequence, hasHeader);
+            lsusers = csvSheetAnalyze(doerId,csvReader, sequence, hasHeader);
 
             csvReader.close();
         } else if (file.getOriginalFilename().endsWith(".ldif")) {

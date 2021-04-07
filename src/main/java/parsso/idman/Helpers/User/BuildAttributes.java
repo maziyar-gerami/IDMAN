@@ -2,15 +2,15 @@ package parsso.idman.Helpers.User;
 
 
 import lombok.SneakyThrows;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
-import parsso.idman.IdmanApplication;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
@@ -24,7 +24,6 @@ import javax.naming.directory.BasicAttributes;
 @Service
 public class BuildAttributes {
 
-    final static Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
     @Value("${default.user.password}")
     private String defaultPassword;
     @Autowired
@@ -89,6 +88,9 @@ public class BuildAttributes {
 
         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
+        Logger logger = LogManager.getLogger(doerID);
+
+
         if (p.getFirstName() != "" && p.getFirstName() != null)
             context.setAttributeValue("givenName", p.getFirstName());
         if (p.getLastName() != "" && p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
@@ -117,7 +119,6 @@ public class BuildAttributes {
             else if (p.getCStatus().equals("disable")) userRepo.disable(doerID, uid);
             else if (p.getCStatus().equals("unlock")) userRepo.unlock(doerID, uid);
 
-            logger.warn("User \""+p.getUserId()+"\" access level changed from \""+old.getStatus()+"\" to \""+p.getStatus()+"\"");
 
         }
 

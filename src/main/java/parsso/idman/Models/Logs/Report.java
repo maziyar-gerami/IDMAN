@@ -34,6 +34,8 @@ public class Report {
     Date date;
     @JsonIgnore
     String thrown;
+    @JsonIgnore
+    protected char separator = ':';
 
     public String getDetails(){
         return source.toString();
@@ -50,10 +52,11 @@ public class Report {
         @Override
         public String toString() {
             return
-                    "className='" + className + '\'' +
-                    ", methodName='" + methodName + '\'' +
-                    ", fileName='" + fileName + '\'' +
-                    ", lineNumber='" + lineNumber + '\'';
+                    "className='" + className + separator +
+                    ", methodName='" + methodName + separator +
+                    ", fileName='" + fileName + separator +
+                    ", lineNumber='" + lineNumber + separator;
         }
     }
+
 }

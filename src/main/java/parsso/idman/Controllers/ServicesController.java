@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -50,17 +49,7 @@ public class ServicesController {
     public String Services() {return "services"; }
 
     @GetMapping("/createservice")
-    public String CreateService(HttpServletRequest request) {
-
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-
-        if (user.getUsersExtraInfo().getRole().equals("ADMIN")
-                || user.getUsersExtraInfo().getRole().equals("SUPERADMIN")
-                || user.getUsersExtraInfo().getRole().equals("SUPPORTER"))
-            return "createservice";
-        return null;
-    }
+    public String CreateService() {return "createservice";}
 
     @GetMapping("/api/services/user")
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
@@ -83,23 +72,22 @@ public class ServicesController {
         return new ResponseEntity<>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
     }
 
-
     @DeleteMapping("/api/services")
-    public ResponseEntity<LinkedList<String>> deleteServices(@RequestBody JSONObject jsonObject) throws IOException {
-        LinkedList ls = serviceRepo.deleteServices(jsonObject);
+    public ResponseEntity<LinkedList<String>> deleteServices(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException {
+        LinkedList ls = serviceRepo.deleteServices(request.getUserPrincipal().getName(), jsonObject);
         if (ls == null) return new ResponseEntity<>(ls, HttpStatus.OK);
         else return new ResponseEntity<>(ls, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/api/services/{system}")
-    public ResponseEntity<String> createService(@RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException {
-        return new ResponseEntity<>(serviceRepo.createService(jsonObject, system));
+    public ResponseEntity<String> createService(HttpServletRequest request,@RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException {
+        return new ResponseEntity<>(serviceRepo.createService(request.getUserPrincipal().getName(), jsonObject, system));
     }
 
     @PutMapping("/api/service/{id}/{system}")
-    public ResponseEntity<String> updateService(@PathVariable("id") long id,
+    public ResponseEntity<String> updateService(HttpServletRequest request,@PathVariable("id") long id,
                                                 @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
-        return new ResponseEntity<>(serviceRepo.updateService(id, jsonObject, system));
+        return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(),id, jsonObject, system));
     }
 
     /**
@@ -118,7 +106,8 @@ public class ServicesController {
 
 
     @GetMapping("/api/services/position/{serviceId}")
-    public ResponseEntity<HttpStatus> increasePosition(@PathVariable("serviceId") String id, @RequestParam("value") int value) {
+    public ResponseEntity<HttpStatus> increasePosition(HttpServletRequest request,
+                                                       @PathVariable("serviceId") String id, @RequestParam("value") int value) {
         if (value == 1)
             return new ResponseEntity<>(serviceRepo.increasePosition(id));
         else if (value == -1)
