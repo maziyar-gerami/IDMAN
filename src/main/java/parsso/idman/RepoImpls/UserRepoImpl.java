@@ -212,6 +212,15 @@ public class UserRepoImpl implements UserRepo {
             update.set("unDeletable", p.isUnDeletable());
             mongoTemplate.upsert(query, update, userExtraInfoCollection);
 
+            Update update1 = new Update();
+
+            update1.set("status", p.getStatus());
+            update1.set("memberOf", p.getMemberOf());
+            update1.set("memberOf", p.getMemberOf());
+
+            mongoTemplate.upsert(query, update1, simpleCollection);
+
+
             if(!user.getStatus().equals(p.getStatus()))
                 logger.warn(new ReportMessage("User",usid,"Status","change", "success","from "+user.getStatus()+ " to "+p.getStatus()).toString());
 
@@ -525,9 +534,6 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
         int limit = nCount;
         int skip =(page-1)*limit;
