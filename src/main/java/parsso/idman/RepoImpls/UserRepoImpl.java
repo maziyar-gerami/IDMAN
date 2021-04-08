@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -531,23 +532,31 @@ public class UserRepoImpl implements UserRepo {
         int limit = nCount;
         int skip =(page-1)*limit;
 
-        List<SimpleUser> userList = mongoTemplate.find(queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus).skip(skip).limit(limit),
+        Query query = queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus);
+
+
+
+        if (sortType.equals(""))
+            query.with(Sort.by(Sort.Direction.ASC,"userId"));
+
+
+            else if (sortType.equals("uid_m2M"))
+                query.with(Sort.by(Sort.Direction.ASC,"userId"));
+
+            else if (sortType.equals("uid_M2m"))
+                query.with(Sort.by(Sort.Direction.DESC,"userId"));
+
+        else if (sortType.equals("displayName_m2M"))
+            query.with(Sort.by(Sort.Direction.ASC,"displayName"));
+
+        else if (sortType.equals("displayName_M2m"))
+            query.with(Sort.by(Sort.Direction.DESC,"displayName"));
+
+
+        List<SimpleUser> userList = mongoTemplate.find(query.skip(skip).limit(limit),
                 SimpleUser.class, simpleCollection);
 
-        if (!sortType.equals("")) {
-            if (sortType.equals("uid_m2M"))
-                Collections.sort(userList, SimpleUser.uidMinToMaxComparator);
-            else if (sortType.equals("uid_M2m"))
-                Collections.sort(userList, SimpleUser.uidMaxToMinComparator);
-            else if (sortType.equals("displayName_m2M"))
-                Collections.sort(userList, SimpleUser.displayNameMinToMaxComparator);
-            else if (sortType.equals("displayName_M2m"))
-                Collections.sort(userList, SimpleUser.displayNameMaxToMinComparator);
-        } else
-            Collections.sort(userList, SimpleUser.uidMinToMaxComparator);
-
-
-        int size = (int) mongoTemplate.count(queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus), SimpleUser.class, simpleCollection);
+        int size = retrieveUsersSize(groupFilter, searchUid, searchDisplayName, userStatus);
 
         return new ListUsers(size , userList, (int) Math.ceil(size/nCount));
     }

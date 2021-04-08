@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         methods: {
             setDateNav: function () {
-                this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+                this.dateNav = new persianDate().format("dddd، DD MMMM YYYY");
                 persianDate.toCalendar("gregorian");
                 persianDate.toLocale("en");
                 this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
@@ -160,8 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                                 vm.sendU = false;
                                                 vm.Success = true;
                                                 vm.Error = false;
-                                            })
-                                            .catch((error) => {
+                                            }).catch((error) => {
                                                 if (error.response) {
                                                     if(error.response.status === 403){
                                                         vm.loader = false;
@@ -223,7 +222,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                                     }
                                                 }
                                             });
-
                                         break;
                                     }
                                 }

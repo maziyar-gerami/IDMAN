@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
             addS: "display:none",
             showS: "",
             ShowSExtra: "display:none",
-            importConflictS: "display:none",
             total: 1,
             ImportedFile: '',
             bootstrapPaginationClasses: {
@@ -114,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
             searchStatus: "none",
             promptImportButtons: false,
             loader: false,
+            loader1: false,
             duplicatePasswords: false,
             showUnDeletableList: false,
             unDeletableList: "",
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         methods: {
             setDateNav: function () {
-                this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+                this.dateNav = new persianDate().format("dddd، DD MMMM YYYY");
                 persianDate.toCalendar("gregorian");
                 persianDate.toLocale("en");
                 this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
@@ -268,25 +268,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }else{
                     document.getElementById("dropdownMenu").classList.toggle("show");
                     this.dropdownMenu = true;
-                }
-            },
-            allSelected () {
-                if(this.allIsSelected){
-                    this.allIsSelected = false;
-                    for(let i = 0; i < this.users.length; ++i){
-                        if(document.getElementById("checkbox-" + this.users[i].userId).checked == true){
-                            document.getElementById("checkbox-" + this.users[i].userId).click();
-                        }
-                        document.getElementById("row-" + this.users[i].userId).style.background = "";
-                    }
-                }else{
-                    this.allIsSelected = true;
-                    for(let i = 0; i < this.users.length; ++i){
-                        if(document.getElementById("checkbox-" + this.users[i].userId).checked == false){
-                            document.getElementById("checkbox-" + this.users[i].userId).click();
-                        }
-                        document.getElementById("row-" + this.users[i].userId).style.background = "#c2dbff";
-                    }
                 }
             },
             isActive (menuItem) {
@@ -329,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     var file = document.querySelector('#file');
                     bodyFormData.append("file", file.files[0]);
                     this.userListImport = [];
-                    vm.loader = true;
+                    this.loader = true;
                     axios({
                         method: 'post',
                         url: url + "/api/users/import",  //
@@ -362,63 +343,6 @@ document.addEventListener('DOMContentLoaded', function () {
             changeRecords: function(event) {
                 this.recordsShownOnPage = event.target.value;
                 this.filter();
-            },
-            selectConflict: function(s1, s2) {
-                document.getElementById(s1).className = "btn btn-success mb-2";
-                document.getElementById(s2).className = "btn btn-notSelected mb-2";
-                var res = s1.split("-");
-                this.usersCorrectUserIdList.push(res[0]);
-                for(var i = 0; i < this.usersCorrectList.length; ++i){
-                    if(this.usersCorrectList[i].userId == res[0]){
-                        if(res[1] == "firstName"){
-                            this.usersCorrectList[i].firstName = res[2];
-                        }else if(res[1] == "lastName"){
-                            this.usersCorrectList[i].lastName = res[2];
-                        }else if(res[1] == "displayName"){
-                            this.usersCorrectList[i].displayName = res[2];
-                        }else if(res[1] == "mobile"){
-                            this.usersCorrectList[i].mobile = res[2];
-                        }else if(res[1] == "mail"){
-                            this.usersCorrectList[i].mail = res[2];
-                        }else if(res[1] == "description"){
-                            this.usersCorrectList[i].description = res[2];
-                        }else if(res[1] == "memberOf"){
-                            this.usersCorrectList[i].memberOf = res[2];
-                        }
-                    }
-                }
-            },
-            unselectConflict: function(s) {
-                document.getElementById(s).className = "btn btn-notSelected mb-2";
-            },
-            resolveConflicts: function() {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                for(var i = 0; i < this.usersCorrectList.length; ++i){
-                    if(this.usersCorrectUserIdList.indexOf(this.usersCorrectList[i].userId) != -1){
-                        var groupsConflictList = [];
-                        var groupsList = this.usersCorrectList[i].memberOf.split(',');
-                        for(var j = 0; j < groupsList.length; ++j){
-                            groupsConflictList.push(groupsList[j]);
-                        }
-                        axios({
-                            method: 'put',
-                            url: url + '/api/users/u/' + vm.usersCorrectList[i].userId,  //
-                            headers: {'Content-Type': 'application/json'},
-                            data: JSON.stringify({
-                                userId: vm.usersCorrectList[i].userId,
-                                firstName: vm.usersCorrectList[i].firstName,
-                                lastName: vm.usersCorrectList[i].lastName,
-                                displayName: vm.usersCorrectList[i].displayName,
-                                mobile: vm.usersCorrectList[i].mobile,
-                                memberOf: groupsConflictList,
-                                mail: vm.usersCorrectList[i].mail,
-                                description: vm.usersCorrectList[i].description,
-                            }).replace(/\\\\/g, "\\")
-                        });
-                    }
-                }
-                location.reload();
             },
             getUserInfo: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -506,12 +430,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 let tempUsers = {};
                 this.users = [];
                 this.isListEmpty = false;
+                this.loader1 = true;
                 axios.get(url + "/api/users/" + vm.currentPage + "/" + vm.recordsShownOnPage) //
                     .then((res) => {
-                        if(res.data.userList.length == 0){
-                            vm.isListEmpty = true;
-                        }
-                        vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
+                        vm.total = res.data.pages;
                         res.data.userList.forEach(function (item) {
                             tempUsers = {};
                             tempUsers.userId = item.userId;
@@ -519,11 +441,15 @@ document.addEventListener('DOMContentLoaded', function () {
                             tempUsers.memberOf = item.memberOf;
                             vm.users.push(tempUsers);
                         });
-                        for(let i = 0; i < vm.recordsShownOnPage; ++i){
-                            if(i < res.data.size){
-                                vm.users[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
-                            }
+                        for(let i = 0; i < vm.recordsShownOnPage && i < res.data.size; ++i){
+                            vm.users[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
                         }
+                        vm.loader1 = false;
+                        if(res.data.userList.length == 0){
+                            vm.isListEmpty = true;
+                        }
+                    }).catch((error) => {
+                        vm.loader1 = false;
                     });
             },
             filter: function (p) {
@@ -571,12 +497,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 let tempUsers = {};
                 this.users = [];
                 this.isListEmpty = false;
+                this.loader1 = true;
                 axios.get(url + "/api/users/" + vm.currentPage + "/" + vm.recordsShownOnPage + searchQuery) //
                     .then((res) => {
-                        if(res.data.userList.length == 0){
-                            vm.isListEmpty = true;
-                        }
-                        vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
+                        vm.total = res.data.pages;
                         res.data.userList.forEach(function (item) {
                             tempUsers = {};
                             tempUsers.userId = item.userId;
@@ -584,13 +508,86 @@ document.addEventListener('DOMContentLoaded', function () {
                             tempUsers.memberOf = item.memberOf;
                             vm.users.push(tempUsers);
                         });
-                        for(let i = 0; i < vm.recordsShownOnPage; ++i){
-                            if(i < res.data.size){
-                                vm.users[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
-                            }
+                        for(let i = 0; i < vm.recordsShownOnPage && i < res.data.size; ++i){
+                            vm.users[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
                         }
+                        vm.loader1 = false;
+                        if(res.data.userList.length == 0){
+                            vm.isListEmpty = true;
+                        }
+                    }).catch((error) => {
+                        vm.loader1 = false;
                     });
                 this.changePageUsers = false;
+            },
+            changeSelected: function (action) {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                let selectedUsers = [];
+                if(action == "delete"){
+                    selectedUsers = [];
+                    for(let i = 0; i < vm.users.length; ++i){
+                        if(document.getElementById("checkbox-" + vm.users[i].userId).checked){
+                            selectedUsers.push(vm.users[i].userId.toString());
+                        }
+                    }
+                    if(selectedUsers.length != 0){
+                        var check = confirm(this.s55);
+                        if (check == true) {
+                            this.loader = true;
+                            axios({
+                                method: 'delete',
+                                url: url + "/api/users", //
+                                headers: {'Content-Type': 'application/json'},
+                                data: JSON.stringify({
+                                    names: selectedUsers
+                                }).replace(/\\\\/g, "\\")
+                            }).then((res) => {
+                                vm.loader = false;
+                                if(res.status == 206) {
+                                    vm.unDeletableList = "";
+                                    for(let i = 0; i < res.data.length-1; ++i){
+                                        vm.unDeletableList = vm.unDeletableList + res.data[i] + ", ";
+                                    }
+                                    vm.unDeletableList = vm.unDeletableList + res.data[res.data.length-1];
+                                    vm.showUnDeletableList = true;
+                                    setTimeout(function(){ vm.showUnDeletableList = false; }, 10000);
+                                }
+                                vm.filter();
+                            }).catch((error) => {
+                                vm.loader = false;
+                            });
+                        }
+                    }else{
+                        alert(this.s56);
+                    }
+                }else if(action == "resetEmail"){
+                    selectedUsers = [];
+                    for(let i = 0; i < vm.users.length; ++i){
+                        if(document.getElementById("checkbox-" + vm.users[i].userId).checked){
+                            selectedUsers.push(vm.users[i].userId.toString());
+                        }
+                    }
+                    if(selectedUsers.length != 0){
+                        this.loader = true;
+                        axios({
+                            method: 'post',
+                            url: url + "/api/users/sendMail", //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                names: selectedUsers
+                            }).replace(/\\\\/g, "\\")
+                        }).then((res) => {
+                            vm.loader = false;
+                            vm.resetPassEmailSent = true;
+                            setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
+                        }).catch((error) => {
+                            vm.loader = false;
+                        });
+                    }else{
+                        alert(this.s56);
+                    }
+                }
             },
             deleteFilter: function () {
                 this.searchUserId = "";
@@ -601,30 +598,50 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.userIdM2mFlag = false;
                 this.displayNamem2MFlag = false;
                 this.displayNameM2mFlag = false;
+                document.getElementById("userIdmin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("userIdMax2min").style = "border-top: solid 7px black;";
+                document.getElementById("displayNamemin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("displayNameMax2min").style = "border-top: solid 7px black;";
                 this.filter();
             },
             userIdm2M: function () {
-                this.userIdm2MFlag = true,
-                this.userIdM2mFlag = false,
-                this.displayNamem2MFlag = false,
-                this.displayNameM2mFlag = false,
+                document.getElementById("userIdmin2Max").style = "border-bottom: solid 7px #007bff;";
+                document.getElementById("userIdMax2min").style = "border-top: solid 7px black;";
+                document.getElementById("displayNamemin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("displayNameMax2min").style = "border-top: solid 7px black;";
+                this.userIdm2MFlag = true;
+                this.userIdM2mFlag = false;
+                this.displayNamem2MFlag = false;
+                this.displayNameM2mFlag = false;
                 this.filter();
             },
             userIdM2m: function () {
-                this.userIdm2MFlag = false,
-                this.userIdM2mFlag = true,
-                this.displayNamem2MFlag = false,
-                this.displayNameM2mFlag = false,
+                document.getElementById("userIdmin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("userIdMax2min").style = "border-top: solid 7px #007bff;";
+                document.getElementById("displayNamemin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("displayNameMax2min").style = "border-top: solid 7px black;";
+                this.userIdm2MFlag = false;
+                this.userIdM2mFlag = true;
+                this.displayNamem2MFlag = false;
+                this.displayNameM2mFlag = false;
                 this.filter();
             },
             displayNamem2M: function () {
-                this.userIdm2MFlag = false,
-                this.userIdM2mFlag = false,
-                this.displayNamem2MFlag = true,
-                this.displayNameM2mFlag = false,
+                document.getElementById("userIdmin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("userIdMax2min").style = "border-top: solid 7px black;";
+                document.getElementById("displayNamemin2Max").style = "border-bottom: solid 7px #007bff;";
+                document.getElementById("displayNameMax2min").style = "border-top: solid 7px black;";
+                this.userIdm2MFlag = false;
+                this.userIdM2mFlag = false;
+                this.displayNamem2MFlag = true;
+                this.displayNameM2mFlag = false;
                 this.filter();
             },
             displayNameM2m: function () {
+                document.getElementById("userIdmin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("userIdMax2min").style = "border-top: solid 7px black;";
+                document.getElementById("displayNamemin2Max").style = "border-bottom: solid 7px black;";
+                document.getElementById("displayNameMax2min").style = "border-top: solid 7px #007bff;";
                 this.userIdm2MFlag = false;
                 this.userIdM2mFlag = false;
                 this.displayNamem2MFlag = false;
@@ -636,22 +653,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.ShowSExtra = "display:none"
                 this.addS = "display:none"
                 this.editS = "display:none"
-                this.importConflictS = "display:none"
                 location.reload();
-            },
-            showImportConflicts: function () {
-                this.showS = "display:none"
-                this.ShowSExtra = ""
-                this.addS = "display:none"
-                this.editS = "display:none"
-                this.importConflictS = ""
             },
             editUserS: function (id) {
                 this.showS = "display:none"
                 this.ShowSExtra = ""
                 this.addS = "display:none"
                 this.editS = ""
-                this.importConflictS = "display:none"
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 this.getGroups();
@@ -885,9 +893,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             },
             exportUsers: function(){
-                url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                vm.loader = true;
+                this.loader = true;
                 axios({
                     url: url_ + "/api/users/export",
                     method: "GET",
@@ -909,15 +917,159 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.ShowSExtra = ""
                 this.addS = ""
                 this.editS = "display:none"
-                this.importConflictS = "display:none"
                 this.getGroups();
+            },
+            addUser: function () {
+                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                var vm = this;
+                var unDeletableVar = false;
+
+                if(document.getElementById('editInfo.userIdCreate').value == "" ||
+                    document.getElementById('editInfo.displayNameCreate').value == "" ||
+                    document.getElementById('editInfo.mailCreate').value == "" ||
+                    document.getElementById('editInfo.mobileCreate').value == ""){
+                    alert("لطفا قسمت های الزامی را پر کنید.");
+                }else{
+
+                    var check = confirm(this.s27);
+
+                    var checkedGroups = [];
+                    if(document.getElementById('groupsCreate').value != ""){
+                        checkedGroups = document.getElementById('groupsCreate').value.split(',');
+                    }
+
+                    if(document.getElementsByName('unDeletableCreate')[0].checked){
+                        unDeletableVar = true;
+                    }else{
+                        unDeletableVar = false;
+                    }
+
+                    let endTimeFinal = null;
+                    if(document.getElementById('endTimeCreate').value != ""){
+                        let dateEndTemp = document.getElementById('endTimeCreate').value.split("  ");
+                        let dateEnd = dateEndTemp[0].split(' ');
+                        let dateEndFinal;
+                        dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
+                        dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
+
+
+                        switch(dateEnd[dateEnd.length-2]) {
+                            case "فروردین":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
+                                break;
+                            case "اردیبهشت":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
+                                break;
+                            case "خرداد":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
+                                break;
+                            case "تیر":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
+                                break;
+                            case "مرداد":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
+                                break;
+                            case "شهریور":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
+                                break;
+                            case "مهر":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
+                                break;
+                            case "آبان":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
+                                break;
+                            case "آذر":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
+                                break;
+                            case "دی":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
+                                break;
+                            case "بهمن":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
+                                break;
+                            case "اسفند":
+                                dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
+                                break;
+                            default:
+                                console.log("Wrong Input for Month");
+                        }
+
+                        let timeEnd = dateEndTemp[1].split(':');
+
+                        timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
+
+                        let dateE = dateEndFinal.split('-');
+
+                        if(parseInt(dateE[1]) < 7){
+                            timeEnd = timeEnd + ":00.000+4:30";
+                        }else{
+                            timeEnd = timeEnd + ":00.000+3:30";
+                        }
+
+                        let TempE = timeEnd.split(':');
+                        if(TempE[0].length == 1){
+                            TempE[0] = '0' + TempE[0];
+                            timeEnd = "";
+                            for(i = 0; i < TempE.length; ++i){
+                                timeEnd = timeEnd + TempE[i] + ':';
+                            }
+                            timeEnd = timeEnd.substring(0,timeEnd.length-1);
+                        }
+
+                        TempE = dateEndFinal.split('-');
+                        if(TempE[1].length == 1){
+                            TempE[1] = '0' + TempE[1];
+                        }
+                        if(TempE[2].length == 1){
+                            TempE[2] = '0' + TempE[2];
+                        }
+
+                        dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
+
+                        endTimeFinal = dateEndFinal + "T" + timeEnd;
+                    }
+
+                    if(check==true) {
+                        axios({
+                            method: 'post',
+                            url: url + "/api/users",  //
+                            headers: {'Content-Type': 'application/json'},
+                            data: JSON.stringify({
+                                    userId: document.getElementById('editInfo.userIdCreate').value,
+                                    firstName: document.getElementById('editInfo.firstNameCreate').value,
+                                    lastName: document.getElementById('editInfo.lastNameCreate').value,
+                                    displayName: document.getElementById('editInfo.displayNameCreate').value,
+                                    mobile: document.getElementById('editInfo.mobileCreate').value,
+                                    memberOf: checkedGroups,
+                                    mail: document.getElementById('editInfo.mailCreate').value,
+                                    employeeNumber: document.getElementById('editInfo.employeeNumberCreate').value,
+                                    userPassword: document.getElementById('newPasswordCreate').value,
+                                    description: document.getElementById('editInfo.descriptionCreate').value,
+                                    cStatus: document.getElementById('statusCreate').value,
+                                    unDeletable: unDeletableVar,
+                                    endTime: endTimeFinal
+                                }
+                            ).replace(/\\\\/g, "\\")
+                        })
+                            .then(() => {
+                                location.reload();
+                            })
+                            .catch((error) => {
+                                if (error.response) {
+                                    if(error.response.status === 302){
+                                        vm.userFound = true;
+                                    }
+                                }
+                            });
+                    }
+                }
             },
             sendResetEmail(userId) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 let selectedUsers = [];
                 selectedUsers.push(userId.toString());
-                vm.loader = true;
+                this.loader = true;
                 axios({
                     method: 'post',
                     url: url + "/api/users/sendMail", //
@@ -952,151 +1104,6 @@ document.addEventListener('DOMContentLoaded', function () {
             removeError() {
                 this.userFound = false;
             },
-            addUser: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                var unDeletableVar = false;
-
-                if(document.getElementById('editInfo.userIdCreate').value == "" ||
-                document.getElementById('editInfo.displayNameCreate').value == "" ||
-                document.getElementById('editInfo.mailCreate').value == "" ||
-                document.getElementById('editInfo.mobileCreate').value == ""){
-                    alert("لطفا قسمت های الزامی را پر کنید.");
-                }else{
-
-                    var check = confirm(this.s27);
-
-                    var checkedGroups = [];
-                    if(document.getElementById('groupsCreate').value != ""){
-                        checkedGroups = document.getElementById('groupsCreate').value.split(',');
-                    }
-
-                    if(document.getElementsByName('unDeletableCreate')[0].checked){
-                        unDeletableVar = true;
-                    }else{
-                        unDeletableVar = false;
-                    }
-
-                    let endTimeFinal = null;
-                    if(document.getElementById('endTimeCreate').value != ""){
-                        let dateEndTemp = document.getElementById('endTimeCreate').value.split("  ");
-                        let dateEnd = dateEndTemp[0].split(' ');
-                        let dateEndFinal;
-                        dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
-                        dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
-                    
-
-                        switch(dateEnd[dateEnd.length-2]) {
-                        case "فروردین":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "اردیبهشت":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "خرداد":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "تیر":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "مرداد":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "شهریور":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "مهر":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "آبان":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "آذر":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "دی":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "بهمن":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "اسفند":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
-                            break;
-                        default:
-                            console.log("Wrong Input for Month");
-                        }
-
-                        let timeEnd = dateEndTemp[1].split(':');
-
-                        timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
-                        
-                        let dateE = dateEndFinal.split('-');
-
-                        if(parseInt(dateE[1]) < 7){
-                        timeEnd = timeEnd + ":00.000+4:30";
-                        }else{
-                        timeEnd = timeEnd + ":00.000+3:30";
-                        }
-
-                        let TempE = timeEnd.split(':');
-                        if(TempE[0].length == 1){
-                        TempE[0] = '0' + TempE[0];
-                        timeEnd = "";
-                        for(i = 0; i < TempE.length; ++i){
-                            timeEnd = timeEnd + TempE[i] + ':';
-                        }
-                        timeEnd = timeEnd.substring(0,timeEnd.length-1);
-                        }
-
-                        TempE = dateEndFinal.split('-');
-                        if(TempE[1].length == 1){
-                        TempE[1] = '0' + TempE[1];
-                        }
-                        if(TempE[2].length == 1){
-                        TempE[2] = '0' + TempE[2];
-                        }
-                        
-                        dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
-
-                        endTimeFinal = dateEndFinal + "T" + timeEnd;
-                    }
-
-                    if(check==true) {
-                        axios({
-                            method: 'post',
-                            url: url + "/api/users",  //
-                            headers: {'Content-Type': 'application/json'},
-                            data: JSON.stringify({
-                                    userId: document.getElementById('editInfo.userIdCreate').value,
-                                    firstName: document.getElementById('editInfo.firstNameCreate').value,
-                                    lastName: document.getElementById('editInfo.lastNameCreate').value,
-                                    displayName: document.getElementById('editInfo.displayNameCreate').value,
-                                    mobile: document.getElementById('editInfo.mobileCreate').value,
-                                    memberOf: checkedGroups,
-                                    mail: document.getElementById('editInfo.mailCreate').value,
-                                    employeeNumber: document.getElementById('editInfo.employeeNumberCreate').value,
-                                    userPassword: document.getElementById('newPasswordCreate').value,
-                                    description: document.getElementById('editInfo.descriptionCreate').value,
-                                    cStatus: document.getElementById('statusCreate').value,
-                                    unDeletable: unDeletableVar,
-                                    endTime: endTimeFinal
-                                }
-                            ).replace(/\\\\/g, "\\")
-                        })
-                        .then(() => {
-                            location.reload();
-                        })
-                        .catch((error) => {
-                            if (error.response) {
-                                if(error.response.status === 302){
-                                    vm.userFound = true;
-                                }
-                            }
-                        });
-                    }
-                }
-            },
             deleteUser: function (userId) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
@@ -1104,6 +1111,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 selectedUsers.push(userId.toString());
                 var check = confirm(this.s28);
                 if (check == true) {
+                    this.loader = true;
                     axios({
                         method: 'delete',
                         url: url + "/api/users", //
@@ -1113,6 +1121,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
+                        vm.loader = false;
                         if(res.status == 206) {
                             vm.unDeletableList = "";
                             for(let i = 0; i < res.data.length-1; ++i){
@@ -1123,23 +1132,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             setTimeout(function(){ vm.showUnDeletableList = false; }, 10000);
                         }
                         vm.filter();
-                    });
-                }
-            },
-            deleteAllUsers: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                var check = confirm(this.s29);
-                if (check == true) {
-                    axios({
-                        method: 'delete',
-                        url: url + "/api/users", //
-                        headers: {'Content-Type': 'application/json'},
-                        data: JSON.stringify({
-                        }).replace(/\\\\/g, "\\")
-                    })
-                    .then((res) => {
-                        vm.filter();
+                    }).catch((error) => {
+                        vm.loader = false;
                     });
                 }
             },
@@ -1199,73 +1193,6 @@ document.addEventListener('DOMContentLoaded', function () {
                   $event.preventDefault();
                 }
             },
-            changeSelected: function (action) {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                let selectedUsers = [];
-                if(action == "delete"){
-                    selectedUsers = [];
-                    for(let i = 0; i < vm.users.length; ++i){
-                        if(document.getElementById("checkbox-" + vm.users[i].userId).checked){
-                             selectedUsers.push(vm.users[i].userId.toString());
-                        }
-                    }
-                    if(selectedUsers.length != 0){
-                        var check = confirm(this.s55);
-                        if (check == true) {
-                            axios({
-                                method: 'delete',
-                                url: url + "/api/users", //
-                                headers: {'Content-Type': 'application/json'},
-                                data: JSON.stringify({
-                                    names: selectedUsers
-                                }).replace(/\\\\/g, "\\")
-                            })
-                            .then((res) => {
-                                if(res.status == 206) {
-                                    vm.unDeletableList = "";
-                                    for(let i = 0; i < res.data.length-1; ++i){
-                                        vm.unDeletableList = vm.unDeletableList + res.data[i] + ", ";
-                                    }
-                                    vm.unDeletableList = vm.unDeletableList + res.data[res.data.length-1];
-                                    vm.showUnDeletableList = true;
-                                    setTimeout(function(){ vm.showUnDeletableList = false; }, 10000);
-                                }
-                                vm.filter();
-                            });
-                        }
-                    }else{
-                        alert(this.s56);
-                    }
-                }else if(action == "resetEmail"){
-                    selectedUsers = [];
-                    for(let i = 0; i < vm.users.length; ++i){
-                        if(document.getElementById("checkbox-" + vm.users[i].userId).checked){
-                            selectedUsers.push(vm.users[i].userId.toString());
-                        }
-                    }
-                    if(selectedUsers.length != 0){
-                        vm.loader = true;
-                        axios({
-                            method: 'post',
-                            url: url + "/api/users/sendMail", //
-                            headers: {'Content-Type': 'application/json'},
-                            data: JSON.stringify({
-                                names: selectedUsers
-                            }).replace(/\\\\/g, "\\")
-                        })
-                        .then((res) => {
-                            vm.loader = false;
-                            vm.resetPassEmailSent = true;
-                            setTimeout(function(){ vm.resetPassEmailSent = false; }, 3000);
-                        }).catch((error) => {
-                            vm.loader = false;
-                        });
-                    }else{
-                        alert(this.s56);
-                    }
-                }
-            },
             rowSelected:function(id) {
                 let row = document.getElementById("row-" + id);
                 if(row.style.background == ""){
@@ -1276,6 +1203,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.allIsSelected = false;
                 if(document.getElementById("selectAllCheckbox").checked == true){
                     document.getElementById("selectAllCheckbox").click();
+                }
+            },
+            allSelected () {
+                if(this.allIsSelected){
+                    this.allIsSelected = false;
+                    for(let i = 0; i < this.users.length; ++i){
+                        if(document.getElementById("checkbox-" + this.users[i].userId).checked == true){
+                            document.getElementById("checkbox-" + this.users[i].userId).click();
+                        }
+                        document.getElementById("row-" + this.users[i].userId).style.background = "";
+                    }
+                }else{
+                    this.allIsSelected = true;
+                    for(let i = 0; i < this.users.length; ++i){
+                        if(document.getElementById("checkbox-" + this.users[i].userId).checked == false){
+                            document.getElementById("checkbox-" + this.users[i].userId).click();
+                        }
+                        document.getElementById("row-" + this.users[i].userId).style.background = "#c2dbff";
+                    }
                 }
             },
             changeLang: function () {

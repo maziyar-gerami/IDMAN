@@ -47,10 +47,11 @@ document.addEventListener('DOMContentLoaded', function () {
             userPicture: "images/PlaceholderUser.png",
             QR: "/api/mobile/qrcode",
             token: "",
-            requestSent: false,
             requestSentSuccess: false,
             requestSentFail: false,
             duplicatePasswords: false,
+            incorrectPassword: false,
+            incorrectToken: false,
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -93,7 +94,9 @@ document.addEventListener('DOMContentLoaded', function () {
             s40: "./dashboard",
             s41: "ممیزی ها",
             s42: "/audits",
-            s43: "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.",
+            s43: "رمز عبور جدید و رمز عبور فعلی نباید یکسان باشند.",
+            s44: "رمز عبور فعلی اشتباه است.",
+            s45: "کد تایید اشتباه است.",
             rolesText: "نقش ها",
             rolesURLText: "./roles",
             reportsText: "گزارش ها",
@@ -131,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         methods: {
             setDateNav: function () {
-                this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+                this.dateNav = new persianDate().format("dddd، DD MMMM YYYY");
                 persianDate.toCalendar("gregorian");
                 persianDate.toLocale("en");
                 this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
@@ -235,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
-            editPass: function (id) {
+            editPass: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 if(document.getElementById('token').value != ""){
                     var check = confirm(this.s24);
@@ -252,10 +255,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         }).then((res) => {
                             location.replace(url + "/profile"); //
                         }).catch((error) => {
-                            if (error.response) {
-                                if(error.response.status === 302){
+                            if(error.response) {
+                                if(error.response.status === 302) {
                                     vm.duplicatePasswords = true;
                                     setTimeout(function(){ vm.duplicatePasswords = false; }, 5000);
+                                }else if(error.response.status === 403) {
+                                    vm.incorrectPassword = true;
+                                    setTimeout(function(){ vm.incorrectPassword = false; }, 5000);
+                                }else if(error.response.status === 405) {
+                                    vm.incorrectToken = true;
+                                    setTimeout(function(){ vm.incorrectToken = false; }, 5000);
                                 }
                             }
                         });
@@ -282,17 +291,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 if(this.userInfo.mobile == "" || this.userInfo.mobile == null){
-                    this.requestSent = true;
                     this.requestSentFail = true;
                     this.requestSentSuccess = false;
                 }else{
-                    this.requestSent = true;
                     this.requestSentFail = false;
                     this.requestSentSuccess = true;
                     axios.get(url + "/api/user/password/request") //
                         .then((res) => {
                             vm.setCountdown(res.data * 60);
                             document.getElementById("countdownBtn").disabled = true;
+                            setTimeout(function(){ vm.requestSentSuccess = false; }, 5000);
                         });
                 }
                 
@@ -357,7 +365,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s38 = "Please Click On The Link Below To Download The App.";
                     this.s39 = "Go Back";
                     this.s41 = "Audits";
-                    this.s43 = "New Password Should Not be Same as Old Password.";
+                    this.s43 = "New Password Should Not be Same as Current Password.";
+                    this.s44 = "Current Password is Incorrect.";
+                    this.s45 = "Verification Code is Incorrect.";
                     this.rolesText = "Roles";
                     this.reportsText = "Reports";
                     this.U0 = "Password";
@@ -422,7 +432,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s38 = "لطفا برای دریافت برنامه موبایل بر روی لینک زیر کلیک کنید.";
                     this.s39 = "بازگشت";
                     this.s41 = "ممیزی ها";
-                    this.s43 = "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.";
+                    this.s43 = "رمز عبور جدید و رمز عبور فعلی نباید یکسان باشند.";
+                    this.s44 = "رمز عبور فعلی اشتباه است.";
+                    this.s45 = "کد تایید اشتباه است.";
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
                     this.U0= "رمز عبور";
@@ -450,9 +462,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         computed: {
-            requestSentFunc () {
-                return this.requestSent;
-            },
             notSamePasswords () {
                 if (this.passwordsFilled) {
                     return (this.password !== this.checkPassword)

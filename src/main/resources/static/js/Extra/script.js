@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         methods: {
             setDateNav: function () {
-                this.dateNav = new persianDate().format("dddd, DD MMMM YYYY");
+                this.dateNav = new persianDate().format("dddd، DD MMMM YYYY");
                 persianDate.toCalendar("gregorian");
                 persianDate.toLocale("en");
                 this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
