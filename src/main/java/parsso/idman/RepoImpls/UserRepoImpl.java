@@ -37,10 +37,7 @@ import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Users.ListUsers;
-import parsso.idman.Models.Users.SimpleUser;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.Models.Users.*;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.UserRepo;
 
@@ -137,13 +134,7 @@ public class UserRepoImpl implements UserRepo {
                 new Thread() {
                     public void run() {
                         //logger.warn("User "+user.getUserId() + " created");
-                        UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
-                        usersExtraInfo.setUserId(p.getUserId());
-                        usersExtraInfo.setQrToken(UUID.randomUUID().toString());
-                        usersExtraInfo.setPhotoName(p.getPhoto());
-                        usersExtraInfo.setCreationTimeStamp(new
-                                Date().getTime());
-                        usersExtraInfo.setUnDeletable(p.isUnDeletable());
+                        UsersExtraInfo usersExtraInfo = new UsersExtraInfo(p.getUserId(),p.getPhoto(),p.isUnDeletable());
                         mongoTemplate.save(usersExtraInfo, Token.collection);
                     }
                 }.start();
@@ -267,11 +258,7 @@ public class UserRepoImpl implements UserRepo {
                     Name dn = buildDnUser.buildDn(p.getUserId());
                     ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
 
-                    UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
-                    usersExtraInfo.setUserId(p.getUserId());
-                    usersExtraInfo.setQrToken(UUID.randomUUID().toString());
-                    usersExtraInfo.setCreationTimeStamp(new Date().getTime());
-                    mongoTemplate.save(usersExtraInfo, Token.collection);
+                    mongoTemplate.save(new UsersExtraInfo(p.getUserId()), Token.collection);
 
                     //update it's first pwChangedTime in a new thread
                     Thread thread = new Thread() {
@@ -978,6 +965,27 @@ public class UserRepoImpl implements UserRepo {
             return excelAnalyzer.csvSheet(csvReader, ou, true);
         }
 
+        return null;
+    }
+
+    @Override
+    public String showPubicMessage() {
+        PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("_id").is("message")), PublicMessage.class, "IDMAN_ExtraInfo");
+        return publicMessage.getMessage();
+    }
+
+    @Override
+    public HttpStatus postPubicMessage(String doer, String message) {
+        return null;
+    }
+
+    @Override
+    public HttpStatus editPubicMessage(String doer, String message) {
+        return null;
+    }
+
+    @Override
+    public HttpStatus deletePubicMessage(String doer, String id) {
         return null;
     }
 }

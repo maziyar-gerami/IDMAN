@@ -313,6 +313,22 @@ public class UsersController {
         return new ResponseEntity<>(userRepo.unlock(principal.getName(),uid));
     }
 
+
+    @PostMapping("/api/users/publicMessage")
+    public ResponseEntity<HttpStatus> postPublicImage(@RequestBody String message) {
+        return new ResponseEntity<>(userRepo.postPubicMessage("maziyar", message));
+    }
+
+    @PutMapping("/api/users/publicMessage")
+    public ResponseEntity<HttpStatus> editPublicImage(@RequestBody String message) {
+        return new ResponseEntity<>(userRepo.editPubicMessage("maziyar", message));
+    }
+
+    @DeleteMapping("/api/users/publicMessage")
+    public ResponseEntity<HttpStatus> deletePublicImage(@RequestParam("id") String id) {
+        return new ResponseEntity<>(userRepo.deletePubicMessage("maziyar",id));
+    }
+
     /**
      * Upload file for importing users using following formats:
      * LDIF,xlsx,xls,csv
@@ -534,6 +550,5 @@ public class UsersController {
     public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));
     }
-
 
 }

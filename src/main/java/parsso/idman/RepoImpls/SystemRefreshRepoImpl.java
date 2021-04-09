@@ -97,12 +97,9 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 }
 
             } else {
-                UsersExtraInfo userExtraInfo = new UsersExtraInfo();
 
-                userExtraInfo.setUserId(user.getUserId());
-                userExtraInfo.setQrToken(UUID.randomUUID().toString());
 
-                mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");
+                mongoTemplate.save(new UsersExtraInfo(user.getUserId()), "IDMAN_UsersExtraInfo");
             }
             UsersExtraInfo  userExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
 
