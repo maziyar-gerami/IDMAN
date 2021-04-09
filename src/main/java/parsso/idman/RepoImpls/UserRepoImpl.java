@@ -969,7 +969,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public String showPubicMessage() {
+    public List<String> showPubicMessage() {
         PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("_id").is("message")), PublicMessage.class, "IDMAN_ExtraInfo");
         return publicMessage.getMessage();
     }

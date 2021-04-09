@@ -80,7 +80,7 @@ public interface UserRepo {
 
     List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException;
 
-    String showPubicMessage();
+    List<String> showPubicMessage();
 
     HttpStatus postPubicMessage(String doer, String message);
 
