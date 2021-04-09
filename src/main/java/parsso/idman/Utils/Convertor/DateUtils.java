@@ -14,7 +14,7 @@ public class DateUtils {
      * The maximum date possible.
      */
     public static Date MAX_DATE = new Date(Long.MAX_VALUE);
-    static ZoneId zoneId = ZoneId.of("UTC+03:30");
+    static ZoneId zoneId = ZoneId.of("Asia/Tehran");
     OffsetDateTime offsetDateTime = OffsetDateTime.now();
     ZonedDateTime zonedDateTime = offsetDateTime.atZoneSameInstant(zoneId);
 

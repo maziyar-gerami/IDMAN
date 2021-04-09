@@ -19,7 +19,7 @@ import java.util.Map;
 public class AccessStrategy {
 
     @JsonIgnore
-    ZoneId zoneId = ZoneId.of("UTC+03:30");
+    ZoneId zoneId = ZoneId.of("Asia/Tehran");
     @JsonProperty("@class")
     private String atClass;
     @JsonInclude(JsonInclude.Include.NON_NULL)

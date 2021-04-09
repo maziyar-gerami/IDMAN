@@ -14,7 +14,7 @@ import java.util.Calendar;
 @Getter
 
 public class Time {
-    static ZoneId zoneId = ZoneId.of("UTC+03:30");
+    static ZoneId zoneId = ZoneId.of("Asia/Tehran");
     private int year;
     private int month;
     private int day;

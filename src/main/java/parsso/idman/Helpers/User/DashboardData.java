@@ -45,7 +45,7 @@ public class DashboardData {
     @Autowired
     LdapTemplate ldapTemplate;
 
-    ZoneId zoneId = ZoneId.of("UTC+03:30");
+    ZoneId zoneId = ZoneId.of("Asia/Tehran");
 
     Users fUsers;
     Services fServices;

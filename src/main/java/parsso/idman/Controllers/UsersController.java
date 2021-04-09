@@ -216,6 +216,7 @@ public class UsersController {
                                                        @RequestParam(name = "searchUid", defaultValue = "") String searchUid,
                                                        @RequestParam(name = "userStatus", defaultValue = "") String userStatus,
                                                        @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName) {
+        //TODO:REMOVE
         if (userStatus.equalsIgnoreCase("disabled")) userStatus = "disable";
         if (userStatus.equalsIgnoreCase("enabled")) userStatus = "enable";
             return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName, userStatus), HttpStatus.OK);
@@ -515,7 +516,8 @@ public class UsersController {
         HttpStatus httpStatus = tokenClass.checkToken(uId, token);
 
         if (httpStatus == HttpStatus.OK) {
-
+            attributes.addAttribute("uid", uId);
+            attributes.addAttribute("token", token);
             return new RedirectView("/newpassword");
         }
         return null;
