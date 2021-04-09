@@ -7,9 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
 
-import java.util.Date;
-import java.util.UUID;
-
 @Getter
 @Setter
 public class UsersExtraInfo {
@@ -32,19 +29,4 @@ public class UsersExtraInfo {
     private String category;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String subCategory;
-
-
-    public UsersExtraInfo(String userId) {
-        this.userId = userId;
-        this.qrToken = UUID.randomUUID().toString();
-        this.creationTimeStamp = new Date().getTime();
-    }
-
-    public UsersExtraInfo(String userId, String photoName, boolean unDeletable) {
-        this.userId = userId;
-        this.qrToken = UUID.randomUUID().toString();
-        this.creationTimeStamp = new Date().getTime();
-        this.photoName = photoName;
-        this.unDeletable = unDeletable;
-    }
 }

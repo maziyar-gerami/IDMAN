@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.naming.Name;
 
 @Service
-public class BuildDn {
+public class BuildDnUser {
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
 

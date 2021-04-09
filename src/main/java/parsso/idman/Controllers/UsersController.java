@@ -216,6 +216,8 @@ public class UsersController {
                                                        @RequestParam(name = "searchUid", defaultValue = "") String searchUid,
                                                        @RequestParam(name = "userStatus", defaultValue = "") String userStatus,
                                                        @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName) {
+        if (userStatus.equalsIgnoreCase("disabled")) userStatus = "disable";
+        if (userStatus.equalsIgnoreCase("enabled")) userStatus = "enable";
             return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
 

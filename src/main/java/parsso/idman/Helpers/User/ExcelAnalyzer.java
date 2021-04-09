@@ -49,7 +49,7 @@ public class ExcelAnalyzer {
             items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
 
             try {
-                ldapTemplate.modifyAttributes(new BuildDn().buildDn(formatter.formatCellValue(row.getCell(0))), items);
+                ldapTemplate.modifyAttributes(new BuildDnUser().buildDn(formatter.formatCellValue(row.getCell(0))), items);
 
             } catch (Exception e) {
                 if (e.getClass().toString().contains("NameNotFoundException"))
@@ -82,7 +82,7 @@ public class ExcelAnalyzer {
             items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
 
             try {
-                ldapTemplate.modifyAttributes(new BuildDn().buildDn(data[0]), items);
+                ldapTemplate.modifyAttributes(new BuildDnUser().buildDn(data[0]), items);
 
             } catch (Exception e) {
                 if (e.getClass().toString().contains("NameNotFoundException"))
@@ -116,7 +116,7 @@ public class ExcelAnalyzer {
             items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
 
             try {
-                ldapTemplate.modifyAttributes(new BuildDn().buildDn(data[0]), items);
+                ldapTemplate.modifyAttributes(new BuildDnUser().buildDn(data[0]), items);
 
             } catch (Exception e) {
                 if (e.getClass().toString().contains("NameNotFoundException"))

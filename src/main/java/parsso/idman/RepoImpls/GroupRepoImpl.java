@@ -15,7 +15,7 @@ import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.User.BuildDn;
+import parsso.idman.Helpers.User.BuildDnUser;
 import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.SimpleUser;
@@ -41,7 +41,7 @@ public class GroupRepoImpl implements GroupRepo {
 
 
     @Autowired
-    BuildDn buildDnUser;
+    BuildDnUser buildDnUser;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
     @Autowired
