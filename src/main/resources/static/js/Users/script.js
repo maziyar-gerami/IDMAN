@@ -109,8 +109,8 @@ document.addEventListener('DOMContentLoaded', function () {
             displayNameM2mFlag: false,
             searchUserId: "",
             searchDisplayName: "",
-            searchGroup: "none",
-            searchStatus: "none",
+            searchGroup: "",
+            searchStatus: "",
             promptImportButtons: false,
             loader: false,
             loader1: false,
@@ -469,13 +469,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     searchQuery = searchQuery + "&";
                 }
                 searchQuery = searchQuery + "groupFilter=";
-                if(this.searchGroup != "none"){
+                if(this.searchGroup != ""){
                     searchQuery = searchQuery + this.searchGroup + "&";
                 }else{
                     searchQuery = searchQuery + "&";
                 }
                 searchQuery = searchQuery + "userStatus=";
-                if(this.searchStatus != "none"){
+                if(this.searchStatus != ""){
                     searchQuery = searchQuery + this.searchStatus + "&";
                 }else{
                     searchQuery = searchQuery + "&";
@@ -592,8 +592,8 @@ document.addEventListener('DOMContentLoaded', function () {
             deleteFilter: function () {
                 this.searchUserId = "";
                 this.searchDisplayName = "";
-                this.searchGroup = "none";
-                this.searchStatus = "none"
+                this.searchGroup = "";
+                this.searchStatus = ""
                 this.userIdm2MFlag = false;
                 this.userIdM2mFlag = false;
                 this.displayNamem2MFlag = false;
