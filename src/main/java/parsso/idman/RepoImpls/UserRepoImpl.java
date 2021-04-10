@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
@@ -37,7 +36,10 @@ import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Users.*;
+import parsso.idman.Models.Users.ListUsers;
+import parsso.idman.Models.Users.SimpleUser;
+import parsso.idman.Models.Users.User;
+import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.UserRepo;
 
@@ -123,6 +125,7 @@ public class UserRepoImpl implements UserRepo {
                         try {
                             ldapTemplate.modifyAttributes(context);
                         } catch (Exception e) {
+
                             logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","due to writing to ldap").toString());
                         }
 
@@ -246,58 +249,15 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public JSONObject createUserImport(String doerID, User p) {
 
-        Logger logger = LogManager.getLogger(doerID);
 
-        if (p.getUserId() != null && !p.getUserId().equals("")) {
-            User user = retrieveUsers(p.getUserId());
+
             if (p.getUserPassword() == null)
                 p.setUserPassword(defaultPassword);
 
-            try {
-                if (user == null) {
-                    Name dn = buildDnUser.buildDn(p.getUserId());
-                    ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
-
-                    mongoTemplate.save(new UsersExtraInfo(p.getUserId()), Token.collection);
-
-                    //update it's first pwChangedTime in a new thread
-                    Thread thread = new Thread() {
-                        @SneakyThrows
-                        public void run() {
-                            User userTemp = retrieveUsers(p.getUserId());
-
-                            DirContextOperations context = ldapTemplate.lookupContext(dn);
+            return create(doerID,p);
 
 
-                            try {
-                                ldapTemplate.modifyAttributes(context);
-                                context.rebind("pwdChangedTime", userTemp.getTimeStamp() + "Z");
 
-                            } catch (Exception e) {
-                            }
-
-
-                        }
-                    };
-
-                    thread.start();
-
-                    logger.warn(new ReportMessage(model,p.getUserId(),"","create", "success","").toString());
-                    return new JSONObject();
-                } else {
-                    logger.warn(new ReportMessage(model,doerID,"","create", "failed","repetitive").toString());
-
-                    return importUsers.compareUsers(user, p);
-                }
-            } catch (Exception e) {
-                logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown error").toString());
-                return null;
-            }
-
-        }
-
-        logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","userId is empty").toString());
-        return null;
     }
 
     @Override

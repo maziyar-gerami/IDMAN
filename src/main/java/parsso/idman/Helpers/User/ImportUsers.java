@@ -79,11 +79,12 @@ public class ImportUsers {
 
             temp = userRepo.createUserImport(doerId,user);
 
-            if (temp != null && temp.size() > 0) {
+            if (temp.size()!=0) {
                 jsonArray.add(temp);
                 nUnSuccessful++;
-                count++;
+
             }
+                count++;
 
         }
 
