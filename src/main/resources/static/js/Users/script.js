@@ -668,15 +668,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         vm.editInfo = res.data;
                         if(typeof res.data.status !== 'undefined'){
                             vm.userStatus = res.data.status;
-                            if(res.data.status == "active"){
+                            if(res.data.status == "enable"){
                                 document.getElementById("option1").selected = true;
                                 document.getElementById("option2").selected = false;
                                 document.getElementById("option3").selected = false;
-                            }else if(res.data.status == "disabled"){
+                            }else if(res.data.status == "disable"){
                                 document.getElementById("option1").selected = false;
                                 document.getElementById("option2").selected = true;
                                 document.getElementById("option3").selected = false;
-                            }else if(res.data.status == "locked"){
+                            }else if(res.data.status == "lock"){
                                 document.getElementById("option1").selected = false;
                                 document.getElementById("option2").selected = false;
                                 document.getElementById("option3").selected = true;
@@ -819,21 +819,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (check == true) {
                         let statusValue;
-                        if(document.getElementById('status').value != "locked"){
-                            if(document.getElementById('status').value == "active"){
-                                if(this.userStatus == "active"){
+                        if(document.getElementById('status').value != "lock"){
+                            if(document.getElementById('status').value == "enable"){
+                                if(this.userStatus == "enable"){
                                     statusValue = "";
-                                }else if(this.userStatus == "disabled"){
+                                }else if(this.userStatus == "disable"){
                                     statusValue = "enable";
-                                }else if(this.userStatus == "locked"){
+                                }else if(this.userStatus == "lock"){
                                     statusValue = "unlock";
                                 }
-                            }else if(document.getElementById('status').value == "disabled"){
-                                if(this.userStatus == "active"){
+                            }else if(document.getElementById('status').value == "disable"){
+                                if(this.userStatus == "enable"){
                                     statusValue = "disable";
-                                }else if(this.userStatus == "disabled"){
+                                }else if(this.userStatus == "disable"){
                                     statusValue = "";
-                                }else if(this.userStatus == "locked"){
+                                }else if(this.userStatus == "lock"){
                                     statusValue = "disable";
                                 }
                             }
@@ -1273,7 +1273,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s37 = "Edit User";
                     this.s38 = "Add User";
                     this.s40 = "Status";
-                    this.s41 = "Active";
+                    this.s41 = "Enabled";
                     this.s42 = "Disabled";
                     this.s43 = "Locked";
                     this.s44 = "Information";
@@ -1296,7 +1296,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s61 = "Full Name";
                     this.s62 = "Group";
                     this.s63 = "Status";
-                    this.s64 = "Active";
+                    this.s64 = "Enabled";
                     this.s65 = "Disabled";
                     this.s66 = "Locked";
                     this.s67 = "Filter";
