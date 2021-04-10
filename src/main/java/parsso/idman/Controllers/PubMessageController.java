@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Models.Users.PublicMessage;
+import parsso.idman.Models.PublicMessage;
 import parsso.idman.Repos.PubMessageRepo;
 
 import java.util.List;

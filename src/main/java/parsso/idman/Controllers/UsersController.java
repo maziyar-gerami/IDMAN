@@ -311,21 +311,6 @@ public class UsersController {
     }
 
 
-    @PostMapping("/api/users/publicMessage")
-    public ResponseEntity<HttpStatus> postPublicImage(@RequestBody String message) {
-        return new ResponseEntity<>(userRepo.postPubicMessage("maziyar", message));
-    }
-
-    @PutMapping("/api/users/publicMessage")
-    public ResponseEntity<HttpStatus> editPublicImage(@RequestBody String message) {
-        return new ResponseEntity<>(userRepo.editPubicMessage("maziyar", message));
-    }
-
-    @DeleteMapping("/api/users/publicMessage")
-    public ResponseEntity<HttpStatus> deletePublicImage(@RequestParam("id") String id) {
-        return new ResponseEntity<>(userRepo.deletePubicMessage("maziyar",id));
-    }
-
     /**
      * Upload file for importing users using following formats:
      * LDIF,xlsx,xls,csv

@@ -968,25 +968,6 @@ public class UserRepoImpl implements UserRepo {
         return null;
     }
 
-    @Override
-    public List<String> showPubicMessage() {
-        PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("_id").is("message")), PublicMessage.class, "IDMAN_ExtraInfo");
-        return publicMessage.getMessage();
-    }
 
-    @Override
-    public HttpStatus postPubicMessage(String doer, String message) {
-        return null;
-    }
-
-    @Override
-    public HttpStatus editPubicMessage(String doer, String message) {
-        return null;
-    }
-
-    @Override
-    public HttpStatus deletePubicMessage(String doer, String id) {
-        return null;
-    }
 }
 

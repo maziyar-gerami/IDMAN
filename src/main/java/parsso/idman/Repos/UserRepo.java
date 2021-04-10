@@ -80,11 +80,5 @@ public interface UserRepo {
 
     List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException;
 
-    List<String> showPubicMessage();
 
-    HttpStatus postPubicMessage(String doer, String message);
-
-    HttpStatus editPubicMessage(String doer, String message);
-
-    HttpStatus deletePubicMessage(String doer, String id);
 }

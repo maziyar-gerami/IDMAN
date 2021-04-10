@@ -2,12 +2,10 @@ package parsso.idman.Repos;
 
 
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import parsso.idman.Models.Users.PublicMessage;
+import parsso.idman.Models.PublicMessage;
 
 import java.util.List;
 
-@Service
 public interface PubMessageRepo {
 
     List<PublicMessage> showPubicMessages(String id);
