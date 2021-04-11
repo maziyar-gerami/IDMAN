@@ -67,11 +67,11 @@ public class User implements UserDetails, Comparable {
 
     public String getStatus() {
         if (this.isEnabled() && !this.isLocked())
-            return "active";
+            return "enable";
         if (this.isLocked())
-            return "locked";
+            return "lock";
         if (!this.isEnabled())
-            return "disabled";
+            return "disable";
 
         return null;
     }

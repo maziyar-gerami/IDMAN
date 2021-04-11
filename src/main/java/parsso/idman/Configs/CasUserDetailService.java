@@ -43,16 +43,17 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
 
         UsersExtraInfo usersExtraInfo =  mongoTemplate.findOne(query, UsersExtraInfo.class, collection1);
 
-        if (usersExtraInfo.getRole().equals("SUPERADMIN"))
-            collection.add(new SimpleGrantedAuthority("ROLE_" + "SUPERADMIN"));
-
-        if (usersExtraInfo.getRole()!=null)
-            collection.add(new SimpleGrantedAuthority("ROLE_" + usersExtraInfo.getRole()));
-
-        else
+        if (usersExtraInfo.getRole() == null)
             collection.add(new SimpleGrantedAuthority("ROLE_" + "USER"));
 
-            return new User(principal.getName(), "", collection);
+        else if (usersExtraInfo.getRole().equals("SUPERADMIN"))
+            collection.add(new SimpleGrantedAuthority("ROLE_" + "SUPERADMIN"));
+
+        else if (usersExtraInfo.getRole()!=null)
+            collection.add(new SimpleGrantedAuthority("ROLE_" + usersExtraInfo.getRole()));
+
+
+        return new User(principal.getName(), "", collection);
 
     }
 

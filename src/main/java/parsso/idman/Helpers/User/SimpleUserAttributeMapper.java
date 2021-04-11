@@ -30,11 +30,11 @@ public class SimpleUserAttributeMapper implements AttributesMapper<SimpleUser> {
 
         if (null != attributes.get("pwdAccountLockedTime"))
             if (attributes.get("pwdAccountLockedTime").get().toString().equals("40400404040404.950Z"))
-                user.setStatus("disabled");
+                user.setStatus("disable");
             else
-                user.setStatus("locked");
+                user.setStatus("lock");
         else
-            user.setStatus("active");
+            user.setStatus("enable");
 
 
         user.setMemberOf(ls);

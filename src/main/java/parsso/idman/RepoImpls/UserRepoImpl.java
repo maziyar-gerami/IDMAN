@@ -153,7 +153,9 @@ public class UserRepoImpl implements UserRepo {
                 return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown reason").toString());
+            if(p.getUserId()!=null || !p.getUserId().equals(""))
+
+                logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown reason").toString());
             return null;
         }
     }
@@ -175,8 +177,6 @@ public class UserRepoImpl implements UserRepo {
         User user = retrieveUsers(p.getUserId());
 
         DirContextOperations context;
-
-
 
         //remove current pwdEndTime
         if ((p.getEndTime() != null && p.getEndTime().equals("")))
@@ -250,11 +250,11 @@ public class UserRepoImpl implements UserRepo {
     public JSONObject createUserImport(String doerID, User p) {
 
 
+        if (p.getUserPassword() == null)
+            p.setUserPassword(defaultPassword);
 
-            if (p.getUserPassword() == null)
-                p.setUserPassword(defaultPassword);
 
-            return create(doerID,p);
+        return create(doerID,p);
 
 
 
@@ -492,11 +492,11 @@ public class UserRepoImpl implements UserRepo {
             query.with(Sort.by(Sort.Direction.ASC,"userId"));
 
 
-            else if (sortType.equals("uid_m2M"))
-                query.with(Sort.by(Sort.Direction.ASC,"userId"));
+        else if (sortType.equals("uid_m2M"))
+            query.with(Sort.by(Sort.Direction.ASC,"userId"));
 
-            else if (sortType.equals("uid_M2m"))
-                query.with(Sort.by(Sort.Direction.DESC,"userId"));
+        else if (sortType.equals("uid_M2m"))
+            query.with(Sort.by(Sort.Direction.DESC,"userId"));
 
         else if (sortType.equals("displayName_m2M"))
             query.with(Sort.by(Sort.Direction.ASC,"displayName"));
@@ -630,7 +630,7 @@ public class UserRepoImpl implements UserRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        
+
 
         return ldapTemplate.search(query().where("ou").is(groupId), simpleUserAttributeMapper);
     }
@@ -665,7 +665,7 @@ public class UserRepoImpl implements UserRepo {
         User user = retrieveUsers(uid);
         String status = user.getStatus();
 
-        if (status.equalsIgnoreCase("disabled")) {
+        if (status.equalsIgnoreCase("disable")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
 
             try {
@@ -752,7 +752,7 @@ public class UserRepoImpl implements UserRepo {
         User user = retrieveUsers(uid);
         String locked = user.getStatus();
 
-        if (locked.equalsIgnoreCase("locked")) {
+        if (locked.equalsIgnoreCase("lock")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
 
             try {

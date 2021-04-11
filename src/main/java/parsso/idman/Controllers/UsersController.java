@@ -320,7 +320,7 @@ public class UsersController {
      * @throws IOException the io exception
      */
     @PostMapping("/api/users/import")
-    public ResponseEntity<JSONObject> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request,@RequestParam("file") MultipartFile file) throws IOException {
 
         JSONObject jsonObject = userRepo.importFileUsers("maziyar",file, defaultSequence, true);
         if (Integer.valueOf(jsonObject.getAsString("nUnSuccessful")) == 0)

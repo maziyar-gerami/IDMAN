@@ -75,18 +75,18 @@ public class UserAttributeMapper implements AttributesMapper<User> {
             if (attributes.get("pwdAccountLockedTime").get().toString().equals("40400404040404.950Z")) {
                 user.setEnabled(false);
                 user.setLocked(false);
-                user.setStatus("disabled");
+                user.setStatus("disable");
 
             } else {
                 user.setEnabled(true);
                 user.setLocked(true);
-                user.setStatus("locked");
+                user.setStatus("lock");
 
             }
         } else {
             user.setEnabled(true);
             user.setLocked(false);
-            user.setStatus("active");
+            user.setStatus("enable");
 
         }
 

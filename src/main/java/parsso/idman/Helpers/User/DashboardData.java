@@ -55,7 +55,6 @@ public class DashboardData {
 
     public Dashboard retrieveDashboardData() throws IOException, InterruptedException {
 
-
         Thread thread = new Thread(){
             @SneakyThrows
             public void run(){
@@ -76,7 +75,12 @@ public class DashboardData {
             //________users data____________
             int nUsers = userRepo.retrieveUsersSize("","","","");
 
-            int nDisabled = ldapTemplate.search(query().where("pwdAccountLockedTime").is("40400404040404.950Z"), simpleUserAttributeMapper).size();
+            int nDisabled;
+            try {
+                nDisabled = ldapTemplate.search(query().where("pwdAccountLockedTime").is("40400404040404.950Z"), simpleUserAttributeMapper).size();
+            }catch (Exception e){
+                nDisabled = 0;
+            }
             int nLocked = ldapTemplate.search(query().where("pwdAccountLockedTime").lte("40400404040404.950Z"), simpleUserAttributeMapper).size();
             int temp = nUsers-nLocked-nDisabled;
             int nActive = (temp)>nUsers?nUsers:temp;

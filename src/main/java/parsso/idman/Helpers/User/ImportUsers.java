@@ -70,22 +70,25 @@ public class ImportUsers {
             user.setEmployeeNumber(formatter.formatCellValue(row.getCell(sequence[9])));
             user.setUserPassword(formatter.formatCellValue(row.getCell(sequence[10])));
 
-            if((row.getCell(sequence[11])!=null) && !(row.getCell(sequence[11]).equals("")))
+            if ((row.getCell(sequence[11]) != null) && !(row.getCell(sequence[11]).equals("")))
                 try {
                     user.setEndTime(Time.setEndTime(formatter.formatCellValue(row.getCell(sequence[11]))));
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
 
-            temp = userRepo.createUserImport(doerId,user);
+            if (user != null && !user.getUserId().equals("")) {
 
-            if (temp.size()!=0) {
-                jsonArray.add(temp);
-                nUnSuccessful++;
+                temp = userRepo.createUserImport(doerId, user);
 
-            }
+                if (temp != null && temp.size() > 0) {
+                    jsonArray.add(temp);
+                    nUnSuccessful++;
+
+                }
                 count++;
 
+            }
         }
 
         JSONObject finalJson = new JSONObject();
@@ -108,7 +111,8 @@ public class ImportUsers {
         if (oldUser.getDisplayName().equals(newUser.getDisplayName())) conflicts.add("displayName");
         if (oldUser.getMail().equals(newUser.getMail())) conflicts.add("mail");
         if (oldUser.getMobile().equals(newUser.getMobile())) conflicts.add("mobile");
-        if (oldUser.getDescription()!=null&&oldUser.getDescription().equals(newUser.getDescription())) conflicts.add("description");
+        if (oldUser.getDescription() != null && oldUser.getDescription().equals(newUser.getDescription()))
+            conflicts.add("description");
         if (oldUser.isEnabled() == (newUser.isEnabled())) conflicts.add("status");
 
         JSONObject jsonObject = new JSONObject();
@@ -119,7 +123,7 @@ public class ImportUsers {
         return jsonObject;
     }
 
-    public JSONObject csvSheetAnalyze(String doerId,BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException {
+    public JSONObject csvSheetAnalyze(String doerId, BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException {
 
         String row;
         JSONArray jsonArray = new JSONArray();
@@ -153,14 +157,18 @@ public class ImportUsers {
 
             i++;
 
-            JSONObject temp = userRepo.createUserImport(doerId, user);
+            if (user != null || user.getUserId() != null && !user.getUserId().equals("")) {
 
-            if (temp.size() > 0) {
-                jsonArray.add(temp);
-                nUnSuccessful++;
+
+                JSONObject temp = userRepo.createUserImport(doerId, user);
+
+                if (temp.size() > 0) {
+                    jsonArray.add(temp);
+                    nUnSuccessful++;
+                }
+                count++;
+
             }
-
-            count++;
         }
 
         JSONObject finalJson = new JSONObject();
@@ -180,7 +188,7 @@ public class ImportUsers {
         return ls;
     }
 
-    public JSONObject importFileUsers(String doerId,MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
+    public JSONObject importFileUsers(String doerId, MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
 
         JSONObject lsusers = new JSONObject();
         InputStream insfile = file.getInputStream();
@@ -193,7 +201,7 @@ public class ImportUsers {
             //Get first/desired sheet from the workbook
             XSSFSheet sheet = workbookXLSX.getSheetAt(0);
 
-            lsusers = excelSheetAnalyze(doerId,sheet, sequence, hasHeader);
+            lsusers = excelSheetAnalyze(doerId, sheet, sequence, hasHeader);
 
         } else if (file.getOriginalFilename().endsWith(".xls")) {
             HSSFWorkbook workbookXLS = null;
@@ -202,13 +210,13 @@ public class ImportUsers {
 
             HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
-            lsusers = excelSheetAnalyze(doerId,xlssheet, sequence, hasHeader);
+            lsusers = excelSheetAnalyze(doerId, xlssheet, sequence, hasHeader);
 
         } else if (file.getOriginalFilename().endsWith(".csv")) {
 
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-            lsusers = csvSheetAnalyze(doerId,csvReader, sequence, hasHeader);
+            lsusers = csvSheetAnalyze(doerId, csvReader, sequence, hasHeader);
 
             csvReader.close();
         } else if (file.getOriginalFilename().endsWith(".ldif")) {
