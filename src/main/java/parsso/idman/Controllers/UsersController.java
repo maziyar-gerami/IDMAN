@@ -458,7 +458,7 @@ public class UsersController {
      * @param token and userId
      * @return the user object if exists, or null if not exists
      */
-    @PutMapping("/api/public/resetpassword/{uid}/{token}")
+    @PutMapping("/api/public/resetPass/{uid}/{token}")
     public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
                                                      @PathVariable("uid") String uid) {
         return new ResponseEntity<>(userRepo.updatePass(uid, newPassword, token));
