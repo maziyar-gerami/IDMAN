@@ -42,7 +42,7 @@ public class GroupsController {
 
     @PostMapping("/api/groups")
     public ResponseEntity<HttpStatus> bindLdapGroup(HttpServletRequest request,@RequestBody Group ou) {
-        return new ResponseEntity<>(groupRepo.create(request.getUserPrincipal().getName(),ou));
+        return new ResponseEntity<>(groupRepo.create("maziyar",ou));
     }
 
     @PutMapping("/api/groups/{id}")

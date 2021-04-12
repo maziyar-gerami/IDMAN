@@ -49,6 +49,7 @@ public class UsersExtraInfo {
         this.creationTimeStamp = new Date().getTime();
         this.photoName = photoName;
         this.unDeletable = unDeletable;
+        this.role = "USER";
     }
 
 }
