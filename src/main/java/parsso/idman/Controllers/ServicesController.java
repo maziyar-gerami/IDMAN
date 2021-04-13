@@ -57,19 +57,17 @@ public class ServicesController {
 
     @Autowired
     MongoTemplate mongoTemplate;
-    
+
 
     @GetMapping("/api/services/user")
 
 
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
         String currentUserId = request.getUserPrincipal().getName();
-        SimpleUser simpleUser = mongoTemplate.findOne(new Query(Criteria.where("uid").is(currentUserId))
+        SimpleUser simpleUser = mongoTemplate.findOne(new Query(Criteria.where("userId").is(currentUserId))
                 ,SimpleUser.class,"IDMAN_SimpleUsers");
 
         if(simpleUser==null){
-            System.out.println("***************************************");
-            System.out.println(currentUserId);
             simpleUser = new SimpleUser(userRepo.retrieveUsers(currentUserId));
             mongoTemplate.save(simpleUser, "IDMAN_SimpleUsers");
         }

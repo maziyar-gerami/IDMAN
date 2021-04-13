@@ -41,11 +41,13 @@ public class UsersExtraInfo {
         this.userId = userId;
         this.qrToken = UUID.randomUUID().toString();
         this.unDeletable = false;
+        this.role = "USER";
         this.creationTimeStamp = new Date().getTime();
     }
 
     public UsersExtraInfo(String userId, String photoName, boolean unDeletable) {
         this.userId = userId;
+
         this.qrToken = UUID.randomUUID().toString();
         this.creationTimeStamp = new Date().getTime();
         this.photoName = photoName;
