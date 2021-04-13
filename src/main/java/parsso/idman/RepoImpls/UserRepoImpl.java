@@ -896,7 +896,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException {
+    public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException {
         InputStream insfile = file.getInputStream();
 
         if (file.getOriginalFilename().endsWith(".xlsx")) {
@@ -907,7 +907,7 @@ public class UserRepoImpl implements UserRepo {
             //Get first/desired sheet from the workbook
             XSSFSheet sheet = workbookXLSX.getSheetAt(0);
 
-            return excelAnalyzer.excelSheetAnalyze(sheet, ou,true);
+            return excelAnalyzer.excelSheetAnalyze(doer, sheet, ou,true);
 
         } else if (file.getOriginalFilename().endsWith(".xls")) {
             HSSFWorkbook workbookXLS = null;
@@ -916,13 +916,13 @@ public class UserRepoImpl implements UserRepo {
 
             HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
-            return excelAnalyzer.excelSheetAnalyze(xlssheet, ou,true);
+            return excelAnalyzer.excelSheetAnalyze(doer,xlssheet, ou,true);
 
         } else if (file.getOriginalFilename().endsWith(".csv")) {
 
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-            return excelAnalyzer.csvSheet(csvReader, ou, true);
+            return excelAnalyzer.csvSheetAnalyzer(doer,csvReader, ou, true);
         }
 
         return null;

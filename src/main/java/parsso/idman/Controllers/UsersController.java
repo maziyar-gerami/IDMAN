@@ -322,7 +322,7 @@ public class UsersController {
     @PostMapping("/api/users/import")
     public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request,@RequestParam("file") MultipartFile file) throws IOException {
 
-        JSONObject jsonObject = userRepo.importFileUsers("maziyar",file, defaultSequence, true);
+        JSONObject jsonObject = userRepo.importFileUsers(request.getUserPrincipal().getName(),file, defaultSequence, true);
         if (Integer.valueOf(jsonObject.getAsString("nUnSuccessful")) == 0)
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
@@ -358,8 +358,8 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/ou/{ou}")
-    public ResponseEntity<List<String>> addGroups(@RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException {
-        List<String> notExist = userRepo.addGroupToUsers(file, ou);
+    public ResponseEntity<List<String>> addGroups(HttpServletRequest request,@RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException {
+        List<String> notExist = userRepo.addGroupToUsers("maziyar",file, ou);
         if (notExist==null)
             return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (notExist.size()==0)

@@ -78,7 +78,7 @@ public interface UserRepo {
 
     HttpStatus syncUsersDBs();
 
-    List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException;
+    List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException;
 
 
 }

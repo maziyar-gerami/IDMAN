@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.PublicMessage;
 import parsso.idman.Repos.PubMessageRepo;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
@@ -34,18 +35,18 @@ public class PubMessageController {
 
 
     @PostMapping("/api/users/publicMessage")
-    public ResponseEntity<HttpStatus> postPublicMessage(@RequestBody String message) {
-        return new ResponseEntity<>(pubMessageRepo.postPubicMessage("maziyar", message));
+    public ResponseEntity<HttpStatus> postPublicMessage(HttpServletRequest request, @RequestBody String message) {
+        return new ResponseEntity<>(pubMessageRepo.postPubicMessage(request.getUserPrincipal().getName(), message));
     }
 
     @PutMapping("/api/users/publicMessage")
-    public ResponseEntity<HttpStatus> editPublicMessage(@RequestBody String message) {
-        return new ResponseEntity<>(pubMessageRepo.editPubicMessage("maziyar", message));
+    public ResponseEntity<HttpStatus> editPublicMessage(HttpServletRequest request,@RequestBody String message) {
+        return new ResponseEntity<>(pubMessageRepo.editPubicMessage(request.getUserPrincipal().getName(), message));
     }
 
     @DeleteMapping("/api/users/publicMessage")
-    public ResponseEntity<HttpStatus> deletePublicMessage(@RequestParam("id") String id) {
-        return new ResponseEntity<>(pubMessageRepo.deletePubicMessage("maziyar",id));
+    public ResponseEntity<HttpStatus> deletePublicMessage(HttpServletRequest request, @RequestParam("id") String id) {
+        return new ResponseEntity<>(pubMessageRepo.deletePubicMessage(request.getUserPrincipal().getName(),id));
     }
 
 }
