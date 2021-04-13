@@ -8,11 +8,11 @@ import java.io.IOException;
 
 public interface SystemRefresh {
 
-    HttpStatus userRefresh() throws IOException;
+    HttpStatus userRefresh(String doer) throws IOException;
 
-    HttpStatus captchaRefresh();
+    HttpStatus captchaRefresh(String doer);
 
-    HttpStatus serivceRefresh() throws IOException, ParseException;
+    HttpStatus serivceRefresh(String doer) throws IOException, ParseException;
 
-    HttpStatus all() throws IOException, ParseException;
+    HttpStatus all(String doer) throws IOException, ParseException;
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import parsso.idman.Repos.SystemRefresh;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
@@ -18,23 +19,23 @@ public class SystemRefreshController {
     SystemRefresh systemRefresh;
 
     @GetMapping("/api/refresh/all")
-    public HttpEntity<HttpStatus> all() throws IOException, ParseException {
-        return new ResponseEntity<>(systemRefresh.all());
+    public HttpEntity<HttpStatus> all(HttpServletRequest request) throws IOException, ParseException {
+        return new ResponseEntity<>(systemRefresh.all(request.getUserPrincipal().getName()));
     }
 
     @GetMapping("/api/refresh/services")
-    public ResponseEntity<HttpStatus> services() throws IOException, ParseException {
-        return new ResponseEntity<>(systemRefresh.serivceRefresh());
+    public ResponseEntity<HttpStatus> services(HttpServletRequest request) throws IOException, ParseException {
+        return new ResponseEntity<>(systemRefresh.serivceRefresh(request.getUserPrincipal().getName()));
     }
 
     @GetMapping("/api/refresh/captchas")
-    public HttpEntity<HttpStatus> captchas(){
-        return new ResponseEntity<>(systemRefresh.captchaRefresh());
+    public HttpEntity<HttpStatus> captchas(HttpServletRequest request){
+        return new ResponseEntity<>(systemRefresh.captchaRefresh(request.getUserPrincipal().getName()));
     }
 
     @GetMapping("/api/refresh/users")
-    public HttpEntity<HttpStatus> users() throws IOException {
-        return new ResponseEntity<>(systemRefresh.userRefresh());
+    public HttpEntity<HttpStatus> users(HttpServletRequest request) throws IOException {
+        return new ResponseEntity<>(systemRefresh.userRefresh(request.getUserPrincipal().getName()));
     }
 
 }
