@@ -11,6 +11,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -25,6 +26,7 @@ import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -134,13 +136,11 @@ public class UserRepoImpl implements UserRepo {
 
                 thread.start();
 
-                new Thread() {
-                    public void run() {
-                        //logger.warn("User "+user.getUserId() + " created");
-                        UsersExtraInfo usersExtraInfo = new UsersExtraInfo(p.getUserId(),p.getPhoto(),p.isUnDeletable());
-                        mongoTemplate.save(usersExtraInfo, Token.collection);
-                    }
-                }.start();
+                new Thread(() -> {
+                    //logger.warn("User "+user.getUserId() + " created");
+                    UsersExtraInfo usersExtraInfo = new UsersExtraInfo(p.getUserId(),p.getPhoto(),p.isUnDeletable());
+                    mongoTemplate.save(usersExtraInfo, Token.collection);
+                }).start();
 
                 if (p.getCStatus() != null)
                     if (p.getCStatus().equals("disable"))
@@ -644,6 +644,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public Dashboard retrieveDashboardData() throws InterruptedException {
+
+
 
         return dashboardData.retrieveDashboardData();
     }

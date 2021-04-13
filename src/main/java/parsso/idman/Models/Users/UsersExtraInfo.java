@@ -40,6 +40,7 @@ public class UsersExtraInfo {
     public UsersExtraInfo(String userId) {
         this.userId = userId;
         this.qrToken = UUID.randomUUID().toString();
+        this.unDeletable = false;
         this.creationTimeStamp = new Date().getTime();
     }
 
