@@ -57,7 +57,7 @@ public class TicketRepoImpl implements TicketRepo {
         firstTicket.setStatus(1);
         Update update = new Update();
         update.set("ID", ticketID);
-        mongoTemplate.upsert(new Query(Criteria.where("ID").is(ticketID)), update,collection);
+        mongoTemplate.save(ticket,collection);
 
         //2
         ticket.setStatus(1);

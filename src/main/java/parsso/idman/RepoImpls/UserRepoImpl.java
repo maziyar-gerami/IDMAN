@@ -190,29 +190,26 @@ public class UserRepoImpl implements UserRepo {
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
 
+        SimpleUser simpleUser = mongoTemplate.findOne(query,SimpleUser.class, simpleCollection);
+        simpleUser.setStatus(p.getCStatus());
+        simpleUser.setMemberOf(p.getMemberOf());
+
+
         if (p.getPhoto() != null)
             usersExtraInfo.setPhotoName(p.getPhoto());
 
         if (p.isUnDeletable())
             usersExtraInfo.setUnDeletable(true);
-        if (usersExtraInfo!=null)
-            mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
 
         try {
             ldapTemplate.modifyAttributes(context);
-            Update update = new Update();
-            update.set("photoName", p.getPhoto());
-            update.set("unDeletable", p.isUnDeletable());
-            mongoTemplate.upsert(query, update, userExtraInfoCollection);
 
-            Update update1 = new Update();
+            mongoTemplate.remove(query, userExtraInfoCollection);
+            mongoTemplate.save(query, userExtraInfoCollection);
 
-            update1.set("status", p.getCStatus());
-            update1.set("memberOf", p.getMemberOf());
-
-            mongoTemplate.upsert(query, update1, simpleCollection);
-
+            mongoTemplate.remove(query, simpleCollection);
+            mongoTemplate.save(simpleUser, simpleCollection);
 
             if(!user.getStatus().equals(p.getStatus()))
                 logger.warn(new ReportMessage("User",usid,"Status","change", "success","from "+user.getStatus()+ " to "+p.getStatus()).toString());
@@ -220,7 +217,7 @@ public class UserRepoImpl implements UserRepo {
             logger.warn(new ReportMessage(model,usid,"","update", "success","").toString());
 
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model,usid,"","update", "failed","unknown error").toString());
+            logger.warn(new ReportMessage(model,usid,"","update", "failed","Writing to DB").toString());
 
         }
 
@@ -230,12 +227,12 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(context);
-                //logger.warn(new ReportMessage(model,usid,"password","update", "success","").toString());
+                logger.warn(new ReportMessage(model,usid,"password","update", "success","").toString());
 
                 return HttpStatus.OK;
             } catch (Exception e) {
 
-                //logger.warn(new ReportMessage(model,usid,"password","update", "failed","unknown error").toString());
+                logger.warn(new ReportMessage(model,usid,"password","update", "failed","unknown error").toString());
 
                 return HttpStatus.BAD_REQUEST;
             }
