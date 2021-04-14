@@ -256,8 +256,7 @@ public class UsersController {
     @PutMapping("/api/users/u/{uId}")
     public ResponseEntity<String> rebindLdapUser(HttpServletRequest request,@PathVariable("uId") String uid, @RequestBody User user) {
 
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.update(principal.getName(),uid, user));
+        return new ResponseEntity<>(userRepo.update( request.getUserPrincipal().getName(),uid, user));
 
     }
 
@@ -322,7 +321,7 @@ public class UsersController {
     @PostMapping("/api/users/import")
     public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request,@RequestParam("file") MultipartFile file) throws IOException {
 
-        JSONObject jsonObject = userRepo.importFileUsers(request.getUserPrincipal().getName(),file, defaultSequence, true);
+        JSONObject jsonObject = userRepo.importFileUsers("maziyar",file, defaultSequence, true);
         if (Integer.valueOf(jsonObject.getAsString("nUnSuccessful")) == 0)
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);

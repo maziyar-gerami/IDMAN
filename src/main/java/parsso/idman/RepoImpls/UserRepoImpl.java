@@ -37,12 +37,14 @@ import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
+import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.FilesStorageService;
+import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
@@ -100,6 +102,9 @@ public class UserRepoImpl implements UserRepo {
     ExcelAnalyzer excelAnalyzer;
     String model = "User";
 
+    @Autowired
+    GroupRepo groupRepo;
+
 
     @Override
     public JSONObject create(String doerID,User p) {
@@ -110,44 +115,53 @@ public class UserRepoImpl implements UserRepo {
         try {
             User user = retrieveUsers(p.getUserId());
             if (user == null || user.getUserId() == null) {
-                Query query = new Query(Criteria.where("userId").is(p.getUserId()));
-                //create user in ldap
-                Name dn = buildDnUser.buildDn(p.getUserId());
-                ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
-                mongoTemplate.save(new SimpleUser(p),simpleCollection);
+                if( checkGroup(p.getMemberOf())) {
 
-                //update it's first pwChangedTime in a new thread
-                Thread thread = new Thread() {
-                    public void run() {
-                        User userTemp = retrieveUsers(p.getUserId());
-                        DirContextOperations context = ldapTemplate.lookupContext(dn);
+                    Query query = new Query(Criteria.where("userId").is(p.getUserId()));
+                    //create user in ldap
+                    Name dn = buildDnUser.buildDn(p.getUserId());
+                    ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
+                    mongoTemplate.save(new SimpleUser(p), simpleCollection);
 
-                        context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp() + "Z");
+                    //update it's first pwChangedTime in a new thread
+                    Thread thread = new Thread() {
+                        public void run() {
+                            User userTemp = retrieveUsers(p.getUserId());
+                            DirContextOperations context = ldapTemplate.lookupContext(dn);
 
-                        try {
-                            ldapTemplate.modifyAttributes(context);
-                        } catch (Exception e) {
+                            context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp() + "Z");
 
-                            logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","due to writing to ldap").toString());
+                            try {
+                                ldapTemplate.modifyAttributes(context);
+                            } catch (Exception e) {
+
+                                logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "due to writing to ldap").toString());
+                            }
+
                         }
+                    };
 
-                    }
-                };
+                    thread.start();
 
-                thread.start();
+                    new Thread(() -> {
+                        //logger.warn("User "+user.getUserId() + " created");
+                        UsersExtraInfo usersExtraInfo = new UsersExtraInfo(p.getUserId(), p.getPhoto(), p.isUnDeletable());
+                        mongoTemplate.save(usersExtraInfo, Token.collection);
+                    }).start();
 
-                new Thread(() -> {
-                    //logger.warn("User "+user.getUserId() + " created");
-                    UsersExtraInfo usersExtraInfo = new UsersExtraInfo(p.getUserId(),p.getPhoto(),p.isUnDeletable());
-                    mongoTemplate.save(usersExtraInfo, Token.collection);
-                }).start();
+                    if (p.getCStatus() != null)
+                        if (p.getCStatus().equals("disable"))
+                            disable(doerID, p.getUserId());
 
-                if (p.getCStatus() != null)
-                    if (p.getCStatus().equals("disable"))
-                        disable(doerID, p.getUserId());
-
-                logger.warn(new ReportMessage(model,p.getUserId(),"","create", "success","").toString());
-                return new JSONObject();
+                    logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "success", "").toString());
+                    return new JSONObject();
+                } else {
+                    logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","group not exist").toString());
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("userId", p.getUserId() );
+                    jsonObject.put("group", p.getMemberOf());
+                    return jsonObject;
+                }
             } else {
                 logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","already exist").toString());
                 return importUsers.compareUsers(user, p);
@@ -158,6 +172,21 @@ public class UserRepoImpl implements UserRepo {
                 logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown reason").toString());
             return null;
         }
+    }
+
+    private  boolean checkGroup(List<String> groups){
+        List<Group> realGroups = groupRepo.retrieve();
+        List<String> realStrings = new LinkedList<>();
+        for (Group group:realGroups) {
+           realStrings.add(group.getId());
+        }
+
+        for (String group:groups) {
+            if(!realStrings.contains(group))
+                return false;
+
+        }
+        return true;
     }
 
     @Override
@@ -186,7 +215,7 @@ public class UserRepoImpl implements UserRepo {
                 && user.getEndTime()!=null)
             removeCurrentEndTime(p.getUserId());
 
-        context = buildAttributes.buildAttributes(doerID, p.getUserId(), p, dn);
+        context = buildAttributes.buildAttributes(doerID, usid, p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
 
@@ -206,7 +235,7 @@ public class UserRepoImpl implements UserRepo {
             ldapTemplate.modifyAttributes(context);
 
             mongoTemplate.remove(query, userExtraInfoCollection);
-            mongoTemplate.save(query, userExtraInfoCollection);
+            mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
             mongoTemplate.remove(query, simpleCollection);
             mongoTemplate.save(simpleUser, simpleCollection);
