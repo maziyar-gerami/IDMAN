@@ -42,13 +42,13 @@ public class GroupsController {
 
     @PostMapping("/api/groups")
     public ResponseEntity<HttpStatus> bindLdapGroup(HttpServletRequest request,@RequestBody Group ou) {
-        return new ResponseEntity<>(groupRepo.create("maziyar",ou));
+        return new ResponseEntity<>(groupRepo.create(request.getUserPrincipal().getName(),ou));
     }
 
     @PutMapping("/api/groups/{id}")
     public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request,@RequestBody Group ou, @PathVariable("id") String id) {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(groupRepo.update(principal.getName(),id, ou));
+
+        return new ResponseEntity<>(groupRepo.update(request.getUserPrincipal().getName(),id, ou));
     }
 
     @GetMapping("/api/groups")
