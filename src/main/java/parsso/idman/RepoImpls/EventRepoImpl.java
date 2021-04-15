@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
 import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Logs.ListEvents;
 import parsso.idman.Models.Time;
@@ -21,7 +22,7 @@ import java.util.List;
 public class EventRepoImpl implements EventRepo {
 
     private static final String mainCollection = "MongoDbCasEventRepository";
-    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    ZoneId zoneId = ZoneId.of("UTC+04:30");
 
 
     @Autowired

@@ -21,7 +21,8 @@ import java.util.List;
 public class ReportRepoImpl implements ReportRepo {
 
     private static final String mainCollection = "IDMAN_Log";
-    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    ZoneId zoneId = ZoneId.of("UTC+04:30");
+
 
     Instant instant = Instant.now(); //can be LocalDateTime
 

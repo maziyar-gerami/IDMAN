@@ -11,14 +11,12 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
@@ -26,7 +24,6 @@ import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -248,6 +245,7 @@ public class UserRepoImpl implements UserRepo {
 
 
         try {
+
             ldapTemplate.modifyAttributes(context);
 
             mongoTemplate.remove(query, userExtraInfoCollection);
@@ -262,6 +260,7 @@ public class UserRepoImpl implements UserRepo {
             logger.warn(new ReportMessage(model,usid,"","update", "success","").toString());
 
         } catch (Exception e) {
+            e.printStackTrace();
             logger.warn(new ReportMessage(model,usid,"","update", "failed","Writing to DB").toString());
 
         }
@@ -815,7 +814,6 @@ public class UserRepoImpl implements UserRepo {
 
             } catch (Exception e) {
 
-                logger.warn(new ReportMessage(model,user.getUserId(),"","unlock", "failed","writing to ldap").toString());
                 return HttpStatus.BAD_REQUEST;
             }
 
@@ -831,12 +829,23 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus massUpdate(String doerID, List<User> users) {
-        for (User user : users)
+    public JSONObject massUpdate(String doerID, List<User> users) {
+        int nCount = users.size();
+        int nSuccessful=0;
+        for (User user : users) {
             if (user != null && user.getUserId() != null)
-                update(doerID, user.getUserId(), user);
+                try {
+                    update(doerID, user.getUserId(), user);
+                    nSuccessful++;
+                } catch (Exception e) {
+                }
+        }
+        JSONObject jsonObject = new JSONObject();
+                jsonObject.put("nCount", nCount);
+                jsonObject.put("nSuccessful", nSuccessful);
+                jsonObject.put("nUnSuccessful",nCount-nSuccessful);
 
-        return HttpStatus.OK;
+                return jsonObject;
     }
 
     @Override

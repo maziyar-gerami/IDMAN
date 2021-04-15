@@ -70,7 +70,7 @@ public interface UserRepo {
 
     int requestToken(User user);
 
-    HttpStatus massUpdate(String doerID,List<User> users);
+    JSONObject massUpdate(String doerID, List<User> users);
 
     ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);
 

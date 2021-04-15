@@ -147,6 +147,10 @@ public class BuildAttributes {
 
         if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null) mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
 
+        if (p.getEndTime() != null) {
+            context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
+        }
+
         return context;
     }
 

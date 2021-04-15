@@ -330,7 +330,7 @@ public class UsersController {
     @PutMapping("/api/users/import/massUpdate")
     public ResponseEntity<JSONObject> updateConflicts(HttpServletRequest request,@RequestBody List<User> users) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.massUpdate(principal.getName(),users));
+        return new ResponseEntity<>(userRepo.massUpdate(principal.getName(),users),HttpStatus.OK);
     }
 
     /**
