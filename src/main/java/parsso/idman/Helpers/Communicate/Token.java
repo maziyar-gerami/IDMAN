@@ -113,11 +113,8 @@ public class Token {
 
             user.setUsersExtraInfo(usersExtraInfo);
         }
-        Name dn = buildDnUser.buildDn(user.getUserId());
-        // context = buildAttributes.buildAttributes(user.getUserId(), user, dn);
 
         try {
-            //ldapTemplate.modifyAttributes((DirContextOperations) context);
             mongoTemplate.save(usersExtraInfo, collection);
             return HttpStatus.OK;
         } catch (Exception e) {

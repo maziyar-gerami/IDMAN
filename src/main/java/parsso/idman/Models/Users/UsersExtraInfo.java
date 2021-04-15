@@ -55,4 +55,5 @@ public class UsersExtraInfo {
         this.role = "USER";
     }
 
+
 }

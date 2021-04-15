@@ -100,6 +100,7 @@ public class BuildAttributes {
         if (p.getEmployeeNumber() != null && !p.getEmployeeNumber().equals("")) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
         if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
 
+
         //if (p.getTimeStamp() > 0)
             //context.setAttributeValue("createtimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
 

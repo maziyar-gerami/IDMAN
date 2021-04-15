@@ -159,7 +159,7 @@ public class UserRepoImpl implements UserRepo {
                     logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","group not exist").toString());
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("userId", p.getUserId() );
-                    jsonObject.put("group", p.getMemberOf());
+                    jsonObject.put("invalidGroups", invalidGroups(p.getMemberOf()));
                     return jsonObject;
                 }
             } else {
@@ -187,6 +187,22 @@ public class UserRepoImpl implements UserRepo {
 
         }
         return true;
+    }
+
+    private List<String> invalidGroups (List<String> groups){
+        List<Group> realGroups = groupRepo.retrieve();
+        List<String> realStrings = new LinkedList<>();
+        List<String> invalids = new LinkedList<>();
+        for (Group group:realGroups) {
+            realStrings.add(group.getId());
+        }
+
+        for (String group:groups) {
+            if(!realStrings.contains(group))
+                invalids.add(group);
+
+        }
+        return invalids;
     }
 
     @Override
@@ -218,7 +234,7 @@ public class UserRepoImpl implements UserRepo {
         context = buildAttributes.buildAttributes(doerID, usid, p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
-
+        usersExtraInfo.setUnDeletable(p.isUnDeletable());
         SimpleUser simpleUser = mongoTemplate.findOne(query,SimpleUser.class, simpleCollection);
         simpleUser.setStatus(p.getCStatus());
         simpleUser.setMemberOf(p.getMemberOf());
@@ -955,7 +971,6 @@ public class UserRepoImpl implements UserRepo {
 
         return null;
     }
-
 
 }
 

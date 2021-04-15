@@ -61,7 +61,6 @@ public class Email {
 
     public HttpStatus sendEmail(String email) {
         if (checkMail(email) != null) {
-            List<JSONObject> s = checkMail(email);
             User user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
@@ -96,8 +95,6 @@ public class Email {
             for (Object temp : jsonArray) {
 
                 User user = userRepo.retrieveUsers(temp.toString());
-                if (checkMail(user.getMail()) != null)
-                    sendEmail(user.getMail());
                 {
                     Thread thread = new Thread() {
                         public void run() {
@@ -105,7 +102,8 @@ public class Email {
 
                         }
                     };
-                    thread.start();
+                    if (checkMail(user.getMail()) != null)
+                        thread.start();
                 }
             }
         }
