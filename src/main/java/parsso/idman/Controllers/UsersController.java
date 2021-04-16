@@ -256,8 +256,7 @@ public class UsersController {
     @PutMapping("/api/users/u/{uId}")
     public ResponseEntity<String> rebindLdapUser(HttpServletRequest request,@PathVariable("uId") String uid, @RequestBody User user) {
 
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.update(principal.getName(),uid, user));
+        return new ResponseEntity<>(userRepo.update( request.getUserPrincipal().getName(),uid, user));
 
     }
 
@@ -310,6 +309,7 @@ public class UsersController {
         return new ResponseEntity<>(userRepo.unlock(principal.getName(),uid));
     }
 
+
     /**
      * Upload file for importing users using following formats:
      * LDIF,xlsx,xls,csv
@@ -330,7 +330,7 @@ public class UsersController {
     @PutMapping("/api/users/import/massUpdate")
     public ResponseEntity<JSONObject> updateConflicts(HttpServletRequest request,@RequestBody List<User> users) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.massUpdate(principal.getName(),users));
+        return new ResponseEntity<>(userRepo.massUpdate(principal.getName(),users),HttpStatus.OK);
     }
 
     /**
@@ -357,8 +357,8 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/ou/{ou}")
-    public ResponseEntity<List<String>> addGroups(@RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException {
-        List<String> notExist = userRepo.addGroupToUsers(file, ou);
+    public ResponseEntity<List<String>> addGroups(HttpServletRequest request,@RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException {
+        List<String> notExist = userRepo.addGroupToUsers(request.getUserPrincipal().getName(),file, ou);
         if (notExist==null)
             return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (notExist.size()==0)
@@ -457,7 +457,7 @@ public class UsersController {
      * @param token and userId
      * @return the user object if exists, or null if not exists
      */
-    @PutMapping("/api/public/resetpassword/{uid}/{token}")
+    @PutMapping("/api/public/resetPass/{uid}/{token}")
     public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
                                                      @PathVariable("uid") String uid) {
         return new ResponseEntity<>(userRepo.updatePass(uid, newPassword, token));
@@ -513,7 +513,8 @@ public class UsersController {
         HttpStatus httpStatus = tokenClass.checkToken(uId, token);
 
         if (httpStatus == HttpStatus.OK) {
-
+            attributes.addAttribute("uid", uId);
+            attributes.addAttribute("token", token);
             return new RedirectView("/newpassword");
         }
         return null;
@@ -530,6 +531,5 @@ public class UsersController {
     public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));
     }
-
 
 }

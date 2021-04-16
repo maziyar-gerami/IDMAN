@@ -35,6 +35,7 @@ import parsso.idman.Repos.SystemRefresh;
 import parsso.idman.Repos.UserRepo;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -109,11 +110,12 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
     }
 
-    private static void refresh(ConfigurableApplicationContext context) throws IOException, org.json.simple.parser.ParseException {
+    /*private static void refresh(ConfigurableApplicationContext context) throws IOException, org.json.simple.parser.ParseException {
 
         //logger.error("refresh started");
-        context.getBean(SystemRefresh.class).all();
-    }
+        HttpServletRequest request;
+        context.getBean(SystemRefresh.class).all(context.);
+    }*/
 
     private static void pulling(ConfigurableApplicationContext context) throws ParseException {
 

@@ -7,12 +7,16 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -51,8 +55,23 @@ public class ServicesController {
     @GetMapping("/createservice")
     public String CreateService() {return "createservice";}
 
+    @Autowired
+    MongoTemplate mongoTemplate;
+
+
     @GetMapping("/api/services/user")
+
+
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
+        String currentUserId = request.getUserPrincipal().getName();
+        SimpleUser simpleUser = mongoTemplate.findOne(new Query(Criteria.where("userId").is(currentUserId))
+                ,SimpleUser.class,"IDMAN_SimpleUsers");
+
+        if(simpleUser==null){
+            simpleUser = new SimpleUser(userRepo.retrieveUsers(currentUserId));
+            mongoTemplate.save(simpleUser, "IDMAN_SimpleUsers");
+        }
+
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(principal.getName())), HttpStatus.OK);
     }

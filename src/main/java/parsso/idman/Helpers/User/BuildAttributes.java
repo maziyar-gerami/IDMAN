@@ -100,6 +100,7 @@ public class BuildAttributes {
         if (p.getEmployeeNumber() != null && !p.getEmployeeNumber().equals("")) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
         if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
 
+
         //if (p.getTimeStamp() > 0)
             //context.setAttributeValue("createtimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
 
@@ -145,6 +146,10 @@ public class BuildAttributes {
         if ( old.getEmployeeNumber() != null && p.getEmployeeNumber() != "") context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
 
         if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null) mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
+
+        if (p.getEndTime() != null) {
+            context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
+        }
 
         return context;
     }

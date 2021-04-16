@@ -70,7 +70,7 @@ public interface UserRepo {
 
     int requestToken(User user);
 
-    HttpStatus massUpdate(String doerID,List<User> users);
+    JSONObject massUpdate(String doerID, List<User> users);
 
     ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);
 
@@ -78,5 +78,7 @@ public interface UserRepo {
 
     HttpStatus syncUsersDBs();
 
-    List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException;
+    List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException;
+
+
 }

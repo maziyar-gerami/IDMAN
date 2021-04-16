@@ -25,7 +25,7 @@ public class LogsExcelView extends AbstractXlsView {
     public static String mainCollection = "IDMAN_Log";
     @Autowired
     ReportRepo reportRepo;
-    ZoneId zoneId = ZoneId.of("UTC+03:30");
+    ZoneId zoneId = ZoneId.of("Asia/Tehran");
 
 
     @Override

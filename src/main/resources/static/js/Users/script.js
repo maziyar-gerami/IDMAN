@@ -188,9 +188,9 @@ document.addEventListener('DOMContentLoaded', function () {
             s68: "حذف فیلتر",
             s69: "",
             s70: "",
-            s71: "از مجموع کاربران وارد شده تعداد ",
-            s72: " کاربر با موفقیت ثبت شدند و تعداد ",
-            s73: " کاربر در هنگام ثبت با مشکل مواجه شده و ثبت نشدند.",
+            s71: "از مجموع کاربران، تعداد ",
+            s72: " کاربر با موفقیت ثبت شده و تعداد ",
+            s73: " کاربر در هنگام ثبت با مشکل مواجه شده و ثبت نشده اند.",
             s74: " (برای شناسه کاربری تنها حروف انگلیسی و اعداد مجاز می باشد)",
             s75: "تعداد رکورد ها: ",
             s76: "لیست کاربران",
@@ -207,6 +207,20 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesURLText: "./roles",
             reportsText: "گزارش ها",
             reportsURLText: "./reports",
+            importUserListGroupError: false,
+            importUserListGroupErrorList: "",
+            importUserListGroupErrorText: "گروه های مشخص شده برای کاربران زیر، تعریف نشده اند.",
+            importUserListRepetitiveError: false,
+            importUserListRepetitiveErrorList: "",
+            importUserListRepetitiveErrorText: "کاربران زیر، تکراری می باشند.",
+            importUserListOverrideResault: false,
+            importUserListOverrideSuccessful: "",
+            importUserListOverrideUnsuccessful: "",
+            importUserListOverride1Text: "از مجموع کاربران، اطلاعات ",
+            importUserListOverride2Text: " کاربر با موفقیت جایگزین شده و اطلاعات ",
+            importUserListOverride3Text: " کاربر با مشکل مواجه شده و جایگزین نشده است.",
+            emailFormatErrorText: "فرمت آدرس ایمیل را به درستی وارد کنید",
+            mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه کاربری",
@@ -285,16 +299,27 @@ document.addEventListener('DOMContentLoaded', function () {
             importUserList: function(override){
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                this.importUserListRepetitiveError = false;
                 if(override){
+                    this.usersImported = false;
+                    this.importUserListGroupError = false;
+                    this.loader = true;
                     axios({
                         method: 'put',
                         url: url + "/api/users/import/massUpdate",  //
                         headers: {'Content-Type': 'application/json'},
                         data: vm.userListImport
+                    }).then((res) => {
+                        vm.loader = false;
+                        vm.importUserListOverrideSuccessful = res.data.nSuccessful;
+                        vm.importUserListOverrideUnsuccessful = res.data.nUnSuccessful;
+                        vm.importUserListOverrideResault = true;
+                        vm.usersImported = true;
+                        vm.filter();
+                    }).catch((error) => {
+                        vm.loader = false;
                     });
                 }
-                this.usersImported = false;
-                this.promptImportButtons = false;
             },
             selectedFile() {
                 let re = /(\.xlsx)$/i;
@@ -302,7 +327,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 let fileName = fup.value;
                 if(!re.exec(fileName)){
                     alert(this.s24);
-                    return;
                 }else{
                     var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                     var vm = this;
@@ -310,6 +334,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     var file = document.querySelector('#file');
                     bodyFormData.append("file", file.files[0]);
                     this.userListImport = [];
+                    this.usersImported = false;
+                    this.importUserListGroupError = false;
+                    this.importUserListRepetitiveError = false;
+                    this.importUserListOverrideResault = false;
                     this.loader = true;
                     axios({
                         method: 'post',
@@ -330,10 +358,27 @@ document.addEventListener('DOMContentLoaded', function () {
                             vm.s69 = error.response.data.nSuccessful;
                             vm.s70 = error.response.data.nUnSuccessful;
                             vm.usersImported = true;
-                            vm.promptImportButtons = true;
-                            vm.userListImport = error.response.data.list;
-                            for(let i = 0; i < error.response.data.list.length; ++i){
-                                vm.userListImport.push(error.response.data.list[i].new);
+                            if(typeof error.response.data.invalidGroups !== "undefined"){
+                                if(error.response.data.invalidGroups.length != 0){
+                                    vm.importUserListGroupErrorList = "";
+                                    for(let i = 0; i < error.response.data.invalidGroups.length-1; ++i){
+                                        vm.importUserListGroupErrorList = vm.importUserListGroupErrorList + error.response.data.invalidGroups[i].userId + ", ";
+                                    }
+                                    vm.importUserListGroupErrorList = vm.importUserListGroupErrorList + error.response.data.invalidGroups[error.response.data.invalidGroups.length-1].userId;
+                                    vm.importUserListGroupError = true;
+                                }
+                            }
+                            if(typeof error.response.data.repetitiveUsers !== "undefined"){
+                                if(error.response.data.repetitiveUsers.length != 0){
+                                    vm.importUserListRepetitiveErrorList = "";
+                                    for(let i = 0; i < error.response.data.repetitiveUsers.length-1; ++i){
+                                        vm.importUserListRepetitiveErrorList = vm.importUserListRepetitiveErrorList + error.response.data.repetitiveUsers[i].new.userId + ", ";
+                                        vm.userListImport.push(error.response.data.repetitiveUsers[i].new);
+                                    }
+                                    vm.importUserListRepetitiveErrorList = vm.importUserListRepetitiveErrorList + error.response.data.repetitiveUsers[error.response.data.repetitiveUsers.length-1].new.userId;
+                                    vm.userListImport.push(error.response.data.repetitiveUsers[error.response.data.repetitiveUsers.length-1].new);
+                                    vm.importUserListRepetitiveError = true;
+                                }
                             }
                             vm.filter();
                         }
@@ -712,11 +757,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
             },
             editUser: function (id) {
+                const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                const mobileRegex = /^09\d{9}$/;
+
                 if(id == "" ||
-                document.getElementById('editInfo.displayNameUpdate').value == "" ||
-                document.getElementById('editInfo.mobileUpdate').value == "" ||
-                document.getElementById('editInfo.mailUpdate').value == ""){
+                document.getElementById("editInfo.displayNameUpdate").value == "" ||
+                document.getElementById("editInfo.mobileUpdate").value == "" ||
+                document.getElementById("editInfo.mailUpdate").value == ""){
                     alert("لطفا قسمت های الزامی را پر کنید.");
+                }else if(!emailRegex.test(document.getElementById("editInfo.mailUpdate").value)){
+                    alert(this.emailFormatErrorText);
+                }else if(!mobileRegex.test(document.getElementById("editInfo.mobileUpdate").value)){
+                    alert(this.mobileFormatErrorText);
                 }else{
                     let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                     var check = confirm(this.s26);
@@ -923,12 +975,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 var unDeletableVar = false;
+                const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                const mobileRegex = /^09\d{9}$/;
 
-                if(document.getElementById('editInfo.userIdCreate').value == "" ||
-                    document.getElementById('editInfo.displayNameCreate').value == "" ||
-                    document.getElementById('editInfo.mailCreate').value == "" ||
-                    document.getElementById('editInfo.mobileCreate').value == ""){
+                if(document.getElementById("editInfo.userIdCreate").value == "" ||
+                    document.getElementById("editInfo.displayNameCreate").value == "" ||
+                    document.getElementById("editInfo.mailCreate").value == "" ||
+                    document.getElementById("editInfo.mobileCreate").value == ""){
                     alert("لطفا قسمت های الزامی را پر کنید.");
+                }else if(!emailRegex.test(document.getElementById("editInfo.mailCreate").value)){
+                    alert(this.emailFormatErrorText);
+                }else if(!mobileRegex.test(document.getElementById("editInfo.mobileCreate").value)){
+                    alert(this.mobileFormatErrorText);
                 }else{
 
                     var check = confirm(this.s27);
@@ -1317,6 +1375,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s85 = "No User Found";
                     this.rolesText = "Roles";
                     this.reportsText = "Reports";
+                    this.importUserListGroupErrorText = "The Groups Specified For The Following Users Are Not Defined.";
+                    this.importUserListRepetitiveErrorText = "The Following Users Are Duplicates.";
+                    this.importUserListOverride1Text = "From Total Users, Information Of ";
+                    this.importUserListOverride2Text = " Users Was Successfully Replaced And Information Of ";
+                    this.importUserListOverride3Text = " Users Encountered a Problem And Was Not Replaced.";
+                    this.emailFormatErrorText = "Enter Email Address Format Correctly";
+                    this.mobileFormatErrorText = "Enter Phone Number Format Correctly";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1436,6 +1501,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s85 = "کاربری یافت نشد";
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
+                    this.importUserListGroupErrorText = "گروه های مشخص شده برای کاربران زیر، تعریف نشده اند.";
+                    this.importUserListRepetitiveErrorText = "کاربران زیر، تکراری می باشند.";
+                    this.importUserListOverride1Text = "از مجموع کاربران، اطلاعات ";
+                    this.importUserListOverride2Text = " کاربر با موفقیت جایگزین شده و اطلاعات ";
+                    this.importUserListOverride3Text = " کاربر با مشکل مواجه شده و جایگزین نشده است.";
+                    this.emailFormatErrorText = "فرمت آدرس ایمیل را به درستی وارد کنید";
+                    this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه کاربری";

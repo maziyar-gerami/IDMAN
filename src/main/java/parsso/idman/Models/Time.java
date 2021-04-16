@@ -14,7 +14,7 @@ import java.util.Calendar;
 @Getter
 
 public class Time {
-    static ZoneId zoneId = ZoneId.of("UTC+03:30");
+    static ZoneId zoneId = ZoneId.of("Asia/Tehran");
     private int year;
     private int month;
     private int day;
@@ -125,16 +125,31 @@ public class Time {
             }
 
             else {
-                return convertDateTimeJalali(input + "+03:30");
+                String temp =  convertDateTimeJalali(input);
 
+                if (temp.contains("-")) {
+                    temp = convertDateToNumber(input);
+
+
+                }
+
+                try {
+                    String temp1 = temp.substring(0,14);
+                    String temp2 = temp.substring(16);
+                    temp = temp1+temp2;
+                }catch (Exception e){
+
+                }
+
+                return temp;
             }
 
             //if is G
         } else {
 
-            if (input.contains("-"))
+            if (input.contains("-")) {
                 return convertDateToNumber(input);
-
+            }
 
             return input;
 

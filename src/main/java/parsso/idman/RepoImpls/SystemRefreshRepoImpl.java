@@ -17,6 +17,7 @@ import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.IdmanApplication;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.UsersExtraInfo;
@@ -37,7 +38,7 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 @Service
 public class SystemRefreshRepoImpl implements SystemRefresh {
 
-    final Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
+
 
     @Autowired
     ServiceRepo serviceRepo;
@@ -63,9 +64,13 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     @Value("${administrator.ou.id}")
     private String admidId;
 
+    String model = "Refresh";
+
     @Override
-    public HttpStatus userRefresh()  {
+    public HttpStatus userRefresh(String doer)  {
         //0. crete collection, if not exist
+
+        Logger logger = LoggerFactory.getLogger(doer);
 
         if (mongoTemplate.getCollection("IDMAN_UsersExtraInfo") == null)
             mongoTemplate.createCollection("IDMAN_UsersExtraInfo");
@@ -97,12 +102,9 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 }
 
             } else {
-                UsersExtraInfo userExtraInfo = new UsersExtraInfo();
 
-                userExtraInfo.setUserId(user.getUserId());
-                userExtraInfo.setQrToken(UUID.randomUUID().toString());
 
-                mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");
+                mongoTemplate.save(new UsersExtraInfo(user.getUserId()), "IDMAN_UsersExtraInfo");
             }
             UsersExtraInfo  userExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
 
@@ -129,18 +131,23 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         //2. cleanUp mongo
         //TODO:Enable it
-        /*List<SimpleUser> usersMongo = mongoTemplate.findAll(SimpleUser.class, "IDMAN_UsersExtraInfo");
+        List<SimpleUser> usersMongo = mongoTemplate.findAll(SimpleUser.class, "IDMAN_UsersExtraInfo");
         if (usersMongo!=null)
         for (SimpleUser simpleUser : usersMongo) {
-            if (ldapTemplate.search(query().where("uid").is(simpleUser.getUserId()), simpleUserAttributeMapper).size()==0)
+            if (ldapTemplate.search(query().where("uid").is(simpleUser.getUserId()), simpleUserAttributeMapper).size() == 0)
                 mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(simpleUser.getUserId())), UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
-        }*/
+        }
+
+        logger.warn(new ReportMessage(model,"","Users","refresh", "success","").toString());
+
 
         return  HttpStatus.OK;
     }
 
     @Override
-    public HttpStatus captchaRefresh() {
+    public HttpStatus captchaRefresh(String doer) {
+
+        Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
 
         logger.warn("Captcha refresh started");
         if (mongoTemplate.getCollection("IDMAN_Captchas") != null) {
@@ -149,15 +156,15 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         }
 
         mongoTemplate.createCollection("IDMAN_Captchas");
-        logger.warn("IDMAN_captchas collection created");
-
-        logger.warn("IDMAN_captchas collection refreshed");
+        logger.warn(new ReportMessage(model,"","Captcha","refresh", "success","").toString());
 
         return HttpStatus.OK;
     }
 
     @Override
-    public HttpStatus serivceRefresh() throws IOException, ParseException {
+    public HttpStatus serivceRefresh(String doer) throws IOException, ParseException {
+        Logger logger = LoggerFactory.getLogger(doer);
+
         if (mongoTemplate.getCollection("IDMAN_ServicesExtraInfo") == null)
             mongoTemplate.createCollection("IDMAN_ServicesExtraInfo");
         int i = 1;
@@ -179,6 +186,8 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             serviceExtraInfo.setPosition(i++);
 
             mongoTemplate.save(serviceExtraInfo, "IDMAN_ServicesExtraInfo");
+
+            logger.warn(new ReportMessage(model,"","Services","refresh", "success","").toString());
         }
 
         List<parsso.idman.Models.Services.Service> serviceList = serviceRepo.listServicesFull();
@@ -203,7 +212,8 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     }
 
     @Override
-    public HttpStatus all() throws IOException, ParseException {
+    public HttpStatus all(String doer) throws IOException, ParseException {
+        Logger logger = LoggerFactory.getLogger(doer);
         try {
             mongoTemplate.getCollection("IDMAN_Tokens").drop();
         } catch (Exception e) {
@@ -211,21 +221,13 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         }
 
 
-        captchaRefresh();
+        captchaRefresh(doer);
 
-        logger.warn("service refresh started");
-        serivceRefresh();
+        serivceRefresh(doer);
 
-        logger.warn("service refresh finished");
+        userRefresh(doer);
 
-        logger.warn("user refresh started");
-
-        userRefresh();
-
-        logger.warn("user refresh finished");
-
-        
-        logger.warn("System refresh finished");
+        logger.warn(new ReportMessage(model,"","System","refresh", "success","").toString());
 
         return HttpStatus.OK;
     }

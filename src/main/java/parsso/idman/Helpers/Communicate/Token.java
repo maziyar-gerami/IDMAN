@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.BuildAttributes;
-import parsso.idman.Helpers.User.BuildDn;
+import parsso.idman.Helpers.User.BuildDnUser;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.UserRepo;
@@ -34,7 +34,7 @@ public class Token {
     @Autowired
     InstantMessage instantMessage;
     @Autowired
-    BuildDn buildDn;
+    BuildDnUser buildDnUser;
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
@@ -113,11 +113,8 @@ public class Token {
 
             user.setUsersExtraInfo(usersExtraInfo);
         }
-        Name dn = buildDn.buildDn(user.getUserId());
-        // context = buildAttributes.buildAttributes(user.getUserId(), user, dn);
 
         try {
-            //ldapTemplate.modifyAttributes((DirContextOperations) context);
             mongoTemplate.save(usersExtraInfo, collection);
             return HttpStatus.OK;
         } catch (Exception e) {

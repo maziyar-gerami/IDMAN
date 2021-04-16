@@ -7,6 +7,9 @@ import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextOperations;
@@ -15,11 +18,12 @@ import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.User.BuildDn;
+import parsso.idman.Helpers.User.BuildDnUser;
 import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.User;
+import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
@@ -41,7 +45,7 @@ public class GroupRepoImpl implements GroupRepo {
 
 
     @Autowired
-    BuildDn buildDnUser;
+    BuildDnUser buildDnUser;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
     @Autowired
@@ -50,6 +54,8 @@ public class GroupRepoImpl implements GroupRepo {
     private UserRepo userRepo;
     @Autowired
     private ServiceRepo serviceRepo;
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     private String model = "Groups";
 
@@ -92,6 +98,16 @@ public class GroupRepoImpl implements GroupRepo {
                             try {
                                 ldapTemplate.modifyAttributes(context);
 
+                                SimpleUser simpleUser = mongoTemplate.findOne
+                                        (new Query(Criteria.where("userId").is(user.getUserId())), SimpleUser.class, "IDMAN_SimpleUsers");
+                                simpleUser.getMemberOf().remove(id);
+
+                                mongoTemplate.remove
+                                        (new Query(Criteria.where("userId").is(user.getUserId())), "IDMAN_SimpleUsers");
+
+                                mongoTemplate.save
+                                        (simpleUser, "IDMAN_SimpleUsers");
+
                             } catch (Exception e){
                                 logger.warn(new ReportMessage(model,user.getUserId(),groupN,"remove", "success","").toString());
                             }
@@ -114,6 +130,7 @@ public class GroupRepoImpl implements GroupRepo {
 
                 } catch (Exception e) {
                     j++;
+                    e.printStackTrace();
                     logger.warn(new ReportMessage(model,group.getId(),"Group","remove", "failed","writing to ldap").toString());
                 }
 
@@ -177,7 +194,7 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
     public Name buildDn(String id) {
-        return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").add("Group", id).build();
+        return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").add("ou", id).build();
     }
 
     @Override
@@ -232,6 +249,7 @@ public class GroupRepoImpl implements GroupRepo {
             return HttpStatus.OK;
 
         } catch (Exception e) {
+            e.printStackTrace();
             logger.warn(new ReportMessage(model,ou.getId(),"Group","create", "failed","writing to ldap").toString());
 
             return HttpStatus.BAD_REQUEST;
@@ -270,9 +288,21 @@ public class GroupRepoImpl implements GroupRepo {
                             contextUser.removeAttributeValue("ou", id);
                             contextUser.addAttributeValue("ou", ou.getId());
                             ldapTemplate.modifyAttributes(contextUser);
+                            SimpleUser simpleUser = mongoTemplate.findOne
+                                    (new Query(Criteria.where("userId").is(user.getUserId())), SimpleUser.class, "IDMAN_SimpleUsers");
+                            simpleUser.getMemberOf().remove(id);
+                            simpleUser.getMemberOf().add(ou.getId());
+
+                            mongoTemplate.remove
+                                    (new Query(Criteria.where("userId").is(user.getUserId())), "IDMAN_SimpleUsers");
+
+                            mongoTemplate.save
+                                    (simpleUser, "IDMAN_SimpleUsers");
                         }
                     }
                 }
+
+
 
 
                 List<parsso.idman.Models.Services.Service> services = serviceRepo.listServicesWithGroups(id);
@@ -316,6 +346,7 @@ public class GroupRepoImpl implements GroupRepo {
                 return HttpStatus.OK;
 
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.warn(new ReportMessage(model,doerID,ou.getId(),"update", "failed","writing to ldap").toString());
 
                 return HttpStatus.BAD_REQUEST;

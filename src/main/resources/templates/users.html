@@ -597,33 +597,55 @@
                                                 </div>
                                             </div>
 
-                                            <div v-if="loader" class="text-center">
-                                                <roller-loader color="#007bff"/>
-                                            </div>
-
                                             <div v-bind:style="usersImported ? 'visibility: visible;' : 'visibility: hidden;' ">
-                                                <p class="rounded" style="background-color:rgba(234, 236, 68, 0.637); padding: 1%;">
-                                                    {{s71}}<span style="color: green;">{{s69}}</span>{{s72}}<span style="color: red;">{{s70}}</span>{{s73}}
-                                                </p>
+                                                <div v-if="importUserListOverrideResault">
+                                                    <p class="rounded" style="background-color:rgba(234, 236, 68, 0.637); padding: 1%;">
+                                                        {{importUserListOverride1Text}}<span style="color: green;">{{importUserListOverrideSuccessful}}</span>
+                                                        {{importUserListOverride2Text}}<span style="color: red;">{{importUserListOverrideUnsuccessful}}</span>{{importUserListOverride3Text}}
+                                                    </p>
+                                                </div>
+                                                <div v-else>
+                                                    <p class="rounded" style="background-color:rgba(234, 236, 68, 0.637); padding: 1%;">
+                                                        {{s71}}<span style="color: green;">{{s69}}</span>{{s72}}<span style="color: red;">{{s70}}</span>{{s73}}
+                                                    </p>
+                                                </div>
                                             </div>
 
-                                            <div class="mt-3 mb-3" style="text-align: center;" v-bind:style="promptImportButtons ? 'visibility: visible;' : 'visibility: hidden;' ">
-                                                <p>{{s77}}</p>
-                                                <div style="display: inline-flex;">
-                                                    <button class="btn btn-danger btn-sm mr-3 ml-3" v-on:click="importUserList(false)">
+                                            <div class="mt-3" v-bind:style="importUserListGroupError ? 'visibility: visible;' : 'visibility: hidden;' ">
+                                                <div class="rounded" style="background-color:rgba(250, 247, 60, 0.521); padding: 1%;">
+                                                    <p>{{importUserListGroupErrorText}}</p>
+                                                    <p>{{importUserListGroupErrorList}}</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-3" v-bind:style="importUserListRepetitiveError ? 'visibility: visible;' : 'visibility: hidden;' ">
+                                                <div class="rounded" style="background-color:rgba(250, 247, 60, 0.521); padding: 1%;">
+                                                    <p>{{importUserListRepetitiveErrorText}}</p>
+                                                    <p>{{importUserListRepetitiveErrorList}}</p>
+                                                    <div class="mt-3" style="text-align: center;">
+                                                        <p>{{s77}}</p>
+                                                        <div style="display: inline-flex;">
+                                                            <button class="btn btn-danger btn-sm mr-3 ml-3" v-on:click="importUserList(false)">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-times fa-stack-1x"></i>
                                                         </span>
-                                                        {{s78}}
-                                                    </button>
-                                                    <button class="btn btn-success btn-sm mr-3 ml-3" v-on:click="importUserList(true)">
+                                                                {{s78}}
+                                                            </button>
+                                                            <button class="btn btn-success btn-sm mr-3 ml-3" v-on:click="importUserList(true)">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-check fa-stack-1x"></i>
                                                         </span>
-                                                        {{s79}}
-                                                    </button>
+                                                                {{s79}}
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
+
+                                            <div v-if="loader" class="text-center mt-3 mb-3">
+                                                <roller-loader color="#007bff"/>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>

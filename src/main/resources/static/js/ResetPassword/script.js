@@ -95,7 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
             s43: "کد پیامک شده خود را وارد کنید",
             s44: "جواب کد امنیتی نمی تواند خالی باشد.",
             s45: "جواب کد امنیتی اشتباه است، دوباره تلاش کنید.",
-            s46: "کد امنیتی"
+            s46: "کد امنیتی",
+            mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
         },
         created: function () {
             this.setDateNav();
@@ -139,8 +140,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 if(email != ""){
-                    if(emailRegex.test(email)){
-                        if(vm.capAnswer != ""){
+                    if(vm.capAnswer != ""){
+                        if(emailRegex.test(email)){
                             axios.get(url + "/api/public/checkMail/" + email) //
                                 .then((res) => {
                                     vm.emails = res.data;
@@ -178,10 +179,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                     }
                                 });
                             }else{
-                                alert(this.s44);
+                            alert(this.s38);
                             }
                     }else{
-                        alert(this.s38);
+                        alert(this.s44);
                     }
                 }else{
                     alert(this.s37);
@@ -296,33 +297,35 @@ document.addEventListener('DOMContentLoaded', function () {
             sendSMS: function  (mobile) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                const mobileRegex = /^09\d{9}$/;
                 if(mobile != ""){
                     if(vm.capAnswer != ""){
-                        axios.get(url + "/api/public/checkMobile/" + mobile) //
-                            .then((res) => {
-                                vm.mobiles = res.data;
-                                if(vm.mobiles.length == 0){
-                                    vm.mobileS = "";
-                                    vm.sendS = false;
-                                    vm.sendUS = false;
-                                    vm.checkSMSCode = false;
-                                    vm.SuccessS = false;
-                                    vm.ErrorS = true;
-                                    vm.ErrorSMSCode = false;
-                                    vm.getCaptcha();
-                                } else if(vm.mobiles.length == 1){
-                                    vm.loader = true;
-                                    axios.get(url + "/api/public/sendSMS/" + mobile + "/" + vm.captchaId + "/" + vm.capAnswer) //
-                                        .then((res) => {
-                                            vm.loader = false;
-                                            vm.codeSMS = "";
-                                            vm.sendS = false;
-                                            vm.sendUS = false;
-                                            vm.checkSMSCode = true;
-                                            vm.SuccessS = false;
-                                            vm.ErrorS = false;
-                                            vm.ErrorSMSCode = false;
-                                        }).catch((error) => {
+                        if(mobileRegex.test(mobile)){
+                            axios.get(url + "/api/public/checkMobile/" + mobile) //
+                                .then((res) => {
+                                    vm.mobiles = res.data;
+                                    if(vm.mobiles.length == 0){
+                                        vm.mobileS = "";
+                                        vm.sendS = false;
+                                        vm.sendUS = false;
+                                        vm.checkSMSCode = false;
+                                        vm.SuccessS = false;
+                                        vm.ErrorS = true;
+                                        vm.ErrorSMSCode = false;
+                                        vm.getCaptcha();
+                                    } else if(vm.mobiles.length == 1){
+                                        vm.loader = true;
+                                        axios.get(url + "/api/public/sendSMS/" + mobile + "/" + vm.captchaId + "/" + vm.capAnswer) //
+                                            .then((res) => {
+                                                vm.loader = false;
+                                                vm.codeSMS = "";
+                                                vm.sendS = false;
+                                                vm.sendUS = false;
+                                                vm.checkSMSCode = true;
+                                                vm.SuccessS = false;
+                                                vm.ErrorS = false;
+                                                vm.ErrorSMSCode = false;
+                                            }).catch((error) => {
                                             if (error.response) {
                                                 if(error.response.status === 403){
                                                     vm.loader = false;
@@ -331,19 +334,22 @@ document.addEventListener('DOMContentLoaded', function () {
                                                 }
                                             }
                                         });
-                                } else if(vm.mobiles.length > 1){
-                                    vm.usernameS = "";
-                                    vm.sendS = false;
-                                    vm.sendUS = true;
-                                    vm.checkSMSCode = false;
-                                    vm.SuccessS = false;
-                                    vm.ErrorS = false;
-                                    vm.ErrorSMSCode = false;
-                                }
-                            });
+                                    } else if(vm.mobiles.length > 1){
+                                        vm.usernameS = "";
+                                        vm.sendS = false;
+                                        vm.sendUS = true;
+                                        vm.checkSMSCode = false;
+                                        vm.SuccessS = false;
+                                        vm.ErrorS = false;
+                                        vm.ErrorSMSCode = false;
+                                    }
+                                });
                         }else{
-                            alert(this.s44);
+                            alert(this.mobileFormatErrorText);
                         }
+                    }else{
+                        alert(this.s44);
+                    }
                 }else{
                     alert(this.s42);
                 }
@@ -452,6 +458,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s44 = "Security Code Answer Cannot Be Empty.";
                     this.s45 = "Security Code Answer Is Incorrect, Try Again.";
                     this.s46 = "Security Code";
+                    this.mobileFormatErrorText = "Enter Phone Number Format Correctly";
                 } else{
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
@@ -495,6 +502,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s44 = "جواب کد امنیتی نمی تواند خالی باشد.";
                     this.s45 = "جواب کد امنیتی اشتباه است، دوباره تلاش کنید.";
                     this.s46 = "کد امنیتی";
+                    this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
                 }
             }
         }

@@ -79,9 +79,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-
-
-
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources
@@ -92,14 +89,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //pages
                 .antMatchers("/resetpassword").permitAll()
-                .antMatchers("/newpassword").permitAll()
+                .antMatchers("/newpassword**").permitAll()
                 .antMatchers("/login/cas").permitAll()
                 .antMatchers("/403").permitAll()
                 .antMatchers("/error").permitAll()
                 .antMatchers("/privacy").permitAll()
 
                 //APIs
-                .antMatchers("/api/public**").anonymous()
+                .antMatchers("/api/public/**").anonymous()
                 .antMatchers("/api/resetpassword**").permitAll()
                 .antMatchers("/api/captcha/request").permitAll()
 
@@ -147,9 +144,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/configs**").hasRole("SUPERADMIN")
 
                 //APIs
-                .antMatchers("/api/configs**").hasRole("SUPERADMIN")
+                .antMatchers("/api/configs/**").hasRole("SUPERADMIN")
+                .antMatchers("/api/configs").hasRole("SUPERADMIN")
                 .antMatchers("/api/roles**").hasRole("SUPERADMIN")
+                .antMatchers("/api/roles/**").hasRole("SUPERADMIN")
                 .antMatchers("/api/refresh**").hasRole("SUPERADMIN")
+                .antMatchers("/api/refresh/**").hasRole("SUPERADMIN")
 
                 //******************SUPPORTER and SUPERADMIN Objects *******************
                 //pages
@@ -159,8 +159,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/tickets").hasAnyRole("SUPPORTER", "SUPERADMIN")
 
 
+                //******************SUPPORTER and SUPERADMIN and Admin Objects *******************
+
+
+                //APIs
+                .antMatchers("/api/tickets").hasAnyRole("ADMIN", "SUPERADMIN")
+
+
+
+
                 .anyRequest().authenticated()
                 .and()
+
 
 
 

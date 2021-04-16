@@ -11,7 +11,7 @@ import java.time.ZoneId;
 
 public class DateConverter {
 
-    ZoneId zoneId = ZoneId.of("UTC+03:30");
+    ZoneId zoneId = ZoneId.of("Asia/Tehran");
     private int day, month, year;
     private int jYear, jMonth, jDay;
     private int gYear, gMonth, gDay;

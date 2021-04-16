@@ -27,6 +27,7 @@ public class EmailSend {
 
     public void sendMail(String to, String uid, String name, String token) {
 
+
         String subject = "بازنشانی رمز عبور";
         String body = " عزیز \nشما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید.\n" +
                 "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +

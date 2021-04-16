@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
@@ -14,11 +13,11 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
-import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
@@ -35,17 +34,21 @@ import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
+import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.FilesStorageService;
+import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
-import javax.naming.NamingException;
-import javax.naming.directory.*;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
+import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -87,7 +90,7 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     private Email emailClass;
     @Autowired
-    private BuildDn buildDn;
+    private BuildDnUser buildDnUser;
     @Autowired
     private DashboardData dashboardData;
     @Autowired
@@ -95,6 +98,9 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     ExcelAnalyzer excelAnalyzer;
     String model = "User";
+
+    @Autowired
+    GroupRepo groupRepo;
 
 
     @Override
@@ -106,75 +112,100 @@ public class UserRepoImpl implements UserRepo {
         try {
             User user = retrieveUsers(p.getUserId());
             if (user == null || user.getUserId() == null) {
-                Query query = new Query(Criteria.where("userId").is(p.getUserId()));
-                //create user in ldap
-                Name dn = buildDn.buildDn(p.getUserId());
-                ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
-                mongoTemplate.save(new SimpleUser(p),simpleCollection);
+                if( checkGroup(p.getMemberOf())) {
 
-                //update it's first pwChangedTime in a new thread
-                Thread thread = new Thread() {
-                    public void run() {
-                        User userTemp = retrieveUsers(p.getUserId());
-                        DirContextOperations context = ldapTemplate.lookupContext(dn);
+                    Query query = new Query(Criteria.where("userId").is(p.getUserId()));
+                    //create user in ldap
+                    Name dn = buildDnUser.buildDn(p.getUserId());
+                    ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
+                    mongoTemplate.save(new SimpleUser(p), simpleCollection);
 
-                        context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp() + "Z");
+                    //update it's first pwChangedTime in a new thread
+                    Thread thread = new Thread() {
+                        public void run() {
+                            User userTemp = retrieveUsers(p.getUserId());
+                            DirContextOperations context = ldapTemplate.lookupContext(dn);
 
-                        try {
-                            ldapTemplate.modifyAttributes(context);
-                        } catch (Exception e) {
-                            logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","due to writing to ldap").toString());
+                            context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp() + "Z");
+
+                            try {
+                                ldapTemplate.modifyAttributes(context);
+                            } catch (Exception e) {
+
+                                logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "due to writing to ldap").toString());
+                            }
+
                         }
+                    };
 
-                    }
-                };
+                    thread.start();
 
-                thread.start();
-
-                new Thread() {
-                    public void run() {
+                    new Thread(() -> {
                         //logger.warn("User "+user.getUserId() + " created");
-                        UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
-                        usersExtraInfo.setUserId(p.getUserId());
-                        usersExtraInfo.setQrToken(UUID.randomUUID().toString());
-                        usersExtraInfo.setPhotoName(p.getPhoto());
-                        usersExtraInfo.setCreationTimeStamp(new
-                                Date().getTime());
-                        usersExtraInfo.setUnDeletable(p.isUnDeletable());
+                        UsersExtraInfo usersExtraInfo = new UsersExtraInfo(p.getUserId(), p.getPhoto(), p.isUnDeletable());
                         mongoTemplate.save(usersExtraInfo, Token.collection);
-                    }
-                }.start();
+                    }).start();
 
-                if (p.getCStatus() != null)
-                    if (p.getCStatus().equals("disable"))
-                        disable(doerID, p.getUserId());
+                    if (p.getCStatus() != null)
+                        if (p.getCStatus().equals("disable"))
+                            disable(doerID, p.getUserId());
 
-                logger.warn(new ReportMessage(model,p.getUserId(),"","create", "success","").toString());
-                return new JSONObject();
+                    logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "success", "").toString());
+                    return new JSONObject();
+                } else {
+                    logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","group not exist").toString());
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("userId", p.getUserId() );
+                    jsonObject.put("invalidGroups", invalidGroups(p.getMemberOf()));
+                    return jsonObject;
+                }
             } else {
                 logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","already exist").toString());
                 return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown reason").toString());
+            if(p.getUserId()!=null || !p.getUserId().equals(""))
+
+                logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown reason").toString());
             return null;
         }
+    }
+
+    private  boolean checkGroup(List<String> groups){
+        List<Group> realGroups = groupRepo.retrieve();
+        List<String> realStrings = new LinkedList<>();
+        for (Group group:realGroups) {
+           realStrings.add(group.getId());
+        }
+
+        for (String group:groups) {
+            if(!realStrings.contains(group))
+                return false;
+
+        }
+        return true;
+    }
+
+    private List<String> invalidGroups (List<String> groups){
+        List<Group> realGroups = groupRepo.retrieve();
+        List<String> realStrings = new LinkedList<>();
+        List<String> invalids = new LinkedList<>();
+        for (Group group:realGroups) {
+            realStrings.add(group.getId());
+        }
+
+        for (String group:groups) {
+            if(!realStrings.contains(group))
+                invalids.add(group);
+
+        }
+        return invalids;
     }
 
     @Override
     public int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
-        SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-
-        return  ldapTemplate.search(BASE_DN, MakeFilter.makeUsersFilter(groupFilter, searchUid, searchDisplayName, userStatus).encode(), searchControls,
-                new AttributesMapper<Object>() {
-                    @Override
-                    public Object mapFromAttributes(Attributes attributes) throws NamingException {
-                        return null;
-                    }
-                }).size();
+        return (int) mongoTemplate.count(queryBuilder(groupFilter,searchUid,searchDisplayName,userStatus), simpleCollection);
     }
 
     @Override
@@ -183,13 +214,11 @@ public class UserRepoImpl implements UserRepo {
         Logger logger = LogManager.getLogger(doerID);
 
         p.setUserId(usid);
-        Name dn = buildDn.buildDn(p.getUserId());
+        Name dn = buildDnUser.buildDn(p.getUserId());
 
         User user = retrieveUsers(p.getUserId());
 
         DirContextOperations context;
-
-
 
         //remove current pwdEndTime
         if ((p.getEndTime() != null && p.getEndTime().equals("")))
@@ -199,23 +228,31 @@ public class UserRepoImpl implements UserRepo {
                 && user.getEndTime()!=null)
             removeCurrentEndTime(p.getUserId());
 
-        context = buildAttributes.buildAttributes(doerID, p.getUserId(), p, dn);
+        context = buildAttributes.buildAttributes(doerID, usid, p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId()));
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
+        usersExtraInfo.setUnDeletable(p.isUnDeletable());
+        SimpleUser simpleUser = mongoTemplate.findOne(query,SimpleUser.class, simpleCollection);
+        simpleUser.setStatus(p.getCStatus());
+        simpleUser.setMemberOf(p.getMemberOf());
+
 
         if (p.getPhoto() != null)
             usersExtraInfo.setPhotoName(p.getPhoto());
 
         if (p.isUnDeletable())
             usersExtraInfo.setUnDeletable(true);
-        if (usersExtraInfo!=null)
-            mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
 
         try {
+
             ldapTemplate.modifyAttributes(context);
+
+            mongoTemplate.remove(query, userExtraInfoCollection);
+            mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
+
             mongoTemplate.remove(query, simpleCollection);
-            mongoTemplate.save(new SimpleUser(p), simpleCollection);
+            mongoTemplate.save(simpleUser, simpleCollection);
 
             if(!user.getStatus().equals(p.getStatus()))
                 logger.warn(new ReportMessage("User",usid,"Status","change", "success","from "+user.getStatus()+ " to "+p.getStatus()).toString());
@@ -223,7 +260,8 @@ public class UserRepoImpl implements UserRepo {
             logger.warn(new ReportMessage(model,usid,"","update", "success","").toString());
 
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model,usid,"","update", "failed","unknown error").toString());
+            e.printStackTrace();
+            logger.warn(new ReportMessage(model,usid,"","update", "failed","Writing to DB").toString());
 
         }
 
@@ -233,12 +271,12 @@ public class UserRepoImpl implements UserRepo {
 
             try {
                 ldapTemplate.modifyAttributes(context);
-                //logger.warn(new ReportMessage(model,usid,"password","update", "success","").toString());
+                logger.warn(new ReportMessage(model,usid,"password","update", "success","").toString());
 
                 return HttpStatus.OK;
             } catch (Exception e) {
 
-                //logger.warn(new ReportMessage(model,usid,"password","update", "failed","unknown error").toString());
+                logger.warn(new ReportMessage(model,usid,"password","update", "failed","unknown error").toString());
 
                 return HttpStatus.BAD_REQUEST;
             }
@@ -252,62 +290,15 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public JSONObject createUserImport(String doerID, User p) {
 
-        Logger logger = LogManager.getLogger(doerID);
 
-        if (p.getUserId() != null && !p.getUserId().equals("")) {
-            User user = retrieveUsers(p.getUserId());
-            if (p.getUserPassword() == null)
-                p.setUserPassword(defaultPassword);
-
-            try {
-                if (user == null) {
-                    Name dn = buildDn.buildDn(p.getUserId());
-                    ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
-
-                    UsersExtraInfo usersExtraInfo = new UsersExtraInfo();
-                    usersExtraInfo.setUserId(p.getUserId());
-                    usersExtraInfo.setQrToken(UUID.randomUUID().toString());
-                    usersExtraInfo.setCreationTimeStamp(new Date().getTime());
-                    mongoTemplate.save(usersExtraInfo, Token.collection);
-
-                    //update it's first pwChangedTime in a new thread
-                    Thread thread = new Thread() {
-                        @SneakyThrows
-                        public void run() {
-                            User userTemp = retrieveUsers(p.getUserId());
-
-                            DirContextOperations context = ldapTemplate.lookupContext(dn);
+        if (p.getUserPassword() == null)
+            p.setUserPassword(defaultPassword);
 
 
-                            try {
-                                ldapTemplate.modifyAttributes(context);
-                                context.rebind("pwdChangedTime", userTemp.getTimeStamp() + "Z");
-
-                            } catch (Exception e) {
-                            }
+        return create(doerID,p);
 
 
-                        }
-                    };
 
-                    thread.start();
-
-                    logger.warn(new ReportMessage(model,p.getUserId(),"","create", "success","").toString());
-                    return new JSONObject();
-                } else {
-                    logger.warn(new ReportMessage(model,doerID,"","create", "failed","repetitive").toString());
-
-                    return importUsers.compareUsers(user, p);
-                }
-            } catch (Exception e) {
-                logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown error").toString());
-                return null;
-            }
-
-        }
-
-        logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","userId is empty").toString());
-        return null;
     }
 
     @Override
@@ -335,12 +326,12 @@ public class UserRepoImpl implements UserRepo {
                     undeletables.add(user.getUserId());
                     continue;
                 }
-                Name dn = buildDn.buildDn(user.getUserId());
+                Name dn = buildDnUser.buildDn(user.getUserId());
                 Query query = new Query(new Criteria("userId").is(user.getUserId()));
 
                 try {
                     ldapTemplate.unbind(dn);
-                    mongoTemplate.remove(query, User.class, userExtraInfoCollection);
+                    mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
                     mongoTemplate.remove(query, SimpleUser.class, simpleCollection);
                     logger.warn(new ReportMessage(model,user.getUserId(),"","remove", "success","").toString());
 
@@ -406,7 +397,7 @@ public class UserRepoImpl implements UserRepo {
 
                     DirContextOperations contextUser;
 
-                    contextUser = ldapTemplate.lookupContext(buildDn.buildDn(user.getUserId()));
+                    contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
                     contextUser.setAttributeValue("userPassword", newPassword);
 
                     try {
@@ -530,30 +521,35 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
         int limit = nCount;
         int skip =(page-1)*limit;
 
-        List<SimpleUser> userList = mongoTemplate.find(queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus).skip(skip).limit(limit),
+        Query query = queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus);
+
+
+
+        if (sortType.equals(""))
+            query.with(Sort.by(Sort.Direction.ASC,"userId"));
+
+
+        else if (sortType.equals("uid_m2M"))
+            query.with(Sort.by(Sort.Direction.ASC,"userId"));
+
+        else if (sortType.equals("uid_M2m"))
+            query.with(Sort.by(Sort.Direction.DESC,"userId"));
+
+        else if (sortType.equals("displayName_m2M"))
+            query.with(Sort.by(Sort.Direction.ASC,"displayName"));
+
+        else if (sortType.equals("displayName_M2m"))
+            query.with(Sort.by(Sort.Direction.DESC,"displayName"));
+
+
+        List<SimpleUser> userList = mongoTemplate.find(query.skip(skip).limit(limit),
                 SimpleUser.class, simpleCollection);
 
-        if (!sortType.equals("")) {
-            if (sortType.equals("uid_m2M"))
-                Collections.sort(userList, SimpleUser.uidMinToMaxComparator);
-            else if (sortType.equals("uid_M2m"))
-                Collections.sort(userList, SimpleUser.uidMaxToMinComparator);
-            else if (sortType.equals("displayName_m2M"))
-                Collections.sort(userList, SimpleUser.displayNameMinToMaxComparator);
-            else if (sortType.equals("displayName_M2m"))
-                Collections.sort(userList, SimpleUser.displayNameMaxToMinComparator);
-        } else
-            Collections.sort(userList, SimpleUser.uidMinToMaxComparator);
-
-
-        int size = (int) mongoTemplate.count(queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus), SimpleUser.class, simpleCollection);
+        int size = retrieveUsersSize(groupFilter, searchUid, searchDisplayName, userStatus);
 
         return new ListUsers(size , userList, (int) Math.ceil(size/nCount));
     }
@@ -626,7 +622,7 @@ public class UserRepoImpl implements UserRepo {
 
             for (User user : people) {
 
-                DirContextOperations context = buildAttributes.buildAttributes(doerID,user.getUserId(), user, buildDn.buildDn(user.getUserId()));
+                DirContextOperations context = buildAttributes.buildAttributes(doerID,user.getUserId(), user, buildDnUser.buildDn(user.getUserId()));
 
                 context.removeAttributeValue("ou", old_ou);
                 context.addAttributeValue("ou", new_ou);
@@ -656,10 +652,11 @@ public class UserRepoImpl implements UserRepo {
         User user = new User();
         UsersExtraInfo usersExtraInfo = null;
         if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
-            user = ldapTemplate.lookup(buildDn.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
+            user = ldapTemplate.lookup(buildDnUser.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
             usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
-            user.setUsersExtraInfo(usersExtraInfo);
+            user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
+            user.setUnDeletable(usersExtraInfo.isUnDeletable());
         }
 
         if(user.getRole()==null)
@@ -674,7 +671,7 @@ public class UserRepoImpl implements UserRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        
+
 
         return ldapTemplate.search(query().where("ou").is(groupId), simpleUserAttributeMapper);
     }
@@ -692,6 +689,8 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public Dashboard retrieveDashboardData() throws InterruptedException {
 
+
+
         return dashboardData.retrieveDashboardData();
     }
 
@@ -701,7 +700,7 @@ public class UserRepoImpl implements UserRepo {
         Logger logger = LogManager.getLogger(doer);
 
 
-        Name dn = buildDn.buildDn(uid);
+        Name dn = buildDnUser.buildDn(uid);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
@@ -709,7 +708,7 @@ public class UserRepoImpl implements UserRepo {
         User user = retrieveUsers(uid);
         String status = user.getStatus();
 
-        if (status.equalsIgnoreCase("disabled")) {
+        if (status.equalsIgnoreCase("disable")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
 
             try {
@@ -729,7 +728,7 @@ public class UserRepoImpl implements UserRepo {
 
     public HttpStatus removeCurrentEndTime(String uid) {
 
-        Name dn = buildDn.buildDn(uid);
+        Name dn = buildDnUser.buildDn(uid);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
@@ -757,7 +756,7 @@ public class UserRepoImpl implements UserRepo {
         Logger logger = LogManager.getLogger(doerID);
 
 
-        Name dn = buildDn.buildDn(uid);
+        Name dn = buildDnUser.buildDn(uid);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
@@ -788,7 +787,7 @@ public class UserRepoImpl implements UserRepo {
         Logger logger = LogManager.getLogger(doerID);
 
 
-        Name dn = buildDn.buildDn(uid);
+        Name dn = buildDnUser.buildDn(uid);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
@@ -796,7 +795,7 @@ public class UserRepoImpl implements UserRepo {
         User user = retrieveUsers(uid);
         String locked = user.getStatus();
 
-        if (locked.equalsIgnoreCase("locked")) {
+        if (locked.equalsIgnoreCase("lock")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
 
             try {
@@ -815,7 +814,6 @@ public class UserRepoImpl implements UserRepo {
 
             } catch (Exception e) {
 
-                logger.warn(new ReportMessage(model,user.getUserId(),"","unlock", "failed","writing to ldap").toString());
                 return HttpStatus.BAD_REQUEST;
             }
 
@@ -831,12 +829,23 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus massUpdate(String doerID, List<User> users) {
-        for (User user : users)
+    public JSONObject massUpdate(String doerID, List<User> users) {
+        int nCount = users.size();
+        int nSuccessful=0;
+        for (User user : users) {
             if (user != null && user.getUserId() != null)
-                update(doerID, user.getUserId(), user);
+                try {
+                    update(doerID, user.getUserId(), user);
+                    nSuccessful++;
+                } catch (Exception e) {
+                }
+        }
+        JSONObject jsonObject = new JSONObject();
+                jsonObject.put("nCount", nCount);
+                jsonObject.put("nSuccessful", nSuccessful);
+                jsonObject.put("nUnSuccessful",nCount-nSuccessful);
 
-        return HttpStatus.OK;
+                return jsonObject;
     }
 
     @Override
@@ -924,7 +933,7 @@ public class UserRepoImpl implements UserRepo {
         if (httpStatus == HttpStatus.OK) {
             DirContextOperations contextUser;
 
-            contextUser = ldapTemplate.lookupContext(buildDn.buildDn(user.getUserId()));
+            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
             contextUser.setAttributeValue("userPassword", pass);
             ldapTemplate.modifyAttributes(contextUser);
 
@@ -940,7 +949,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<String> addGroupToUsers(MultipartFile file, String ou) throws IOException {
+    public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException {
         InputStream insfile = file.getInputStream();
 
         if (file.getOriginalFilename().endsWith(".xlsx")) {
@@ -951,7 +960,7 @@ public class UserRepoImpl implements UserRepo {
             //Get first/desired sheet from the workbook
             XSSFSheet sheet = workbookXLSX.getSheetAt(0);
 
-            return excelAnalyzer.excelSheetAnalyze(sheet, ou,true);
+            return excelAnalyzer.excelSheetAnalyze(doer, sheet, ou,true);
 
         } else if (file.getOriginalFilename().endsWith(".xls")) {
             HSSFWorkbook workbookXLS = null;
@@ -960,16 +969,17 @@ public class UserRepoImpl implements UserRepo {
 
             HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
-            return excelAnalyzer.excelSheetAnalyze(xlssheet, ou,true);
+            return excelAnalyzer.excelSheetAnalyze(doer,xlssheet, ou,true);
 
         } else if (file.getOriginalFilename().endsWith(".csv")) {
 
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-            return excelAnalyzer.csvSheet(csvReader, ou, true);
+            return excelAnalyzer.csvSheetAnalyzer(doer,csvReader, ou, true);
         }
 
         return null;
     }
+
 }
 

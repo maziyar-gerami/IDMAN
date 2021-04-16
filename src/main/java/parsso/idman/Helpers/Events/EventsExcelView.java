@@ -28,7 +28,7 @@ public class EventsExcelView extends AbstractXlsView {
     public static String mainCollection = "MongoDbCasEventRepository";
     @Autowired
     EventRepo eventRepo;
-    ZoneId zoneId = ZoneId.of("UTC+03:30");
+    ZoneId zoneId = ZoneId.of("Asia/Tehran");
 
 
     @Override

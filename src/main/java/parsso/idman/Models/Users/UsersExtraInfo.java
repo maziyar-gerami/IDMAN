@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
+import java.util.UUID;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -29,4 +32,28 @@ public class UsersExtraInfo {
     private String category;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String subCategory;
+
+    public UsersExtraInfo(){
+
+    }
+
+    public UsersExtraInfo(String userId) {
+        this.userId = userId;
+        this.qrToken = UUID.randomUUID().toString();
+        this.unDeletable = false;
+        this.role = "USER";
+        this.creationTimeStamp = new Date().getTime();
+    }
+
+    public UsersExtraInfo(String userId, String photoName, boolean unDeletable) {
+        this.userId = userId;
+
+        this.qrToken = UUID.randomUUID().toString();
+        this.creationTimeStamp = new Date().getTime();
+        this.photoName = photoName;
+        this.unDeletable = unDeletable;
+        this.role = "USER";
+    }
+
+
 }

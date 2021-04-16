@@ -45,7 +45,7 @@ public class DashboardData {
     @Autowired
     LdapTemplate ldapTemplate;
 
-    ZoneId zoneId = ZoneId.of("UTC+03:30");
+    ZoneId zoneId = ZoneId.of("Asia/Tehran");
 
     Users fUsers;
     Services fServices;
@@ -54,7 +54,6 @@ public class DashboardData {
 
 
     public Dashboard retrieveDashboardData() throws IOException, InterruptedException {
-
 
         Thread thread = new Thread(){
             @SneakyThrows
@@ -74,7 +73,7 @@ public class DashboardData {
 
         Thread userData = new Thread(() -> {
             //________users data____________
-            int nUsers = userRepo.retrieveUsersSize(null,null,null,null);
+            int nUsers = userRepo.retrieveUsersSize("","","","");
 
             int nDisabled = ldapTemplate.search(query().where("pwdAccountLockedTime").is("40400404040404.950Z"), simpleUserAttributeMapper).size();
             int nLocked = ldapTemplate.search(query().where("pwdAccountLockedTime").lte("40400404040404.950Z"), simpleUserAttributeMapper).size();

@@ -6,44 +6,11 @@ import lombok.Setter;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
-import java.util.Comparator;
 import java.util.List;
 
 @Getter
 @Setter
 public class SimpleUser implements Serializable, Comparable {
-    public static Comparator<SimpleUser> uidMinToMaxComparator = new Comparator<SimpleUser>() {
-
-        @Override
-        public int compare(SimpleUser o1, SimpleUser o2) {
-            return o1.getUserId().compareTo(o2.getUserId());
-        }
-
-    };
-    public static Comparator<SimpleUser> uidMaxToMinComparator = new Comparator<SimpleUser>() {
-
-        @Override
-        public int compare(SimpleUser o1, SimpleUser o2) {
-            return o2.getUserId().compareTo(o1.getUserId());
-        }
-
-    };
-    public static Comparator<SimpleUser> displayNameMinToMaxComparator = new Comparator<SimpleUser>() {
-
-        @Override
-        public int compare(SimpleUser o1, SimpleUser o2) {
-            return o1.getDisplayName().compareTo(o2.getDisplayName());
-        }
-
-    };
-    public static Comparator<SimpleUser> displayNameMaxToMinComparator = new Comparator<SimpleUser>() {
-
-        @Override
-        public int compare(SimpleUser o1, SimpleUser o2) {
-            return o2.getDisplayName().compareTo(o1.getDisplayName());
-        }
-
-    };
 
     public SimpleUser(User user) {
         this._id = user.get_id();

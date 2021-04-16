@@ -13,7 +13,10 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.RepoImpls.UserRepoImpl;
+import parsso.idman.Repos.UserRepo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +25,9 @@ import java.util.Map;
 public class CasUserDetailService implements AuthenticationUserDetailsService {
     @Autowired
     MongoTemplate mongoTemplate;
+
+    @Autowired
+    UserRepo userRepo;
 
     String adminId;
     public CasUserDetailService(String Id){
@@ -34,7 +40,6 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
         CasAssertionAuthenticationToken casAssertionAuthenticationToken = (CasAssertionAuthenticationToken) token;
         AttributePrincipal principal = casAssertionAuthenticationToken.getAssertion().getPrincipal();
         Collection<SimpleGrantedAuthority> collection = new ArrayList<SimpleGrantedAuthority>();
-        Map attributes = principal.getAttributes();
         Query query = new Query(Criteria.where("userId").is(principal.getName()));
         String collection1 = "IDMAN_UsersExtraInfo";
 
@@ -43,16 +48,25 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
 
         UsersExtraInfo usersExtraInfo =  mongoTemplate.findOne(query, UsersExtraInfo.class, collection1);
 
-        if (usersExtraInfo.getRole().equals("SUPERADMIN"))
-            collection.add(new SimpleGrantedAuthority("ROLE_" + "SUPERADMIN"));
+        if (usersExtraInfo==null){
+            usersExtraInfo = new UsersExtraInfo(principal.getName());
+            mongoTemplate.save(usersExtraInfo,collection1);
+        }
 
-        if (usersExtraInfo.getRole()!=null)
-            collection.add(new SimpleGrantedAuthority("ROLE_" + usersExtraInfo.getRole()));
 
-        else
+
+
+        if (usersExtraInfo.getRole() == null)
             collection.add(new SimpleGrantedAuthority("ROLE_" + "USER"));
 
-            return new User(principal.getName(), "", collection);
+        else if (usersExtraInfo.getRole().equals("SUPERADMIN"))
+            collection.add(new SimpleGrantedAuthority("ROLE_" + "SUPERADMIN"));
+
+        else if (usersExtraInfo.getRole()!=null)
+            collection.add(new SimpleGrantedAuthority("ROLE_" + usersExtraInfo.getRole()));
+
+
+        return new User(principal.getName(), "", collection);
 
     }
 

@@ -535,7 +535,11 @@
                                             <h3 class="mb-3 pb-2 border-bottom">{{s29}}</h3>
                                             <div class="form-group">
                                                 <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s55}}</small></label>
-                                                <input id="group.idCreate" type="text" @keypress="groupNameValidate" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <input id="group.idCreate" type="text" @keypress="groupNameValidate" v-on:keyup="removeGroupIdDuplicateError"
+                                                class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <div class="matches mt-2" v-bind:style="groupIdDuplicate ? 'visibility: visible;' : 'visibility: hidden;' ">
+                                                    <p class="error" style="font-size: .8rem;">{{groupIdDuplicateText}}</p>
+                                                </div>
                                             </div>
                                             <div class="form-group">
                                                 <label>{{U3}}<span style="color: red;"> *</span></label>
