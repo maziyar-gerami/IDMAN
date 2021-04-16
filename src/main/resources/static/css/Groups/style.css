@@ -213,3 +213,12 @@ html,body {
   text-align: left;
   direction: ltr;
 }
+
+.error {
+  color: #ef5662;
+  position: relative;
+  padding: .35rem 1.25rem;
+  border: 1px solid #ffc1c5;
+  border-radius: .25rem;
+  text-align: center;
+}

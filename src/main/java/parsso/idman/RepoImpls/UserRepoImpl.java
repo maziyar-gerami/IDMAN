@@ -36,6 +36,7 @@ import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
+import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.User;
@@ -114,7 +115,6 @@ public class UserRepoImpl implements UserRepo {
             if (user == null || user.getUserId() == null) {
                 if( checkGroup(p.getMemberOf())) {
 
-                    Query query = new Query(Criteria.where("userId").is(p.getUserId()));
                     //create user in ldap
                     Name dn = buildDnUser.buildDn(p.getUserId());
                     ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
@@ -233,8 +233,12 @@ public class UserRepoImpl implements UserRepo {
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
         usersExtraInfo.setUnDeletable(p.isUnDeletable());
         SimpleUser simpleUser = mongoTemplate.findOne(query,SimpleUser.class, simpleCollection);
-        simpleUser.setStatus(p.getCStatus());
+        if(p.getCStatus()!=null)
+            simpleUser.setStatus(p.getCStatus());
+        else
+            simpleUser.setStatus(p.getStatus());
         simpleUser.setMemberOf(p.getMemberOf());
+        simpleUser.setDisplayName(p.getDisplayName());
 
 
         if (p.getPhoto() != null)
@@ -244,9 +248,22 @@ public class UserRepoImpl implements UserRepo {
             usersExtraInfo.setUnDeletable(true);
 
 
+
         try {
+            ldapTemplate.modifyAttributes(context);
+
+            if (!p.getStatus().equalsIgnoreCase(user.getStatus()))
+                if (user.getStatus().equalsIgnoreCase("enable") && user.getStatus().equalsIgnoreCase("disable"))
+                    disable(doerID,usid);
+                else
+                    enable(doerID, usid);
+
+            if (p.getEndTime()!=null)
+                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
 
             ldapTemplate.modifyAttributes(context);
+
+
 
             mongoTemplate.remove(query, userExtraInfoCollection);
             mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
@@ -282,6 +299,8 @@ public class UserRepoImpl implements UserRepo {
             }
 
         }
+
+
 
         return  HttpStatus.OK;
     }
@@ -838,6 +857,7 @@ public class UserRepoImpl implements UserRepo {
                     update(doerID, user.getUserId(), user);
                     nSuccessful++;
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
         }
         JSONObject jsonObject = new JSONObject();

@@ -137,6 +137,8 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesURLText: "./roles",
             reportsText: "گزارش ها",
             reportsURLText: "./reports",
+            groupIdDuplicate: false,
+            groupIdDuplicateText: "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام انگلیسی",
@@ -365,6 +367,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         .then((resp) => {
                             location.reload();
                         });
+                    }).catch((error) => {
+                        if (error.response) {
+                            if(error.response.status === 302){
+                                vm.groupIdDuplicate = true;
+                            }
+                        }
                     });
                 }
             },
@@ -590,8 +598,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         url: url + "/api/users/ou/" + document.getElementById("editingGroupID").value,  //
                         headers: {'Content-Type': 'multipart/form-data'},
                         data: bodyFormData,
-                    })
-                    .then((res) => {
+                    }).then((res) => {
                         console.log(res);
                         if(res.status == 200){
                             vm.loader2 = false;
@@ -606,6 +613,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             vm.usersAddedError = true;
                             setTimeout(function(){ vm.usersAddedError = false; }, 15000);
                         }
+                    }).catch((error) => {
+                        vm.loader2 = false;
+                        alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید");
                     });
                 }
             },
@@ -618,6 +628,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }else if (keyCode > 90 && keyCode < 97) {
                     $event.preventDefault();
                 }
+            },
+            removeGroupIdDuplicateError() {
+                this.groupIdDuplicate = false;
             },
             changeLang: function () {
                 if(this.lang == "EN"){
@@ -676,6 +689,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s55 = " (Only English Letters And Numbers Are Allowed For Group Name)";
                     this.rolesText = "Roles";
                     this.reportsText = "Reports";
+                    this.groupIdDuplicateText = "A Group With This Name Already Exists, Please Choose Another.";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
@@ -748,6 +762,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s55 = " (برای نام انگلیسی گروه تنها حروف انگلیسی و اعداد مجاز می باشد)";
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
+                    this.groupIdDuplicateText = "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";

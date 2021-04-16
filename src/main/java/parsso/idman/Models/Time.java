@@ -87,7 +87,7 @@ public class Time {
                         + String.format("%02d", eventDate.getHour())
                         + String.format("%02d", eventDate.getMinute())
                         + String.format("%02d", eventDate.getSecond())
-                        + String.format("%02d", eventDate.getNano());
+                        + String.format("%03d", eventDate.getNano());
             }else if (input.contains("/")) {
                 String Y = input.substring(0, 4);
                 String M = input.substring(5, 7);
@@ -120,8 +120,8 @@ public class Time {
                         + String.format("%02d", eventDate.getMonthValue())
                         + String.format("%02d", eventDate.getDayOfMonth())
                         + String.format("%02d", eventDate.getHour())
-                        + String.format("%02d", eventDate.getMinute());
-                
+                        + String.format("%02d", eventDate.getMinute())
+                        + String.format("%02d", eventDate.getSecond());
             }
 
             else {
@@ -130,14 +130,6 @@ public class Time {
                 if (temp.contains("-")) {
                     temp = convertDateToNumber(input);
 
-
-                }
-
-                try {
-                    String temp1 = temp.substring(0,14);
-                    String temp2 = temp.substring(16);
-                    temp = temp1+temp2;
-                }catch (Exception e){
 
                 }
 
@@ -164,7 +156,7 @@ public class Time {
 
         String date = convertDateJalaliToGeorgian(Integer.valueOf(timeObject.getYear()), Integer.valueOf(timeObject.getMonth()), Integer.valueOf(timeObject.getDay()));
 
-        String time = String.format("%02d", Integer.valueOf(timeObject.getYear())) +
+        String time = String.format("%02d", Integer.valueOf(timeObject.getHours())) +
                 String.format("%02d", Integer.valueOf(timeObject.getMinutes())) +
                 String.format("%02d", Integer.valueOf(timeObject.getSeconds())) + "." +
                 String.format("%03d", Integer.valueOf(timeObject.getMilliSeconds()));

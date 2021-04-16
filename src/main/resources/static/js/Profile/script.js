@@ -101,6 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesURLText: "./roles",
             reportsText: "گزارش ها",
             reportsURLText: "./reports",
+            emailFormatErrorText: "فرمت آدرس ایمیل را به درستی وارد کنید",
+            mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -210,13 +212,18 @@ document.addEventListener('DOMContentLoaded', function () {
             editUser: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
+                const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                const mobileRegex = /^09\d{9}$/;
 
-                if(document.getElementById('userInfo.displayNameUpdate').value == "" ||
-                document.getElementById('userInfo.mobileUpdate').value == "" ||
-                document.getElementById('userInfo.mailUpdate').value == ""){
+                if(document.getElementById("userInfo.displayNameUpdate").value == "" ||
+                document.getElementById("userInfo.mobileUpdate").value == "" ||
+                document.getElementById("userInfo.mailUpdate").value == ""){
                     alert("لطفا قسمت های الزامی را پر کنید.");
+                }else if(!emailRegex.test(document.getElementById("userInfo.mailUpdate").value)){
+                    alert(this.emailFormatErrorText);
+                }else if(!mobileRegex.test(document.getElementById("userInfo.mobileUpdate").value)){
+                    alert(this.mobileFormatErrorText);
                 }else{
-
                     var check = confirm(this.s24);
                     if (check == true) {
                         axios({
@@ -370,6 +377,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s45 = "Verification Code is Incorrect.";
                     this.rolesText = "Roles";
                     this.reportsText = "Reports";
+                    this.emailFormatErrorText = "Enter Email Address Format Correctly";
+                    this.mobileFormatErrorText = "Enter Phone Number Format Correctly";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -437,6 +446,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s45 = "کد تایید اشتباه است.";
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
+                    this.emailFormatErrorText = "فرمت آدرس ایمیل را به درستی وارد کنید";
+                    this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";
