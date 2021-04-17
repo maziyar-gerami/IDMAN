@@ -12,292 +12,6 @@
     <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="fonts/IranSans/font.css" rel="stylesheet">
 
-</head>
-<body class="rtl h-100">
-    <div id="app" class="h-100">
-            <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
-            <div class="container">
-                <a class="navbar-brand" href="https://sso.pars-sso.ir">
-                    پارسو
-                </a>
-
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#app-navbar-collapse"
-                        aria-controls="app-navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="app-navbar-collapse">
-                    <ul class="navbar-nav ml-auto">
-                                                <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                                   aria-expanded="false" aria-haspopup="true" v-pre>
-                                    مرضیه حسینی <span class="caret"></span>
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="https://sso.pars-sso.ir/cas/logout">
-                                        خروج                                </a>
-                                </div>
-                            </li>
-                                        </ul>
-                </div>
-            </div>
-        </nav>
-
-            <div class="container">
-            <div class="row">
-                <div class="col-lg-3 mb-3 mb-lg-0">
-                    <div class="card">
-                        <div class="card-body p-0 pt-3">
-                            <form id="upload-form" method="POST" action="https://sso.pars-sso.ir/client/settings/set/avatar"
-                                  accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
-                                <input type="hidden" name="_token" value="HnbHSZVtG0YwNQevtFPTLQTc5GlSC4gamP8fucmC">
-                                <input type="file" id="upload-image" name="upload-image"
-                                       onchange="document.getElementById('upload-form').submit()">
-                            </form>
-
-                            <div class="profile-userpic mb-3">
-                                <img src="https://sso.pars-sso.ir/images/PlaceholderUser.png" class="img-responsive" alt="">
-                                <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()">
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <i class="fa fa-photo"></i>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </a>
-                            </div>
-
-                            <div class="text-center mb-3">
-                                <div>
-                                    <strong>مرضیه حسینی</strong>
-                                </div>
-                                <div class="text-primary">
-                                    <small>marzieh</small>
-                                </div>
-                            </div>
-
-                            <div class="text-center mb-3">
-                                <a href="https://sso.pars-sso.ir/cas/logout" class="btn btn-danger btn-sm">
-                                    <i class="fa fa-power-off"></i>
-                                    خروج                            </a>
-                            </div>
-
-                            <div class="list-group list-group-flush">
-                                <a class="list-group-item list-group-item-action py-2 "
-                                   href="https://sso.pars-sso.ir/client">
-                                    <i class="fa fa-dashboard"></i>
-                                    <span>داشبورد</span>
-                                </a>
-                                <a class="list-group-item list-group-item-action py-2  active "
-                                   href="https://sso.pars-sso.ir/client/services">
-                                    <i class="fa fa-server"></i>
-                                    <span>سرویس ها</span>
-                                </a>
-                                <a class="list-group-item list-group-item-action py-2 "
-                                   href="https://sso.pars-sso.ir/client/groups">
-                                    <i class="fa fa-users"></i>
-                                    <span>گروه ها</span>
-                                </a>
-                                <a class="list-group-item list-group-item-action py-2 "
-                                   href="https://sso.pars-sso.ir/client/incidents">
-                                    <i class="fa fa-calendar"></i>
-                                    <span>رویداد ها</span>
-                                </a>
-
-                                <a class="list-group-item list-group-item-action py-2 "
-                                   href="https://sso.pars-sso.ir/client/settings">
-                                    <i class="fa fa-cogs"></i>
-                                    <span>تنظیمات</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-9 page-content">
-                        <div class="card">
-            <div class="card-body">
-                <h4 class="border-bottom pb-3 mb-3">
-                    <a href="https://sso.pars-sso.ir/client/services" class="btn btn-dark">
-                        <i class="fa fa-arrow-right"></i>
-                    </a>
-                    <span>سرویس وبلاگ پارسو</span>
-                </h4>
-
-                <div class="mb-3">
-                    <canvas id="canvas"></canvas>
-                </div>
-
-                <div class="card mb-3">
-                    <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                        <div>رویداد های اخیر</div>
-                        <a href="#">
-                            <i class="fa fa-search"></i>
-                            <span>مشاهده همه</span>
-                        </a>
-                    </div>
-                    <div class="list-group list-group-flush">
-                                                <div class="list-group-item list-group-item-warning text-center">
-                                <div>
-                                    <i class="fa fa-signing fa-2x"></i>
-                                </div>
-                                <div>لیست رویداد ها خالی است</div>
-                            </div>
-                                        </div>
-                </div>
-
-                <div class="mb-3">
-                    <model-explorer ref="userExplorer" title="کاربران دارای دسترسی" subject="کاربران"
-                                    api="https://sso.pars-sso.ir/client/services/13/users">
-                        <template slot="models" slot-scope="slot">
-                            <div class="list-group-item">
-                                <div class="row align-items-start">
-                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="model in slot.models">
-                                        <div class="my-3 mx-4 mx-lg-2">
-                                            <img :src="model.avatar_url" class="d-block w-100 rounded-circle border" alt="">
-                                        </div>
-                                        <div>
-                                            <div class="dropdown">
-                                                <button class="btn btn-link btn-sm dropdown-toggle" data-toggle="dropdown">
-                                                    <span class="text-ellipsis" v-text="model.username"></span>
-                                                </button>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="javascript:void(0)"
-                                                       @click.prevent="banUser(model)">
-                                                        <i class="fa fa-ban text-danger"></i>
-                                                        <span>منع دسترسی</span>
-                                                    </a>
-                                                    <a class="dropdown-item" href="javascript:void(0)"
-                                                       @click.prevent="editUser(model)">
-                                                        <i class="fa fa-cog"></i>
-                                                        <span>ویرایش پارامتر ها</span>
-                                                    </a>
-                                                    <a class="dropdown-item" href="javascript:void(0)"
-                                                       @click.prevent="grantUser(model)"
-                                                       v-if="!model.service_granted">
-                                                        <i class="fa fa-check text-success"></i>
-                                                        <span>تایید دسترسی</span>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            <div class="text-muted text-ellipsis"
-                                                 :title="`${model.first_name || ''} ${model.last_name || ''}`">
-                                                <i class="fa fa-info-circle text-warning" v-if="!model.service_granted"></i>
-                                                <small v-text="`${model.first_name || ''} ${model.last_name || ''}`"></small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </model-explorer>
-                </div>
-
-                <div class="mb-3">
-                    <model-explorer ref="bannedUserExplorer" title="کاربران منع شده" subject="کاربران"
-                                    api="https://sso.pars-sso.ir/client/services/13/users/banned">
-                        <template slot="actions">
-                            <button type="button" class="btn btn-success btn-sm ml-2" @click="banDialog">
-                                <i class="fa fa-plus"></i>
-                            </button>
-                        </template>
-                        <template slot="models" slot-scope="slot">
-                            <div class="list-group-item">
-                                <div class="row align-items-start">
-                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="model in slot.models">
-                                        <div class="my-3 mx-4 mx-lg-2">
-                                            <img :src="model.avatar_url" class="d-block w-100 rounded-circle border" alt="">
-                                        </div>
-                                        <div>
-                                            <div class="dropdown">
-                                                <button class="btn btn-link btn-sm dropdown-toggle" data-toggle="dropdown"
-                                                        v-text="model.username"></button>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="javascript:void(0)"
-                                                       @click.prevent="unbanUser(model)">
-                                                        <i class="fa fa-ban"></i>
-                                                        <span>رفع محدودیت</span>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            <div class="text-muted text-ellipsis"
-                                                 :title="`${model.first_name || ''} ${model.last_name || ''}`">
-                                                <small v-text="`${model.first_name || ''} ${model.last_name || ''}`"></small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </model-explorer>
-                </div>
-
-                                <h4 class="mb-3 mt-5">ویرایش تنظیمات سرویس</h4>
-
-                    <div class="border rounded p-3 mb-5">
-                        <a href="https://sso.pars-sso.ir/client/services/13/edit" class="btn btn-primary">
-                            <i class="fa fa-cog"></i>
-                            <span>ویرایش تنظیمات سرویس</span>
-                        </a>
-                    </div>
-
-                    <h4 class="mb-3">پارامتر های کاربران</h4>
-
-                    <div class="border rounded p-3 mb-5">
-                        <p>پارامتر ها در واقع اطلاعاتی هستند که در زمان ورود کاربران برای سروریس ارسال میشود. در صورتی که
-                            کاربر
-                            برای
-                            اولین بار به سرویس وارد شود، از او خواسته میشود که پارامتر های خود را تایید کند. تمام پرامتر های
-                            کاربران در
-                            قسمت تهیه گزارش قابل دریافت است.</p>
-
-                        <a href="https://sso.pars-sso.ir/client/services/parameters/13" class="btn btn-primary">
-                            <i class="fa fa-cog"></i>
-                            <span>ویرایش پارامتر ها</span>
-                        </a>
-                    </div>
-
-                    <h4 class="mb-3">مسدود سازی سرویس</h4>
-
-                    <div class="border rounded p-3 mb-5">
-                        <p>این عملیات سرویس را موقطا از دسترس خارج میکند. هیچ یک از کاربران تا بازگشایی مجدد سرویس از همین
-                            قسمت
-                            امکان
-                            ورود به سرویس را نخواهد داشت. در نظر داشته این عملیات تاثیری بر کاربرانی که قبلا به سرویس وارد
-                            شده
-                            اند
-                            نخواهد داشت.</p>
-
-                        <p>وضعیت فعلی سرویس:
-                            <strong><span class="text-success"><i class="fa fa-check"></i> <i></i> فعال</span></strong>
-                        </p>
-
-                        <form method="post" action="https://sso.pars-sso.ir/client/services/13/toggle">
-                            <input type="hidden" name="_token" value="HnbHSZVtG0YwNQevtFPTLQTc5GlSC4gamP8fucmC">
-                                                        <button type="submit" class="btn btn-warning">
-                                    <i class="fa fa-ban"></i>
-                                    <span>مسدود سازی سرویس</span>
-                                </button>
-                                                </form>
-                    </div>
-
-                        </div>
-        </div>
-                </div>
-            </div>
-        </div>
-
-        <footer class="mb-3 mt-4">
-            <div class="container">
-                <div class="d-flex justify-content-center">
-                    <a href="" class="btn btn-link">قوانین</a>
-                    <a href="" class="btn btn-link">حریم خصوصی</a>
-                    <a href="" class="btn btn-link">راهنما</a>
-                </div>
-            </div>
-        </footer>
-    </div>
 
     <script src="js/es6-promise.min.js"></script>
     <script src="js/es6-promise.auto.min.js"></script>
@@ -307,6 +21,467 @@
     <script src="js/axios.min.js"></script>
     <script src="js/Groups/script.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
+    </head>
+<body class="rtl h-100">
+<div id="app" class="h-100">
+        <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
+        <div class="container">
+            <a class="navbar-brand" href="https://sso.pars-sso.ir">
+                پارسو
+            </a>
 
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#app-navbar-collapse"
+                    aria-controls="app-navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="app-navbar-collapse">
+                <ul class="navbar-nav ml-auto">
+                                            <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-expanded="false" aria-haspopup="true" v-pre>
+                                مرضیه حسینی <span class="caret"></span>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="https://sso.pars-sso.ir/cas/logout">
+                                    خروج                                </a>
+                            </div>
+                        </li>
+                                    </ul>
+            </div>
+        </div>
+    </nav>
+
+        <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mb-3 mb-lg-0">
+                <div class="card">
+                    <div class="card-body p-0 pt-3">
+                        <form id="upload-form" method="POST" action="https://sso.pars-sso.ir/client/settings/set/avatar"
+                              accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
+                            <input type="hidden" name="_token" value="HnbHSZVtG0YwNQevtFPTLQTc5GlSC4gamP8fucmC">
+                            <input type="file" id="upload-image" name="upload-image"
+                                   onchange="document.getElementById('upload-form').submit()">
+                        </form>
+
+                        <div class="profile-userpic mb-3">
+                            <img src="https://sso.pars-sso.ir/images/PlaceholderUser.png" class="img-responsive" alt="">
+                            <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <i class="fa fa-photo"></i>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </a>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <div>
+                                <strong>مرضیه حسینی</strong>
+                            </div>
+                            <div class="text-primary">
+                                <small>marzieh</small>
+                            </div>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <a href="https://sso.pars-sso.ir/cas/logout" class="btn btn-danger btn-sm">
+                                <i class="fa fa-power-off"></i>
+                                خروج                            </a>
+                        </div>
+
+                        <div class="list-group list-group-flush">
+                            <a class="list-group-item list-group-item-action py-2 "
+                               href="https://sso.pars-sso.ir/client">
+                                <i class="fa fa-dashboard"></i>
+                                <span>داشبورد</span>
+                            </a>
+                            <a class="list-group-item list-group-item-action py-2  active "
+                               href="https://sso.pars-sso.ir/client/services">
+                                <i class="fa fa-server"></i>
+                                <span>سرویس ها</span>
+                            </a>
+                            <a class="list-group-item list-group-item-action py-2 "
+                               href="https://sso.pars-sso.ir/client/groups">
+                                <i class="fa fa-users"></i>
+                                <span>گروه ها</span>
+                            </a>
+                            <a class="list-group-item list-group-item-action py-2 "
+                               href="https://sso.pars-sso.ir/client/incidents">
+                                <i class="fa fa-calendar"></i>
+                                <span>رویداد ها</span>
+                            </a>
+                            
+                            <a class="list-group-item list-group-item-action py-2 "
+                               href="https://sso.pars-sso.ir/client/settings">
+                                <i class="fa fa-cogs"></i>
+                                <span>تنظیمات</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 page-content">
+                    <div class="card">
+        <div class="card-body">
+            <h4 class="border-bottom pb-3 mb-3">
+                <a href="https://sso.pars-sso.ir/client/services" class="btn btn-dark">
+                    <i class="fa fa-arrow-right"></i>
+                </a>
+                <span>سرویس وبلاگ پارسو</span>
+            </h4>
+
+            <div class="mb-3">
+                <canvas id="canvas"></canvas>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                    <div>رویداد های اخیر</div>
+                    <a href="#">
+                        <i class="fa fa-search"></i>
+                        <span>مشاهده همه</span>
+                    </a>
+                </div>
+                <div class="list-group list-group-flush">
+                                            <div class="list-group-item list-group-item-warning text-center">
+                            <div>
+                                <i class="fa fa-signing fa-2x"></i>
+                            </div>
+                            <div>لیست رویداد ها خالی است</div>
+                        </div>
+                                    </div>
+            </div>
+
+            <div class="mb-3">
+                <model-explorer ref="userExplorer" title="کاربران دارای دسترسی" subject="کاربران"
+                                api="https://sso.pars-sso.ir/client/services/13/users">
+                    <template slot="models" slot-scope="slot">
+                        <div class="list-group-item">
+                            <div class="row align-items-start">
+                                <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="model in slot.models">
+                                    <div class="my-3 mx-4 mx-lg-2">
+                                        <img :src="model.avatar_url" class="d-block w-100 rounded-circle border" alt="">
+                                    </div>
+                                    <div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link btn-sm dropdown-toggle" data-toggle="dropdown">
+                                                <span class="text-ellipsis" v-text="model.username"></span>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href="javascript:void(0)"
+                                                   @click.prevent="banUser(model)">
+                                                    <i class="fa fa-ban text-danger"></i>
+                                                    <span>منع دسترسی</span>
+                                                </a>
+                                                <a class="dropdown-item" href="javascript:void(0)"
+                                                   @click.prevent="editUser(model)">
+                                                    <i class="fa fa-cog"></i>
+                                                    <span>ویرایش پارامتر ها</span>
+                                                </a>
+                                                <a class="dropdown-item" href="javascript:void(0)"
+                                                   @click.prevent="grantUser(model)"
+                                                   v-if="!model.service_granted">
+                                                    <i class="fa fa-check text-success"></i>
+                                                    <span>تایید دسترسی</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="text-muted text-ellipsis"
+                                             :title="`${model.first_name || ''} ${model.last_name || ''}`">
+                                            <i class="fa fa-info-circle text-warning" v-if="!model.service_granted"></i>
+                                            <small v-text="`${model.first_name || ''} ${model.last_name || ''}`"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </model-explorer>
+            </div>
+
+            <div class="mb-3">
+                <model-explorer ref="bannedUserExplorer" title="کاربران منع شده" subject="کاربران"
+                                api="https://sso.pars-sso.ir/client/services/13/users/banned">
+                    <template slot="actions">
+                        <button type="button" class="btn btn-success btn-sm ml-2" @click="banDialog">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </template>
+                    <template slot="models" slot-scope="slot">
+                        <div class="list-group-item">
+                            <div class="row align-items-start">
+                                <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="model in slot.models">
+                                    <div class="my-3 mx-4 mx-lg-2">
+                                        <img :src="model.avatar_url" class="d-block w-100 rounded-circle border" alt="">
+                                    </div>
+                                    <div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link btn-sm dropdown-toggle" data-toggle="dropdown"
+                                                    v-text="model.username"></button>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href="javascript:void(0)"
+                                                   @click.prevent="unbanUser(model)">
+                                                    <i class="fa fa-ban"></i>
+                                                    <span>رفع محدودیت</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="text-muted text-ellipsis"
+                                             :title="`${model.first_name || ''} ${model.last_name || ''}`">
+                                            <small v-text="`${model.first_name || ''} ${model.last_name || ''}`"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </model-explorer>
+            </div>
+
+                            <h4 class="mb-3 mt-5">ویرایش تنظیمات سرویس</h4>
+
+                <div class="border rounded p-3 mb-5">
+                    <a href="https://sso.pars-sso.ir/client/services/13/edit" class="btn btn-primary">
+                        <i class="fa fa-cog"></i>
+                        <span>ویرایش تنظیمات سرویس</span>
+                    </a>
+                </div>
+
+                <h4 class="mb-3">پارامتر های کاربران</h4>
+
+                <div class="border rounded p-3 mb-5">
+                    <p>پارامتر ها در واقع اطلاعاتی هستند که در زمان ورود کاربران برای سروریس ارسال میشود. در صورتی که
+                        کاربر
+                        برای
+                        اولین بار به سرویس وارد شود، از او خواسته میشود که پارامتر های خود را تایید کند. تمام پرامتر های
+                        کاربران در
+                        قسمت تهیه گزارش قابل دریافت است.</p>
+
+                    <a href="https://sso.pars-sso.ir/client/services/parameters/13" class="btn btn-primary">
+                        <i class="fa fa-cog"></i>
+                        <span>ویرایش پارامتر ها</span>
+                    </a>
+                </div>
+
+                <h4 class="mb-3">مسدود سازی سرویس</h4>
+
+                <div class="border rounded p-3 mb-5">
+                    <p>این عملیات سرویس را موقطا از دسترس خارج میکند. هیچ یک از کاربران تا بازگشایی مجدد سرویس از همین
+                        قسمت
+                        امکان
+                        ورود به سرویس را نخواهد داشت. در نظر داشته این عملیات تاثیری بر کاربرانی که قبلا به سرویس وارد
+                        شده
+                        اند
+                        نخواهد داشت.</p>
+
+                    <p>وضعیت فعلی سرویس:
+                        <strong><span class="text-success"><i class="fa fa-check"></i> <i></i> فعال</span></strong>
+                    </p>
+
+                    <form method="post" action="https://sso.pars-sso.ir/client/services/13/toggle">
+                        <input type="hidden" name="_token" value="HnbHSZVtG0YwNQevtFPTLQTc5GlSC4gamP8fucmC">
+                                                    <button type="submit" class="btn btn-warning">
+                                <i class="fa fa-ban"></i>
+                                <span>مسدود سازی سرویس</span>
+                            </button>
+                                            </form>
+                </div>
+            
+                    </div>
+    </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mb-3 mt-4">
+        <div class="container">
+            <div class="d-flex justify-content-center">
+                <a href="" class="btn btn-link">قوانین</a>
+                <a href="" class="btn btn-link">حریم خصوصی</a>
+                <a href="" class="btn btn-link">راهنما</a>
+            </div>
+        </div>
+    </footer>
+</div>
+
+    <script>
+        Chart.defaults.global.defaultFontFamily = 'IRANSans, Helvetica, Arial, sans-serif';
+
+        window.chartColors = {
+            red: 'rgb(255, 99, 132)',
+            green: 'rgb(75, 192, 192)',
+        };
+
+        var config = {
+            type: 'line',
+            data: {
+                labels: Array.from(Array(30).keys()).reverse(),
+                datasets: [
+                    {
+                        label: 'ورود های موفق',
+                        fill: false,
+                        backgroundColor: window.chartColors.green,
+                        borderColor: window.chartColors.green,
+                        data: JSON.parse('[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"14"]'),
+                    }, {
+                        label: 'ورود های ناموفق',
+                        fill: false,
+                        backgroundColor: window.chartColors.red,
+                        borderColor: window.chartColors.red,
+                        data: JSON.parse('[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"0"]'),
+                    },
+                ]
+            },
+            options: {
+                responsive: true,
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'روز پیش',
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'تعداد',
+                        }
+                    }]
+                }
+            }
+        };
+
+        window.onload = function () {
+            var ctx = document.getElementById('canvas').getContext('2d');
+            window.myLine = new Chart(ctx, config);
+        };
+    </script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                destroyConfirmation: '',
+                destroyConfirmed: false,
+            },
+            watch: {
+                destroyConfirmation: function (newVal, oldVal) {
+                    this.destroyConfirmed = newVal === 'وبلاگ پارسو'
+                }
+            },
+            methods: {
+                banUser: function (user) {
+                    var _this = this;
+
+                    this.$refs.userExplorer.loading = true;
+                    this.$refs.userExplorer.error = '';
+
+                    axios.post('https://sso.pars-sso.ir/client/services/13/users/__id__/ban'.replace('__id__', user.id)).then(function () {
+                        _this.$refs.userExplorer.fetch();
+                        _this.$refs.bannedUserExplorer.fetch();
+                    }).catch(function (result) {
+                        _this.$refs.userExplorer.loading = false;
+                        _this.$refs.userExplorer.error = result.response.statusText;
+                    });
+                },
+                editUser: function (user) {
+                    var _this = this;
+
+                    editParams(JSON.parse('[]'), user.parameters).then(function (data) {
+                        _this.$refs.userExplorer.loading = true;
+                        _this.$refs.userExplorer.error = '';
+
+                        axios.post('https://sso.pars-sso.ir/client/services/13/users/__id__/edit'.replace('__id__', user.id), {
+                            parameters: data,
+                        }).then(function () {
+                            _this.$refs.userExplorer.fetch();
+                        }).catch(function (result) {
+                            _this.$refs.userExplorer.loading = false;
+                            _this.$refs.userExplorer.error = result.response.statusText;
+                        });
+                    })
+                },
+                grantUser: function (user) {
+                    var _this = this;
+
+                    this.$refs.userExplorer.loading = true;
+                    this.$refs.userExplorer.error = '';
+
+                    axios.post('https://sso.pars-sso.ir/client/services/13/users/__id__/grant'.replace('__id__', user.id)).then(function () {
+                        _this.$refs.userExplorer.fetch();
+                    }).catch(function (result) {
+                        _this.$refs.userExplorer.loading = false;
+                        _this.$refs.userExplorer.error = result.response.statusText;
+                    });
+                },
+                unbanUser: function (user) {
+                    var _this = this;
+
+                    this.$refs.bannedUserExplorer.loading = true;
+                    this.$refs.bannedUserExplorer.error = '';
+
+                    axios.post('https://sso.pars-sso.ir/client/services/13/users/__id__/unban'.replace('__id__', user.id)).then(function () {
+                        _this.$refs.bannedUserExplorer.fetch();
+                        _this.$refs.userExplorer.fetch();
+                    }).catch(function (result) {
+                        _this.$refs.bannedUserExplorer.loading = false;
+                        _this.$refs.bannedUserExplorer.error = result.response.statusText;
+                    });
+                },
+                banDialog: function () {
+                    var _this = this;
+
+                    selectMember().then(function (user) {
+                        _this.banUser(user)
+                    }).catch(function () {
+
+                    })
+                },
+                removeAdmin: function (user) {
+                    var _this = this;
+
+                    this.$refs.adminExplorer.loading = true;
+                    this.$refs.adminExplorer.error = '';
+
+                    axios.post('https://sso.pars-sso.ir/client/services/13/admins/__id__/detach'.replace('__id__', user.id)).then(function () {
+                        _this.$refs.adminExplorer.fetch();
+                    }).catch(function (result) {
+                        _this.$refs.adminExplorer.loading = false;
+                        _this.$refs.adminExplorer.error = result.response.statusText;
+                    });
+                },
+                addAdmin: function () {
+                    var _this = this;
+
+                    selectMember().then(function (user) {
+                        _this.$refs.adminExplorer.loading = true;
+                        _this.$refs.adminExplorer.error = '';
+
+                        axios.post('https://sso.pars-sso.ir/client/services/13/admins/__id__/attach'.replace('__id__', user.id)).then(function () {
+                            _this.$refs.adminExplorer.fetch();
+                        }).catch(function (result) {
+                            _this.$refs.adminExplorer.loading = false;
+                            _this.$refs.adminExplorer.error = result.response.statusText;
+                        });
+                    }).catch(function () {
+
+                    })
+                }
+            }
+        });
+    </script>
 </body>
 </html>

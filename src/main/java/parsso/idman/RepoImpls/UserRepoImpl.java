@@ -542,7 +542,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
-        
+
         Thread thread = new Thread(){
             public void run(){
                 systemRefresh.refreshLockedUsers();
