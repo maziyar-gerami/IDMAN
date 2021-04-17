@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 
+import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
@@ -43,6 +44,7 @@ import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.GroupRepo;
+import parsso.idman.Repos.SystemRefresh;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
@@ -102,6 +104,9 @@ public class UserRepoImpl implements UserRepo {
 
     @Autowired
     GroupRepo groupRepo;
+
+    @Autowired
+    SystemRefresh systemRefresh;
 
 
     @Override
@@ -270,9 +275,6 @@ public class UserRepoImpl implements UserRepo {
 
             mongoTemplate.remove(query, simpleCollection);
             mongoTemplate.save(simpleUser, simpleCollection);
-
-            if(!user.getStatus().equals(p.getStatus()))
-                logger.warn(new ReportMessage("User",usid,"Status","change", "success","from "+user.getStatus()+ " to "+p.getStatus()).toString());
 
             logger.warn(new ReportMessage(model,usid,"","update", "success","").toString());
 
@@ -540,6 +542,13 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
+        
+        Thread thread = new Thread(){
+            public void run(){
+                systemRefresh.refreshLockedUsers();
+            }
+        };
+        thread.start();
 
         int limit = nCount;
         int skip =(page-1)*limit;

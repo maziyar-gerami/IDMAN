@@ -249,12 +249,14 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         List<User> users = ldapTemplate.search(BASE_DN, andFilter.encode(), userAttributeMapper);
         for (User user: users) {
-            Query query = new Query(Criteria.where("userId").lte(user.getUserId()));
+            Query query = new Query(Criteria.where("userId").is(user.getUserId()));
             SimpleUser simpleUser = mongoTemplate.findOne(query,SimpleUser.class,"IDMAN_SimpleUsers");
-            simpleUser.setStatus("lock");
-            mongoTemplate.remove(query, SimpleUser.class, "IDMAN_SimpleUsers");
-            mongoTemplate.save(simpleUser, "IDMAN_SimpleUsers");
-            logger.warn(new ReportMessage("User",user.getUserId(),"","locked", "","").toString());
+            if (!simpleUser.getStatus().equalsIgnoreCase("lock")) {
+                simpleUser.setStatus("lock");
+                mongoTemplate.remove(query, SimpleUser.class, "IDMAN_SimpleUsers");
+                mongoTemplate.save(simpleUser, "IDMAN_SimpleUsers");
+                logger.warn(new ReportMessage("User", user.getUserId(), "", "locked", "", "").toString());
+            }
         }
         return HttpStatus.OK;
     }

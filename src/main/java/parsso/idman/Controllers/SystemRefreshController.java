@@ -35,7 +35,7 @@ public class SystemRefreshController {
 
     @GetMapping("/api/refresh/users")
     public HttpEntity<HttpStatus> users(HttpServletRequest request) throws IOException {
-        return new ResponseEntity<>(systemRefresh.userRefresh("maziyar"));
+        return new ResponseEntity<>(systemRefresh.userRefresh(request.getUserPrincipal().getName()));
     }
 
     @GetMapping("/api/refresh/lockedUsers")
