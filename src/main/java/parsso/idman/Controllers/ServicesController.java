@@ -64,7 +64,8 @@ public class ServicesController {
 
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
         String currentUserId = request.getUserPrincipal().getName();
-        SimpleUser simpleUser = mongoTemplate.findOne(new Query(Criteria.where("userId").is(currentUserId))
+        Criteria regex = Criteria.where("userId").regex(currentUserId, "i");
+        SimpleUser simpleUser = mongoTemplate.findOne(new Query(regex)
                 ,SimpleUser.class,"IDMAN_SimpleUsers");
 
         if(simpleUser==null){

@@ -675,7 +675,12 @@ public class UserRepoImpl implements UserRepo {
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
             usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
             user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
-            user.setUnDeletable(usersExtraInfo.isUnDeletable());
+            try {
+                user.setUnDeletable(usersExtraInfo.isUnDeletable());
+            }
+            catch (Exception e){
+                user.setUnDeletable(false);
+            }
         }
 
         if(user.getRole()==null)
@@ -921,8 +926,10 @@ public class UserRepoImpl implements UserRepo {
         if (!mongoTemplate.collectionExists(simpleCollection))
             mongoTemplate.createCollection(simpleCollection);
 
-        for (SimpleUser simpleUser:simpleUsers)
+        for (SimpleUser simpleUser:simpleUsers) {
+            mongoTemplate.remove(new Query(Criteria.where("userId").is(simpleUser.getUserId())),"IDMAN_SimpleUsers");
             mongoTemplate.save(simpleUser, simpleCollection);
+        }
 
         return HttpStatus.OK;
     }

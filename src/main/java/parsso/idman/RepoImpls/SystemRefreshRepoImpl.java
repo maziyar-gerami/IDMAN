@@ -12,6 +12,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.filter.AndFilter;
+import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.NotFilter;
+import org.springframework.ldap.filter.PresentFilter;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
@@ -20,6 +24,7 @@ import parsso.idman.IdmanApplication;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.SimpleUser;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.SystemRefresh;
@@ -66,6 +71,9 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
     String model = "Refresh";
 
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
+
     @Override
     public HttpStatus userRefresh(String doer)  {
         //0. crete collection, if not exist
@@ -77,7 +85,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         //1. create documents
         for (SimpleUser user : userRepo.retrieveUsersMain(-1,-1)) {
-            Query queryMongo = new Query(new Criteria("userId").is(user.getUserId()));
+            Query queryMongo = new Query(new Criteria("userId").regex(user.getUserId(), "i"));
             if (mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, "IDMAN_UsersExtraInfo") != null) {
 
                 UsersExtraInfo userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
@@ -98,6 +106,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                 if (photoName!=null) {
                     userExtraInfo.setPhotoName(photoName);
+                    mongoTemplate.remove(queryMongo, "IDMAN_UserExtraInfo");
                     mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");
                 }
 
@@ -130,7 +139,6 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         }
 
         //2. cleanUp mongo
-        //TODO:Enable it
         List<SimpleUser> usersMongo = mongoTemplate.findAll(SimpleUser.class, "IDMAN_UsersExtraInfo");
         if (usersMongo!=null)
         for (SimpleUser simpleUser : usersMongo) {
@@ -220,7 +228,6 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             e.printStackTrace();
         }
 
-
         captchaRefresh(doer);
 
         serivceRefresh(doer);
@@ -229,6 +236,26 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         logger.warn(new ReportMessage(model,"","System","refresh", "success","").toString());
 
+        return HttpStatus.OK;
+    }
+
+    @Override
+    public HttpStatus refreshLockedUsers(){
+        AndFilter andFilter = new AndFilter();
+
+        Logger logger = LoggerFactory.getLogger("System");
+        andFilter.and(new PresentFilter("pwdAccountLockedTime"));
+        andFilter.and(new NotFilter(new EqualsFilter("pwdAccountLockedTime", "40400404040404.950Z")));
+
+        List<User> users = ldapTemplate.search(BASE_DN, andFilter.encode(), userAttributeMapper);
+        for (User user: users) {
+            Query query = new Query(Criteria.where("userId").lte(user.getUserId()));
+            SimpleUser simpleUser = mongoTemplate.findOne(query,SimpleUser.class,"IDMAN_SimpleUsers");
+            simpleUser.setStatus("lock");
+            mongoTemplate.remove(query, SimpleUser.class, "IDMAN_SimpleUsers");
+            mongoTemplate.save(simpleUser, "IDMAN_SimpleUsers");
+            logger.warn(new ReportMessage("User",user.getUserId(),"","locked", "","").toString());
+        }
         return HttpStatus.OK;
     }
 }
