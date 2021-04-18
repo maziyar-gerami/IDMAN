@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.BuildDnUser;
 import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.GroupRepo;
@@ -59,6 +58,8 @@ public class GroupRepoImpl implements GroupRepo {
 
     private String model = "Groups";
 
+    private  final String  usersExtraInfoCollection = "IDMAN_UsersExtraInfo";
+
     @Override
     public HttpStatus remove(String doerID, JSONObject jsonObject) {
 
@@ -89,7 +90,7 @@ public class GroupRepoImpl implements GroupRepo {
 
                 String id = group.getId();
 
-                for (SimpleUser user : userRepo.retrieveGroupsUsers(id)) {
+                for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(id)) {
                     if(user!=null && user.getMemberOf()!=null)
                     for (String groupN : user.getMemberOf()) {
                         if (groupN.equalsIgnoreCase(id)) {
@@ -98,12 +99,12 @@ public class GroupRepoImpl implements GroupRepo {
                             try {
                                 ldapTemplate.modifyAttributes(context);
 
-                                SimpleUser simpleUser = mongoTemplate.findOne
-                                        (new Query(Criteria.where("userId").is(user.getUserId())), SimpleUser.class, "IDMAN_SimpleUsers");
+                                UsersExtraInfo simpleUser = mongoTemplate.findOne
+                                        (new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, usersExtraInfoCollection);
                                 simpleUser.getMemberOf().remove(id);
 
                                 mongoTemplate.remove
-                                        (new Query(Criteria.where("userId").is(user.getUserId())), "IDMAN_SimpleUsers");
+                                        (new Query(Criteria.where("userId").is(user.getUserId())), usersExtraInfoCollection);
 
                                 mongoTemplate.save
                                         (simpleUser, "IDMAN_SimpleUsers");
@@ -135,9 +136,6 @@ public class GroupRepoImpl implements GroupRepo {
                 }
 
             }
-
-        else
-            logger.warn(new ReportMessage(model,"all groups","","remove", "success","partially").toString());
 
         return HttpStatus.OK;
     }
@@ -279,23 +277,23 @@ public class GroupRepoImpl implements GroupRepo {
                 logger.warn(new ReportMessage(model,id,"Group","update", "success","").toString());
 
 
-                for (SimpleUser user : userRepo.retrieveGroupsUsers(id)) {
+                for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(id)) {
                     for (String group : user.getMemberOf()) {
                         if (group.equalsIgnoreCase(id)) {
                             contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
                             contextUser.removeAttributeValue("ou", id);
                             contextUser.addAttributeValue("ou", ou.getId());
                             ldapTemplate.modifyAttributes(contextUser);
-                            SimpleUser simpleUser = mongoTemplate.findOne
-                                    (new Query(Criteria.where("userId").is(user.getUserId())), SimpleUser.class, "IDMAN_SimpleUsers");
-                            simpleUser.getMemberOf().remove(id);
-                            simpleUser.getMemberOf().add(ou.getId());
+                            UsersExtraInfo usersExtraInfo = mongoTemplate.findOne
+                                    (new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, usersExtraInfoCollection);
+                            usersExtraInfo.getMemberOf().remove(id);
+                            usersExtraInfo.getMemberOf().add(ou.getId());
 
                             mongoTemplate.remove
-                                    (new Query(Criteria.where("userId").is(user.getUserId())), "IDMAN_SimpleUsers");
+                                    (new Query(Criteria.where("userId").is(user.getUserId())), usersExtraInfoCollection);
 
                             mongoTemplate.save
-                                    (simpleUser, "IDMAN_SimpleUsers");
+                                    (usersExtraInfo, usersExtraInfoCollection);
                         }
                     }
                 }

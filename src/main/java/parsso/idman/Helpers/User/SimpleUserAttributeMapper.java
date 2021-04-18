@@ -3,7 +3,7 @@ package parsso.idman.Helpers.User;
 
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Users.SimpleUser;
+import parsso.idman.Models.Users.UsersExtraInfo;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
@@ -11,15 +11,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
-public class SimpleUserAttributeMapper implements AttributesMapper<SimpleUser> {
+public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInfo> {
 
     @Override
-    public SimpleUser mapFromAttributes(Attributes attributes) throws NamingException {
-        SimpleUser user = new SimpleUser();
+    public UsersExtraInfo mapFromAttributes(Attributes attributes) throws NamingException {
+        UsersExtraInfo user = new UsersExtraInfo();
 
 
         if (attributes==null||attributes.get("uid") == null)
             return  null;
+
         user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
         user.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
         //user.setPasswordChangedTime(null != attributes.get("pwdChangedTime") ? Long.valueOf(attributes.get("pwdChangedTime").get().toString().substring(0, 14)) : Long.valueOf(attributes.get("createtimestamp").get().toString().substring(0, 14)));

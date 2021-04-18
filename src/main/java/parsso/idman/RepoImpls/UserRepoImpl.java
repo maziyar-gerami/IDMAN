@@ -33,13 +33,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.Token;
+import parsso.idman.Helpers.Group.GroupsChecks;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.ListUsers;
-import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.FilesStorageService;
@@ -65,7 +65,6 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     FilesStorageService storageService;
     String userExtraInfoCollection = "IDMAN_UsersExtraInfo";
-    String simpleCollection = "IDMAN_SimpleUsers";
     @Value("${base.url}")
     private String BASE_URL;
     @Value("${email.controller}")
@@ -108,6 +107,9 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     SystemRefresh systemRefresh;
 
+    @Autowired
+    GroupsChecks groupsChecks;
+
 
     @Override
     public JSONObject create(String doerID,User p) {
@@ -116,16 +118,16 @@ public class UserRepoImpl implements UserRepo {
 
         Logger logger = LogManager.getLogger(doerID);
 
+        UsersExtraInfo usersExtraInfo = null;
 
         try {
             User user = retrieveUsers(p.getUserId());
             if (user == null || user.getUserId() == null) {
-                if( checkGroup(p.getMemberOf())) {
+                if( groupsChecks.checkGroup(p.getMemberOf())) {
 
                     //create user in ldap
                     Name dn = buildDnUser.buildDn(p.getUserId());
                     ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
-                    mongoTemplate.save(new SimpleUser(p), simpleCollection);
 
                     //update it's first pwChangedTime in a new thread
                     Thread thread = new Thread() {
@@ -147,14 +149,11 @@ public class UserRepoImpl implements UserRepo {
 
                     thread.start();
 
-                    new Thread(() -> {
-                        //logger.warn("User "+user.getUserId() + " created");
-                        UsersExtraInfo usersExtraInfo = new UsersExtraInfo(p.getUserId(), p.getPhoto(), p.isUnDeletable());
-                        mongoTemplate.save(usersExtraInfo, Token.collection);
-                    }).start();
+                    usersExtraInfo = new UsersExtraInfo( p , p.getPhoto(), p.isUnDeletable());
+                    mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
-                    if (p.getCStatus() != null)
-                        if (p.getCStatus().equals("disable"))
+                    if (p.getStatus() != null)
+                        if (p.getStatus().equals("disable"))
                             disable(doerID, p.getUserId());
 
                     logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "success", "").toString());
@@ -163,7 +162,7 @@ public class UserRepoImpl implements UserRepo {
                     logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","group not exist").toString());
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("userId", p.getUserId() );
-                    jsonObject.put("invalidGroups", invalidGroups(p.getMemberOf()));
+                    jsonObject.put("invalidGroups", groupsChecks.invalidGroups(p.getMemberOf()));
                     return jsonObject;
                 }
             } else {
@@ -178,41 +177,10 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
-    private  boolean checkGroup(List<String> groups){
-        List<Group> realGroups = groupRepo.retrieve();
-        List<String> realStrings = new LinkedList<>();
-        for (Group group:realGroups) {
-           realStrings.add(group.getId());
-        }
-
-        for (String group:groups) {
-            if(!realStrings.contains(group))
-                return false;
-
-        }
-        return true;
-    }
-
-    private List<String> invalidGroups (List<String> groups){
-        List<Group> realGroups = groupRepo.retrieve();
-        List<String> realStrings = new LinkedList<>();
-        List<String> invalids = new LinkedList<>();
-        for (Group group:realGroups) {
-            realStrings.add(group.getId());
-        }
-
-        for (String group:groups) {
-            if(!realStrings.contains(group))
-                invalids.add(group);
-
-        }
-        return invalids;
-    }
-
     @Override
     public int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
-        return (int) mongoTemplate.count(queryBuilder(groupFilter,searchUid,searchDisplayName,userStatus), simpleCollection);
+        return (int) mongoTemplate.count(queryBuilder(groupFilter,searchUid,searchDisplayName,userStatus), userExtraInfoCollection);
     }
 
     @Override
@@ -243,24 +211,20 @@ public class UserRepoImpl implements UserRepo {
         }catch (Exception e) {
             user.setUnDeletable(p.isUnDeletable());
         }
-        SimpleUser simpleUser = mongoTemplate.findOne(query,SimpleUser.class, simpleCollection);
         if (p.getMemberOf()!=null)
-            simpleUser.setMemberOf(p.getMemberOf());
+            usersExtraInfo.setMemberOf(p.getMemberOf());
         if(p.getCStatus()!=null)
-            simpleUser.setStatus(p.getCStatus());
+            usersExtraInfo.setStatus(p.getCStatus());
         else
-            simpleUser.setStatus(p.getStatus());
-        simpleUser.setMemberOf(p.getMemberOf());
-        simpleUser.setDisplayName(p.getDisplayName());
-
+            usersExtraInfo.setStatus(p.getStatus());
+        usersExtraInfo.setMemberOf(p.getMemberOf());
+        usersExtraInfo.setDisplayName(p.getDisplayName());
 
         if (p.getPhoto() != null)
             usersExtraInfo.setPhotoName(p.getPhoto());
 
         if (p.isUnDeletable())
             usersExtraInfo.setUnDeletable(true);
-
-
 
         try {
             //ldapTemplate.modifyAttributes(context);
@@ -280,9 +244,6 @@ public class UserRepoImpl implements UserRepo {
 
             mongoTemplate.remove(query, userExtraInfoCollection);
             mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
-
-            mongoTemplate.remove(query, simpleCollection);
-            mongoTemplate.save(simpleUser, simpleCollection);
 
             logger.warn(new ReportMessage(model,usid,"","update", "success","").toString());
 
@@ -361,7 +322,6 @@ public class UserRepoImpl implements UserRepo {
                 try {
                     ldapTemplate.unbind(dn);
                     mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
-                    mongoTemplate.remove(query, SimpleUser.class, simpleCollection);
                     logger.warn(new ReportMessage(model,user.getUserId(),"","remove", "success","").toString());
 
                 } catch (Exception e) {
@@ -524,7 +484,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<SimpleUser> retrieveUsersMain(int page, int number) {
+    public List<UsersExtraInfo> retrieveUsersMain(int page, int number) {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -582,8 +542,8 @@ public class UserRepoImpl implements UserRepo {
             query.with(Sort.by(Sort.Direction.DESC,"displayName"));
 
 
-        List<SimpleUser> userList = mongoTemplate.find(query.skip(skip).limit(limit),
-                SimpleUser.class, simpleCollection);
+        List<UsersExtraInfo> userList = mongoTemplate.find(query.skip(skip).limit(limit),
+                UsersExtraInfo.class, userExtraInfoCollection);
 
         int size = retrieveUsersSize(groupFilter, searchUid, searchDisplayName, userStatus);
 
@@ -707,7 +667,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<SimpleUser> retrieveGroupsUsers(String groupId) {
+    public List<UsersExtraInfo> retrieveGroupsUsers(String groupId) {
 
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
@@ -893,7 +853,7 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int number) {
 
-        List<SimpleUser> users = retrieveGroupsUsers(groupId);
+        List<UsersExtraInfo> users = retrieveGroupsUsers(groupId);
 
         CollectionUtils.filter(users, PredicateUtils.notNullPredicate());
 
@@ -903,7 +863,7 @@ public class UserRepoImpl implements UserRepo {
         int pages = (int) Math.ceil(size / number);
         int start = (page - 1) * number;
 
-        List<SimpleUser> relativeUsers = new LinkedList<>();
+        List<UsersExtraInfo> relativeUsers = new LinkedList<>();
 
         for (int i = start; i < n; i++)
             relativeUsers.add(users.get(i));
@@ -938,14 +898,14 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public HttpStatus syncUsersDBs() {
-        List<SimpleUser> simpleUsers = retrieveUsersMain(-1,-1);
+        List<UsersExtraInfo> simpleUsers = retrieveUsersMain(-1,-1);
 
-        if (!mongoTemplate.collectionExists(simpleCollection))
-            mongoTemplate.createCollection(simpleCollection);
+        if (!mongoTemplate.collectionExists(userExtraInfoCollection))
+            mongoTemplate.createCollection(userExtraInfoCollection);
 
-        for (SimpleUser simpleUser:simpleUsers) {
-            mongoTemplate.remove(new Query(Criteria.where("userId").is(simpleUser.getUserId())),"IDMAN_SimpleUsers");
-            mongoTemplate.save(simpleUser, simpleCollection);
+        for (UsersExtraInfo simpleUser:simpleUsers) {
+            mongoTemplate.remove(new Query(Criteria.where("userId").is(simpleUser.getUserId())),userExtraInfoCollection);
+            mongoTemplate.save(simpleUser, userExtraInfoCollection);
         }
 
         return HttpStatus.OK;

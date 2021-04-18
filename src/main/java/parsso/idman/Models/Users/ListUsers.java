@@ -12,10 +12,10 @@ import java.util.List;
 public class ListUsers {
     int size;
     int pages;
-    List<SimpleUser> userList;
+    List<UsersExtraInfo> userList;
 
 
-    public ListUsers(int size, List<SimpleUser> relativeEvents, int pages) {
+    public ListUsers(int size, List<UsersExtraInfo> relativeEvents, int pages) {
         this.size = size;
         this.pages = pages+1;
         this.userList = relativeEvents;

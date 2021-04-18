@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Users.SimpleUser;
+import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -65,11 +65,11 @@ public class ServicesController {
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
         String currentUserId = request.getUserPrincipal().getName();
         Criteria regex = Criteria.where("userId").regex(currentUserId, "i");
-        SimpleUser simpleUser = mongoTemplate.findOne(new Query(regex)
-                ,SimpleUser.class,"IDMAN_SimpleUsers");
+        UsersExtraInfo simpleUser = mongoTemplate.findOne(new Query(regex)
+                ,UsersExtraInfo.class,"IDMAN_SimpleUsers");
 
         if(simpleUser==null){
-            simpleUser = new SimpleUser(userRepo.retrieveUsers(currentUserId));
+            simpleUser = new UsersExtraInfo(userRepo.retrieveUsers(currentUserId));
             mongoTemplate.save(simpleUser, "IDMAN_SimpleUsers");
         }
 

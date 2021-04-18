@@ -17,8 +17,8 @@ import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.UsersExcelView;
 import parsso.idman.Models.Users.ListUsers;
-import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.User;
+import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.Repos.UserRepo;
 
@@ -182,7 +182,7 @@ public class UsersController {
      * @return the the user object with provided uId
      */
     @GetMapping("/api/users")
-    public ResponseEntity<List<SimpleUser>> retrieveUsersMain() {
+    public ResponseEntity<List<UsersExtraInfo>> retrieveUsersMain() {
         return new ResponseEntity<>(userRepo.retrieveUsersMain(-1,-1), HttpStatus.OK);
     }
 
