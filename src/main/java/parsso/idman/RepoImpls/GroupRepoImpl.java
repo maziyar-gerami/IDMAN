@@ -136,8 +136,6 @@ public class GroupRepoImpl implements GroupRepo {
 
             }
 
-        if (j>0)
-            logger.warn(new ReportMessage(model,"all groups","","remove", "success","").toString());
         else
             logger.warn(new ReportMessage(model,"all groups","","remove", "success","partially").toString());
 

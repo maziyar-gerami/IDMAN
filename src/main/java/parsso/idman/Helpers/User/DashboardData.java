@@ -14,6 +14,7 @@ import parsso.idman.Models.DashboardData.Logins;
 import parsso.idman.Models.DashboardData.Services;
 import parsso.idman.Models.DashboardData.Users;
 import parsso.idman.Models.Logs.Event;
+import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
@@ -75,8 +76,8 @@ public class DashboardData {
             //________users data____________
             int nUsers = userRepo.retrieveUsersSize("","","","");
 
-            int nDisabled = ldapTemplate.search(query().where("pwdAccountLockedTime").is("40400404040404.950Z"), simpleUserAttributeMapper).size();
-            int nLocked = ldapTemplate.search(query().where("pwdAccountLockedTime").lte("40400404040404.950Z"), simpleUserAttributeMapper).size();
+            int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), SimpleUser.class,"IDMAN_SimpleUsers");
+            int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), SimpleUser.class,"IDMAN_SimpleUsers");
             int temp = nUsers-nLocked-nDisabled;
             int nActive = (temp)>nUsers?nUsers:temp;
 

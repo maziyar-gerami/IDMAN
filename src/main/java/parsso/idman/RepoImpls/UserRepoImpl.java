@@ -112,6 +112,8 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public JSONObject create(String doerID,User p) {
 
+        p.setUserId(p.getUserId().toLowerCase());
+
         Logger logger = LogManager.getLogger(doerID);
 
 
@@ -234,10 +236,16 @@ public class UserRepoImpl implements UserRepo {
             removeCurrentEndTime(p.getUserId());
 
         context = buildAttributes.buildAttributes(doerID, usid, p, dn);
-        Query query = new Query(Criteria.where("userId").is(p.getUserId()));
+        Query query = new Query(Criteria.where("userId").is(p.getUserId().toLowerCase()));
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
-        usersExtraInfo.setUnDeletable(p.isUnDeletable());
+        try {
+            usersExtraInfo.setUnDeletable(p.isUnDeletable());
+        }catch (Exception e) {
+            user.setUnDeletable(p.isUnDeletable());
+        }
         SimpleUser simpleUser = mongoTemplate.findOne(query,SimpleUser.class, simpleCollection);
+        if (p.getMemberOf()!=null)
+            simpleUser.setMemberOf(p.getMemberOf());
         if(p.getCStatus()!=null)
             simpleUser.setStatus(p.getCStatus());
         else
@@ -255,7 +263,7 @@ public class UserRepoImpl implements UserRepo {
 
 
         try {
-            ldapTemplate.modifyAttributes(context);
+            //ldapTemplate.modifyAttributes(context);
 
             if (!p.getStatus().equalsIgnoreCase(user.getStatus()))
                 if (user.getStatus().equalsIgnoreCase("enable") && user.getStatus().equalsIgnoreCase("disable"))

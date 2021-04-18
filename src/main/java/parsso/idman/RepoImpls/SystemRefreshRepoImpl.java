@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 
+import com.sun.org.apache.xpath.internal.operations.Equals;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -253,11 +254,34 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             SimpleUser simpleUser = mongoTemplate.findOne(query,SimpleUser.class,"IDMAN_SimpleUsers");
             if (!simpleUser.getStatus().equalsIgnoreCase("lock")) {
                 simpleUser.setStatus("lock");
+
+                logger.warn(new ReportMessage("User", user.getUserId(), "", "locked", "", "").toString());
                 mongoTemplate.remove(query, SimpleUser.class, "IDMAN_SimpleUsers");
                 mongoTemplate.save(simpleUser, "IDMAN_SimpleUsers");
-                logger.warn(new ReportMessage("User", user.getUserId(), "", "locked", "", "").toString());
             }
+
         }
+
+        List<SimpleUser> simpleUsers =  mongoTemplate.find(new Query(Criteria.where("status").is("lock")), SimpleUser.class , "IDMAN_SimpleUsers");
+        for (SimpleUser simple:simpleUsers) {
+            Query query = new Query(Criteria.where("userId").is(simple.getUserId()));
+
+                if (ldapTemplate.search(query().where("uid").is(simple.getUserId()), userAttributeMapper).size()==0) {
+
+                simple.setStatus("enable");
+
+                mongoTemplate.remove(query, SimpleUser.class, "IDMAN_SimpleUsers");
+                mongoTemplate.save(simple, "IDMAN_SimpleUsers");
+
+                logger.warn(new ReportMessage("User", simple.getUserId(), "", "unlock", "", "due to time pass").toString());
+
+
+                }
+
+
+        }
+
+
         return HttpStatus.OK;
     }
 }
