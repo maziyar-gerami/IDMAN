@@ -66,11 +66,11 @@ public class ServicesController {
         String currentUserId = request.getUserPrincipal().getName();
         Criteria regex = Criteria.where("userId").regex(currentUserId, "i");
         UsersExtraInfo simpleUser = mongoTemplate.findOne(new Query(regex)
-                ,UsersExtraInfo.class,"IDMAN_SimpleUsers");
+                ,UsersExtraInfo.class,"IDMAN_UsersExtraInfo");
 
         if(simpleUser==null){
             simpleUser = new UsersExtraInfo(userRepo.retrieveUsers(currentUserId));
-            mongoTemplate.save(simpleUser, "IDMAN_SimpleUsers");
+            mongoTemplate.save(simpleUser, "IDMAN_UsersExtraInfo");
         }
 
         Principal principal = request.getUserPrincipal();

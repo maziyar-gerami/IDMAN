@@ -107,7 +107,7 @@ public class GroupRepoImpl implements GroupRepo {
                                         (new Query(Criteria.where("userId").is(user.getUserId())), usersExtraInfoCollection);
 
                                 mongoTemplate.save
-                                        (simpleUser, "IDMAN_SimpleUsers");
+                                        (simpleUser, usersExtraInfoCollection);
 
                             } catch (Exception e){
                                 logger.warn(new ReportMessage(model,user.getUserId(),groupN,"remove", "success","").toString());
