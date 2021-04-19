@@ -121,6 +121,25 @@ public class BuildAttributes {
             else if (p.getCStatus().equals("unlock")) userRepo.unlock(doerID, uid);
 
 
+        }else {
+            if (p.getStatus() != null){
+                String oldStutus = old.getStatus();
+                String newStatus = p.getStatus();
+
+                if (oldStutus.equals("enable") && newStatus.equals("disable")) {
+                    userRepo.disable(doerID, uid);
+                }
+
+                else if (oldStutus.equals("disable") && newStatus.equals("enable"))
+                    userRepo.enable(doerID, uid);
+
+                else if (oldStutus.equals("lock") && newStatus.equals("enable"))
+                    userRepo.unlock(doerID, uid);
+
+            }
+
+
+
         }
 
         if (p.getMemberOf() != null) {
@@ -136,6 +155,8 @@ public class BuildAttributes {
         }
 
         if (p.getDescription() != "" && p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
+
+        //if (p.getUserPassword() != "" && p.getUserPassword() != null) context.setAttributeValue("userPassword", p.getUserPassword());
 
 /*
         if (p.getEndTime() != null) {

