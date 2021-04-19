@@ -38,4 +38,8 @@ public class SystemRefreshController {
         return new ResponseEntity<>(systemRefresh.userRefresh(request.getUserPrincipal().getName()));
     }
 
+    @GetMapping("/api/refresh/lockedUsers")
+    public HttpEntity<HttpStatus> lockedUsers() throws IOException {
+        return new ResponseEntity<>(systemRefresh.refreshLockedUsers());
+    }
 }

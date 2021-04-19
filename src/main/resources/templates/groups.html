@@ -11,6 +11,18 @@
     <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="fonts/IranSans/font.css" rel="stylesheet">
 
+
+    <script src="js/es6-promise.min.js"></script>
+    <script src="js/es6-promise.auto.min.js"></script>
+    <script src="js/polyfill.min.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/persian-date.min.js"></script>
+    <script src="js/Groups/script.js"></script>
+    <script src="js/vue-plain-pagination.umd.min.js"></script>
+    <script src="js/vue-spinners-css.min.js"></script>
+
 </head>
 <body class="h-100">
     <div id="app">
@@ -305,7 +317,7 @@
                                                 <div class="row pb-3 mt-3 mb-3 ml-0 mr-0 border-bottom">
                                                     <div class="col-7 pl-1 pr-1">
                                                         <select id="editingGroupID" name="type" class="w-100 form-control" style="padding-right: 5px; padding-left: 5px;">
-                                                            <option value="none" selected disabled>{{s51}}</option>
+                                                            <option value="" selected disabled>{{s51}}</option>
                                                             <option v-for="group in groups" v-bind:id="group" :value="group.id">{{group.name}}</option>
                                                         </select>
                                                     </div>
@@ -315,7 +327,7 @@
                                                                 <input type="file" accept=".xlsx, .xls, .csv" ref="file" @change="selectedFile"
                                                                 class="d-none" name="file" id="file">
                                                             </form>
-                                                            <button class="w-100 btn btn-success btn-sm" onclick="document.getElementById('file').click()">
+                                                            <button class="w-100 btn btn-success btn-sm" @click="fileUploadCheck">
                                                                 <span class="fa-stack">
                                                                     <i class="fa fa-download fa-stack-1x"></i>
                                                                 </span>
@@ -704,17 +716,5 @@
             </footer>
         </div>
     </div>
-
-    <script src="js/es6-promise.min.js"></script>
-    <script src="js/es6-promise.auto.min.js"></script>
-    <script src="js/polyfill.min.js"></script>
-    <script src="js/vue.min.js"></script>
-    <script src="js/vue-router.js"></script>
-    <script src="js/axios.min.js"></script>
-    <script src="js/persian-date.min.js"></script>
-    <script src="js/Groups/script.js"></script>
-    <script src="js/vue-plain-pagination.umd.min.js"></script>
-    <script src="js/vue-spinners-css.min.js"></script>
-
 </body>
 </html>

@@ -1103,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     employeeNumber: document.getElementById('editInfo.employeeNumberCreate').value,
                                     userPassword: document.getElementById('newPasswordCreate').value,
                                     description: document.getElementById('editInfo.descriptionCreate').value,
-                                    cStatus: document.getElementById('statusCreate').value,
+                                    status: document.getElementById('statusCreate').value,
                                     unDeletable: unDeletableVar,
                                     endTime: endTimeFinal
                                 }

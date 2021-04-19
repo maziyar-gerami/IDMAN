@@ -14,6 +14,7 @@ import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -37,7 +38,9 @@ public class GroupsController {
     @GetMapping("/api/groups/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
-        return new ResponseEntity<>(groupRepo.retrieveCurrentUserGroup(user), HttpStatus.OK);
+        List <Group> groups = groupRepo.retrieveCurrentUserGroup(user);
+        groups.removeAll(Collections.singleton(null));
+        return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
     @PostMapping("/api/groups")

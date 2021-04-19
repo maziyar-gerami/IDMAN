@@ -14,6 +14,7 @@ import parsso.idman.Models.DashboardData.Logins;
 import parsso.idman.Models.DashboardData.Services;
 import parsso.idman.Models.DashboardData.Users;
 import parsso.idman.Models.Logs.Event;
+import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
@@ -24,12 +25,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
-
 
 @Service
 public class DashboardData {
     public static String mainCollection = "MongoDbCasEventRepository";
+    public static String userExtraInfoCollection = "IDMAN_UsersExtraInfo";
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -75,8 +75,8 @@ public class DashboardData {
             //________users data____________
             int nUsers = userRepo.retrieveUsersSize("","","","");
 
-            int nDisabled = ldapTemplate.search(query().where("pwdAccountLockedTime").is("40400404040404.950Z"), simpleUserAttributeMapper).size();
-            int nLocked = ldapTemplate.search(query().where("pwdAccountLockedTime").lte("40400404040404.950Z"), simpleUserAttributeMapper).size();
+            int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), UsersExtraInfo.class, userExtraInfoCollection);
+            int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class,userExtraInfoCollection);
             int temp = nUsers-nLocked-nDisabled;
             int nActive = (temp)>nUsers?nUsers:temp;
 

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
+
+import java.util.List;
 import java.util.UUID;
 
 import java.util.Date;
@@ -15,7 +17,6 @@ import java.util.Date;
 public class UsersExtraInfo {
     @JsonIgnore
     private ObjectId _id;
-    @JsonIgnore
     private String userId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String mobileToken;
@@ -33,8 +34,24 @@ public class UsersExtraInfo {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String subCategory;
 
+    private String displayName;
+    private long timeStamp;
+    private List<String> memberOf;
+    private String status;
+    private long passwordChangedTime;
+
     public UsersExtraInfo(){
 
+    }
+
+    public UsersExtraInfo(User user) {
+        this._id = user.get_id();
+        this.userId = user.getUserId();
+        this.displayName = user.getDisplayName();
+        this.memberOf = user.getMemberOf();
+        this.passwordChangedTime = user.getPasswordChangedTime();
+        this.status = user.getStatus();
+        this.timeStamp = user.getTimeStamp();
     }
 
     public UsersExtraInfo(String userId) {
@@ -45,8 +62,14 @@ public class UsersExtraInfo {
         this.creationTimeStamp = new Date().getTime();
     }
 
-    public UsersExtraInfo(String userId, String photoName, boolean unDeletable) {
-        this.userId = userId;
+    public UsersExtraInfo(User user , String photoName, boolean unDeletable) {
+        this._id = user.get_id();
+        this.userId = user.getUserId();
+        this.displayName = user.getDisplayName();
+        this.memberOf = user.getMemberOf();
+        this.passwordChangedTime = user.getPasswordChangedTime();
+        this.status = user.getStatus();
+        this.timeStamp = user.getTimeStamp();
 
         this.qrToken = UUID.randomUUID().toString();
         this.creationTimeStamp = new Date().getTime();

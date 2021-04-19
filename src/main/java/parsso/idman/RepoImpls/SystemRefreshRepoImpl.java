@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 
+import com.sun.org.apache.xpath.internal.operations.Equals;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.filter.AndFilter;
+import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.NotFilter;
+import org.springframework.ldap.filter.PresentFilter;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
@@ -19,7 +24,7 @@ import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.IdmanApplication;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Users.SimpleUser;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.SystemRefresh;
@@ -66,21 +71,26 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
     String model = "Refresh";
 
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
+
+    String userExtraInfoCollection = "IDMAN_UsersExtraInfo";
+
     @Override
     public HttpStatus userRefresh(String doer)  {
         //0. crete collection, if not exist
 
         Logger logger = LoggerFactory.getLogger(doer);
 
-        if (mongoTemplate.getCollection("IDMAN_UsersExtraInfo") == null)
-            mongoTemplate.createCollection("IDMAN_UsersExtraInfo");
+        if (mongoTemplate.getCollection(userExtraInfoCollection) == null)
+            mongoTemplate.createCollection(userExtraInfoCollection);
 
         //1. create documents
-        for (SimpleUser user : userRepo.retrieveUsersMain(-1,-1)) {
-            Query queryMongo = new Query(new Criteria("userId").is(user.getUserId()));
-            if (mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, "IDMAN_UsersExtraInfo") != null) {
+        for (UsersExtraInfo user : userRepo.retrieveUsersMain(-1,-1)) {
+            Query queryMongo = new Query(new Criteria("userId").regex(user.getUserId(), "i"));
+            if (mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection) != null) {
 
-                UsersExtraInfo userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
+                UsersExtraInfo userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection);
                 if (userExtraInfo!=null && userExtraInfo.getQrToken().equals(""))
                     userExtraInfo.setQrToken(UUID.randomUUID().toString());
 
@@ -98,15 +108,16 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                 if (photoName!=null) {
                     userExtraInfo.setPhotoName(photoName);
-                    mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");
+                    mongoTemplate.remove(queryMongo, userExtraInfoCollection);
+                    mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
                 }
 
             } else {
 
 
-                mongoTemplate.save(new UsersExtraInfo(user.getUserId()), "IDMAN_UsersExtraInfo");
+                mongoTemplate.save(new UsersExtraInfo(user.getUserId()), userExtraInfoCollection);
             }
-            UsersExtraInfo  userExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
+            UsersExtraInfo  userExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
 
             if (userExtraInfo!=null) {
                 if (userExtraInfo.getUserId().equalsIgnoreCase("su"))
@@ -118,7 +129,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 else
                     userExtraInfo.setRole(userExtraInfo.getRole());
 
-                mongoTemplate.save(userExtraInfo, "IDMAN_UsersExtraInfo");
+                mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
 
             }
         }
@@ -130,12 +141,11 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         }
 
         //2. cleanUp mongo
-        //TODO:Enable it
-        List<SimpleUser> usersMongo = mongoTemplate.findAll(SimpleUser.class, "IDMAN_UsersExtraInfo");
+        List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, userExtraInfoCollection);
         if (usersMongo!=null)
-        for (SimpleUser simpleUser : usersMongo) {
-            if (ldapTemplate.search(query().where("uid").is(simpleUser.getUserId()), simpleUserAttributeMapper).size() == 0)
-                mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(simpleUser.getUserId())), UsersExtraInfo.class, "IDMAN_UsersExtraInfo");
+        for (UsersExtraInfo usersExtraInfo : usersMongo) {
+            if (ldapTemplate.search(query().where("uid").is(usersExtraInfo.getUserId()), simpleUserAttributeMapper).size() == 0)
+                mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
         }
 
         logger.warn(new ReportMessage(model,"","Users","refresh", "success","").toString());
@@ -220,7 +230,6 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             e.printStackTrace();
         }
 
-
         captchaRefresh(doer);
 
         serivceRefresh(doer);
@@ -228,6 +237,51 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         userRefresh(doer);
 
         logger.warn(new ReportMessage(model,"","System","refresh", "success","").toString());
+
+        return HttpStatus.OK;
+    }
+
+    @Override
+    public HttpStatus refreshLockedUsers(){
+        AndFilter andFilter = new AndFilter();
+
+        Logger logger = LoggerFactory.getLogger("System");
+        andFilter.and(new PresentFilter("pwdAccountLockedTime"));
+        andFilter.and(new NotFilter(new EqualsFilter("pwdAccountLockedTime", "40400404040404.950Z")));
+
+        List<User> users = ldapTemplate.search(BASE_DN, andFilter.encode(), userAttributeMapper);
+        for (User user: users) {
+            Query query = new Query(Criteria.where("userId").is(user.getUserId()));
+            UsersExtraInfo simpleUser = mongoTemplate.findOne(query,UsersExtraInfo.class,userExtraInfoCollection);
+            if (!simpleUser.getStatus().equalsIgnoreCase("lock")) {
+                simpleUser.setStatus("lock");
+
+                logger.warn(new ReportMessage("User", user.getUserId(), "", "locked", "", "").toString());
+                mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
+                mongoTemplate.save(simpleUser, userExtraInfoCollection);
+            }
+
+        }
+
+        List<UsersExtraInfo> simpleUsers =  mongoTemplate.find(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class , userExtraInfoCollection);
+        for (UsersExtraInfo simple:simpleUsers) {
+            Query query = new Query(Criteria.where("userId").is(simple.getUserId()));
+
+                if (ldapTemplate.search(query().where("uid").is(simple.getUserId()), userAttributeMapper).size()==0) {
+
+                simple.setStatus("enable");
+
+                mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
+                mongoTemplate.save(simple, userExtraInfoCollection);
+
+                logger.warn(new ReportMessage("User", simple.getUserId(), "", "unlock", "", "due to time pass").toString());
+
+
+                }
+
+
+        }
+
 
         return HttpStatus.OK;
     }

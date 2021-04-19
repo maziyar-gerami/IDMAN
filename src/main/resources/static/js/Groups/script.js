@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reportsURLText: "./reports",
             groupIdDuplicate: false,
             groupIdDuplicateText: "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.",
+            fileUploadGroupNotSelectedText: "لطفا گروه مورد نظر خود را انتخاب کنید",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام انگلیسی",
@@ -578,6 +579,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
+            fileUploadCheck: function () {
+                if(document.getElementById("editingGroupID").value != ""){
+                    document.getElementById("file").click();
+                }else{
+                    alert(this.fileUploadGroupNotSelectedText);
+                }
+            },
             selectedFile() {
                 let re = /(\.csv|\.xls|\.xlsx)$/i;
                 let fup = document.getElementById('file');
@@ -690,6 +698,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesText = "Roles";
                     this.reportsText = "Reports";
                     this.groupIdDuplicateText = "A Group With This Name Already Exists, Please Choose Another.";
+                    this.fileUploadGroupNotSelectedText = "Please Select The Intended Group";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
@@ -763,6 +772,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
                     this.groupIdDuplicateText = "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.";
+                    this.fileUploadGroupNotSelectedText = "لطفا گروه مورد نظر خود را انتخاب کنید";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";

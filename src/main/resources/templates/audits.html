@@ -11,8 +11,119 @@
     <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="fonts/IranSans/font.css" rel="stylesheet">
     <link href="css/persian-datepicker.min.css" rel="stylesheet"/>
+    
+
+    <script src="js/es6-promise.min.js"></script>
+    <script src="js/es6-promise.auto.min.js"></script>
+    <script src="js/polyfill.min.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/persian-date.min.js"></script>
+    <script src="js/Audits/script.js"></script>
+    <script src="js/vue-plain-pagination.umd.min.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/persian-datepicker.min.js"></script>
+    <script src="js/vue-spinners-css.min.js"></script>
 
 </head>
+<script type="text/javascript">
+    $(document).ready(function() {
+      $(".datePickerFa").pDatepicker({
+        inline: false,
+        format: "LL",
+        viewMode: "day",
+        initialValue: false,
+        initialValueType: "persian",
+        autoClose: true,
+        position: "auto",
+        altFormat: "lll",
+        altField: ".alt-field",
+        onlyTimePicker: false,
+        onlySelectOnDate: true,
+        calendarType: "persian",
+        inputDelay: 800,
+        observer: false,
+        calendar: {
+            persian: {
+            locale: "fa",
+            showHint: true,
+            leapYearMode: "algorithmic"
+            },
+            gregorian: {
+            locale: "en",
+            showHint: true
+            }
+        },
+        navigator: {
+            enabled: true,
+            scroll: {
+            enabled: true
+            },
+            text: {
+            btnNextText: "<",
+            btnPrevText: ">"
+            }
+        },
+        toolbox: {
+            enabled: true,
+            calendarSwitch: {
+            enabled: true,
+            format: "MMMM"
+            },
+            todayButton: {
+            enabled: true,
+            text: {
+                fa: "امروز",
+                en: "Today"
+            }
+            },
+            submitButton: {
+            enabled: true,
+            text: {
+                fa: "تایید",
+                en: "Submit"
+            }
+            },
+            text: {
+            btnToday: "امروز"
+            }
+        },
+        timePicker: {
+            enabled: false,
+            step: 1,
+            hour: {
+            enabled: false,
+            step: null
+            },
+            minute: {
+            enabled: false,
+            step: null
+            },
+            second: {
+            enabled: false,
+            step: null
+            },
+            meridian: {
+            enabled: false
+            }
+        },
+        dayPicker: {
+            enabled: true,
+            titleFormat: "YYYY MMMM"
+        },
+        monthPicker: {
+            enabled: true,
+            titleFormat: "YYYY"
+        },
+        yearPicker: {
+            enabled: true,
+            titleFormat: "YYYY"
+        },
+        responsive: true
+        });
+    });
+</script>
 <body class="h-100">
     <div id="app">
         <div v-bind:class="{rtl: isRtl}" class=" h-100">
@@ -409,117 +520,5 @@
             </footer>
         </div>
     </div>
-
-    <script src="js/es6-promise.min.js"></script>
-    <script src="js/es6-promise.auto.min.js"></script>
-    <script src="js/polyfill.min.js"></script>
-    <script src="js/vue.min.js"></script>
-    <script src="js/vue-router.js"></script>
-    <script src="js/axios.min.js"></script>
-    <script src="js/persian-date.min.js"></script>
-    <script src="js/Audits/script.js"></script>
-    <script src="js/vue-plain-pagination.umd.min.js"></script>
-    <script src="js/jquery.js"></script>
-    <script src="js/persian-datepicker.min.js"></script>
-    <script src="js/vue-spinners-css.min.js"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $(".datePickerFa").pDatepicker({
-                inline: false,
-                format: "LL",
-                viewMode: "day",
-                initialValue: false,
-                initialValueType: "persian",
-                autoClose: true,
-                position: "auto",
-                altFormat: "lll",
-                altField: ".alt-field",
-                onlyTimePicker: false,
-                onlySelectOnDate: true,
-                calendarType: "persian",
-                inputDelay: 800,
-                observer: false,
-                calendar: {
-                    persian: {
-                        locale: "fa",
-                        showHint: true,
-                        leapYearMode: "algorithmic"
-                    },
-                    gregorian: {
-                        locale: "en",
-                        showHint: true
-                    }
-                },
-                navigator: {
-                    enabled: true,
-                    scroll: {
-                        enabled: true
-                    },
-                    text: {
-                        btnNextText: "<",
-                        btnPrevText: ">"
-                    }
-                },
-                toolbox: {
-                    enabled: true,
-                    calendarSwitch: {
-                        enabled: true,
-                        format: "MMMM"
-                    },
-                    todayButton: {
-                        enabled: true,
-                        text: {
-                            fa: "امروز",
-                            en: "Today"
-                        }
-                    },
-                    submitButton: {
-                        enabled: true,
-                        text: {
-                            fa: "تایید",
-                            en: "Submit"
-                        }
-                    },
-                    text: {
-                        btnToday: "امروز"
-                    }
-                },
-                timePicker: {
-                    enabled: false,
-                    step: 1,
-                    hour: {
-                        enabled: false,
-                        step: null
-                    },
-                    minute: {
-                        enabled: false,
-                        step: null
-                    },
-                    second: {
-                        enabled: false,
-                        step: null
-                    },
-                    meridian: {
-                        enabled: false
-                    }
-                },
-                dayPicker: {
-                    enabled: true,
-                    titleFormat: "YYYY MMMM"
-                },
-                monthPicker: {
-                    enabled: true,
-                    titleFormat: "YYYY"
-                },
-                yearPicker: {
-                    enabled: true,
-                    titleFormat: "YYYY"
-                },
-                responsive: true
-            });
-        });
-    </script>
-
 </body>
 </html>

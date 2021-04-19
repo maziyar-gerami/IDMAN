@@ -78,7 +78,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources

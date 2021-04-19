@@ -46,7 +46,7 @@ public class ImportUsers {
         if (hasHeader == true) rowIterator.next();
 
         List<JSONObject> invalidGroups = new LinkedList<>();
-        List<JSONObject> repetitiveGroups = new LinkedList<>();
+        List<JSONObject> repetitiveUsers = new LinkedList<>();
 
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
@@ -89,7 +89,7 @@ public class ImportUsers {
                     if(temp.getAsString("invalidGroups")!= null)
                         invalidGroups.add(temp);
                     else
-                        repetitiveGroups.add(temp);
+                        repetitiveUsers.add(temp);
                     nUnSuccessful++;
 
                 }
@@ -102,7 +102,7 @@ public class ImportUsers {
 
         JSONObject finalJson = new JSONObject();
         finalJson.put("invalidGroups", invalidGroups);
-        finalJson.put("repetitiveUsers", repetitiveGroups);
+        finalJson.put("repetitiveUsers", repetitiveUsers);
         finalJson.put("count", count);
         finalJson.put("nUnSuccessful", nUnSuccessful);
         finalJson.put("nSuccessful", count - nUnSuccessful);

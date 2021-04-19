@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Users.ListUsers;
-import parsso.idman.Models.Users.SimpleUser;
 import parsso.idman.Models.Users.User;
+import parsso.idman.Models.Users.UsersExtraInfo;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -26,7 +26,7 @@ public interface UserRepo {
 
     HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException;
 
-    List<SimpleUser> retrieveUsersMain(int page, int number);
+    List<UsersExtraInfo> retrieveUsersMain(int page, int number);
 
     int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus);
 
@@ -44,7 +44,7 @@ public interface UserRepo {
 
     User retrieveUsers(String userId);
 
-    List<SimpleUser> retrieveGroupsUsers(String groupId);
+    List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
 
     List<JSONObject> checkMail(String token);
 

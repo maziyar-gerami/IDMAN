@@ -15,4 +15,6 @@ public interface SystemRefresh {
     HttpStatus serivceRefresh(String doer) throws IOException, ParseException;
 
     HttpStatus all(String doer) throws IOException, ParseException;
+
+    HttpStatus refreshLockedUsers();
 }

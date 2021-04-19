@@ -16,10 +16,7 @@ import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.*;
 
 @Service
 public class BuildAttributes {
@@ -33,6 +30,9 @@ public class BuildAttributes {
 
     @Autowired
     private LdapTemplate ldapTemplate;
+
+    @Autowired
+    BuildDnUser buildDnUser;
 
 
     public Attributes BuildAttributes(User p) {
@@ -137,19 +137,31 @@ public class BuildAttributes {
 
         if (p.getDescription() != "" && p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
 
-
+/*
         if (p.getEndTime() != null) {
-            String time = Time.convertDateTimeJalali(p.getEndTime());
+            String time;
+            try {
+                time = Time.convertDateTimeJalali(p.getEndTime());
+            }catch (Exception e){
+                time = p.getEndTime();
+            }
             context.setAttributeValue("pwdEndTime", time + "Z");
-        }
+        }*/
 
         if ( old.getEmployeeNumber() != null && p.getEmployeeNumber() != "") context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
 
         if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null) mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
 
-        if (p.getEndTime() != null) {
-            context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
+        if(p.getEndTime()!=null && old.getEndTime()!=null)  {
+
+            ModificationItem[] modificationItems;
+            modificationItems = new ModificationItem[1];
+
+            modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
+
+            ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()),modificationItems);
         }
+
 
         return context;
     }
