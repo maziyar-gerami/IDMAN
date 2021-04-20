@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
@@ -36,7 +35,6 @@ import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.Group.GroupsChecks;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
-import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.ListUsers;
@@ -634,30 +632,11 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
-    @Override
-    public User retrieveUsers(String userId) {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        User user = new User();
-        UsersExtraInfo usersExtraInfo = null;
-        if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
-            user = ldapTemplate.lookup(buildDnUser.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
-            Query query = new Query(Criteria.where("userId").is(user.getUserId()));
-            usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
-            user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
-            try {
-                user.setUnDeletable(usersExtraInfo.isUnDeletable());
-            }
-            catch (Exception e){
-                user.setUnDeletable(false);
-            }
-        }
 
-        if(user.getRole()==null)
-            return setRole(user);
-        if (user.getUserId() == null) return null;
-        else return user;
+
+    @Override
+    public User retrieveUsers(String userId)  {
+        return ldapTemplate.findOne(query().where("uid").is(userId), User.class);
     }
 
     @Override
