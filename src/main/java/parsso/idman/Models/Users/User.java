@@ -92,7 +92,6 @@ public final class User implements Comparable {
 
 
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Attribute(name="userPassword")
     private String userPassword;
 

@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
@@ -231,6 +232,10 @@ public class UserRepoImpl implements UserRepo {
             if (p.getEndTime()!=null)
                 context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
 
+            if (p.getUserPassword()!=null)
+                context.setAttributeValue("userPassword", p.getUserPassword());
+
+
             ldapTemplate.modifyAttributes(context);
 
             mongoTemplate.remove(query, userExtraInfoCollection);
@@ -243,26 +248,6 @@ public class UserRepoImpl implements UserRepo {
             logger.warn(new ReportMessage(model,usid,"","update", "failed","Writing to DB").toString());
 
         }
-
-        if(p.getUserPassword()!=null) {
-
-            context.setAttributeValue("userPassword", p.getUserPassword());
-
-            try {
-                ldapTemplate.modifyAttributes(context);
-                logger.warn(new ReportMessage(model,usid,"password","update", "success","").toString());
-
-                return HttpStatus.OK;
-            } catch (Exception e) {
-
-                logger.warn(new ReportMessage(model,usid,"password","update", "failed","unknown error").toString());
-
-                return HttpStatus.BAD_REQUEST;
-            }
-
-        }
-
-
 
         return  HttpStatus.OK;
     }

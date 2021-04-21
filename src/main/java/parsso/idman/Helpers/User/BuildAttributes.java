@@ -88,9 +88,6 @@ public class BuildAttributes {
 
         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
-        Logger logger = LogManager.getLogger(doerID);
-
-
         if (p.getFirstName() != "" && p.getFirstName() != null)
             context.setAttributeValue("givenName", p.getFirstName());
         if (p.getLastName() != "" && p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
@@ -137,8 +134,6 @@ public class BuildAttributes {
                     userRepo.unlock(doerID, uid);
 
             }
-
-
 
         }
 

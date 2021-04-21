@@ -60,8 +60,6 @@ public class ServicesController {
 
 
     @GetMapping("/api/services/user")
-
-
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
         String currentUserId = request.getUserPrincipal().getName();
         Criteria regex = Criteria.where("userId").regex(currentUserId, "i");
