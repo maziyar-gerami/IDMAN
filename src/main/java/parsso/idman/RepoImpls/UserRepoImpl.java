@@ -621,7 +621,28 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User retrieveUsers(String userId)  {
-        return ldapTemplate.findOne(query().where("uid").is(userId), User.class);
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        User user = new User();
+        UsersExtraInfo usersExtraInfo = null;
+        if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
+            user = ldapTemplate.lookup(buildDnUser.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
+            Query query = new Query(Criteria.where("userId").is(user.getUserId()));
+            usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
+            user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
+            try {
+                user.setUnDeletable(usersExtraInfo.isUnDeletable());
+            }
+            catch (Exception e){
+                user.setUnDeletable(false);
+            }
+        }
+
+        if(user.getRole()==null)
+            user =  setRole(user);
+        if (user.getUserId() == null) return null;
+        else return user;
     }
 
     @Override

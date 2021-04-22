@@ -173,15 +173,11 @@ public class UsersController {
      */
     @GetMapping("/api/users/u/{uid}")
     public ResponseEntity<User> retrieveUser(@PathVariable("uid") String userId) {
-        if (userRepo.retrieveUsers(userId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveUsers(userId), HttpStatus.OK);
+        User user = userRepo.retrieveUsers(userId);
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @GetMapping("/api/userss/u/{uid}")
-    public ResponseEntity<User> retrieveUsers(@PathVariable("uid") String userId) throws InvalidNameException {
-        if (userRepo.retrieveUsers(userId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveUsers(userId), HttpStatus.OK);
-    }
 
     /**
      * Retrieve user with main variables

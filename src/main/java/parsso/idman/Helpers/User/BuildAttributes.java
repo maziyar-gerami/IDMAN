@@ -84,59 +84,87 @@ public class BuildAttributes {
     @SneakyThrows
     public DirContextOperations buildAttributes(String doerID, String uid, User p, Name dn) {
 
+        //retrieve old user
         User old = userRepo.retrieveUsers(uid);
-
         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
+        //givenName (First Name attribute)
         if (p.getFirstName() != "" && p.getFirstName() != null)
             context.setAttributeValue("givenName", p.getFirstName());
-        if (p.getLastName() != "" && p.getLastName() != null) context.setAttributeValue("sn", p.getLastName());
+        else if (p.getFirstName().equals(""))
+            context.removeAttributeValue("givenName", old.getFirstName());
+
+        //lastName
+        if (p.getLastName() != "" && p.getLastName() != null)
+            context.setAttributeValue("sn", p.getLastName());
+        else if (p.getLastName().equals(""))
+            context.removeAttributeValue("sn", old.getFirstName());
+
+
+        //displayName attribute (Persian name attribute)
         if (p.getDisplayName() != "" && p.getDisplayName() != null)
             context.setAttributeValue("displayName", p.getDisplayName());
-        if (p.getMobile() != "" && p.getMobile() != null) context.setAttributeValue("mobile", p.getMobile());
-        if (p.getEmployeeNumber() != null && !p.getEmployeeNumber().equals("")) context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
-        if (p.getMail() != null) context.setAttributeValue("mail", p.getMail());
+        else if (p.getDisplayName().equals(""))
+            context.removeAttributeValue("displayName", old.getDisplayName());
 
+        //mobile attribute (Mobile attribute)
+        if (p.getMobile() != "" && p.getMobile() != null)
+            context.setAttributeValue("mobile", p.getMobile());
+        else if (p.getMobile().equals("") && old.getMobile()!=null && !old.getMobile().equals(""))
+            context.removeAttributeValue("mobile", old.getMobile());
 
-        //if (p.getTimeStamp() > 0)
-            //context.setAttributeValue("createtimestamp", Long.valueOf(p.getTimeStamp()).toString().substring(0,14));
+        //employeeNumber attribute (Employee Number attribute)
+        if (p.getEmployeeNumber() != null && !p.getEmployeeNumber().equals(""))
+            context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
+        else if (p.getEmployeeNumber().equals(""))
+            context.removeAttributeValue("employeeNumber", old.getEmployeeNumber());
 
-        if ((p.getFirstName()) != null || (p.getLastName() != null)) {
-            if (p.getFirstName() == null)
-                context.setAttributeValue("cn", userRepo.retrieveUsers(uid).getFirstName() + ' ' + p.getLastName());
+        //mail attribute (Mail attribute)
+        if (p.getMail() != null)
+            context.setAttributeValue("mail", p.getMail());
+        else if (p.getMail().equals(""))
+            context.removeAttributeValue("mail", old.getMail());
 
-            else if (p.getLastName() == null)
-                context.setAttributeValue("cn", p.getFirstName() + ' ' + userRepo.retrieveUsers(uid).getLastName());
+        //Description attribute
+        if (p.getDescription() != "" && p.getDescription() != null)
+            context.setAttributeValue("description", p.getDescription());
+        else if ((p.getDescription().equals("")))
+            context.removeAttributeValue("description", old.getDescription());
 
-            else context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
-        }
+        //cn attribute (English full name that computing from last name and firs name)
+        if (!(p.getFirstName().equals("")) && (!(p.getLastName().equals(""))))
+                context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
+        else if (p.getFirstName().equals(""))
+                context.setAttributeValue("cn", old.getLastName());
+        else if (p.getLastName().equals(""))
+            context.setAttributeValue("cn", old.getFirstName());
+        else if ((p.getFirstName().equals("")) && (p.getLastName().equals("")))
+            context.setAttributeValue("cn", "");
 
+        //cStatus for changing status
         if (p.getCStatus() != null) {
-
             if (p.getCStatus().equals("enable")) userRepo.enable(doerID, uid);
             else if (p.getCStatus().equals("disable")) userRepo.disable(doerID, uid);
             else if (p.getCStatus().equals("unlock")) userRepo.unlock(doerID, uid);
-
-
         }else {
             if (p.getStatus() != null){
-                String oldStutus = old.getStatus();
+                String oldStatus = old.getStatus();
                 String newStatus = p.getStatus();
 
-                if (oldStutus.equals("enable") && newStatus.equals("disable")) {
+                if (oldStatus.equals("enable") && newStatus.equals("disable"))
                     userRepo.disable(doerID, uid);
-                }
 
-                else if (oldStutus.equals("disable") && newStatus.equals("enable"))
+                else if (oldStatus.equals("disable") && newStatus.equals("enable"))
                     userRepo.enable(doerID, uid);
 
-                else if (oldStutus.equals("lock") && newStatus.equals("enable"))
+                else if (oldStatus.equals("lock") && newStatus.equals("enable"))
                     userRepo.unlock(doerID, uid);
 
             }
 
         }
 
+        //ou attribute stating membrane in group
         if (p.getMemberOf() != null) {
             if (p.getMemberOf().size() != 0) {
                 for (int i = 0; i < p.getMemberOf().size(); i++) {
@@ -149,11 +177,8 @@ public class BuildAttributes {
                 }
         }
 
-        if (p.getDescription() != "" && p.getDescription() != null) context.setAttributeValue("description", p.getDescription());
 
-        //if (p.getUserPassword() != "" && p.getUserPassword() != null) context.setAttributeValue("userPassword", p.getUserPassword());
-
-/*
+        //End access time of a user
         if (p.getEndTime() != null) {
             String time;
             try {
@@ -162,19 +187,28 @@ public class BuildAttributes {
                 time = p.getEndTime();
             }
             context.setAttributeValue("pwdEndTime", time + "Z");
-        }*/
+        } else
+            context.removeAttributeValue("pwdEndTime", old.getEndTime());
 
-        if ( old.getEmployeeNumber() != null && p.getEmployeeNumber() != "") context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
 
-        if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null) mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
+
+        if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null)
+            mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
+
+        ModificationItem[] modificationItems;
+        modificationItems = new ModificationItem[1];
 
         if(p.getEndTime()!=null && old.getEndTime()!=null)  {
 
-            ModificationItem[] modificationItems;
-            modificationItems = new ModificationItem[1];
+            modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
+            ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()),modificationItems);
 
+        } else if(p.getEndTime()==null && old.getEndTime()!=null)  {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
+            ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()),modificationItems);
 
+        }else if(p.getEndTime()!=null && old.getEndTime()!=null)  {
+            modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
             ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()),modificationItems);
         }
 
