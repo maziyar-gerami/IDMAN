@@ -202,8 +202,7 @@ public class UsersController {
     public ResponseEntity<HttpStatus> massUsersGroupUpdate(HttpServletRequest request,
                                                            @RequestBody JSONObject gu,
                                                            @PathVariable (name = "groupId") String groupId) {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.massUsersGroupUpdate(principal.getName(),groupId, gu));
+        return new ResponseEntity<>(userRepo.massUsersGroupUpdate(request.getUserPrincipal().getName(),groupId, gu));
     }
 
     /**

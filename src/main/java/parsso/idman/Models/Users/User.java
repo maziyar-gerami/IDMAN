@@ -44,7 +44,6 @@ public class User implements UserDetails, Comparable {
     private String mail;
     private String description;
     private List<String> memberOf;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String userPassword;
     @JsonIgnore
     private String photo;

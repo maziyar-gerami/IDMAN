@@ -227,13 +227,16 @@ public class UserRepoImpl implements UserRepo {
         if (p.isUnDeletable())
             usersExtraInfo.setUnDeletable(true);
 
+        if (p.getEndTime()!=null)
+            context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
+
+        if (p.getUserPassword()!=null)
+            context.setAttributeValue("userPassword", p.getUserPassword());
+
+
         try {
 
-            if (p.getEndTime()!=null)
-                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
 
-            if (p.getUserPassword()!=null)
-                context.setAttributeValue("userPassword", p.getUserPassword());
 
 
             ldapTemplate.modifyAttributes(context);
