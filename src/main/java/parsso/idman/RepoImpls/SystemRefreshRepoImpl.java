@@ -87,12 +87,16 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         //1. create documents
         for (UsersExtraInfo user : userRepo.retrieveUsersMain(-1,-1)) {
+            User userMain = userRepo.retrieveUsers(user.getUserId());
+
             Query queryMongo = new Query(new Criteria("userId").regex(user.getUserId(), "i"));
+
             if (mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection) != null) {
 
                 UsersExtraInfo userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection);
-                if (userExtraInfo!=null && userExtraInfo.getQrToken().equals(""))
+                if (userExtraInfo.getQrToken().equals(""))
                     userExtraInfo.setQrToken(UUID.randomUUID().toString());
+
 
                 String photoName = ldapTemplate.search(
                         query().where("uid").is(user.getUserId()),
@@ -106,17 +110,11 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                             }
                         }).get(0);
 
-                if (photoName!=null) {
+                if (photoName!=null)
                     userExtraInfo.setPhotoName(photoName);
-                    mongoTemplate.remove(queryMongo, userExtraInfoCollection);
-                    mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
-                }
 
-            } else {
-
-
-                mongoTemplate.save(new UsersExtraInfo(user.getUserId()), userExtraInfoCollection);
             }
+
             UsersExtraInfo  userExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
 
             if (userExtraInfo!=null) {
@@ -129,6 +127,23 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 else
                     userExtraInfo.setRole(userExtraInfo.getRole());
 
+                if (userExtraInfo.isUnDeletable())
+                    userExtraInfo.setUnDeletable(true);
+                else
+                    userExtraInfo.setUnDeletable(false);
+
+                userExtraInfo.setDisplayName(userMain.getDisplayName());
+
+                userExtraInfo.setMemberOf(userMain.getMemberOf());
+
+                userExtraInfo.setStatus(userMain.getStatus());
+
+                userExtraInfo.setPasswordChangedTime(userMain.getPasswordChangedTime());
+
+                userExtraInfo.setCreationTimeStamp(userMain.getTimeStamp());
+
+                
+                userExtraInfo.setStatus(userMain.getStatus());
                 mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
 
             }
