@@ -361,8 +361,10 @@ public class UsersController {
     @PutMapping("/api/users/ou/{ou}")
     public ResponseEntity<List<String>> addGroups(HttpServletRequest request,@RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException {
         List<String> notExist = userRepo.addGroupToUsers(request.getUserPrincipal().getName(),file, ou);
+        if (ou.equals("none"))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (notExist==null)
-            return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return  new ResponseEntity<>(HttpStatus.FORBIDDEN);
         if (notExist.size()==0)
             return new ResponseEntity<>(HttpStatus.OK);
         else

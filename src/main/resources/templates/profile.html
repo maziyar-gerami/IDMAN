@@ -219,16 +219,19 @@
                                     <div class="tab-pane fade" :class="{ 'active show': isActive('info') }" id="info">
                                         <div>
                                             <div class="form-group">
-                                                <label>{{U3}}</label>
-                                                <input v-bind:value="userInfo.firstName" id="userInfo.firstNameUpdate" type="text" class="form-control">
+                                                <label>{{U3}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
+                                                <input v-bind:value="userInfo.firstName" id="userInfo.firstNameUpdate" v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck"
+                                                    type="text" class="form-control">
                                             </div>
                                             <div class="form-group">
-                                                <label>{{U4}}</label>
-                                                <input v-bind:value="userInfo.lastName" id="userInfo.lastNameUpdate" type="text" class="form-control">
+                                                <label>{{U4}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
+                                                <input v-bind:value="userInfo.lastName" id="userInfo.lastNameUpdate" v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck"
+                                                    type="text" class="form-control">
                                             </div>
                                             <div class="form-group">
-                                                <label>{{U5}}<span style="color: red;"> *</span></label>
-                                                <input v-bind:value="userInfo.displayName" id="userInfo.displayNameUpdate" type="text" class="form-control"  required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
+                                                <label>{{U5}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputPersianFilterText}}</small></label>
+                                                <input v-bind:value="userInfo.displayName" id="userInfo.displayNameUpdate" v-on:keypress="persianInputCharCheck" v-on:paste="persianInputCharCheck"
+                                                    type="text" class="form-control"  required oninvalid="this.setCustomValidity('لطفا این قسمت را تکمیل کنید')"
                                                 oninput="setCustomValidity('')">
                                             </div>
                                             <div class="form-group">

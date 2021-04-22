@@ -23,6 +23,7 @@
     <script src="js/CreateService/script.js"></script>
     <script src="js/jquery.js"></script>
     <script src="js/persian-datepicker.min.js"></script>
+    <script src="js/persian-rex.min.js"></script>
 
 </head>
 <script type="text/javascript">
@@ -282,8 +283,9 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>{{s17}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s47}}</small></label>
-                                                    <input name="name" @keypress="serviceNameValidate" class="form-control enInput" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                    <label>{{s17}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
+                                                    <input name="name" v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck"
+                                                        class="form-control enInput" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 </div>
                                                 <div class="form-group">
                                                     <label>{{s36}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s73}}</small></label>
@@ -311,12 +313,13 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group mb-3">
-                                                    <label>{{s19}}<span style="color: red;"> *</span></label>
-                                                    <input name="description" class="form-control" type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"></input>
+                                                    <label>{{s19}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputPersianFilterText}}</small></label>
+                                                    <input name="description" class="form-control" v-on:keypress="persianInputCharCheck" v-on:paste="persianInputCharCheck"
+                                                        type="text" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 </div>
                                                 <div class="form-group mb-3">
                                                     <label>URL<span style="color: red;"> *</span></label>
-                                                    <input name="url" class="form-control enInput" type="text" placeholder="URL" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید"></input>
+                                                    <input name="url" class="form-control enInput" type="text" placeholder="URL" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 </div>
 
                                                 <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s20}}</span></h4>

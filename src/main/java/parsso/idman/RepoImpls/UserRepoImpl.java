@@ -214,10 +214,15 @@ public class UserRepoImpl implements UserRepo {
         }
         if (p.getMemberOf()!=null)
             usersExtraInfo.setMemberOf(p.getMemberOf());
-        if(p.getCStatus()!=null)
-            usersExtraInfo.setStatus(p.getCStatus());
-        else
+        if(p.getCStatus()!=null) {
+            if (p.getCStatus().equals("unlock") || p.getCStatus().equals("enable"))
+                p.setStatus("enable");
+            else if (p.getCStatus().equals("disable"))
+                p.setStatus("disable");
             usersExtraInfo.setStatus(p.getStatus());
+        }
+        else
+            usersExtraInfo.setStatus("enable");
         usersExtraInfo.setMemberOf(p.getMemberOf());
         usersExtraInfo.setDisplayName(p.getDisplayName());
 
@@ -235,9 +240,6 @@ public class UserRepoImpl implements UserRepo {
 
 
         try {
-
-
-
 
             ldapTemplate.modifyAttributes(context);
 

@@ -733,19 +733,20 @@
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label>{{U3}}</label>
+                                                        <label>{{U3}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
                                                         <input v-model:value="editInfo.firstName" id="editInfo.firstNameUpdate"
-                                                            type="text" class="form-control enInput">
+                                                            v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck" type="text" class="form-control enInput">
                                                     </div>
                                                     <div class="form-group">
-                                                        <label>{{U4}}</label>
+                                                        <label>{{U4}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
                                                         <input v-model="editInfo.lastName" id="editInfo.lastNameUpdate"
-                                                            type="text" class="form-control enInput">
+                                                            v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck" type="text" class="form-control enInput">
                                                     </div>
                                                     <div class="form-group">
-                                                        <label>{{U5}}<span style="color: red;"> *</span></label>
+                                                        <label>{{U5}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputPersianFilterText}}</small></label>
                                                         <input v-model:value="editInfo.displayName" id="editInfo.displayNameUpdate"
-                                                            type="text" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                            v-on:keypress="persianInputCharCheck" v-on:paste="persianInputCharCheck" type="text" class="form-control" required
+                                                            data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                     </div>
 
                                                     <div class="form-group">
@@ -792,9 +793,10 @@
                                     <div class="p-3" v-bind:style="addS">
                                         <h3 class="mb-3 pb-2 border-bottom">{{s38}}</h3>
                                         <div class="form-group">
-                                            <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s74}}</small></label>
-                                            <input id="editInfo.userIdCreate" @keypress="userIdValidate" type="text" v-on:keyup="removeError" class="form-control enInput"
-                                            required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                            <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
+                                            <input id="editInfo.userIdCreate" v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck" v-on:keyup="removeError"
+                                                type="text" class="form-control enInput" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+
                                             <div class="matches mt-2" v-bind:style="userCreateExists ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                 <p class="error" style="font-size: .8rem;">{{s50}}</p>
                                             </div>
@@ -856,19 +858,20 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label>{{U3}}</label>
-                                            <input id="editInfo.firstNameCreate" type="text"
-                                                   class="form-control enInput" placeholder="Ali">
+                                            <label>{{U3}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
+                                            <input id="editInfo.firstNameCreate" v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck"
+                                                type="text" class="form-control enInput" placeholder="Ali">
                                         </div>
                                         <div class="form-group">
-                                            <label>{{U4}}</label>
-                                            <input id="editInfo.lastNameCreate" type="text"
-                                                   class="form-control enInput" placeholder="Amiri">
+                                            <label>{{U4}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
+                                            <input id="editInfo.lastNameCreate" v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck"
+                                                type="text" class="form-control enInput" placeholder="Amiri">
                                         </div>
                                         <div class="form-group">
-                                            <label>{{U5}}<span style="color: red;"> *</span></label>
-                                            <input id="editInfo.displayNameCreate" type="text" class="form-control" required 
-                                            data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید" placeholder="علی امیری">
+                                            <label>{{U5}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputPersianFilterText}}</small></label>
+                                            <input id="editInfo.displayNameCreate" v-on:keypress="persianInputCharCheck" v-on:paste="persianInputCharCheck"
+                                                type="text" class="form-control" placeholder="علی امیری" required
+                                                data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                         </div>
 
                                         <div class="form-group">
