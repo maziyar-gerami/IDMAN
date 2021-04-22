@@ -22,6 +22,7 @@
     <script src="js/Groups/script.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
     <script src="js/vue-spinners-css.min.js"></script>
+    <script src="js/persian-rex.min.js"></script>
 
 </head>
 <body class="h-100">
@@ -365,12 +366,14 @@
                                         <div class="p-3" v-bind:style="editS">
                                             <h3 class="mb-3 pb-2 border-bottom">{{s30}}</h3>
                                             <div class="form-group">
-                                                <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s55}}</small></label>
-                                                <input v-bind:value="group.id" id="group.idUpdate" type="text" @keypress="groupNameValidate" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
+                                                <input v-bind:value="group.id" id="group.idUpdate" type="text" v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck"
+                                                    class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                             </div>
                                             <div class="form-group">
-                                                <label>{{U3}}<span style="color: red;"> *</span></label>
-                                                <input v-bind:value="group.name" id="group.nameUpdate" type="text" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <label>{{U3}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputPersianFilterText}}</small></label>
+                                                <input v-bind:value="group.name" id="group.nameUpdate" type="text" v-on:keypress="persianInputCharCheck" v-on:paste="persianInputCharCheck"
+                                                    class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                             </div>
                                             <div class="form-group">
                                                 <label>{{U9}}</label>
@@ -534,16 +537,17 @@
                                         <div class="p-3" v-bind:style="addS">
                                             <h3 class="mb-3 pb-2 border-bottom">{{s29}}</h3>
                                             <div class="form-group">
-                                                <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s55}}</small></label>
-                                                <input id="group.idCreate" type="text" @keypress="groupNameValidate" v-on:keyup="removeGroupIdDuplicateError"
-                                                class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
+                                                <input id="group.idCreate" type="text" v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck"
+                                                    v-on:keyup="removeGroupIdDuplicateError" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 <div class="matches mt-2" v-bind:style="groupIdDuplicate ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                     <p class="error" style="font-size: .8rem;">{{groupIdDuplicateText}}</p>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label>{{U3}}<span style="color: red;"> *</span></label>
-                                                <input id="group.nameCreate" type="text" class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                <label>{{U3}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputPersianFilterText}}</small></label>
+                                                <input id="group.nameCreate" type="text" v-on:keypress="persianInputCharCheck" v-on:paste="persianInputCharCheck"
+                                                    class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                             </div>
                                             <div class="form-group">
                                                 <label>{{U9}}</label>

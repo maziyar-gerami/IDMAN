@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GroupRepoImpl implements GroupRepo {
@@ -70,38 +71,34 @@ public class GroupRepoImpl implements GroupRepo {
             groups = retrieve();
         else {
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
-            for (Object string:jsonArray
-                 ) {
-                Group group = retrieveOu((String) string);
-                if (group != null)
-                    groups.add(group);
-                else
-                    continue;
-            }
+            DirContextOperations context;
             Iterator<String> iterator = jsonArray.iterator();
             while (iterator.hasNext()) {
                 Group group = retrieveOu(iterator.next());
-                if (group != null)
-                    groups.add(group);
-                else
-                    continue;
 
-                DirContextOperations context;
 
-                String id = group.getId();
+                Name dn = buildDn(group.getId());
+                try {
+                    ldapTemplate.unbind(dn);
+                    logger.warn(new ReportMessage(model,group.getId(),"Group","remove", "success","").toString());
 
-                for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(id)) {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.warn(new ReportMessage(model,group.getId(),"Group","remove", "failed","writing to ldap").toString());
+                }
+
+
+                for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(group.getId())) {
                     if(user!=null && user.getMemberOf()!=null)
                     for (String groupN : user.getMemberOf()) {
-                        if (groupN.equalsIgnoreCase(id)) {
+                        if (groupN.equalsIgnoreCase(group.getId())) {
                             context = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
-                            context.removeAttributeValue("ou", id);
+                            context.removeAttributeValue("ou", group.getId());
                             try {
                                 ldapTemplate.modifyAttributes(context);
-
                                 UsersExtraInfo simpleUser = mongoTemplate.findOne
                                         (new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, usersExtraInfoCollection);
-                                simpleUser.getMemberOf().remove(id);
+                                simpleUser.getMemberOf().remove(group.getId());
 
                                 mongoTemplate.remove
                                         (new Query(Criteria.where("userId").is(user.getUserId())), usersExtraInfoCollection);
@@ -109,8 +106,12 @@ public class GroupRepoImpl implements GroupRepo {
                                 mongoTemplate.save
                                         (simpleUser, usersExtraInfoCollection);
 
+                                logger.warn(new ReportMessage("User",user.getUserId(), "group " + groupN,"remove", "success","").toString());
+
+
                             } catch (Exception e){
-                                logger.warn(new ReportMessage(model,user.getUserId(),groupN,"remove", "success","").toString());
+                                logger.warn(new ReportMessage("User",user.getUserId(), "group " + groupN,"remove", "failed","writing to LDAP").toString());
+
                             }
                         }
 
@@ -121,21 +122,7 @@ public class GroupRepoImpl implements GroupRepo {
 
         }
 
-        int j=0;
-        if (groups != null)
-            for (Group group : groups) {
-                Name dn = buildDn(group.getId());
-                try {
-                    ldapTemplate.unbind(dn);
-                    logger.warn(new ReportMessage(model,group.getId(),"Group","remove", "success","all groups").toString());
 
-                } catch (Exception e) {
-                    j++;
-                    e.printStackTrace();
-                    logger.warn(new ReportMessage(model,group.getId(),"Group","remove", "failed","writing to ldap").toString());
-                }
-
-            }
 
         return HttpStatus.OK;
     }

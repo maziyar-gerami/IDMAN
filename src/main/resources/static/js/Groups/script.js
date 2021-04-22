@@ -140,6 +140,8 @@ document.addEventListener('DOMContentLoaded', function () {
             groupIdDuplicate: false,
             groupIdDuplicateText: "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.",
             fileUploadGroupNotSelectedText: "لطفا گروه مورد نظر خود را انتخاب کنید",
+            inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
+            inputPersianFilterText: " (تنها حروف فارسی و اعداد مجاز می باشند)",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام انگلیسی",
@@ -627,18 +629,70 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
             },
-            groupNameValidate ($event) {
-                let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
-                if (keyCode < 48 || keyCode > 122) {
-                    $event.preventDefault();
-                }else if (keyCode > 57 && keyCode < 65) {
-                    $event.preventDefault();
-                }else if (keyCode > 90 && keyCode < 97) {
-                    $event.preventDefault();
-                }
-            },
             removeGroupIdDuplicateError() {
                 this.groupIdDuplicate = false;
+            },
+            persianInputCharCheck ($event) {
+                if($event.type == "keypress"){
+                    let key = ($event.key ? $event.key : $event.which);
+                    let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+                    if(keyCode < 48 || 57 < keyCode){
+                        if(32 < keyCode && keyCode < 65){
+                            $event.preventDefault();
+                        }else if(90 < keyCode && keyCode < 97){
+                            $event.preventDefault();
+                        }else if(122 < keyCode && keyCode < 127){
+                            $event.preventDefault();
+                        }else if(!persianRex.text.test(key)){
+                            $event.preventDefault();
+                        }
+                    }
+                }else if ($event.type == "paste"){
+                    let text = $event.clipboardData.getData("text");
+                    for(let i = 0; i < text.length; ++i){
+                        if(text[i].charCodeAt(0) < 48 || 57 < text[i].charCodeAt(0)){
+                            if(32 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 65){
+                                $event.preventDefault();
+                                break;
+                            }else if(90 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 97){
+                                $event.preventDefault();
+                                break;
+                            }else if(122 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 127){
+                                $event.preventDefault();
+                                break;
+                            }else if(!persianRex.text.test(text[i])){
+                                $event.preventDefault();
+                                break;
+                            }
+                        }
+                    }
+                }
+            },
+            englishInputCharCheck ($event) {
+                if($event.type == "keypress"){
+                    let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+                    if (keyCode < 48 || 122 < keyCode) {
+                        $event.preventDefault();
+                    }else if (57 < keyCode  && keyCode < 65) {
+                        $event.preventDefault();
+                    }else if (90 < keyCode  && keyCode < 97) {
+                        $event.preventDefault();
+                    }
+                }else if ($event.type == "paste"){
+                    let text = $event.clipboardData.getData("text");
+                    for(let i = 0; i < text.length; ++i){
+                        if (text[i].charCodeAt(0) < 48 || 122 < text[i].charCodeAt(0)) {
+                            $event.preventDefault();
+                            break;
+                        }else if (57 < text[i].charCodeAt(0)  && text[i].charCodeAt(0) < 65) {
+                            $event.preventDefault();
+                            break;
+                        }else if (90 < text[i].charCodeAt(0)  && text[i].charCodeAt(0) < 97) {
+                            $event.preventDefault();
+                            break;
+                        }
+                    }
+                }
             },
             changeLang: function () {
                 if(this.lang == "EN"){
@@ -699,6 +753,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "Reports";
                     this.groupIdDuplicateText = "A Group With This Name Already Exists, Please Choose Another.";
                     this.fileUploadGroupNotSelectedText = "Please Select The Intended Group";
+                    this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
+                    this.inputPersianFilterText = " (Only Persian Letters And Numbers Are Allowed)";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
@@ -773,6 +829,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "گزارش ها";
                     this.groupIdDuplicateText = "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.";
                     this.fileUploadGroupNotSelectedText = "لطفا گروه مورد نظر خود را انتخاب کنید";
+                    this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
+                    this.inputPersianFilterText = " (تنها حروف فارسی و اعداد مجاز می باشند)";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";

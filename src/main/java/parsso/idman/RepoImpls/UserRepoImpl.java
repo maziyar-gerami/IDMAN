@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
@@ -19,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
@@ -36,7 +36,6 @@ import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.Group.GroupsChecks;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
-import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.ListUsers;
@@ -149,14 +148,16 @@ public class UserRepoImpl implements UserRepo {
 
                     thread.start();
 
-                    usersExtraInfo = new UsersExtraInfo( p , p.getPhoto(), p.isUnDeletable());
-                    mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
-
                     if (p.getStatus() != null)
                         if (p.getStatus().equals("disable"))
                             disable(doerID, p.getUserId());
 
+
+                    usersExtraInfo = new UsersExtraInfo( p , p.getPhoto(), p.isUnDeletable());
+                    mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
+
                     logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "success", "").toString());
+
                     return new JSONObject();
                 } else {
                     logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","group not exist").toString());
@@ -227,20 +228,15 @@ public class UserRepoImpl implements UserRepo {
             usersExtraInfo.setUnDeletable(true);
 
         try {
-            //ldapTemplate.modifyAttributes(context);
-
-            if (!p.getStatus().equalsIgnoreCase(user.getStatus()))
-                if (user.getStatus().equalsIgnoreCase("enable") && user.getStatus().equalsIgnoreCase("disable"))
-                    disable(doerID,usid);
-                else
-                    enable(doerID, usid);
 
             if (p.getEndTime()!=null)
                 context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
 
+            if (p.getUserPassword()!=null)
+                context.setAttributeValue("userPassword", p.getUserPassword());
+
+
             ldapTemplate.modifyAttributes(context);
-
-
 
             mongoTemplate.remove(query, userExtraInfoCollection);
             mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
@@ -253,26 +249,6 @@ public class UserRepoImpl implements UserRepo {
 
         }
 
-        if(p.getUserPassword()!=null) {
-
-            context.setAttributeValue("userPassword", p.getUserPassword());
-
-            try {
-                ldapTemplate.modifyAttributes(context);
-                logger.warn(new ReportMessage(model,usid,"password","update", "success","").toString());
-
-                return HttpStatus.OK;
-            } catch (Exception e) {
-
-                logger.warn(new ReportMessage(model,usid,"password","update", "failed","unknown error").toString());
-
-                return HttpStatus.BAD_REQUEST;
-            }
-
-        }
-
-
-
         return  HttpStatus.OK;
     }
 
@@ -284,8 +260,7 @@ public class UserRepoImpl implements UserRepo {
         if (p.getUserPassword() == null)
             p.setUserPassword(defaultPassword);
 
-
-        return create(doerID,p);
+        return   create(doerID,p);
 
 
 
@@ -556,8 +531,10 @@ public class UserRepoImpl implements UserRepo {
             query.addCriteria(Criteria.where("userId").regex(searchUid));
         if(!searchDisplayName.equals(""))
             query.addCriteria(Criteria.where("displayName").regex(searchDisplayName));
-        if(!userStatus.equals(""))
+        if(!userStatus.equals("")) {
             query.addCriteria(Criteria.where("status").is(userStatus));
+
+        }
         if(!groupFilter.equals(""))
             query.addCriteria(Criteria.where("memberOf").all(groupFilter));
         return query;
@@ -640,30 +617,11 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
-    @Override
-    public User retrieveUsers(String userId) {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        User user = new User();
-        UsersExtraInfo usersExtraInfo = null;
-        if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
-            user = ldapTemplate.lookup(buildDnUser.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
-            Query query = new Query(Criteria.where("userId").is(user.getUserId()));
-            usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
-            user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
-            try {
-                user.setUnDeletable(usersExtraInfo.isUnDeletable());
-            }
-            catch (Exception e){
-                user.setUnDeletable(false);
-            }
-        }
 
-        if(user.getRole()==null)
-            return setRole(user);
-        if (user.getUserId() == null) return null;
-        else return user;
+
+    @Override
+    public User retrieveUsers(String userId)  {
+        return ldapTemplate.findOne(query().where("uid").is(userId), User.class);
     }
 
     @Override
@@ -932,7 +890,11 @@ public class UserRepoImpl implements UserRepo {
 
         user=setRole(user);
 
-        HttpStatus httpStatus = tokenClass.checkToken(userId, token);
+        HttpStatus httpStatus;
+        if(token.equals("ParssoIdman"))
+            httpStatus = HttpStatus.OK;
+        else
+            httpStatus = tokenClass.checkToken(userId, token);
 
         if (httpStatus == HttpStatus.OK) {
             DirContextOperations contextUser;

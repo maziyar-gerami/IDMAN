@@ -189,6 +189,8 @@ document.addEventListener('DOMContentLoaded', function () {
         serviceFaNameText: "نام فارسی",
         reportsText: "گزارش ها",
         reportsURLText: "./reports",
+        inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
+        inputPersianFilterText: " (تنها حروف فارسی و اعداد مجاز می باشند)",
       },
       created: function () {
         this.setDateNav();
@@ -1129,12 +1131,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this.allGroupsHolderText = this.addAllGroupsText;
           }
         },
-        serviceNameValidate ($event) {
-          let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
-          if (keyCode < 48 || keyCode > 122) {
-             $event.preventDefault();
-          }
-        },
         FaNumToEnNum: function (str) {
           let s = str.split("");
           let sEn = "";
@@ -1250,6 +1246,68 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById("selectAllCheckbox").click();
             }
         },
+        persianInputCharCheck ($event) {
+          if($event.type == "keypress"){
+            let key = ($event.key ? $event.key : $event.which);
+            let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+            if(keyCode < 48 || 57 < keyCode){
+              if(32 < keyCode && keyCode < 65){
+                $event.preventDefault();
+              }else if(90 < keyCode && keyCode < 97){
+                $event.preventDefault();
+              }else if(122 < keyCode && keyCode < 127){
+                $event.preventDefault();
+              }else if(!persianRex.text.test(key)){
+                $event.preventDefault();
+              }
+            }
+          }else if ($event.type == "paste"){
+            let text = $event.clipboardData.getData("text");
+            for(let i = 0; i < text.length; ++i){
+              if(text[i].charCodeAt(0) < 48 || 57 < text[i].charCodeAt(0)){
+                if(32 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 65){
+                  $event.preventDefault();
+                  break;
+                }else if(90 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 97){
+                  $event.preventDefault();
+                  break;
+                }else if(122 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 127){
+                  $event.preventDefault();
+                  break;
+                }else if(!persianRex.text.test(text[i])){
+                  $event.preventDefault();
+                  break;
+                }
+              }
+            }
+          }
+        },
+        englishInputCharCheck ($event) {
+          if($event.type == "keypress"){
+            let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+            if (keyCode < 48 || 122 < keyCode) {
+              $event.preventDefault();
+            }else if (57 < keyCode  && keyCode < 65) {
+              $event.preventDefault();
+            }else if (90 < keyCode  && keyCode < 97) {
+              $event.preventDefault();
+            }
+          }else if ($event.type == "paste"){
+            let text = $event.clipboardData.getData("text");
+            for(let i = 0; i < text.length; ++i){
+              if (text[i].charCodeAt(0) < 48 || 122 < text[i].charCodeAt(0)) {
+                $event.preventDefault();
+                break;
+              }else if (57 < text[i].charCodeAt(0)  && text[i].charCodeAt(0) < 65) {
+                $event.preventDefault();
+                break;
+              }else if (90 < text[i].charCodeAt(0)  && text[i].charCodeAt(0) < 97) {
+                $event.preventDefault();
+                break;
+              }
+            }
+          }
+        },
         changeLang: function () {
           if(this.lang == "EN"){
             window.localStorage.setItem("lang", "EN");
@@ -1354,6 +1412,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.addAllGroupsText = "Select All";
             this.removeAllGroupsText = "Unselect All";
             this.reportsText = "Reports";
+            this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
+            this.inputPersianFilterText = " (Only Persian Letters And Numbers Are Allowed)";
           }else {
               window.localStorage.setItem("lang", "FA");
               this.margin = "margin-right: 30px;";
@@ -1457,6 +1517,8 @@ document.addEventListener('DOMContentLoaded', function () {
               this.addAllGroupsText = "انتخاب همه";
               this.removeAllGroupsText = "لغو انتخاب همه";
               this.reportsText = "گزارش ها";
+              this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
+              this.inputPersianFilterText = " (تنها حروف فارسی و اعداد مجاز می باشند)";
           }
         },
         div: function (a, b) {

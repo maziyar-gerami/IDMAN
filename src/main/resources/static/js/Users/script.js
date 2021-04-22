@@ -221,6 +221,8 @@ document.addEventListener('DOMContentLoaded', function () {
             importUserListOverride3Text: " کاربر با مشکل مواجه شده و جایگزین نشده است.",
             emailFormatErrorText: "فرمت آدرس ایمیل را به درستی وارد کنید",
             mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
+            inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
+            inputPersianFilterText: " (تنها حروف فارسی و اعداد مجاز می باشند)",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه کاربری",
@@ -1243,14 +1245,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return sEn;
             },
-            userIdValidate ($event) {
-                let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
-                if (keyCode < 48 || keyCode > 122) {
-                   $event.preventDefault();
-                }else if (keyCode == 58 || keyCode == 62) {
-                  $event.preventDefault();
-                }
-            },
             rowSelected:function(id) {
                 let row = document.getElementById("row-" + id);
                 if(row.style.background == ""){
@@ -1279,6 +1273,68 @@ document.addEventListener('DOMContentLoaded', function () {
                             document.getElementById("checkbox-" + this.users[i].userId).click();
                         }
                         document.getElementById("row-" + this.users[i].userId).style.background = "#c2dbff";
+                    }
+                }
+            },
+            persianInputCharCheck ($event) {
+                if($event.type == "keypress"){
+                    let key = ($event.key ? $event.key : $event.which);
+                    let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+                    if(keyCode < 48 || 57 < keyCode){
+                        if(32 < keyCode && keyCode < 65){
+                            $event.preventDefault();
+                        }else if(90 < keyCode && keyCode < 97){
+                            $event.preventDefault();
+                        }else if(122 < keyCode && keyCode < 127){
+                            $event.preventDefault();
+                        }else if(!persianRex.text.test(key)){
+                            $event.preventDefault();
+                        }
+                    }
+                }else if ($event.type == "paste"){
+                    let text = $event.clipboardData.getData("text");
+                    for(let i = 0; i < text.length; ++i){
+                        if(text[i].charCodeAt(0) < 48 || 57 < text[i].charCodeAt(0)){
+                            if(32 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 65){
+                                $event.preventDefault();
+                                break;
+                            }else if(90 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 97){
+                                $event.preventDefault();
+                                break;
+                            }else if(122 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 127){
+                                $event.preventDefault();
+                                break;
+                            }else if(!persianRex.text.test(text[i])){
+                                $event.preventDefault();
+                                break;
+                            }
+                        }
+                    }
+                }
+            },
+            englishInputCharCheck ($event) {
+                if($event.type == "keypress"){
+                    let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+                    if (keyCode < 48 || 122 < keyCode) {
+                        $event.preventDefault();
+                    }else if (57 < keyCode  && keyCode < 65) {
+                        $event.preventDefault();
+                    }else if (90 < keyCode  && keyCode < 97) {
+                        $event.preventDefault();
+                    }
+                }else if ($event.type == "paste"){
+                    let text = $event.clipboardData.getData("text");
+                    for(let i = 0; i < text.length; ++i){
+                        if (text[i].charCodeAt(0) < 48 || 122 < text[i].charCodeAt(0)) {
+                            $event.preventDefault();
+                            break;
+                        }else if (57 < text[i].charCodeAt(0)  && text[i].charCodeAt(0) < 65) {
+                            $event.preventDefault();
+                            break;
+                        }else if (90 < text[i].charCodeAt(0)  && text[i].charCodeAt(0) < 97) {
+                            $event.preventDefault();
+                            break;
+                        }
                     }
                 }
             },
@@ -1382,6 +1438,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.importUserListOverride3Text = " Users Encountered a Problem And Was Not Replaced.";
                     this.emailFormatErrorText = "Enter Email Address Format Correctly";
                     this.mobileFormatErrorText = "Enter Phone Number Format Correctly";
+                    this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
+                    this.inputPersianFilterText = " (Only Persian Letters And Numbers Are Allowed)";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1508,6 +1566,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.importUserListOverride3Text = " کاربر با مشکل مواجه شده و جایگزین نشده است.";
                     this.emailFormatErrorText = "فرمت آدرس ایمیل را به درستی وارد کنید";
                     this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
+                    this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
+                    this.inputPersianFilterText = " (تنها حروف فارسی و اعداد مجاز می باشند)";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه کاربری";

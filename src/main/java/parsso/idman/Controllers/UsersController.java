@@ -22,6 +22,7 @@ import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.Repos.UserRepo;
 
+import javax.naming.InvalidNameException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -172,6 +173,12 @@ public class UsersController {
      */
     @GetMapping("/api/users/u/{uid}")
     public ResponseEntity<User> retrieveUser(@PathVariable("uid") String userId) {
+        if (userRepo.retrieveUsers(userId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(userRepo.retrieveUsers(userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/userss/u/{uid}")
+    public ResponseEntity<User> retrieveUsers(@PathVariable("uid") String userId) throws InvalidNameException {
         if (userRepo.retrieveUsers(userId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(userRepo.retrieveUsers(userId), HttpStatus.OK);
     }
