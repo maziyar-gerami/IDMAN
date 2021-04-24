@@ -67,7 +67,7 @@ public class BuildAttributes {
         if (p.getDescription() != null && !(p.getDescription().equals("")))
             attrs.put("description", p.getDescription());
         else
-            attrs.put("description", " ");
+            attrs.put("description", "");
 
         if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
@@ -88,58 +88,63 @@ public class BuildAttributes {
         User old = userRepo.retrieveUsers(uid);
         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
-        //givenName (First Name attribute)
-        if (p.getFirstName() != "" && p.getFirstName() != null)
-            context.setAttributeValue("givenName", p.getFirstName());
-        else if (p.getFirstName().equals(""))
-            context.removeAttributeValue("givenName", old.getFirstName());
-
-        //lastName
-        if (p.getLastName() != "" && p.getLastName() != null)
-            context.setAttributeValue("sn", p.getLastName());
-        else if (p.getLastName().equals(""))
-            context.removeAttributeValue("sn", old.getFirstName());
+        //First name (givenName) *
+        if (p.getFirstName()!=null)
+            if (p.getFirstName() != "")
+                context.setAttributeValue("givenName", p.getFirstName());
 
 
-        //displayName attribute (Persian name attribute)
-        if (p.getDisplayName() != "" && p.getDisplayName() != null)
-            context.setAttributeValue("displayName", p.getDisplayName());
-        else if (p.getDisplayName().equals(""))
-            context.removeAttributeValue("displayName", old.getDisplayName());
+        //Last Name (sn) *
+        if (p.getLastName()!=null)
+            if (p.getLastName() != "")
+                context.setAttributeValue("sn", p.getLastName());
 
-        //mobile attribute (Mobile attribute)
-        if (p.getMobile() != "" && p.getMobile() != null)
-            context.setAttributeValue("mobile", p.getMobile());
-        else if (p.getMobile().equals("") && old.getMobile()!=null && !old.getMobile().equals(""))
-            context.removeAttributeValue("mobile", old.getMobile());
+        //Persian name (displayName) *
+        if (p.getDisplayName()!=null)
+            if (p.getDisplayName() != "")
+                context.setAttributeValue("displayName", p.getDisplayName());
 
-        //employeeNumber attribute (Employee Number attribute)
-        if (p.getEmployeeNumber() != null && !p.getEmployeeNumber().equals(""))
-            context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
-        else if (p.getEmployeeNumber().equals(""))
-            context.removeAttributeValue("employeeNumber", old.getEmployeeNumber());
+        //attribute (Mobile) *
+        if (p.getMobile() != null)
+            if (p.getMobile() != "")
+                context.setAttributeValue("mobile", p.getMobile());
 
-        //mail attribute (Mail attribute)
+        //Employee Number attribute (employeeNumber)
+        if (p.getEmployeeNumber() != null){
+            if (!p.getEmployeeNumber().equals(""))
+                context.setAttributeValue("employeeNumber", p.getEmployeeNumber());
+            else if (p.getEmployeeNumber().equals(""))
+                context.removeAttributeValue("employeeNumber", old.getEmployeeNumber());
+        }
+
+        //Mail Address attribute (Mail) *
         if (p.getMail() != null)
-            context.setAttributeValue("mail", p.getMail());
-        else if (p.getMail().equals(""))
-            context.removeAttributeValue("mail", old.getMail());
+            if (p.getMail() != "")
+                context.setAttributeValue("mail", p.getMail());
 
         //Description attribute
-        if (p.getDescription() != "" && p.getDescription() != null)
-            context.setAttributeValue("description", p.getDescription());
-        else if ((p.getDescription().equals("")))
-            context.removeAttributeValue("description", old.getDescription());
+        if(p.getDescription() != null) {
+            if (!p.getDescription().equals(""))
+                context.setAttributeValue("description", p.getDescription());
+            else if (p.getDescription().equals(""))
+                context.removeAttributeValue("description", old.getDescription());
+        }
+
+        //userPassword attribute *
+        if (p.getPassword() != null && p.getPassword().equals(""))
+            context.setAttributeValue("userPassword", p.getPassword());
 
         //cn attribute (English full name that computing from last name and firs name)
-        if (!(p.getFirstName().equals("")) && (!(p.getLastName().equals(""))))
+        if(p.getFirstName()!=null && p.getLastName()!=null) {
+            if (!(p.getFirstName().equals("")) && (!(p.getLastName().equals(""))))
                 context.setAttributeValue("cn", p.getFirstName() + ' ' + p.getLastName());
-        else if (p.getFirstName().equals(""))
+            else if (p.getFirstName().equals(""))
                 context.setAttributeValue("cn", old.getLastName());
-        else if (p.getLastName().equals(""))
-            context.setAttributeValue("cn", old.getFirstName());
-        else if ((p.getFirstName().equals("")) && (p.getLastName().equals("")))
-            context.setAttributeValue("cn", "");
+            else if (p.getLastName().equals(""))
+                context.setAttributeValue("cn", old.getFirstName());
+            else if ((p.getFirstName().equals("")) && (p.getLastName().equals("")))
+                context.setAttributeValue("cn", "");
+        }
 
         //cStatus for changing status
         if (p.getCStatus() != null) {
@@ -176,21 +181,6 @@ public class BuildAttributes {
                     context.removeAttributeValue("ou", id);
                 }
         }
-
-
-        //End access time of a user
-        if (p.getEndTime() != null) {
-            String time;
-            try {
-                time = Time.convertDateTimeJalali(p.getEndTime());
-            }catch (Exception e){
-                time = p.getEndTime();
-            }
-            context.setAttributeValue("pwdEndTime", time + "Z");
-        } else
-            context.removeAttributeValue("pwdEndTime", old.getEndTime());
-
-
 
         if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null)
             mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");

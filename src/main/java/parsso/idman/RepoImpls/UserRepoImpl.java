@@ -207,13 +207,13 @@ public class UserRepoImpl implements UserRepo {
         context = buildAttributes.buildAttributes(doerID, usid, p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId().toLowerCase()));
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
+
         try {
             usersExtraInfo.setUnDeletable(p.isUnDeletable());
         }catch (Exception e) {
             user.setUnDeletable(p.isUnDeletable());
         }
-        if (p.getMemberOf()!=null)
-            usersExtraInfo.setMemberOf(p.getMemberOf());
+
         if(p.getCStatus()!=null) {
             if (p.getCStatus().equals("unlock") || p.getCStatus().equals("enable"))
                 p.setStatus("enable");
@@ -223,8 +223,12 @@ public class UserRepoImpl implements UserRepo {
         }
         else
             usersExtraInfo.setStatus("enable");
-        usersExtraInfo.setMemberOf(p.getMemberOf());
-        usersExtraInfo.setDisplayName(p.getDisplayName());
+
+        if (p.getMemberOf()!=null)
+            usersExtraInfo.setMemberOf(p.getMemberOf());
+
+        if (p.getDisplayName()!=null)
+            usersExtraInfo.setDisplayName(p.getDisplayName());
 
         if (p.getPhoto() != null)
             usersExtraInfo.setPhotoName(p.getPhoto());
@@ -232,12 +236,8 @@ public class UserRepoImpl implements UserRepo {
         if (p.isUnDeletable())
             usersExtraInfo.setUnDeletable(true);
 
-        if (p.getEndTime()!=null)
-            context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
-
         if (p.getUserPassword()!=null)
             context.setAttributeValue("userPassword", p.getUserPassword());
-
 
         try {
 
@@ -570,7 +570,7 @@ public class UserRepoImpl implements UserRepo {
         List<User> relatedPeople = new LinkedList<>();
 
         for (User user : people) {
-            if (user.getDisplayName() != null && !user.getUsersExtraInfo().getRole().equals("SUPERADMIN")) {
+            if ( user!=null && user.getDisplayName() != null) {
                 relatedPeople.add(user);
             }
 

@@ -86,15 +86,15 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             mongoTemplate.createCollection(userExtraInfoCollection);
 
         //1. create documents
-        for (UsersExtraInfo user : userRepo.retrieveUsersMain(-1,-1)) {
-            User userMain = userRepo.retrieveUsers(user.getUserId());
+        for (User user : userRepo.retrieveUsersFull()) {
 
             Query queryMongo = new Query(new Criteria("userId").regex(user.getUserId(), "i"));
 
-            if (mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection) != null) {
+            UsersExtraInfo userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection);
 
-                UsersExtraInfo userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection);
-                if (userExtraInfo.getQrToken().equals(""))
+            if (userExtraInfo != null) {
+
+                if (userExtraInfo.getQrToken()==null || userExtraInfo.getQrToken().equals(""))
                     userExtraInfo.setQrToken(UUID.randomUUID().toString());
 
 
@@ -113,18 +113,18 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 if (photoName!=null)
                     userExtraInfo.setPhotoName(photoName);
 
+            } else {
+
+                userExtraInfo = new UsersExtraInfo();
+                userExtraInfo.setQrToken(UUID.randomUUID().toString());
             }
 
-            UsersExtraInfo  userExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
-
             if (userExtraInfo!=null) {
-                if (userExtraInfo.getUserId().equalsIgnoreCase("su"))
-                    userExtraInfo.setRole("SUPERADMIN");
-                else if (user.getMemberOf().contains(admidId))
-                    userExtraInfo.setRole("ADMIN");
-                else if (userExtraInfo.getRole() == null)
+                if (userExtraInfo.getRole() == null)
                     userExtraInfo.setRole("USER");
-                else
+                else if (userExtraInfo.getUserId()!=null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
+                    userExtraInfo.setRole("SUPERADMIN");
+                else if (userExtraInfo.getRole() !=null)
                     userExtraInfo.setRole(userExtraInfo.getRole());
 
                 if (userExtraInfo.isUnDeletable())
@@ -132,19 +132,20 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 else
                     userExtraInfo.setUnDeletable(false);
 
-                userExtraInfo.setDisplayName(userMain.getDisplayName());
+                userExtraInfo.setDisplayName(user.getDisplayName());
 
-                userExtraInfo.setMemberOf(userMain.getMemberOf());
+                userExtraInfo.setMemberOf(user.getMemberOf());
 
-                userExtraInfo.setStatus(userMain.getStatus());
+                userExtraInfo.setStatus(user.getStatus());
 
-                userExtraInfo.setPasswordChangedTime(userMain.getPasswordChangedTime());
+                userExtraInfo.setPasswordChangedTime(user.getPasswordChangedTime());
 
-                userExtraInfo.setCreationTimeStamp(userMain.getTimeStamp());
+                userExtraInfo.setCreationTimeStamp(user.getTimeStamp());
 
-                
-                userExtraInfo.setStatus(userMain.getStatus());
                 mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
+
+                logger.warn(new ReportMessage("User",user.getUserId(),"", "refresh", "success","").toString());
+
 
             }
         }
@@ -156,12 +157,12 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         }
 
         //2. cleanUp mongo
-        List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, userExtraInfoCollection);
+        /*List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, userExtraInfoCollection);
         if (usersMongo!=null)
         for (UsersExtraInfo usersExtraInfo : usersMongo) {
             if (ldapTemplate.search(query().where("uid").is(usersExtraInfo.getUserId()), simpleUserAttributeMapper).size() == 0)
                 mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
-        }
+        }*/
 
         logger.warn(new ReportMessage(model,"","Users","refresh", "success","").toString());
 
