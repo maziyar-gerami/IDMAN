@@ -122,6 +122,21 @@ public class UserRepoImpl implements UserRepo {
         try {
             User user = retrieveUsers(p.getUserId());
             if (user == null || user.getUserId() == null) {
+
+                if (p.getDisplayName()==null || p.getDisplayName()=="" ||
+                p.getMail()==null || p.getMail()=="" ||p.getStatus()==null || p.getStatus()=="") {
+                    logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "essential parameter not exist").toString());
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("userId", p.getUserId() );
+                    if (p.getDisplayName()==null || p.getDisplayName()=="")
+                        jsonObject.put("invalidParameter", "ِDisplayName");
+                    if (p.getMail()==null || p.getMail()=="")
+                        jsonObject.put("invalidParameter", "Mail");
+                    if (p.getStatus()==null || p.getStatus()=="")
+                        jsonObject.put("invalidParameter", "Status");
+                    return jsonObject;
+                }
+
                 if( groupsChecks.checkGroup(p.getMemberOf())) {
 
                     //create user in ldap
@@ -148,6 +163,10 @@ public class UserRepoImpl implements UserRepo {
 
                     thread.start();
 
+                    if(p.getUserPassword()!=null)
+                        updatePass(user.getUserId(),p.getUserPassword(),"ParssoIdman");
+
+
                     if (p.getStatus() != null)
                         if (p.getStatus().equals("disable"))
                             disable(doerID, p.getUserId());
@@ -172,7 +191,6 @@ public class UserRepoImpl implements UserRepo {
             }
         } catch (Exception e) {
             if(p.getUserId()!=null || !p.getUserId().equals(""))
-
                 logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown reason").toString());
             return null;
         }

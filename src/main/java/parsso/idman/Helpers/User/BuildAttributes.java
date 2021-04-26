@@ -52,7 +52,7 @@ public class BuildAttributes {
         attrs.put("sn", p.getLastName().equals("") ? " " : p.getLastName());
         attrs.put("userPassword", p.getUserPassword() != null ? p.getUserPassword() : defaultPassword);
         attrs.put("displayName", p.getDisplayName());
-        attrs.put("mobile", p.getMobile().equals("") || p.getMobile() == null ? " " : p.getMobile());
+        attrs.put("mobile", p.getMobile());
         attrs.put("employeeNumber", p.getEmployeeNumber() == null || p.getEmployeeNumber().equals("") ? "0" : p.getEmployeeNumber());
         attrs.put("mail", p.getMail());
         attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
@@ -67,7 +67,7 @@ public class BuildAttributes {
         if (p.getDescription() != null && !(p.getDescription().equals("")))
             attrs.put("description", p.getDescription());
         else
-            attrs.put("description", "");
+            attrs.put("description", " ");
 
         if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
@@ -130,10 +130,6 @@ public class BuildAttributes {
                 context.removeAttributeValue("description", old.getDescription());
         }
 
-        //userPassword attribute *
-        if (p.getPassword() != null && p.getPassword().equals(""))
-            context.setAttributeValue("userPassword", p.getPassword());
-
         //cn attribute (English full name that computing from last name and firs name)
         if(p.getFirstName()!=null && p.getLastName()!=null) {
             if (!(p.getFirstName().equals("")) && (!(p.getLastName().equals(""))))
@@ -181,6 +177,14 @@ public class BuildAttributes {
                     context.removeAttributeValue("ou", id);
                 }
         }
+
+
+        //EndTime
+        if (p.getEndTime()!=null && p.getEndTime() != "")
+            context.setAttributeValue("pwdEndTime",Time.setEndTime(p.getEndTime()) + 'Z');
+            else
+                context.removeAttributeValue("pwdEndTime", old.getEndTime());
+
 
         if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null)
             mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
