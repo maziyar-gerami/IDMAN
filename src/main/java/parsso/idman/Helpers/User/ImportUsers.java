@@ -42,10 +42,12 @@ public class ImportUsers {
 
         int count = 0;
         int nUnSuccessful = 0;
+        int nUserIdEmpty = 0;
 
         if (hasHeader == true) rowIterator.next();
 
         List<JSONObject> invalidGroups = new LinkedList<>();
+        List<JSONObject> invalidParameter = new LinkedList<>();
         List<JSONObject> repetitiveUsers = new LinkedList<>();
 
         while (rowIterator.hasNext()) {
@@ -73,6 +75,8 @@ public class ImportUsers {
             user.setEmployeeNumber(formatter.formatCellValue(row.getCell(sequence[9])));
             user.setUserPassword(formatter.formatCellValue(row.getCell(sequence[10])));
 
+
+
             if ((row.getCell(sequence[11]) != null) && !(row.getCell(sequence[11]).equals("")))
                 try {
                     user.setEndTime(Time.setEndTime(formatter.formatCellValue(row.getCell(sequence[11]))));
@@ -82,20 +86,32 @@ public class ImportUsers {
 
             if (user != null && !user.getUserId().equals("")) {
 
+                if (user.getUserId()==null || user.getUserId().equals("")){
+                    nUserIdEmpty++;
+                    nUnSuccessful++;
+                    continue;
+                }
+
                 temp = userRepo.createUserImport(doerId, user);
 
-
                 if (temp != null && temp.size() > 0) {
-                    if(temp.getAsString("invalidGroups")!= null)
+
+                    if(temp.getAsString("invalidParameter")!= null)
+                        invalidParameter.add(temp);
+
+
+                    else if(temp.getAsString("invalidGroups")!= null)
                         invalidGroups.add(temp);
+
                     else
                         repetitiveUsers.add(temp);
+
                     nUnSuccessful++;
 
                 }
-                count++;
 
             }
+            count++;
         }
 
 
@@ -106,8 +122,13 @@ public class ImportUsers {
         finalJson.put("count", count);
         finalJson.put("nUnSuccessful", nUnSuccessful);
         finalJson.put("nSuccessful", count - nUnSuccessful);
+        finalJson.put("nRepetitive" , repetitiveUsers.size());
+        finalJson.put("nInvalidGroups", invalidGroups.size());
+        finalJson.put("nEssentialParameterInvalid", invalidParameter.size() );
+        finalJson.put("nUserIdEmpty", nUserIdEmpty );
 
         finalJson.put("list", jsonArray);
+
 
         return finalJson;
     }

@@ -119,6 +119,14 @@ public class UserRepoImpl implements UserRepo {
 
         UsersExtraInfo usersExtraInfo = null;
 
+        if (p.getUserId()==null||p.getUserId()==""){
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("invalidGroups",p.getUserId());
+            return jsonObject;
+
+        }
+
         try {
             User user = retrieveUsers(p.getUserId());
             if (user == null || user.getUserId() == null) {
@@ -163,8 +171,6 @@ public class UserRepoImpl implements UserRepo {
 
                     thread.start();
 
-                    if(p.getUserPassword()!=null)
-                        updatePass(user.getUserId(),p.getUserPassword(),"ParssoIdman");
 
 
                     if (p.getStatus() != null)
@@ -190,8 +196,12 @@ public class UserRepoImpl implements UserRepo {
                 return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
-            if(p.getUserId()!=null || !p.getUserId().equals(""))
-                logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown reason").toString());
+            if(p.getUserId()!=null || !p.getUserId().equals("")) {
+                e.printStackTrace();
+                logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "unknown reason").toString());
+            }
+            else
+                logger.warn(new ReportMessage(model,"","","create", "failed","UserId is empty").toString());
             return null;
         }
     }
@@ -254,7 +264,7 @@ public class UserRepoImpl implements UserRepo {
         if (p.isUnDeletable())
             usersExtraInfo.setUnDeletable(true);
 
-        if (p.getUserPassword()!=null)
+        if (p.getUserPassword()!=null && !p.getUserPassword().equals(""))
             context.setAttributeValue("userPassword", p.getUserPassword());
 
         try {
