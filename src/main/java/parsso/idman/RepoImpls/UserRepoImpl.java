@@ -388,7 +388,7 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("uid", uId));
 
 
-        if (ldapTemplate.authenticate(BASE_DN,andFilter.toString(),oldPassword)) {
+        if (ldapTemplate.authenticate("ou=People,"+BASE_DN,andFilter.toString(),oldPassword)) {
             if (token != null) {
                 if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
 
@@ -593,7 +593,7 @@ public class UserRepoImpl implements UserRepo {
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("objectclass", "person"));
 
-        List<User> people = ldapTemplate.search(BASE_DN, andFilter.toString(), searchControls,
+        List<User> people = ldapTemplate.search("ou=People,"+BASE_DN, andFilter.toString(), searchControls,
                 userAttributeMapper);
         List<User> relatedPeople = new LinkedList<>();
 
@@ -621,7 +621,7 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("objectclass", "person"));
         andFilter.and(new EqualsFilter("ou", old_ou));
 
-        List<User> people = ldapTemplate.search(BASE_DN, andFilter.toString(), searchControls,
+        List<User> people = ldapTemplate.search("ou=People,"+BASE_DN, andFilter.toString(), searchControls,
                 userAttributeMapper);
 
         try {

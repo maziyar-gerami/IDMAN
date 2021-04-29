@@ -87,6 +87,9 @@ public class ImportUsers {
             if (user != null && !user.getUserId().equals("")) {
 
                 if (user.getUserId()==null || user.getUserId().equals("")){
+                    if(user.getDisplayName() == null || user.getDisplayName()=="")
+                        continue;
+
                     nUserIdEmpty++;
                     nUnSuccessful++;
                     continue;
@@ -109,9 +112,9 @@ public class ImportUsers {
                     nUnSuccessful++;
 
                 }
+                count++;
 
             }
-            count++;
         }
 
 
