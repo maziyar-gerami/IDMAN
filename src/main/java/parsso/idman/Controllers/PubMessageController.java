@@ -35,18 +35,18 @@ public class PubMessageController {
 
 
     @PostMapping("/api/users/publicMessage")
-    public ResponseEntity<HttpStatus> postPublicMessage(HttpServletRequest request, @RequestBody String message) {
-        return new ResponseEntity<>(pubMessageRepo.postPubicMessage(request.getUserPrincipal().getName(), message));
+    public ResponseEntity<HttpStatus> postPublicMessage(HttpServletRequest request, @RequestBody PublicMessage message) {
+        return new ResponseEntity<>(pubMessageRepo.postPubicMessage("maziyar", message));
     }
 
     @PutMapping("/api/users/publicMessage")
-    public ResponseEntity<HttpStatus> editPublicMessage(HttpServletRequest request,@RequestBody String message) {
-        return new ResponseEntity<>(pubMessageRepo.editPubicMessage(request.getUserPrincipal().getName(), message));
+    public ResponseEntity<HttpStatus> editPublicMessage(HttpServletRequest request, @RequestBody PublicMessage message) {
+        return new ResponseEntity<>(pubMessageRepo.editPubicMessage("maziyar", message));
     }
 
     @DeleteMapping("/api/users/publicMessage")
     public ResponseEntity<HttpStatus> deletePublicMessage(HttpServletRequest request, @RequestParam("id") String id) {
-        return new ResponseEntity<>(pubMessageRepo.deletePubicMessage(request.getUserPrincipal().getName(),id));
+        return new ResponseEntity<>(pubMessageRepo.deletePubicMessage("maziyar",id));
     }
 
 }
