@@ -59,6 +59,8 @@ public class User implements UserDetails, Comparable {
     @JsonIgnore
     private UsersExtraInfo usersExtraInfo;
     private boolean unDeletable;
+    private boolean profileInaccessibility;
+
 
     public User() {
         locked = false;

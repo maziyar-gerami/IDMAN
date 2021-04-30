@@ -72,12 +72,16 @@ public class UserRepoImpl implements UserRepo {
     private String BASE_DN;
     @Value("${get.users.time.interval}")
     private int apiHours;
+    @Value("${user.profile.access}")
+    private String access;
     @Autowired
     private LdapTemplate ldapTemplate;
     @Value("${default.user.password}")
     private String defaultPassword;
     @Value("${profile.photo.path}")
     private String uploadedFilesPath;
+    @Value("${user.profile.access}")
+    String profileAccessiblity;
     @Autowired
     private BuildAttributes buildAttributes;
     @Autowired
@@ -215,12 +219,16 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public HttpStatus update(String doerID,String usid, User p) {
 
+
         Logger logger = LogManager.getLogger(doerID);
 
         p.setUserId(usid);
         Name dn = buildDnUser.buildDn(p.getUserId());
 
         User user = retrieveUsers(p.getUserId());
+
+        if (user.getRole().equals("USER") && access.equalsIgnoreCase("false"))
+            return HttpStatus.FORBIDDEN;
 
         DirContextOperations context;
 
@@ -672,9 +680,16 @@ public class UserRepoImpl implements UserRepo {
             }
         }
 
+
+
         if(user.getRole()==null)
             user =  setRole(user);
-        if (user.getUserId() == null) return null;
+        if (user.getRole().equals("USER") && profileAccessiblity.equalsIgnoreCase("FALSE"))
+            user.setProfileInaccessibility(true);
+
+        if (user.getUserId() == null)
+            return null;
+
         else return user;
     }
 

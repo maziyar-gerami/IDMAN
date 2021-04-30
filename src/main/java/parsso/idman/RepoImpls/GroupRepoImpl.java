@@ -34,10 +34,7 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.SearchControls;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -187,11 +184,10 @@ public class GroupRepoImpl implements GroupRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
         final AndFilter filter = new AndFilter();
-        filter.and(new EqualsFilter("objectclass", "extensibleObject"));
+        filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
         return ldapTemplate.search("ou="+model+","+BASE_DN, filter.encode(),
                 new OUAttributeMapper());
-
     }
 
     @Override
@@ -199,10 +195,12 @@ public class GroupRepoImpl implements GroupRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         final AndFilter filter = new AndFilter();
-        filter.and(new EqualsFilter("objectclass", "extensibleObject"));
+        filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
         List<Group> gt = ldapTemplate.search("ou="+model+","+BASE_DN, filter.encode(),
                 new OUAttributeMapper());
+
+        gt.removeIf(t -> t.getId().equals(model));
 
         if (gt.size() != 0)
             return null;
