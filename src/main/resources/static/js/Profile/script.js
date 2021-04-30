@@ -184,6 +184,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         }else if(window.localStorage.getItem("lang") === "EN") {
                             vm.s1 = vm.nameEN;
                         }
+                        if(res.data.profileInaccessibility){
+                            document.getElementById("userInfo.firstNameUpdate").readOnly = true;
+                            document.getElementById("userInfo.lastNameUpdate").readOnly = true;
+                            document.getElementById("userInfo.displayNameUpdate").readOnly = true;
+                            document.getElementById("userInfo.mobileUpdate").readOnly = true;
+                            document.getElementById("userInfo.mailUpdate").readOnly = true;
+                            document.getElementById("userInfo.employeeNumberUpdate").readOnly = true;
+                            document.getElementById("userInfo.descriptionUpdate").readOnly = true;
+                        }
                     });
             },
             getUserPic: function () {
