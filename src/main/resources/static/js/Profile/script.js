@@ -192,6 +192,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             document.getElementById("userInfo.mailUpdate").readOnly = true;
                             document.getElementById("userInfo.employeeNumberUpdate").readOnly = true;
                             document.getElementById("userInfo.descriptionUpdate").readOnly = true;
+                            document.getElementById("editButton").style = "display: none;";
+                            vm.U17 = "اطلاعات کاربری";
                         }
                     });
             },
@@ -469,7 +471,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U12 = "Add New User";
                     this.U13 = "Edit";
                     this.U16 = "Edit Password";
-                    this.U17 = "Edit User Information";
+                    if(this.userInfo.profileInaccessibility){
+                        this.U17 = "User Information";
+                    }else {
+                        this.U17 = "Edit User Information";
+                    }
                     this.U18 = "Employee Number";
                     this.rules[0].message = "- One Lowercase or Uppercase English Letter Required.";
                     this.rules[1].message = "- One special Character or Persian Letter Required.";
@@ -540,7 +546,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U12 = "اضافه کردن کاربر جدید";
                     this.U13 = "ویرایش";
                     this.U16 = "تغییر رمز عبور";
-                    this.U17 = "تغییر اطلاعات کاربری";
+                    if(this.userInfo.profileInaccessibility){
+                        this.U17 = "اطلاعات کاربری";
+                    }else {
+                        this.U17 = "تغییر اطلاعات کاربری";
+                    }
                     this.U18 = "کد پرسنلی";
                     this.rules[0].message = "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ";
                     this.rules[1].message = "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ";

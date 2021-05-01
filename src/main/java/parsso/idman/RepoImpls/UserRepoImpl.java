@@ -227,7 +227,8 @@ public class UserRepoImpl implements UserRepo {
 
         User user = retrieveUsers(p.getUserId());
 
-        if (user.getRole().equals("USER") && access.equalsIgnoreCase("false"))
+        if (!retrieveUsers(usid).getRole().equals("USER") &&
+                user.getRole().equals("USER") && access.equalsIgnoreCase("false"))
             return HttpStatus.FORBIDDEN;
 
         DirContextOperations context;

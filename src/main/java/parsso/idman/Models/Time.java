@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.Utils.Convertor.DateConverter;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -184,6 +185,22 @@ public class Time {
 
         return timeObject.getYear() + timeObject.getMonth() + timeObject.getDay() + time;
     }
+
+    public static Time longToPersianTime(Long in){
+        Instant instant = Instant.ofEpochMilli(in);
+        OffsetDateTime offsetDateTime = OffsetDateTime.ofInstant(instant, zoneId);
+
+        DateConverter dc = new DateConverter();
+
+        dc.gregorianToPersian(offsetDateTime.getYear(), offsetDateTime.getMonthValue(),offsetDateTime.getDayOfMonth());
+
+        int year = dc.getYear();
+        int month = dc.getMonth();
+        int day = dc.getDay();
+
+        return new Time(year, month,day,offsetDateTime.getHour(),offsetDateTime.getMinute(), offsetDateTime.getSecond());
+    }
+
 
     private static Time stringToTime(String seTime){
         return new Time(Integer.valueOf(seTime.substring(0, 4)),

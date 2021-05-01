@@ -1,6 +1,7 @@
 package parsso.idman.Repos;
 
 
+import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import parsso.idman.Models.PublicMessage;
 
@@ -15,5 +16,5 @@ public interface PubMessageRepo {
 
     HttpStatus editPubicMessage(String doer, PublicMessage message);
 
-    HttpStatus deletePubicMessage(String doer, String id);
+    HttpStatus deletePubicMessage(String doer, JSONObject jsonObject);
 }
