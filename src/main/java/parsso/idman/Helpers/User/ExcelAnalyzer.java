@@ -48,9 +48,16 @@ public class ExcelAnalyzer {
 
             String tempUID = formatter.formatCellValue(row.getCell(0));
 
+            User user;
+
             if(tempUID!=null
                 && !tempUID.equals("")){
-                User user = userRepo.retrieveUsers(tempUID);
+                user = userRepo.retrieveUsers(tempUID);
+
+                if (user == null){
+                    continue;
+                }
+
                 user.getMemberOf().add(ou);
                 userRepo.update(doer, tempUID,user);
             }

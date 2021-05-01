@@ -72,12 +72,16 @@ public class UserRepoImpl implements UserRepo {
     private String BASE_DN;
     @Value("${get.users.time.interval}")
     private int apiHours;
+    @Value("${user.profile.access}")
+    private String access;
     @Autowired
     private LdapTemplate ldapTemplate;
     @Value("${default.user.password}")
     private String defaultPassword;
     @Value("${profile.photo.path}")
     private String uploadedFilesPath;
+    @Value("${user.profile.access}")
+    String profileAccessiblity;
     @Autowired
     private BuildAttributes buildAttributes;
     @Autowired
@@ -119,9 +123,32 @@ public class UserRepoImpl implements UserRepo {
 
         UsersExtraInfo usersExtraInfo = null;
 
+        if (p.getUserId()==null||p.getUserId()==""){
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("invalidGroups",p.getUserId());
+            return jsonObject;
+
+        }
+
         try {
             User user = retrieveUsers(p.getUserId());
             if (user == null || user.getUserId() == null) {
+
+                if (p.getDisplayName()==null || p.getDisplayName()=="" ||
+                p.getMail()==null || p.getMail()=="" ||p.getStatus()==null || p.getStatus()=="") {
+                    logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "essential parameter not exist").toString());
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("userId", p.getUserId() );
+                    if (p.getDisplayName()==null || p.getDisplayName()=="")
+                        jsonObject.put("invalidParameter", "ِDisplayName");
+                    if (p.getMail()==null || p.getMail()=="")
+                        jsonObject.put("invalidParameter", "Mail");
+                    if (p.getStatus()==null || p.getStatus()=="")
+                        jsonObject.put("invalidParameter", "Status");
+                    return jsonObject;
+                }
+
                 if( groupsChecks.checkGroup(p.getMemberOf())) {
 
                     //create user in ldap
@@ -148,6 +175,8 @@ public class UserRepoImpl implements UserRepo {
 
                     thread.start();
 
+
+
                     if (p.getStatus() != null)
                         if (p.getStatus().equals("disable"))
                             disable(doerID, p.getUserId());
@@ -171,9 +200,12 @@ public class UserRepoImpl implements UserRepo {
                 return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
-            if(p.getUserId()!=null || !p.getUserId().equals(""))
-
-                logger.warn(new ReportMessage(model,p.getUserId(),"","create", "failed","unknown reason").toString());
+            if(p.getUserId()!=null || !p.getUserId().equals("")) {
+                e.printStackTrace();
+                logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "unknown reason").toString());
+            }
+            else
+                logger.warn(new ReportMessage(model,"","","create", "failed","UserId is empty").toString());
             return null;
         }
     }
@@ -187,12 +219,16 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public HttpStatus update(String doerID,String usid, User p) {
 
+
         Logger logger = LogManager.getLogger(doerID);
 
         p.setUserId(usid);
         Name dn = buildDnUser.buildDn(p.getUserId());
 
         User user = retrieveUsers(p.getUserId());
+
+        if (user.getRole().equals("USER") && access.equalsIgnoreCase("false"))
+            return HttpStatus.FORBIDDEN;
 
         DirContextOperations context;
 
@@ -207,19 +243,28 @@ public class UserRepoImpl implements UserRepo {
         context = buildAttributes.buildAttributes(doerID, usid, p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId().toLowerCase()));
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
+
         try {
             usersExtraInfo.setUnDeletable(p.isUnDeletable());
         }catch (Exception e) {
             user.setUnDeletable(p.isUnDeletable());
         }
+
+        if(p.getCStatus()!=null) {
+            if (p.getCStatus().equals("unlock") || p.getCStatus().equals("enable"))
+                p.setStatus("enable");
+            else if (p.getCStatus().equals("disable"))
+                p.setStatus("disable");
+            usersExtraInfo.setStatus(p.getStatus());
+        }
+        else
+            usersExtraInfo.setStatus("enable");
+
         if (p.getMemberOf()!=null)
             usersExtraInfo.setMemberOf(p.getMemberOf());
-        if(p.getCStatus()!=null)
-            usersExtraInfo.setStatus(p.getCStatus());
-        else
-            usersExtraInfo.setStatus(p.getStatus());
-        usersExtraInfo.setMemberOf(p.getMemberOf());
-        usersExtraInfo.setDisplayName(p.getDisplayName());
+
+        if (p.getDisplayName()!=null)
+            usersExtraInfo.setDisplayName(p.getDisplayName());
 
         if (p.getPhoto() != null)
             usersExtraInfo.setPhotoName(p.getPhoto());
@@ -227,14 +272,10 @@ public class UserRepoImpl implements UserRepo {
         if (p.isUnDeletable())
             usersExtraInfo.setUnDeletable(true);
 
+        if (p.getUserPassword()!=null && !p.getUserPassword().equals(""))
+            context.setAttributeValue("userPassword", p.getUserPassword());
+
         try {
-
-            if (p.getEndTime()!=null)
-                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
-
-            if (p.getUserPassword()!=null)
-                context.setAttributeValue("userPassword", p.getUserPassword());
-
 
             ldapTemplate.modifyAttributes(context);
 
@@ -355,7 +396,7 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("uid", uId));
 
 
-        if (ldapTemplate.authenticate(BASE_DN,andFilter.toString(),oldPassword)) {
+        if (ldapTemplate.authenticate("ou=People,"+BASE_DN,andFilter.toString(),oldPassword)) {
             if (token != null) {
                 if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
 
@@ -560,12 +601,12 @@ public class UserRepoImpl implements UserRepo {
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("objectclass", "person"));
 
-        List<User> people = ldapTemplate.search(BASE_DN, andFilter.toString(), searchControls,
+        List<User> people = ldapTemplate.search("ou=People,"+BASE_DN, andFilter.toString(), searchControls,
                 userAttributeMapper);
         List<User> relatedPeople = new LinkedList<>();
 
         for (User user : people) {
-            if (user.getDisplayName() != null && !user.getUsersExtraInfo().getRole().equals("SUPERADMIN")) {
+            if ( user!=null && user.getDisplayName() != null) {
                 relatedPeople.add(user);
             }
 
@@ -588,7 +629,7 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("objectclass", "person"));
         andFilter.and(new EqualsFilter("ou", old_ou));
 
-        List<User> people = ldapTemplate.search(BASE_DN, andFilter.toString(), searchControls,
+        List<User> people = ldapTemplate.search("ou=People,"+BASE_DN, andFilter.toString(), searchControls,
                 userAttributeMapper);
 
         try {
@@ -621,7 +662,35 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User retrieveUsers(String userId)  {
-        return ldapTemplate.findOne(query().where("uid").is(userId), User.class);
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        User user = new User();
+        UsersExtraInfo usersExtraInfo = null;
+        if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
+            user = ldapTemplate.lookup(buildDnUser.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
+            Query query = new Query(Criteria.where("userId").is(user.getUserId()));
+            usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
+            user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
+            try {
+                user.setUnDeletable(usersExtraInfo.isUnDeletable());
+            }
+            catch (Exception e){
+                user.setUnDeletable(false);
+            }
+        }
+
+
+
+        if(user.getRole()==null)
+            user =  setRole(user);
+        if (user.getRole().equals("USER") && profileAccessiblity.equalsIgnoreCase("FALSE"))
+            user.setProfileInaccessibility(true);
+
+        if (user.getUserId() == null)
+            return null;
+
+        else return user;
     }
 
     @Override

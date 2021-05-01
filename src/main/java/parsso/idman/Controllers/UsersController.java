@@ -173,15 +173,11 @@ public class UsersController {
      */
     @GetMapping("/api/users/u/{uid}")
     public ResponseEntity<User> retrieveUser(@PathVariable("uid") String userId) {
-        if (userRepo.retrieveUsers(userId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveUsers(userId), HttpStatus.OK);
+        User user = userRepo.retrieveUsers(userId);
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @GetMapping("/api/userss/u/{uid}")
-    public ResponseEntity<User> retrieveUsers(@PathVariable("uid") String userId) throws InvalidNameException {
-        if (userRepo.retrieveUsers(userId) == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        else return new ResponseEntity<>(userRepo.retrieveUsers(userId), HttpStatus.OK);
-    }
 
     /**
      * Retrieve user with main variables
@@ -206,8 +202,7 @@ public class UsersController {
     public ResponseEntity<HttpStatus> massUsersGroupUpdate(HttpServletRequest request,
                                                            @RequestBody JSONObject gu,
                                                            @PathVariable (name = "groupId") String groupId) {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.massUsersGroupUpdate(principal.getName(),groupId, gu));
+        return new ResponseEntity<>(userRepo.massUsersGroupUpdate(request.getUserPrincipal().getName(),groupId, gu));
     }
 
     /**
@@ -366,8 +361,10 @@ public class UsersController {
     @PutMapping("/api/users/ou/{ou}")
     public ResponseEntity<List<String>> addGroups(HttpServletRequest request,@RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException {
         List<String> notExist = userRepo.addGroupToUsers(request.getUserPrincipal().getName(),file, ou);
+        if (ou.equals("none"))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (notExist==null)
-            return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return  new ResponseEntity<>(HttpStatus.FORBIDDEN);
         if (notExist.size()==0)
             return new ResponseEntity<>(HttpStatus.OK);
         else

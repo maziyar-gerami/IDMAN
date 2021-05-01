@@ -56,7 +56,9 @@ public class GroupsController {
 
     @GetMapping("/api/groups")
     public ResponseEntity<List<Group>> retrieve() {
-        return new ResponseEntity<>(groupRepo.retrieve(), HttpStatus.OK);
+        List<Group> groups =  groupRepo.retrieve();
+        groups.removeIf(t -> t.getName() == null);
+        return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
     @GetMapping("/api/groups/{id}")

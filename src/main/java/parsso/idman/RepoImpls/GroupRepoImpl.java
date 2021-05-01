@@ -34,10 +34,7 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.SearchControls;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,6 +55,7 @@ public class GroupRepoImpl implements GroupRepo {
     MongoTemplate mongoTemplate;
 
     private String model = "Groups";
+
 
     private  final String  usersExtraInfoCollection = "IDMAN_UsersExtraInfo";
 
@@ -177,7 +175,7 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
     public Name buildDn(String id) {
-        return LdapNameBuilder.newInstance(BASE_DN).add("ou", "Groups").add("ou", id).build();
+        return LdapNameBuilder.newInstance("ou="+model+","+BASE_DN).add("ou", id).build();
     }
 
     @Override
@@ -186,28 +184,30 @@ public class GroupRepoImpl implements GroupRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
         final AndFilter filter = new AndFilter();
-        filter.and(new EqualsFilter("objectclass", "extensibleObject"));
+        filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
-        return ldapTemplate.search(BASE_DN, filter.encode(),
+        return ldapTemplate.search("ou="+model+","+BASE_DN, filter.encode(),
                 new OUAttributeMapper());
-
     }
 
     @Override
     public List<Group> retrieve(String ou) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        final AndFilter filter = new AndFilter();
+        filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
-        List<Group> gt = ldapTemplate.search(BASE_DN, null, new OUAttributeMapper());
+        List<Group> gt = ldapTemplate.search("ou="+model+","+BASE_DN, filter.encode(),
+                new OUAttributeMapper());
+
+        gt.removeIf(t -> t.getId().equals(model));
 
         if (gt.size() != 0)
             return null;
 
-        final AndFilter filter = new AndFilter();
-        filter.and(new EqualsFilter("objectclass", "extensibleObject"));
 
-        return ldapTemplate.search(BASE_DN, filter.encode(),
-                new OUAttributeMapper());
+
+        return gt;
 
     }
 
