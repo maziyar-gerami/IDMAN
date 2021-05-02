@@ -31,6 +31,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.json:json:20201115'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -39,6 +40,8 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 	implementation 'org.thymeleaf:thymeleaf-spring5'
 	implementation 'org.springframework.security:spring-security-web'
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
+	implementation 'com.sun.xml.ws:jaxws-ri:2.3.2'
 	compile 'io.jsonwebtoken:jjwt-api:0.11.1'
 
 	compile 'com.captcha:botdetect-jsp20:4.0.beta3.7'
