@@ -48,8 +48,7 @@ public class ConfigRepoImpl implements ConfigRepo {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    @Value("${external.config}")
-    private String pathToProperties;
+    private final String pathToProperties= "classpath://resources/application.properties";
 
     @Value("${external.config.backup}")
     private String backUpOfProperties;
