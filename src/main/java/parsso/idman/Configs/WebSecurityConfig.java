@@ -28,6 +28,7 @@ import java.util.Collections;
 @Order(99)
 
 @EnableWebSecurity
+@PropertySource(value = "file:${external.config}", ignoreResourceNotFound = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final SingleSignOutFilter singleSignOutFilter;
