@@ -93,14 +93,14 @@ public class User implements UserDetails, Comparable {
 
 
         else {
-            if (this.getUsersExtraInfo().getRole().equals("SUPPERADMIN"))
+
+            if (this.getUsersExtraInfo().getRole().equals("SUPPERADMIN") ||this.getUserId().equalsIgnoreCase("su"))
                 list.add(new SimpleGrantedAuthority(PREFIX + "SUPERADMIN"));
 
             else if (this.memberOf.contains(admidId)) {
                 list.add(new SimpleGrantedAuthority(PREFIX + "ADMIN"));
 
                 list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
-
 
             } else
                 list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
@@ -160,8 +160,6 @@ public class User implements UserDetails, Comparable {
         else
             return 0;
     }
-
-
 }
 
 

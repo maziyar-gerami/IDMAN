@@ -115,6 +115,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
             } else {
 
+                userExtraInfo.setUserId(user.getUserId());
                 userExtraInfo = new UsersExtraInfo();
                 userExtraInfo.setQrToken(UUID.randomUUID().toString());
             }
@@ -122,8 +123,10 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             if (userExtraInfo!=null) {
                 if (userExtraInfo.getRole() == null)
                     userExtraInfo.setRole("USER");
+
                 else if (userExtraInfo.getUserId()!=null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
                     userExtraInfo.setRole("SUPERADMIN");
+
                 else if (userExtraInfo.getRole() !=null)
                     userExtraInfo.setRole(userExtraInfo.getRole());
 

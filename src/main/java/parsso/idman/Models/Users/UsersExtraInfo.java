@@ -58,7 +58,10 @@ public class UsersExtraInfo {
         this.userId = userId;
         this.qrToken = UUID.randomUUID().toString();
         this.unDeletable = false;
-        this.role = "USER";
+        if (userId.equalsIgnoreCase("su"))
+            this.role = "SUPERADMIN";
+        else
+            this.role = "USER";
         this.creationTimeStamp = new Date().getTime();
     }
 
