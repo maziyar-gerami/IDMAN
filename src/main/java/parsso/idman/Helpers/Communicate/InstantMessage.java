@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.filter.EqualsFilter;
 import parsso.idman.Captcha.Models.CAPTCHA;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
@@ -41,6 +42,9 @@ public class InstantMessage {
     private String SMS_API_KEY;
     @Value("${base.url}")
     private String baseurl;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
+
     @Autowired
     private LdapTemplate ldapTemplate;
     @Autowired
@@ -98,7 +102,7 @@ public class InstantMessage {
                 try {
                     SendRepoImbl sendRepoImbl = new SendRepoImbl();
                     Variables variables = new Variables();
-                    variables.setMainMessage(user.getUsersExtraInfo().getMobileToken());
+                    variables.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0,Integer.valueOf(SMS_VALIDATION_DIGITS)));
                     sendRepoImbl.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
 
                     mongoTemplate.remove(query, collection);
@@ -155,8 +159,9 @@ public class InstantMessage {
                 try {
                     SendRepoImbl sendRepoImbl = new SendRepoImbl();
                     Variables variables = new Variables();
-                    variables.setMainMessage(user.getUsersExtraInfo().getMobileToken());
+                    variables.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0,Integer.valueOf(SMS_VALIDATION_DIGITS)));
                     sendRepoImbl.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
+
                     return Integer.valueOf(SMS_VALID_TIME);
 
                 } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
@@ -177,10 +182,9 @@ public class InstantMessage {
 
 
     public List<JSONObject> checkMobile(String mobile) {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        List<User> people = ldapTemplate.search(query().where("mobile").is(mobile), userAttributeMapper);
+
+        List<User> people = ldapTemplate.search(BASE_DN, new EqualsFilter("mobile",mobile).encode(), userAttributeMapper);
         List<JSONObject> jsonArray = new LinkedList<>();
         JSONObject jsonObject;
         for (User user : people) {
@@ -268,7 +272,7 @@ public class InstantMessage {
                         try {
                             SendRepoImbl sendRepoImbl = new SendRepoImbl();
                             Variables variables = new Variables();
-                            variables.setMainMessage(user.getUsersExtraInfo().getMobileToken());
+                            variables.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0,Integer.valueOf(SMS_VALIDATION_DIGITS)));
                             sendRepoImbl.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
                             mongoTemplate.remove(query, collection);
                             return Integer.valueOf(SMS_VALID_TIME);

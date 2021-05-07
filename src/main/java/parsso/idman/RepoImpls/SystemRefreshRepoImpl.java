@@ -150,8 +150,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
 
                 logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "success", "").toString());
-
-
+                
             }
         }catch (Exception e){
                 logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "failed", "").toString());
