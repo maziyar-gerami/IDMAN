@@ -77,7 +77,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     String userExtraInfoCollection = "IDMAN_UsersExtraInfo";
 
     @Override
-    public HttpStatus userRefresh(String doer)  {
+    public HttpStatus userRefresh(String doer) {
         //0. crete collection, if not exist
 
         Logger logger = LoggerFactory.getLogger(doer);
@@ -88,13 +88,15 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         //1. create documents
         for (User user : userRepo.retrieveUsersFull()) {
 
+            try {
+
             Query queryMongo = new Query(new Criteria("userId").regex(user.getUserId(), "i"));
 
             UsersExtraInfo userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection);
 
             if (userExtraInfo != null) {
 
-                if (userExtraInfo.getQrToken()==null || userExtraInfo.getQrToken().equals(""))
+                if (userExtraInfo.getQrToken() == null || userExtraInfo.getQrToken().equals(""))
                     userExtraInfo.setQrToken(UUID.randomUUID().toString());
 
 
@@ -103,14 +105,14 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                         new AttributesMapper<String>() {
                             public String mapFromAttributes(Attributes attrs)
                                     throws NamingException {
-                                if(attrs.get("photoName")!=null)
+                                if (attrs.get("photoName") != null)
                                     return attrs.get("photoName").get().toString();
 
                                 return "";
                             }
                         }).get(0);
 
-                if (photoName!=null)
+                if (photoName != null)
                     userExtraInfo.setPhotoName(photoName);
 
             } else {
@@ -120,14 +122,14 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 userExtraInfo.setQrToken(UUID.randomUUID().toString());
             }
 
-            if (userExtraInfo!=null) {
+            if (userExtraInfo != null) {
                 if (userExtraInfo.getRole() == null)
                     userExtraInfo.setRole("USER");
 
-                else if (userExtraInfo.getUserId()!=null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
+                else if (userExtraInfo.getUserId() != null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
                     userExtraInfo.setRole("SUPERADMIN");
 
-                else if (userExtraInfo.getRole() !=null)
+                else if (userExtraInfo.getRole() != null)
                     userExtraInfo.setRole(userExtraInfo.getRole());
 
                 if (userExtraInfo.isUnDeletable())
@@ -147,11 +149,14 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                 mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
 
-                logger.warn(new ReportMessage("User",user.getUserId(),"", "refresh", "success","").toString());
+                logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "success", "").toString());
 
 
             }
-        }
+        }catch (Exception e){
+                logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "failed", "").toString());
+            }
+    }
 
         try {
             dashboardData.updateDashboardData();

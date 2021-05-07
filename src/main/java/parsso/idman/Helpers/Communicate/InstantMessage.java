@@ -15,8 +15,11 @@ import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.SMS.sdk.KavenegarApi;
 import parsso.idman.Utils.SMS.sdk.excepctions.ApiException;
 import parsso.idman.Utils.SMS.sdk.excepctions.HttpException;
+import parsso.idman.Utils.SMSmagfa.RepoImbls.SendRepoImbl;
+import parsso.idman.Utils.SMSmagfa.Variables;
 
 import javax.naming.directory.SearchControls;
+import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,7 +49,7 @@ public class InstantMessage {
     private parsso.idman.Helpers.User.UserAttributeMapper userAttributeMapper;
 
 
-    public int sendMessage(String mobile, String cid, String answer) {
+    public int sendMessageKaveNegar(String mobile, String cid, String answer) {
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null)
@@ -80,7 +83,45 @@ public class InstantMessage {
             return 0;
     }
 
-    public int sendMessage(User user) {
+    public int sendMessageMagfa(String mobile, String cid, String answer) {
+        Query query = new Query(Criteria.where("_id").is(cid));
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        if (captcha == null)
+            return -1;
+        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
+            mongoTemplate.remove(query, collection);
+            return -1;
+        }
+        if (checkMobile(mobile).size() > 0) {
+            User user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+            if (tokenClass.insertMobileToken(user)) {
+                try {
+                    SendRepoImbl sendRepoImbl = new SendRepoImbl();
+                    Variables variables = new Variables();
+                    variables.setMainMessage(user.getUsersExtraInfo().getMobileToken());
+                    sendRepoImbl.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
+
+                    mongoTemplate.remove(query, collection);
+                    return Integer.valueOf(SMS_VALID_TIME);
+
+                } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                    System.out.print("HttpException  : " + ex.getMessage());
+                    return 0;
+                } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                    System.out.print("ApiException : " + ex.getMessage());
+                    return 0;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            } else
+                return 0;
+
+        }
+            return 0;
+    }
+
+
+    public int sendMessageKaveNegar(User user) {
 
         if (checkMobile(user.getMobile()).size() > 0) {
             if (tokenClass.insertMobileToken(user)) {
@@ -106,9 +147,39 @@ public class InstantMessage {
     }
 
 
+
+    public int sendMessageMagfa(User user) {
+
+        if (checkMobile(user.getMobile()).size() > 0) {
+            if (tokenClass.insertMobileToken(user)) {
+                try {
+                    SendRepoImbl sendRepoImbl = new SendRepoImbl();
+                    Variables variables = new Variables();
+                    variables.setMainMessage(user.getUsersExtraInfo().getMobileToken());
+                    sendRepoImbl.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
+                    return Integer.valueOf(SMS_VALID_TIME);
+
+                } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                    System.out.print("HttpException  : " + ex.getMessage());
+                    return 0;
+                } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                    System.out.print("ApiException : " + ex.getMessage());
+                    return 0;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            } else
+                return 0;
+
+        }
+            return 0;
+    }
+
+
     public List<JSONObject> checkMobile(String mobile) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
         List<User> people = ldapTemplate.search(query().where("mobile").is(mobile), userAttributeMapper);
         List<JSONObject> jsonArray = new LinkedList<>();
         JSONObject jsonObject;
@@ -121,7 +192,7 @@ public class InstantMessage {
     }
 
 
-    public int sendMessage(String mobile, String uId, String cid, String answer) {
+    public int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) {
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null)
@@ -157,6 +228,60 @@ public class InstantMessage {
                             System.out.print("ApiException : " + ex.getMessage());
                             return 0;
 
+                        }
+
+                    }
+
+
+                }
+            }
+
+        } else
+            return 0;
+
+        return 0;
+
+    }
+
+
+    public int sendMessageMagfa(String mobile, String uId, String cid, String answer) {
+        Query query = new Query(Criteria.where("_id").is(cid));
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        if (captcha == null)
+            return -1;
+        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
+            mongoTemplate.remove(query, collection);
+            return -1;
+        }
+
+        if (checkMobile(mobile) != null & userRepo.retrieveUsers(uId).getUserId() != null) {
+            List<JSONObject> ids = checkMobile(mobile);
+            List<User> people = new LinkedList<>();
+            User user = userRepo.retrieveUsers(uId);
+            for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
+
+            for (User p : people) {
+                if (p.getUserId().equals(user.getUserId())) {
+
+                    if (tokenClass.insertMobileToken(user)) {
+
+                        try {
+                            SendRepoImbl sendRepoImbl = new SendRepoImbl();
+                            Variables variables = new Variables();
+                            variables.setMainMessage(user.getUsersExtraInfo().getMobileToken());
+                            sendRepoImbl.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
+                            mongoTemplate.remove(query, collection);
+                            return Integer.valueOf(SMS_VALID_TIME);
+                        } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                            System.out.print("HttpException  : " + ex.getMessage());
+                            return 0;
+
+                        } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                            System.out.print("ApiException : " + ex.getMessage());
+                            return 0;
+
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
                         }
 
                     }

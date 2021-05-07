@@ -22,7 +22,6 @@ import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.Repos.UserRepo;
 
-import javax.naming.InvalidNameException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -425,7 +424,7 @@ public class UsersController {
     public ResponseEntity<Integer> sendMessage(@PathVariable("mobile") String mobile,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
-        int time = instantMessage.sendMessage(mobile, cid, answer);
+        int time = instantMessage.sendMessageMagfa(mobile, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
@@ -445,7 +444,7 @@ public class UsersController {
                                                @PathVariable("uid") String uid,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
-        int time = instantMessage.sendMessage(mobile, uid, cid, answer);
+        int time = instantMessage.sendMessageMagfa(mobile, uid, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)

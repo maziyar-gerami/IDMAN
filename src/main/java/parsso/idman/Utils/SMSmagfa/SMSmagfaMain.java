@@ -9,6 +9,6 @@ public class SMSmagfaMain {
     public static void main(String[] args) throws MalformedURLException {
 
         SendRepoImbl sendRepoImbl = new SendRepoImbl();
-        System.out.println(sendRepoImbl.SendMessage("hello","09185826845",1L));
+        System.out.println(sendRepoImbl.SendMessage("hello","09183097717",1L));
     }
 }

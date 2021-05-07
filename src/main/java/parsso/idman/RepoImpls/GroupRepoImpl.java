@@ -117,8 +117,6 @@ public class GroupRepoImpl implements GroupRepo {
 
     @Override
     public Group retrieveOu(String uid) {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
         List<Group> groups = retrieve();
 

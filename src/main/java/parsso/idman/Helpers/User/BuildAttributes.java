@@ -59,10 +59,12 @@ public class BuildAttributes {
         if (p.getUsersExtraInfo() != null && p.getUsersExtraInfo().getResetPassToken() != null)
             attrs.put("resetPassToken", p.getUsersExtraInfo().getResetPassToken());
         if (p.getMemberOf() != null && p.getMemberOf().size() != 0) {
-            Attribute attr = new BasicAttribute("ou");
-            for (int i = 0; i < p.getMemberOf().size(); i++)
-                attr.add(p.getMemberOf().get(i));
-            attrs.put(attr);
+            if (!(p.getMemberOf().size()==1 && p.getMemberOf().get(0).equals(""))) {
+                Attribute attr = new BasicAttribute("ou");
+                for (int i = 0; i < p.getMemberOf().size(); i++)
+                    attr.add(p.getMemberOf().get(i));
+                attrs.put(attr);
+            }
         }
         if (p.getDescription() != null && !(p.getDescription().equals("")))
             attrs.put("description", p.getDescription());
@@ -181,7 +183,7 @@ public class BuildAttributes {
 
         //EndTime
         if (p.getEndTime()!=null && p.getEndTime() != "")
-            context.setAttributeValue("pwdEndTime",Time.setEndTime(p.getEndTime()) + 'Z');
+            context.setAttributeValue("pwdEndTime",Time.setEndTime(p.getEndTime().substring(0,19)) + 'Z');
             else
                 context.removeAttributeValue("pwdEndTime", old.getEndTime());
 
