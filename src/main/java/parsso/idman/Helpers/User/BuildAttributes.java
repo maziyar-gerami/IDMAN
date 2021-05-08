@@ -169,7 +169,7 @@ public class BuildAttributes {
 
         //ou attribute stating membrane in group
         if (p.getMemberOf() != null) {
-            if (p.getMemberOf().size() != 0) {
+            if (p.getMemberOf().size() != 0 && p.getMemberOf().get(0) != ("")) {
                 for (int i = 0; i < p.getMemberOf().size(); i++) {
                     if (i == 0) context.setAttributeValue("ou", p.getMemberOf().get(i));
                     else context.addAttributeValue("ou", p.getMemberOf().get(i));
@@ -182,8 +182,13 @@ public class BuildAttributes {
 
 
         //EndTime
-        if (p.getEndTime()!=null && p.getEndTime() != "")
-            context.setAttributeValue("pwdEndTime",Time.setEndTime(p.getEndTime().substring(0,19)) + 'Z');
+        if (p.getEndTime()!=null && p.getEndTime() != "") {
+            if (p.getEndTime().length() > 19)
+                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime().substring(0, 19)) + 'Z');
+            else
+                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
+
+        }
             else
                 context.removeAttributeValue("pwdEndTime", old.getEndTime());
 

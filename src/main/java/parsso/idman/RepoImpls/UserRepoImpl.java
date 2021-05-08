@@ -131,8 +131,9 @@ public class UserRepoImpl implements UserRepo {
 
         }
 
+        User user = retrieveUsers(p.getUserId());
+
         try {
-            User user = retrieveUsers(p.getUserId());
             if (user == null || user.getUserId() == null) {
 
                 if (p.getDisplayName()==null || p.getDisplayName()=="" ||
@@ -154,28 +155,6 @@ public class UserRepoImpl implements UserRepo {
                     //create user in ldap
                     Name dn = buildDnUser.buildDn(p.getUserId());
                     ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
-
-                    //update it's first pwChangedTime in a new thread
-                    Thread thread = new Thread() {
-                        public void run() {
-                            User userTemp = retrieveUsers(p.getUserId());
-                            DirContextOperations context = ldapTemplate.lookupContext(dn);
-
-                            context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp() + "Z");
-
-                            try {
-                                ldapTemplate.modifyAttributes(context);
-                            } catch (Exception e) {
-
-                                logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "due to writing to ldap").toString());
-                            }
-
-                        }
-                    };
-
-                    thread.start();
-
-
 
                     if (p.getStatus() != null)
                         if (p.getStatus().equals("disable"))
@@ -668,8 +647,9 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = new User();
         UsersExtraInfo usersExtraInfo = null;
-        if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
-            user = ldapTemplate.lookup(buildDnUser.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
+        List<User> people = ldapTemplate.search("ou=People,"+BASE_DN,new EqualsFilter("uid", userId).encode(), searchControls,userAttributeMapper);
+        if (people.size()!=0) {
+            user = people.get(0);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
             usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
             user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
