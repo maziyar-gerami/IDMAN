@@ -171,7 +171,7 @@ public class BuildAttributes {
         if (p.getMemberOf() != null) {
             if (p.getMemberOf().size() != 0 && p.getMemberOf().get(0) != ("")) {
                 for (int i = 0; i < p.getMemberOf().size(); i++) {
-                    if (i == 0) context.setAttributeValue("ou", p.getMemberOf().get(i));
+                    if (old.getMemberOf() == null && i==0) context.setAttributeValue("ou", p.getMemberOf().get(i));
                     else context.addAttributeValue("ou", p.getMemberOf().get(i));
                 }
             } else if (old.getMemberOf() != null)
