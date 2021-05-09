@@ -50,8 +50,7 @@ public class UsersController {
     private UserRepo userRepo;
     @Value("${administrator.ou.id}")
     private String adminOu;
-    @Value("${token.valid.email}")
-    private String tokenValidEmail;
+
 
 
 
@@ -424,7 +423,7 @@ public class UsersController {
     public ResponseEntity<Integer> sendMessage(@PathVariable("mobile") String mobile,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
-        int time = instantMessage.sendMessageMagfa(mobile, cid, answer);
+        int time = instantMessage.sendMessage(mobile, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
@@ -444,7 +443,7 @@ public class UsersController {
                                                @PathVariable("uid") String uid,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
-        int time = instantMessage.sendMessageMagfa(mobile, uid, cid, answer);
+        int time = instantMessage.sendMessage(mobile, uid, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)

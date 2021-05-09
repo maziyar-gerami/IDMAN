@@ -41,6 +41,8 @@ public class InstantMessage {
     private String baseurl;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
+    @Value("${SMS.SDK}")
+    private String SMS_sdk;
 
     @Autowired
     private LdapTemplate ldapTemplate;
@@ -49,8 +51,32 @@ public class InstantMessage {
     @Autowired
     private parsso.idman.Helpers.User.UserAttributeMapper userAttributeMapper;
 
+    public int sendMessage(String mobile, String cid, String answer){
+        if(SMS_sdk.equalsIgnoreCase("KaveNegar"))
+            return sendMessageKaveNegar(mobile, cid, answer);
+        else if (SMS_sdk.equalsIgnoreCase("Magfa"))
+            return sendMessageMagfa(mobile, cid, answer);
+        return 0;
+    }
 
-    public int sendMessageKaveNegar(String mobile, String cid, String answer) {
+    public int sendMessage(User user){
+        if(SMS_sdk.equalsIgnoreCase("KaveNegar"))
+            return sendMessageKaveNegar(user);
+        else if (SMS_sdk.equalsIgnoreCase("Magfa"))
+            return sendMessageMagfa(user);
+        return 0;
+    }
+
+    public int sendMessage(String mobile, String uid, String cid, String answer){
+        if(SMS_sdk.equalsIgnoreCase("KaveNegar"))
+            return sendMessageKaveNegar(mobile, uid, cid, answer);
+        else if (SMS_sdk.equalsIgnoreCase("Magfa"))
+            return sendMessageMagfa(mobile, uid, cid, answer);
+        return 0;
+    }
+
+
+    private int sendMessageKaveNegar(String mobile, String cid, String answer) {
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null)
@@ -84,7 +110,7 @@ public class InstantMessage {
             return 0;
     }
 
-    public int sendMessageMagfa(String mobile, String cid, String answer) {
+    private int sendMessageMagfa(String mobile, String cid, String answer) {
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null)
@@ -122,7 +148,9 @@ public class InstantMessage {
     }
 
 
-    public int sendMessageKaveNegar(User user) {
+
+
+    private int sendMessageKaveNegar(User user) {
 
         if (checkMobile(user.getMobile()).size() > 0) {
             if (tokenClass.insertMobileToken(user)) {
@@ -149,7 +177,7 @@ public class InstantMessage {
 
 
 
-    public int sendMessageMagfa(User user) {
+    private int sendMessageMagfa(User user) {
 
         if (checkMobile(user.getMobile()).size() > 0) {
             if (tokenClass.insertMobileToken(user)) {
@@ -193,7 +221,9 @@ public class InstantMessage {
     }
 
 
-    public int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) {
+
+
+    private int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) {
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null)
@@ -245,7 +275,7 @@ public class InstantMessage {
     }
 
 
-    public int sendMessageMagfa(String mobile, String uId, String cid, String answer) {
+    private int sendMessageMagfa(String mobile, String uId, String cid, String answer) {
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null)

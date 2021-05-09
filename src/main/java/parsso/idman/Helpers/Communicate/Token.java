@@ -163,6 +163,6 @@ public class Token {
 
 
     public int requestToken(User user) {
-        return instantMessage.sendMessageMagfa(user);
+        return instantMessage.sendMessage(user);
     }
 }

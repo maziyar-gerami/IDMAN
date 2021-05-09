@@ -3,7 +3,6 @@ package parsso.idman.Utils.SMS.Magfa.RepoImbls;
 import parsso.idman.Utils.SMS.Magfa.Classes.*;
 import parsso.idman.Utils.SMS.Magfa.Creditions;
 import parsso.idman.Utils.SMS.Magfa.Repos.SendRepo;
-import parsso.idman.Utils.SMS.Magfa.SMSmagfa.Classes.*;
 
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
