@@ -168,23 +168,23 @@ public class GroupRepoImpl implements GroupRepo {
     @Override
     public List<Group> retrieve() {
         SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
         final AndFilter filter = new AndFilter();
         filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
-        return ldapTemplate.search("ou="+model+","+BASE_DN, filter.encode(),
+        return ldapTemplate.search("ou=Groups,"+BASE_DN, filter.encode(),
                 new OUAttributeMapper());
     }
 
     @Override
     public List<Group> retrieve(String ou) {
         SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         final AndFilter filter = new AndFilter();
         filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
-        List<Group> gt = ldapTemplate.search("ou="+model+","+BASE_DN, filter.encode(),
+        List<Group> gt = ldapTemplate.search("ou=Groups,"+BASE_DN, filter.encode(),
                 new OUAttributeMapper());
 
         gt.removeIf(t -> t.getId().equals(model));

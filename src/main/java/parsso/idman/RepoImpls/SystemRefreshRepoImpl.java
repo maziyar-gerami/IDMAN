@@ -32,6 +32,7 @@ import parsso.idman.Repos.UserRepo;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
+import javax.naming.directory.SearchControls;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,9 +79,14 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
     @Override
     public HttpStatus userRefresh(String doer) {
-        //0. crete collection, if not exist
+
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
         Logger logger = LoggerFactory.getLogger(doer);
+
+        //0. crete collection, if not exist
 
         if (mongoTemplate.getCollection(userExtraInfoCollection) == null)
             mongoTemplate.createCollection(userExtraInfoCollection);
@@ -101,7 +107,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
 
                 String photoName = ldapTemplate.search(
-                        query().where("uid").is(user.getUserId()),
+                        "ou=People,"+BASE_DN, new EqualsFilter("uid", user.getUserId()).encode() , searchControls,
                         new AttributesMapper<String>() {
                             public String mapFromAttributes(Attributes attrs)
                                     throws NamingException {
@@ -150,7 +156,8 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
 
                 logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "success", "").toString());
-                
+
+
             }
         }catch (Exception e){
                 logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "failed", "").toString());
@@ -266,6 +273,11 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
     @Override
     public HttpStatus refreshLockedUsers(){
+
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+
         AndFilter andFilter = new AndFilter();
 
         Logger logger = LoggerFactory.getLogger("System");
@@ -290,7 +302,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         for (UsersExtraInfo simple:simpleUsers) {
             Query query = new Query(Criteria.where("userId").is(simple.getUserId()));
 
-                if (ldapTemplate.search(query().where("uid").is(simple.getUserId()), userAttributeMapper).size()==0) {
+                if (ldapTemplate.search("ou=People,"+BASE_DN,new EqualsFilter("uid",simple.getUserId()).encode(), searchControls, userAttributeMapper).size()==0) {
 
                 simple.setStatus("enable");
 

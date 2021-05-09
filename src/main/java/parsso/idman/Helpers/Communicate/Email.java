@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.stereotype.Service;
 import parsso.idman.Captcha.Models.CAPTCHA;
 import parsso.idman.Helpers.User.UserAttributeMapper;
@@ -45,11 +46,14 @@ public class Email {
     @Value("${token.valid.email}")
     private String EMAIL_VALID_TIME;
 
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
+
     public List<JSONObject> checkMail(String email) {
         SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         List<JSONObject> jsonArray = new LinkedList<>();
-        List<User> people = ldapTemplate.search(query().where("mail").is(email), userAttributeMapper);
+        List<User> people = ldapTemplate.search("ou=People,"+BASE_DN,new EqualsFilter("mail", email).encode(), userAttributeMapper);
         JSONObject jsonObject;
         for (User user : people) {
             jsonObject = new JSONObject();

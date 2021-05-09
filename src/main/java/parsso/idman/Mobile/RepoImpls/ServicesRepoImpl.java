@@ -103,8 +103,7 @@ public class ServicesRepoImpl implements ServicesRepo {
         // return OK or code 200: token is valid and time is ok
         // return requestTimeOut or error 408: token is valid but time is not ok
         // return forbidden or error code 403: token is not valid
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
 
         User user = userRepo.retrieveUsers(userId);
 
