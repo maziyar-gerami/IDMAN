@@ -20,12 +20,11 @@ import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Mobile.Repos.*;
-import parsso.idman.Utils.SMS.sdk.KavenegarApi;
-import parsso.idman.Utils.SMS.sdk.excepctions.ApiException;
-import parsso.idman.Utils.SMS.sdk.excepctions.HttpException;
+import parsso.idman.Utils.SMS.KaveNegar.KavenegarApi;
+import parsso.idman.Utils.SMS.KaveNegar.excepctions.ApiException;
+import parsso.idman.Utils.SMS.KaveNegar.excepctions.HttpException;
 
 import javax.naming.Name;
-import javax.naming.directory.SearchControls;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.SecureRandom;

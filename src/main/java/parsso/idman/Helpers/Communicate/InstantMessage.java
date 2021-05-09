@@ -13,18 +13,15 @@ import org.springframework.ldap.filter.EqualsFilter;
 import parsso.idman.Captcha.Models.CAPTCHA;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
-import parsso.idman.Utils.SMS.sdk.KavenegarApi;
-import parsso.idman.Utils.SMS.sdk.excepctions.ApiException;
-import parsso.idman.Utils.SMS.sdk.excepctions.HttpException;
-import parsso.idman.Utils.SMSmagfa.RepoImbls.SendRepoImbl;
-import parsso.idman.Utils.SMSmagfa.Variables;
+import parsso.idman.Utils.SMS.KaveNegar.KavenegarApi;
+import parsso.idman.Utils.SMS.KaveNegar.excepctions.ApiException;
+import parsso.idman.Utils.SMS.KaveNegar.excepctions.HttpException;
+import parsso.idman.Utils.SMS.Magfa.RepoImbls.SendRepoImbl;
+import parsso.idman.Utils.SMS.Magfa.Variables;
 
-import javax.naming.directory.SearchControls;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
-
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 @Configuration
 public class InstantMessage {

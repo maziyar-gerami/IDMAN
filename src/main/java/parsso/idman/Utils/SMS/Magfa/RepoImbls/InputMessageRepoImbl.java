@@ -1,0 +1,46 @@
+package parsso.idman.Utils.SMS.Magfa.RepoImbls;
+
+import parsso.idman.Utils.SMS.Magfa.Classes.MagfaSoapServer;
+import parsso.idman.Utils.SMS.Magfa.Classes.MagfaSoapServer_Service;
+import parsso.idman.Utils.SMS.Magfa.Classes.MessagesResult;
+import parsso.idman.Utils.SMS.Magfa.Creditions;
+import parsso.idman.Utils.SMS.Magfa.Repos.InputMessagesRepo;
+import parsso.idman.Utils.SMS.Magfa.Classes.DatedCustomerReturnIncomingFormat;
+
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.MessageContext;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+
+public class InputMessageRepoImbl implements InputMessagesRepo {
+    @Override
+    public ArrayList<String> InputMessage() throws MalformedURLException {
+        URL url = new URL("https://sms.magfa.com/api/soap/sms/v2/server?wsdl");
+        MagfaSoapServer service = new MagfaSoapServer_Service(url).getMagfaSoapServer();
+        Creditions creditions=new Creditions();
+        String username = creditions.getUsername();
+        String password = creditions.getPassword();
+        String domain = creditions.getDomain();
+        BindingProvider prov = (BindingProvider) service;
+        prov.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, username + "/" + domain);
+        prov.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
+        HashMap httpHeaders = new HashMap<>();
+        httpHeaders.put("Content-Encoding", Collections.singletonList("gzip"));//this indicates you're sending a compressed request
+        httpHeaders.put("Accept-Encoding", Collections.singletonList("gzip")); //this says you're willing to accept a compressed response
+        prov.getRequestContext().put(MessageContext.HTTP_REQUEST_HEADERS, httpHeaders);
+        MessagesResult result = service.messages(100, "");
+        ArrayList<String> res=new ArrayList<>();
+        if(result.getStatus() != 0 ){
+            res.add(String.valueOf(result.getStatus()));
+            return res;
+        }
+        else
+            for (DatedCustomerReturnIncomingFormat msg : result.getMessages()) {
+                res.add(msg.getDate()+":"+msg.getBody());
+            }
+        return res;
+    }
+}
