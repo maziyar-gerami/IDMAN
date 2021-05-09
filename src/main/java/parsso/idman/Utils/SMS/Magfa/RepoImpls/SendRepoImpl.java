@@ -15,12 +15,10 @@ import java.util.List;
 
 public class SendRepoImbl implements SendRepo {
     @Override
-    public ArrayList<String> SendMessage(String message, String PhoneNumber, Long id) throws MalformedURLException {
+    public ArrayList<String> SendMessage(String message, String username, String password, String PhoneNumber, Long id) throws MalformedURLException {
         URL url = new URL("https://sms.magfa.com/api/soap/sms/v2/server?wsdl");
         MagfaSoapServer service = new MagfaSoapServer_Service(url).getMagfaSoapServer();
         Creditions creditions =new Creditions();
-        String username = creditions.getUsername();
-        String password = creditions.getPassword();
         String domain = creditions.getDomain();
         BindingProvider prov = (BindingProvider) service;
         prov.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, username + "/" + domain);
