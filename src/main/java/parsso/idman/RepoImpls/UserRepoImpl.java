@@ -483,8 +483,7 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public List<UsersExtraInfo> retrieveUsersMain(int page, int number) {
         SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
         int limit = number;
         int skip =(page-1)*limit;
