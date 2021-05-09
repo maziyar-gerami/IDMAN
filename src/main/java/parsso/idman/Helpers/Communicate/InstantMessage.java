@@ -16,7 +16,8 @@ import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.SMS.KaveNegar.KavenegarApi;
 import parsso.idman.Utils.SMS.KaveNegar.excepctions.ApiException;
 import parsso.idman.Utils.SMS.KaveNegar.excepctions.HttpException;
-import parsso.idman.Utils.SMS.Magfa.RepoImbls.SendRepoImbl;
+import parsso.idman.Utils.SMS.Magfa.RepoImpls.SendRepoImpl;
+import parsso.idman.Utils.SMS.Magfa.Repos.SendRepo;
 import parsso.idman.Utils.SMS.Magfa.Variables;
 
 import java.net.MalformedURLException;
@@ -50,6 +51,8 @@ public class InstantMessage {
     private Token tokenClass;
     @Autowired
     private parsso.idman.Helpers.User.UserAttributeMapper userAttributeMapper;
+    @Autowired
+    private SendRepo sendRepo;
 
     public int sendMessage(String mobile, String cid, String answer){
         if(SMS_sdk.equalsIgnoreCase("KaveNegar"))
@@ -123,10 +126,9 @@ public class InstantMessage {
             User user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
             if (tokenClass.insertMobileToken(user)) {
                 try {
-                    SendRepoImbl sendRepoImbl = new SendRepoImbl();
                     Variables variables = new Variables();
                     variables.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0,Integer.valueOf(SMS_VALIDATION_DIGITS)));
-                    sendRepoImbl.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
+                    sendRepo.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
 
                     mongoTemplate.remove(query, collection);
                     return Integer.valueOf(SMS_VALID_TIME);
@@ -182,10 +184,9 @@ public class InstantMessage {
         if (checkMobile(user.getMobile()).size() > 0) {
             if (tokenClass.insertMobileToken(user)) {
                 try {
-                    SendRepoImbl sendRepoImbl = new SendRepoImbl();
                     Variables variables = new Variables();
                     variables.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0,Integer.valueOf(SMS_VALIDATION_DIGITS)));
-                    sendRepoImbl.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
+                    sendRepo.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
 
                     return Integer.valueOf(SMS_VALID_TIME);
 
@@ -297,10 +298,9 @@ public class InstantMessage {
                     if (tokenClass.insertMobileToken(user)) {
 
                         try {
-                            SendRepoImbl sendRepoImbl = new SendRepoImbl();
                             Variables variables = new Variables();
                             variables.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0,Integer.valueOf(SMS_VALIDATION_DIGITS)));
-                            sendRepoImbl.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
+                            sendRepo.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
                             mongoTemplate.remove(query, collection);
                             return Integer.valueOf(SMS_VALID_TIME);
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
