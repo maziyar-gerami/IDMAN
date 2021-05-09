@@ -23,6 +23,7 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.OrFilter;
 import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -495,12 +496,14 @@ public class UserRepoImpl implements UserRepo {
         else
             usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(limit),UsersExtraInfo.class, userExtraInfoCollection);
 
-        ContainerCriteria query = query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is(usersExtraInfos.get(0).getUserId());
+        OrFilter orFilter = new OrFilter();
 
-        for (int i=1 ; i<usersExtraInfos.size();i++)
-            query.or("uid").is(usersExtraInfos.get(i).getUserId());
+        //ContainerCriteria query = query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is(usersExtraInfos.get(0).getUserId());
 
-        return ldapTemplate.search(query, new SimpleUserAttributeMapper());
+        for (int i=0 ; i<usersExtraInfos.size();i++)
+            orFilter.or(new EqualsFilter("uid", usersExtraInfos.get(i).getUserId()));
+
+        return ldapTemplate.search("ou=People,"+BASE_DN, orFilter.encode(), searchControls , new SimpleUserAttributeMapper());
 
     }
 

@@ -183,8 +183,8 @@ public class BuildAttributes {
 
         //EndTime
         if (p.getEndTime()!=null && p.getEndTime() != "") {
-            if (p.getEndTime().length() > 19)
-                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime().substring(0, 19)) + 'Z');
+            if (p.getEndTime().charAt(p.getEndTime().length()-1) == 'Z')
+                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()));
             else
                 context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
 
