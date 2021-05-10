@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import parsso.idman.Models.SkyRoom;
 import parsso.idman.Repos.SkyroomRepo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,9 +17,7 @@ public class SkyroomController {
     @Autowired
     SkyroomRepo runSkyroom;
     @GetMapping("/api/skyroom")
-    ResponseEntity<String> hello(HttpServletRequest request) throws IOException {
-        Principal principal = request.getUserPrincipal();
-        //RunSkyroom runSkyroom=new RunSkyroom();
-        return new ResponseEntity<>(runSkyroom.Run(principal.getName()).toString(), HttpStatus.OK);
+    ResponseEntity<SkyRoom> hello(HttpServletRequest request) throws IOException {
+        return new ResponseEntity<>(runSkyroom.Run(request.getUserPrincipal().getName()), HttpStatus.OK);
     }
 }

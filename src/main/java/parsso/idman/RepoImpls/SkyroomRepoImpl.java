@@ -2,9 +2,9 @@ package parsso.idman.RepoImpls;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import parsso.idman.Models.SkyRoom;
 import parsso.idman.Repos.SkyroomRepo;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -21,23 +21,18 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     @Value("${skyroom.api.key}")
     String apiKey;
 
-    public JSONObject Run(String name) throws IOException {
-        JSONObject RetJson = new JSONObject();
-        // SkyroomRepImpl skyroom=new SkyroomRepImpl();
-        System.out.println(name);
-        System.out.println(RandomPassMaker(8));
+    public SkyRoom Run(String name) throws IOException {
         int userId = Register(name, RandomPassMaker(8), "niki");
+        SkyRoom skyRoom;
         if (userId == 0) {
             int roomId =GetRoomId(name);
-            RetJson.put("Guest",GetRoomGuestUrl(roomId));
-            RetJson.put("Login", CreateLoginUrl(roomId, String.valueOf(userId), name));
-            return RetJson;
+            skyRoom = new SkyRoom(true,CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
+            return skyRoom;
         }
         int roomId =CreateRoom(name);
         AddUserRooms(userId, roomId);
-        RetJson.put("Guest", GetRoomGuestUrl(roomId));
-        RetJson.put("Login", CreateLoginUrl(roomId, String.valueOf(userId), name));
-        return RetJson;
+        skyRoom = new SkyRoom(true,CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
+        return skyRoom;
     }
     public JSONObject Post(String json) throws IOException {
        String api=apiKey;

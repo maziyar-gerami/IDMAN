@@ -36,7 +36,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
     @Override
     public List<PublicMessage> showPubicMessages(String id) {
         if (id.equals(""))
-            return mongoTemplate.find(new Query(), PublicMessage.class, collection);
+            return mongoTemplate.find(new Query(new Criteria()), PublicMessage.class, collection);
 
         return mongoTemplate.find(new Query(Criteria.where("ID").is(id)), PublicMessage.class, collection);
     }

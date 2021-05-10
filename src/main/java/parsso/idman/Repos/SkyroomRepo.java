@@ -1,11 +1,12 @@
 package parsso.idman.Repos;
 
 import org.json.JSONObject;
+import parsso.idman.Models.SkyRoom;
 
 import java.io.IOException;
 
 public interface SkyroomRepo {
-    JSONObject Run(String name) throws IOException;
+    SkyRoom Run(String name) throws IOException;
     int CreateRoom(String name, String title, boolean guest_login, boolean op_login_first, int max_users) throws IOException;
     int CreateRoom(String name) throws IOException;
     int GetRoomId(String name) throws IOException;

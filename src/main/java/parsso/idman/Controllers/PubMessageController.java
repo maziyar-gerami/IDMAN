@@ -37,7 +37,7 @@ public class PubMessageController {
 
     @PostMapping("/api/users/publicMessage")
     public ResponseEntity<HttpStatus> postPublicMessage(HttpServletRequest request, @RequestBody PublicMessage message) {
-        return new ResponseEntity<>(pubMessageRepo.postPubicMessage(request.getUserPrincipal().getName(), message));
+        return new ResponseEntity<>(pubMessageRepo.postPubicMessage("maziyar", message));
     }
 
     @PutMapping("/api/users/publicMessage")

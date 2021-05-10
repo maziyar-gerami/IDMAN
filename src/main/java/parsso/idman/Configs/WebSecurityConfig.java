@@ -98,7 +98,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/privacy").permitAll()
 
                 //APIs
-                .antMatchers("/api/public/**").anonymous()
+                .antMatchers("/api/public/**").permitAll()
                 .antMatchers("/api/resetpassword**").permitAll()
                 .antMatchers("/api/captcha/request").permitAll()
 
@@ -127,7 +127,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/createservice").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
                 .antMatchers("/users").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
                 .antMatchers("/groups").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
-                .antMatchers("/pubmessages").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/publicmessages").hasAnyRole("ADMIN" , "SUPPORTER","SUPERADMIN")
 
 
                 //APIs
