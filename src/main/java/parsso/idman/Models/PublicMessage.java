@@ -14,7 +14,7 @@ import java.util.UUID;
 public class PublicMessage {
     @JsonIgnore
     private  ObjectId _id;
-    private String ID;
+    private String messageId;
     private String title;
     private String creator;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -46,7 +46,7 @@ public class PublicMessage {
     }
 
     public PublicMessage(String title, String body, boolean visible, String creator) {
-        this.ID = UUID.randomUUID().toString();
+        this.messageId = UUID.randomUUID().toString();
         this.title = title;
         this.visible = visible;
         this.createDate = System.currentTimeMillis();

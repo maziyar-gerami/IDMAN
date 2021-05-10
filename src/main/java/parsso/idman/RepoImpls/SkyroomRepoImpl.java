@@ -55,7 +55,6 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }
-            System.out.println(response.toString());
             return  new JSONObject(response.toString());
         }
     }
@@ -79,7 +78,6 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         params.put("status", 1);
         params.put("is_public",true);
         root.put("params",params);
-        System.out.println(root);
         JSONObject res=Post(root.toString());
         if (res.getBoolean("ok")){
             return res.getInt("result");

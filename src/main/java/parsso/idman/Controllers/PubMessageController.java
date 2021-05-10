@@ -42,7 +42,7 @@ public class PubMessageController {
 
     @PutMapping("/api/users/publicMessage")
     public ResponseEntity<HttpStatus> editPublicMessage(HttpServletRequest request, @RequestBody PublicMessage message) {
-        return new ResponseEntity<>(pubMessageRepo.editPubicMessage(request.getUserPrincipal().getName(), message));
+        return new ResponseEntity<>(pubMessageRepo.editPubicMessage("maziyar", message));
     }
 
     @DeleteMapping("/api/users/publicMessages")
