@@ -7,10 +7,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -39,6 +41,12 @@ public class UsersExtraInfo {
     private List<String> memberOf;
     private String status;
     private long passwordChangedTime;
+
+    public List<String> getMemberOf() {
+        if (!(memberOf==null || memberOf.size()==0))
+            return memberOf.stream().distinct().collect(Collectors.toList());
+        return  null;
+    }
 
     public UsersExtraInfo(){
 
