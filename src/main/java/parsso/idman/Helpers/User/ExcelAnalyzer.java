@@ -58,6 +58,11 @@ public class ExcelAnalyzer {
                     continue;
                 }
 
+                if (user.getMemberOf() == null) {
+                    List<String> ous = new LinkedList<>();
+                    ous.add(ou);
+                    user.setMemberOf(ous);
+                }else
                 user.getMemberOf().add(ou);
                 userRepo.update(doer, tempUID,user);
             }

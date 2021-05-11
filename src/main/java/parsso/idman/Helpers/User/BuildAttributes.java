@@ -59,10 +59,12 @@ public class BuildAttributes {
         if (p.getUsersExtraInfo() != null && p.getUsersExtraInfo().getResetPassToken() != null)
             attrs.put("resetPassToken", p.getUsersExtraInfo().getResetPassToken());
         if (p.getMemberOf() != null && p.getMemberOf().size() != 0) {
-            Attribute attr = new BasicAttribute("ou");
-            for (int i = 0; i < p.getMemberOf().size(); i++)
-                attr.add(p.getMemberOf().get(i));
-            attrs.put(attr);
+            if (!(p.getMemberOf().size()==1 && p.getMemberOf().get(0).equals(""))) {
+                Attribute attr = new BasicAttribute("ou");
+                for (int i = 0; i < p.getMemberOf().size(); i++)
+                    attr.add(p.getMemberOf().get(i));
+                attrs.put(attr);
+            }
         }
         if (p.getDescription() != null && !(p.getDescription().equals("")))
             attrs.put("description", p.getDescription());
@@ -167,9 +169,9 @@ public class BuildAttributes {
 
         //ou attribute stating membrane in group
         if (p.getMemberOf() != null) {
-            if (p.getMemberOf().size() != 0) {
+            if (p.getMemberOf().size() != 0 && p.getMemberOf().get(0) != ("")) {
                 for (int i = 0; i < p.getMemberOf().size(); i++) {
-                    if (i == 0) context.setAttributeValue("ou", p.getMemberOf().get(i));
+                    if (old.getMemberOf() == null && i==0) context.setAttributeValue("ou", p.getMemberOf().get(i));
                     else context.addAttributeValue("ou", p.getMemberOf().get(i));
                 }
             } else if (old.getMemberOf() != null)
@@ -180,8 +182,13 @@ public class BuildAttributes {
 
 
         //EndTime
-        if (p.getEndTime()!=null && p.getEndTime() != "")
-            context.setAttributeValue("pwdEndTime",Time.setEndTime(p.getEndTime()) + 'Z');
+        if (p.getEndTime()!=null && p.getEndTime() != "") {
+            if (p.getEndTime().charAt(p.getEndTime().length()-1) == 'Z')
+                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()));
+            else
+                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
+
+        }
             else
                 context.removeAttributeValue("pwdEndTime", old.getEndTime());
 

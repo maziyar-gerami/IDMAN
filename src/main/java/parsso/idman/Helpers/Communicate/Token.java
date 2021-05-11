@@ -15,7 +15,6 @@ import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.UserRepo;
 
-import javax.naming.Name;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Random;

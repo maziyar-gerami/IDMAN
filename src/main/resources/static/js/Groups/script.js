@@ -137,6 +137,8 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesURLText: "./roles",
             reportsText: "گزارش ها",
             reportsURLText: "./reports",
+            publicmessagesText: "اعلان ها",
+            publicmessagesURLText: "./publicmessages",
             groupIdDuplicate: false,
             groupIdDuplicateText: "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.",
             fileUploadGroupNotSelectedText: "لطفا گروه مورد نظر خود را انتخاب کنید",
@@ -625,7 +627,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }).catch((error) => {
                         vm.loader2 = false;
-                        alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید");
+                        alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
                     });
                 }
             },
@@ -751,6 +753,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s55 = " (Only English Letters And Numbers Are Allowed For Group Name)";
                     this.rolesText = "Roles";
                     this.reportsText = "Reports";
+                    this.publicmessagesText = "Public Messages";
                     this.groupIdDuplicateText = "A Group With This Name Already Exists, Please Choose Another.";
                     this.fileUploadGroupNotSelectedText = "Please Select The Intended Group";
                     this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
@@ -827,6 +830,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s55 = " (برای نام انگلیسی گروه تنها حروف انگلیسی و اعداد مجاز می باشد)";
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
+                    this.publicmessagesText = "اعلان ها";
                     this.groupIdDuplicateText = "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.";
                     this.fileUploadGroupNotSelectedText = "لطفا گروه مورد نظر خود را انتخاب کنید";
                     this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";

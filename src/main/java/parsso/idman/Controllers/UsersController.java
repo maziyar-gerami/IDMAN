@@ -22,7 +22,6 @@ import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
 import parsso.idman.Repos.UserRepo;
 
-import javax.naming.InvalidNameException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -51,8 +50,7 @@ public class UsersController {
     private UserRepo userRepo;
     @Value("${administrator.ou.id}")
     private String adminOu;
-    @Value("${token.valid.email}")
-    private String tokenValidEmail;
+
 
 
 

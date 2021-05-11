@@ -101,6 +101,8 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesURLText: "./roles",
             reportsText: "گزارش ها",
             reportsURLText: "./reports",
+            publicmessagesText: "اعلان ها",
+            publicmessagesURLText: "./publicmessages",
             emailFormatErrorText: "فرمت آدرس ایمیل را به درستی وارد کنید",
             mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
             inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
@@ -452,6 +454,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s45 = "Verification Code is Incorrect.";
                     this.rolesText = "Roles";
                     this.reportsText = "Reports";
+                    this.publicmessagesText = "Public Messages";
                     this.emailFormatErrorText = "Enter Email Address Format Correctly";
                     this.mobileFormatErrorText = "Enter Phone Number Format Correctly";
                     this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
@@ -527,6 +530,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s45 = "کد تایید اشتباه است.";
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
+                    this.publicmessagesText = "اعلان ها";
                     this.emailFormatErrorText = "فرمت آدرس ایمیل را به درستی وارد کنید";
                     this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
                     this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";

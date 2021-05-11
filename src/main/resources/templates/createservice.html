@@ -208,6 +208,11 @@
                                         <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{rolesText}}</span>
                                     </a>
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                       v-bind:href="publicmessagesURLText">
+                                        <i class="fa fa-bell fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{publicmessagesText}}</span>
+                                    </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s43">
                                         <i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp;

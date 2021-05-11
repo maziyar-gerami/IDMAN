@@ -23,6 +23,7 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.OrFilter;
 import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -53,6 +54,7 @@ import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -131,8 +133,9 @@ public class UserRepoImpl implements UserRepo {
 
         }
 
+        User user = retrieveUsers(p.getUserId());
+
         try {
-            User user = retrieveUsers(p.getUserId());
             if (user == null || user.getUserId() == null) {
 
                 if (p.getDisplayName()==null || p.getDisplayName()=="" ||
@@ -154,28 +157,6 @@ public class UserRepoImpl implements UserRepo {
                     //create user in ldap
                     Name dn = buildDnUser.buildDn(p.getUserId());
                     ldapTemplate.bind(dn, null, buildAttributes.BuildAttributes(p));
-
-                    //update it's first pwChangedTime in a new thread
-                    Thread thread = new Thread() {
-                        public void run() {
-                            User userTemp = retrieveUsers(p.getUserId());
-                            DirContextOperations context = ldapTemplate.lookupContext(dn);
-
-                            context.setAttributeValue("pwdChangedTime", userTemp.getTimeStamp() + "Z");
-
-                            try {
-                                ldapTemplate.modifyAttributes(context);
-                            } catch (Exception e) {
-
-                                logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "due to writing to ldap").toString());
-                            }
-
-                        }
-                    };
-
-                    thread.start();
-
-
 
                     if (p.getStatus() != null)
                         if (p.getStatus().equals("disable"))
@@ -227,7 +208,8 @@ public class UserRepoImpl implements UserRepo {
 
         User user = retrieveUsers(p.getUserId());
 
-        if (user.getRole().equals("USER") && access.equalsIgnoreCase("false"))
+        if (!retrieveUsers(usid).getRole().equals("USER") &&
+                user.getRole().equals("USER") && access.equalsIgnoreCase("false"))
             return HttpStatus.FORBIDDEN;
 
         DirContextOperations context;
@@ -502,8 +484,9 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public List<UsersExtraInfo> retrieveUsersMain(int page, int number) {
         SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+        String[] array = {"uid","displayName", "ou", "createtimestamp", "pwdAccountLockedTime"};
+        searchControls.setReturningAttributes(array);
 
         int limit = number;
         int skip =(page-1)*limit;
@@ -515,12 +498,12 @@ public class UserRepoImpl implements UserRepo {
         else
             usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(limit),UsersExtraInfo.class, userExtraInfoCollection);
 
-        ContainerCriteria query = query().attributes("uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime").where("uid").is(usersExtraInfos.get(0).getUserId());
+        OrFilter orFilter = new OrFilter();
 
-        for (int i=1 ; i<usersExtraInfos.size();i++)
-            query.or("uid").is(usersExtraInfos.get(i).getUserId());
+        for (int i=0 ; i<usersExtraInfos.size();i++)
+            orFilter.or(new EqualsFilter("uid", usersExtraInfos.get(i).getUserId()));
 
-        return ldapTemplate.search(query, new SimpleUserAttributeMapper());
+        return ldapTemplate.search("ou=People,"+BASE_DN, orFilter.encode(), searchControls , new SimpleUserAttributeMapper());
 
     }
 
@@ -585,9 +568,9 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public User getName(String uid, String token) {
         SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         if (tokenClass.checkToken(uid, token) == HttpStatus.OK)
-            return ldapTemplate.search(query().attributes("givenName", "sn", "displayName").where("uid").is(uid),
+            return ldapTemplate.search("ou=People,"+BASE_DN,new EqualsFilter("uid",uid).encode(), searchControls,
                     userAttributeMapper).get(0);
         return null;
     }
@@ -596,7 +579,7 @@ public class UserRepoImpl implements UserRepo {
     public List<User> retrieveUsersFull() {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("objectclass", "person"));
@@ -623,7 +606,7 @@ public class UserRepoImpl implements UserRepo {
 
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("objectclass", "person"));
@@ -664,11 +647,12 @@ public class UserRepoImpl implements UserRepo {
     public User retrieveUsers(String userId)  {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         User user = new User();
         UsersExtraInfo usersExtraInfo = null;
-        if (!((ldapTemplate.search(query().where("uid").is(userId), userAttributeMapper)).toString() == "[]")) {
-            user = ldapTemplate.lookup(buildDnUser.buildDn(userId), new String[]{"*", "+"}, userAttributeMapper);
+        List<User> people = ldapTemplate.search("ou=People,"+BASE_DN,new EqualsFilter("uid", userId).encode(), searchControls,userAttributeMapper);
+        if (people.size()!=0) {
+            user = people.get(0);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
             usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
             user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
@@ -698,10 +682,9 @@ public class UserRepoImpl implements UserRepo {
 
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-
-        return ldapTemplate.search(query().where("ou").is(groupId), simpleUserAttributeMapper);
+        return ldapTemplate.search("ou=People,"+BASE_DN,new EqualsFilter("ou", groupId).encode(),searchControls, simpleUserAttributeMapper);
     }
 
     @Override
@@ -951,10 +934,6 @@ public class UserRepoImpl implements UserRepo {
 
     public HttpStatus updatePass(String userId, String pass, String token) {
 
-        //Logger logger = LogManager.getLogger(doerID);
-
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         User user = retrieveUsers(userId);
 
         user=setRole(user);

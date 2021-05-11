@@ -64,16 +64,11 @@ public class GroupRepoImpl implements GroupRepo {
 
         Logger logger = LogManager.getLogger(doerID);
 
-        List<Group> groups = new LinkedList<>();
-        if (jsonObject.size() == 0)
-            groups = retrieve();
-        else {
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
             DirContextOperations context;
             Iterator<String> iterator = jsonArray.iterator();
             while (iterator.hasNext()) {
                 Group group = retrieveOu(iterator.next());
-
 
                 Name dn = buildDn(group.getId());
                 try {
@@ -81,7 +76,6 @@ public class GroupRepoImpl implements GroupRepo {
                     logger.warn(new ReportMessage(model,group.getId(),"Group","remove", "success","").toString());
 
                 } catch (Exception e) {
-                    e.printStackTrace();
                     logger.warn(new ReportMessage(model,group.getId(),"Group","remove", "failed","writing to ldap").toString());
                 }
 
@@ -117,19 +111,12 @@ public class GroupRepoImpl implements GroupRepo {
                 }
             }
 
-
-        }
-
-
-
         return HttpStatus.OK;
     }
 
 
     @Override
     public Group retrieveOu(String uid) {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
         List<Group> groups = retrieve();
 
@@ -181,23 +168,23 @@ public class GroupRepoImpl implements GroupRepo {
     @Override
     public List<Group> retrieve() {
         SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
         final AndFilter filter = new AndFilter();
         filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
-        return ldapTemplate.search("ou="+model+","+BASE_DN, filter.encode(),
+        return ldapTemplate.search("ou=Groups,"+BASE_DN, filter.encode(),
                 new OUAttributeMapper());
     }
 
     @Override
     public List<Group> retrieve(String ou) {
         SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         final AndFilter filter = new AndFilter();
         filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
-        List<Group> gt = ldapTemplate.search("ou="+model+","+BASE_DN, filter.encode(),
+        List<Group> gt = ldapTemplate.search("ou=Groups,"+BASE_DN, filter.encode(),
                 new OUAttributeMapper());
 
         gt.removeIf(t -> t.getId().equals(model));

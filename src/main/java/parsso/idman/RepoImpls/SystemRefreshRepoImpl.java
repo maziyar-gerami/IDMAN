@@ -32,6 +32,7 @@ import parsso.idman.Repos.UserRepo;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
+import javax.naming.directory.SearchControls;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,10 +78,15 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     String userExtraInfoCollection = "IDMAN_UsersExtraInfo";
 
     @Override
-    public HttpStatus userRefresh(String doer)  {
-        //0. crete collection, if not exist
+    public HttpStatus userRefresh(String doer) {
+
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
         Logger logger = LoggerFactory.getLogger(doer);
+
+        //0. crete collection, if not exist
 
         if (mongoTemplate.getCollection(userExtraInfoCollection) == null)
             mongoTemplate.createCollection(userExtraInfoCollection);
@@ -88,43 +94,48 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         //1. create documents
         for (User user : userRepo.retrieveUsersFull()) {
 
+            try {
+
             Query queryMongo = new Query(new Criteria("userId").regex(user.getUserId(), "i"));
 
             UsersExtraInfo userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection);
 
             if (userExtraInfo != null) {
 
-                if (userExtraInfo.getQrToken()==null || userExtraInfo.getQrToken().equals(""))
+                if (userExtraInfo.getQrToken() == null || userExtraInfo.getQrToken().equals(""))
                     userExtraInfo.setQrToken(UUID.randomUUID().toString());
 
 
                 String photoName = ldapTemplate.search(
-                        query().where("uid").is(user.getUserId()),
+                        "ou=People,"+BASE_DN, new EqualsFilter("uid", user.getUserId()).encode() , searchControls,
                         new AttributesMapper<String>() {
                             public String mapFromAttributes(Attributes attrs)
                                     throws NamingException {
-                                if(attrs.get("photoName")!=null)
+                                if (attrs.get("photoName") != null)
                                     return attrs.get("photoName").get().toString();
 
                                 return "";
                             }
                         }).get(0);
 
-                if (photoName!=null)
+                if (photoName != null)
                     userExtraInfo.setPhotoName(photoName);
 
             } else {
 
+                userExtraInfo.setUserId(user.getUserId());
                 userExtraInfo = new UsersExtraInfo();
                 userExtraInfo.setQrToken(UUID.randomUUID().toString());
             }
 
-            if (userExtraInfo!=null) {
+            if (userExtraInfo != null) {
                 if (userExtraInfo.getRole() == null)
                     userExtraInfo.setRole("USER");
-                else if (userExtraInfo.getUserId()!=null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
+
+                else if (userExtraInfo.getUserId() != null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
                     userExtraInfo.setRole("SUPERADMIN");
-                else if (userExtraInfo.getRole() !=null)
+
+                else if (userExtraInfo.getRole() != null)
                     userExtraInfo.setRole(userExtraInfo.getRole());
 
                 if (userExtraInfo.isUnDeletable())
@@ -144,11 +155,14 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                 mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
 
-                logger.warn(new ReportMessage("User",user.getUserId(),"", "refresh", "success","").toString());
+                logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "success", "").toString());
 
 
             }
-        }
+        }catch (Exception e){
+                logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "failed", "").toString());
+            }
+    }
 
         try {
             dashboardData.updateDashboardData();
@@ -259,6 +273,11 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
     @Override
     public HttpStatus refreshLockedUsers(){
+
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+
         AndFilter andFilter = new AndFilter();
 
         Logger logger = LoggerFactory.getLogger("System");
@@ -283,7 +302,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         for (UsersExtraInfo simple:simpleUsers) {
             Query query = new Query(Criteria.where("userId").is(simple.getUserId()));
 
-                if (ldapTemplate.search(query().where("uid").is(simple.getUserId()), userAttributeMapper).size()==0) {
+                if (ldapTemplate.search("ou=People,"+BASE_DN,new EqualsFilter("uid",simple.getUserId()).encode(), searchControls, userAttributeMapper).size()==0) {
 
                 simple.setStatus("enable");
 

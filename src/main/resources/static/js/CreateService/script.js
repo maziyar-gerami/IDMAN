@@ -142,6 +142,8 @@ document.addEventListener('DOMContentLoaded', function () {
       allGroupsHolderText: "انتخاب همه",
       reportsText: "گزارش ها",
       reportsURLText: "./reports",
+      publicmessagesText: "اعلان ها",
+      publicmessagesURLText: "./publicmessages",
       inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
       inputPersianFilterText: " (تنها حروف فارسی و اعداد مجاز می باشند)",
     },
@@ -955,6 +957,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s83 = "Disabled";
           this.rolesText = "Roles";
           this.reportsText = "Reports";
+          this.publicmessagesText = "Public Messages";
           if(this.allGroupsHolderText == this.addAllGroupsText){
             this.allGroupsHolderText = "Select All";
           }else{
@@ -1047,6 +1050,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s83 = "غیرفعال";
             this.rolesText = "نقش ها";
             this.reportsText = "گزارش ها";
+            this.publicmessagesText = "اعلان ها";
             if(this.allGroupsHolderText == this.addAllGroupsText){
               this.allGroupsHolderText = "انتخاب همه";
             }else{

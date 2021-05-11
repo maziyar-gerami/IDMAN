@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 
+import net.minidev.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.PublicMessage;
 import parsso.idman.Repos.PubMessageRepo;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -28,11 +31,17 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 
 
     @Override
-    public List<PublicMessage> showPubicMessages(String id) {
-        if (id.equals(""))
-            return mongoTemplate.find(new Query(),PublicMessage.class, collection);
+    public List<PublicMessage> showVisiblePubicMessages() {
 
-        return mongoTemplate.find(new Query(Criteria.where("ID").is(id)), PublicMessage.class, collection);
+        return mongoTemplate.find(new Query(Criteria.where("visible").is(true)), PublicMessage.class, collection);
+    }
+
+    @Override
+    public List<PublicMessage> showAllPubicMessages(String id) {
+        if (id.equals(""))
+            return mongoTemplate.find(new Query(new Criteria()), PublicMessage.class, collection);
+
+        return mongoTemplate.find(new Query(Criteria.where("messageId").is(id)), PublicMessage.class, collection);
     }
 
 
@@ -47,12 +56,12 @@ public class PubMessageRepoImpl implements PubMessageRepo {
         try {
             PublicMessage messageToSave = new PublicMessage(message.getTitle(),message.getBody(),message.isVisible(),doer);
             mongoTemplate.save(messageToSave,collection);
-            logger.warn(new ReportMessage(model, doer,messageToSave.getID(),"create", "success", "by '" +doer+"'"));
+            logger.warn(new ReportMessage(model, messageToSave.getMessageId(),"", "create", "success", ""));
 
             return  HttpStatus.OK;
 
         }catch (Exception e){
-            logger.warn(new ReportMessage(model, doer,"","create", "failed", "Writing to mongo"));
+            logger.warn(new ReportMessage(model, message.getMessageId(),"","create", "failed", "Writing to mongo"));
             return HttpStatus.FORBIDDEN;
 
         }
@@ -61,11 +70,62 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 
     @Override
     public HttpStatus editPubicMessage(String doer, PublicMessage message) {
-        return null;
+        Logger logger = LogManager.getLogger(doer);
+
+        PublicMessage oldMessage = showAllPubicMessages(message.getMessageId()).get(0);
+
+        message.setUpdater(doer);
+        message.setUpdateDate(System.currentTimeMillis());
+
+        message.setCreator(oldMessage.getCreator());
+        message.setCreateDate(oldMessage.getCreateDate());
+
+        PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("messageId").is(message.getMessageId())), PublicMessage.class,collection);
+        message.set_id(publicMessage.get_id());
+        try {
+            mongoTemplate.save(message,collection);
+            logger.warn(new ReportMessage(model, message.getMessageId(),"", "update", "success", ""));
+
+            return HttpStatus.OK;
+        }catch (Exception e){
+            logger.warn(new ReportMessage(model, message.getMessageId(),"","create", "failed", "Writing to mongo"));
+            return HttpStatus.FORBIDDEN;
+        }
     }
 
     @Override
-    public HttpStatus deletePubicMessage(String doer, String id) {
-        return null;
+    public HttpStatus deletePubicMessage(String doer, JSONObject jsonObject) {
+        Logger logger = LogManager.getLogger(doer);
+
+        ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+        Iterator<String> iterator = jsonArray.iterator();
+
+        if (!iterator.hasNext()) {
+            try {
+
+                mongoTemplate.remove(new Query(), collection);
+                logger.warn(new ReportMessage(model, "All", "", "delete", "success", ""));
+
+            }catch (Exception e){
+
+                logger.warn(new ReportMessage(model, "All", "", "delete", "failed", ""));
+
+            }
+        }
+
+        while (iterator.hasNext()) {
+            String next = iterator.next();
+
+            try {
+                mongoTemplate.remove(new Query(Criteria.where("messageId").is(next)),collection);
+                logger.warn(new ReportMessage(model, next, "", "delete", "success", ""));
+
+            } catch (Exception e) {
+                logger.warn(new ReportMessage(model, next, "", "delete", "failed", "Writing to mongo"));
+            }
+
+        }
+
+        return HttpStatus.OK;
     }
 }

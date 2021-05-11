@@ -106,6 +106,8 @@ document.addEventListener('DOMContentLoaded', function () {
       rolesURLText: "./roles",
       reportsText: "گزارش ها",
       reportsURLText: "./reports",
+      publicmessagesText: "اعلان ها",
+      publicmessagesURLText: "./publicmessages",
     },
     created: function () {
       this.setDateNav();
@@ -876,6 +878,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s47 = "No Records Found";
           this.rolesText = "Roles";
           this.reportsText = "Reports";
+          this.publicmessagesText = "Public Messages";
         }else {
             window.localStorage.setItem("lang", "FA");
             this.getEvents();
@@ -927,6 +930,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s47 = "رکوردی یافت نشد";
             this.rolesText = "نقش ها";
             this.reportsText = "گزارش ها";
+            this.publicmessagesText = "اعلان ها";
         }
       },
       div: function (a, b) {

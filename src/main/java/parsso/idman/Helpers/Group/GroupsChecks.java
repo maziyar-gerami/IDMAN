@@ -16,6 +16,9 @@ public class GroupsChecks {
     @Autowired
     GroupRepo groupRepo;
     public boolean checkGroup(List<String> groups){
+        if (groups.size()==1&&groups.get(0).equals(""))
+            return true;
+
         List<Group> realGroups = groupRepo.retrieve();
         List<String> realStrings = new LinkedList<>();
         for (Group group:realGroups) {

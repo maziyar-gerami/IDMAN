@@ -76,6 +76,8 @@ document.addEventListener('DOMContentLoaded', function () {
       rolesURLText: "./roles",
       reportsText: "گزارش ها",
       reportsURLText: "./reports",
+      publicmessagesText: "اعلان ها",
+      publicmessagesURLText: "./publicmessages",
     },
     created: function () {
       this.setDateNav();
@@ -342,6 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s42 = "All Refreshed Successfully.";
           this.rolesText = "Roles";
           this.reportsText = "Reports";
+          this.publicmessagesText = "Public Messages";
         }else {
             window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
@@ -384,6 +387,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s42 = "به‌روزرسانی کلی با موفقیت انجام شد.";
             this.rolesText = "نقش ها";
             this.reportsText = "گزارش ها";
+            this.publicmessagesText = "اعلان ها";
         }
       }
     },
