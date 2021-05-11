@@ -144,6 +144,10 @@ dependencies {
 
 	implementation 'org.apache.logging.log4j:log4j-mongodb4:2.14.1'
 
+	// https://mvnrepository.com/artifact/commons-codec/commons-codec
+	implementation group: 'commons-codec', name: 'commons-codec', version: '1.15'
+
+
 	configurations.all {
 		resolutionStrategy.dependencySubstitution.all { dependency ->
 			if (dependency.requested instanceof ModuleComponentSelector && dependency.requested.module == 'spring-boot-starter-logging') {

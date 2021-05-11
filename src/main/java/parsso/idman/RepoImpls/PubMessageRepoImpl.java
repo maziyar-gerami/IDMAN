@@ -31,7 +31,13 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 
 
     @Override
-    public List<PublicMessage> showPubicMessages(String id) {
+    public List<PublicMessage> showVisiblePubicMessages() {
+
+        return mongoTemplate.find(new Query(Criteria.where("visible").is(true)), PublicMessage.class, collection);
+    }
+
+    @Override
+    public List<PublicMessage> showAllPubicMessages(String id) {
         if (id.equals(""))
             return mongoTemplate.find(new Query(new Criteria()), PublicMessage.class, collection);
 
@@ -66,7 +72,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
     public HttpStatus editPubicMessage(String doer, PublicMessage message) {
         Logger logger = LogManager.getLogger(doer);
 
-        PublicMessage oldMessage = showPubicMessages(message.getMessageId()).get(0);
+        PublicMessage oldMessage = showAllPubicMessages(message.getMessageId()).get(0);
 
         message.setUpdater(doer);
         message.setUpdateDate(System.currentTimeMillis());

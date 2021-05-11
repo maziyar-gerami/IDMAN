@@ -10,7 +10,9 @@ import java.util.List;
 public interface PubMessageRepo {
 
 
-    List<PublicMessage> showPubicMessages(String id);
+    List<PublicMessage> showVisiblePubicMessages();
+
+    List<PublicMessage> showAllPubicMessages(String id);
 
     HttpStatus postPubicMessage(String doer, PublicMessage message);
 
