@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
             superAdminText: "مدیر کل",
             supporterText: "پشتیبانی",
             adminText: "مدیر",
+            presenterText: "ارائه دهنده",
             userText: "کاربر",
             showMeeting: false,
             meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
@@ -191,10 +192,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 let superAdminTempList = [];
                 let supporterTempList = [];
                 let adminTempList = [];
+                let presenterTempList = [];
                 let userTempList = [];
                 this.loader = true;
                 axios({
-                    method: 'get',
+                    method: "get",
                     url: url + "/api/roles", //
                 })
                 .then((res) => {
@@ -212,13 +214,17 @@ document.addEventListener('DOMContentLoaded', function () {
                             res.data[i].roleFa = "مدیر";
                             res.data[i].icon = "color: #007bff;";
                             adminTempList.push(res.data[i]);
+                        }else if(res.data[i].role == "PRESENTER"){
+                            res.data[i].roleFa = "ارائه دهنده";
+                            res.data[i].icon = "color: #00f7f7;";
+                            presenterTempList.push(res.data[i]);
                         }else if(res.data[i].role == "USER"){
                             res.data[i].roleFa = "کاربر";
                             res.data[i].icon = "color: #ffc107;";
                             userTempList.push(res.data[i]);
                         }
                     }
-                    vm.userList = superAdminTempList.concat(supporterTempList, adminTempList, userTempList);
+                    vm.userList = superAdminTempList.concat(supporterTempList, adminTempList, presenterTempList, userTempList);
                     vm.loader = false;
                 });
             },
@@ -234,9 +240,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     let check = confirm(this.confirmationText);
                     if(check){
                         axios({
-                            method: 'put',
+                            method: "put",
                             url: url + "/api/roles/" + role, //
-                            headers: {'Content-Type': 'application/json'},
+                            headers: {"Content-Type": "application/json"},
                             data: JSON.stringify({
                                 names: vm.editList
                             }).replace(/\\\\/g, "\\")
@@ -307,6 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.superAdminText = "SUPERADMIN";
                     this.supporterText = "SUPPORTER";
                     this.adminText = "ADMIN";
+                    this.presenterText = "PRESENTER";
                     this.userText = "USER";
                     this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
                     this.meetingInviteLinkCopyStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
@@ -355,6 +362,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.superAdminText = "مدیر کل";
                     this.supporterText = "پشتیبانی";
                     this.adminText = "مدیر";
+                    this.presenterText = "ارائه دهنده";
                     this.userText = "کاربر";
                     this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
                     this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
