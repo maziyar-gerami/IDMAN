@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
+import parsso.idman.Utils.Convertor.DateConverter;
 
 @Setter
 @Getter
@@ -23,7 +24,24 @@ public class Ticket {
     int status;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     String subCategory;
+    @JsonIgnore
     Long creationTime;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonIgnore
     Long modifiedTime;
+    Time creationDateTime;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    Time modifiedDateTime;
+
+    public Time getCreationDateTime() {
+        return Time.longToPersianTime(this.creationTime);
+    }
+
+
+    public Time getModifiedDateTime() {
+        if (this.modifiedTime != null)
+            return Time.longToPersianTime(this.modifiedTime);
+        else
+            return null;
+    }
+
 }

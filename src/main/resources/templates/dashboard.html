@@ -29,8 +29,26 @@
 </head>
 <body class="h-100">
     <div id="app">
-        <div  v-bind:class="{rtl: isRtl}" class=" h-100">
-                <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
+        <div id="overlay">
+            <div id="overlayContent" v-bind:class="{rtl: isRtl}">
+                <div id="overlayBody">
+                    <div class="form-group">
+                        <div class="row mt-3 mb-5 ml-0 mr-0">
+                            <button v-on:click="openMeeting" class="btn btn-primary col-12">{{enterMeetingText}}</button>
+                        </div><br>
+                        <p>{{inviteToMeetingText}}</p>
+                        <div class="row ml-0 mr-0">
+                            <input id="copyMeetingLink" v-model:value="meetingGuestLink" type="text" class="form-control col-10" v-bind:style="meetingInviteLinkStyle" readonly>
+                            <button id="copyMeetingLinkBtn" v-bind:style="meetingInviteLinkCopyStyle"
+                            v-on:click="copyMeetingLink" class="btn btn-sm btn-success col-2">{{copyText}}</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="closeOverlay" v-on:click="closeOverlay">{{returnText}}</div>
+            </div>
+        </div>
+        <div v-bind:class="{rtl: isRtl}" class=" h-100">
+            <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
                     <div class="container">
                         <div class="dropdown">
                             <a class="navbar-brand" href="./">{{s0}}</a>
@@ -48,7 +66,7 @@
                         </div>
                     </div>
                 </nav>
-                <div class="container">
+            <div class="container">
                 <div class="row">
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
@@ -80,8 +98,15 @@
 
                                 <div class="text-center mb-3">
                                     <a href="./logout" class="btn btn-danger btn-sm">
-                                        <i class="fa fa-power-off"></i>
-                                        {{s2}}
+                                        <i class="fa fa-power-off fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{s2}}</span>
+                                    </a>
+                                </div>
+
+                                <div v-if="showMeeting" class="text-center mb-3 mt-3" v-on:click="openOverlay">
+                                    <a href="#" style="width: 100%;border-radius: 0;" class="btn btn-primary">
+                                        <i class="fa fa-video-camera fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{meetingText}}</span>
                                     </a>
                                 </div>
 

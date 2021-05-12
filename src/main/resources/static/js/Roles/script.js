@@ -72,13 +72,25 @@ document.addEventListener('DOMContentLoaded', function () {
             superAdminText: "مدیر کل",
             supporterText: "پشتیبانی",
             adminText: "مدیر",
+            presenterText: "ارائه دهنده",
             userText: "کاربر",
+            showMeeting: false,
+            meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
+            meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
+            meetingAdminLink: "",
+            meetingGuestLink: "",
+            meetingText: "جلسه مجازی",
+            enterMeetingText: "ورود به جلسه",
+            inviteToMeetingText: "دعوت به جلسه",
+            copyText: "کپی",
+            returnText: "بازگشت",
         },
         created: function () {
             this.setDateNav();
             this.getUserInfo();
             this.getUserPic();
             this.getUsers();
+            this.getMeetingInfo();
             if(window.localStorage.getItem("lang") === null){
                 window.localStorage.setItem("lang", "FA");
             }else if(window.localStorage.getItem("lang") === "EN") {
@@ -109,6 +121,34 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById("dropdownMenu").classList.toggle("show");
                     this.dropdownMenu = true;
                 }
+            },
+            openMeeting: function () {
+                window.open(this.meetingAdminLink, "_blank").focus();
+            },
+            openOverlay: function () {
+                document.getElementById("overlay").style.display = "block";
+            },
+            closeOverlay: function () {
+                document.getElementById("overlay").style.display = "none";
+            },
+            copyMeetingLink: function () {
+                let copyText = document.getElementById("copyMeetingLink");
+                copyText.select();
+                document.execCommand("copy");
+                document.getElementById("copyMeetingLinkBtn").disabled = true;
+                setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+            },
+            getMeetingInfo: function () {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
+                axios.get(url + "/api/skyroom") //
+                    .then((res) => {
+                        if(res.data.enable){
+                            vm.showMeeting = true;
+                            vm.meetingAdminLink = res.data.presenter;
+                            vm.meetingGuestLink = res.data.students;
+                        }
+                    });
             },
             getUserInfo: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -152,10 +192,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 let superAdminTempList = [];
                 let supporterTempList = [];
                 let adminTempList = [];
+                let presenterTempList = [];
                 let userTempList = [];
                 this.loader = true;
                 axios({
-                    method: 'get',
+                    method: "get",
                     url: url + "/api/roles", //
                 })
                 .then((res) => {
@@ -173,13 +214,17 @@ document.addEventListener('DOMContentLoaded', function () {
                             res.data[i].roleFa = "مدیر";
                             res.data[i].icon = "color: #007bff;";
                             adminTempList.push(res.data[i]);
+                        }else if(res.data[i].role == "PRESENTER"){
+                            res.data[i].roleFa = "ارائه دهنده";
+                            res.data[i].icon = "color: #00f7f7;";
+                            presenterTempList.push(res.data[i]);
                         }else if(res.data[i].role == "USER"){
                             res.data[i].roleFa = "کاربر";
                             res.data[i].icon = "color: #ffc107;";
                             userTempList.push(res.data[i]);
                         }
                     }
-                    vm.userList = superAdminTempList.concat(supporterTempList, adminTempList, userTempList);
+                    vm.userList = superAdminTempList.concat(supporterTempList, adminTempList, presenterTempList, userTempList);
                     vm.loader = false;
                 });
             },
@@ -195,9 +240,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     let check = confirm(this.confirmationText);
                     if(check){
                         axios({
-                            method: 'put',
+                            method: "put",
                             url: url + "/api/roles/" + role, //
-                            headers: {'Content-Type': 'application/json'},
+                            headers: {"Content-Type": "application/json"},
                             data: JSON.stringify({
                                 names: vm.editList
                             }).replace(/\\\\/g, "\\")
@@ -268,7 +313,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.superAdminText = "SUPERADMIN";
                     this.supporterText = "SUPPORTER";
                     this.adminText = "ADMIN";
+                    this.presenterText = "PRESENTER";
                     this.userText = "USER";
+                    this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+                    this.meetingInviteLinkCopyStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+                    this.meetingText = "Meeting";
+                    this.enterMeetingText = "Enter Meeting";
+                    this.inviteToMeetingText = "Invite To Meeting";
+                    this.copyText = "Copy";
+                    this.returnText = "Return";
                 } else{
                     window.localStorage.setItem("lang", "FA");
                     this.lang = "EN";
@@ -309,9 +362,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.superAdminText = "مدیر کل";
                     this.supporterText = "پشتیبانی";
                     this.adminText = "مدیر";
+                    this.presenterText = "ارائه دهنده";
                     this.userText = "کاربر";
-
-
+                    this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+                    this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+                    this.meetingText = "جلسه مجازی";
+                    this.enterMeetingText = "ورود به جلسه";
+                    this.inviteToMeetingText = "دعوت به جلسه";
+                    this.copyText = "کپی";
+                    this.returnText = "بازگشت";
                 }
             }
         },

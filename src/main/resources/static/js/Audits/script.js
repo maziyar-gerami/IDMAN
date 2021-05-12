@@ -110,6 +110,16 @@ document.addEventListener('DOMContentLoaded', function () {
       reportsURLText: "./reports",
       publicmessagesText: "اعلان ها",
       publicmessagesURLText: "./publicmessages",
+      showMeeting: false,
+      meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
+      meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
+      meetingAdminLink: "",
+      meetingGuestLink: "",
+      meetingText: "جلسه مجازی",
+      enterMeetingText: "ورود به جلسه",
+      inviteToMeetingText: "دعوت به جلسه",
+      copyText: "کپی",
+      returnText: "بازگشت",
     },
     created: function () {
       this.setDateNav();
@@ -117,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
       this.getUserPic();
       this.getAudit();
       this.getAudits();
+      this.getMeetingInfo();
       if(window.localStorage.getItem("lang") === null) {
         window.localStorage.setItem("lang", "FA");
       }else if(window.localStorage.getItem("lang") === "EN") {
@@ -147,6 +158,34 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById("dropdownMenu").classList.toggle("show");
           this.dropdownMenu = true;
         }
+      },
+      openMeeting: function () {
+        window.open(this.meetingAdminLink, "_blank").focus();
+      },
+      openOverlay: function () {
+        document.getElementById("overlay").style.display = "block";
+      },
+      closeOverlay: function () {
+        document.getElementById("overlay").style.display = "none";
+      },
+      copyMeetingLink: function () {
+        let copyText = document.getElementById("copyMeetingLink");
+        copyText.select();
+        document.execCommand("copy");
+        document.getElementById("copyMeetingLinkBtn").disabled = true;
+        setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+      },
+      getMeetingInfo: function () {
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
+        axios.get(url + "/api/skyroom") //
+            .then((res) => {
+              if(res.data.enable){
+                vm.showMeeting = true;
+                vm.meetingAdminLink = res.data.presenter;
+                vm.meetingGuestLink = res.data.students;
+              }
+            });
       },
       isActive (menuItem) {
         return this.activeItem === menuItem
@@ -604,6 +643,13 @@ document.addEventListener('DOMContentLoaded', function () {
           this.rolesText = "Roles";
           this.reportsText = "Reports";
           this.publicmessagesText = "Public Messages";
+          this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+          this.meetingInviteLinkCopyStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+          this.meetingText = "Meeting";
+          this.enterMeetingText = "Enter Meeting";
+          this.inviteToMeetingText = "Invite To Meeting";
+          this.copyText = "Copy";
+          this.returnText = "Return";
         }else {
             window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
@@ -655,6 +701,13 @@ document.addEventListener('DOMContentLoaded', function () {
             this.rolesText = "نقش ها";
             this.reportsText = "گزارش ها";
             this.publicmessagesText = "اعلان ها";
+            this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+            this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+            this.meetingText = "جلسه مجازی";
+            this.enterMeetingText = "ورود به جلسه";
+            this.inviteToMeetingText = "دعوت به جلسه";
+            this.copyText = "کپی";
+            this.returnText = "بازگشت";
         }
       },
       div: function (a, b) {

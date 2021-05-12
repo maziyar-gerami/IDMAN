@@ -143,7 +143,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //******************SUPERADMIN Objects ONLY *******************
                 //pages
-                .antMatchers("/roles").hasAnyRole("SUPERADMIN")
+                .antMatchers("/roles").hasRole("SUPERADMIN")
                 .antMatchers("/configs**").hasRole("SUPERADMIN")
 
                 //APIs
@@ -167,6 +167,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //APIs
                 .antMatchers("/api/tickets").hasAnyRole("ADMIN", "SUPERADMIN", "SUPPORTER")
+
 
 
 

@@ -126,6 +126,24 @@
 </script>
 <body class="h-100">
     <div id="app">
+        <div id="overlay">
+            <div id="overlayContent" v-bind:class="{rtl: isRtl}">
+                <div id="overlayBody">
+                    <div class="form-group">
+                        <div class="row mt-3 mb-5 ml-0 mr-0">
+                            <button v-on:click="openMeeting" class="btn btn-primary col-12">{{enterMeetingText}}</button>
+                        </div><br>
+                        <p>{{inviteToMeetingText}}</p>
+                        <div class="row ml-0 mr-0">
+                            <input id="copyMeetingLink" v-model:value="meetingGuestLink" type="text" class="form-control col-10" v-bind:style="meetingInviteLinkStyle" readonly>
+                            <button id="copyMeetingLinkBtn" v-bind:style="meetingInviteLinkCopyStyle"
+                                    v-on:click="copyMeetingLink" class="btn btn-sm btn-success col-2">{{copyText}}</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="closeOverlay" v-on:click="closeOverlay">{{returnText}}</div>
+            </div>
+        </div>
         <div v-bind:class="{rtl: isRtl}" class=" h-100">
             <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
                 <div class="container">
@@ -177,8 +195,15 @@
 
                                 <div class="text-center mb-3">
                                     <a href="./logout" class="btn btn-danger btn-sm">
-                                        <i class="fa fa-power-off"></i>
+                                        <i class="fa fa-power-off"></i>&nbsp;
                                         {{s2}}
+                                    </a>
+                                </div>
+
+                                <div v-if="showMeeting" class="text-center mb-3 mt-3" v-on:click="openOverlay">
+                                    <a href="#" style="width: 100%;border-radius: 0;" class="btn btn-primary">
+                                        <i class="fa fa-video-camera fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{meetingText}}</span>
                                     </a>
                                 </div>
 
@@ -251,7 +276,7 @@
                                         <h3 class="border-bottom pb-2">{{s6}}</h3>
                                     </div>
                                     <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
-                                        <div sec:authorize="hasRole('USER')" style="font-size: 15px;">
+                                        <div sec:authorize="hasAnyRole('USER', 'PRESENTER')" style="font-size: 15px;">
                                             <div class="row justify-content-center">
                                                 <div class="col-2"></div>
                                                 <div class="col-5">
