@@ -285,7 +285,7 @@
                                             <button v-on:click="showList()" class="btn btn-danger">{{s47}}</button>
                                         </div>
                                         <div id="auditList">
-                                            <div sec:authorize="hasRole('USER')" style="font-size: 15px;">
+                                            <div sec:authorize="hasRole('USER', 'PRESENTER')" style="font-size: 15px;">
                                                 <div class="row justify-content-center">
                                                     <div class="col-2"></div>
                                                     <div class="col-5">
