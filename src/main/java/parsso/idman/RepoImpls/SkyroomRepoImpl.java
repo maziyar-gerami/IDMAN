@@ -2,10 +2,12 @@ package parsso.idman.RepoImpls;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.SkyRoom;
 import parsso.idman.Repos.SkyroomRepo;
+import parsso.idman.Repos.UserRepo;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -21,17 +23,24 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     @Value("${skyroom.api.key}")
     String apiKey;
 
+    @Value("${skyroom.enable}")
+    String skyroomEnable;
+
+    @Autowired
+    UserRepo userRepo;
+
     public SkyRoom Run(String name) throws IOException {
         int userId = Register(name, RandomPassMaker(8), "niki");
         SkyRoom skyRoom;
         if (userId == 0) {
             int roomId =GetRoomId(name);
-            skyRoom = new SkyRoom(true,CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
+            skyRoom = new SkyRoom(skyroomEnable, userRepo.retrieveUsers(name).getUsersExtraInfo().getRole()
+                    ,CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
             return skyRoom;
         }
         int roomId =CreateRoom(name);
         AddUserRooms(userId, roomId);
-        return new SkyRoom(true,CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
+        return new SkyRoom(skyroomEnable, userRepo.retrieveUsers(name).getUsersExtraInfo().getRole(),CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
     }
     public JSONObject Post(String json) throws IOException {
        String api=apiKey;

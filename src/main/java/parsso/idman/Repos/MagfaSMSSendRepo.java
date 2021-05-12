@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 @Service
 public interface MagfaSMSSendRepo {
+
     ArrayList<String> SendMessage(String message, String PhoneNumber, Long id) throws MalformedURLException;
 
     String GetBalanceRepo() throws MalformedURLException;
