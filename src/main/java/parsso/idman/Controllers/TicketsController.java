@@ -45,15 +45,14 @@ public class TicketsController {
 
     @PostMapping("/api/ticket")
     public ResponseEntity<HttpStatus> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request) {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(ticketRepo.sendTicket(ticket, "maziyar"));
+        return new ResponseEntity<>(ticketRepo.sendTicket(ticket, request.getUserPrincipal().getName()));
     }
 
     @PostMapping("/api/ticket/reply/{ticketID}")
     public ResponseEntity<HttpStatus> replyTicket(@PathVariable ("ticketID") String ticketID,
                                             @RequestBody Ticket ticket, HttpServletRequest request){
 
-        return new ResponseEntity<>(ticketRepo.reply(ticketID, "bardia",ticket));
+        return new ResponseEntity<>(ticketRepo.reply(ticketID, request.getUserPrincipal().getName(),ticket));
     }
 
     @GetMapping("/api/tickets/outbox")
@@ -64,8 +63,7 @@ public class TicketsController {
     @GetMapping("/api/tickets/pending")
     public ResponseEntity<List<Ticket>> pendingTickets(@RequestParam (name = "cat", defaultValue = "") String cat, @RequestParam (name = "subCat", defaultValue = "") String subCat, HttpServletRequest request) {
 
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers("maziyar");
+        User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
 
         return new ResponseEntity<>(ticketRepo.pendingTickets(cat,subCat,user), HttpStatus.OK);
     }
