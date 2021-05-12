@@ -175,6 +175,20 @@ html,body {
   .tableList{
     display: inline-table;
   }
+  #overlayContent{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30%;
+    height: 40%;
+    color: black;
+    background-color: rgb(255, 255, 255);
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    border-radius: 5px;
+    z-index: 11;
+    padding: 20px;
+  }
 }
 
 @media only screen and (max-width: 775px) {
@@ -186,6 +200,20 @@ html,body {
   }
   .tableList{
     display: block;
+  }
+  #overlayContent{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 50%;
+    color: black;
+    background-color: rgb(255, 255, 255);
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    border-radius: 5px;
+    z-index: 11;
+    padding: 20px;
   }
 }
 
@@ -212,4 +240,35 @@ html,body {
 .enInput {
   text-align: left;
   direction: ltr;
+}
+
+#overlay{
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 10;
+}
+
+#overlayBody{
+  height: 90%;
+  overflow: auto;
+}
+
+#closeOverlay{
+  position: absolute;
+  bottom: 20px;
+  width: 100px;
+  color: black;
+  background-color: #dc3545;
+  border-radius: 2rem;
+  z-index: 12;
+  cursor: pointer;
+  padding: 5px;
+  text-align: center;
 }

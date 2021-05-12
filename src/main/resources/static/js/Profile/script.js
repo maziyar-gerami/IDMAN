@@ -107,6 +107,16 @@ document.addEventListener('DOMContentLoaded', function () {
             mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
             inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
             inputPersianFilterText: " (تنها حروف فارسی و اعداد مجاز می باشند)",
+            showMeeting: false,
+            meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
+            meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
+            meetingAdminLink: "",
+            meetingGuestLink: "",
+            meetingText: "جلسه مجازی",
+            enterMeetingText: "ورود به جلسه",
+            inviteToMeetingText: "دعوت به جلسه",
+            copyText: "کپی",
+            returnText: "بازگشت",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -132,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.getUserInfo();
             this.getUserPic();
             this.getQR();
+            this.getMeetingInfo();
             if(window.localStorage.getItem("lang") === null){
                 window.localStorage.setItem("lang", "FA");
             }else if(window.localStorage.getItem("lang") === "EN") {
@@ -162,6 +173,34 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById("dropdownMenu").classList.toggle("show");
                     this.dropdownMenu = true;
                 }
+            },
+            openMeeting: function () {
+                window.open(this.meetingAdminLink, "_blank").focus();
+            },
+            openOverlay: function () {
+                document.getElementById("overlay").style.display = "block";
+            },
+            closeOverlay: function () {
+                document.getElementById("overlay").style.display = "none";
+            },
+            copyMeetingLink: function () {
+                let copyText = document.getElementById("copyMeetingLink");
+                copyText.select();
+                document.execCommand("copy");
+                document.getElementById("copyMeetingLinkBtn").disabled = true;
+                setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+            },
+            getMeetingInfo: function () {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
+                axios.get(url + "/api/skyroom") //
+                    .then((res) => {
+                        if(res.data.enable){
+                            vm.showMeeting = true;
+                            vm.meetingAdminLink = res.data.presenter;
+                            vm.meetingGuestLink = res.data.students;
+                        }
+                    });
             },
             isActive (menuItem) {
                 return this.activeItem === menuItem
@@ -459,6 +498,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.mobileFormatErrorText = "Enter Phone Number Format Correctly";
                     this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
                     this.inputPersianFilterText = " (Only Persian Letters And Numbers Are Allowed)";
+                    this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+                    this.meetingInviteLinkCopyStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+                    this.meetingText = "Meeting";
+                    this.enterMeetingText = "Enter Meeting";
+                    this.inviteToMeetingText = "Invite To Meeting";
+                    this.copyText = "Copy";
+                    this.returnText = "Return";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -535,6 +581,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
                     this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
                     this.inputPersianFilterText = " (تنها حروف فارسی و اعداد مجاز می باشند)";
+                    this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+                    this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+                    this.meetingText = "جلسه مجازی";
+                    this.enterMeetingText = "ورود به جلسه";
+                    this.inviteToMeetingText = "دعوت به جلسه";
+                    this.copyText = "کپی";
+                    this.returnText = "بازگشت";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";

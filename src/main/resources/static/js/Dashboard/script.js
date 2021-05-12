@@ -96,6 +96,16 @@ document.addEventListener('DOMContentLoaded', function () {
       reportsURLText: "./reports",
       publicmessagesText: "اعلان ها",
       publicmessagesURLText: "./publicmessages",
+      showMeeting: false,
+      meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
+      meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
+      meetingAdminLink: "",
+      meetingGuestLink: "",
+      meetingText: "جلسه مجازی",
+      enterMeetingText: "ورود به جلسه",
+      inviteToMeetingText: "دعوت به جلسه",
+      copyText: "کپی",
+      returnText: "بازگشت",
     },
     created: function () {
       this.setDateNav();
@@ -104,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
       this.getServices();
       this.getUserPic();
       this.getGroups();
+      this.getMeetingInfo();
       if(window.localStorage.getItem("lang") === null){
           window.localStorage.setItem("lang", "FA");
       }else if(window.localStorage.getItem("lang") === "EN") {
@@ -112,28 +123,56 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     methods: {
       setDateNav: function () {
-            this.dateNav = new persianDate().format("dddd، DD MMMM YYYY");
-            persianDate.toCalendar("gregorian");
-            persianDate.toLocale("en");
-            this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
-            persianDate.toCalendar("persian");
-            persianDate.toLocale("fa");
-            this.dateNavText = this.dateNav;
+        this.dateNav = new persianDate().format("dddd، DD MMMM YYYY");
+        persianDate.toCalendar("gregorian");
+        persianDate.toLocale("en");
+        this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+        persianDate.toCalendar("persian");
+        persianDate.toLocale("fa");
+        this.dateNavText = this.dateNav;
       },
       dropdownNavbar: function () {
-            if(this.dropdownMenu){
-                let dropdowns = document.getElementsByClassName("dropdown-content");
-                for (let i = 0; i < dropdowns.length; ++i) {
-                    let openDropdown = dropdowns[i];
-                    if(openDropdown.classList.contains("show")) {
-                        openDropdown.classList.remove("show");
-                    }
-                }
-                this.dropdownMenu = false;
-            }else{
-                document.getElementById("dropdownMenu").classList.toggle("show");
-                this.dropdownMenu = true;
+        if(this.dropdownMenu){
+          let dropdowns = document.getElementsByClassName("dropdown-content");
+          for (let i = 0; i < dropdowns.length; ++i) {
+            let openDropdown = dropdowns[i];
+              if(openDropdown.classList.contains("show")) {
+                openDropdown.classList.remove("show");
+              }
+          }
+          this.dropdownMenu = false;
+        }else{
+          document.getElementById("dropdownMenu").classList.toggle("show");
+          this.dropdownMenu = true;
+        }
+      },
+      openMeeting: function () {
+        window.open(this.meetingAdminLink, "_blank").focus();
+      },
+      openOverlay: function () {
+        document.getElementById("overlay").style.display = "block";
+      },
+      closeOverlay: function () {
+        document.getElementById("overlay").style.display = "none";
+      },
+      copyMeetingLink: function () {
+        let copyText = document.getElementById("copyMeetingLink");
+        copyText.select();
+        document.execCommand("copy");
+        document.getElementById("copyMeetingLinkBtn").disabled = true;
+        setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+      },
+      getMeetingInfo: function () {
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
+        axios.get(url + "/api/skyroom") //
+          .then((res) => {
+            if(res.data.enable){
+              vm.showMeeting = true;
+              vm.meetingAdminLink = res.data.presenter;
+              vm.meetingGuestLink = res.data.students;
             }
+          });
       },
       isActive (menuItem) {
         return this.activeItem === menuItem
@@ -267,6 +306,13 @@ document.addEventListener('DOMContentLoaded', function () {
           this.rolesText = "Roles";
           this.reportsText = "Reports";
           this.publicmessagesText = "Public Messages";
+          this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+          this.meetingInviteLinkCopyStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+          this.meetingText = "Meeting";
+          this.enterMeetingText = "Enter Meeting";
+          this.inviteToMeetingText = "Invite To Meeting";
+          this.copyText = "Copy";
+          this.returnText = "Return";
           this.ActiveUsersChart.sections[0].label = "Active";
           this.ActiveUsersChart.sections[1].label = "Disabled";
           this.ActiveUsersChart.sections[2].label = "Locked";
@@ -305,6 +351,13 @@ document.addEventListener('DOMContentLoaded', function () {
             this.rolesText = "نقش ها";
             this.reportsText = "گزارش ها";
             this.publicmessagesText = "اعلان ها";
+            this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+            this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+            this.meetingText = "جلسه مجازی";
+            this.enterMeetingText = "ورود به جلسه";
+            this.inviteToMeetingText = "دعوت به جلسه";
+            this.copyText = "کپی";
+            this.returnText = "بازگشت";
             this.ActiveUsersChart.sections[0].label = "فعال";
             this.ActiveUsersChart.sections[1].label = "غیرفعال";
             this.ActiveUsersChart.sections[2].label = "قفل شده";
