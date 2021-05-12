@@ -16,6 +16,7 @@ import java.security.Principal;
 public class SkyroomController {
     @Autowired
     SkyroomRepo runSkyroom;
+
     @GetMapping("/api/skyroom")
     ResponseEntity<SkyRoom> hello(HttpServletRequest request) throws IOException {
         return new ResponseEntity<>(runSkyroom.Run(request.getUserPrincipal().getName()), HttpStatus.OK);

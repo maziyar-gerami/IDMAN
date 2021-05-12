@@ -1,9 +1,9 @@
-package parsso.idman.Utils.SMS.Magfa.RepoImpls;
+package parsso.idman.RepoImpls;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import parsso.idman.Utils.SMS.Magfa.Classes.*;
-import parsso.idman.Utils.SMS.Magfa.Repos.SendRepo;
+import parsso.idman.Repos.MagfaSMSSendRepo;
 
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class SendRepoImpl implements SendRepo {
+public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
 
     @Value("${SMS.Magfa.username}")
     String username;
