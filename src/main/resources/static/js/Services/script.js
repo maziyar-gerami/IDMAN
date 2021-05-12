@@ -183,12 +183,15 @@ document.addEventListener('DOMContentLoaded', function () {
         s101: "سرویسی یافت نشد",
         rolesText: "نقش ها",
         rolesURLText: "./roles",
+        reportsText: "گزارش ها",
+        reportsURLText: "./reports",
+        publicmessagesText: "اعلان ها",
+        publicmessagesURLText: "./publicmessages",
         addAllGroupsText: "انتخاب همه",
         removeAllGroupsText: "لغو انتخاب همه",
         allGroupsHolderText: "انتخاب همه",
         serviceFaNameText: "نام فارسی",
-        reportsText: "گزارش ها",
-        reportsURLText: "./reports",
+
         inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
         inputPersianFilterText: " (تنها حروف فارسی و اعداد مجاز می باشند)",
       },
@@ -1409,9 +1412,10 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s100 = "Disabled";
             this.s101 = "No Service Found";
             this.rolesText = "Roles";
+            this.reportsText = "Reports";
+            this.publicmessagesText = "Public Messages";
             this.addAllGroupsText = "Select All";
             this.removeAllGroupsText = "Unselect All";
-            this.reportsText = "Reports";
             this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
             this.inputPersianFilterText = " (Only Persian Letters And Numbers Are Allowed)";
           }else {
@@ -1514,9 +1518,10 @@ document.addEventListener('DOMContentLoaded', function () {
               this.s100 = "غیرفعال";
               this.s101 = "سرویسی یافت نشد";
               this.rolesText = "نقش ها";
+              this.reportsText = "گزارش ها";
+              this.publicmessagesText = "اعلان ها";
               this.addAllGroupsText = "انتخاب همه";
               this.removeAllGroupsText = "لغو انتخاب همه";
-              this.reportsText = "گزارش ها";
               this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
               this.inputPersianFilterText = " (تنها حروف فارسی و اعداد مجاز می باشند)";
           }

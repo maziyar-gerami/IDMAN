@@ -107,6 +107,8 @@ document.addEventListener('DOMContentLoaded', function () {
       rolesURLText: "./roles",
       reportsText: "گزارش ها",
       reportsURLText: "./reports",
+      publicmessagesText: "اعلان ها",
+      publicmessagesURLText: "./publicmessages",
       messageText: "پیام",
       userIdText: "شناسه کاربری",
     },
@@ -574,6 +576,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s48 = "No Records Found";
           this.rolesText = "Roles";
           this.reportsText = "Reports";
+          this.publicmessagesText = "Public Messages";
           this.messageText = "Message";
           this.userIdText = "UserId";
         }else {
@@ -626,6 +629,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s48 = "رکوردی یافت نشد";
             this.rolesText = "نقش ها";
             this.reportsText = "گزارش ها";
+            this.publicmessagesText = "اعلان ها";
             this.messageText = "پیام";
             this.userIdText = "شناسه کاربری";
         }

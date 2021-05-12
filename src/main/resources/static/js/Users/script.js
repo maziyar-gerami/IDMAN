@@ -207,6 +207,8 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesURLText: "./roles",
             reportsText: "گزارش ها",
             reportsURLText: "./reports",
+            publicmessagesText: "اعلان ها",
+            publicmessagesURLText: "./publicmessages",
             importUserListGroupError: false,
             importUserListGroupErrorList: "",
             importUserListGroupErrorText: "گروه های مشخص شده برای کاربران زیر، تعریف نشده اند.",
@@ -1431,6 +1433,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s85 = "No User Found";
                     this.rolesText = "Roles";
                     this.reportsText = "Reports";
+                    this.publicmessagesText = "Public Messages";
                     this.importUserListGroupErrorText = "The Groups Specified For The Following Users Are Not Defined.";
                     this.importUserListRepetitiveErrorText = "The Following Users Are Duplicates.";
                     this.importUserListOverride1Text = "From Total Users, Information Of ";
@@ -1559,6 +1562,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s85 = "کاربری یافت نشد";
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
+                    this.publicmessagesText = "اعلان ها";
                     this.importUserListGroupErrorText = "گروه های مشخص شده برای کاربران زیر، تعریف نشده اند.";
                     this.importUserListRepetitiveErrorText = "کاربران زیر، تکراری می باشند.";
                     this.importUserListOverride1Text = "از مجموع کاربران، اطلاعات ";

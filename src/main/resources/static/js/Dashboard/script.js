@@ -94,6 +94,8 @@ document.addEventListener('DOMContentLoaded', function () {
       rolesURLText: "./roles",
       reportsText: "گزارش ها",
       reportsURLText: "./reports",
+      publicmessagesText: "اعلان ها",
+      publicmessagesURLText: "./publicmessages",
     },
     created: function () {
       this.setDateNav();
@@ -264,6 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s28 = "Audits";
           this.rolesText = "Roles";
           this.reportsText = "Reports";
+          this.publicmessagesText = "Public Messages";
           this.ActiveUsersChart.sections[0].label = "Active";
           this.ActiveUsersChart.sections[1].label = "Disabled";
           this.ActiveUsersChart.sections[2].label = "Locked";
@@ -301,6 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s28 = "ممیزی ها";
             this.rolesText = "نقش ها";
             this.reportsText = "گزارش ها";
+            this.publicmessagesText = "اعلان ها";
             this.ActiveUsersChart.sections[0].label = "فعال";
             this.ActiveUsersChart.sections[1].label = "غیرفعال";
             this.ActiveUsersChart.sections[2].label = "قفل شده";
