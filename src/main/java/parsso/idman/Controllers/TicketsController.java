@@ -43,7 +43,7 @@ public class TicketsController {
                 return new ResponseEntity<>(ticket, HttpStatus.OK);
             else
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            
+
         else
             return new ResponseEntity<>(ticket, ticket != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
 
@@ -88,7 +88,7 @@ public class TicketsController {
     @GetMapping("/api/user/tickets/inbox")
     public ResponseEntity<List<Ticket>> received(HttpServletRequest request) {
         List<Ticket> tickets = ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName());
-        tickets.stream().filter(c -> (c.getTo().equals(request.getUserPrincipal())) ||
+        tickets.stream().filter(c -> (c.getFrom().equals(request.getUserPrincipal())) ||
                 c.getFrom().equals(request.getUserPrincipal().getName())).collect(Collectors.toList());
 
         return new ResponseEntity<>(ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName()), HttpStatus.OK);
@@ -96,7 +96,6 @@ public class TicketsController {
 
     @GetMapping("/api/user/tickets/chat/{chatID}")
     public ResponseEntity<List<Ticket>> getChat(@PathVariable(name = "chatID") String chatID) {
-
             return new ResponseEntity<>(ticketRepo.retrieveChat(chatID), HttpStatus.OK);
     }
 

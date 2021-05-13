@@ -168,15 +168,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/supporter/**").hasAnyRole("ADMIN", "SUPERADMIN", "SUPPORTER")
 
 
-
-
-
-
-
-
-
                 .anyRequest().authenticated()
                 .and()
+
 
 
 
