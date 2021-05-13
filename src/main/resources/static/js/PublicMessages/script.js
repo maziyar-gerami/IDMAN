@@ -80,27 +80,27 @@ document.addEventListener('DOMContentLoaded', function () {
             s21: "./groups",
             s22: "./profile",
             s23: "آیا از اعمال این تغییرات اطمینان دارید؟",
-            s24: "آیا از حذف این اعلان اطمینان دارید؟",
-            s25: "آیا از حذف تمامی اعلان ها اطمینان دارید؟",
+            s24: "آیا از حذف این اعلان عمومی اطمینان دارید؟",
+            s25: "آیا از حذف تمامی اعلان های عمومی اطمینان دارید؟",
             s26: "./privacy",
             s27: "پیکربندی",
             s28: "./configs",
-            s29: "افزودن اعلان",
-            s30: "ویرایش اعلان",
+            s29: "افزودن اعلان عمومی",
+            s30: "ویرایش اعلان عمومی",
             s31: "./events",
-            s32: "حذف اعلان",
+            s32: "حذف اعلان عمومی",
             s33: "اعمال",
-            s34: "آیا از حذف اعلان های انتخاب شده اطمینان دارید؟",
-            s35: "هیچ اعلانی انتخاب نشده است.",
+            s34: "آیا از حذف اعلان های عمومی انتخاب شده اطمینان دارید؟",
+            s35: "هیچ اعلان عمومی انتخاب نشده است.",
             s36: "تعداد رکورد ها: ",
             s37: "ممیزی ها",
             s38: "/audits",
-            s45: "اعلانی یافت نشد",
+            s45: "هیچ اعلان عمومی یافت نشد",
             rolesText: "نقش ها",
             rolesURLText: "./roles",
             reportsText: "گزارش ها",
             reportsURLText: "./reports",
-            publicmessagesText: "اعلان ها",
+            publicmessagesText: "اعلان های عمومی",
             publicmessagesURLText: "./publicmessages",
             showMeeting: false,
             meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
@@ -498,22 +498,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s19 = "ایمیل";
                     this.s20 = "داشبورد";
                     this.s23 = "آیا از اعمال این تغییرات اطمینان دارید؟";
-                    this.s24 = "آیا از حذف این اعلان اطمینان دارید؟";
-                    this.s25 = "آیا از حذف تمامی اعلان ها اطمینان دارید؟";
+                    this.s24 = "آیا از حذف این اعلان عمومی اطمینان دارید؟";
+                    this.s25 = "آیا از حذف تمامی اعلان های عمومی اطمینان دارید؟";
                     this.s26 = "./privacy";
                     this.s27 = "پیکربندی";
-                    this.s29 = "افزودن اعلان";
-                    this.s30 = "ویرایش اعلان";
-                    this.s32 = "حذف اعلان";
+                    this.s29 = "افزودن اعلان عمومی";
+                    this.s30 = "ویرایش اعلان عمومی";
+                    this.s32 = "حذف اعلان عمومی";
                     this.s33 = "اعمال";
-                    this.s34 = "آیا از حذف اعلان های انتخاب شده اطمینان دارید؟";
-                    this.s35 = "هیچ اعلانی انتخاب نشده است.";
+                    this.s34 = "آیا از حذف اعلان های عمومی انتخاب شده اطمینان دارید؟";
+                    this.s35 = "هیچ اعلان عمومی انتخاب نشده است.";
                     this.s36 = "تعداد رکورد ها: ";
                     this.s37 = "ممیزی ها";
-                    this.s45 = "اعلانی یافت نشد";
+                    this.s45 = "هیچ اعلان عمومی یافت نشد";
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
-                    this.publicmessagesText = "اعلان ها";
+                    this.publicmessagesText = "اعلان های عمومی";
                     this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
                     this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
                     this.meetingText = "جلسه مجازی";

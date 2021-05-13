@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
         rolesURLText: "./roles",
         reportsText: "گزارش ها",
         reportsURLText: "./reports",
-        publicmessagesText: "اعلان ها",
+        publicmessagesText: "اعلان های عمومی",
         publicmessagesURLText: "./publicmessages",
         addAllGroupsText: "انتخاب همه",
         removeAllGroupsText: "لغو انتخاب همه",
@@ -1564,7 +1564,7 @@ document.addEventListener('DOMContentLoaded', function () {
               this.s101 = "سرویسی یافت نشد";
               this.rolesText = "نقش ها";
               this.reportsText = "گزارش ها";
-              this.publicmessagesText = "اعلان ها";
+              this.publicmessagesText = "اعلان های عمومی";
               this.addAllGroupsText = "انتخاب همه";
               this.removeAllGroupsText = "لغو انتخاب همه";
               this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";

@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesURLText: "./roles",
             reportsText: "گزارش ها",
             reportsURLText: "./reports",
-            publicmessagesText: "اعلان ها",
+            publicmessagesText: "اعلان های عمومی",
             publicmessagesURLText: "./publicmessages",
             groupIdDuplicate: false,
             groupIdDuplicateText: "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.",
@@ -876,7 +876,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s55 = " (برای نام انگلیسی گروه تنها حروف انگلیسی و اعداد مجاز می باشد)";
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
-                    this.publicmessagesText = "اعلان ها";
+                    this.publicmessagesText = "اعلان های عمومی";
                     this.groupIdDuplicateText = "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.";
                     this.fileUploadGroupNotSelectedText = "لطفا گروه مورد نظر خود را انتخاب کنید";
                     this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
