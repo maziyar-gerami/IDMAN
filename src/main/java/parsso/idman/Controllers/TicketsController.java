@@ -37,10 +37,16 @@ public class TicketsController {
     @GetMapping("/api/user/ticket/{ticketID}")
     public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request) {
         Ticket ticket = ticketRepo.retrieveTicket(ticketID);
-        if (ticket.getFrom().equals(request.getUserPrincipal().getName()))
+        User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
+        if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))
+            if (user.getUserId().equalsIgnoreCase(ticket.getTo()) || user.getUserId().equalsIgnoreCase(ticket.getFrom()))
+                return new ResponseEntity<>(ticket, HttpStatus.OK);
+            else
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            
+        else
             return new ResponseEntity<>(ticket, ticket != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     @DeleteMapping("/api/user/ticket/{ticketID}")
