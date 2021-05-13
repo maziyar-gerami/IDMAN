@@ -78,8 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-
-
+                
 
                 .authorizeRequests()
                 //****************Public Objects*********************
@@ -162,11 +161,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/tickets").hasAnyRole("SUPPORTER", "SUPERADMIN")
 
 
-                //******************SUPPORTER and SUPERADMIN and Admin Objects *******************
+                //******************SUPPORTER and SUPERADMIN and ADMIN Objects *******************
 
 
                 //APIs
-                .antMatchers("/api/tickets").hasAnyRole("ADMIN", "SUPERADMIN", "SUPPORTER")
+                .antMatchers("/api/supporter**").hasAnyRole("ADMIN", "SUPERADMIN", "SUPPORTER")
+
+
+
+
 
 
 

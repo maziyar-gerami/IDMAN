@@ -136,14 +136,17 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public List<Ticket> pendingTickets(String cat, String subCat, User supporter) {
-        Query query = new Query(Criteria.where("status").is(0));
-        if(supporter!=null){
-            if (supporter.getUsersExtraInfo().getCategory()!=null)
-                query.addCriteria(Criteria.where("category").is(supporter.getUsersExtraInfo().getCategory()));
-            if (supporter.getUsersExtraInfo().getCategory()!=null&&supporter.getUsersExtraInfo().getSubCategory()!=null)
-                query.addCriteria(Criteria.where("subCategory").is(supporter.getUsersExtraInfo().getSubCategory()));
-        }
+    public List<Ticket> retrieve(String cat, String subCat, String status) {
+        Query query;
+        if (status.equals(""))
+            query = new Query(new Criteria());
+        else
+            query = new Query(Criteria.where("status").is(Integer.valueOf(status)));
+
+        if (!cat.equals(""))
+                query.addCriteria(Criteria.where("category").is(cat));
+            if (!subCat.equals(""))
+                query.addCriteria(Criteria.where("subCategory").is(subCat));
 
         return mongoTemplate.find(query, Ticket.class,collection);
     }
