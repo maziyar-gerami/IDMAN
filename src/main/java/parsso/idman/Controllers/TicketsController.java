@@ -71,7 +71,7 @@ public class TicketsController {
         return new ResponseEntity<>(ticketRepo.retrieveTicketsSend(request.getUserPrincipal().getName()), HttpStatus.OK);
     }
 
-    @GetMapping("/api/user/tickets")
+    @GetMapping("/api/supporter/tickets")
     public ResponseEntity<List<Ticket>> pendingTickets(@RequestParam (name = "cat", defaultValue = "") String cat,
                                                        @RequestParam (name = "subCat", defaultValue = "") String subCat,
                                                        @RequestParam (name = "status", defaultValue = "") String status) {
@@ -110,7 +110,7 @@ public class TicketsController {
         return new ResponseEntity<>(ticketRepo.updateTicket(ticketID, ticket) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
-    @PutMapping("/api/user/ticket/status/{ticketID}/{status}")
+    @PutMapping("/api/supporter/ticket/status/{ticketID}/{status}")
     public ResponseEntity<HttpStatus> updateTicketStatus(@PathVariable int status, @PathVariable("ticketID") String ticketID,
                                                          HttpServletRequest request) {
         if (ticketRepo.retrieveTicket(ticketID).getFrom().equals(request.getUserPrincipal().getName()))
