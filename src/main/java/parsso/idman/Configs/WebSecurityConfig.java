@@ -165,7 +165,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
                 //APIs
-                .antMatchers("/api/supporter**").hasAnyRole("ADMIN", "SUPERADMIN", "SUPPORTER")
+                .antMatchers("/api/supporter/**").hasAnyRole("ADMIN", "SUPERADMIN", "SUPPORTER")
 
 
 
