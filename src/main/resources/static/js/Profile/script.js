@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesURLText: "./roles",
             reportsText: "گزارش ها",
             reportsURLText: "./reports",
-            publicmessagesText: "اعلان ها",
+            publicmessagesText: "اعلان های عمومی",
             publicmessagesURLText: "./publicmessages",
             emailFormatErrorText: "فرمت آدرس ایمیل را به درستی وارد کنید",
             mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
@@ -576,7 +576,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s45 = "کد تایید اشتباه است.";
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
-                    this.publicmessagesText = "اعلان ها";
+                    this.publicmessagesText = "اعلان های عمومی";
                     this.emailFormatErrorText = "فرمت آدرس ایمیل را به درستی وارد کنید";
                     this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
                     this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";

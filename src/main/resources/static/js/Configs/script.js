@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
       rolesURLText: "./roles",
       reportsText: "گزارش ها",
       reportsURLText: "./reports",
-      publicmessagesText: "اعلان ها",
+      publicmessagesText: "اعلان های عمومی",
       publicmessagesURLText: "./publicmessages",
       showMeeting: false,
       meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.s42 = "به‌روزرسانی کلی با موفقیت انجام شد.";
             this.rolesText = "نقش ها";
             this.reportsText = "گزارش ها";
-            this.publicmessagesText = "اعلان ها";
+            this.publicmessagesText = "اعلان های عمومی";
             this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
             this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
             this.meetingText = "جلسه مجازی";
