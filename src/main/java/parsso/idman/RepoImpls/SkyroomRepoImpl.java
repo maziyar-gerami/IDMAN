@@ -85,7 +85,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         JSONObject params = new JSONObject();
         params.put("username", username);
         params.put("password", password);
-        params.put("nickname", userRepo.retrieveUsers(username).getDisplayName());
+        params.put("nickname", "کاربر");
         params.put("status", 1);
         params.put("is_public",true);
         root.put("params",params);
