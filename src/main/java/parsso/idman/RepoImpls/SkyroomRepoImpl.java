@@ -30,17 +30,20 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     UserRepo userRepo;
 
     public SkyRoom Run(String name) throws IOException {
+        String Realname=name;
+        name=userRepo.retrieveUsers(name).getFirstName().split("")[0] +userRepo.retrieveUsers(name).getLastName().split("")[0]+(int) (Long.parseLong(userRepo.retrieveUsers(name).getMobile())%937);
         int userId = Register(name, RandomPassMaker(8), "niki");
         SkyRoom skyRoom;
         if (userId == 0) {
-            int roomId =GetRoomId(name);
-            skyRoom = new SkyRoom(skyroomEnable, userRepo.retrieveUsers(name).getUsersExtraInfo().getRole()
+            int roomId=GetRoomId(name);
+            //System.out.println(CreateLoginUrl(roomId, String.valueOf(userId), name)+GetRoomGuestUrl(roomId));
+            skyRoom = new SkyRoom(skyroomEnable, userRepo.retrieveUsers(Realname).getUsersExtraInfo().getRole()
                     ,CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
             return skyRoom;
         }
         int roomId =CreateRoom(name);
         AddUserRooms(userId, roomId);
-        return new SkyRoom(skyroomEnable, userRepo.retrieveUsers(name).getUsersExtraInfo().getRole(),CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
+        return new SkyRoom(skyroomEnable, userRepo.retrieveUsers(Realname).getUsersExtraInfo().getRole(),CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
     }
     public JSONObject Post(String json) throws IOException {
        String api=apiKey;
@@ -82,7 +85,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         JSONObject params = new JSONObject();
         params.put("username", username);
         params.put("password", password);
-        params.put("nickname", "کاربر");
+        params.put("nickname", userRepo.retrieveUsers(username).getDisplayName());
         params.put("status", 1);
         params.put("is_public",true);
         root.put("params",params);
