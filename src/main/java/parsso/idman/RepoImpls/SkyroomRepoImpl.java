@@ -35,7 +35,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         int userId = Register(name, RandomPassMaker(8), "niki");
         SkyRoom skyRoom;
         if (userId == 0) {
-            int roomId =GetRoomId(name);
+            int roomId=GetRoomId(name);
             //System.out.println(CreateLoginUrl(roomId, String.valueOf(userId), name)+GetRoomGuestUrl(roomId));
             skyRoom = new SkyRoom(skyroomEnable, userRepo.retrieveUsers(Realname).getUsersExtraInfo().getRole()
                     ,CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
