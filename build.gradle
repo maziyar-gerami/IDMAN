@@ -42,6 +42,7 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-web'
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
 	implementation 'com.sun.xml.ws:jaxws-ri:2.3.2'
+	implementation 'com.google.code.gson:gson:2.8.2'
 	compile 'io.jsonwebtoken:jjwt-api:0.11.1'
 
 	compile 'com.captcha:botdetect-jsp20:4.0.beta3.7'
