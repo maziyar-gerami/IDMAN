@@ -30,7 +30,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     UserRepo userRepo;
 
     public SkyRoom Run(String name) throws IOException {
-        String Realname=userRepo.retrieveUsers(name).getFirstName()+userRepo.retrieveUsers(name).getLastName();
+        String Realname= userRepo.retrieveUsers(name).getFirstName()+userRepo.retrieveUsers(name).getLastName();
         String Classname=userRepo.retrieveUsers(name).getFirstName().split("")[0] +userRepo.retrieveUsers(name).getLastName().split("")[0]+(int) (Long.parseLong(userRepo.retrieveUsers(name).getMobile())%937);
         int userId = Register(Realname, RandomPassMaker(8), userRepo.retrieveUsers(name).getDisplayName());
         SkyRoom skyRoom;
