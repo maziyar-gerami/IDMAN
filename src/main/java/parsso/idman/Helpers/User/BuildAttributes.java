@@ -178,6 +178,12 @@ public class BuildAttributes {
                 for (String id : old.getMemberOf()) {
                     context.removeAttributeValue("ou", id);
                 }
+
+            if (old.getMemberOf()!=null)
+            for (String group: old.getMemberOf()) {
+                if (!p.getMemberOf().contains(group))
+                    context.removeAttributeValue("ou", group);
+            }
         }
 
 

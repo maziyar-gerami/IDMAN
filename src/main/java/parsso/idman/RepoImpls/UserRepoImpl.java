@@ -242,8 +242,10 @@ public class UserRepoImpl implements UserRepo {
         else
             usersExtraInfo.setStatus("enable");
 
+
         if (p.getMemberOf()!=null)
-            usersExtraInfo.setMemberOf(p.getMemberOf());
+                usersExtraInfo.setMemberOf(p.getMemberOf());
+
 
         if (p.getDisplayName()!=null)
             usersExtraInfo.setDisplayName(p.getDisplayName());
@@ -261,7 +263,6 @@ public class UserRepoImpl implements UserRepo {
 
             ldapTemplate.modifyAttributes(context);
 
-            mongoTemplate.remove(query, userExtraInfoCollection);
             mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
             logger.warn(new ReportMessage(model,usid,"","update", "success","").toString());
