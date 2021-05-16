@@ -38,7 +38,7 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
         CasAssertionAuthenticationToken casAssertionAuthenticationToken = (CasAssertionAuthenticationToken) token;
         AttributePrincipal principal = casAssertionAuthenticationToken.getAssertion().getPrincipal();
         Collection<SimpleGrantedAuthority> collection = new ArrayList<SimpleGrantedAuthority>();
-        Query query = new Query(Criteria.where("userId").is(principal.getName()));
+        Query query = new Query(Criteria.where("userId").is(principal.getName().toLowerCase()));
         String collection1 = "IDMAN_UsersExtraInfo";
 
         String mongoURI = "mongodb://" + "parssouser:APA00918" + "@" + "parsso2.razi.ac.ir:27017" + "/" + "parssodb";
