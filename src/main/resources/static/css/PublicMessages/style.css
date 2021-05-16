@@ -179,8 +179,8 @@ html,body {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 30%;
-    height: 40%;
+    width: 40%;
+    height: 50%;
     color: black;
     background-color: rgb(255, 255, 255);
     transform: translate(-50%,-50%);
@@ -205,8 +205,8 @@ html,body {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 80%;
-    height: 50%;
+    width: 90%;
+    height: 60%;
     color: black;
     background-color: rgb(255, 255, 255);
     transform: translate(-50%,-50%);
