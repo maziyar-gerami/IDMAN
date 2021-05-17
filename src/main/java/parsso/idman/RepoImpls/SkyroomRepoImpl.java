@@ -48,28 +48,31 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         return new SkyRoom(skyroomEnable, userRepo.retrieveUsers(name).getUsersExtraInfo().getRole(),CreateLoginUrl(roomId, String.valueOf(userId), Realname),GetRoomGuestUrl(roomId));
     }
     public JSONObject Post(String json) throws IOException {
-        String api=apiKey;
-        URL url = new URL(api);
-        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "PostmanRuntime/7.26.10");
-        con.setRequestProperty("Accept-Encoding", "*/*");
-        con.setRequestProperty("Accept", "gzip, deflate");
-        con.setRequestProperty("Connection", "close");
-        con.setDoOutput(true);
-        try (OutputStream os = con.getOutputStream()) {
-            os.write(json.getBytes());
-        }
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
-            StringBuilder response = new StringBuilder();
-            String responseLine = null;
-            while ((responseLine = br.readLine()) != null) {
-                response.append(responseLine.trim());
+        if (skyroomEnable.equalsIgnoreCase("true")) {
+            String api = apiKey;
+            URL url = new URL(api);
+            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("User-Agent", "PostmanRuntime/7.26.10");
+            con.setRequestProperty("Accept-Encoding", "*/*");
+            con.setRequestProperty("Accept", "gzip, deflate");
+            con.setRequestProperty("Connection", "close");
+            con.setDoOutput(true);
+            try (OutputStream os = con.getOutputStream()) {
+                os.write(json.getBytes());
             }
-            return  new JSONObject(response.toString());
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine = null;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                return new JSONObject(response.toString());
+            }
         }
+        else return new JSONObject();
     }
     @Override
     public String RandomPassMaker(int n) {
