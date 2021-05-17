@@ -106,6 +106,12 @@ public class UserRepoImpl implements UserRepo {
     ExcelAnalyzer excelAnalyzer;
     String model = "User";
 
+    @Value("${skyroom.api.key}")
+    String skyRoomApiKey;
+
+    @Value("${skyroom.enable}")
+    private String skyEnable;
+
     @Autowired
     GroupRepo groupRepo;
 
@@ -651,19 +657,25 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         User user = new User();
         UsersExtraInfo usersExtraInfo = null;
-        List<User> people = ldapTemplate.search("ou=People,"+BASE_DN,new EqualsFilter("uid", userId).encode(), searchControls,userAttributeMapper);
-        if (people.size()!=0) {
-            user = people.get(0);
-            Query query = new Query(Criteria.where("userId").is(user.getUserId()));
-            usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
-            user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
-            try {
-                user.setUnDeletable(usersExtraInfo.isUnDeletable());
+        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, userAttributeMapper);
+
+
+        if (people.size() != 0) {
+                user = people.get(0);
+                Query query = new Query(Criteria.where("userId").is(user.getUserId()));
+                usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
+                user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
+                try {
+                    user.setUnDeletable(usersExtraInfo.isUnDeletable());
+                } catch (Exception e) {
+                    user.setUnDeletable(false);
+                }
+
+                if(skyEnable.equalsIgnoreCase("true") && !(user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))) {
+                    user.setSkyRoomEnable(true);
+                    user.setSkyroomApiKey(skyRoomApiKey);
+                }
             }
-            catch (Exception e){
-                user.setUnDeletable(false);
-            }
-        }
 
 
 

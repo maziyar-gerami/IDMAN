@@ -60,6 +60,10 @@ public class User implements UserDetails, Comparable {
     private UsersExtraInfo usersExtraInfo;
     private boolean unDeletable;
     private boolean profileInaccessibility;
+    boolean skyRoomEnable;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    String skyroomApiKey;
+
 
 
     public User() {
