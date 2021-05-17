@@ -25,9 +25,6 @@ public class User implements UserDetails, Comparable {
 
     private static final String PREFIX = "ROLE_";
     @JsonIgnore
-    @Value("${administrator.ou.id}")
-    private String admidId;
-    @JsonIgnore
     ObjectId _id;
     private String userId;
     private String firstName;
@@ -91,26 +88,11 @@ public class User implements UserDetails, Comparable {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
 
-        if (this.memberOf == null)
-
-            list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
-
-
-        else {
-
-            if (this.getUsersExtraInfo().getRole().equals("SUPPERADMIN") ||this.getUserId().equalsIgnoreCase("su"))
+        if (this.getUserId().equalsIgnoreCase("su"))
                 list.add(new SimpleGrantedAuthority(PREFIX + "SUPERADMIN"));
 
-            else if (this.memberOf.contains(admidId)) {
-                list.add(new SimpleGrantedAuthority(PREFIX + "ADMIN"));
-
-                list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
-
-            } else
-                list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
-
-        }
-
+        else
+            list.add(new SimpleGrantedAuthority(PREFIX + this.getUsersExtraInfo().getRole()));
 
         return list;
     }
