@@ -24,7 +24,7 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
 
     String model = "MagfaSMS";
 
-    
+
     @Value("${SMS.Magfa.username}")
     String username;
     @Value("${SMS.Magfa.password}")

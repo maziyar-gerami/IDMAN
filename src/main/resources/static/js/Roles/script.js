@@ -90,7 +90,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this.getUserInfo();
             this.getUserPic();
             this.getUsers();
-            this.getMeetingInfo();
             if(window.localStorage.getItem("lang") === null){
                 window.localStorage.setItem("lang", "FA");
             }else if(window.localStorage.getItem("lang") === "EN") {
@@ -138,18 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById("copyMeetingLinkBtn").disabled = true;
                 setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
             },
-            getMeetingInfo: function () {
-                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                let vm = this;
-                axios.get(url + "/api/skyroom") //
-                    .then((res) => {
-                        if(res.data.enable){
-                            vm.showMeeting = true;
-                            vm.meetingAdminLink = res.data.presenter;
-                            vm.meetingGuestLink = res.data.students;
-                        }
-                    });
-            },
             getUserInfo: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
@@ -162,6 +149,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         vm.usernameText = vm.name;
                     }else if(window.localStorage.getItem("lang") === "EN") {
                         vm.usernameText = vm.nameEN;
+                    }
+                    if(res.data.skyRoom.enable){
+                        vm.showMeeting = true;
+                        vm.meetingAdminLink = res.data.skyRoom.presenter;
+                        vm.meetingGuestLink = res.data.skyRoom.students;
                     }
                 });
             },
