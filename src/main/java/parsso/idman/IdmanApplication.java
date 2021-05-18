@@ -68,6 +68,8 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private static long expirePwdMessageTime;
     @Value("${interval.check.pass.hours}")
     private static long intervalCheckPassTime;
+    @Autowired
+    CasUserDetailService casUserDetailService;
 
 
     private static final Logger logger = LogManager.getLogger("System");
@@ -199,7 +201,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         /*provider.setUserDetailsService(
                 s -> new User("test@test.com", "Mellon", true, true, true, true,
                         AuthorityUtils.createAuthorityList("ADMIN")));*/
-        CasUserDetailService casUserDetailService = new CasUserDetailService(adminId);
         provider.setAuthenticationUserDetailsService(casUserDetailService);
         provider.setKey("CAS_PROVIDER_LOCALHOST_8900");
         return provider;

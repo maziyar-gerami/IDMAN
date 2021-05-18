@@ -2,10 +2,13 @@ package parsso.idman.RepoImpls;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.SkyRoom;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.SkyroomRepo;
+import parsso.idman.Repos.UserRepo;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -21,42 +24,56 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     @Value("${skyroom.api.key}")
     String apiKey;
 
-    public SkyRoom Run(String name) throws IOException {
-        int userId = Register(name, RandomPassMaker(8), "niki");
+    @Value("${skyroom.enable}")
+    String skyroomEnable;
+
+    @Autowired
+    UserRepo userRepo;
+
+    public SkyRoom Run(User user) throws IOException {
+        String Realname= user.getFirstName()+user.getLastName();
+        String Classname=user.getFirstName().split("")[0] +user.getLastName().split("")[0]+(int) (Long.parseLong(user.getMobile())%937);
+        int userId = Register(Realname, RandomPassMaker(8), user.getDisplayName());
         SkyRoom skyRoom;
         if (userId == 0) {
-            int roomId =GetRoomId(name);
-            skyRoom = new SkyRoom(true,CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
+            int roomId=GetRoomId(Classname);
+            Realname=user.getFirstName()+" "+user.getLastName();
+            //System.out.println(CreateLoginUrl(roomId, String.valueOf(userId), Classname)+GetRoomGuestUrl(roomId));
+            skyRoom = new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole()
+                    ,CreateLoginUrl(roomId, String.valueOf(userId), Realname),GetRoomGuestUrl(roomId));
             return skyRoom;
         }
-        int roomId =CreateRoom(name);
+        int roomId =CreateRoom(Classname);
         AddUserRooms(userId, roomId);
-        skyRoom = new SkyRoom(true,CreateLoginUrl(roomId, String.valueOf(userId), name),GetRoomGuestUrl(roomId));
-        return skyRoom;
+        Realname=user.getFirstName()+" "+user.getLastName();
+        return new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole(),CreateLoginUrl(roomId, String.valueOf(userId), Realname),GetRoomGuestUrl(roomId));
     }
     public JSONObject Post(String json) throws IOException {
-       String api=apiKey;
-        URL url = new URL(api);
-        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("User-Agent", "PostmanRuntime/7.26.10");
-        con.setRequestProperty("Accept-Encoding", "*/*");
-        con.setRequestProperty("Accept", "gzip, deflate");
-        con.setRequestProperty("Connection", "close");
-        con.setDoOutput(true);
-        try (OutputStream os = con.getOutputStream()) {
-            os.write(json.getBytes());
-        }
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
-            StringBuilder response = new StringBuilder();
-            String responseLine = null;
-            while ((responseLine = br.readLine()) != null) {
-                response.append(responseLine.trim());
+        if (skyroomEnable.equalsIgnoreCase("true")) {
+            String api = apiKey;
+            URL url = new URL(api);
+            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("User-Agent", "PostmanRuntime/7.26.10");
+            con.setRequestProperty("Accept-Encoding", "*/*");
+            con.setRequestProperty("Accept", "gzip, deflate");
+            con.setRequestProperty("Connection", "close");
+            con.setDoOutput(true);
+            try (OutputStream os = con.getOutputStream()) {
+                os.write(json.getBytes());
             }
-            return  new JSONObject(response.toString());
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine = null;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                return new JSONObject(response.toString());
+            }
         }
+        else return new JSONObject();
     }
     @Override
     public String RandomPassMaker(int n) {
@@ -74,7 +91,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         JSONObject params = new JSONObject();
         params.put("username", username);
         params.put("password", password);
-        params.put("nickname", "کاربر");
+        params.put("nickname", nickname);
         params.put("status", 1);
         params.put("is_public",true);
         root.put("params",params);

@@ -51,20 +51,27 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public HttpStatus reply(String ticketID, String supporter,Ticket ticket) {
-        Ticket firstTicket = retrieveTicket(ticketID);
-        firstTicket.setTo(supporter);
-        firstTicket.setStatus(1);
-        Update update = new Update();
-        update.set("ID", ticketID);
-        mongoTemplate.save(ticket,collection);
+    public HttpStatus reply(String ticketID, String supporter,Ticket replyTicket) {
+
+        Ticket priorTicket = retrieveTicket(ticketID);
+        priorTicket.setTo(supporter);
+        priorTicket.setStatus(1);
+        if (priorTicket.getChatID()== null)
+            priorTicket.setChatID(UUID.randomUUID().toString());
+
+        mongoTemplate.save(priorTicket,collection);
 
         //2
-        ticket.setStatus(1);
-        ticket.setChatID(UUID.randomUUID().toString());
-        ticket.setFrom(firstTicket.getTo());
-        ticket.setTo(firstTicket.getFrom());
-        mongoTemplate.save(ticket);
+        replyTicket.setID(UUID.randomUUID().toString());
+        replyTicket.setCategory(priorTicket.getCategory());
+        replyTicket.setSubCategory(priorTicket.getSubCategory());
+        replyTicket.setStatus(1);
+        replyTicket.setSubject(priorTicket.getSubject());
+        replyTicket.setChatID(priorTicket.getChatID());
+        replyTicket.setFrom(priorTicket.getTo());
+        replyTicket.setTo(priorTicket.getFrom());
+        replyTicket.setCreationTime(new Date().getTime());
+        mongoTemplate.save(replyTicket,collection);
 
         return HttpStatus.OK;
     }
@@ -129,14 +136,17 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public List<Ticket> pendingTickets(String cat, String subCat, User supporter) {
-        Query query = new Query(Criteria.where("status").is(0));
-        if(supporter!=null){
-            if (supporter.getUsersExtraInfo().getCategory()!=null)
-                query.addCriteria(Criteria.where("category").is(supporter.getUsersExtraInfo().getCategory()));
-            if (supporter.getUsersExtraInfo().getCategory()!=null&&supporter.getUsersExtraInfo().getSubCategory()!=null)
-                query.addCriteria(Criteria.where("subCategory").is(supporter.getUsersExtraInfo().getSubCategory()));
-        }
+    public List<Ticket> retrieve(String cat, String subCat, String status) {
+        Query query;
+        if (status.equals(""))
+            query = new Query(new Criteria());
+        else
+            query = new Query(Criteria.where("status").is(Integer.valueOf(status)));
+
+        if (!cat.equals(""))
+                query.addCriteria(Criteria.where("category").is(cat));
+            if (!subCat.equals(""))
+                query.addCriteria(Criteria.where("subCategory").is(subCat));
 
         return mongoTemplate.find(query, Ticket.class,collection);
     }

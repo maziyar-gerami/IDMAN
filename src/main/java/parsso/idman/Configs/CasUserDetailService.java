@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.UserRepo;
 
@@ -20,29 +21,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+@Service
 public class CasUserDetailService implements AuthenticationUserDetailsService {
     @Autowired
     MongoTemplate mongoTemplate;
-
-    @Autowired
-    UserRepo userRepo;
-
-    String adminId;
-    public CasUserDetailService(String Id){
-
-        adminId = Id;
-    }
 
     @Override
     public UserDetails loadUserDetails(Authentication token) throws UsernameNotFoundException {
         CasAssertionAuthenticationToken casAssertionAuthenticationToken = (CasAssertionAuthenticationToken) token;
         AttributePrincipal principal = casAssertionAuthenticationToken.getAssertion().getPrincipal();
         Collection<SimpleGrantedAuthority> collection = new ArrayList<SimpleGrantedAuthority>();
-        Query query = new Query(Criteria.where("userId").is(principal.getName()));
+        Query query = new Query(Criteria.where("userId").is(principal.getName().toLowerCase()));
         String collection1 = "IDMAN_UsersExtraInfo";
-
-        String mongoURI = "mongodb://" + "parssouser:APA00918" + "@" + "parsso2.razi.ac.ir:27017" + "/" + "parssodb";
-        MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(mongoURI), "parssodb");
 
         UsersExtraInfo usersExtraInfo =  mongoTemplate.findOne(query, UsersExtraInfo.class, collection1);
 
@@ -50,9 +40,6 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
             usersExtraInfo = new UsersExtraInfo(principal.getName());
             mongoTemplate.save(usersExtraInfo,collection1);
         }
-
-
-
 
         if (usersExtraInfo.getRole() == null)
             collection.add(new SimpleGrantedAuthority("ROLE_" + "USER"));
@@ -62,7 +49,6 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
 
         else if (usersExtraInfo.getRole()!=null)
             collection.add(new SimpleGrantedAuthority("ROLE_" + usersExtraInfo.getRole()));
-
 
         return new User(principal.getName(), "", collection);
 

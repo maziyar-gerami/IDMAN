@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import parsso.idman.Models.SkyRoom;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,9 +25,6 @@ import java.util.List;
 public class User implements UserDetails, Comparable {
 
     private static final String PREFIX = "ROLE_";
-    @JsonIgnore
-    @Value("${administrator.ou.id}")
-    private String admidId;
     @JsonIgnore
     ObjectId _id;
     private String userId;
@@ -60,6 +58,8 @@ public class User implements UserDetails, Comparable {
     private UsersExtraInfo usersExtraInfo;
     private boolean unDeletable;
     private boolean profileInaccessibility;
+    SkyRoom skyRoom;
+
 
 
     public User() {
@@ -87,26 +87,11 @@ public class User implements UserDetails, Comparable {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
 
-        if (this.memberOf == null)
-
-            list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
-
-
-        else {
-
-            if (this.getUsersExtraInfo().getRole().equals("SUPPERADMIN") ||this.getUserId().equalsIgnoreCase("su"))
+        if (this.getUserId().equalsIgnoreCase("su"))
                 list.add(new SimpleGrantedAuthority(PREFIX + "SUPERADMIN"));
 
-            else if (this.memberOf.contains(admidId)) {
-                list.add(new SimpleGrantedAuthority(PREFIX + "ADMIN"));
-
-                list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
-
-            } else
-                list.add(new SimpleGrantedAuthority(PREFIX + "USER"));
-
-        }
-
+        else
+            list.add(new SimpleGrantedAuthority(PREFIX + this.getUsersExtraInfo().getRole()));
 
         return list;
     }

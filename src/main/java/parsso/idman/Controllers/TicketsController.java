@@ -14,6 +14,8 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 public class TicketsController {
 
@@ -32,66 +34,93 @@ public class TicketsController {
 
     //*************************************** APIs ***************************************
 
-    @GetMapping("/api/ticket/{ticketID}")
-    public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID) {
+    @GetMapping("/api/user/ticket/{ticketID}")
+    public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request) {
         Ticket ticket = ticketRepo.retrieveTicket(ticketID);
-        return new ResponseEntity<>(ticket, ticket != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
+        if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))
+            if (user.getUserId().equalsIgnoreCase(ticket.getTo()) || user.getUserId().equalsIgnoreCase(ticket.getFrom()))
+                return new ResponseEntity<>(ticket, HttpStatus.OK);
+            else
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        else
+            return new ResponseEntity<>(ticket, ticket != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+
     }
 
-    @DeleteMapping("/api/ticket/{ticketID}")
-    public ResponseEntity<HttpStatus> deleteTicket(@PathVariable("ticketID") String ticketID) {
-        return new ResponseEntity<>(ticketRepo.deleteTicket(ticketID) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+    @DeleteMapping("/api/user/ticket/{ticketID}")
+    public ResponseEntity<HttpStatus> deleteTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request) {
+        if (ticketRepo.retrieveTicket(ticketID).getFrom().equals(request.getUserPrincipal().getName()))
+            return new ResponseEntity<>(ticketRepo.deleteTicket(ticketID) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    @PostMapping("/api/ticket")
+    @PostMapping("/api/user/ticket")
     public ResponseEntity<HttpStatus> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request) {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(ticketRepo.sendTicket(ticket, principal.getName()));
+        return new ResponseEntity<>(ticketRepo.sendTicket(ticket, request.getUserPrincipal().getName()));
     }
 
-    @PostMapping("/api/ticket/reply/{ticketID}")
+    @PostMapping("/api/supporter/ticket/reply/{ticketID}")
     public ResponseEntity<HttpStatus> replyTicket(@PathVariable ("ticketID") String ticketID,
                                             @RequestBody Ticket ticket, HttpServletRequest request){
 
         return new ResponseEntity<>(ticketRepo.reply(ticketID, request.getUserPrincipal().getName(),ticket));
     }
 
-    @GetMapping("/api/tickets/outbox")
+    @GetMapping("/api/user/tickets/sent")
     public ResponseEntity<List<Ticket>> sendTicket(HttpServletRequest request) {
+        List<Ticket> tickets = ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName());
+        tickets.stream().filter(c -> (c.getTo().equals(request.getUserPrincipal())) ||
+                c.getFrom().equals(request.getUserPrincipal().getName())).collect(Collectors.toList());
         return new ResponseEntity<>(ticketRepo.retrieveTicketsSend(request.getUserPrincipal().getName()), HttpStatus.OK);
     }
 
-    @GetMapping("/api/tickets/pending")
-    public ResponseEntity<List<Ticket>> pendingTickets(@RequestParam (name = "cat", defaultValue = "") String cat, @RequestParam (name = "subCat", defaultValue = "") String subCat, HttpServletRequest request) {
+    @GetMapping("/api/supporter/tickets")
+    public ResponseEntity<List<Ticket>> pendingTickets(@RequestParam (name = "cat", defaultValue = "") String cat,
+                                                       @RequestParam (name = "subCat", defaultValue = "") String subCat,
+                                                       @RequestParam (name = "status", defaultValue = "") String status) {
 
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
-
-        return new ResponseEntity<>(ticketRepo.pendingTickets(cat,subCat,user), HttpStatus.OK);
+        return new ResponseEntity<>(ticketRepo.retrieve(cat,subCat, status) , HttpStatus.OK);
     }
 
-    @GetMapping("/api/tickets/inbox")
+    @GetMapping("/api/user/tickets/inbox")
     public ResponseEntity<List<Ticket>> received(HttpServletRequest request) {
+        List<Ticket> tickets = ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName());
+        tickets.stream().filter(c -> (c.getFrom().equals(request.getUserPrincipal())) ||
+                c.getFrom().equals(request.getUserPrincipal().getName())).collect(Collectors.toList());
+
         return new ResponseEntity<>(ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName()), HttpStatus.OK);
     }
 
-    @GetMapping("/api/tickets/chat/{chatID}")
+    @GetMapping("/api/user/tickets/chat/{chatID}")
     public ResponseEntity<List<Ticket>> getChat(@PathVariable(name = "chatID") String chatID) {
-        return new ResponseEntity<>(ticketRepo.retrieveChat(chatID), HttpStatus.OK);
+            return new ResponseEntity<>(ticketRepo.retrieveChat(chatID), HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/tickets/chat/{chatID}")
-    public ResponseEntity<HttpStatus> deleteChat(@PathVariable(name = "chatID") String chatID) {
-        return new ResponseEntity<>(ticketRepo.deleteChat(chatID), HttpStatus.OK);
+    @DeleteMapping("/api/user/tickets/chat/{chatID}")
+    public ResponseEntity<HttpStatus> deleteChat(@PathVariable(name = "chatID") String chatID, HttpServletRequest request) {
+        if (ticketRepo.retrieveChat(chatID).get(0).getFrom().equals(request.getUserPrincipal().getName()) ||
+                ticketRepo.retrieveChat(chatID).get(0).getTo().equals(request.getUserPrincipal().getName()))
+            return new ResponseEntity<>(ticketRepo.deleteChat(chatID), HttpStatus.OK);
+
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
     }
 
-    @PutMapping("/api/ticket/{ticketID}")
+    @PutMapping("/api/supporter/ticket/{ticketID}")
     public ResponseEntity<HttpStatus> updateTicket(@RequestBody Ticket ticket, @PathVariable("ticketID") String ticketID) {
+
         return new ResponseEntity<>(ticketRepo.updateTicket(ticketID, ticket) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
-    @PutMapping("/api/ticket/status/{ticketID}/{status}")
-    public ResponseEntity<HttpStatus> updateTicketStatus(@PathVariable int status, @PathVariable("ticketID") String ticketID) {
-        return new ResponseEntity<>(ticketRepo.updateTicketStatus(status, ticketID) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+    @PutMapping("/api/supporter/ticket/status/{ticketID}/{status}")
+    public ResponseEntity<HttpStatus> updateTicketStatus(@PathVariable int status, @PathVariable("ticketID") String ticketID,
+                                                         HttpServletRequest request) {
+        if (ticketRepo.retrieveTicket(ticketID).getFrom().equals(request.getUserPrincipal().getName()))
+            return new ResponseEntity<>(ticketRepo.updateTicketStatus(status, ticketID) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 }

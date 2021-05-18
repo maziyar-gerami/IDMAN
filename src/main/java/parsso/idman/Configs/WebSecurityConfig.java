@@ -77,8 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-
-
+///*
 
 
                 .authorizeRequests()
@@ -104,21 +103,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //************* Any Authenticated Users Objects **********
                 //Pages
-                .antMatchers("/dashboard").hasAnyRole("USER", "ADMIN" , "SUPPORTER","SUPERADMIN")
-                .antMatchers("/events").hasAnyRole("USER","ADMIN" , "SUPPORTER","SUPERADMIN")
-                .antMatchers("/audits").hasAnyRole("USER","ADMIN" , "SUPPORTER","SUPERADMIN")
-                .antMatchers("/profile").hasAnyRole("USER","ADMIN" , "SUPPORTER","SUPERADMIN")
-                .antMatchers("/privacy").hasAnyRole("USER","ADMIN" , "SUPPORTER","SUPERADMIN")
-                .antMatchers("/reports").hasAnyRole("USER","ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/dashboard").hasAnyRole("USER", "PRESENTER", "ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/events").hasAnyRole("USER", "PRESENTER","ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/audits").hasAnyRole("USER","PRESENTER","ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/profile").hasAnyRole("USER","PRESENTER","ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/privacy").hasAnyRole("USER","PRESENTER","ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/reports").hasAnyRole("USER","PRESENTER","ADMIN" , "SUPPORTER","SUPERADMIN")
 
 
                 //APIs
-                .antMatchers("/api/groups/user").hasAnyRole("USER","ADMIN" , "SUPPORTER","SUPERADMIN")
-                .antMatchers("/api/events/user/**").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
-                .antMatchers("/api/audits/user/**").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
-                .antMatchers("/api/reports/user/**").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
-                .antMatchers("/api/services/user").hasAnyRole("USER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
-                .antMatchers("/api/user/**").hasAnyRole("USER","ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/api/groups/user").hasAnyRole("USER","PRESENTER","ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/api/events/user/**").hasAnyRole("USER","PRESENTER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/api/audits/user/**").hasAnyRole("USER","PRESENTER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/api/reports/user/**").hasAnyRole("USER","PRESENTER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/api/services/user").hasAnyRole("USER","PRESENTER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/api/user/**").hasAnyRole("USER","PRESENTER","ADMIN" , "SUPPORTER", "SUPERADMIN")
 
 
                 //****************** SUPERADMIN & ADMIN & SUPPORTER Objects************************
@@ -143,7 +142,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //******************SUPERADMIN Objects ONLY *******************
                 //pages
-                .antMatchers("/roles").hasAnyRole("SUPERADMIN")
+                .antMatchers("/roles").hasRole("SUPERADMIN")
                 .antMatchers("/configs**").hasRole("SUPERADMIN")
 
                 //APIs
@@ -162,13 +161,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/tickets").hasAnyRole("SUPPORTER", "SUPERADMIN")
 
 
-                //******************SUPPORTER and SUPERADMIN and Admin Objects *******************
+                //******************SUPPORTER and SUPERADMIN and ADMIN Objects *******************
 
 
                 //APIs
-                .antMatchers("/api/tickets").hasAnyRole("ADMIN", "SUPERADMIN", "SUPPORTER")
-
-
+                .antMatchers("/api/supporter/**").hasAnyRole("ADMIN", "SUPERADMIN", "SUPPORTER")
 
 
                 .anyRequest().authenticated()
@@ -176,7 +173,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-
+//*/
 
 
 

@@ -16,7 +16,7 @@ public interface TicketRepo {
 
 
 
-    List<Ticket> pendingTickets(String cat, String subCat, User supporter);
+    List<Ticket> retrieve(String cat, String subCat, String status);
 
     Ticket retrieveTicket(String ticketID);
 

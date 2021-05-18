@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import com.sun.org.apache.xpath.internal.operations.Equals;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +37,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
-
 
 @Service
 public class SystemRefreshRepoImpl implements SystemRefresh {
-
 
 
     @Autowired
@@ -66,16 +62,12 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
     @Autowired
     DashboardData dashboardData;
-
+    String model = "Refresh";
+    String userExtraInfoCollection = "IDMAN_UsersExtraInfo";
     @Value("${administrator.ou.id}")
     private String admidId;
-
-    String model = "Refresh";
-
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-
-    String userExtraInfoCollection = "IDMAN_UsersExtraInfo";
 
     @Override
     public HttpStatus userRefresh(String doer) {
@@ -86,62 +78,74 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         Logger logger = LoggerFactory.getLogger(doer);
 
-        //0. crete collection, if not exist
+        Logger loggerSecond = LoggerFactory.getLogger("System");
+
+
+        //0. create collection, if not exist
 
         if (mongoTemplate.getCollection(userExtraInfoCollection) == null)
             mongoTemplate.createCollection(userExtraInfoCollection);
+
+        loggerSecond.warn("******* User refresh started: Step 1 *******");
+
+        UsersExtraInfo userExtraInfo;
 
         //1. create documents
         for (User user : userRepo.retrieveUsersFull()) {
 
             try {
 
-            Query queryMongo = new Query(new Criteria("userId").regex(user.getUserId(), "i"));
+                Query queryMongo = new Query(new Criteria("userId").regex(user.getUserId(), "i"));
 
-            UsersExtraInfo userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection);
+                userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection);
 
-            if (userExtraInfo != null) {
+                if (userExtraInfo != null) {
 
-                if (userExtraInfo.getQrToken() == null || userExtraInfo.getQrToken().equals(""))
+                    if (userExtraInfo.getQrToken() == null || userExtraInfo.getQrToken().equals(""))
+                        userExtraInfo.setQrToken(UUID.randomUUID().toString());
+
+
+                    String photoName = ldapTemplate.search(
+                            "ou=People," + BASE_DN, new EqualsFilter("uid", user.getUserId()).encode(), searchControls,
+                            new AttributesMapper<String>() {
+                                public String mapFromAttributes(Attributes attrs)
+                                        throws NamingException {
+                                    if (attrs.get("photoName") != null)
+                                        return attrs.get("photoName").get().toString();
+
+                                    return "";
+                                }
+                            }).get(0);
+
+                    if (photoName != null)
+                        userExtraInfo.setPhotoName(photoName);
+
+                } else {
+
+                    userExtraInfo.setUserId(user.getUserId());
+                    userExtraInfo = new UsersExtraInfo();
                     userExtraInfo.setQrToken(UUID.randomUUID().toString());
+                }
 
+                if (userExtraInfo != null) {
+                    if (userExtraInfo.getRole() == null)
+                        userExtraInfo.setRole("USER");
 
-                String photoName = ldapTemplate.search(
-                        "ou=People,"+BASE_DN, new EqualsFilter("uid", user.getUserId()).encode() , searchControls,
-                        new AttributesMapper<String>() {
-                            public String mapFromAttributes(Attributes attrs)
-                                    throws NamingException {
-                                if (attrs.get("photoName") != null)
-                                    return attrs.get("photoName").get().toString();
+                    else if (userExtraInfo.getUserId() != null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
+                        userExtraInfo.setRole("SUPERADMIN");
 
-                                return "";
-                            }
-                        }).get(0);
+                    else if (userExtraInfo.getRole() != null)
+                        userExtraInfo.setRole(userExtraInfo.getRole());
 
-                if (photoName != null)
-                    userExtraInfo.setPhotoName(photoName);
+                    if (userExtraInfo.isUnDeletable())
+                        userExtraInfo.setUnDeletable(true);
+                    else
+                        userExtraInfo.setUnDeletable(false);
 
-            } else {
-
-                userExtraInfo.setUserId(user.getUserId());
-                userExtraInfo = new UsersExtraInfo();
-                userExtraInfo.setQrToken(UUID.randomUUID().toString());
+                }
+            } catch (Exception e) {
+                userExtraInfo = new UsersExtraInfo(user.getUserId());
             }
-
-            if (userExtraInfo != null) {
-                if (userExtraInfo.getRole() == null)
-                    userExtraInfo.setRole("USER");
-
-                else if (userExtraInfo.getUserId() != null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
-                    userExtraInfo.setRole("SUPERADMIN");
-
-                else if (userExtraInfo.getRole() != null)
-                    userExtraInfo.setRole(userExtraInfo.getRole());
-
-                if (userExtraInfo.isUnDeletable())
-                    userExtraInfo.setUnDeletable(true);
-                else
-                    userExtraInfo.setUnDeletable(false);
 
                 userExtraInfo.setDisplayName(user.getDisplayName());
 
@@ -153,16 +157,16 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                 userExtraInfo.setCreationTimeStamp(user.getTimeStamp());
 
+            try {
+
                 mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
-
-                logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "success", "").toString());
-
-
+                logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "success", "Step 1: creating documents").toString());
+            } catch (Exception e) {
+                logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "failed", "writing to mongo").toString());
             }
-        }catch (Exception e){
-                logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "failed", "").toString());
-            }
-    }
+
+
+        }
 
         try {
             dashboardData.updateDashboardData();
@@ -170,18 +174,29 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             e.printStackTrace();
         }
 
+        loggerSecond.warn("******* User refresh  Step 1 finished. To be continue... *******");
+
+
+        loggerSecond.warn("******* User refresh started: Step 2 *******");
+
+
         //2. cleanUp mongo
-        /*List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, userExtraInfoCollection);
-        if (usersMongo!=null)
-        for (UsersExtraInfo usersExtraInfo : usersMongo) {
-            if (ldapTemplate.search(query().where("uid").is(usersExtraInfo.getUserId()), simpleUserAttributeMapper).size() == 0)
-                mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
-        }*/
+        List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, userExtraInfoCollection);
+        if (usersMongo != null)
+            for (UsersExtraInfo usersExtraInfo : usersMongo) {
+                List<UsersExtraInfo> usersExtraInfoList = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", usersExtraInfo.getUserId()).encode(), searchControls, simpleUserAttributeMapper);
+                if (usersExtraInfoList.size() == 0) {
+                    mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
+                    logger.warn(new ReportMessage("MongoDB Document", usersExtraInfo.getUserId(), "", "remove ", "success", "Step 2: removing extra document").toString());
+                }
+            }
 
-        logger.warn(new ReportMessage(model,"","Users","refresh", "success","").toString());
+        loggerSecond.warn("******* User refresh  Step 2 finished *******");
+
+        logger.warn(new ReportMessage(model, "", "Users", "refresh", "success", "").toString());
 
 
-        return  HttpStatus.OK;
+        return HttpStatus.OK;
     }
 
     @Override
@@ -196,7 +211,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         }
 
         mongoTemplate.createCollection("IDMAN_Captchas");
-        logger.warn(new ReportMessage(model,"","Captcha","refresh", "success","").toString());
+        logger.warn(new ReportMessage(model, "", "Captcha", "refresh", "success", "").toString());
 
         return HttpStatus.OK;
     }
@@ -227,7 +242,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
             mongoTemplate.save(serviceExtraInfo, "IDMAN_ServicesExtraInfo");
 
-            logger.warn(new ReportMessage(model,"","Services","refresh", "success","").toString());
+            logger.warn(new ReportMessage(model, "", "Services", "refresh", "success", "").toString());
         }
 
         List<parsso.idman.Models.Services.Service> serviceList = serviceRepo.listServicesFull();
@@ -242,9 +257,9 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             ids.remove(service.getId());
 
         Query query;
-        for (Long id:ids) {
+        for (Long id : ids) {
             query = new Query(Criteria.where("_id").is(id));
-            mongoTemplate.findAndRemove(query,MicroService.class,"IDMAN_ServicesExtraInfo");
+            mongoTemplate.findAndRemove(query, MicroService.class, "IDMAN_ServicesExtraInfo");
 
         }
 
@@ -266,13 +281,13 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         userRefresh(doer);
 
-        logger.warn(new ReportMessage(model,"","System","refresh", "success","").toString());
+        logger.warn(new ReportMessage(model, "", "System", "refresh", "success", "").toString());
 
         return HttpStatus.OK;
     }
 
     @Override
-    public HttpStatus refreshLockedUsers(){
+    public HttpStatus refreshLockedUsers() {
 
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
@@ -285,9 +300,9 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         andFilter.and(new NotFilter(new EqualsFilter("pwdAccountLockedTime", "40400404040404.950Z")));
 
         List<User> users = ldapTemplate.search(BASE_DN, andFilter.encode(), userAttributeMapper);
-        for (User user: users) {
+        for (User user : users) {
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
-            UsersExtraInfo simpleUser = mongoTemplate.findOne(query,UsersExtraInfo.class,userExtraInfoCollection);
+            UsersExtraInfo simpleUser = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
             if (!simpleUser.getStatus().equalsIgnoreCase("lock")) {
                 simpleUser.setStatus("lock");
 
@@ -298,11 +313,11 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         }
 
-        List<UsersExtraInfo> simpleUsers =  mongoTemplate.find(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class , userExtraInfoCollection);
-        for (UsersExtraInfo simple:simpleUsers) {
+        List<UsersExtraInfo> simpleUsers = mongoTemplate.find(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, userExtraInfoCollection);
+        for (UsersExtraInfo simple : simpleUsers) {
             Query query = new Query(Criteria.where("userId").is(simple.getUserId()));
 
-                if (ldapTemplate.search("ou=People,"+BASE_DN,new EqualsFilter("uid",simple.getUserId()).encode(), searchControls, userAttributeMapper).size()==0) {
+            if (ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", simple.getUserId()).encode(), searchControls, userAttributeMapper).size() == 0) {
 
                 simple.setStatus("enable");
 
@@ -312,7 +327,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 logger.warn(new ReportMessage("User", simple.getUserId(), "", "unlock", "", "due to time pass").toString());
 
 
-                }
+            }
 
 
         }

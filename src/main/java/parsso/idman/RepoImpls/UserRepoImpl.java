@@ -38,14 +38,12 @@ import parsso.idman.Helpers.Group.GroupsChecks;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Logs.ReportMessage;
+import parsso.idman.Models.SkyRoom;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Repos.FilesStorageService;
-import parsso.idman.Repos.GroupRepo;
-import parsso.idman.Repos.SystemRefresh;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.Repos.*;
 
 import javax.naming.Name;
 import javax.naming.directory.BasicAttribute;
@@ -105,6 +103,14 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     ExcelAnalyzer excelAnalyzer;
     String model = "User";
+    @Autowired
+    SkyroomRepo skyroomRepo;
+
+    @Value("${skyroom.api.key}")
+    String skyRoomApiKey;
+
+    @Value("${skyroom.enable}")
+    private String skyEnable;
 
     @Autowired
     GroupRepo groupRepo;
@@ -242,8 +248,10 @@ public class UserRepoImpl implements UserRepo {
         else
             usersExtraInfo.setStatus("enable");
 
+
         if (p.getMemberOf()!=null)
-            usersExtraInfo.setMemberOf(p.getMemberOf());
+                usersExtraInfo.setMemberOf(p.getMemberOf());
+
 
         if (p.getDisplayName()!=null)
             usersExtraInfo.setDisplayName(p.getDisplayName());
@@ -261,7 +269,6 @@ public class UserRepoImpl implements UserRepo {
 
             ldapTemplate.modifyAttributes(context);
 
-            mongoTemplate.remove(query, userExtraInfoCollection);
             mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
             logger.warn(new ReportMessage(model,usid,"","update", "success","").toString());
@@ -645,24 +652,37 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User retrieveUsers(String userId)  {
+        Logger logger = LogManager.getLogger("System");
+
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         User user = new User();
         UsersExtraInfo usersExtraInfo = null;
-        List<User> people = ldapTemplate.search("ou=People,"+BASE_DN,new EqualsFilter("uid", userId).encode(), searchControls,userAttributeMapper);
-        if (people.size()!=0) {
-            user = people.get(0);
-            Query query = new Query(Criteria.where("userId").is(user.getUserId()));
-            usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
-            user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
+        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, userAttributeMapper);
+
+        SkyRoom skyRoom = null;
+
+        if (people.size() != 0) {
+                user = people.get(0);
+                Query query = new Query(Criteria.where("userId").is(user.getUserId()));
+                usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
+                user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
+                try {
+                    user.setUnDeletable(usersExtraInfo.isUnDeletable());
+                } catch (Exception e) {
+                    user.setUnDeletable(false);
+                }
+
             try {
-                user.setUnDeletable(usersExtraInfo.isUnDeletable());
+                skyRoom = skyroomRepo.Run(user);
+            } catch (IOException e) {
+                logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom Dara").toString());
+
             }
-            catch (Exception e){
-                user.setUnDeletable(false);
+
+            user.setSkyRoom(skyRoom);
             }
-        }
 
 
 

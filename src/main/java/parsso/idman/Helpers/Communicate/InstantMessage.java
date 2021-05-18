@@ -16,8 +16,7 @@ import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.SMS.KaveNegar.KavenegarApi;
 import parsso.idman.Utils.SMS.KaveNegar.excepctions.ApiException;
 import parsso.idman.Utils.SMS.KaveNegar.excepctions.HttpException;
-import parsso.idman.Utils.SMS.Magfa.RepoImpls.SendRepoImpl;
-import parsso.idman.Utils.SMS.Magfa.Repos.SendRepo;
+import parsso.idman.Repos.MagfaSMSSendRepo;
 import parsso.idman.Utils.SMS.Magfa.Variables;
 
 import java.net.MalformedURLException;
@@ -52,7 +51,7 @@ public class InstantMessage {
     @Autowired
     private parsso.idman.Helpers.User.UserAttributeMapper userAttributeMapper;
     @Autowired
-    private SendRepo sendRepo;
+    private MagfaSMSSendRepo magfaSMSSendRepo;
 
     public int sendMessage(String mobile, String cid, String answer){
         if(SMS_sdk.equalsIgnoreCase("KaveNegar"))
@@ -128,7 +127,7 @@ public class InstantMessage {
                 try {
                     Variables variables = new Variables();
                     variables.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0,Integer.valueOf(SMS_VALIDATION_DIGITS)));
-                    sendRepo.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
+                    magfaSMSSendRepo.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
 
                     mongoTemplate.remove(query, collection);
                     return Integer.valueOf(SMS_VALID_TIME);
@@ -186,7 +185,7 @@ public class InstantMessage {
                 try {
                     Variables variables = new Variables();
                     variables.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0,Integer.valueOf(SMS_VALIDATION_DIGITS)));
-                    sendRepo.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
+                    magfaSMSSendRepo.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
 
                     return Integer.valueOf(SMS_VALID_TIME);
 
@@ -300,7 +299,7 @@ public class InstantMessage {
                         try {
                             Variables variables = new Variables();
                             variables.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0,Integer.valueOf(SMS_VALIDATION_DIGITS)));
-                            sendRepo.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
+                            magfaSMSSendRepo.SendMessage(variables.getMainMessage(),user.getMobile(),1L);
                             mongoTemplate.remove(query, collection);
                             return Integer.valueOf(SMS_VALID_TIME);
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
