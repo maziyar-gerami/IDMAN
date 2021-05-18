@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import parsso.idman.Models.SkyRoom;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,9 +58,7 @@ public class User implements UserDetails, Comparable {
     private UsersExtraInfo usersExtraInfo;
     private boolean unDeletable;
     private boolean profileInaccessibility;
-    boolean skyRoomEnable;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    String skyroomApiKey;
+    SkyRoom skyRoom;
 
 
 

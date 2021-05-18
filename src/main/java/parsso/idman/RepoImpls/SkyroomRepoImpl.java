@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.SkyRoom;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.SkyroomRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -29,23 +30,23 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     @Autowired
     UserRepo userRepo;
 
-    public SkyRoom Run(String name) throws IOException {
-        String Realname= userRepo.retrieveUsers(name).getFirstName()+userRepo.retrieveUsers(name).getLastName();
-        String Classname=userRepo.retrieveUsers(name).getFirstName().split("")[0] +userRepo.retrieveUsers(name).getLastName().split("")[0]+(int) (Long.parseLong(userRepo.retrieveUsers(name).getMobile())%937);
-        int userId = Register(Realname, RandomPassMaker(8), userRepo.retrieveUsers(name).getDisplayName());
+    public SkyRoom Run(User user) throws IOException {
+        String Realname= user.getFirstName()+user.getLastName();
+        String Classname=user.getFirstName().split("")[0] +user.getLastName().split("")[0]+(int) (Long.parseLong(user.getMobile())%937);
+        int userId = Register(Realname, RandomPassMaker(8), user.getDisplayName());
         SkyRoom skyRoom;
         if (userId == 0) {
             int roomId=GetRoomId(Classname);
-            Realname=userRepo.retrieveUsers(name).getFirstName()+" "+userRepo.retrieveUsers(name).getLastName();
+            Realname=user.getFirstName()+" "+user.getLastName();
             //System.out.println(CreateLoginUrl(roomId, String.valueOf(userId), Classname)+GetRoomGuestUrl(roomId));
-            skyRoom = new SkyRoom(skyroomEnable, userRepo.retrieveUsers(name).getUsersExtraInfo().getRole()
+            skyRoom = new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole()
                     ,CreateLoginUrl(roomId, String.valueOf(userId), Realname),GetRoomGuestUrl(roomId));
             return skyRoom;
         }
         int roomId =CreateRoom(Classname);
         AddUserRooms(userId, roomId);
-        Realname=userRepo.retrieveUsers(name).getFirstName()+" "+userRepo.retrieveUsers(name).getLastName();
-        return new SkyRoom(skyroomEnable, userRepo.retrieveUsers(name).getUsersExtraInfo().getRole(),CreateLoginUrl(roomId, String.valueOf(userId), Realname),GetRoomGuestUrl(roomId));
+        Realname=user.getFirstName()+" "+user.getLastName();
+        return new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole(),CreateLoginUrl(roomId, String.valueOf(userId), Realname),GetRoomGuestUrl(roomId));
     }
     public JSONObject Post(String json) throws IOException {
         if (skyroomEnable.equalsIgnoreCase("true")) {

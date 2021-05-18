@@ -38,14 +38,12 @@ import parsso.idman.Helpers.Group.GroupsChecks;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Logs.ReportMessage;
+import parsso.idman.Models.SkyRoom;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Repos.FilesStorageService;
-import parsso.idman.Repos.GroupRepo;
-import parsso.idman.Repos.SystemRefresh;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.Repos.*;
 
 import javax.naming.Name;
 import javax.naming.directory.BasicAttribute;
@@ -105,6 +103,8 @@ public class UserRepoImpl implements UserRepo {
     @Autowired
     ExcelAnalyzer excelAnalyzer;
     String model = "User";
+    @Autowired
+    SkyroomRepo skyroomRepo;
 
     @Value("${skyroom.api.key}")
     String skyRoomApiKey;
@@ -652,6 +652,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User retrieveUsers(String userId)  {
+        Logger logger = LogManager.getLogger("System");
+
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
@@ -659,6 +661,7 @@ public class UserRepoImpl implements UserRepo {
         UsersExtraInfo usersExtraInfo = null;
         List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, userAttributeMapper);
 
+        SkyRoom skyRoom = null;
 
         if (people.size() != 0) {
                 user = people.get(0);
@@ -671,10 +674,14 @@ public class UserRepoImpl implements UserRepo {
                     user.setUnDeletable(false);
                 }
 
-                if(skyEnable.equalsIgnoreCase("true") && !(user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))) {
-                    user.setSkyRoomEnable(true);
-                    user.setSkyroomApiKey(skyRoomApiKey);
-                }
+            try {
+                skyRoom = skyroomRepo.Run(user);
+            } catch (IOException e) {
+                logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom Dara").toString());
+
+            }
+
+            user.setSkyRoom(skyRoom);
             }
 
 
