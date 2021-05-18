@@ -24,6 +24,7 @@ public class SkyroomController {
     @Value("${skyroom.enable}")
     private String skyroomEnable;
 
+    @Deprecated
     @GetMapping("/api/skyroom")
     ResponseEntity<SkyRoom> hello(HttpServletRequest request) throws IOException {
         if (skyroomEnable.equalsIgnoreCase("true"))
