@@ -14,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import parsso.idman.Models.SkyRoom;
+import parsso.idman.Models.Time;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +44,8 @@ public class User implements UserDetails, Comparable {
     private String mail;
     private String description;
     private List<String> memberOf;
+    @JsonIgnore
+    private String exportMemberOf;
     private String userPassword;
     @JsonIgnore
     private String photo;
@@ -52,6 +55,8 @@ public class User implements UserDetails, Comparable {
     private String status;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String endTime;
+    @JsonIgnore
+    private String exportEndTime;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String cStatus;
     @JsonIgnore
@@ -65,6 +70,23 @@ public class User implements UserDetails, Comparable {
     public User() {
         locked = false;
         enabled = true;
+    }
+
+    public String getExportEndTime(){
+        return Time.getExportEndTime(getEndTime());
+    }
+
+    public String getExportMemberOf() {
+        if (getMemberOf()!=null && getMemberOf().size()!=0){
+            String groups = "";
+            for (String group: getMemberOf()) {
+                if(!groups.equals(""))
+                    groups += ", ";
+                groups += group;
+            }
+            return groups;
+        }
+        return  "";
     }
 
     public String getStatus() {

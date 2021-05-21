@@ -3,9 +3,7 @@ package parsso.idman.Helpers.User;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
@@ -37,7 +35,9 @@ public class UsersExcelView extends AbstractXlsView {
         CellStyle style = workbook.createCellStyle();
         Font font = workbook.createFont();
         font.setFontName("Arial");
+        font.setBold(true);
         style.setFont(font);
+        style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
 
         // create header row
         HSSFRow header = sheet.createRow(0);
@@ -92,7 +92,7 @@ public class UsersExcelView extends AbstractXlsView {
             if(user.getMail()!=null)
                 aRow.createCell(5).setCellValue(user.getMail());
             if(user.getMemberOf()!=null)
-                aRow.createCell(6).setCellValue(user.getMemberOf().toString());
+                aRow.createCell(6).setCellValue(user.getExportMemberOf());
             if(user.getDescription()!=null)
                 aRow.createCell(7).setCellValue(user.getDescription());
             if(user.getStatus()!=null)
@@ -100,7 +100,7 @@ public class UsersExcelView extends AbstractXlsView {
             if(user.getEmployeeNumber()!=null)
                 aRow.createCell(9).setCellValue(user.getEmployeeNumber());
             if(user.getEndTime()!=null)
-                aRow.createCell(10).setCellValue(user.getEndTime());
+                aRow.createCell(10).setCellValue(user.getExportEndTime());
 
         }
 
