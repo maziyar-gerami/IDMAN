@@ -1,4 +1,4 @@
-package parsso.idman.Captcha.RepoImp;
+package parsso.idman.Utils.Captcha.RepoImp;
 
 
 import lombok.Getter;
@@ -10,10 +10,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Captcha.Models.CAPTCHA;
-import parsso.idman.Captcha.Models.CAPTCHAimage;
-import parsso.idman.Captcha.Models.Points;
-import parsso.idman.Captcha.Repo.CAPTCHARepo;
+import parsso.idman.Utils.Captcha.Models.CAPTCHA;
+import parsso.idman.Utils.Captcha.Models.CAPTCHAimage;
+import parsso.idman.Utils.Captcha.Models.Points;
+import parsso.idman.Utils.Captcha.Repo.CAPTCHARepo;
+import parsso.idman.Helpers.Variables;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -41,7 +42,7 @@ public class CaptchaRepoImp implements CAPTCHARepo {
     private String mongoCreds;
     @Value("${mongo.hosts}")
     private String mongoHosts;
-    private String collection = "IDMAN_Captchas";
+    private String collection =  Variables.col_captchas;
 
     public CaptchaRepoImp() {
         this.len = 5;

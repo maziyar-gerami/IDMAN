@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.DashboardData.Logins;
 import parsso.idman.Models.DashboardData.Services;
@@ -29,7 +30,7 @@ import java.util.List;
 @Service
 public class DashboardData {
     public static String mainCollection = "MongoDbCasEventRepository";
-    public static String userExtraInfoCollection = "IDMAN_UsersExtraInfo";
+    public static String userExtraInfoCollection =   Variables.col_usersExtraInfo;
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -65,7 +66,7 @@ public class DashboardData {
         thread.start();
 
         return mongoTemplate.findOne(new Query(Criteria.where("_id").is("Dashboard")),Dashboard.class,
-                "IDMAN_ExtraInfo");
+                Variables.col_extraInfo);
 
     }
 
@@ -145,9 +146,9 @@ public class DashboardData {
 
 
         mongoTemplate.remove(new Query(Criteria.where("_id").is("id")),
-                "IDMAN_ExtraInfo");
+                Variables.col_extraInfo);
 
-        mongoTemplate.save(dashboard, "IDMAN_ExtraInfo");
+        mongoTemplate.save(dashboard, Variables.col_extraInfo);
 
     }
 }

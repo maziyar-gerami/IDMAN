@@ -6,13 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Models.Ticket;
+import parsso.idman.Models.Tickets.ListTickets;
+import parsso.idman.Models.Tickets.Ticket;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.TicketRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,9 +79,11 @@ public class TicketsController {
 
     @GetMapping("/api/supporter/tickets")
     public ResponseEntity<List<Ticket>> pendingTickets(@RequestParam (name = "cat", defaultValue = "") String cat,
-                                                       @RequestParam (name = "subCat", defaultValue = "") String subCat,
-                                                       @RequestParam (name = "status", defaultValue = "") String status) {
-
+                                                      @RequestParam (name = "subCat", defaultValue = "") String subCat,
+                                                      @RequestParam (name = "status", defaultValue = "") String status,
+                                                      @RequestParam (name = "page", defaultValue = "") String page,
+                                                      @RequestParam (name = "count", defaultValue = "") String count)
+    {
         return new ResponseEntity<>(ticketRepo.retrieve(cat,subCat, status) , HttpStatus.OK);
     }
 

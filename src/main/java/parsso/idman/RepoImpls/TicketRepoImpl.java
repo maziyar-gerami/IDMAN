@@ -5,11 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Ticket;
-import parsso.idman.Models.Users.User;
+import parsso.idman.Helpers.Variables;
+import parsso.idman.Models.Tickets.ListTickets;
+import parsso.idman.Models.Tickets.Ticket;
 import parsso.idman.Repos.TicketRepo;
 
 import java.util.Date;
@@ -25,7 +25,7 @@ public class TicketRepoImpl implements TicketRepo {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    final String collection = "IDMAN_Tickets";
+    final String collection =  Variables.col_tickets;
 
 
     @Override
@@ -135,19 +135,30 @@ public class TicketRepoImpl implements TicketRepo {
         }
     }
 
+    private int ticketsCount(){
+        return (int) mongoTemplate.count(new Query(), collection);
+    }
+
     @Override
     public List<Ticket> retrieve(String cat, String subCat, String status) {
+        //int page,count;
+
+
+
         Query query;
         if (status.equals(""))
             query = new Query(new Criteria());
         else
             query = new Query(Criteria.where("status").is(Integer.valueOf(status)));
 
+        //if(page != 0) query.skip(page-1*count).limit(count);
+
         if (!cat.equals(""))
                 query.addCriteria(Criteria.where("category").is(cat));
             if (!subCat.equals(""))
                 query.addCriteria(Criteria.where("subCategory").is(subCat));
 
+            int ticketCount  = ticketsCount();
         return mongoTemplate.find(query, Ticket.class,collection);
     }
 

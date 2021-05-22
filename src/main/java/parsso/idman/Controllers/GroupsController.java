@@ -71,6 +71,4 @@ public class GroupsController {
         return new ResponseEntity<>(groupRepo.remove(request.getUserPrincipal().getName(), jsonObject));
     }
 
-
-
 }

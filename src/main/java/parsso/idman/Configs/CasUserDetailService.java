@@ -1,6 +1,5 @@
 package parsso.idman.Configs;
 
-import com.mongodb.client.MongoClients;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -14,12 +13,13 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Repos.UserRepo;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
+
 
 @Service
 public class CasUserDetailService implements AuthenticationUserDetailsService {
@@ -32,7 +32,7 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
         AttributePrincipal principal = casAssertionAuthenticationToken.getAssertion().getPrincipal();
         Collection<SimpleGrantedAuthority> collection = new ArrayList<SimpleGrantedAuthority>();
         Query query = new Query(Criteria.where("userId").is(principal.getName().toLowerCase()));
-        String collection1 = "IDMAN_UsersExtraInfo";
+        String collection1 =   Variables.col_usersExtraInfo;
 
         UsersExtraInfo usersExtraInfo =  mongoTemplate.findOne(query, UsersExtraInfo.class, collection1);
 

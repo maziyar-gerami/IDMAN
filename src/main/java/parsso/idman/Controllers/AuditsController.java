@@ -13,7 +13,6 @@ import parsso.idman.Repos.AuditRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.security.Principal;
 import java.text.ParseException;
 
 @Controller
@@ -57,19 +56,16 @@ public class AuditsController {
 
     @GetMapping("/api/audits/user/{page}/{n}")
     public ResponseEntity<ListAudits> retrieveCurrentUserAudits(HttpServletRequest request, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(auditRepo.getListUserAudits(principal.getName(), page, n), HttpStatus.OK);
+        return new ResponseEntity<>(auditRepo.getListUserAudits(request.getUserPrincipal().getName(), page, n), HttpStatus.OK);
     }
 
     @GetMapping("/api/audits/user/date/{date}/{page}/{n}")
     public ResponseEntity<ListAudits> retrieveCurrentUserAuditsByDate(HttpServletRequest request, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(auditRepo.getListUserAuditByDate(date, principal.getName(), page, n), HttpStatus.OK);
+        return new ResponseEntity<>(auditRepo.getListUserAuditByDate(date, request.getUserPrincipal().getName(), page, n), HttpStatus.OK);
     }
 
     @GetMapping("/api/audits/users/export")
     public ModelAndView downloadExcel() {
-
         // return a view which will be resolved by an excel view resolver
         return new ModelAndView(auditsExcelView, "listAudits", null);
     }

@@ -13,7 +13,7 @@ IDMAN is a client for Parsso-core (a Centralized Authentication System) that is 
 
 You need to change a file, named `application.properties` before deploying the project.
 
-This file is in the `resources` directory which contains all configuration variables in the project. Now we discuss all variables that you have to change:
+This file is in the `resources` directory which contains all configuration texts in the project. Now we discuss all texts that you have to change:
 
 1.  Email server configurations
 

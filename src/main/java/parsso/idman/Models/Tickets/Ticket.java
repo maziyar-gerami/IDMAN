@@ -1,4 +1,4 @@
-package parsso.idman.Models;
+package parsso.idman.Models.Tickets;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
+import parsso.idman.Models.Time;
 import parsso.idman.Utils.Convertor.DateConverter;
 
 @Setter

@@ -19,6 +19,7 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.BuildDnUser;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.User;
@@ -57,7 +58,7 @@ public class GroupRepoImpl implements GroupRepo {
     private String model = "Groups";
 
 
-    private  final String  usersExtraInfoCollection = "IDMAN_UsersExtraInfo";
+    private  final String  usersExtraInfoCollection =   Variables.col_usersExtraInfo;
 
     @Override
     public HttpStatus remove(String doerID, JSONObject jsonObject) {

@@ -14,6 +14,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.UsersExtraInfo;
@@ -64,11 +65,11 @@ public class ServicesController {
         String currentUserId = request.getUserPrincipal().getName();
         Criteria regex = Criteria.where("userId").regex(currentUserId, "i");
         UsersExtraInfo simpleUser = mongoTemplate.findOne(new Query(regex)
-                ,UsersExtraInfo.class,"IDMAN_UsersExtraInfo");
+                ,UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
         if(simpleUser==null){
             simpleUser = new UsersExtraInfo(userRepo.retrieveUsers(currentUserId));
-            mongoTemplate.save(simpleUser, "IDMAN_UsersExtraInfo");
+            mongoTemplate.save(simpleUser,  Variables.col_usersExtraInfo);
         }
 
         Principal principal = request.getUserPrincipal();

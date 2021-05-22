@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
@@ -31,7 +32,7 @@ import java.util.*;
 @Component
 public class SamlServiceHelper {
 
-    private final String collection = "IDMAN_Services";
+    private final String collection =  Variables.col_services;
     @Value("${services.folder.path}")
     String path;
     @Autowired

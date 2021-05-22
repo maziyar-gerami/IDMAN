@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
 import parsso.idman.Helpers.User.UserAttributeMapper;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.IdmanApplication;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.ServiceType.MicroService;
@@ -63,7 +64,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     @Autowired
     DashboardData dashboardData;
     String model = "Refresh";
-    String userExtraInfoCollection = "IDMAN_UsersExtraInfo";
+    String userExtraInfoCollection =   Variables.col_usersExtraInfo;
     @Value("${administrator.ou.id}")
     private String admidId;
     @Value("${spring.ldap.base.dn}")
@@ -205,12 +206,12 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
 
         logger.warn("Captcha refresh started");
-        if (mongoTemplate.getCollection("IDMAN_Captchas") != null) {
-            mongoTemplate.getCollection("IDMAN_Captchas").drop();
+        if (mongoTemplate.getCollection(  Variables.col_captchas) != null) {
+            mongoTemplate.getCollection(  Variables.col_captchas).drop();
             logger.warn("IDMAN_captchas collection dropped");
         }
 
-        mongoTemplate.createCollection("IDMAN_Captchas");
+        mongoTemplate.createCollection(  Variables.col_captchas);
         logger.warn(new ReportMessage(model, "", "Captcha", "refresh", "success", "").toString());
 
         return HttpStatus.OK;
@@ -220,13 +221,13 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     public HttpStatus serivceRefresh(String doer) throws IOException, ParseException {
         Logger logger = LoggerFactory.getLogger(doer);
 
-        if (mongoTemplate.getCollection("IDMAN_ServicesExtraInfo") == null)
-            mongoTemplate.createCollection("IDMAN_ServicesExtraInfo");
+        if (mongoTemplate.getCollection( Variables.col_servicesExtraInfo) == null)
+            mongoTemplate.createCollection( Variables.col_servicesExtraInfo);
         int i = 1;
 
         for (parsso.idman.Models.Services.Service service : serviceRepo.listServicesFull()) {
             Query query = new Query(Criteria.where("_id").is(service.getId()));
-            MicroService serviceExtraInfo = mongoTemplate.findOne(query, MicroService.class, "IDMAN_ServicesExtraInfo");
+            MicroService serviceExtraInfo = mongoTemplate.findOne(query, MicroService.class,  Variables.col_servicesExtraInfo);
             MicroService newServiceExtraInfo = new MicroService();
 
             if (serviceExtraInfo == null) {
@@ -240,7 +241,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
             serviceExtraInfo.setPosition(i++);
 
-            mongoTemplate.save(serviceExtraInfo, "IDMAN_ServicesExtraInfo");
+            mongoTemplate.save(serviceExtraInfo,  Variables.col_servicesExtraInfo);
 
             logger.warn(new ReportMessage(model, "", "Services", "refresh", "success", "").toString());
         }
@@ -249,7 +250,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         List<Long> ids = new LinkedList<>();
 
 
-        List<MicroService> microServices = mongoTemplate.findAll(MicroService.class, "IDMAN_ServicesExtraInfo");
+        List<MicroService> microServices = mongoTemplate.findAll(MicroService.class,  Variables.col_servicesExtraInfo);
 
         for (MicroService microService : microServices) ids.add(microService.get_id());
 
@@ -259,7 +260,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         Query query;
         for (Long id : ids) {
             query = new Query(Criteria.where("_id").is(id));
-            mongoTemplate.findAndRemove(query, MicroService.class, "IDMAN_ServicesExtraInfo");
+            mongoTemplate.findAndRemove(query, MicroService.class,  Variables.col_servicesExtraInfo);
 
         }
 

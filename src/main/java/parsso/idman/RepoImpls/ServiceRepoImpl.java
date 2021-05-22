@@ -20,6 +20,7 @@ import parsso.idman.Helpers.Service.CasServiceHelper;
 import parsso.idman.Helpers.Service.Position;
 import parsso.idman.Helpers.Service.SamlServiceHelper;
 import parsso.idman.Helpers.Service.Trim;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
@@ -54,7 +55,7 @@ public class ServiceRepoImpl implements ServiceRepo {
     LdapTemplate ldapTemplate;
     @Autowired
     Position position;
-    String collection = "IDMAN_ServicesExtraInfo";
+    String collection =  Variables.col_servicesExtraInfo;
     @Value("${services.folder.path}")
     private String path;
     @Value("${base.url}")

@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 
 import java.util.Collections;
@@ -17,7 +18,7 @@ public class Position {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    String collection = "IDMAN_ServicesExtraInfo";
+    String collection =  Variables.col_servicesExtraInfo;
 
     public int lastPosition() {
         List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);

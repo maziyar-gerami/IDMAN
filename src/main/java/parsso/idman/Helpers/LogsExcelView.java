@@ -22,7 +22,7 @@ import java.util.Map;
 @Service
 public class LogsExcelView extends AbstractXlsView {
 
-    public static String mainCollection = "IDMAN_Log";
+    public static String mainCollection = Variables.col_log;
     @Autowired
     ReportRepo reportRepo;
     ZoneId zoneId = ZoneId.of("Asia/Tehran");

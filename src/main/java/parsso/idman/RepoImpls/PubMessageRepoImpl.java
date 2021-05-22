@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.PublicMessage;
 import parsso.idman.Repos.PubMessageRepo;
@@ -26,7 +27,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 
     final String model = "PublicMessage";
 
-    private final String collection = "IDMAN_PublicMessage";
+    private final String collection = Variables.col_publicMessage;;
 
 
 
