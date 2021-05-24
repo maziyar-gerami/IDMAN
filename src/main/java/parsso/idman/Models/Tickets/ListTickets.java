@@ -1,10 +1,13 @@
 package parsso.idman.Models.Tickets;
 
 
-import parsso.idman.Models.Users.UsersExtraInfo;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 public class ListTickets {
     int size;
     int pages;
