@@ -192,21 +192,23 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public List<Ticket> retrieveTicketsSend(String userId, String page, String count) {
+    public ListTickets retrieveTicketsSend(String userId, String page, String count) {
         int skip = (Integer.valueOf(page)-1) * Integer.valueOf(count);
 
         int limit = Integer.valueOf(count);
 
         Query query = new Query(Criteria.where("from").is(userId)).skip(skip).limit(limit);
-        try {
-            return mongoTemplate.find(query, Ticket.class ,collection);
-        }catch (Exception e){
-            return null;
-        }
+        List<Ticket> ticketList = null;
+
+            ticketList =  mongoTemplate.find(query, Ticket.class ,collection);
+
+            int size = (int)mongoTemplate.count(query,collection);
+            return new ListTickets(size,ticketList, (int) Math.floor(size/limit));
+
     }
 
     @Override
-    public List<Ticket> retrieveTicketsReceived (String userId, String page, String count) {
+    public ListTickets retrieveTicketsReceived (String userId, String page, String count) {
 
         int skip = (Integer.valueOf(page)-1) * Integer.valueOf(count);
 
@@ -214,11 +216,13 @@ public class TicketRepoImpl implements TicketRepo {
 
         Query query = new Query(Criteria.where("to").is(userId).and("status").is(1)).skip(skip).limit(limit);
 
-        try {
-            return mongoTemplate.find(query, Ticket.class ,collection);
-        }catch (Exception e){
-            return null;
-        }
+        List<Ticket> ticketList = null;
+
+        ticketList =  mongoTemplate.find(query, Ticket.class ,collection);
+
+        int size = (int)mongoTemplate.count(query,collection);
+
+        return new ListTickets(size,ticketList, (int) Math.floor(size/limit));
     }
 
     @Override
