@@ -134,8 +134,10 @@ public class TicketRepoImpl implements TicketRepo {
             if (ticket.getDeleteFor() != null)
                 deleteFor = ticket.getDeleteFor();
 
-            if (ticket.getStatus() == 0)
+            if (ticket.getStatus() == 0) {
                 mongoTemplate.remove(ticket, collection);
+                continue;
+            }
 
             deleteFor.add(doer);
             ticket.setDeleteFor(deleteFor);
@@ -190,9 +192,12 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public List<Ticket> retrieveTicketsSend(String userId) {
+    public List<Ticket> retrieveTicketsSend(String userId, String page, String count) {
+        int skip = (Integer.valueOf(page)-1) * Integer.valueOf(count);
 
-        Query query = new Query(Criteria.where("from").is(userId));
+        int limit = Integer.valueOf(count);
+
+        Query query = new Query(Criteria.where("from").is(userId)).skip(skip).limit(limit);
         try {
             return mongoTemplate.find(query, Ticket.class ,collection);
         }catch (Exception e){
@@ -201,9 +206,14 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public List<Ticket> retrieveTicketsReceived (String userId) {
+    public List<Ticket> retrieveTicketsReceived (String userId, String page, String count) {
 
-        Query query = new Query(Criteria.where("to").is(userId));
+        int skip = (Integer.valueOf(page)-1) * Integer.valueOf(count);
+
+        int limit = Integer.valueOf(count);
+
+        Query query = new Query(Criteria.where("to").is(userId).and("status").is(1)).skip(skip).limit(limit);
+
         try {
             return mongoTemplate.find(query, Ticket.class ,collection);
         }catch (Exception e){

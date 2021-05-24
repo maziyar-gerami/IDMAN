@@ -25,9 +25,9 @@ public interface TicketRepo {
 
     HttpStatus updateTicketStatus(String doer, int status, JSONObject jsonObject);
 
-    List<Ticket> retrieveTicketsSend(String userId);
+    List<Ticket> retrieveTicketsSend(String userId, String page, String count);
 
-    List<Ticket> retrieveTicketsReceived(String userId);
+    List<Ticket> retrieveTicketsReceived(String userId, String page, String count);
 
     HttpStatus updateTicket(String userId, String ticketId, Ticket ticket);
 

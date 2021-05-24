@@ -68,11 +68,11 @@ public class TicketsController {
     }
 
     @GetMapping("/api/user/tickets/sent/{page}/{count}")
-    public ResponseEntity<List<Ticket>> sendTicket(HttpServletRequest request) {
-        List<Ticket> tickets = ticketRepo.retrieveTicketsReceived( request.getUserPrincipal().getName());
-        tickets.stream().filter(c -> (c.getTo().equals(request.getUserPrincipal())) ||
-                c.getFrom().equals( request.getUserPrincipal().getName())).collect(Collectors.toList());
-        return new ResponseEntity<>(ticketRepo.retrieveTicketsSend( request.getUserPrincipal().getName()), HttpStatus.OK);
+    public ResponseEntity<List<Ticket>> sendTicket(HttpServletRequest request, @PathVariable (name = "page") String page,
+                                                   @PathVariable (name = "count") String count) {
+        List<Ticket> tickets = ticketRepo.retrieveTicketsReceived( request.getUserPrincipal().getName(),page,count);
+        tickets.stream().filter(c -> (c.getFrom().equals(request.getUserPrincipal())));
+        return new ResponseEntity<> (ticketRepo.retrieveTicketsSend( request.getUserPrincipal().getName(), page, count), HttpStatus.OK);
     }
 
     @PutMapping("/api/supporter/ticket/status/{status}")
@@ -82,13 +82,14 @@ public class TicketsController {
 
     }
 
-    @GetMapping("/api/user/tickets/inbox/{page}/{count}")
-    public ResponseEntity<List<Ticket>> received(HttpServletRequest request) {
-        List<Ticket> tickets = ticketRepo.retrieveTicketsReceived( request.getUserPrincipal().getName());
-        tickets.stream().filter(c -> (c.getFrom().equals(request.getUserPrincipal())) ||
-                c.getFrom().equals( request.getUserPrincipal().getName())).collect(Collectors.toList());
+    @GetMapping("/api/supporter/tickets/inbox/{page}/{count}")
+    public ResponseEntity<List<Ticket>> received(HttpServletRequest request, @PathVariable (name = "page") String page,
+                                                 @PathVariable (name = "count") String count) {
+        List<Ticket> tickets = ticketRepo.retrieveTicketsReceived( request.getUserPrincipal().getName(), page,count);
+        tickets.stream().filter(c -> (c.getLastFrom().equals(request.getUserPrincipal())) ||
+                c.getLastTo().equals( request.getUserPrincipal().getName())).collect(Collectors.toList());
 
-        return new ResponseEntity<>(ticketRepo.retrieveTicketsReceived( request.getUserPrincipal().getName()), HttpStatus.OK);
+        return new ResponseEntity<>(ticketRepo.retrieveTicketsReceived( request.getUserPrincipal().getName(), page,count), HttpStatus.OK);
     }
 
     @PutMapping("/api/user/ticket/{ticketID}")
