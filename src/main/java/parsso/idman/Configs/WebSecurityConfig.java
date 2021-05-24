@@ -77,7 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-///*
+
 
 
                 .authorizeRequests()
@@ -109,6 +109,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/profile").hasAnyRole("USER","PRESENTER","ADMIN" , "SUPPORTER","SUPERADMIN")
                 .antMatchers("/privacy").hasAnyRole("USER","PRESENTER","ADMIN" , "SUPPORTER","SUPERADMIN")
                 .antMatchers("/reports").hasAnyRole("USER","PRESENTER","ADMIN" , "SUPPORTER","SUPERADMIN")
+                .antMatchers("/ticketing").hasAnyRole("USER","PRESENTER","ADMIN" , "SUPPORTER","SUPERADMIN")
 
 
                 //APIs
@@ -118,6 +119,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/reports/user/**").hasAnyRole("USER","PRESENTER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/services/user").hasAnyRole("USER","PRESENTER", "ADMIN" , "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/user/**").hasAnyRole("USER","PRESENTER","ADMIN" , "SUPPORTER", "SUPERADMIN")
+
 
 
                 //****************** SUPERADMIN & ADMIN & SUPPORTER Objects************************
@@ -140,6 +142,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/events/users/**").hasAnyRole("ADMIN" , "SUPPORTER", "SUPERADMIN")
 
 
+
                 //******************SUPERADMIN Objects ONLY *******************
                 //pages
                 .antMatchers("/roles").hasRole("SUPERADMIN")
@@ -155,7 +158,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //******************SUPPORTER and SUPERADMIN Objects *******************
                 //pages
-                .antMatchers("/ticketing").hasAnyRole("SUPPORTER", "SUPERADMIN")
 
                 //APIs
                 .antMatchers("/api/tickets").hasAnyRole("SUPPORTER", "SUPERADMIN")
@@ -173,7 +175,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-//*/
+
 
 
 

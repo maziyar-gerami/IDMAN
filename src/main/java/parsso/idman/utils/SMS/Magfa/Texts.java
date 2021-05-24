@@ -4,7 +4,7 @@ package parsso.idman.Utils.SMS.Magfa;
 import lombok.Getter;
 
 @Getter
-public class Variables {
+public class Texts {
     public String mainMessage;
 
 

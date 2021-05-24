@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.User;
@@ -200,7 +201,7 @@ public class BuildAttributes {
 
 
         if(p.getUsersExtraInfo()!=null && p.getUsersExtraInfo().getResetPassToken()!=null)
-            mongoTemplate.save(p.getUsersExtraInfo(), "IDMAN_UsersExtraInfo");
+            mongoTemplate.save(p.getUsersExtraInfo(),  Variables.col_usersExtraInfo);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];

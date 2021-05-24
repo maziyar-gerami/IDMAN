@@ -11,8 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.stereotype.Service;
-import parsso.idman.Captcha.Models.CAPTCHA;
+import parsso.idman.Utils.Captcha.Models.CAPTCHA;
 import parsso.idman.Helpers.User.UserAttributeMapper;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Users.User;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.UserRepo;
@@ -23,12 +24,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.springframework.ldap.query.LdapQueryBuilder.query;
-
 @Service
 public class Email {
 
-    private final String collection = "IDMAN_Captchas";
+    private final String collection =   Variables.col_captchas;
     @Autowired
     LdapTemplate ldapTemplate;
     @Autowired

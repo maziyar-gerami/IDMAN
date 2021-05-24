@@ -41,7 +41,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="closeOverlay" v-on:click="closeOverlay">{{returnText}}</div>
+                <div id="closeOverlay" class="btn btn-danger" v-on:click="closeOverlay">{{returnText}}</div>
             </div>
         </div>
         <div v-bind:class="{rtl: isRtl}" class=" h-100">
@@ -140,6 +140,11 @@
                                         <span>{{publicmessagesText}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
+                                       v-bind:href="ticketingURLText">
+                                        <i class="fa fa-ticket fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{ticketingText}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="eventsURLText">
                                         <i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{eventsText}}</span>
@@ -176,7 +181,7 @@
                                         <h3 class="border-bottom pb-2">{{rolesText}}</h3>
                                     </div>
                                     <div class="row mb-3 mt-3 ml-0 mr-0">
-                                        <div class="col pl-1 pr-1">
+                                        <div class="col pr-0 pl-0">
                                             <div class="card">
                                                 <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
                                                     <div class="row ml-0 mr-0 w-100">

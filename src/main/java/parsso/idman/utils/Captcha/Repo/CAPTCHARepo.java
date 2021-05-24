@@ -1,9 +1,9 @@
-package parsso.idman.Captcha.Repo;
+package parsso.idman.Utils.Captcha.Repo;
 
 
 import org.springframework.http.HttpStatus;
-import parsso.idman.Captcha.Models.CAPTCHA;
-import parsso.idman.Captcha.Models.CAPTCHAimage;
+import parsso.idman.Utils.Captcha.Models.CAPTCHA;
+import parsso.idman.Utils.Captcha.Models.CAPTCHAimage;
 
 public interface CAPTCHARepo {
 

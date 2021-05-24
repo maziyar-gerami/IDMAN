@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Service.Trim;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Event;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
@@ -21,7 +22,7 @@ import java.util.List;
 public class Pulling {
 
     public static String mainCollection = "MongoDbCasEventRepository";
-    public static String secondaryCollection = "IDMAN_Events";
+    public static String secondaryCollection =  Variables.col_events;
     @Autowired
     EventRepo eventRepo;
     @Autowired

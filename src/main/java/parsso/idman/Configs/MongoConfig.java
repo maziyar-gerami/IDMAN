@@ -31,14 +31,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     }
 
     @Override
-    public MongoClient mongoClient() {
-
-        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-
-
-        return MongoClients.create(connectionString);
-    }
+    public MongoClient mongoClient() {return MongoClients.create(connectionString); }
 
     @Override
     public Collection getMappingBasePackages() {

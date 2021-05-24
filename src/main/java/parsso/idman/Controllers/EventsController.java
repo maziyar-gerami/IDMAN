@@ -56,8 +56,7 @@ public class EventsController {
 
     @GetMapping("/api/events/user/{page}/{n}")
     public ResponseEntity<ListEvents> retrieveCurrentUserEvents(HttpServletRequest request, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-        Principal principal = request.getUserPrincipal();
-        ListEvents listEvents = eventRepo.getListUserEvents(principal.getName(), page, n);
+        ListEvents listEvents = eventRepo.getListUserEvents(request.getUserPrincipal().getName(), page, n);
         for (int i=0; i < listEvents.getEventList().size();i++)
             listEvents.getEventList().get(i).getProperties().setServerip(null);
         return new ResponseEntity<>(listEvents, HttpStatus.OK);
@@ -65,8 +64,7 @@ public class EventsController {
 
     @GetMapping("/api/events/user/date/{date}/{page}/{n}")
     public ResponseEntity<ListEvents> retrieveCurrentUserEventsByDate(HttpServletRequest request, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-        Principal principal = request.getUserPrincipal();
-        ListEvents listEvents = eventRepo.getListUserEventByDate(date, principal.getName(), page, n);
+        ListEvents listEvents = eventRepo.getListUserEventByDate(date, request.getUserPrincipal().getName(), page, n);
         for (int i=0; i < listEvents.getEventList().size();i++)
             listEvents.getEventList().get(i).getProperties().setServerip(null);
 

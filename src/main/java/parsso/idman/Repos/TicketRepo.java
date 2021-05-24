@@ -1,9 +1,13 @@
 package parsso.idman.Repos;
 
 
+import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Ticket;
+import org.springframework.web.bind.annotation.RequestBody;
+import parsso.idman.Models.Tickets.ListTickets;
+import parsso.idman.Models.Tickets.Ticket;
+import parsso.idman.Models.Tickets.Ticket;
 import parsso.idman.Models.Users.User;
 
 import java.util.List;
@@ -13,29 +17,19 @@ public interface TicketRepo {
 
     HttpStatus sendTicket(Ticket ticket, String userId);
 
-
-
-
-    List<Ticket> retrieve(String cat, String subCat, String status);
-
     Ticket retrieveTicket(String ticketID);
-
-    List<Ticket> retrieveTicketsReceived(String userId);
-
-    List<Ticket> retrieveTicketsSend(String userId);
 
     HttpStatus reply(String ticketID, String user, Ticket ticket);
 
+    HttpStatus deleteTicket(String doer,JSONObject jsonObject);
 
+    HttpStatus updateTicketStatus(String doer, int status, JSONObject jsonObject);
 
+    ListTickets retrieveTicketsSend(String userId, String page, String count);
 
-    List<Ticket> retrieveChat(String chatID);
+    ListTickets retrieveTicketsReceived(String userId, String page, String count);
 
-    HttpStatus deleteTicket(String ticketID);
+    HttpStatus updateTicket(String userId, String ticketId, Ticket ticket);
 
-    HttpStatus deleteChat(String chatID);
-
-    HttpStatus updateTicket(String ticketId, Ticket ticket);
-
-    HttpStatus updateTicketStatus(int status, String ticketID);
+    ListTickets retrieve(String cat, String subCat, String status, String page, String count);
 }

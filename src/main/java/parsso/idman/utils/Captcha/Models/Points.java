@@ -1,4 +1,4 @@
-package parsso.idman.Captcha.Models;
+package parsso.idman.Utils.Captcha.Models;
 
 
 import lombok.Getter;

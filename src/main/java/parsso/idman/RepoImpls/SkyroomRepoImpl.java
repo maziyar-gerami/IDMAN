@@ -1,15 +1,19 @@
 package parsso.idman.RepoImpls;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.SkyRoom;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.SkyroomRepo;
 import parsso.idman.Repos.UserRepo;
 
+import javax.naming.MalformedLinkException;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,7 +34,11 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     @Autowired
     UserRepo userRepo;
 
+    Logger logger = LogManager.getLogger("System");
+
+
     public SkyRoom Run(User user) throws IOException {
+
         String Realname= user.getFirstName()+user.getLastName();
         String Classname=user.getFirstName().split("")[0] +user.getLastName().split("")[0]+(int) (Long.parseLong(user.getMobile())%937);
         int userId = Register(Realname, RandomPassMaker(8), user.getDisplayName());
@@ -50,8 +58,12 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     }
     public JSONObject Post(String json) throws IOException {
         if (skyroomEnable.equalsIgnoreCase("true")) {
-            String api = apiKey;
-            URL url = new URL(api);
+            URL url=null;
+            try {
+                url = new URL(apiKey);
+            } catch (Exception e){
+                logger.warn(new ReportMessage("skyroom","","","retrieve url", "failed","malformed url").toString());
+            }
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json");

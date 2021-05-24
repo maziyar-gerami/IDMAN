@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ListReports;
 import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Time;
@@ -20,7 +21,7 @@ import java.util.List;
 @Service
 public class ReportRepoImpl implements ReportRepo {
 
-    private static final String mainCollection = "IDMAN_Log";
+    private static final String mainCollection = Variables.col_log;
     ZoneId zoneId = ZoneId.of("UTC+04:30");
 
 

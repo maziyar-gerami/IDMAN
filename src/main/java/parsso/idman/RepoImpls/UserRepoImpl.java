@@ -36,6 +36,7 @@ import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.Group.GroupsChecks;
 import parsso.idman.Helpers.User.*;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.SkyRoom;
@@ -63,7 +64,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Autowired
     FilesStorageService storageService;
-    String userExtraInfoCollection = "IDMAN_UsersExtraInfo";
+    String userExtraInfoCollection =   Variables.col_usersExtraInfo;
     @Value("${base.url}")
     private String BASE_URL;
     @Value("${email.controller}")
@@ -109,8 +110,6 @@ public class UserRepoImpl implements UserRepo {
     @Value("${skyroom.api.key}")
     String skyRoomApiKey;
 
-    @Value("${skyroom.enable}")
-    private String skyEnable;
 
     @Autowired
     GroupRepo groupRepo;
@@ -673,15 +672,21 @@ public class UserRepoImpl implements UserRepo {
                 } catch (Exception e) {
                     user.setUnDeletable(false);
                 }
+            //TODO: Uncomment it
+                /*
 
             try {
-                skyRoom = skyroomRepo.Run(user);
+
+                //skyRoom = skyroomRepo.Run(user);
             } catch (IOException e) {
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom Dara").toString());
 
             }
 
-            user.setSkyRoom(skyRoom);
+
+            //user.setSkyRoom(skyRoom);
+
+                 */
             }
 
 

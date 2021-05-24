@@ -3,6 +3,7 @@ package parsso.idman.Helpers.Service;
 
 import com.mongodb.client.MongoClients;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 
 import java.net.InetAddress;
@@ -15,7 +16,7 @@ public class Pulling {
 
     public static void pullServices() throws UnknownHostException {
 
-        String collection = "IDMAN_Services";
+        String collection =  Variables.col_services;
         String mongoHosts = "mongodb://parssouser:APA00918@parsso.razi.ac.ir:27017/parssodb?ssl=false";
 
         MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(mongoHosts), "parssodb");

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Config;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Logs.Setting;
@@ -392,7 +393,7 @@ public class ConfigRepoImpl implements ConfigRepo {
                     setting.setChangable(true);
 
 
-                mongoTemplate.save(setting, "IDMAN_Properties");
+                mongoTemplate.save(setting,  Variables.col_properties);
             }
         }
 

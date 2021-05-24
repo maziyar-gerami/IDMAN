@@ -1,7 +1,10 @@
 package parsso.idman.RepoImpls;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Utils.SMS.Magfa.Classes.*;
 import parsso.idman.Repos.MagfaSMSSendRepo;
 
@@ -17,14 +20,24 @@ import java.util.List;
 @Service
 public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
 
+    Logger logger = LogManager.getLogger("System");
+
+    String model = "MagfaSMS";
+
+
     @Value("${SMS.Magfa.username}")
     String username;
     @Value("${SMS.Magfa.password}")
     String password;
     @Override
     public ArrayList<String> SendMessage(String message,String PhoneNumber, Long id) throws MalformedURLException {
-        URL url = new URL("https://sms.magfa.com/api/soap/sms/v2/server?wsdl");
-        MagfaSoapServer service = new MagfaSoapServer_Service(url).getMagfaSoapServer();
+        MagfaSoapServer service = null;
+        try {
+            URL url = new URL("https://sms.magfa.com/api/soap/sms/v2/server?wsdl");
+            service = new MagfaSoapServer_Service(url).getMagfaSoapServer();
+        }catch (MalformedURLException e){
+            logger.warn(new ReportMessage(model,"","","retrieve url", "failed","malformed url").toString());
+        }
         String domain = "magfa";
         BindingProvider prov = (BindingProvider) service;
         prov.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, username + "/" + domain);
