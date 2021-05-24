@@ -23,7 +23,7 @@ public interface TicketRepo {
 
     HttpStatus deleteTicket(String doer,JSONObject jsonObject);
 
-    HttpStatus updateTicketStatus(int status, JSONObject jsonObject);
+    HttpStatus updateTicketStatus(String doer, int status, JSONObject jsonObject);
 
     List<Ticket> retrieveTicketsSend(String userId);
 

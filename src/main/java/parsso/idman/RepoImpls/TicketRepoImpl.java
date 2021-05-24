@@ -156,7 +156,10 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public HttpStatus updateTicketStatus(int status, @RequestBody JSONObject jsonObject) {
+    public HttpStatus updateTicketStatus(String doer, int status, @RequestBody JSONObject jsonObject) {
+
+        logger = LogManager.getLogger(doer);
+
 
         ArrayList jsonArray = (ArrayList) jsonObject.get("names");
         Iterator<String> iterator = jsonArray.iterator();
