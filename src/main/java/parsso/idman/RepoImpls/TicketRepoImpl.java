@@ -94,6 +94,9 @@ public class TicketRepoImpl implements TicketRepo {
         Ticket ticketToSave = new Ticket(ticket,messages);
         ticketToSave.setStatus(1);
 
+        if(ticket.getTo().equals("SUPPORTER"))
+            ticketToSave.setTo(userid);
+
         try {
             mongoTemplate.remove(new Query(Criteria.where("ID").is(ticketID)), collection);
             mongoTemplate.save(ticketToSave, collection);
@@ -134,10 +137,10 @@ public class TicketRepoImpl implements TicketRepo {
             if (ticket.getDeleteFor() != null)
                 deleteFor = ticket.getDeleteFor();
 
-            if (ticket.getStatus() == 0) {
+            //if (ticket.getStatus() == 0) {
                 mongoTemplate.remove(ticket, collection);
-                continue;
-            }
+                //continue;
+            //}
 
             deleteFor.add(doer);
             ticket.setDeleteFor(deleteFor);

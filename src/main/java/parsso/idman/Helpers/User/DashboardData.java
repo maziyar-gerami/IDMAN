@@ -119,7 +119,6 @@ public class DashboardData {
             int nUnSucceful = 0;
 
             for (Event event : events) {
-                //TODO: This is date
                 ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
 
 

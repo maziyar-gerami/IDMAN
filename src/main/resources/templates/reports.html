@@ -141,7 +141,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="closeOverlay" v-on:click="closeOverlay">{{returnText}}</div>
+                <div id="closeOverlay" class="btn btn-danger" v-on:click="closeOverlay">{{returnText}}</div>
             </div>
         </div>
         <div v-bind:class="{rtl: isRtl}" class=" h-100">
@@ -237,6 +237,11 @@
                                        v-bind:href="publicmessagesURLText">
                                         <i class="fa fa-bell fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{publicmessagesText}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                       v-bind:href="ticketingURLText">
+                                        <i class="fa fa-ticket fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{ticketingText}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2"
                                     v-bind:href="s36">

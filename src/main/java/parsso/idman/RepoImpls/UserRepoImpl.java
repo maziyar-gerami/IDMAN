@@ -376,7 +376,6 @@ public class UserRepoImpl implements UserRepo {
 
         Logger logger = LogManager.getLogger(uId);
 
-        //TODO:check current pass
         User user = retrieveUsers(uId);
 
         AndFilter andFilter = new AndFilter();
@@ -475,7 +474,6 @@ public class UserRepoImpl implements UserRepo {
         //remove old pic
         File oldPic = new File(uploadedFilesPath + user.getPhoto());
 
-        //TODO:Should consider
         user.setPhoto(s);
         logger.warn(new ReportMessage(model,name,"profile image","change", "success","").toString());
         if (update(user.getUserId(),user.getUserId(), user) == HttpStatus.OK) {
@@ -672,21 +670,20 @@ public class UserRepoImpl implements UserRepo {
                 } catch (Exception e) {
                     user.setUnDeletable(false);
                 }
-            //TODO: Uncomment it
-                /*
+
 
             try {
 
-                //skyRoom = skyroomRepo.Run(user);
+                skyRoom = skyroomRepo.Run(user);
             } catch (IOException e) {
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom Dara").toString());
 
             }
 
 
-            //user.setSkyRoom(skyRoom);
+            user.setSkyRoom(skyRoom);
 
-                 */
+
             }
 
 

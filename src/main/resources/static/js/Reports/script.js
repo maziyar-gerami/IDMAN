@@ -109,6 +109,8 @@ document.addEventListener('DOMContentLoaded', function () {
       reportsURLText: "./reports",
       publicmessagesText: "اعلان های عمومی",
       publicmessagesURLText: "./publicmessages",
+      ticketingText: "تیکتینگ",
+      ticketingURLText: "./ticketing",
       messageText: "پیام",
       userIdText: "شناسه کاربری",
       showMeeting: false,
@@ -608,6 +610,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.rolesText = "Roles";
           this.reportsText = "Reports";
           this.publicmessagesText = "Public Messages";
+          this.ticketingText = "Ticketing";
           this.messageText = "Message";
           this.userIdText = "UserId";
           this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
@@ -668,6 +671,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.rolesText = "نقش ها";
             this.reportsText = "گزارش ها";
             this.publicmessagesText = "اعلان های عمومی";
+            this.ticketingText = "تیکتینگ";
             this.messageText = "پیام";
             this.userIdText = "شناسه کاربری";
             this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
