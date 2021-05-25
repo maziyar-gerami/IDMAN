@@ -99,7 +99,7 @@ public class TicketRepoImpl implements TicketRepo {
 
         Ticket ticketToSave = new Ticket(ticket,messages);
         if (st!=-1)
-        ticketToSave.setStatus(st);
+        ticketToSave.setStatus(2);
 
         if(ticket.getTo().equals("SUPPORTER"))
             ticketToSave.setTo(userid);
