@@ -74,9 +74,15 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public HttpStatus reply(String ticketID, String userid,Ticket replyTicket) {
+    public HttpStatus reply(String ticketID, String userid,Ticket replyTicket, String status) {
 
         logger = LogManager.getLogger(userid);
+        int st=-1;
+
+        try{
+            st = Integer.valueOf(status);
+        }catch (Exception e){
+        }
 
         Ticket ticket = retrieveTicket(ticketID);
 
@@ -92,7 +98,8 @@ public class TicketRepoImpl implements TicketRepo {
         messages.add(new Message(userid, to, replyTicket.getMessage()));
 
         Ticket ticketToSave = new Ticket(ticket,messages);
-        ticketToSave.setStatus(1);
+        if (st!=-1)
+        ticketToSave.setStatus(st);
 
         if(ticket.getTo().equals("SUPPORTER"))
             ticketToSave.setTo(userid);
