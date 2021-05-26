@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Ticket;
-import parsso.idman.Models.Tickets.Ticket;
-import parsso.idman.Models.Users.User;
 
 import java.util.List;
 
@@ -27,9 +25,9 @@ public interface TicketRepo {
 
     ListTickets retrieveTicketsSend(String userId, String page, String count);
 
-    ListTickets retrieveTicketsReceived(String userId, String page, String count);
+    ListTickets retrieveTicketsReceived(String userId, String page, String count, String from, String ticketId, String date);
 
     HttpStatus updateTicket(String userId, String ticketId, Ticket ticket);
 
-    ListTickets retrieve(String cat, String subCat, String status, String page, String count);
+    ListTickets retrieve(String cat, String subCat, String status, String page, String count, String from, String ticketId, String date);
 }

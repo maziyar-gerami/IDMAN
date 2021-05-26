@@ -22,7 +22,8 @@ import java.util.List;
 public class EventRepoImpl implements EventRepo {
 
     private static final String mainCollection = "MongoDbCasEventRepository";
-    ZoneId zoneId = ZoneId.of("UTC+04:30");
+    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+
 
 
     @Autowired

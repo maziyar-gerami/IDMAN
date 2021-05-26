@@ -84,11 +84,14 @@ public class TicketsController {
 
     @GetMapping("/api/supporter/tickets/inbox/{page}/{count}")
     public ResponseEntity<ListTickets> received(HttpServletRequest request, @PathVariable (name = "page") String page,
+                                                @RequestParam (name = "from", defaultValue = "") String from,
+                                                @RequestParam (name = "id", defaultValue = "") String id,
+                                                @RequestParam (name = "date", defaultValue = "") String date,
                                                  @PathVariable (name = "count") String count) {
-        ListTickets tickets = ticketRepo.retrieveTicketsReceived( request.getUserPrincipal().getName(), page,count);
+        ListTickets tickets = ticketRepo.retrieveTicketsReceived( request.getUserPrincipal().getName(), page,count, from,id, date);
         tickets.getTicketList().stream().filter(c -> (c.getLastFrom().equals(request.getUserPrincipal())) ||
                 c.getLastTo().equals( request.getUserPrincipal().getName())).collect(Collectors.toList());
-        return new ResponseEntity<>(ticketRepo.retrieveTicketsReceived( request.getUserPrincipal().getName(), page,count), HttpStatus.OK);
+        return new ResponseEntity<>(tickets, HttpStatus.OK);
     }
 
     @PutMapping("/api/user/ticket/{ticketID}")
@@ -102,9 +105,12 @@ public class TicketsController {
     public ResponseEntity<ListTickets> pendingTickets(@RequestParam (name = "cat", defaultValue = "") String cat,
                                                       @RequestParam (name = "subCat", defaultValue = "") String subCat,
                                                       @RequestParam (name = "status", defaultValue = "") String status,
+                                                      @RequestParam (name = "from", defaultValue = "") String from,
+                                                      @RequestParam (name = "id", defaultValue = "") String id,
+                                                      @RequestParam (name = "date", defaultValue = "") String date,
                                                       @PathVariable (name = "page") String page,
                                                       @PathVariable (name = "count") String count) {
-        return new ResponseEntity<>(ticketRepo.retrieve(cat,subCat, status,page,count),HttpStatus.OK);
+        return new ResponseEntity<>(ticketRepo.retrieve(cat,subCat, status,page,count, from, id,  date),HttpStatus.OK);
     }
 
 }

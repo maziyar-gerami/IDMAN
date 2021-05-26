@@ -18,11 +18,15 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Message;
 import parsso.idman.Models.Tickets.Ticket;
+import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.TicketRepo;
+import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -39,6 +43,11 @@ public class TicketRepoImpl implements TicketRepo {
     Logger logger ;
     String model = "Tickets";
 
+    @Autowired
+    UserRepo userRepo;
+
+    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+
 
     @Override
     public HttpStatus sendTicket(Ticket ticket, String userid) {
@@ -46,7 +55,7 @@ public class TicketRepoImpl implements TicketRepo {
             logger = LogManager.getLogger(userid);
 
             List<Message> messages = new LinkedList<>();
-            messages.add(new Message(userid, ticket.getMessage()));
+            messages.add(new Message(userRepo.retrieveUsers(userid), ticket.getMessage()));
 
             Ticket ticketToSave = new Ticket(userid, ticket.getSubject(),messages);
 
@@ -63,6 +72,8 @@ public class TicketRepoImpl implements TicketRepo {
 
     @Override
     public Ticket retrieveTicket(String ticketID) {
+
+
 
         Query query = new Query(Criteria.where("ID").is(ticketID));
         try {
@@ -96,7 +107,7 @@ public class TicketRepoImpl implements TicketRepo {
             to = ticket.getLastFrom();
 
         ticket.setTo(userid);
-        messages.add(new Message(userid, to, replyTicket.getMessage()));
+        messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
 
         Ticket ticketToSave = new Ticket(ticket,messages);
         ticketToSave.setStatus(st);
@@ -218,13 +229,32 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public ListTickets retrieveTicketsReceived (String userId, String page, String count) {
+    public ListTickets retrieveTicketsReceived (String userId, String page, String count, String from, String ticketId, String date) {
 
         int skip = (Integer.valueOf(page)-1) * Integer.valueOf(count);
 
         int limit = Integer.valueOf(count);
 
         Query query = new Query(Criteria.where("to").is(userId).and("status").is(1)).skip(skip).limit(limit);
+
+        if (!from.equals(""))
+            query.addCriteria(Criteria.where("from").is(from));
+
+        if (!ticketId.equals(""))
+            query.addCriteria(Criteria.where("ID").is(ticketId));
+
+        if(!date.equals("")){
+            String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+            String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
+            String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
+
+            long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+            long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+
+            query.addCriteria(Criteria.where("creationTime").gte(eventEndDate).lte(eventEndDate));
+
+            query.addCriteria(Criteria.where("_id").gte(eventStartDate).lte(eventEndDate));
+        }
 
         List<Ticket> ticketList = null;
 
@@ -253,7 +283,9 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public ListTickets retrieve(String cat, String subCat, String status, String page, String count) {
+    public ListTickets retrieve(String cat, String subCat, String status, String page, String count,String from, String ticketId, String date) {
+
+
         int skip = (Integer.valueOf(page)-1) * Integer.valueOf(count);
         int limit = Integer.valueOf(count);
         int st;
@@ -263,17 +295,35 @@ public class TicketRepoImpl implements TicketRepo {
             st = -1;
         }
         Query query;
-        if (status.equals(""))
-            query = new Query(new Criteria());
+        if (st == -1)
+            query = new Query();
         else
             query = new Query(Criteria.where("status").is(st));
-
-        query.skip(skip).limit(limit);
 
         if (!cat.equals(""))
                 query.addCriteria(Criteria.where("category").is(cat));
             if (!subCat.equals(""))
                 query.addCriteria(Criteria.where("subCategory").is(subCat));
+
+
+        if (!from.equals(""))
+            query.addCriteria(Criteria.where("from").is(from));
+
+        if (!ticketId.equals(""))
+            query.addCriteria(Criteria.where("ID").is(ticketId));
+
+        if(!date.equals("")){
+            String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+            String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
+            String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
+
+            long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+            long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+
+            query.addCriteria(Criteria.where("creationTime").gte(eventEndDate).lte(eventEndDate));
+
+            query.addCriteria(Criteria.where("_id").gte(eventStartDate).lte(eventEndDate));
+        }
 
             int ticketCount  = ticketsCount(cat,subCat,st);
         List<Ticket> ticketList =  mongoTemplate.find(query, Ticket.class,collection);

@@ -670,20 +670,21 @@ public class UserRepoImpl implements UserRepo {
                 } catch (Exception e) {
                     user.setUnDeletable(false);
                 }
-
+            //TODO: Uncomment it
+                /*
 
             try {
 
-                skyRoom = skyroomRepo.Run(user);
+                //skyRoom = skyroomRepo.Run(user);
             } catch (IOException e) {
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom Dara").toString());
 
             }
 
 
-            user.setSkyRoom(skyRoom);
+            //user.setSkyRoom(skyRoom);
 
-
+                 */
             }
 
 

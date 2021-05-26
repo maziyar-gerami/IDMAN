@@ -13,6 +13,7 @@ import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Setter
@@ -26,6 +27,8 @@ public class Ticket {
     String to;
     String lastFrom;
     String lastTo;
+    String lastFromDisplayName;
+    String lastToDisplayName;
     String subject;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     String message;
@@ -50,10 +53,10 @@ public class Ticket {
     }
 
     public Ticket(String from, String subject, List<Message> messages) {
-        this.ID = UUID.randomUUID().toString();
         this.from = from;
         this.to = "SUPPORTER";
         this.creationTime = new Date().getTime();
+        this.ID = new Random().nextInt(899)+100+ "-"+ getCreationTime().toString().substring(7);
         this.subject = subject;
         this.messages = messages;
     }
@@ -100,5 +103,13 @@ public class Ticket {
 
     public String getLastTo() {
         return this.getMessages().get(this.getMessages().size()-1).getTo();
+    }
+
+    public String getLastFromDisplayName() {
+        return this.getMessages().get(this.getMessages().size()-1).getFromDisplayName();
+    }
+
+    public String getLastToDisplayName() {
+        return this.getMessages().get(this.getMessages().size()-1).getToDisplayName();
     }
 }

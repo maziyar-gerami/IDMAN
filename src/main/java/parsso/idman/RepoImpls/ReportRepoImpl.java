@@ -22,7 +22,7 @@ import java.util.List;
 public class ReportRepoImpl implements ReportRepo {
 
     private static final String mainCollection = Variables.col_log;
-    ZoneId zoneId = ZoneId.of("UTC+04:30");
+    ZoneId zoneId = ZoneId.of("Asia/Tehran");
 
 
     Instant instant = Instant.now(); //can be LocalDateTime
