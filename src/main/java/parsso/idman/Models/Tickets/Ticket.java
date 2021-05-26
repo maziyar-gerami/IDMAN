@@ -27,8 +27,6 @@ public class Ticket {
     String to;
     String lastFrom;
     String lastTo;
-    String lastFromDisplayName;
-    String lastToDisplayName;
     String subject;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     String message;
@@ -47,6 +45,8 @@ public class Ticket {
     @JsonIgnore
     List<String> deleteFor;
     List<Message> messages;
+
+
 
     public Ticket(){
 
@@ -105,11 +105,19 @@ public class Ticket {
         return this.getMessages().get(this.getMessages().size()-1).getTo();
     }
 
-    public String getLastFromDisplayName() {
-        return this.getMessages().get(this.getMessages().size()-1).getFromDisplayName();
+    public String getFrom() {
+        return from.toLowerCase();
     }
 
-    public String getLastToDisplayName() {
-        return this.getMessages().get(this.getMessages().size()-1).getToDisplayName();
+    public void setFrom(String from) {
+        this.from = from.toLowerCase();
+    }
+
+    public String getTo() {
+        return to.toLowerCase();
+    }
+
+    public void setTo(String to) {
+        this.to = to.toLowerCase();
     }
 }

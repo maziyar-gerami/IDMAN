@@ -219,9 +219,7 @@ public class TicketRepoImpl implements TicketRepo {
         int limit = Integer.valueOf(count);
 
         Query query = new Query(Criteria.where("from").is(userId)).skip(skip).limit(limit);
-        List<Ticket> ticketList = null;
-
-            ticketList =  mongoTemplate.find(query, Ticket.class ,collection);
+        List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class ,collection);
 
             int size = (int)mongoTemplate.count(query,collection);
             return new ListTickets(size,ticketList, (int) Math.floor(size/limit));
