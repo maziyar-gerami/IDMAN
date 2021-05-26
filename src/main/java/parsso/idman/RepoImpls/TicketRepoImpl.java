@@ -251,9 +251,8 @@ public class TicketRepoImpl implements TicketRepo {
             long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
             long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
 
-            query.addCriteria(Criteria.where("creationTime").gte(eventEndDate).lte(eventEndDate));
+            query.addCriteria(Criteria.where("creationTime").gte(eventStartDate).lte(eventEndDate));
 
-            query.addCriteria(Criteria.where("_id").gte(eventStartDate).lte(eventEndDate));
         }
 
         List<Ticket> ticketList = null;
@@ -320,9 +319,9 @@ public class TicketRepoImpl implements TicketRepo {
             long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
             long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
 
-            query.addCriteria(Criteria.where("creationTime").gte(eventEndDate).lte(eventEndDate));
+            query.addCriteria(Criteria.where("creationTime").gte(eventStartDate).lte(eventEndDate));
 
-            query.addCriteria(Criteria.where("_id").gte(eventStartDate).lte(eventEndDate));
+
         }
 
             int ticketCount  = ticketsCount(cat,subCat,st);
