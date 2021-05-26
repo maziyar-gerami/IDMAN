@@ -77,11 +77,12 @@ public class TicketRepoImpl implements TicketRepo {
     public HttpStatus reply(String ticketID, String userid,Ticket replyTicket, String status) {
 
         logger = LogManager.getLogger(userid);
-        int st=-1;
+        int st;
 
         try{
             st = Integer.valueOf(status);
         }catch (Exception e){
+            st=1;
         }
 
         Ticket ticket = retrieveTicket(ticketID);
@@ -98,8 +99,7 @@ public class TicketRepoImpl implements TicketRepo {
         messages.add(new Message(userid, to, replyTicket.getMessage()));
 
         Ticket ticketToSave = new Ticket(ticket,messages);
-        if (st!=-1)
-        ticketToSave.setStatus(2);
+        ticketToSave.setStatus(st);
 
         if(ticket.getTo().equals("SUPPORTER"))
             ticketToSave.setTo(userid);
