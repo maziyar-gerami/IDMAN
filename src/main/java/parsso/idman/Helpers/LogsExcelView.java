@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Models.Logs.Report;
+import parsso.idman.Models.Time;
 import parsso.idman.Repos.ReportRepo;
 import parsso.idman.Utils.Convertor.DateConverter;
 
@@ -47,7 +48,7 @@ public class LogsExcelView extends AbstractXlsView {
         // create header row
         HSSFRow header = sheet.createRow(0);
 
-        header.createCell(0).setCellValue("userId");
+        header.createCell(0).setCellValue("Functor userID");
         header.getCell(0).setCellStyle(style);
 
         header.createCell(1).setCellValue("Message");
@@ -62,7 +63,6 @@ public class LogsExcelView extends AbstractXlsView {
         header.createCell(4).setCellValue("Details");
         header.getCell(4).setCellStyle(style);
 
-
         // create data rows
         int rowCount = 1;
         DateConverter dateConverter = new DateConverter();
@@ -70,10 +70,11 @@ public class LogsExcelView extends AbstractXlsView {
         for (Report report : reports) {
             dateConverter.gregorianToPersian(report.getDateTime().getYear(), report.getDateTime().getMonth(), report.getDateTime().getDay());
             HSSFRow aRow = sheet.createRow(rowCount++);
+            Time time = Time.longToPersianTime(report.getMillis());
             aRow.createCell(0).setCellValue(report.getLoggerName());
             aRow.createCell(1).setCellValue(report.getMessage());
-            aRow.createCell(2).setCellValue(dateConverter.getYear() + "/" + dateConverter.getMonth() + "/" + dateConverter.getDay());
-            aRow.createCell(3).setCellValue(report.getDateTime().getHours() + ":" + report.getDateTime().getMinutes() + ":" + report.getDateTime().getSeconds());
+            aRow.createCell(2).setCellValue(time.getYear() + "/" + time.getMonth() + "/" + time.getDay());
+            aRow.createCell(3).setCellValue(time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds());
             aRow.createCell(4).setCellValue(report.getDetails());
         }
 

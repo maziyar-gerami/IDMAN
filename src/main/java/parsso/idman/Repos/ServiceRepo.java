@@ -25,11 +25,11 @@ public interface ServiceRepo {
 
     Service retrieveService(long id) throws IOException, ParseException;
 
-    LinkedList<String> deleteServices(String doerID,JSONObject files) throws IOException;
+    LinkedList<String> deleteServices(String doerID, JSONObject files) throws IOException;
 
     String uploadMetadata(MultipartFile file);
 
-    HttpStatus updateOuIdChange(String doerID,Service service, long sid, String name, String oldOu, String newOu) throws IOException;
+    HttpStatus updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException;
 
     HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException;
 

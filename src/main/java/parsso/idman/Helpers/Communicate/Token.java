@@ -24,7 +24,7 @@ import java.util.UUID;
 @Service
 public class Token {
 
-    public static String collection =   Variables.col_usersExtraInfo;
+    public static String collection = Variables.col_usersExtraInfo;
     @Autowired
     BuildAttributes buildAttributes;
     @Autowired
@@ -152,7 +152,7 @@ public class Token {
 
 
         try {
-            userRepo.update(user.getUserId(),user.getUserId(), user);
+            userRepo.update(user.getUserId(), user.getUserId(), user);
             mongoTemplate.save(usersExtraInfo, collection);
 
         } catch (Exception e) {

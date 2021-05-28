@@ -32,16 +32,14 @@ import java.util.*;
 @Component
 public class SamlServiceHelper {
 
-    private final String collection =  Variables.col_services;
+    final String model = "Service";
+    private final String collection = Variables.col_services;
     @Value("${services.folder.path}")
     String path;
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
     ServiceRepo serviceRepo;
-
-
-    final String model = "Service";
 
     public SamlService buildSamlService(JSONObject jo) {
 
@@ -213,7 +211,6 @@ public class SamlServiceHelper {
         String json = null;
 
 
-
         if (service != null) {
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -283,8 +280,8 @@ public class SamlServiceHelper {
         try {
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
-            logger.warn(new ReportMessage(model,String.valueOf(id),"","update",
-                    "failed","writing file").toString());
+            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update",
+                    "failed", "writing file").toString());
         }
 
         FileWriter file;
@@ -300,11 +297,11 @@ public class SamlServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            logger.warn(new ReportMessage(model,String.valueOf(id),"","update", "success","").toString());
+            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update", "success", "").toString());
             return HttpStatus.OK;
         } catch (IOException e) {
-            logger.warn(new ReportMessage(model,String.valueOf(id),"","update",
-                    "failed","writing file").toString());
+            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update",
+                    "failed", "writing file").toString());
             return HttpStatus.FORBIDDEN;
         }
 

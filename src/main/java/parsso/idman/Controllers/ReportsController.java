@@ -47,7 +47,7 @@ public class ReportsController {
 
     @GetMapping("/api/reports/users/date/{date}/{page}/{n}")
     public ResponseEntity<ListReports> retrieveByDate(HttpServletRequest request, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-        return new ResponseEntity<>(reportRepo.getLogsByDate(date,page,n), HttpStatus.OK);
+        return new ResponseEntity<>(reportRepo.getLogsByDate(date, page, n), HttpStatus.OK);
     }
 
     @GetMapping("/api/reports/users/{id}/date/{date}/{page}/{n}")

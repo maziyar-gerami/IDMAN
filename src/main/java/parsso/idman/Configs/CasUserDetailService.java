@@ -1,5 +1,6 @@
 package parsso.idman.Configs;
 
+
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Users.UsersExtraInfo;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -32,13 +32,13 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
         AttributePrincipal principal = casAssertionAuthenticationToken.getAssertion().getPrincipal();
         Collection<SimpleGrantedAuthority> collection = new ArrayList<SimpleGrantedAuthority>();
         Query query = new Query(Criteria.where("userId").is(principal.getName().toLowerCase()));
-        String collection1 =   Variables.col_usersExtraInfo;
+        String collection1 = Variables.col_usersExtraInfo;
 
-        UsersExtraInfo usersExtraInfo =  mongoTemplate.findOne(query, UsersExtraInfo.class, collection1);
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection1);
 
-        if (usersExtraInfo==null){
+        if (usersExtraInfo == null) {
             usersExtraInfo = new UsersExtraInfo(principal.getName());
-            mongoTemplate.save(usersExtraInfo,collection1);
+            mongoTemplate.save(usersExtraInfo, collection1);
         }
 
         if (usersExtraInfo.getRole() == null)
@@ -47,7 +47,7 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
         else if (usersExtraInfo.getRole().equals("SUPERADMIN") || usersExtraInfo.getUserId().equalsIgnoreCase("su"))
             collection.add(new SimpleGrantedAuthority("ROLE_" + "SUPERADMIN"));
 
-        else if (usersExtraInfo.getRole()!=null)
+        else if (usersExtraInfo.getRole() != null)
             collection.add(new SimpleGrantedAuthority("ROLE_" + usersExtraInfo.getRole()));
 
         return new User(principal.getName(), "", collection);

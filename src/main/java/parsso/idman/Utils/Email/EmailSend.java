@@ -16,9 +16,9 @@ public class EmailSend {
     // Recipient's email ID needs to be mentioned.
 
     // Sender's email ID needs to be mentioned
-    @Value("${address.email.sender}")
+    @Value("${spring.mail.username}")
     String from;
-    @Value("${password.email.sender}")
+    @Value("${spring.mail.password}")
     String password;
 
     // Assuming you are sending email from through gmails
@@ -94,7 +94,6 @@ public class EmailSend {
         String end = "\n\nبرای جلوگیری از غیرفعال شدن حساب کاربری، هرچه زودتر به تغییر رمز عبور خود از طریق پارسو اقدام فرمایید.";
 
 
-
         // Get system properties
         Properties properties = System.getProperties();
 
@@ -132,7 +131,7 @@ public class EmailSend {
             message.setSubject(subject);
 
             // Now set the actual message
-            message.setText(user.getDisplayName().substring(0, user.getDisplayName().indexOf(' '))+ start+day+middle+end, "UTF8");
+            message.setText(user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')) + start + day + middle + end, "UTF8");
 
             // Send message
             Transport.send(message);

@@ -1,5 +1,5 @@
-
 package parsso.idman.Utils.SMS.Magfa.Classes;
+
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for sendMessage complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="sendMessage">
  *   &lt;complexContent>
@@ -28,18 +28,16 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "sendMessage", propOrder = {
-    "alphabet",
-    "id",
-    "parts",
-    "recipient",
-    "status",
-    "tariff",
-    "userId"
+        "alphabet",
+        "id",
+        "parts",
+        "recipient",
+        "status",
+        "tariff",
+        "userId"
 })
 public class SendMessage {
 
@@ -53,11 +51,9 @@ public class SendMessage {
 
     /**
      * Gets the value of the alphabet property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getAlphabet() {
         return alphabet;
@@ -65,11 +61,9 @@ public class SendMessage {
 
     /**
      * Sets the value of the alphabet property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setAlphabet(String value) {
         this.alphabet = value;
@@ -77,7 +71,6 @@ public class SendMessage {
 
     /**
      * Gets the value of the id property.
-     * 
      */
     public long getId() {
         return id;
@@ -85,7 +78,6 @@ public class SendMessage {
 
     /**
      * Sets the value of the id property.
-     * 
      */
     public void setId(long value) {
         this.id = value;
@@ -93,7 +85,6 @@ public class SendMessage {
 
     /**
      * Gets the value of the parts property.
-     * 
      */
     public int getParts() {
         return parts;
@@ -101,7 +92,6 @@ public class SendMessage {
 
     /**
      * Sets the value of the parts property.
-     * 
      */
     public void setParts(int value) {
         this.parts = value;
@@ -109,11 +99,9 @@ public class SendMessage {
 
     /**
      * Gets the value of the recipient property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getRecipient() {
         return recipient;
@@ -121,11 +109,9 @@ public class SendMessage {
 
     /**
      * Sets the value of the recipient property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setRecipient(String value) {
         this.recipient = value;
@@ -133,7 +119,6 @@ public class SendMessage {
 
     /**
      * Gets the value of the status property.
-     * 
      */
     public int getStatus() {
         return status;
@@ -141,7 +126,6 @@ public class SendMessage {
 
     /**
      * Sets the value of the status property.
-     * 
      */
     public void setStatus(int value) {
         this.status = value;
@@ -149,7 +133,6 @@ public class SendMessage {
 
     /**
      * Gets the value of the tariff property.
-     * 
      */
     public double getTariff() {
         return tariff;
@@ -157,7 +140,6 @@ public class SendMessage {
 
     /**
      * Sets the value of the tariff property.
-     * 
      */
     public void setTariff(double value) {
         this.tariff = value;
@@ -165,7 +147,6 @@ public class SendMessage {
 
     /**
      * Gets the value of the userId property.
-     * 
      */
     public long getUserId() {
         return userId;
@@ -173,7 +154,6 @@ public class SendMessage {
 
     /**
      * Sets the value of the userId property.
-     * 
      */
     public void setUserId(long value) {
         this.userId = value;

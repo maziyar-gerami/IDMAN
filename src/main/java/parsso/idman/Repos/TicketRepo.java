@@ -4,11 +4,8 @@ package parsso.idman.Repos;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Ticket;
-
-import java.util.List;
 
 @Service
 public interface TicketRepo {
@@ -19,7 +16,7 @@ public interface TicketRepo {
 
     HttpStatus reply(String ticketID, String user, Ticket ticket, String status);
 
-    HttpStatus deleteTicket(String doer,JSONObject jsonObject);
+    HttpStatus deleteTicket(String doer, JSONObject jsonObject);
 
     HttpStatus updateTicketStatus(String doer, int status, JSONObject jsonObject);
 

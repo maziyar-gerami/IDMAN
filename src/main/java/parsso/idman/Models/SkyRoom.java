@@ -19,8 +19,7 @@ public class SkyRoom {
             this.enable = true;
             this.presenter = presenter;
             this.students = students;
-        }
-        else {
+        } else {
             this.enable = false;
             this.presenter = null;
             this.presenter = null;

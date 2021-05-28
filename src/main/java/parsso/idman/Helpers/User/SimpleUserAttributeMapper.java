@@ -18,8 +18,8 @@ public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInf
         UsersExtraInfo user = new UsersExtraInfo();
 
 
-        if (attributes==null||attributes.get("uid") == null)
-            return  null;
+        if (attributes == null || attributes.get("uid") == null)
+            return null;
 
         user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
         user.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);

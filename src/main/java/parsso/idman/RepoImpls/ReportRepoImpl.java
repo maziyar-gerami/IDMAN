@@ -28,7 +28,6 @@ public class ReportRepoImpl implements ReportRepo {
     Instant instant = Instant.now(); //can be LocalDateTime
 
 
-
     @Autowired
     MongoTemplate mongoTemplate;
 

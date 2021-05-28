@@ -12,6 +12,8 @@ import java.util.Date;
 @Getter
 public class Report {
     @JsonIgnore
+    protected char separator = ':';
+    @JsonIgnore
     String level;
     Time dateTime;
     String loggerName;
@@ -34,16 +36,14 @@ public class Report {
     Date date;
     @JsonIgnore
     String thrown;
-    @JsonIgnore
-    protected char separator = ':';
 
-    public String getDetails(){
+    public String getDetails() {
         return source.toString();
     }
 
     @Setter
     @Getter
-    private class Source{
+    private class Source {
         String className;
         String methodName;
         String fileName;
@@ -53,9 +53,9 @@ public class Report {
         public String toString() {
             return
                     "className='" + className + separator +
-                    ", methodName='" + methodName + separator +
-                    ", fileName='" + fileName + separator +
-                    ", lineNumber='" + lineNumber + separator;
+                            ", methodName='" + methodName + separator +
+                            ", fileName='" + fileName + separator +
+                            ", lineNumber='" + lineNumber + separator;
         }
     }
 

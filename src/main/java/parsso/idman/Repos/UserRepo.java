@@ -54,19 +54,19 @@ public interface UserRepo {
 
     int sendEmail(String email, String uid, String cid, String answer);
 
-    HttpStatus updatePass(String userId,String oldPass, String token);
+    HttpStatus updatePass(String userId, String oldPass, String token);
 
     JSONObject importFileUsers(String doerId, MultipartFile file, int[] sequence, boolean hasHeader) throws IOException;
 
     Dashboard retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException;
 
-    HttpStatus enable(String doerID,String uid);
+    HttpStatus enable(String doerID, String uid);
 
     String createUrl(String userId, String token);
 
-    HttpStatus disable(String doerID,String uid);
+    HttpStatus disable(String doerID, String uid);
 
-    HttpStatus unlock(String doerID,String uid);
+    HttpStatus unlock(String doerID, String uid);
 
     int requestToken(User user);
 
@@ -74,7 +74,7 @@ public interface UserRepo {
 
     ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);
 
-    HttpStatus massUsersGroupUpdate(String doerID,String groupId, JSONObject gu);
+    HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu);
 
     HttpStatus syncUsersDBs();
 

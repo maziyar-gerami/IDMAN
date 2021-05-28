@@ -29,7 +29,7 @@ public class SystemRefreshController {
     }
 
     @GetMapping("/api/refresh/captchas")
-    public HttpEntity<HttpStatus> captchas(HttpServletRequest request){
+    public HttpEntity<HttpStatus> captchas(HttpServletRequest request) {
         return new ResponseEntity<>(systemRefresh.captchaRefresh(request.getUserPrincipal().getName()));
     }
 

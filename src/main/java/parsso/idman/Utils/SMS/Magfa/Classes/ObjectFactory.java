@@ -1,22 +1,21 @@
-
 package parsso.idman.Utils.SMS.Magfa.Classes;
+
 
 import javax.xml.bind.annotation.XmlRegistry;
 
 
 /**
- * This object contains factory methods for each 
- * Java content interface and Java element interface 
- * generated in the com.company package. 
- * <p>An ObjectFactory allows you to programatically 
- * construct new instances of the Java representation 
- * for XML content. The Java representation of XML 
- * content can consist of schema derived interfaces 
- * and classes representing the binding of schema 
- * type definitions, element declarations and model 
- * groups.  Factory methods for each of these are 
+ * This object contains factory methods for each
+ * Java content interface and Java element interface
+ * generated in the com.company package.
+ * <p>An ObjectFactory allows you to programatically
+ * construct new instances of the Java representation
+ * for XML content. The Java representation of XML
+ * content can consist of schema derived interfaces
+ * and classes representing the binding of schema
+ * type definitions, element declarations and model
+ * groups.  Factory methods for each of these are
  * provided in this class.
- * 
  */
 @XmlRegistry
 public class ObjectFactory {
@@ -24,14 +23,12 @@ public class ObjectFactory {
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.company
-     * 
      */
     public ObjectFactory() {
     }
 
     /**
      * Create an instance of {@link LongArray }
-     * 
      */
     public LongArray createLongArray() {
         return new LongArray();
@@ -39,7 +36,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link StringArray }
-     * 
      */
     public StringArray createStringArray() {
         return new StringArray();
@@ -47,7 +43,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link IntArray }
-     *
      */
     public IntArray createIntArray() {
         return new IntArray();
@@ -55,7 +50,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link CustomerReturnIncomingFormat }
-     *
      */
     public CustomerReturnIncomingFormat createCustomerReturnIncomingFormat() {
         return new CustomerReturnIncomingFormat();
@@ -63,7 +57,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link MessagesResult }
-     *
      */
     public MessagesResult createMessagesResult() {
         return new MessagesResult();
@@ -71,7 +64,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SendResult }
-     *
      */
     public SendResult createSendResult() {
         return new SendResult();
@@ -79,7 +71,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link CreditResult }
-     *
      */
     public CreditResult createCreditResult() {
         return new CreditResult();
@@ -87,7 +78,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DeliveryResult }
-     *
      */
     public DeliveryResult createDeliveryResult() {
         return new DeliveryResult();
@@ -95,7 +85,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SendMessage }
-     *
      */
     public SendMessage createSendMessage() {
         return new SendMessage();
@@ -103,7 +92,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DatedCustomerReturnIncomingFormat }
-     *
      */
     public DatedCustomerReturnIncomingFormat createDatedCustomerReturnIncomingFormat() {
         return new DatedCustomerReturnIncomingFormat();
@@ -111,7 +99,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link MessageIdResult }
-     *
      */
     public MessageIdResult createMessageIdResult() {
         return new MessageIdResult();
@@ -119,7 +106,6 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DeliveryStatus }
-     *
      */
     public DeliveryStatus createDeliveryStatus() {
         return new DeliveryStatus();

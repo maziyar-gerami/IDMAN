@@ -42,7 +42,7 @@ public class PubMessageController {
     }
 
     @GetMapping("/api/users/publicMessages")
-    public ResponseEntity<List<PublicMessage>> getAllPublicMessage(@RequestParam (name="id", defaultValue = "") String id) {
+    public ResponseEntity<List<PublicMessage>> getAllPublicMessage(@RequestParam(name = "id", defaultValue = "") String id) {
         return new ResponseEntity<>(pubMessageRepo.showAllPubicMessages(id), HttpStatus.OK);
     }
 
@@ -59,6 +59,6 @@ public class PubMessageController {
 
     @DeleteMapping("/api/users/publicMessages")
     public ResponseEntity<HttpStatus> deletePublicMessage(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
-        return new ResponseEntity<>(pubMessageRepo.deletePubicMessage(request.getUserPrincipal().getName(),jsonObject));
+        return new ResponseEntity<>(pubMessageRepo.deletePubicMessage(request.getUserPrincipal().getName(), jsonObject));
     }
 }

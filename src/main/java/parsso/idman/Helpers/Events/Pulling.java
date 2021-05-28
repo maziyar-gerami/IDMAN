@@ -22,7 +22,7 @@ import java.util.List;
 public class Pulling {
 
     public static String mainCollection = "MongoDbCasEventRepository";
-    public static String secondaryCollection =  Variables.col_events;
+    public static String secondaryCollection = Variables.col_events;
     @Autowired
     EventRepo eventRepo;
     @Autowired

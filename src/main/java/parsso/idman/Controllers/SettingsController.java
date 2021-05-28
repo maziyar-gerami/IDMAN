@@ -24,28 +24,21 @@ import java.util.concurrent.ScheduledExecutorService;
 @RestController
 public class SettingsController {
 
-    int millis= 3600000;
-
-    @Autowired
-    private SettingsRepo settingsRepo;
-
+    int millis = 3600000;
     @Autowired
     PasswordSettings passwordSettings;
-
-    @Value("${interval.check.pass.hours}")
-    private long intervalCheckPassTime;
-
     @Autowired
     UserRepo userRepo;
-
     @Autowired
     InstantMessage instantMessage;
-
     @Autowired
     Email email;
-
     @Autowired
     ConfigRepo configRepo;
+    @Autowired
+    private SettingsRepo settingsRepo;
+    @Value("${interval.check.pass.hours}")
+    private long intervalCheckPassTime;
 
     @GetMapping("/api/settings/notification/email")
     public ResponseEntity<HttpStatus> enableEmailNotification() {
@@ -60,7 +53,7 @@ public class SettingsController {
                 while (true) {
 
                     settingsRepo.emailNotification();
-                    Thread.sleep(intervalCheckPassTime*millis);
+                    Thread.sleep(intervalCheckPassTime * millis);
 
                 }
             }
@@ -70,7 +63,7 @@ public class SettingsController {
             if (t.getName().equals("thread-pulling-email-passExpire")) {
                 try {
                     t.interrupt();
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -94,9 +87,9 @@ public class SettingsController {
             @SneakyThrows
             @Override
             public void run() {
-                while (true){
+                while (true) {
                     settingsRepo.messageNotification();
-                    Thread.sleep(intervalCheckPassTime*millis);
+                    Thread.sleep(intervalCheckPassTime * millis);
                 }
             }
         };
@@ -105,7 +98,7 @@ public class SettingsController {
             if (t.getName().equals("thread-pulling-sms-passExpire")) {
                 try {
                     t.interrupt();
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -117,9 +110,7 @@ public class SettingsController {
 
         if (thread.isAlive()) {
             thread.interrupt();
-        }
-
-        else
+        } else
             thread.start();
 
 
@@ -129,7 +120,7 @@ public class SettingsController {
     @GetMapping("/api/settings/switches")
     public ResponseEntity<List<Setting>> listSwitches() throws IOException {
 
-        return new ResponseEntity<>(settingsRepo.retrieveTFSetting(),HttpStatus.OK);
+        return new ResponseEntity<>(settingsRepo.retrieveTFSetting(), HttpStatus.OK);
 
     }
 }

@@ -31,11 +31,9 @@ import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Models.Users.User;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.FilesStorageService;
-import parsso.idman.Repos.SystemRefresh;
 import parsso.idman.Repos.UserRepo;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,8 +48,17 @@ import java.util.List;
 public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
 
     private static final int millis = 3600000;
+    @Value("${max.pwd.lifetime.hours}")
+    private static final long maxPwdLifetime = 10;
+    private static final Logger logger = LogManager.getLogger("System");
+    @Value("${expire.pwd.message.hours}")
+    private static long expirePwdMessageTime;
+    @Value("${interval.check.pass.hours}")
+    private static long intervalCheckPassTime;
     @Resource
     FilesStorageService storageService;
+    @Autowired
+    CasUserDetailService casUserDetailService;
     @Value("${cas.url.logout.path}")
     private String casLogout;
     @Value("${cas.url.validator}")
@@ -59,27 +66,12 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Value("${base.url}")
     private String baseurl;
 
-    @Value("${administrator.ou.id}")
-    private String adminId;
-
-    @Value("${max.pwd.lifetime.hours}")
-    private static final long maxPwdLifetime=10;
-    @Value("${expire.pwd.message.hours}")
-    private static long expirePwdMessageTime;
-    @Value("${interval.check.pass.hours}")
-    private static long intervalCheckPassTime;
-    @Autowired
-    CasUserDetailService casUserDetailService;
-
-
-    private static final Logger logger = LogManager.getLogger("System");
-
     /**
      * The entry point of application.
      *
      * @param args the input arguments
      */
-    public static void main(String[] args) throws  Exception {
+    public static void main(String[] args) throws Exception {
 
         ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
         //new SystemRefreshRepoImpl();
@@ -89,8 +81,8 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
             @SneakyThrows
             @Override
             public void run() {
-                while (true){
-                    Thread.sleep(intervalCheckPassTime*millis);
+                while (true) {
+                    Thread.sleep(intervalCheckPassTime * millis);
                     //pulling(context);
                 }
             }
@@ -121,18 +113,18 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
     private static void pulling(ConfigurableApplicationContext context) throws ParseException {
 
-        long deadline = maxPwdLifetime*24*millis;
-        long message = expirePwdMessageTime*24*millis;
+        long deadline = maxPwdLifetime * 24 * millis;
+        long message = expirePwdMessageTime * 24 * millis;
 
-        List <User> users = context.getBean(UserRepo.class).retrieveUsersFull();
+        List<User> users = context.getBean(UserRepo.class).retrieveUsersFull();
 
         InstantMessage instantMessage1 = context.getBean(InstantMessage.class); // <-- here
 
         for (User user : users) {
 
             Date pwdChangedTime = new SimpleDateFormat("yyyyMMddHHmmss").parse(String.valueOf(user.getPasswordChangedTime()));
-            if ((deadline/ millis-((new Date().getTime()-pwdChangedTime.getTime())/ millis))<=(message/ millis))
-                instantMessage1.sendWarnExpireMessage(user, String.valueOf(deadline/ millis-((new Date().getTime()-pwdChangedTime.getTime())/ millis)));
+            if ((deadline / millis - ((new Date().getTime() - pwdChangedTime.getTime()) / millis)) <= (message / millis))
+                instantMessage1.sendWarnExpireMessage(user, String.valueOf(deadline / millis - ((new Date().getTime() - pwdChangedTime.getTime()) / millis)));
         }
     }
 
@@ -245,7 +237,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
     @Service
     @Getter
-    public static class Pullings{
+    public static class Pullings {
         @Autowired
         UserRepoImpl userRepo;
 

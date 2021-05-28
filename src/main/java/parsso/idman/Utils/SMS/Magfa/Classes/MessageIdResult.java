@@ -1,5 +1,5 @@
-
 package parsso.idman.Utils.SMS.Magfa.Classes;
+
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for messageIdResult complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="messageIdResult">
  *   &lt;complexContent>
@@ -23,13 +23,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "messageIdResult", propOrder = {
-    "status",
-    "mid"
+        "status",
+        "mid"
 })
 public class MessageIdResult {
 
@@ -38,7 +36,6 @@ public class MessageIdResult {
 
     /**
      * Gets the value of the status property.
-     * 
      */
     public int getStatus() {
         return status;
@@ -46,7 +43,6 @@ public class MessageIdResult {
 
     /**
      * Sets the value of the status property.
-     * 
      */
     public void setStatus(int value) {
         this.status = value;
@@ -54,7 +50,6 @@ public class MessageIdResult {
 
     /**
      * Gets the value of the mid property.
-     * 
      */
     public long getMid() {
         return mid;
@@ -62,7 +57,6 @@ public class MessageIdResult {
 
     /**
      * Sets the value of the mid property.
-     * 
      */
     public void setMid(long value) {
         this.mid = value;

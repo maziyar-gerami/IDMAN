@@ -97,7 +97,7 @@ public class AuditsExcelView extends AbstractXlsView {
             aRow.createCell(6).setCellValue(audit.getClientIpAddress());
             aRow.createCell(7).setCellValue(audit.getClientIpAddress());
 
-            if (rowCount==65536)
+            if (rowCount == 65536)
                 break;
         }
 

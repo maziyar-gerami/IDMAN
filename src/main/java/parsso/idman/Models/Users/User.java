@@ -7,13 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import parsso.idman.Models.SkyRoom;
 import parsso.idman.Models.Time;
 
 import java.util.ArrayList;
@@ -67,31 +64,30 @@ public class User implements UserDetails, Comparable {
     //SkyRoom skyRoom;
 
 
-
     public User() {
         locked = false;
         enabled = true;
     }
 
-    public String getExportEndTime(){
+    public String getExportEndTime() {
         return Time.getExportEndTime(getEndTime());
     }
 
     public String getExportMemberOf() {
-        if (getMemberOf()!=null && getMemberOf().size()!=0){
+        if (getMemberOf() != null && getMemberOf().size() != 0) {
             String groups = "";
-            for (String group: getMemberOf()) {
-                if(!groups.equals(""))
+            for (String group : getMemberOf()) {
+                if (!groups.equals(""))
                     groups += ", ";
                 groups += group;
             }
             return groups;
         }
-        return  "";
+        return "";
     }
 
     public String getStatus() {
-        if(this.status != null)
+        if (this.status != null)
             return this.status;
 
         if (this.isEnabled() && !this.isLocked())
@@ -111,7 +107,7 @@ public class User implements UserDetails, Comparable {
         List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
 
         if (this.getUserId().equalsIgnoreCase("su"))
-                list.add(new SimpleGrantedAuthority(PREFIX + "SUPERADMIN"));
+            list.add(new SimpleGrantedAuthority(PREFIX + "SUPERADMIN"));
 
         else
             list.add(new SimpleGrantedAuthority(PREFIX + this.getUsersExtraInfo().getRole()));

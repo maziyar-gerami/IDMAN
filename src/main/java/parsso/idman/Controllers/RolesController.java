@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
-
 @Controller
 public class RolesController {
 
@@ -32,19 +31,21 @@ public class RolesController {
     //*************************************** Pages ***************************************
 
     @GetMapping("/roles")
-    public String Roles() { return "roles"; }
+    public String Roles() {
+        return "roles";
+    }
 
     //*************************************** APIs ***************************************
 
 
     @GetMapping("/api/roles")
     public ResponseEntity<List<UserRole>> retrieveRoles() {
-        return new ResponseEntity<>(rolesRepo.retrieve(),rolesRepo.retrieve() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(rolesRepo.retrieve(), rolesRepo.retrieve() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/api/roles/{role}")
     public ResponseEntity<HttpStatus> updateTicket(HttpServletRequest request, @RequestBody JSONObject users, @PathVariable("role") String role) {
-        return new ResponseEntity<>(rolesRepo.updateRole(request.getUserPrincipal().getName(),role, users));
+        return new ResponseEntity<>(rolesRepo.updateRole(request.getUserPrincipal().getName(), role, users));
     }
 
 }

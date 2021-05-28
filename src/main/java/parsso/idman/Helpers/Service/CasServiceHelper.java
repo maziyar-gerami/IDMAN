@@ -32,7 +32,8 @@ import java.util.*;
 @Component
 public class CasServiceHelper {
 
-    private final String collection =  Variables.col_services;
+    final String model = "Service";
+    private final String collection = Variables.col_services;
     @Value("${services.folder.path}")
     String path;
     @Autowired
@@ -40,7 +41,6 @@ public class CasServiceHelper {
     @Autowired
     ServiceRepo serviceRepo;
     Logger logger = LoggerFactory.getLogger(CasServiceHelper.class);
-    final String model = "Service";
 
     public CasService buildCasService(JSONObject jo) {
 
@@ -287,8 +287,8 @@ public class CasServiceHelper {
         try {
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
-            logger.warn(new ReportMessage(model,String.valueOf(id),"","update",
-                    "failed","opening file").toString());
+            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update",
+                    "failed", "opening file").toString());
             return HttpStatus.FORBIDDEN;
         }
 
@@ -305,11 +305,11 @@ public class CasServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            logger.warn(new ReportMessage(model,String.valueOf(id),"","update", "success","").toString());
+            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update", "success", "").toString());
             return HttpStatus.OK;
         } catch (IOException e) {
-            logger.warn(new ReportMessage(model,String.valueOf(id),"","update",
-                    "failed","writing file").toString());
+            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update",
+                    "failed", "writing file").toString());
             return HttpStatus.FORBIDDEN;
         }
 

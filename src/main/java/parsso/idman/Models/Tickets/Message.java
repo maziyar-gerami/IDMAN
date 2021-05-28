@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.util.Date;
 
@@ -22,13 +21,10 @@ public class Message {
     @JsonIgnore
     private long creationLong;
 
-    public Time getCreationTime() {
-        return Time.longToPersianTime(creationLong);
-    }
-
-    public Message(){
+    public Message() {
 
     }
+
     public Message(User user, String body) {
         this.to = "SUPPORTER";
         this.toDisplayName = "پشتیبان";
@@ -45,5 +41,9 @@ public class Message {
         this.toDisplayName = to.getDisplayName();
         this.body = body;
         this.creationLong = new Date().getTime();
+    }
+
+    public Time getCreationTime() {
+        return Time.longToPersianTime(creationLong);
     }
 }

@@ -11,15 +11,12 @@ public class Level {
 
     User user;
 
-    enum levels {USER,PRESENTER,ADMIN,SUPPORTER,SUPERADMIN};
-
-
-    public Level(User doer, User user){
+    public Level(User doer, User user) {
         this.doer = doer;
         this.user = user;
     }
 
-    public int accessLevel(){
+    public int accessLevel() {
 
         if (user.getUserId().equalsIgnoreCase("su"))
             return 5;
@@ -40,21 +37,20 @@ public class Level {
 
     }
 
-    public boolean hasAccess(){
+    public boolean hasAccess() {
 
         if (doer.getUserId().equalsIgnoreCase("su"))
             return true;
 
-        else if (levels.valueOf(doer.getUsersExtraInfo().getRole()).compareTo(levels.valueOf(user.getUsersExtraInfo().getRole()))==0)
+        else if (levels.valueOf(doer.getUsersExtraInfo().getRole()).compareTo(levels.valueOf(user.getUsersExtraInfo().getRole())) == 0)
             return false;
 
-        else if (levels.valueOf(doer.getUsersExtraInfo().getRole()).compareTo(levels.valueOf(user.getUsersExtraInfo().getRole()))>0)
+        else if (levels.valueOf(doer.getUsersExtraInfo().getRole()).compareTo(levels.valueOf(user.getUsersExtraInfo().getRole())) > 0)
             return false;
 
-        else if (levels.valueOf(doer.getUsersExtraInfo().getRole()).compareTo(levels.valueOf(user.getUsersExtraInfo().getRole()))<0)
-            return true;
-
-        return false;
+        else return levels.valueOf(doer.getUsersExtraInfo().getRole()).compareTo(levels.valueOf(user.getUsersExtraInfo().getRole())) < 0;
 
     }
+
+    enum levels {USER, PRESENTER, ADMIN, SUPPORTER, SUPERADMIN}
 }

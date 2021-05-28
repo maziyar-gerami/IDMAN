@@ -105,7 +105,7 @@ public class AccessStrategy {
         String tf = seTime.substring(23);
 
         return (convertDate(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day))) +
-        'T' + hours + ':' + minutes + ':' + seconds + '.' + milliSeconds + tf;
+                'T' + hours + ':' + minutes + ':' + seconds + '.' + milliSeconds + tf;
 
     }
 
@@ -147,7 +147,7 @@ public class AccessStrategy {
 
         }
 
-        if (jsonObject.get("endpointUrl") != null && jsonObject.get("acceptableResponseCodes") != (null) ) {
+        if (jsonObject.get("endpointUrl") != null && jsonObject.get("acceptableResponseCodes") != (null)) {
 
             accessStrategy.setAtClass("org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
 

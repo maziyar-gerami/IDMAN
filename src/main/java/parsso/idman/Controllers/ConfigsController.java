@@ -24,21 +24,21 @@ import java.util.List;
 @Controller
 public class ConfigsController {
 
+    @Autowired
+    PasswordSettings passwordSettings;
+    @Autowired
+    UserRepo userRepo;
     @Qualifier("configRepoImpl")
 
     @Autowired
     private ConfigRepo configRepo;
 
-    @Autowired
-    PasswordSettings passwordSettings;
-
-    @Autowired
-    UserRepo userRepo;
-
     //*************************************** Pages ***************************************
 
     @GetMapping("/configs")
-    public String Configs(HttpServletRequest request) { return "configs"; }
+    public String Configs(HttpServletRequest request) {
+        return "configs";
+    }
 
     //*************************************** APIs ***************************************
 
@@ -60,14 +60,14 @@ public class ConfigsController {
 
     @PutMapping("/api/configs")
     public ResponseEntity<String> updateSettings(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException {
-        configRepo.updateSettings(request.getUserPrincipal().getName(),settings);
+        configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
         passwordSettings.update(settings);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/api/configs/system/{system}")
     public ResponseEntity<String> updateSettingsSystem(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException {
-        configRepo.updateSettings(request.getUserPrincipal().getName(),settings);
+        configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
         passwordSettings.update(settings);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -78,9 +78,9 @@ public class ConfigsController {
     }
 
     @GetMapping("/api/configs/restore/{cname}")
-    public ResponseEntity<HttpStatus> restoreSettings(HttpServletRequest request,@PathVariable String cname)
+    public ResponseEntity<HttpStatus> restoreSettings(HttpServletRequest request, @PathVariable String cname)
             throws IOException, ParseException, java.text.ParseException {
-        return new ResponseEntity<>(configRepo.restore(request.getUserPrincipal().getName(),cname));
+        return new ResponseEntity<>(configRepo.restore(request.getUserPrincipal().getName(), cname));
     }
 
     @GetMapping("/api/configs/reset")

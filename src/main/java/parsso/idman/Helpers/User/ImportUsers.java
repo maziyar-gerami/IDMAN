@@ -76,7 +76,6 @@ public class ImportUsers {
             user.setUserPassword(formatter.formatCellValue(row.getCell(sequence[10])));
 
 
-
             if ((row.getCell(sequence[11]) != null) && !(row.getCell(sequence[11]).equals("")))
                 try {
                     user.setEndTime(Time.setEndTime(formatter.formatCellValue(row.getCell(sequence[11]))));
@@ -86,8 +85,8 @@ public class ImportUsers {
 
             if (user != null && !user.getUserId().equals("")) {
 
-                if (user.getUserId()==null || user.getUserId().equals("")){
-                    if(user.getDisplayName() == null || user.getDisplayName()=="")
+                if (user.getUserId() == null || user.getUserId().equals("")) {
+                    if (user.getDisplayName() == null || user.getDisplayName() == "")
                         continue;
 
                     nUserIdEmpty++;
@@ -99,11 +98,11 @@ public class ImportUsers {
 
                 if (temp != null && temp.size() > 0) {
 
-                    if(temp.getAsString("invalidParameter")!= null)
+                    if (temp.getAsString("invalidParameter") != null)
                         invalidParameter.add(temp);
 
 
-                    else if(temp.getAsString("invalidGroups")!= null)
+                    else if (temp.getAsString("invalidGroups") != null)
                         invalidGroups.add(temp);
 
                     else
@@ -118,17 +117,16 @@ public class ImportUsers {
         }
 
 
-
         JSONObject finalJson = new JSONObject();
         finalJson.put("invalidGroups", invalidGroups);
         finalJson.put("repetitiveUsers", repetitiveUsers);
         finalJson.put("count", count);
         finalJson.put("nUnSuccessful", nUnSuccessful);
         finalJson.put("nSuccessful", count - nUnSuccessful);
-        finalJson.put("nRepetitive" , repetitiveUsers.size());
+        finalJson.put("nRepetitive", repetitiveUsers.size());
         finalJson.put("nInvalidGroups", invalidGroups.size());
-        finalJson.put("nEssentialParameterInvalid", invalidParameter.size() );
-        finalJson.put("nUserIdEmpty", nUserIdEmpty );
+        finalJson.put("nEssentialParameterInvalid", invalidParameter.size());
+        finalJson.put("nUserIdEmpty", nUserIdEmpty);
 
         finalJson.put("list", jsonArray);
 

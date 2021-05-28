@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import com.google.gson.JsonObject;
 import net.minidev.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,7 +9,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import parsso.idman.Helpers.Variables;
@@ -19,12 +17,9 @@ import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Message;
 import parsso.idman.Models.Tickets.Ticket;
 import parsso.idman.Models.Time;
-import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.TicketRepo;
 import parsso.idman.Repos.UserRepo;
 
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -32,15 +27,12 @@ import java.util.*;
 @Service
 public class TicketRepoImpl implements TicketRepo {
 
+    final String collection = Variables.col_tickets;
     @Autowired
     TicketRepo ticketRepo;
-
     @Autowired
     MongoTemplate mongoTemplate;
-
-    final String collection =  Variables.col_tickets;
-
-    Logger logger ;
+    Logger logger;
     String model = "Tickets";
 
     @Autowired
@@ -57,14 +49,14 @@ public class TicketRepoImpl implements TicketRepo {
             List<Message> messages = new LinkedList<>();
             messages.add(new Message(userRepo.retrieveUsers(userid), ticket.getMessage()));
 
-            Ticket ticketToSave = new Ticket(userid, ticket.getSubject(),messages);
+            Ticket ticketToSave = new Ticket(userid, ticket.getSubject(), messages);
 
-            mongoTemplate.save(ticketToSave,collection);
-            logger.warn(new ReportMessage(model,ticketToSave.getID(),"", "create", "success", ""));
+            mongoTemplate.save(ticketToSave, collection);
+            logger.warn(new ReportMessage(model, ticketToSave.getID(), "", "create", "success", ""));
 
-            return  HttpStatus.OK;
-        }catch (Exception e) {
-            logger.warn(new ReportMessage(model,ticket.getID(),"", "create", "failed", ""));
+            return HttpStatus.OK;
+        } catch (Exception e) {
+            logger.warn(new ReportMessage(model, ticket.getID(), "", "create", "failed", ""));
 
             return HttpStatus.FORBIDDEN;
         }
@@ -74,26 +66,25 @@ public class TicketRepoImpl implements TicketRepo {
     public Ticket retrieveTicket(String ticketID) {
 
 
-
         Query query = new Query(Criteria.where("ID").is(ticketID));
         try {
-            return mongoTemplate.findOne(query, Ticket.class , collection);
-        }catch (Exception e){
+            return mongoTemplate.findOne(query, Ticket.class, collection);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
     @Override
-    public HttpStatus reply(String ticketID, String userid,Ticket replyTicket, String status) {
+    public HttpStatus reply(String ticketID, String userid, Ticket replyTicket, String status) {
 
         logger = LogManager.getLogger(userid);
         int st;
 
-        try{
+        try {
             st = Integer.valueOf(status);
-        }catch (Exception e){
-            st=1;
+        } catch (Exception e) {
+            st = 1;
         }
 
         Ticket ticket = retrieveTicket(ticketID);
@@ -109,26 +100,26 @@ public class TicketRepoImpl implements TicketRepo {
         ticket.setTo(userid);
         messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
 
-        Ticket ticketToSave = new Ticket(ticket,messages);
+        Ticket ticketToSave = new Ticket(ticket, messages);
         ticketToSave.setStatus(st);
 
-        if(ticket.getTo().equals("SUPPORTER"))
+        if (ticket.getTo().equals("SUPPORTER"))
             ticketToSave.setTo(userid);
 
         try {
             mongoTemplate.remove(new Query(Criteria.where("ID").is(ticketID)), collection);
             mongoTemplate.save(ticketToSave, collection);
-            logger.warn(new ReportMessage(model,ticketToSave.getID(),"", "reply", "success", ""));
-        }catch (Exception e){
+            logger.warn(new ReportMessage(model, ticketToSave.getID(), "", "reply", "success", ""));
+        } catch (Exception e) {
 
-            logger.warn(new ReportMessage(model,ticketToSave.getID(),"", "reply", "failed", "writing to MongoDB"));
+            logger.warn(new ReportMessage(model, ticketToSave.getID(), "", "reply", "failed", "writing to MongoDB"));
 
         }
 
         return HttpStatus.OK;
     }
 
-    private int ticketsCount(String cat, String subcat, int status){
+    private int ticketsCount(String cat, String subcat, int status) {
         Query query = new Query();
         if (status != -1)
             query.addCriteria(Criteria.where("status").is(status));
@@ -148,7 +139,7 @@ public class TicketRepoImpl implements TicketRepo {
 
         ArrayList jsonArray = (ArrayList) jsonObject.get("names");
         Iterator<String> iterator = jsonArray.iterator();
-        int i=0;
+        int i = 0;
         while (iterator.hasNext()) {
             Ticket ticket = retrieveTicket(iterator.next());
 
@@ -156,8 +147,8 @@ public class TicketRepoImpl implements TicketRepo {
                 deleteFor = ticket.getDeleteFor();
 
             //if (ticket.getStatus() == 0) {
-                mongoTemplate.remove(ticket, collection);
-                //continue;
+            mongoTemplate.remove(ticket, collection);
+            //continue;
             //}
 
             deleteFor.add(doer);
@@ -165,13 +156,13 @@ public class TicketRepoImpl implements TicketRepo {
 
             try {
                 mongoTemplate.save(ticket, collection);
-                logger.warn(new ReportMessage(model,ticket.getID(),"", "remove", "success", ""));
+                logger.warn(new ReportMessage(model, ticket.getID(), "", "remove", "success", ""));
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model,ticket.getID(),"", "remove", "failed", "writing to MongoDB"));
+                logger.warn(new ReportMessage(model, ticket.getID(), "", "remove", "failed", "writing to MongoDB"));
                 i++;
             }
         }
-        if (i==0)
+        if (i == 0)
             return HttpStatus.OK;
 
         else
@@ -196,16 +187,16 @@ public class TicketRepoImpl implements TicketRepo {
             try {
                 mongoTemplate.remove(query, collection);
                 mongoTemplate.save(ticket, collection);
-                logger.warn(new ReportMessage(model,ticket.getID(),"", "update status", "success", ""));
+                logger.warn(new ReportMessage(model, ticket.getID(), "", "update status", "success", ""));
 
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model,ticket.getID(),"", "update status", "failed", "writing to MongoDB"));
+                logger.warn(new ReportMessage(model, ticket.getID(), "", "update status", "failed", "writing to MongoDB"));
 
                 i++;
             }
         }
 
-        if (i==0)
+        if (i == 0)
             return HttpStatus.OK;
         else
             return HttpStatus.PARTIAL_CONTENT;
@@ -214,22 +205,22 @@ public class TicketRepoImpl implements TicketRepo {
 
     @Override
     public ListTickets retrieveTicketsSend(String userId, String page, String count) {
-        int skip = (Integer.valueOf(page)-1) * Integer.valueOf(count);
+        int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
 
         int limit = Integer.valueOf(count);
 
         Query query = new Query(Criteria.where("from").is(userId)).skip(skip).limit(limit);
-        List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class ,collection);
+        List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
 
-            int size = (int)mongoTemplate.count(query,collection);
-            return new ListTickets(size,ticketList, (int) Math.floor(size/limit));
+        int size = (int) mongoTemplate.count(query, collection);
+        return new ListTickets(size, ticketList, (int) Math.floor(size / limit));
 
     }
 
     @Override
-    public ListTickets retrieveTicketsReceived (String userId, String page, String count, String from, String ticketId, String date) {
+    public ListTickets retrieveTicketsReceived(String userId, String page, String count, String from, String ticketId, String date) {
 
-        int skip = (Integer.valueOf(page)-1) * Integer.valueOf(count);
+        int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
 
         int limit = Integer.valueOf(count);
 
@@ -241,7 +232,7 @@ public class TicketRepoImpl implements TicketRepo {
         if (!ticketId.equals(""))
             query.addCriteria(Criteria.where("ID").is(ticketId));
 
-        if(!date.equals("")){
+        if (!date.equals("")) {
             String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
             String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
             String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
@@ -255,40 +246,40 @@ public class TicketRepoImpl implements TicketRepo {
 
         List<Ticket> ticketList = null;
 
-        ticketList =  mongoTemplate.find(query, Ticket.class ,collection);
+        ticketList = mongoTemplate.find(query, Ticket.class, collection);
 
-        int size = (int)mongoTemplate.count(query,collection);
+        int size = (int) mongoTemplate.count(query, collection);
 
-        return new ListTickets(size,ticketList, (int) Math.floor(size/limit));
+        return new ListTickets(size, ticketList, (int) Math.floor(size / limit));
     }
 
     @Override
     public HttpStatus updateTicket(String userId, String ticketId, Ticket newTicket) {
         logger = LogManager.getLogger(userId);
         Query query = new Query(Criteria.where("ID").is(ticketId));
-        Ticket oldTicket = mongoTemplate.findOne(query, Ticket.class,collection);
+        Ticket oldTicket = mongoTemplate.findOne(query, Ticket.class, collection);
         Ticket ticketToSave = Ticket.ticketUpdate(oldTicket, newTicket);
         try {
             mongoTemplate.remove(query, collection);
             mongoTemplate.save(ticketToSave, collection);
-            logger.warn(new ReportMessage(model,ticketId,"", "update", "success", ""));
+            logger.warn(new ReportMessage(model, ticketId, "", "update", "success", ""));
             return HttpStatus.OK;
-        }catch (Exception e){
-            logger.warn(new ReportMessage(model,ticketId,"", "update", "failed", "writing to MongoDB"));
+        } catch (Exception e) {
+            logger.warn(new ReportMessage(model, ticketId, "", "update", "failed", "writing to MongoDB"));
             return HttpStatus.FORBIDDEN;
         }
     }
 
     @Override
-    public ListTickets retrieve(String cat, String subCat, String status, String page, String count,String from, String ticketId, String date) {
+    public ListTickets retrieve(String cat, String subCat, String status, String page, String count, String from, String ticketId, String date) {
 
 
-        int skip = (Integer.valueOf(page)-1) * Integer.valueOf(count);
+        int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
         int limit = Integer.valueOf(count);
         int st;
         try {
             st = Integer.valueOf(status);
-        } catch (Exception e){
+        } catch (Exception e) {
             st = -1;
         }
         Query query;
@@ -298,9 +289,9 @@ public class TicketRepoImpl implements TicketRepo {
             query = new Query(Criteria.where("status").is(st));
 
         if (!cat.equals(""))
-                query.addCriteria(Criteria.where("category").is(cat));
-            if (!subCat.equals(""))
-                query.addCriteria(Criteria.where("subCategory").is(subCat));
+            query.addCriteria(Criteria.where("category").is(cat));
+        if (!subCat.equals(""))
+            query.addCriteria(Criteria.where("subCategory").is(subCat));
 
 
         if (!from.equals(""))
@@ -309,7 +300,7 @@ public class TicketRepoImpl implements TicketRepo {
         if (!ticketId.equals(""))
             query.addCriteria(Criteria.where("ID").is(ticketId));
 
-        if(!date.equals("")){
+        if (!date.equals("")) {
             String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
             String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
             String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
@@ -322,8 +313,8 @@ public class TicketRepoImpl implements TicketRepo {
 
         }
 
-            int ticketCount  = ticketsCount(cat,subCat,st);
-        List<Ticket> ticketList =  mongoTemplate.find(query, Ticket.class,collection);
-        return  new ListTickets(ticketCount,ticketList, (int) Math.floor(ticketCount/limit));
+        int ticketCount = ticketsCount(cat, subCat, st);
+        List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
+        return new ListTickets(ticketCount, ticketList, (int) Math.floor(ticketCount / limit));
     }
 }

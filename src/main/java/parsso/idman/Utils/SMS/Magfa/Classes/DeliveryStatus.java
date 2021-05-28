@@ -1,5 +1,5 @@
-
 package parsso.idman.Utils.SMS.Magfa.Classes;
+
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for deliveryStatus complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="deliveryStatus">
  *   &lt;complexContent>
@@ -26,15 +26,13 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "deliveryStatus", propOrder = {
-    "mid",
-    "status",
-    "date",
-    "smsc"
+        "mid",
+        "status",
+        "date",
+        "smsc"
 })
 public class DeliveryStatus {
 
@@ -46,7 +44,6 @@ public class DeliveryStatus {
 
     /**
      * Gets the value of the mid property.
-     * 
      */
     public long getMid() {
         return mid;
@@ -54,7 +51,6 @@ public class DeliveryStatus {
 
     /**
      * Sets the value of the mid property.
-     * 
      */
     public void setMid(long value) {
         this.mid = value;
@@ -62,7 +58,6 @@ public class DeliveryStatus {
 
     /**
      * Gets the value of the status property.
-     * 
      */
     public int getStatus() {
         return status;
@@ -70,7 +65,6 @@ public class DeliveryStatus {
 
     /**
      * Sets the value of the status property.
-     * 
      */
     public void setStatus(int value) {
         this.status = value;
@@ -78,11 +72,9 @@ public class DeliveryStatus {
 
     /**
      * Gets the value of the date property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getDate() {
         return date;
@@ -90,11 +82,9 @@ public class DeliveryStatus {
 
     /**
      * Sets the value of the date property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDate(String value) {
         this.date = value;
@@ -102,11 +92,9 @@ public class DeliveryStatus {
 
     /**
      * Gets the value of the smsc property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getSmsc() {
         return smsc;
@@ -114,11 +102,9 @@ public class DeliveryStatus {
 
     /**
      * Sets the value of the smsc property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setSmsc(String value) {
         this.smsc = value;

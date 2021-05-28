@@ -49,16 +49,16 @@ public class PasswordSettings {
     @Value("${pwd.check.quality}")
     String pwd_check_quality;
 
-    private Name buidDn(){
+    private Name buidDn() {
         return LdapNameBuilder.newInstance("ads-pwdId=default,ou=passwordPolicies,ads-interceptorId=authenticationInterceptor,ou=interceptors,ads-directoryServiceId=default,ou=config").build();
     }
 
-    public void update(List<Setting> settings){
+    public void update(List<Setting> settings) {
 
         ModificationItem[] items = new ModificationItem[9];
         Attribute[] attrs = new Attribute[9];
 
-        for (Setting setting:settings) {
+        for (Setting setting : settings) {
             if (setting.getName().equals("pwd.check.quality")) {
                 attrs[0] = new BasicAttribute("ads-pwdcheckquality", setting.getValue());
                 items[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[0]);

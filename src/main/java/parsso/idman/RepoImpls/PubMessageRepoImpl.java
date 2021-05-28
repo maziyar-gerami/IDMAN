@@ -22,14 +22,10 @@ import java.util.List;
 @Service
 public class PubMessageRepoImpl implements PubMessageRepo {
 
+    final String model = "PublicMessage";
+    private final String collection = Variables.col_publicMessage;
     @Autowired
     MongoTemplate mongoTemplate;
-
-    final String model = "PublicMessage";
-
-    private final String collection = Variables.col_publicMessage;;
-
-
 
     @Override
     public List<PublicMessage> showVisiblePubicMessages() {
@@ -55,14 +51,14 @@ public class PubMessageRepoImpl implements PubMessageRepo {
             mongoTemplate.createCollection(collection);
 
         try {
-            PublicMessage messageToSave = new PublicMessage(message.getTitle(),message.getBody(),message.isVisible(),doer);
-            mongoTemplate.save(messageToSave,collection);
-            logger.warn(new ReportMessage(model, messageToSave.getMessageId(),"", "create", "success", ""));
+            PublicMessage messageToSave = new PublicMessage(message.getTitle(), message.getBody(), message.isVisible(), doer);
+            mongoTemplate.save(messageToSave, collection);
+            logger.warn(new ReportMessage(model, messageToSave.getMessageId(), "", "create", "success", ""));
 
-            return  HttpStatus.OK;
+            return HttpStatus.OK;
 
-        }catch (Exception e){
-            logger.warn(new ReportMessage(model, message.getMessageId(),"","create", "failed", "Writing to mongo"));
+        } catch (Exception e) {
+            logger.warn(new ReportMessage(model, message.getMessageId(), "", "create", "failed", "Writing to mongo"));
             return HttpStatus.FORBIDDEN;
 
         }
@@ -81,15 +77,15 @@ public class PubMessageRepoImpl implements PubMessageRepo {
         message.setCreator(oldMessage.getCreator());
         message.setCreateDate(oldMessage.getCreateDate());
 
-        PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("messageId").is(message.getMessageId())), PublicMessage.class,collection);
+        PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("messageId").is(message.getMessageId())), PublicMessage.class, collection);
         message.set_id(publicMessage.get_id());
         try {
-            mongoTemplate.save(message,collection);
-            logger.warn(new ReportMessage(model, message.getMessageId(),"", "update", "success", ""));
+            mongoTemplate.save(message, collection);
+            logger.warn(new ReportMessage(model, message.getMessageId(), "", "update", "success", ""));
 
             return HttpStatus.OK;
-        }catch (Exception e){
-            logger.warn(new ReportMessage(model, message.getMessageId(),"","create", "failed", "Writing to mongo"));
+        } catch (Exception e) {
+            logger.warn(new ReportMessage(model, message.getMessageId(), "", "create", "failed", "Writing to mongo"));
             return HttpStatus.FORBIDDEN;
         }
     }
@@ -107,7 +103,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
                 mongoTemplate.remove(new Query(), collection);
                 logger.warn(new ReportMessage(model, "All", "", "delete", "success", ""));
 
-            }catch (Exception e){
+            } catch (Exception e) {
 
                 logger.warn(new ReportMessage(model, "All", "", "delete", "failed", ""));
 
@@ -118,7 +114,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
             String next = iterator.next();
 
             try {
-                mongoTemplate.remove(new Query(Criteria.where("messageId").is(next)),collection);
+                mongoTemplate.remove(new Query(Criteria.where("messageId").is(next)), collection);
                 logger.warn(new ReportMessage(model, next, "", "delete", "success", ""));
 
             } catch (Exception e) {
