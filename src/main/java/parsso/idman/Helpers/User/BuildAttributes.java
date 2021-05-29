@@ -42,15 +42,15 @@ public class BuildAttributes {
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
 
-        attrs.put("uid", p.getUserId());
-        attrs.put("givenName", p.getFirstName().equals("") ? " " : p.getFirstName());
-        attrs.put("sn", p.getLastName().equals("") ? " " : p.getLastName());
+        attrs.put("uid", p.getUserId().trim());
+        attrs.put("givenName", p.getFirstName().equals("") ? " " : p.getFirstName().trim());
+        attrs.put("sn", p.getLastName().equals("") ? " " : p.getLastName().trim());
         attrs.put("userPassword", p.getUserPassword() != null ? p.getUserPassword() : defaultPassword);
-        attrs.put("displayName", p.getDisplayName());
+        attrs.put("displayName", p.getDisplayName().trim());
         attrs.put("mobile", p.getMobile());
         attrs.put("employeeNumber", p.getEmployeeNumber() == null || p.getEmployeeNumber().equals("") ? "0" : p.getEmployeeNumber());
-        attrs.put("mail", p.getMail());
-        attrs.put("cn", p.getFirstName() + ' ' + p.getLastName());
+        attrs.put("mail", p.getMail().trim());
+        attrs.put("cn", p.getFirstName().trim() + ' ' + p.getLastName().trim());
         if (p.getUsersExtraInfo() != null && p.getUsersExtraInfo().getResetPassToken() != null)
             attrs.put("resetPassToken", p.getUsersExtraInfo().getResetPassToken());
         if (p.getMemberOf() != null && p.getMemberOf().size() != 0) {
@@ -62,7 +62,7 @@ public class BuildAttributes {
             }
         }
         if (p.getDescription() != null && !(p.getDescription().equals("")))
-            attrs.put("description", p.getDescription());
+            attrs.put("description", p.getDescription().trim());
         else
             attrs.put("description", " ");
 
@@ -88,18 +88,18 @@ public class BuildAttributes {
         //First name (givenName) *
         if (p.getFirstName() != null)
             if (p.getFirstName() != "")
-                context.setAttributeValue("givenName", p.getFirstName());
+                context.setAttributeValue("givenName", p.getFirstName().trim());
 
 
         //Last Name (sn) *
         if (p.getLastName() != null)
             if (p.getLastName() != "")
-                context.setAttributeValue("sn", p.getLastName());
+                context.setAttributeValue("sn", p.getLastName().trim());
 
         //Persian name (displayName) *
         if (p.getDisplayName() != null)
             if (p.getDisplayName() != "")
-                context.setAttributeValue("displayName", p.getDisplayName());
+                context.setAttributeValue("displayName", p.getDisplayName().trim());
 
         //attribute (Mobile) *
         if (p.getMobile() != null)
@@ -117,14 +117,14 @@ public class BuildAttributes {
         //Mail Address attribute (Mail) *
         if (p.getMail() != null)
             if (p.getMail() != "")
-                context.setAttributeValue("mail", p.getMail());
+                context.setAttributeValue("mail", p.getMail().trim());
 
         //Description attribute
         if (p.getDescription() != null) {
             if (!p.getDescription().equals(""))
-                context.setAttributeValue("description", p.getDescription());
+                context.setAttributeValue("description", p.getDescription().trim());
             else if (p.getDescription().equals(""))
-                context.removeAttributeValue("description", old.getDescription());
+                context.removeAttributeValue("description", old.getDescription().trim());
         }
 
         //cn attribute (English full name that computing from last name and firs name)
@@ -212,7 +212,6 @@ public class BuildAttributes {
             modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
             ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
         }
-
 
         return context;
     }

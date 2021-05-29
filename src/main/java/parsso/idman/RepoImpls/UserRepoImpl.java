@@ -173,7 +173,6 @@ public class UserRepoImpl implements UserRepo {
             }
         } catch (Exception e) {
             if (p.getUserId() != null || !p.getUserId().equals("")) {
-                e.printStackTrace();
                 logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "unknown reason").toString());
             } else
                 logger.warn(new ReportMessage(model, "", "", "create", "failed", "UserId is empty").toString());
@@ -193,7 +192,7 @@ public class UserRepoImpl implements UserRepo {
 
         Logger logger = LogManager.getLogger(doerID);
 
-        p.setUserId(usid);
+        p.setUserId(usid.trim());
         Name dn = buildDnUser.buildDn(p.getUserId());
 
         User user = retrieveUsers(p.getUserId());
@@ -237,7 +236,7 @@ public class UserRepoImpl implements UserRepo {
 
 
         if (p.getDisplayName() != null)
-            usersExtraInfo.setDisplayName(p.getDisplayName());
+            usersExtraInfo.setDisplayName(p.getDisplayName().trim());
 
         if (p.getPhoto() != null)
             usersExtraInfo.setPhotoName(p.getPhoto());
@@ -526,6 +525,7 @@ public class UserRepoImpl implements UserRepo {
         else if (sortType.equals("displayName_M2m"))
             query.with(Sort.by(Sort.Direction.DESC, "displayName"));
 
+        query.with(Sort.by(Sort.Direction.DESC, "_id"));
 
         List<UsersExtraInfo> userList = mongoTemplate.find(query.skip(skip).limit(limit),
                 UsersExtraInfo.class, userExtraInfoCollection);

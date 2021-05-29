@@ -5,6 +5,7 @@ import net.minidev.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -23,6 +24,8 @@ import parsso.idman.Repos.UserRepo;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class TicketRepoImpl implements TicketRepo {
@@ -209,7 +212,7 @@ public class TicketRepoImpl implements TicketRepo {
 
         int limit = Integer.valueOf(count);
 
-        Query query = new Query(Criteria.where("from").is(userId)).skip(skip).limit(limit);
+        Query query = new Query(Criteria.where("from").is(userId)).with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
 
         int size = (int) mongoTemplate.count(query, collection);
@@ -224,7 +227,7 @@ public class TicketRepoImpl implements TicketRepo {
 
         int limit = Integer.valueOf(count);
 
-        Query query = new Query(Criteria.where("to").is(userId).and("status").is(1)).skip(skip).limit(limit);
+        Query query = new Query(Criteria.where("to").is(userId).and("status").is(1)).with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
 
         if (!from.equals(""))
             query.addCriteria(Criteria.where("from").is(from));
@@ -244,9 +247,7 @@ public class TicketRepoImpl implements TicketRepo {
 
         }
 
-        List<Ticket> ticketList = null;
-
-        ticketList = mongoTemplate.find(query, Ticket.class, collection);
+        List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
 
         int size = (int) mongoTemplate.count(query, collection);
 
@@ -287,6 +288,9 @@ public class TicketRepoImpl implements TicketRepo {
             query = new Query();
         else
             query = new Query(Criteria.where("status").is(st));
+
+        query.with(Sort.by(Sort.Direction.DESC, "_id"));
+
 
         if (!cat.equals(""))
             query.addCriteria(Criteria.where("category").is(cat));

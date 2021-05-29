@@ -46,8 +46,8 @@ public class UsersExtraInfo {
 
     public UsersExtraInfo(User user) {
         this._id = user.get_id();
-        this.userId = user.getUserId();
-        this.displayName = user.getDisplayName();
+        this.userId = user.getUserId().trim();
+        this.displayName = user.getDisplayName().trim();
         this.memberOf = user.getMemberOf();
         this.passwordChangedTime = user.getPasswordChangedTime();
         this.status = user.getStatus();
@@ -67,8 +67,8 @@ public class UsersExtraInfo {
 
     public UsersExtraInfo(User user, String photoName, boolean unDeletable) {
         this._id = user.get_id();
-        this.userId = user.getUserId();
-        this.displayName = user.getDisplayName();
+        this.userId = user.getUserId().trim();
+        this.displayName = user.getDisplayName().trim();
         this.memberOf = user.getMemberOf();
         this.passwordChangedTime = user.getPasswordChangedTime();
         this.status = user.getStatus();
@@ -86,6 +86,4 @@ public class UsersExtraInfo {
             return memberOf.stream().distinct().collect(Collectors.toList());
         return null;
     }
-
-
 }
