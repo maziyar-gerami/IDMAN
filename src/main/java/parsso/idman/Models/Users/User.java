@@ -11,6 +11,7 @@ import org.bson.types.ObjectId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import parsso.idman.Models.SkyRoom;
 import parsso.idman.Models.Time;
 
 import java.util.ArrayList;
@@ -60,8 +61,8 @@ public class User implements UserDetails, Comparable {
     private UsersExtraInfo usersExtraInfo;
     private boolean unDeletable;
     private boolean profileInaccessibility;
-    //TODO: Uncomment it
-    //SkyRoom skyRoom;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    SkyRoom skyRoom;
 
 
     public User() {

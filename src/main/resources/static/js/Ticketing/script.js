@@ -256,11 +256,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     }else if(window.localStorage.getItem("lang") === "EN") {
                         vm.s1 = vm.nameEN;
                     }
-                    /*if(res.data.skyRoom.enable){
+                    if(res.data.skyRoom.enable){
                         vm.showMeeting = true;
                         vm.meetingAdminLink = res.data.skyRoom.presenter;
                         vm.meetingGuestLink = res.data.skyRoom.students;
-                    }*/
+                    }
                     if(res.data.role == "SUPPORTER" || res.data.role == "SUPERADMIN"){
                         vm.getInboxTickets();
                     }else {
