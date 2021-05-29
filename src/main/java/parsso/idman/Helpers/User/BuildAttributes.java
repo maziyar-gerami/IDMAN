@@ -62,7 +62,7 @@ public class BuildAttributes {
             }
         }
         if (p.getDescription() != null && !(p.getDescription().equals("")))
-            attrs.put("description", p.getDescription().trim());
+            attrs.put("description", p.getDescription());
         else
             attrs.put("description", " ");
 
@@ -122,9 +122,9 @@ public class BuildAttributes {
         //Description attribute
         if (p.getDescription() != null) {
             if (!p.getDescription().equals(""))
-                context.setAttributeValue("description", p.getDescription().trim());
+                context.setAttributeValue("description", p.getDescription());
             else if (p.getDescription().equals(""))
-                context.removeAttributeValue("description", old.getDescription().trim());
+                context.removeAttributeValue("description", old.getDescription());
         }
 
         //cn attribute (English full name that computing from last name and firs name)
