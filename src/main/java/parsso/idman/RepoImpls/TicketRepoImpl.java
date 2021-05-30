@@ -108,6 +108,8 @@ public class TicketRepoImpl implements TicketRepo {
 
         if (ticket.getTo().equals("SUPPORTER"))
             ticketToSave.setTo(userid);
+        else
+            ticketToSave.setTo(ticket.getTo());
 
         try {
             mongoTemplate.remove(new Query(Criteria.where("ID").is(ticketID)), collection);
@@ -288,6 +290,8 @@ public class TicketRepoImpl implements TicketRepo {
             query = new Query();
         else
             query = new Query(Criteria.where("status").is(st));
+
+        query.skip(skip).limit(limit);
 
         query.with(Sort.by(Sort.Direction.DESC, "_id"));
 

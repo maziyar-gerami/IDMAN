@@ -107,7 +107,9 @@ public class TicketsController {
                                                       @RequestParam(name = "date", defaultValue = "") String date,
                                                       @PathVariable(name = "page") String page,
                                                       @PathVariable(name = "count") String count) {
-        return new ResponseEntity<>(ticketRepo.retrieve(cat, subCat, status, page, count, from, id, date), HttpStatus.OK);
+        ListTickets ls = ticketRepo.retrieve(cat, subCat, status, page, count, from, id, date);
+        return new ResponseEntity<>(ls, HttpStatus.OK);
+
     }
 
 }
