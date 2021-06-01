@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
         reportsURLText: "./reports",
         publicmessagesText: "اعلان های عمومی",
         publicmessagesURLText: "./publicmessages",
-        ticketingText: "تیکتینگ",
+        ticketingText: "پشتیبانی",
         ticketingURLText: "./ticketing",
         addAllGroupsText: "انتخاب همه",
         removeAllGroupsText: "لغو انتخاب همه",
@@ -1560,7 +1560,7 @@ document.addEventListener('DOMContentLoaded', function () {
               this.rolesText = "نقش ها";
               this.reportsText = "گزارش ها";
               this.publicmessagesText = "اعلان های عمومی";
-              this.ticketingText = "تیکتینگ";
+              this.ticketingText = "پشتیبانی";
               this.addAllGroupsText = "انتخاب همه";
               this.removeAllGroupsText = "لغو انتخاب همه";
               this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";

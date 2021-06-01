@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reportsURLText: "./reports",
             publicmessagesText: "اعلان های عمومی",
             publicmessagesURLText: "./publicmessages",
-            ticketingText: "تیکتینگ",
+            ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
             emailFormatErrorText: "فرمت آدرس ایمیل را به درستی وارد کنید",
             mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
                     this.publicmessagesText = "اعلان های عمومی";
-                    this.ticketingText = "تیکتینگ";
+                    this.ticketingText = "پشتیبانی";
                     this.emailFormatErrorText = "فرمت آدرس ایمیل را به درستی وارد کنید";
                     this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
                     this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";

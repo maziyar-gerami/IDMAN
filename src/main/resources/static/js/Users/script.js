@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reportsURLText: "./reports",
             publicmessagesText: "اعلان های عمومی",
             publicmessagesURLText: "./publicmessages",
-            ticketingText: "تیکتینگ",
+            ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
             importUserListGroupError: false,
             importUserListGroupErrorList: "",
@@ -1604,7 +1604,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
                     this.publicmessagesText = "اعلان های عمومی";
-                    this.ticketingText = "تیکتینگ";
+                    this.ticketingText = "پشتیبانی";
                     this.importUserListGroupErrorText = "گروه های مشخص شده برای کاربران زیر، تعریف نشده اند.";
                     this.importUserListRepetitiveErrorText = "کاربران زیر، تکراری می باشند.";
                     this.importUserListOverride1Text = "از مجموع کاربران، اطلاعات ";

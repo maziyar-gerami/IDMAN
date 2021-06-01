@@ -67,9 +67,10 @@ public class TicketsController {
 
     @GetMapping("/api/user/tickets/sent/{page}/{count}")
     public ResponseEntity<ListTickets> sendTicket(HttpServletRequest request, @PathVariable(name = "page") String page,
+                                                  @RequestParam(name = "date", defaultValue = "") String date,
                                                   @PathVariable(name = "count") String count) {
 
-        return new ResponseEntity<>(ticketRepo.retrieveTicketsSend(request.getUserPrincipal().getName().toLowerCase(), page, count), HttpStatus.OK);
+        return new ResponseEntity<>(ticketRepo.retrieveSentTickets(request.getUserPrincipal().getName().toLowerCase(), page, count,date), HttpStatus.OK);
     }
 
     @PutMapping("/api/supporter/ticket/status/{status}")

@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reportsURLText: "./reports",
             publicmessagesText: "اعلان های عمومی",
             publicmessagesURLText: "./publicmessages",
-            ticketingText: "تیکتینگ",
+            ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
             groupIdDuplicate: false,
             groupIdDuplicateText: "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.",
@@ -872,7 +872,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesText = "نقش ها";
                     this.reportsText = "گزارش ها";
                     this.publicmessagesText = "اعلان های عمومی";
-                    this.ticketingText = "تیکتینگ";
+                    this.ticketingText = "پشتیبانی";
                     this.groupIdDuplicateText = "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.";
                     this.fileUploadGroupNotSelectedText = "لطفا گروه مورد نظر خود را انتخاب کنید";
                     this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";

@@ -329,7 +329,7 @@ html,body {
   position: absolute;
   bottom: 20px;
   width: 100px;
-  color: black;
+  color: white;
   background-color: #dc3545;
   border-radius: 2rem;
   z-index: 12;

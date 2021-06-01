@@ -59,7 +59,17 @@ document.addEventListener('DOMContentLoaded', function () {
             isListEmpty: false,
             isInboxListEmpty: false,
             activeItem: "chatsTab",
-            searchStatus: "0",
+            searchStatus: "?status=0",
+            showMeeting: false,
+            meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
+            meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
+            meetingAdminLink: "",
+            meetingGuestLink: "",
+            deleteInputIcon: "left: 10%;",
+            idSearch: "",
+            inboxIdSearch: "",
+            dateSearch: "",
+            inboxDateSearch: "",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -105,19 +115,13 @@ document.addEventListener('DOMContentLoaded', function () {
             reportsURLText: "./reports",
             publicmessagesText: "اعلان های عمومی",
             publicmessagesURLText: "./publicmessages",
-            ticketingText: "تیکتینگ",
+            ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
-            showMeeting: false,
-            meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
-            meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
-            meetingAdminLink: "",
-            meetingGuestLink: "",
             meetingText: "جلسه مجازی",
             enterMeetingText: "ورود به جلسه",
             inviteToMeetingText: "دعوت به جلسه",
             copyText: "کپی",
             returnText: "بازگشت",
-            ticketingText: "تیکتینگ",
             replyText: "پاسخ",
             subjectText: "موضوع",
             fromText: "ارسال کننده",
@@ -128,11 +132,16 @@ document.addEventListener('DOMContentLoaded', function () {
             sendText: "ارسال",
             sendAndCloseText: "ارسال و بستن تیکت",
             openTicketsText: "تیکت های باز",
+            myOpenTicketsText: "تیکت های باز من",
+            allText: "همه",
             ticketsListText: "لیست تیکت ها",
             closeText: "بستن",
             pendingTicketsText: "تیکت های در حال انتظار",
             closedTicketsText: "تیکت های بسته شده",
             createDateText: "تاریخ ایجاد",
+            idText: "شناسه",
+            submitFilter: "اعمال فیلتر",
+            removeFilter: "حذف فیلتر",
         },
         created: function () {
             this.setDateNav();
@@ -185,6 +194,78 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.execCommand("copy");
                 document.getElementById("copyMeetingLinkBtn").disabled = true;
                 setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+            },
+            faMonthtoNumMonth: function (faMonth) {
+                let numMonth = "";
+                switch(faMonth) {
+                    case "فروردین":
+                        numMonth = "01";
+                        break;
+                    case "اردیبهشت":
+                        numMonth = "02";
+                        break;
+                    case "خرداد":
+                        numMonth = "03";
+                        break;
+                    case "تیر":
+                        numMonth = "04";
+                        break;
+                    case "مرداد":
+                        numMonth = "05";
+                        break;
+                    case "شهریور":
+                        numMonth = "06";
+                        break;
+                    case "مهر":
+                        numMonth = "07";
+                        break;
+                    case "آبان":
+                        numMonth = "08";
+                        break;
+                    case "آذر":
+                        numMonth = "09";
+                        break;
+                    case "دی":
+                        numMonth = "10";
+                        break;
+                    case "بهمن":
+                        numMonth = "11";
+                        break;
+                    case "اسفند":
+                        numMonth = "12";
+                        break;
+                    default:
+                        console.log("Wrong Input for Month");
+                }
+                return numMonth;
+            },
+            faNumToEnNum: function (str) {
+                let s = str.split("");
+                let sEn = "";
+                for(i = 0; i < s.length; ++i){
+                    if(s[i] == '۰'){
+                        sEn = sEn + '0';
+                    }else if(s[i] == '۱'){
+                        sEn = sEn + '1';
+                    }else if(s[i] == '۲'){
+                        sEn = sEn + '2';
+                    }else if(s[i] == '۳'){
+                        sEn = sEn + '3';
+                    }else if(s[i] == '۴'){
+                        sEn = sEn + '4';
+                    }else if(s[i] == '۵'){
+                        sEn = sEn + '5';
+                    }else if(s[i] == '۶'){
+                        sEn = sEn + '6';
+                    }else if(s[i] == '۷'){
+                        sEn = sEn + '7';
+                    }else if(s[i] == '۸'){
+                        sEn = sEn + '8';
+                    }else if(s[i] == '۹'){
+                        sEn = sEn + '9';
+                    }
+                }
+                return sEn;
             },
             isActive (menuItem) {
                 return this.activeItem === menuItem
@@ -256,6 +337,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }else if(window.localStorage.getItem("lang") === "EN") {
                         vm.s1 = vm.nameEN;
                     }
+                    /*
                     if(res.data.skyRoom.enable){
                         vm.showMeeting = true;
                         vm.meetingAdminLink = res.data.skyRoom.presenter;
@@ -266,6 +348,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }else {
                         vm.getSentTickets();
                     }
+                     */
                 });
             },
             getUserPic: function () {
@@ -292,13 +375,30 @@ document.addEventListener('DOMContentLoaded', function () {
             getTickets: function (p) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
+                let searchQuery = "";
+                let searchQueryInit = "?";
+                if(this.searchStatus != ""){
+                    searchQuery = searchQuery + searchQueryInit + "status=" + this.searchStatus;
+                    searchQueryInit = "&";
+                }
+                if(this.idSearch != ""){
+                    searchQuery = searchQuery + searchQueryInit + "id=" + this.idSearch;
+                    searchQueryInit = "&";
+                }
+                this.dateSearch = document.getElementById("dateSearch").value;
+                if(this.dateSearch != ""){
+                    let tempArray = this.dateSearch.split(" ");
+                    this.dateSearch = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+                    searchQuery = searchQuery + searchQueryInit + "date=" + this.dateSearch;
+                    searchQueryInit = "&";
+                }
                 if(p != "paginationCurrentPage"){
                     this.currentPage = 1;
                     this.paginationCurrentPage = this.currentPage;
                 }
                 this.tickets = [];
                 this.isListEmpty = false;
-                axios.get(url + "/api/supporter/tickets/" + vm.currentPage + "/" + vm.recordsShownOnPage + "/?status=" + vm.searchStatus) //
+                axios.get(url + "/api/supporter/tickets/" + vm.currentPage + "/" + vm.recordsShownOnPage + searchQuery) //
                     .then((res) => {
                         vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
                         vm.tickets = res.data.ticketList;
@@ -315,13 +415,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 let vm = this;
                 let answeredTickets = [];
                 let unansweredTickets = [];
+                let searchQuery = "";
+                let searchQueryInit = "?";
+                if(this.inboxIdSearch != ""){
+                    searchQuery = searchQuery + searchQueryInit + "id=" + this.inboxIdSearch;
+                    searchQueryInit = "&";
+                }
+                this.inboxDateSearch = document.getElementById("inboxDateSearch").value;
+                if(this.inboxDateSearch != ""){
+                    let tempArray = this.inboxDateSearch.split(" ");
+                    this.inboxDateSearch = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+                    searchQuery = searchQuery + searchQueryInit + "date=" + this.inboxDateSearch;
+                    searchQueryInit = "&";
+                }
                 if(p != "paginationCurrentPage"){
                     this.currentInboxPage = 1;
                     this.paginationCurrentInboxPage = this.currentInboxPage;
                 }
                 this.inboxTickets = [];
                 this.isInboxListEmpty = false;
-                axios.get(url + "/api/supporter/tickets/inbox/" + vm.currentInboxPage + "/" + vm.recordsShownOnInboxPage) //
+                axios.get(url + "/api/supporter/tickets/inbox/" + vm.currentInboxPage + "/" + vm.recordsShownOnInboxPage + searchQuery) //
                     .then((res) => {
                         vm.totalInbox = Math.ceil(res.data.size / vm.recordsShownOnInboxPage);
                         for(let i = 0; i < res.data.ticketList.length; ++i){
@@ -425,7 +538,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 headers: {"Content-Type": "application/json"},
                                 data: JSON.stringify({
                                     message: document.getElementById("messageBody").value,
-                                    "status": 2
+                                    status: 2
                                 }).replace(/\\\\/g, "\\")
                             }).then((res) => {
                                 location.reload();
@@ -477,12 +590,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
-                        if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERADMIN"){
-                            vm.getInboxTickets();
-                        }else {
-                            vm.getSentTickets();
-                        }
-                        vm.getTickets();
+                        location.reload();
                     }).catch((error) => {
                         alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
                     });
@@ -509,10 +617,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                 data: JSON.stringify({
                                     names: selectedTickets
                                 }).replace(/\\\\/g, "\\")
-                            })
-                                .then((res) => {
-                                    vm.getTickets();
-                                }).catch((error) => {
+                            }).then((res) => {
+                                location.reload();
+                            }).catch((error) => {
                                 alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
                             });
                         }
@@ -536,10 +643,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                 data: JSON.stringify({
                                     names: selectedTickets
                                 }).replace(/\\\\/g, "\\")
-                            })
-                                .then((res) => {
-                                    vm.getTickets();
-                                }).catch((error) => {
+                            }).then((res) => {
+                                location.reload();
+                            }).catch((error) => {
                                 alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
                             });
                         }
@@ -569,14 +675,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                 data: JSON.stringify({
                                     names: selectedInboxTickets
                                 }).replace(/\\\\/g, "\\")
-                            })
-                                .then((res) => {
-                                    if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERADMIN"){
-                                        vm.getInboxTickets();
-                                    }else {
-                                        vm.getSentTickets();
-                                    }
-                                }).catch((error) => {
+                            }).then((res) => {
+                                location.reload();
+                            }).catch((error) => {
                                 alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
                             });
                         }
@@ -600,10 +701,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                 data: JSON.stringify({
                                     names: selectedInboxTickets
                                 }).replace(/\\\\/g, "\\")
-                            })
-                                .then((res) => {
-                                    vm.getInboxTickets();
-                                }).catch((error) => {
+                            }).then((res) => {
+                                location.reload();
+                            }).catch((error) => {
                                 alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
                             });
                         }
@@ -636,6 +736,32 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById("selectAllInboxCheckbox").click();
                 }
             },
+            deleteFilter: function () {
+                this.idSearch = "";
+                document.getElementById("dateSearch").value = "";
+                this.getTickets();
+            },
+            deleteInboxFilter: function () {
+                this.inboxIdSearch = "";
+                document.getElementById("inboxDateSearch").value = "";
+                this.getInboxTickets();
+            },
+            removeIdSearch: function () {
+                this.idSearch = "";
+                this.getTickets();
+            },
+            removeDateSearch: function () {
+                document.getElementById("dateSearch").value = "";
+                this.getTickets();
+            },
+            removeInboxIdSearch: function () {
+                this.inboxIdSearch = "";
+                this.getInboxTickets();
+            },
+            removeInboxDateSearch: function () {
+                document.getElementById("inboxDateSearch").value = "";
+                this.getInboxTickets();
+            },
             changeLang: function () {
                 if(this.lang == "EN"){
                     window.localStorage.setItem("lang", "EN");
@@ -645,6 +771,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.isRtl = false;
                     this.margin1 = "mr-1";
                     this.dateNavText = this.dateNavEn;
+                    this.deleteInputIcon = "right: 10%;";
                     this.s0 = "Parsso";
                     this.s1 = this.nameEN;
                     this.s2 = "Exit";
@@ -696,11 +823,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.sendText = "Send";
                     this.sendAndCloseText = "Send And Close Ticket";
                     this.openTicketsText = "Open Tickets";
+                    this.myOpenTicketsText = "My Open Tickets";
+                    this.allText = "All";
                     this.ticketsListText = "Tickets List";
                     this.closeText = "Close";
                     this.pendingTicketsText = "Pending Tickets";
                     this.closedTicketsText = "Closed Tickets";
                     this.createDateText = "Create Date";
+                    this.idText = "ID";
+                    this.submitFilter = "Filter";
+                    this.removeFilter = "No Filter";
                 }else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
@@ -709,6 +841,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.isRtl = true;
                     this.margin1 = "ml-1";
                     this.dateNavText = this.dateNav;
+                    this.deleteInputIcon = "left: 10%;";
                     this.s0 = "پارسو";
                     this.s1 = this.name;
                     this.s2 = "خروج";
@@ -750,7 +883,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.inviteToMeetingText = "دعوت به جلسه";
                     this.copyText = "کپی";
                     this.returnText = "بازگشت";
-                    this.ticketingText = "تیکتینگ";
+                    this.ticketingText = "پشتیبانی";
                     this.replyText = "پاسخ";
                     this.subjectText = "موضوع";
                     this.fromText = "ارسال کننده";
@@ -761,34 +894,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.sendText = "ارسال";
                     this.sendAndCloseText = "ارسال و بستن تیکت";
                     this.openTicketsText = "تیکت های باز";
+                    this.myOpenTicketsText = "تیکت های باز من";
+                    this.allText = "همه";
                     this.ticketsListText = "لیست تیکت ها";
                     this.closeText = "بستن";
                     this.pendingTicketsText = "تیکت های در حال انتظار";
                     this.closedTicketsText = "تیکت های بسته شده";
                     this.createDateText = "تاریخ ایجاد";
+                    this.idText = "شناسه";
+                    this.submitFilter = "اعمال فیلتر";
+                    this.removeFilter = "حذف فیلتر";
                 }
             }
         },
         computed:{
             sortedTickets: function () {
-                /*this.ticketsPage = [];
-                for(let i = 0; i < this.recordsShownOnPage; ++i){
-                    if(i + ((this.currentPage - 1) * this.recordsShownOnPage) <= this.tickets.length - 1){
-                        this.ticketsPage[i] = this.tickets[i + ((this.currentPage - 1) * this.recordsShownOnPage)];
-                    }
-                }
-                return this.ticketsPage;*/
                 this.ticketsPage = this.tickets;
                 return this.ticketsPage;
             },
             sortedInboxTickets: function () {
-                /*this.inboxTicketsPage = [];
-                for(let i = 0; i < this.recordsShownOnInboxPage; ++i){
-                    if(i + ((this.currentInboxPage - 1) * this.recordsShownOnInboxPage) <= this.inboxTickets.length - 1){
-                        this.inboxTicketsPage[i] = this.inboxTickets[i + ((this.currentInboxPage - 1) * this.recordsShownOnInboxPage)];
-                    }
-                }
-                return this.inboxTicketsPage;*/
                 this.inboxTicketsPage = this.inboxTickets;
                 return this.inboxTicketsPage;
             },
