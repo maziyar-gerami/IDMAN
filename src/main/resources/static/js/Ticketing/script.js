@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
             isListEmpty: false,
             isInboxListEmpty: false,
             activeItem: "chatsTab",
-            searchStatus: "?status=0",
+            searchStatus: "",
             showMeeting: false,
             meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
             meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
@@ -142,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
             idText: "شناسه",
             submitFilter: "اعمال فیلتر",
             removeFilter: "حذف فیلتر",
+            closeSelectedTicketsText: "آیا از بستن تیکت های انتخاب شده اطمینان دارید؟",
         },
         created: function () {
             this.setDateNav();
@@ -632,7 +633,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                     if(selectedTickets.length != 0){
-                        let check = confirm(this.s34);
+                        let check = confirm(this.closeSelectedTicketsText);
                         if (check == true) {
                             axios({
                                 method: "put",
@@ -690,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                     if(selectedInboxTickets.length != 0){
-                        let check = confirm(this.s34);
+                        let check = confirm(this.closeSelectedTicketsText);
                         if (check == true) {
                             axios({
                                 method: "put",
@@ -831,6 +832,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.idText = "ID";
                     this.submitFilter = "Filter";
                     this.removeFilter = "No Filter";
+                    this.closeSelectedTicketsText = "Are You Sure You Want To Close Selected Tickets?";
                 }else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
@@ -902,6 +904,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.idText = "شناسه";
                     this.submitFilter = "اعمال فیلتر";
                     this.removeFilter = "حذف فیلتر";
+                    this.closeSelectedTicketsText = "آیا از بستن تیکت های انتخاب شده اطمینان دارید؟";
+
                 }
             }
         },
