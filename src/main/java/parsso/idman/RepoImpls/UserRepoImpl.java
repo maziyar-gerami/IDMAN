@@ -885,13 +885,19 @@ public class UserRepoImpl implements UserRepo {
     public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
         List<String> add = (List<String>) gu.get("add");
         List<String> remove = (List<String>) gu.get("remove");
+        List <String> groups = new LinkedList<>();
         for (String uid : add) {
             User user = retrieveUsers(uid);
-            if (user.getMemberOf() != null && !user.getMemberOf().contains(groupId)) {
-                user.getMemberOf().add(groupId);
-                update(doerID, uid, user);
+            if (user.getMemberOf() != null) {
+                if (!user.getMemberOf().contains(groupId))
+                    user.getMemberOf().add(groupId);
+            }else {
+                groups.add(groupId);
+                user.setMemberOf(groups);
             }
 
+
+            update(doerID, uid, user);
         }
         for (String uid : remove) {
             User user = retrieveUsers(uid);

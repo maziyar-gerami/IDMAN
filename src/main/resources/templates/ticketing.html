@@ -23,6 +23,7 @@
     <script src="js/Ticketing/script.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
     <script src="js/vue-spinners-css.min.js"></script>
+    <script src="js/jquery.js"></script>
     <script src="js/persian-datepicker.min.js"></script>
 
 </head>
@@ -312,15 +313,14 @@
                                                             <div class="col-8"></div>
                                                         </div>
                                                         <div class="row mb-3 ml-0 mr-0">
-                                                            <div class="col-3">
+                                                            <div class="col-4">
                                                                 <input v-model="inboxIdSearch" type="text" :placeholder="idText" class="form-control icon-input">
                                                                 <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeInboxIdSearch()"></i>
                                                             </div>
-                                                            <div class="col-3">
+                                                            <div class="col-4">
                                                                 <input id="inboxDateSearch" type="text" :placeholder="createDateText" class="datePickerFa form-control icon-input">
                                                                 <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeInboxDateSearch()"></i>
                                                             </div>
-                                                            <div class="col-2"></div>
                                                             <div class="col-2">
                                                                 <button class="btn btn-danger btn-sm w-100 h-100" v-on:click="deleteInboxFilter()">{{removeFilter}}</button>
                                                             </div>
@@ -481,15 +481,14 @@
                                                             </div>
                                                         </div>
                                                         <div class="row mb-3 ml-0 mr-0">
-                                                            <div class="col-3">
+                                                            <div class="col-4">
                                                                 <input v-model="idSearch" type="text" :placeholder="idText" class="form-control icon-input">
                                                                 <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeIdSearch()"></i>
                                                             </div>
-                                                            <div class="col-3">
+                                                            <div class="col-4">
                                                                 <input id="dateSearch" type="text" :placeholder="createDateText" class="datePickerFa form-control icon-input">
                                                                 <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeDateSearch()"></i>
                                                             </div>
-                                                            <div class="col-2"></div>
                                                             <div class="col-2">
                                                                 <button class="btn btn-danger btn-sm w-100 h-100" v-on:click="deleteFilter()">{{removeFilter}}</button>
                                                             </div>
