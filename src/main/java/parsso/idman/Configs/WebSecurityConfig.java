@@ -76,6 +76,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
+
+
+
+
+
+
+
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources
@@ -96,6 +103,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/public/**").permitAll()
                 .antMatchers("/api/resetpassword**").permitAll()
                 .antMatchers("/api/captcha/request").permitAll()
+                .antMatchers("/api/mobile/**").permitAll()
+
 
                 //************* Any Authenticated Users Objects **********
                 //Pages
@@ -166,6 +175,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .anyRequest().authenticated()
                 .and()
+
+
 
 
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)

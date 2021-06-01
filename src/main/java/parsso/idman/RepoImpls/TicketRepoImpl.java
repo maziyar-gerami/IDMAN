@@ -124,15 +124,29 @@ public class TicketRepoImpl implements TicketRepo {
         return HttpStatus.OK;
     }
 
-    private int ticketsCount(String cat, String subcat, int status) {
+    private int ticketsCount(String cat, String subcat, int status, String id, String date) {
         Query query = new Query();
         if (status != -1)
             query.addCriteria(Criteria.where("status").is(status));
 
         if (!cat.equals("")) {
-            query.addCriteria(Criteria.where("category").is(cat));
+            query.addCriteria(Criteria.where("category").regex(cat));
             if (!subcat.equals(""))
-                query.addCriteria(Criteria.where("subCategory").is(subcat));
+                query.addCriteria(Criteria.where("subCategory").regex(subcat));
+        }
+        if(!query.equals(""))
+            query.addCriteria(Criteria.where("ID").regex(id));
+
+        if (!date.equals("")) {
+            String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+            String timeStart = time + "T00:00:00.000Z";
+            String timeEnd = time + "T23:59:59.000Z";
+
+            long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+            long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+
+            query.addCriteria(Criteria.where("creationTime").gte(eventStartDate).lte(eventEndDate));
+
         }
         return (int) mongoTemplate.count(query, collection);
     }
@@ -209,13 +223,25 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public ListTickets retrieveTicketsSend(String userId, String page, String count) {
+    public ListTickets retrieveSentTickets(String userId, String page, String count, String date) {
         int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
 
         int limit = Integer.valueOf(count);
 
         Query query = new Query(Criteria.where("from").is(userId)).with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
+
+        if (!date.equals("")) {
+            String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+            String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
+            String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
+
+            long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+            long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+
+            query.addCriteria(Criteria.where("creationTime").gte(eventStartDate).lte(eventEndDate));
+
+        }
 
         int size = (int) mongoTemplate.count(query, collection);
         return new ListTickets(size, ticketList, (int) Math.floor(size / limit));
@@ -232,10 +258,10 @@ public class TicketRepoImpl implements TicketRepo {
         Query query = new Query(Criteria.where("to").is(userId).and("status").is(1)).with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
 
         if (!from.equals(""))
-            query.addCriteria(Criteria.where("from").is(from));
+            query.addCriteria(Criteria.where("from").regex(from));
 
         if (!ticketId.equals(""))
-            query.addCriteria(Criteria.where("ID").is(ticketId));
+            query.addCriteria(Criteria.where("ID").regex(ticketId));
 
         if (!date.equals("")) {
             String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
@@ -297,21 +323,21 @@ public class TicketRepoImpl implements TicketRepo {
 
 
         if (!cat.equals(""))
-            query.addCriteria(Criteria.where("category").is(cat));
+            query.addCriteria(Criteria.where("category").regex(cat));
         if (!subCat.equals(""))
-            query.addCriteria(Criteria.where("subCategory").is(subCat));
+            query.addCriteria(Criteria.where("subCategory").regex(subCat));
 
 
         if (!from.equals(""))
-            query.addCriteria(Criteria.where("from").is(from));
+            query.addCriteria(Criteria.where("from").regex(from));
 
         if (!ticketId.equals(""))
-            query.addCriteria(Criteria.where("ID").is(ticketId));
+            query.addCriteria(Criteria.where("ID").regex(ticketId));
 
         if (!date.equals("")) {
             String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-            String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
-            String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
+            String timeStart = time + "T00:00:00.000Z";
+            String timeEnd = time + "T23:59:59.000Z";
 
             long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
             long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
@@ -321,7 +347,7 @@ public class TicketRepoImpl implements TicketRepo {
 
         }
 
-        int ticketCount = ticketsCount(cat, subCat, st);
+        int ticketCount = ticketsCount(cat, subCat, st, ticketId,date);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
         return new ListTickets(ticketCount, ticketList, (int) Math.floor(ticketCount / limit));
     }
