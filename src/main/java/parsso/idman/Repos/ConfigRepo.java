@@ -21,7 +21,7 @@ public interface ConfigRepo {
 
     HttpStatus factoryReset(String doerID) throws IOException;
 
-    HttpStatus restore(String doerID,String name) throws IOException, ParseException, java.text.ParseException;
+    HttpStatus restore(String doerID, String name) throws IOException, ParseException, java.text.ParseException;
 
     List<Config> listBackedUpConfigs() throws IOException, ParseException;
 

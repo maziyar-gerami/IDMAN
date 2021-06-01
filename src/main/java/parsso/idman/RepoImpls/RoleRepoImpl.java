@@ -21,16 +21,17 @@ import java.util.List;
 @Service
 public class RoleRepoImpl implements RolesRepo {
 
-    final String collection =   Variables.col_usersExtraInfo;
+    final String collection = Variables.col_usersExtraInfo;
     String model = "Role";
 
 
     @Autowired
     MongoTemplate mongoTemplate;
+
     @Override
     public List<UserRole> retrieve() {
         Query query = new Query();
-        return mongoTemplate.find(query,UserRole.class,collection);
+        return mongoTemplate.find(query, UserRole.class, collection);
     }
 
     @Override
@@ -38,25 +39,25 @@ public class RoleRepoImpl implements RolesRepo {
         Logger logger = LogManager.getLogger(doerID);
         int i = 0;
         List<String> userIDs = (List<String>) users.get("names");
-        for (String userId:userIDs) {
+        for (String userId : userIDs) {
             try {
                 Query query = new Query(Criteria.where("userId").is(userId));
-                UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class,collection);
+                UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
                 String oldRole = usersExtraInfo.getRole();
                 usersExtraInfo.setRole(role);
-                mongoTemplate.save(usersExtraInfo,collection);
-                logger.warn(new ReportMessage(model,userId,"","change", "success",
-                        "from \""+ oldRole + "\" to \"" +role+"\"").toString());
+                mongoTemplate.save(usersExtraInfo, collection);
+                logger.warn(new ReportMessage(model, userId, "", "change", "success",
+                        "from \"" + oldRole + "\" to \"" + role + "\"").toString());
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 i++;
-                logger.warn(new ReportMessage(model,userId,"","change", "failed","due to writing to ldap").toString());
+                logger.warn(new ReportMessage(model, userId, "", "change", "failed", "due to writing to ldap").toString());
 
             }
 
-            if (i>0){
-                logger.warn(new ReportMessage(model,userId,"","change", "success","partially done").toString());
-                return  HttpStatus.PARTIAL_CONTENT;
+            if (i > 0) {
+                logger.warn(new ReportMessage(model, userId, "", "change", "success", "partially done").toString());
+                return HttpStatus.PARTIAL_CONTENT;
 
             }
         }

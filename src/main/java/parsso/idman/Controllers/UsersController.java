@@ -3,7 +3,6 @@ package parsso.idman.Controllers;
 
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,10 +47,6 @@ public class UsersController {
     private InstantMessage instantMessage;
     @Autowired
     private UserRepo userRepo;
-    @Value("${administrator.ou.id}")
-    private String adminOu;
-
-
 
 
     //*************************************** APIs ***************************************
@@ -77,7 +72,7 @@ public class UsersController {
     @PutMapping("/api/user")
     public ResponseEntity<HttpStatus> updateUser(HttpServletRequest request, @RequestBody User user) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.update(principal.getName(),principal.getName(), user));
+        return new ResponseEntity<>(userRepo.update(principal.getName(), principal.getName(), user));
     }
 
     /**
@@ -95,9 +90,6 @@ public class UsersController {
 
             if (user.getUsersExtraInfo().getRole().equals("SUPERADMIN"))
                 return 0;
-
-            else if (memberOf.contains(adminOu))
-                return 1;
 
             else
                 return 2;
@@ -146,7 +138,7 @@ public class UsersController {
         String token = jsonObject.getAsString("token");
         if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
 
-        return new ResponseEntity<>(userRepo.changePassword(principal.getName(),oldPassword, newPassword, token));
+        return new ResponseEntity<>(userRepo.changePassword(principal.getName(), oldPassword, newPassword, token));
 
     }
 
@@ -184,14 +176,14 @@ public class UsersController {
      */
     @GetMapping("/api/users")
     public ResponseEntity<List<UsersExtraInfo>> retrieveUsersMain() {
-        return new ResponseEntity<>(userRepo.retrieveUsersMain(-1,-1), HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.retrieveUsersMain(-1, -1), HttpStatus.OK);
     }
 
     @GetMapping("/api/users/group/{groupId}")
     public ResponseEntity<ListUsers> retrieveUsersMainWithGroupId(@PathVariable(name = "groupId") String groupId,
-                                                                         @RequestParam(name = "page", defaultValue = "1") int page,
-                                                                         @RequestParam(name = "nRec", defaultValue = "90000") int nRec) {
-        ListUsers users = userRepo.retrieveUsersMainWithGroupId(groupId, page,nRec);
+                                                                  @RequestParam(name = "page", defaultValue = "1") int page,
+                                                                  @RequestParam(name = "nRec", defaultValue = "90000") int nRec) {
+        ListUsers users = userRepo.retrieveUsersMainWithGroupId(groupId, page, nRec);
         if (users == null) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(users, HttpStatus.OK);
     }
@@ -199,8 +191,8 @@ public class UsersController {
     @PutMapping("/api/users/group/{groupId}")
     public ResponseEntity<HttpStatus> massUsersGroupUpdate(HttpServletRequest request,
                                                            @RequestBody JSONObject gu,
-                                                           @PathVariable (name = "groupId") String groupId) {
-        return new ResponseEntity<>(userRepo.massUsersGroupUpdate(request.getUserPrincipal().getName(),groupId, gu));
+                                                           @PathVariable(name = "groupId") String groupId) {
+        return new ResponseEntity<>(userRepo.massUsersGroupUpdate(request.getUserPrincipal().getName(), groupId, gu));
     }
 
     /**
@@ -216,7 +208,7 @@ public class UsersController {
                                                        @RequestParam(name = "searchUid", defaultValue = "") String searchUid,
                                                        @RequestParam(name = "userStatus", defaultValue = "") String userStatus,
                                                        @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName) {
-            return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName, userStatus), HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
 
     /**
@@ -237,10 +229,10 @@ public class UsersController {
      * @return the response entity
      */
     @PostMapping("/api/users")
-    public ResponseEntity<JSONObject> bindLdapUser(HttpServletRequest request,@RequestBody User user) {
+    public ResponseEntity<JSONObject> bindLdapUser(HttpServletRequest request, @RequestBody User user) {
         JSONObject jsonObject = userRepo.create(request.getUserPrincipal().getName(), user);
 
-        if (jsonObject==null || jsonObject.size() == 0)
+        if (jsonObject == null || jsonObject.size() == 0)
             return new ResponseEntity<>(null, HttpStatus.OK);
         else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
 
@@ -254,9 +246,9 @@ public class UsersController {
      * @return the response entity
      */
     @PutMapping("/api/users/u/{uId}")
-    public ResponseEntity<String> rebindLdapUser(HttpServletRequest request,@PathVariable("uId") String uid, @RequestBody User user) {
+    public ResponseEntity<String> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) {
 
-        return new ResponseEntity<>(userRepo.update( request.getUserPrincipal().getName(),uid, user));
+        return new ResponseEntity<>(userRepo.update(request.getUserPrincipal().getName(), uid, user));
 
     }
 
@@ -266,9 +258,9 @@ public class UsersController {
      * @return the response entity
      */
     @DeleteMapping("/api/users")
-    public ResponseEntity<List<String>> unbindAllLdapUser(HttpServletRequest request,@RequestBody JSONObject jsonObject) {
+    public ResponseEntity<List<String>> unbindAllLdapUser(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
         Principal principal = request.getUserPrincipal();
-        List<String> names = userRepo.remove(principal.getName(),jsonObject);
+        List<String> names = userRepo.remove(principal.getName(), jsonObject);
         if (names.size() == 0)
             return new ResponseEntity<>(HttpStatus.OK);
         else
@@ -283,7 +275,7 @@ public class UsersController {
     @PutMapping("/api/users/enable/u/{id}")
     public ResponseEntity<HttpStatus> enable(HttpServletRequest request, @PathVariable("id") String uid) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.enable(principal.getName(),uid));
+        return new ResponseEntity<>(userRepo.enable(principal.getName(), uid));
     }
 
     /**
@@ -294,7 +286,7 @@ public class UsersController {
     @PutMapping("/api/users/disable/u/{id}")
     public ResponseEntity<HttpStatus> disable(HttpServletRequest request, @PathVariable("id") String uid) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.disable(principal.getName(),uid));
+        return new ResponseEntity<>(userRepo.disable(principal.getName(), uid));
     }
 
 
@@ -306,7 +298,7 @@ public class UsersController {
     @PutMapping("/api/users/unlock/u/{id}")
     public ResponseEntity<HttpStatus> lockUnlock(HttpServletRequest request, @PathVariable("id") String uid) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.unlock(principal.getName(),uid));
+        return new ResponseEntity<>(userRepo.unlock(principal.getName(), uid));
     }
 
 
@@ -319,18 +311,18 @@ public class UsersController {
      * @throws IOException the io exception
      */
     @PostMapping("/api/users/import")
-    public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request,@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException {
 
-        JSONObject jsonObject = userRepo.importFileUsers(request.getUserPrincipal().getName(),file, defaultSequence, true);
+        JSONObject jsonObject = userRepo.importFileUsers(request.getUserPrincipal().getName(), file, defaultSequence, true);
         if (Integer.valueOf(jsonObject.getAsString("nUnSuccessful")) == 0)
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
     }
 
     @PutMapping("/api/users/import/massUpdate")
-    public ResponseEntity<JSONObject> updateConflicts(HttpServletRequest request,@RequestBody List<User> users) {
+    public ResponseEntity<JSONObject> updateConflicts(HttpServletRequest request, @RequestBody List<User> users) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.massUpdate(request.getUserPrincipal().getName(),users),HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.massUpdate(request.getUserPrincipal().getName(), users), HttpStatus.OK);
     }
 
     /**
@@ -357,13 +349,13 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/ou/{ou}")
-    public ResponseEntity<List<String>> addGroups(HttpServletRequest request,@RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException {
-        List<String> notExist = userRepo.addGroupToUsers(request.getUserPrincipal().getName(),file, ou);
+    public ResponseEntity<List<String>> addGroups(HttpServletRequest request, @RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException {
+        List<String> notExist = userRepo.addGroupToUsers(request.getUserPrincipal().getName(), file, ou);
         if (ou.equals("none"))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        if (notExist==null)
-            return  new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        if (notExist.size()==0)
+        if (notExist == null)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (notExist.size() == 0)
             return new ResponseEntity<>(HttpStatus.OK);
         else
             return new ResponseEntity<>(notExist, HttpStatus.PARTIAL_CONTENT);
@@ -403,7 +395,7 @@ public class UsersController {
                                             @PathVariable("cid") String cid,
                                             @PathVariable("answer") String answer) {
 
-        int time = userRepo.sendEmail(email,null, cid, answer);
+        int time = userRepo.sendEmail(email, null, cid, answer);
         if (time > 0)
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)

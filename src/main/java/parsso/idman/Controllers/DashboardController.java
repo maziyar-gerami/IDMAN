@@ -73,9 +73,6 @@ public class DashboardController {
     }
 
 
-
-
-
     //*************************************** APIs ***************************************
 
     /**
@@ -88,11 +85,6 @@ public class DashboardController {
 
         return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
     }
-
-
-
-
-
 
 
     //*************************************** Pages ***************************************

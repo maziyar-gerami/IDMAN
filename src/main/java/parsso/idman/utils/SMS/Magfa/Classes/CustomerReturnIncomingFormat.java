@@ -1,14 +1,14 @@
-
 package parsso.idman.Utils.SMS.Magfa.Classes;
+
 
 import javax.xml.bind.annotation.*;
 
 
 /**
  * <p>Java class for customerReturnIncomingFormat complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="customerReturnIncomingFormat">
  *   &lt;complexContent>
@@ -23,18 +23,16 @@ import javax.xml.bind.annotation.*;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "customerReturnIncomingFormat", propOrder = {
-    "body",
-    "senderNumber",
-    "recipientNumber",
-    "errorResult"
+        "body",
+        "senderNumber",
+        "recipientNumber",
+        "errorResult"
 })
 @XmlSeeAlso({
-    DatedCustomerReturnIncomingFormat.class
+        DatedCustomerReturnIncomingFormat.class
 })
 public class CustomerReturnIncomingFormat {
 
@@ -49,11 +47,9 @@ public class CustomerReturnIncomingFormat {
 
     /**
      * Gets the value of the body property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getBody() {
         return body;
@@ -61,11 +57,9 @@ public class CustomerReturnIncomingFormat {
 
     /**
      * Sets the value of the body property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setBody(String value) {
         this.body = value;
@@ -73,11 +67,9 @@ public class CustomerReturnIncomingFormat {
 
     /**
      * Gets the value of the senderNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getSenderNumber() {
         return senderNumber;
@@ -85,11 +77,9 @@ public class CustomerReturnIncomingFormat {
 
     /**
      * Sets the value of the senderNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setSenderNumber(String value) {
         this.senderNumber = value;
@@ -97,11 +87,9 @@ public class CustomerReturnIncomingFormat {
 
     /**
      * Gets the value of the recipientNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getRecipientNumber() {
         return recipientNumber;
@@ -109,11 +97,9 @@ public class CustomerReturnIncomingFormat {
 
     /**
      * Sets the value of the recipientNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setRecipientNumber(String value) {
         this.recipientNumber = value;
@@ -121,11 +107,9 @@ public class CustomerReturnIncomingFormat {
 
     /**
      * Gets the value of the errorResult property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getErrorResult() {
         return errorResult;
@@ -133,11 +117,9 @@ public class CustomerReturnIncomingFormat {
 
     /**
      * Sets the value of the errorResult property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setErrorResult(String value) {
         this.errorResult = value;

@@ -16,7 +16,7 @@ public class Pulling {
 
     public static void pullServices() throws UnknownHostException {
 
-        String collection =  Variables.col_services;
+        String collection = Variables.col_services;
         String mongoHosts = "mongodb://parssouser:APA00918@parsso.razi.ac.ir:27017/parssodb?ssl=false";
 
         MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(mongoHosts), "parssodb");

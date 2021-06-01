@@ -33,43 +33,39 @@ import java.util.List;
 @Controller
 public class ServicesController {
 
+    @Autowired
+    MongoTemplate mongoTemplate;
     @Qualifier("userRepoImpl")
     @Autowired
     private UserRepo userRepo;
-
     @Qualifier("serviceRepoImpl")
     @Autowired
     private ServiceRepo serviceRepo;
-
-    @Value("${administrator.ou.id}")
-    private String adminOu;
-
     @Value("${services.folder.path}")
     private String path;
-
     @Value("${metadata.file.path}")
     private String metadataPath;
 
     @GetMapping("/services")
-    public String Services() {return "services"; }
+    public String Services() {
+        return "services";
+    }
 
     @GetMapping("/createservice")
-    public String CreateService() {return "createservice";}
-
-    @Autowired
-    MongoTemplate mongoTemplate;
-
+    public String CreateService() {
+        return "createservice";
+    }
 
     @GetMapping("/api/services/user")
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
         String currentUserId = request.getUserPrincipal().getName();
         Criteria regex = Criteria.where("userId").regex(currentUserId, "i");
         UsersExtraInfo simpleUser = mongoTemplate.findOne(new Query(regex)
-                ,UsersExtraInfo.class, Variables.col_usersExtraInfo);
+                , UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
-        if(simpleUser==null){
+        if (simpleUser == null) {
             simpleUser = new UsersExtraInfo(userRepo.retrieveUsers(currentUserId));
-            mongoTemplate.save(simpleUser,  Variables.col_usersExtraInfo);
+            mongoTemplate.save(simpleUser, Variables.col_usersExtraInfo);
         }
 
         Principal principal = request.getUserPrincipal();
@@ -99,14 +95,14 @@ public class ServicesController {
     }
 
     @PostMapping("/api/services/{system}")
-    public ResponseEntity<String> createService(HttpServletRequest request,@RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException {
+    public ResponseEntity<String> createService(HttpServletRequest request, @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException {
         return new ResponseEntity<>(serviceRepo.createService(request.getUserPrincipal().getName(), jsonObject, system));
     }
 
     @PutMapping("/api/service/{id}/{system}")
-    public ResponseEntity<String> updateService(HttpServletRequest request,@PathVariable("id") long id,
+    public ResponseEntity<String> updateService(HttpServletRequest request, @PathVariable("id") long id,
                                                 @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
-        return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(),id, jsonObject, system));
+        return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
     }
 
     /**

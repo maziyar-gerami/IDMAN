@@ -7,11 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
 
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import java.util.Date;
 import java.util.stream.Collectors;
 
 @Getter
@@ -28,7 +26,7 @@ public class UsersExtraInfo {
     private String qrToken;
     private long creationTimeStamp;
     private String photoName;
-    private  boolean unDeletable;
+    private boolean unDeletable;
     @JsonIgnore
     private String role;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -42,20 +40,14 @@ public class UsersExtraInfo {
     private String status;
     private long passwordChangedTime;
 
-    public List<String> getMemberOf() {
-        if (!(memberOf==null || memberOf.size()==0))
-            return memberOf.stream().distinct().collect(Collectors.toList());
-        return  null;
-    }
-
-    public UsersExtraInfo(){
+    public UsersExtraInfo() {
 
     }
 
     public UsersExtraInfo(User user) {
         this._id = user.get_id();
-        this.userId = user.getUserId();
-        this.displayName = user.getDisplayName();
+        this.userId = user.getUserId().trim();
+        this.displayName = user.getDisplayName().trim();
         this.memberOf = user.getMemberOf();
         this.passwordChangedTime = user.getPasswordChangedTime();
         this.status = user.getStatus();
@@ -73,10 +65,10 @@ public class UsersExtraInfo {
         this.creationTimeStamp = new Date().getTime();
     }
 
-    public UsersExtraInfo(User user , String photoName, boolean unDeletable) {
+    public UsersExtraInfo(User user, String photoName, boolean unDeletable) {
         this._id = user.get_id();
-        this.userId = user.getUserId();
-        this.displayName = user.getDisplayName();
+        this.userId = user.getUserId().trim();
+        this.displayName = user.getDisplayName().trim();
         this.memberOf = user.getMemberOf();
         this.passwordChangedTime = user.getPasswordChangedTime();
         this.status = user.getStatus();
@@ -89,5 +81,9 @@ public class UsersExtraInfo {
         this.role = "USER";
     }
 
-
+    public List<String> getMemberOf() {
+        if (!(memberOf == null || memberOf.size() == 0))
+            return memberOf.stream().distinct().collect(Collectors.toList());
+        return null;
+    }
 }

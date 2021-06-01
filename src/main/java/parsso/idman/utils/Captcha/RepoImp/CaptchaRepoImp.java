@@ -10,11 +10,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Utils.Captcha.Models.CAPTCHA;
 import parsso.idman.Utils.Captcha.Models.CAPTCHAimage;
 import parsso.idman.Utils.Captcha.Models.Points;
 import parsso.idman.Utils.Captcha.Repo.CAPTCHARepo;
-import parsso.idman.Helpers.Variables;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -42,7 +42,7 @@ public class CaptchaRepoImp implements CAPTCHARepo {
     private String mongoCreds;
     @Value("${mongo.hosts}")
     private String mongoHosts;
-    private String collection =  Variables.col_captchas;
+    private String collection = Variables.col_captchas;
 
     public CaptchaRepoImp() {
         this.len = 5;
@@ -159,8 +159,8 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         CAPTCHA actualCaptcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
 
         if (actualCaptcha != null) {
-            Thread thread = new Thread(){
-                public void run(){
+            Thread thread = new Thread() {
+                public void run() {
                     mongoTemplate.remove(query, collection);
                 }
 

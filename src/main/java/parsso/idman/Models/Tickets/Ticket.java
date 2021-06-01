@@ -3,17 +3,14 @@ package parsso.idman.Models.Tickets;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.sun.xml.ws.developer.Serialization;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
 import parsso.idman.Models.Time;
-import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+import java.util.Random;
 
 @Setter
 @Getter
@@ -45,20 +42,21 @@ public class Ticket {
     List<String> deleteFor;
     List<Message> messages;
 
-    public Ticket(){
+
+    public Ticket() {
 
     }
 
     public Ticket(String from, String subject, List<Message> messages) {
-        this.ID = UUID.randomUUID().toString();
         this.from = from;
         this.to = "SUPPORTER";
         this.creationTime = new Date().getTime();
+        this.ID = new Random().nextInt(899) + 100 + "-" + getCreationTime().toString().substring(7);
         this.subject = subject;
         this.messages = messages;
     }
 
-    public Ticket(Ticket ticket,  List<Message> messages) {
+    public Ticket(Ticket ticket, List<Message> messages) {
         this.ID = ticket.getID();
         this.from = ticket.getFrom();
         this.creationTime = ticket.getCreationTime();
@@ -71,14 +69,16 @@ public class Ticket {
         this.messages = messages;
     }
 
-    public static Ticket ticketUpdate(Ticket oldTicket, Ticket newTicket){
+    public static Ticket ticketUpdate(Ticket oldTicket, Ticket newTicket) {
         try {
             oldTicket.setStatus(newTicket.getStatus());
-        }catch (Exception e){}
-            oldTicket.setModifiedTime(new Date().getTime());
+        } catch (Exception e) {
+        }
+        oldTicket.setModifiedTime(new Date().getTime());
         try {
             oldTicket.setSubject(newTicket.getSubject());
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
 
         return oldTicket;
     }
@@ -95,10 +95,26 @@ public class Ticket {
     }
 
     public String getLastFrom() {
-        return this.getMessages().get(this.getMessages().size()-1).getFrom();
+        return this.getMessages().get(this.getMessages().size() - 1).getFrom();
     }
 
     public String getLastTo() {
-        return this.getMessages().get(this.getMessages().size()-1).getTo();
+        return this.getMessages().get(this.getMessages().size() - 1).getTo();
+    }
+
+    public String getFrom() {
+        return from.toLowerCase();
+    }
+
+    public void setFrom(String from) {
+        this.from = from.toLowerCase();
+    }
+
+    public String getTo() {
+        return to.toLowerCase();
+    }
+
+    public void setTo(String to) {
+        this.to = to.toLowerCase();
     }
 }

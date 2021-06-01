@@ -11,12 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.stereotype.Service;
-import parsso.idman.Utils.Captcha.Models.CAPTCHA;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Users.User;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.Repos.UserRepo;
+import parsso.idman.Utils.Captcha.Models.CAPTCHA;
 import parsso.idman.Utils.Email.EmailSend;
 
 import javax.naming.directory.SearchControls;
@@ -27,7 +27,7 @@ import java.util.List;
 @Service
 public class Email {
 
-    private final String collection =   Variables.col_captchas;
+    private final String collection = Variables.col_captchas;
     @Autowired
     LdapTemplate ldapTemplate;
     @Autowired
@@ -52,7 +52,7 @@ public class Email {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         List<JSONObject> jsonArray = new LinkedList<>();
-        List<User> people = ldapTemplate.search("ou=People,"+BASE_DN,new EqualsFilter("mail", email).encode(), userAttributeMapper);
+        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("mail", email).encode(), userAttributeMapper);
         JSONObject jsonObject;
         for (User user : people) {
             jsonObject = new JSONObject();
@@ -90,7 +90,7 @@ public class Email {
             List<User> users = userRepo.retrieveUsersFull();
 
             for (User user : users)
-                if (!user.getUsersExtraInfo().getRole().equals("SUPERADMIN")  && user.getMail() != null && user.getMail() != null && user.getMail() != "" && user.getMail() != " ")
+                if (!user.getUsersExtraInfo().getRole().equals("SUPERADMIN") && user.getMail() != null && user.getMail() != null && user.getMail() != "" && user.getMail() != " ")
                     sendEmail(user.getMail());
 
         } else {
@@ -195,7 +195,7 @@ public class Email {
 
         try {
             emailSend.sendMail(user, day);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

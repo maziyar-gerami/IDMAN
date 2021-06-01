@@ -1,5 +1,5 @@
-
 package parsso.idman.Utils.SMS.Magfa.Classes;
+
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -11,9 +11,9 @@ import java.util.List;
 
 /**
  * <p>Java class for deliveryResult complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="deliveryResult">
  *   &lt;complexContent>
@@ -26,13 +26,11 @@ import java.util.List;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "deliveryResult", propOrder = {
-    "status",
-    "dlrs"
+        "status",
+        "dlrs"
 })
 public class DeliveryResult {
 
@@ -42,7 +40,6 @@ public class DeliveryResult {
 
     /**
      * Gets the value of the status property.
-     *
      */
     public int getStatus() {
         return status;
@@ -50,7 +47,6 @@ public class DeliveryResult {
 
     /**
      * Sets the value of the status property.
-     *
      */
     public void setStatus(int value) {
         this.status = value;
@@ -75,8 +71,6 @@ public class DeliveryResult {
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link DeliveryStatus }
-     *
-     *
      */
     public List<DeliveryStatus> getDlrs() {
         if (dlrs == null) {

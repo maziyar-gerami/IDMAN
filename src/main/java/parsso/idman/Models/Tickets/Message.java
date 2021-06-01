@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.Models.Time;
-import parsso.idman.Utils.Convertor.DateConverter;
+import parsso.idman.Models.Users.User;
 
 import java.util.Date;
 
@@ -14,31 +14,36 @@ import java.util.Date;
 public class Message {
     private String to;
     private String from;
+    private String toDisplayName;
+    private String fromDisplayName;
     private String body;
     private Time creationTime;
     @JsonIgnore
     private long creationLong;
 
+    public Message() {
+
+    }
+
+    public Message(User user, String body) {
+        this.to = "SUPPORTER";
+        this.toDisplayName = "پشتیبان";
+        this.from = user.getUserId();
+        this.fromDisplayName = user.getDisplayName();
+        this.body = body;
+        this.creationLong = new Date().getTime();
+    }
+
+    public Message(User from, User to, String body) {
+        this.from = from.getUserId();
+        this.fromDisplayName = from.getDisplayName();
+        this.to = to.getUserId();
+        this.toDisplayName = to.getDisplayName();
+        this.body = body;
+        this.creationLong = new Date().getTime();
+    }
+
     public Time getCreationTime() {
         return Time.longToPersianTime(creationLong);
     }
-
-    public Message(){
-
-    }
-    public Message(String from, String body) {
-        this.to = "SUPPORTER";
-        this.from = from;
-        this.body = body;
-        this.creationLong = new Date().getTime();
-    }
-
-    public Message(String from, String to, String body) {
-        this.from = from;
-        this.to = to;
-        this.body = body;
-        this.creationLong = new Date().getTime();
-    }
-
-
 }

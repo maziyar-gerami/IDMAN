@@ -22,44 +22,33 @@ import java.util.List;
 @Service
 public class SettingsRepoImpl implements SettingsRepo {
 
-    int millis= 3600000;
-
-
-    @Autowired
-    private SettingsRepo settingsRepo;
-
-    @Autowired
-    PasswordSettings passwordSettings;
-
-    @Value("${max.pwd.lifetime.hours}")
-    private long maxPwdLifetime;
-
-    @Value("${expire.pwd.message.hours}")
-    private long expirePwdMessageTime;
-
     @Value("${interval.check.pass.hours}")
     private static long intervalCheckPassTime;
-
+    int millis = 3600000;
+    @Autowired
+    PasswordSettings passwordSettings;
     @Autowired
     UserRepo userRepo;
-
-
     @Autowired
     InstantMessage instantMessage;
-
     @Autowired
     Email email;
-
     @Autowired
     ConfigRepo configRepo;
+    @Autowired
+    private SettingsRepo settingsRepo;
+    @Value("${max.pwd.lifetime.hours}")
+    private long maxPwdLifetime;
+    @Value("${expire.pwd.message.hours}")
+    private long expirePwdMessageTime;
 
     @Override
     public HttpStatus emailNotification() {
         try {
             startNotification("email");
             return HttpStatus.OK;
-        }catch (Exception e){
-            return  HttpStatus.FORBIDDEN;
+        } catch (Exception e) {
+            return HttpStatus.FORBIDDEN;
         }
     }
 
@@ -68,17 +57,17 @@ public class SettingsRepoImpl implements SettingsRepo {
         try {
             startNotification("instantMessage");
             return HttpStatus.OK;
-        }catch (Exception e){
-            return  HttpStatus.FORBIDDEN;
+        } catch (Exception e) {
+            return HttpStatus.FORBIDDEN;
         }
     }
 
     @Override
     public List<Setting> retrieveTFSetting() throws IOException {
-        return  configRepo.retrieveTFSetting();
+        return configRepo.retrieveTFSetting();
     }
 
-    private HttpStatus startNotification(String method){
+    private HttpStatus startNotification(String method) {
         long deadline = maxPwdLifetime * millis;
         long messageTime = expirePwdMessageTime * millis;
 
@@ -98,10 +87,10 @@ public class SettingsRepoImpl implements SettingsRepo {
                 }
             } catch (java.text.ParseException e) {
                 e.printStackTrace();
-                return  HttpStatus.BAD_REQUEST;
+                return HttpStatus.BAD_REQUEST;
             }
 
         }
-        return  HttpStatus.OK;
+        return HttpStatus.OK;
     }
 }

@@ -30,7 +30,7 @@ import java.util.List;
 @Service
 public class DashboardData {
     public static String mainCollection = "MongoDbCasEventRepository";
-    public static String userExtraInfoCollection =   Variables.col_usersExtraInfo;
+    public static String userExtraInfoCollection = Variables.col_usersExtraInfo;
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -53,19 +53,18 @@ public class DashboardData {
     Logins fLogins;
 
 
-
     public Dashboard retrieveDashboardData() throws IOException, InterruptedException {
 
-        Thread thread = new Thread(){
+        Thread thread = new Thread() {
             @SneakyThrows
-            public void run(){
+            public void run() {
                 updateDashboardData();
             }
         };
 
         thread.start();
 
-        return mongoTemplate.findOne(new Query(Criteria.where("_id").is("Dashboard")),Dashboard.class,
+        return mongoTemplate.findOne(new Query(Criteria.where("_id").is("Dashboard")), Dashboard.class,
                 Variables.col_extraInfo);
 
     }
@@ -74,14 +73,14 @@ public class DashboardData {
 
         Thread userData = new Thread(() -> {
             //________users data____________
-            int nUsers = userRepo.retrieveUsersSize("","","","");
+            int nUsers = userRepo.retrieveUsersSize("", "", "", "");
 
             int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), UsersExtraInfo.class, userExtraInfoCollection);
-            int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class,userExtraInfoCollection);
-            int temp = nUsers-nLocked-nDisabled;
-            int nActive = (temp)>nUsers?nUsers:temp;
+            int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, userExtraInfoCollection);
+            int temp = nUsers - nLocked - nDisabled;
+            int nActive = (temp) > nUsers ? nUsers : temp;
 
-            fUsers = new Users(nUsers,nActive,nDisabled,nLocked);
+            fUsers = new Users(nUsers, nActive, nDisabled, nLocked);
 
         });
         userData.start();
@@ -107,7 +106,7 @@ public class DashboardData {
 
             int nDisabledServices = nServices - nEnabledServices;
 
-            fServices =new Services(nServices,nDisabledServices,nEnabledServices);
+            fServices = new Services(nServices, nDisabledServices, nEnabledServices);
 
         });
 
@@ -119,7 +118,6 @@ public class DashboardData {
             int nUnSucceful = 0;
 
             for (Event event : events) {
-                //TODO: This is date
                 ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
 
 
@@ -129,7 +127,7 @@ public class DashboardData {
                     nSuccessful++;
             }
 
-            fLogins = new Logins (nSuccessful+nUnSucceful,nUnSucceful,nSuccessful);
+            fLogins = new Logins(nSuccessful + nUnSucceful, nUnSucceful, nSuccessful);
         });
 
 
@@ -140,7 +138,7 @@ public class DashboardData {
         userData.join();
         servicesData.join();
 
-        Dashboard dashboard = new Dashboard(fServices,fLogins,fUsers);
+        Dashboard dashboard = new Dashboard(fServices, fLogins, fUsers);
 
         dashboard.setId("Dashboard");
 

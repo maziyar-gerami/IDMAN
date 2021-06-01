@@ -13,7 +13,6 @@ import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,25 +37,25 @@ public class GroupsController {
     @GetMapping("/api/groups/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
-        List <Group> groups = groupRepo.retrieveCurrentUserGroup(user);
+        List<Group> groups = groupRepo.retrieveCurrentUserGroup(user);
         groups.removeAll(Collections.singleton(null));
         return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
     @PostMapping("/api/groups")
-    public ResponseEntity<HttpStatus> bindLdapGroup(HttpServletRequest request,@RequestBody Group ou) {
-        return new ResponseEntity<>(groupRepo.create(request.getUserPrincipal().getName(),ou));
+    public ResponseEntity<HttpStatus> bindLdapGroup(HttpServletRequest request, @RequestBody Group ou) {
+        return new ResponseEntity<>(groupRepo.create(request.getUserPrincipal().getName(), ou));
     }
 
     @PutMapping("/api/groups/{id}")
-    public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request,@RequestBody Group ou, @PathVariable("id") String id) {
+    public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request, @RequestBody Group ou, @PathVariable("id") String id) {
 
-        return new ResponseEntity<>(groupRepo.update(request.getUserPrincipal().getName(),id, ou));
+        return new ResponseEntity<>(groupRepo.update(request.getUserPrincipal().getName(), id, ou));
     }
 
     @GetMapping("/api/groups")
     public ResponseEntity<List<Group>> retrieve() {
-        List<Group> groups =  groupRepo.retrieve();
+        List<Group> groups = groupRepo.retrieve();
         groups.removeIf(t -> t.getName() == null);
         return new ResponseEntity<>(groups, HttpStatus.OK);
     }
@@ -67,7 +66,7 @@ public class GroupsController {
     }
 
     @DeleteMapping("/api/groups")
-    public ResponseEntity<HttpStatus> unbindAllLdapOU(HttpServletRequest request,@RequestBody JSONObject jsonObject) {
+    public ResponseEntity<HttpStatus> unbindAllLdapOU(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
         return new ResponseEntity<>(groupRepo.remove(request.getUserPrincipal().getName(), jsonObject));
     }
 

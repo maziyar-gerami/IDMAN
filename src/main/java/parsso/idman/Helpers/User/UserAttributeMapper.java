@@ -36,16 +36,16 @@ public class UserAttributeMapper implements AttributesMapper<User> {
         User user = new User();
 
         user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
-        user.setFirstName(null != attributes.get("givenName")? attributes.get("givenName").get().toString() : "");
+        user.setFirstName(null != attributes.get("givenName") ? attributes.get("givenName").get().toString() : "");
         user.setLastName(null != attributes.get("sn") ? attributes.get("sn").get().toString() : null);
         user.setDisplayName((null != attributes.get("displayName") && !attributes.get("displayName").equals("")) ? attributes.get("displayName").get().toString() : null);
-        user.setMobile(null != attributes.get("mobile")? attributes.get("mobile").get().toString() : null);
+        user.setMobile(null != attributes.get("mobile") ? attributes.get("mobile").get().toString() : null);
         user.setMail(null != attributes.get("mail") ? attributes.get("mail").get().toString() : null);
         user.setTimeStamp(null != attributes.get("createtimestamp") ? Long.valueOf(attributes.get("createtimestamp").get().toString().substring(0, 14)) : 0);
         user.setPasswordChangedTime(null != attributes.get("pwdChangedTime") ? Long.valueOf(attributes.get("pwdChangedTime").get().toString().substring(0, 14)) : user.getTimeStamp());
         user.setEmployeeNumber((null != attributes.get("employeeNumber") && !attributes.get("employeeNumber").equals("")) ? attributes.get("employeeNumber").get().toString() : null);
         int nGroups = (null == attributes.get("ou") && !attributes.get("displayName").equals("")) ? 0 : attributes.get("ou").size();
-        user.setDescription(attributes.get("description")!=null ? attributes.get("description").get().toString():" ");
+        user.setDescription(attributes.get("description") != null ? attributes.get("description").get().toString() : " ");
         List<String> ls = new LinkedList<>();
         for (int i = 0; i < nGroups; i++) ls.add(attributes.get("ou").get(i).toString());
         if (user.getUsersExtraInfo() != null)
@@ -55,9 +55,9 @@ public class UserAttributeMapper implements AttributesMapper<User> {
         Query query = new Query(Criteria.where("userId").is(user.getUserId()));
 
 
-        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class,  Variables.col_usersExtraInfo);
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
-        if (usersExtraInfo!=null) {
+        if (usersExtraInfo != null) {
 
             user.setPhoto(usersExtraInfo.getPhotoName());
             user.setUnDeletable(usersExtraInfo.isUnDeletable());
@@ -65,7 +65,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
             //user.getUsersExtraInfo().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
             user.setEndTime(null != attributes.get("pwdEndTime") ? Time.setEndTime(attributes.get("pwdEndTime").get().toString()) : null);
 
-            if (usersExtraInfo.getRole()==null)
+            if (usersExtraInfo.getRole() == null)
                 user.setRole(usersExtraInfo.getRole());
             else {
 

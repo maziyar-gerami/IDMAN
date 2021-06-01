@@ -1,5 +1,5 @@
-
 package parsso.idman.Utils.SMS.Magfa.Classes;
+
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -10,9 +10,9 @@ import java.math.BigDecimal;
 
 /**
  * <p>Java class for creditResult complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="creditResult">
  *   &lt;complexContent>
@@ -25,13 +25,11 @@ import java.math.BigDecimal;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "creditResult", propOrder = {
-    "status",
-    "balance"
+        "status",
+        "balance"
 })
 public class CreditResult {
 
@@ -41,7 +39,6 @@ public class CreditResult {
 
     /**
      * Gets the value of the status property.
-     * 
      */
     public int getStatus() {
         return status;
@@ -49,7 +46,6 @@ public class CreditResult {
 
     /**
      * Sets the value of the status property.
-     * 
      */
     public void setStatus(int value) {
         this.status = value;
@@ -57,11 +53,9 @@ public class CreditResult {
 
     /**
      * Gets the value of the balance property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
+     *
+     * @return possible object is
+     * {@link BigDecimal }
      */
     public BigDecimal getBalance() {
         return balance;
@@ -69,11 +63,9 @@ public class CreditResult {
 
     /**
      * Sets the value of the balance property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link BigDecimal }
      */
     public void setBalance(BigDecimal value) {
         this.balance = value;

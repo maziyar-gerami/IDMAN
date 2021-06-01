@@ -1,12 +1,13 @@
 package parsso.idman.RepoImpls;
 
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Utils.SMS.Magfa.Classes.*;
 import parsso.idman.Repos.MagfaSMSSendRepo;
+import parsso.idman.Utils.SMS.Magfa.Classes.*;
 
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
@@ -29,14 +30,15 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
     String username;
     @Value("${SMS.Magfa.password}")
     String password;
+
     @Override
-    public ArrayList<String> SendMessage(String message,String PhoneNumber, Long id) throws MalformedURLException {
+    public ArrayList<String> SendMessage(String message, String PhoneNumber, Long id) throws MalformedURLException {
         MagfaSoapServer service = null;
         try {
             URL url = new URL("https://sms.magfa.com/api/soap/sms/v2/server?wsdl");
             service = new MagfaSoapServer_Service(url).getMagfaSoapServer();
-        }catch (MalformedURLException e){
-            logger.warn(new ReportMessage(model,"","","retrieve url", "failed","malformed url").toString());
+        } catch (MalformedURLException e) {
+            logger.warn(new ReportMessage(model, "", "", "retrieve url", "failed", "malformed url").toString());
         }
         String domain = "magfa";
         BindingProvider prov = (BindingProvider) service;
@@ -59,7 +61,7 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
         List uidItems = uids.getItem();
         uidItems.add(id);
         SendResult result = service.send(messages, senders, recipients, uids, new IntArray(), new StringArray(), new IntArray());
-        ArrayList<String> res= new ArrayList<>();
+        ArrayList<String> res = new ArrayList<>();
         res.add(String.valueOf(result.getStatus()));
         for (SendMessage sendMessage : result.getMessages()) {
             res.add(sendMessage.toString());
@@ -80,14 +82,13 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
         httpHeaders.put("Accept-Encoding", Collections.singletonList("gzip")); //this says you're willing to accept a compressed response
         prov.getRequestContext().put(MessageContext.HTTP_REQUEST_HEADERS, httpHeaders);
         MessagesResult result = service.messages(100, "");
-        ArrayList<String> res=new ArrayList<>();
-        if(result.getStatus() != 0 ){
+        ArrayList<String> res = new ArrayList<>();
+        if (result.getStatus() != 0) {
             res.add(String.valueOf(result.getStatus()));
             return res;
-        }
-        else
+        } else
             for (DatedCustomerReturnIncomingFormat msg : result.getMessages()) {
-                res.add(msg.getDate()+":"+msg.getBody());
+                res.add(msg.getDate() + ":" + msg.getBody());
             }
         return res;
     }
@@ -117,8 +118,8 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
         mids.getItem().add(456789L);
         DeliveryResult result = service.statuses(mids);
 // result
-        ArrayList<String> res= new ArrayList<>();
-        if (result.getStatus() != 0 )
+        ArrayList<String> res = new ArrayList<>();
+        if (result.getStatus() != 0)
             res.add(String.valueOf(result.getStatus()));
         else
             for (DeliveryStatus deliveryStatus : result.getDlrs()) {
@@ -136,7 +137,7 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
         String domain = "magfa";
 
 // set basic auth
-        BindingProvider prov = (BindingProvider)service;
+        BindingProvider prov = (BindingProvider) service;
         prov.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, username + "/" + domain);
         prov.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
 
@@ -150,7 +151,7 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
         MessageIdResult result = service.mid(id);
 
 // result
-        if(result.getStatus() != 0 )
+        if (result.getStatus() != 0)
             return String.valueOf(result.getStatus());
         else {
             return String.valueOf(result.getMid());

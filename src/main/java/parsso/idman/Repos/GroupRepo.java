@@ -16,14 +16,13 @@ public interface GroupRepo {
 
     HttpStatus create(String doerId, Group ou);
 
-    HttpStatus update(String doerID,String name, Group ou);
+    HttpStatus update(String doerID, String name, Group ou);
 
     HttpStatus remove(String doerId, JSONObject jsonObject);
 
     Group retrieveOu(String name);
 
     List<Group> retrieveCurrentUserGroup(User user);
-
 
 
 }

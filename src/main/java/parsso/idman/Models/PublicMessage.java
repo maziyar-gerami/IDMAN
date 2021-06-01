@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 public class PublicMessage {
     @JsonIgnore
-    private  ObjectId _id;
+    private ObjectId _id;
     private String messageId;
     private String title;
     private String creator;
@@ -25,24 +25,13 @@ public class PublicMessage {
     @JsonIgnore
     private Long updateDate;
 
-    private  Time createTime;
+    private Time createTime;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Time updateTime;
     private String body;
 
-    public PublicMessage(){
+    public PublicMessage() {
 
-    }
-
-    public Time getCreateTime() {
-        return Time.longToPersianTime(getCreateDate());
-    }
-
-    public Time getUpdateTime() {
-        if (updateDate!= null)
-        return Time.longToPersianTime(updateDate);
-
-        return null;
     }
 
     public PublicMessage(String title, String body, boolean visible, String creator) {
@@ -52,6 +41,17 @@ public class PublicMessage {
         this.createDate = System.currentTimeMillis();
         this.creator = creator;
         this.body = body;
+    }
+
+    public Time getCreateTime() {
+        return Time.longToPersianTime(getCreateDate());
+    }
+
+    public Time getUpdateTime() {
+        if (updateDate != null)
+            return Time.longToPersianTime(updateDate);
+
+        return null;
     }
 }
 

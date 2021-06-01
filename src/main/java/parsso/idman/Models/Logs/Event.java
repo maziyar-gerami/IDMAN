@@ -51,7 +51,6 @@ public class Event implements Serializable {
     Time time;
 
 
-
     public String getType() {
         ActionInfo actionHelper = new ActionInfo(type);
         return actionHelper.getAction();

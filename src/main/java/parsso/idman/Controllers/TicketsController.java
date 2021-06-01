@@ -1,8 +1,6 @@
 package parsso.idman.Controllers;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +14,6 @@ import parsso.idman.Repos.TicketRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -39,19 +36,20 @@ public class TicketsController {
 
     @PostMapping("/api/user/ticket")
     public ResponseEntity<HttpStatus> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request) {
-        return new ResponseEntity<>(ticketRepo.sendTicket(ticket,  request.getUserPrincipal().getName()));
+        return new ResponseEntity<>(ticketRepo.sendTicket(ticket, request.getUserPrincipal().getName().toLowerCase()));
     }
 
     @PutMapping("/api/user/ticket/reply/{ticketID}")
-    public ResponseEntity<HttpStatus> replyTicket(@PathVariable ("ticketID") String ticketID,
-                                                  @RequestBody Ticket ticket, HttpServletRequest request){
-        return new ResponseEntity<>(ticketRepo.reply(ticketID,  request.getUserPrincipal().getName(),ticket));
+    public ResponseEntity<HttpStatus> replyTicket(@PathVariable("ticketID") String ticketID,
+                                                  @RequestParam(name = "status", defaultValue = "") String status,
+                                                  @RequestBody Ticket ticket, HttpServletRequest request) {
+        return new ResponseEntity<>(ticketRepo.reply(ticketID, request.getUserPrincipal().getName().toLowerCase(), ticket, status));
     }
 
     @GetMapping("/api/user/ticket/{ticketID}")
     public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request) {
         Ticket ticket = ticketRepo.retrieveTicket(ticketID);
-        User user = userRepo.retrieveUsers( request.getUserPrincipal().getName());
+        User user = userRepo.retrieveUsers(request.getUserPrincipal().getName().toLowerCase());
         if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))
             if (user.getUserId().equalsIgnoreCase(ticket.getTo()) || user.getUserId().equalsIgnoreCase(ticket.getFrom()))
                 return new ResponseEntity<>(ticket, HttpStatus.OK);
@@ -63,47 +61,55 @@ public class TicketsController {
 
     @DeleteMapping("/api/user/ticket")
     public ResponseEntity<HttpStatus> deleteTicket(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
-            return new ResponseEntity<>(ticketRepo.deleteTicket( request.getUserPrincipal().getName(),
-                    jsonObject) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ticketRepo.deleteTicket(request.getUserPrincipal().getName().toLowerCase(),
+                jsonObject) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/api/user/tickets/sent/{page}/{count}")
-    public ResponseEntity<ListTickets> sendTicket(HttpServletRequest request, @PathVariable (name = "page") String page,
-                                                   @PathVariable (name = "count") String count) {
+    public ResponseEntity<ListTickets> sendTicket(HttpServletRequest request, @PathVariable(name = "page") String page,
+                                                  @PathVariable(name = "count") String count) {
 
-        return new ResponseEntity<> (ticketRepo.retrieveTicketsSend( request.getUserPrincipal().getName(), page, count), HttpStatus.OK);
+        return new ResponseEntity<>(ticketRepo.retrieveTicketsSend(request.getUserPrincipal().getName().toLowerCase(), page, count), HttpStatus.OK);
     }
 
     @PutMapping("/api/supporter/ticket/status/{status}")
     public ResponseEntity<HttpStatus> updateTicketStatus(@PathVariable int status, @RequestBody JSONObject jsonObject,
                                                          HttpServletRequest request) {
-            return new ResponseEntity<>(ticketRepo.updateTicketStatus(request.getUserPrincipal().getName(),status, jsonObject) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ticketRepo.updateTicketStatus(request.getUserPrincipal().getName().toLowerCase(), status, jsonObject) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
 
     }
 
     @GetMapping("/api/supporter/tickets/inbox/{page}/{count}")
-    public ResponseEntity<ListTickets> received(HttpServletRequest request, @PathVariable (name = "page") String page,
-                                                 @PathVariable (name = "count") String count) {
-        ListTickets tickets = ticketRepo.retrieveTicketsReceived( request.getUserPrincipal().getName(), page,count);
+    public ResponseEntity<ListTickets> received(HttpServletRequest request, @PathVariable(name = "page") String page,
+                                                @RequestParam(name = "from", defaultValue = "") String from,
+                                                @RequestParam(name = "id", defaultValue = "") String id,
+                                                @RequestParam(name = "date", defaultValue = "") String date,
+                                                @PathVariable(name = "count") String count) {
+        ListTickets tickets = ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName().toLowerCase(), page, count, from, id, date);
         tickets.getTicketList().stream().filter(c -> (c.getLastFrom().equals(request.getUserPrincipal())) ||
-                c.getLastTo().equals( request.getUserPrincipal().getName())).collect(Collectors.toList());
-        return new ResponseEntity<>(ticketRepo.retrieveTicketsReceived( request.getUserPrincipal().getName(), page,count), HttpStatus.OK);
+                c.getLastTo().equals(request.getUserPrincipal().getName().toLowerCase())).collect(Collectors.toList());
+        return new ResponseEntity<>(tickets, HttpStatus.OK);
     }
 
     @PutMapping("/api/user/ticket/{ticketID}")
     public ResponseEntity<HttpStatus> updateTicket(@RequestBody Ticket ticket, @PathVariable("ticketID") String ticketID,
                                                    HttpServletRequest request) {
 
-        return new ResponseEntity<>(ticketRepo.updateTicket(request.getUserPrincipal().getName(), ticketID, ticket) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ticketRepo.updateTicket(request.getUserPrincipal().getName().toLowerCase(), ticketID, ticket) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/api/supporter/tickets/{page}/{count}")
-    public ResponseEntity<ListTickets> pendingTickets(@RequestParam (name = "cat", defaultValue = "") String cat,
-                                                      @RequestParam (name = "subCat", defaultValue = "") String subCat,
-                                                      @RequestParam (name = "status", defaultValue = "") String status,
-                                                      @PathVariable (name = "page") String page,
-                                                      @PathVariable (name = "count") String count) {
-        return new ResponseEntity<>(ticketRepo.retrieve(cat,subCat, status,page,count),HttpStatus.OK);
+    public ResponseEntity<ListTickets> pendingTickets(@RequestParam(name = "cat", defaultValue = "") String cat,
+                                                      @RequestParam(name = "subCat", defaultValue = "") String subCat,
+                                                      @RequestParam(name = "status", defaultValue = "") String status,
+                                                      @RequestParam(name = "from", defaultValue = "") String from,
+                                                      @RequestParam(name = "id", defaultValue = "") String id,
+                                                      @RequestParam(name = "date", defaultValue = "") String date,
+                                                      @PathVariable(name = "page") String page,
+                                                      @PathVariable(name = "count") String count) {
+        ListTickets ls = ticketRepo.retrieve(cat, subCat, status, page, count, from, id, date);
+        return new ResponseEntity<>(ls, HttpStatus.OK);
+
     }
 
 }

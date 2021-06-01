@@ -41,33 +41,24 @@ import java.util.*;
 public class ConfigRepoImpl implements ConfigRepo {
 
     @Autowired
-    private ApplicationContext appContext;
-
-    @Autowired
     PasswordSettings passwordSettings;
-
     @Autowired
     MongoTemplate mongoTemplate;
-
-    @Value("${external.config}")
-    private String pathToProperties;
-
-    @Value("${external.config.backup}")
-    private String backUpOfProperties;
-
-    @Value("${backup.path}")
-    private String backUpPath;
-
     @Autowired
     InstantMessage instantMessage;
-
     @Autowired
     Email email;
-
     @Autowired
     UserRepo userRepo;
-
     String model = "Config";
+    @Autowired
+    private ApplicationContext appContext;
+    @Value("${external.config}")
+    private String pathToProperties;
+    @Value("${external.config.backup}")
+    private String backUpOfProperties;
+    @Value("${backup.path}")
+    private String backUpPath;
 
     public static List<Setting> parser(Scanner reader, String system) {
 
@@ -158,8 +149,8 @@ public class ConfigRepoImpl implements ConfigRepo {
 
         List<Setting> relatedSettings = new LinkedList<>();
 
-        for (Setting setting:allSettings) {
-            if (setting.getValue()!= null && (setting.getValue().equalsIgnoreCase("true") || setting.getValue().equalsIgnoreCase("false")))
+        for (Setting setting : allSettings) {
+            if (setting.getValue() != null && (setting.getValue().equalsIgnoreCase("true") || setting.getValue().equalsIgnoreCase("false")))
                 relatedSettings.add(setting);
         }
 
@@ -222,10 +213,10 @@ public class ConfigRepoImpl implements ConfigRepo {
 
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("application.properties")) {
             Files.copy(is, Paths.get(this.getClass().getClassLoader() + "/backup/" + date + "_application.properties"));
-            logger.warn(new ReportMessage(model,"","","update", "success","").toString());
+            logger.warn(new ReportMessage(model, "", "", "update", "success", "").toString());
 
         } catch (IOException e) {
-            logger.warn(new ReportMessage(model,"","","update", "failed","unknown error").toString());
+            logger.warn(new ReportMessage(model, "", "", "update", "failed", "unknown error").toString());
 
         }
 
@@ -279,10 +270,10 @@ public class ConfigRepoImpl implements ConfigRepo {
         Path originalPath = Paths.get(file.getAbsolutePath());
         try {
             Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
-            logger.warn(new ReportMessage(model,"","","resetFactory", "success","").toString());
+            logger.warn(new ReportMessage(model, "", "", "resetFactory", "success", "").toString());
 
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model,"","","resetFactory", "failed","").toString());
+            logger.warn(new ReportMessage(model, "", "", "resetFactory", "failed", "").toString());
 
         }
         return HttpStatus.OK;
@@ -302,10 +293,10 @@ public class ConfigRepoImpl implements ConfigRepo {
                 Path originalPath = Paths.get(s);
                 try {
                     Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
-                    logger.warn(new ReportMessage(model,config.getName(),"","restore", "success",""));
+                    logger.warn(new ReportMessage(model, config.getName(), "", "restore", "success", ""));
 
                 } catch (Exception e) {
-                    logger.warn(new ReportMessage(model,config.getName().toString(),"","restore", "failed","config "+config.getName()).toString());
+                    logger.warn(new ReportMessage(model, config.getName(), "", "restore", "failed", "config " + config.getName()).toString());
 
                 }
                 return HttpStatus.OK;
@@ -385,15 +376,12 @@ public class ConfigRepoImpl implements ConfigRepo {
 
         List<Setting> settings = parser(myReader, system);
 
-        for (Setting setting: settings) {
+        for (Setting setting : settings) {
             if (setting.getGroup() != null) {
-                if (setting.getGroup().equalsIgnoreCase("Main"))
-                    setting.setChangable(false);
-                else
-                    setting.setChangable(true);
+                setting.setChangable(!setting.getGroup().equalsIgnoreCase("Main"));
 
 
-                mongoTemplate.save(setting,  Variables.col_properties);
+                mongoTemplate.save(setting, Variables.col_properties);
             }
         }
 
