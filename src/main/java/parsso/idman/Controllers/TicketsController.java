@@ -87,8 +87,6 @@ public class TicketsController {
                                                 @RequestParam(name = "date", defaultValue = "") String date,
                                                 @PathVariable(name = "count") String count) {
         ListTickets tickets = ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName().toLowerCase(), page, count, from, id, date);
-        tickets.getTicketList().stream().filter(c -> (c.getLastFrom().equals(request.getUserPrincipal())) ||
-                c.getLastTo().equals(request.getUserPrincipal().getName().toLowerCase())).collect(Collectors.toList());
         return new ResponseEntity<>(tickets, HttpStatus.OK);
     }
 
