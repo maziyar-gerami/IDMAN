@@ -535,11 +535,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         }else if(sendType === "send&close"){
                             axios({
                                 method: "put",
-                                url: url + "/api/user/ticket/reply/" + id, //
+                                url: url + "/api/user/ticket/reply/" + id + "?status=2", //
                                 headers: {"Content-Type": "application/json"},
                                 data: JSON.stringify({
-                                    message: document.getElementById("messageBody").value,
-                                    status: 2
+                                    message: document.getElementById("messageBody").value
                                 }).replace(/\\\\/g, "\\")
                             }).then((res) => {
                                 location.reload();
