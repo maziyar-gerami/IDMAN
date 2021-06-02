@@ -100,7 +100,8 @@ public class TicketRepoImpl implements TicketRepo {
         else
             to = ticket.getLastFrom();
 
-        ticket.setTo(userid);
+        if (ticket.getTo().equals("SUPPORTER"))
+            ticket.setTo(userid);
         messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
 
         Ticket ticketToSave = new Ticket(ticket, messages);
