@@ -79,16 +79,17 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public HttpStatus reply(String ticketID, String userid, Ticket replyTicket, String status) {
+    public HttpStatus reply(String ticketID, String userid, Ticket replyTicket) {
 
         logger = LogManager.getLogger(userid);
         int st;
 
         try {
-            st = Integer.valueOf(status);
+            st = Integer.valueOf(replyTicket.getStatus());
         } catch (Exception e) {
             st = 1;
         }
+        if (st==0) st=1;
 
         Ticket ticket = retrieveTicket(ticketID);
 
@@ -100,8 +101,10 @@ public class TicketRepoImpl implements TicketRepo {
         else
             to = ticket.getLastFrom();
 
-        if (ticket.getTo().equals("SUPPORTER"))
+        if (ticket.getTo().equalsIgnoreCase("SUPPORTER"))
             ticket.setTo(userid);
+        else
+            ticket.setTo(ticket.getTo());
         messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
 
         Ticket ticketToSave = new Ticket(ticket, messages);
@@ -302,7 +305,6 @@ public class TicketRepoImpl implements TicketRepo {
 
     @Override
     public ListTickets retrieve(String cat, String subCat, String status, String page, String count, String from, String ticketId, String date) {
-
 
         int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
         int limit = Integer.valueOf(count);

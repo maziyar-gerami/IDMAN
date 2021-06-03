@@ -14,7 +14,7 @@ public interface TicketRepo {
 
     Ticket retrieveTicket(String ticketID);
 
-    HttpStatus reply(String ticketID, String user, Ticket ticket, String status);
+    HttpStatus reply(String ticketID, String user, Ticket ticket);
 
     HttpStatus deleteTicket(String doer, JSONObject jsonObject);
 

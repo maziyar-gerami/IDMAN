@@ -652,6 +652,7 @@ public class UserRepoImpl implements UserRepo {
                 user.setUnDeletable(false);
             }
 
+            
             try {
                 skyRoom = skyroomRepo.Run(user);
                 user.setSkyRoom(skyRoom);
@@ -659,6 +660,8 @@ public class UserRepoImpl implements UserRepo {
                 user.setSkyRoom(null);
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom load failed").toString());
             }
+
+
 
         }
 

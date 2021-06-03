@@ -41,9 +41,8 @@ public class TicketsController {
 
     @PutMapping("/api/user/ticket/reply/{ticketID}")
     public ResponseEntity<HttpStatus> replyTicket(@PathVariable("ticketID") String ticketID,
-                                                  @RequestParam(name = "status", defaultValue = "") String status,
                                                   @RequestBody Ticket ticket, HttpServletRequest request) {
-        return new ResponseEntity<>(ticketRepo.reply(ticketID, request.getUserPrincipal().getName().toLowerCase(), ticket, status));
+        return new ResponseEntity<>(ticketRepo.reply(ticketID, request.getUserPrincipal().getName().toLowerCase(), ticket));
     }
 
     @GetMapping("/api/user/ticket/{ticketID}")
