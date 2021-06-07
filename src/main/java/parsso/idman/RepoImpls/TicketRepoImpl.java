@@ -107,13 +107,16 @@ public class TicketRepoImpl implements TicketRepo {
         else
             ticket.setTo(ticket.getTo());
 
-        messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
 
         //check if closed or reopen, add new message
-        if(ticket.getStatus() < st && st == 2)
+        if(ticket.getStatus() < st && st == 2) {
+            messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
             messages.add(new Message(userRepo.retrieveUsers(userid), "CLOSE", true));
-        else if (ticket.getStatus() > st )
+        }
+        else if (ticket.getStatus() > st ) {
             messages.add(new Message(userRepo.retrieveUsers(userid), "REOPEN", true));
+            messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
+        }
 
         Ticket ticketToSave = new Ticket(ticket, messages);
         ticketToSave.setStatus(st);
