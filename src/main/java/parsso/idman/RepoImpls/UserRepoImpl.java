@@ -13,6 +13,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -630,7 +632,6 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User retrieveUsers(String userId) {
-        Logger logger = LogManager.getLogger("System");
 
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
@@ -652,7 +653,7 @@ public class UserRepoImpl implements UserRepo {
                 user.setUnDeletable(false);
             }
 
-            
+            /*
             try {
                 skyRoom = skyroomRepo.Run(user);
                 user.setSkyRoom(skyRoom);
@@ -661,7 +662,7 @@ public class UserRepoImpl implements UserRepo {
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom load failed").toString());
             }
 
-
+             */
 
         }
 
