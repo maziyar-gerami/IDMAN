@@ -27,4 +27,6 @@ public interface TicketRepo {
     HttpStatus updateTicket(String userId, String ticketId, Ticket ticket);
 
     ListTickets retrieve(String doer, String cat, String subCat, String status, String page, String count, String from, String ticketId, String date);
+
+    ListTickets retrieveArchivedTickets(String doer, String cat, String subCat, String status, String page, String count, String from, String ticketId, String date);
 }
