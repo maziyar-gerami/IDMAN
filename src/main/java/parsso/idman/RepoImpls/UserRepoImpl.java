@@ -13,6 +13,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -630,7 +632,6 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User retrieveUsers(String userId) {
-        Logger logger = LogManager.getLogger("System");
 
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
@@ -651,7 +652,8 @@ public class UserRepoImpl implements UserRepo {
             } catch (Exception e) {
                 user.setUnDeletable(false);
             }
-/*
+
+            /*
             try {
                 skyRoom = skyroomRepo.Run(user);
                 user.setSkyRoom(skyRoom);
@@ -660,7 +662,8 @@ public class UserRepoImpl implements UserRepo {
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom load failed").toString());
             }
 
- */
+             */
+
         }
 
 
@@ -885,13 +888,19 @@ public class UserRepoImpl implements UserRepo {
     public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
         List<String> add = (List<String>) gu.get("add");
         List<String> remove = (List<String>) gu.get("remove");
+        List <String> groups = new LinkedList<>();
         for (String uid : add) {
             User user = retrieveUsers(uid);
-            if (user.getMemberOf() != null && !user.getMemberOf().contains(groupId)) {
-                user.getMemberOf().add(groupId);
-                update(doerID, uid, user);
+            if (user.getMemberOf() != null) {
+                if (!user.getMemberOf().contains(groupId))
+                    user.getMemberOf().add(groupId);
+            }else {
+                groups.add(groupId);
+                user.setMemberOf(groups);
             }
 
+
+            update(doerID, uid, user);
         }
         for (String uid : remove) {
             User user = retrieveUsers(uid);

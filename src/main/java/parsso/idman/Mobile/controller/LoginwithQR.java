@@ -41,7 +41,6 @@ public class LoginwithQR {
     byte[] GetQr() throws IOException, WriterException {
 
         random = servicesRepo.randomString(42);
-        System.out.println(random);
         return servicesRepo.getQRCodeImage(random, 500, 500);
     }
 

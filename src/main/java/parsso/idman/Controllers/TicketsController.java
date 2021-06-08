@@ -41,9 +41,8 @@ public class TicketsController {
 
     @PutMapping("/api/user/ticket/reply/{ticketID}")
     public ResponseEntity<HttpStatus> replyTicket(@PathVariable("ticketID") String ticketID,
-                                                  @RequestParam(name = "status", defaultValue = "") String status,
                                                   @RequestBody Ticket ticket, HttpServletRequest request) {
-        return new ResponseEntity<>(ticketRepo.reply(ticketID, request.getUserPrincipal().getName().toLowerCase(), ticket, status));
+        return new ResponseEntity<>(ticketRepo.reply(ticketID, request.getUserPrincipal().getName().toLowerCase(), ticket));
     }
 
     @GetMapping("/api/user/ticket/{ticketID}")
@@ -87,8 +86,6 @@ public class TicketsController {
                                                 @RequestParam(name = "date", defaultValue = "") String date,
                                                 @PathVariable(name = "count") String count) {
         ListTickets tickets = ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName().toLowerCase(), page, count, from, id, date);
-        tickets.getTicketList().stream().filter(c -> (c.getLastFrom().equals(request.getUserPrincipal())) ||
-                c.getLastTo().equals(request.getUserPrincipal().getName().toLowerCase())).collect(Collectors.toList());
         return new ResponseEntity<>(tickets, HttpStatus.OK);
     }
 

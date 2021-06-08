@@ -18,6 +18,7 @@ import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Message;
 import parsso.idman.Models.Tickets.Ticket;
 import parsso.idman.Models.Time;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.TicketRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -79,16 +80,17 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public HttpStatus reply(String ticketID, String userid, Ticket replyTicket, String status) {
+    public HttpStatus reply(String ticketID, String userid, Ticket replyTicket) {
 
         logger = LogManager.getLogger(userid);
         int st;
 
         try {
-            st = Integer.valueOf(status);
+            st = Integer.valueOf(replyTicket.getStatus());
         } catch (Exception e) {
             st = 1;
         }
+        if (st==0) st=1;
 
         Ticket ticket = retrieveTicket(ticketID);
 
@@ -100,8 +102,21 @@ public class TicketRepoImpl implements TicketRepo {
         else
             to = ticket.getLastFrom();
 
-        ticket.setTo(userid);
-        messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
+        if (ticket.getTo().equalsIgnoreCase("SUPPORTER"))
+            ticket.setTo(userid);
+        else
+            ticket.setTo(ticket.getTo());
+
+
+        //check if closed or reopen, add new message
+        if(ticket.getStatus() < st && st == 2) {
+            messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
+            messages.add(new Message(userRepo.retrieveUsers(userid), "CLOSE", true));
+        }
+        else if (ticket.getStatus() > st ) {
+            messages.add(new Message(userRepo.retrieveUsers(userid), "REOPEN", true));
+            messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
+        }
 
         Ticket ticketToSave = new Ticket(ticket, messages);
         ticketToSave.setStatus(st);
@@ -202,7 +217,18 @@ public class TicketRepoImpl implements TicketRepo {
             ticketID = iterator.next();
             Query query = new Query(Criteria.where("ID").is(ticketID));
             Ticket ticket = mongoTemplate.findOne(query, Ticket.class, collection);
+
+            List<Message> messages = ticket.getMessages();
+
+            //check if closed or reopen, add new message
+            if(ticket.getStatus() < status && status == 2)
+                messages.add(new Message(userRepo.retrieveUsers(doer), "CLOSE", true));
+            else if (ticket.getStatus() > status )
+                messages.add(new Message(userRepo.retrieveUsers(doer), "REOPEN", true));
+
             ticket.setStatus(status);
+            ticket.setMessages(messages);
+
             try {
                 mongoTemplate.remove(query, collection);
                 mongoTemplate.save(ticket, collection);
@@ -301,7 +327,6 @@ public class TicketRepoImpl implements TicketRepo {
 
     @Override
     public ListTickets retrieve(String cat, String subCat, String status, String page, String count, String from, String ticketId, String date) {
-
 
         int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
         int limit = Integer.valueOf(count);

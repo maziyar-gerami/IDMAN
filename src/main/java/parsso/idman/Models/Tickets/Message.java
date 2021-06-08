@@ -2,6 +2,7 @@ package parsso.idman.Models.Tickets;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.Models.Time;
@@ -17,9 +18,19 @@ public class Message {
     private String toDisplayName;
     private String fromDisplayName;
     private String body;
+    private boolean close;
+    private boolean reOpen;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Time closeTime;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Time reOpenTime;
     private Time creationTime;
     @JsonIgnore
     private long creationLong;
+    @JsonIgnore
+    private long closeLong;
+    @JsonIgnore
+    private long reOpenLong;
 
     public Message() {
 
@@ -43,7 +54,31 @@ public class Message {
         this.creationLong = new Date().getTime();
     }
 
+    public Message(User by, String action, boolean state) {
+        this.from = by.getUserId();
+        this.to = "SYSTEM";
+        this.fromDisplayName = by.getDisplayName();
+        long now = new Date().getTime();
+        this.creationLong = now;
+        if (action.equals("CLOSE")){
+            this.close = state;
+            this.closeLong = now;
+        }
+        else if (action.equals("REOPEN")) {
+            this.reOpen = true;
+            this.reOpenLong = now;
+        }
+    }
+
     public Time getCreationTime() {
         return Time.longToPersianTime(creationLong);
+    }
+
+    public Time getCloseTime() {
+        return Time.longToPersianTime(closeLong);
+    }
+
+    public Time getReOpenTime() {
+        return Time.longToPersianTime(reOpenLong);
     }
 }
