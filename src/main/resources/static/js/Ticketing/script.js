@@ -143,6 +143,15 @@ document.addEventListener('DOMContentLoaded', function () {
             submitFilter: "اعمال فیلتر",
             removeFilter: "حذف فیلتر",
             closeSelectedTicketsText: "آیا از بستن تیکت های انتخاب شده اطمینان دارید؟",
+            statusText: "وضعیت",
+            openText: "باز",
+            pendingText: "در حال انتظار",
+            closedText: "بسته شده",
+            alertMessage1Text: "تیکت در تاریخ ",
+            alertMessage2Text: " توسط کاربر ",
+            alertMessageOpen3Text: " باز شد.",
+            alertMessageClose3Text: " بسته شد.",
+            unreadMessageText: "پیام خوانده نشده",
         },
         created: function () {
             this.setDateNav();
@@ -835,6 +844,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.submitFilter = "Filter";
                     this.removeFilter = "No Filter";
                     this.closeSelectedTicketsText = "Are You Sure You Want To Close Selected Tickets?";
+                    this.statusText = "Status";
+                    this.openText = "Open";
+                    this.pendingText = "Pending";
+                    this.closedText = "Closed";
+                    this.alertMessage1Text = "On ";
+                    this.alertMessage2Text = " User ";
+                    this.alertMessageOpen3Text = ", Opened the Ticket.";
+                    this.alertMessageClose3Text = ", Closed the Ticket.";
+                    this.unreadMessageText ="Unread Message";
                 }else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
@@ -907,7 +925,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.submitFilter = "اعمال فیلتر";
                     this.removeFilter = "حذف فیلتر";
                     this.closeSelectedTicketsText = "آیا از بستن تیکت های انتخاب شده اطمینان دارید؟";
-
+                    this.statusText = "وضعیت";
+                    this.openText = "باز";
+                    this.pendingText = "در حال انتظار";
+                    this.closedText = "بسته شده";
+                    this.alertMessage1Text = "تیکت در تاریخ ";
+                    this.alertMessage2Text = " توسط کاربر ";
+                    this.alertMessageOpen3Text = " باز شد.";
+                    this.alertMessageClose3Text = " بسته شد.";
+                    this.unreadMessageText ="پیام خوانده نشده";
                 }
             }
         },

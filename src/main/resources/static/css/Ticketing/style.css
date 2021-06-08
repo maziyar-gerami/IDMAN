@@ -220,6 +220,7 @@ html,body {
 .table-wrapper{
   overflow-y: auto;
   height: 70vh;
+  font-size: .9rem;
 }
 
 .frame-wrapper{
@@ -322,7 +323,7 @@ input:checked + .slider:before {
   right: 0;
   bottom: 0;
   background-color: rgba(0,0,0,0.5);
-  z-index: 10;
+  z-index: 20;
 }
 
 #overlayBody{
@@ -367,4 +368,14 @@ input:checked + .slider:before {
   z-index: 11;
   cursor: pointer;
   color: red
+}
+
+.alertMessage {
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  text-align: center;
+  background: rgba(128, 140, 143, 0.5);
+  float: right;
+  right: 25%;
+  position: relative;
 }
