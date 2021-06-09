@@ -16,7 +16,7 @@ public class ListTickets {
 
     public ListTickets(int size, List<Ticket> relativeEvents, int pages) {
         this.size = size;
-        this.pages = pages + 1;
+        this.pages = pages;
         this.ticketList = relativeEvents;
     }
 }

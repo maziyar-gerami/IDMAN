@@ -75,29 +75,6 @@ public class UsersController {
         return new ResponseEntity<>(userRepo.update(principal.getName(), principal.getName(), user));
     }
 
-    /**
-     * Specify that logged-in user is admin or not
-     *
-     * @return whether logged-in user is admin or not
-     */
-    @Deprecated
-    @GetMapping("/api/user/isAdmin")
-    public int isAdmin(HttpServletRequest request) {
-        try {
-            Principal principal = request.getUserPrincipal();
-            User user = userRepo.retrieveUsers(principal.getName());
-            List<String> memberOf = user.getMemberOf();
-
-            if (user.getUsersExtraInfo().getRole().equals("SUPERADMIN"))
-                return 0;
-
-            else
-                return 2;
-
-        } catch (Exception e) {
-            return 400;
-        }
-    }
 
 
     /**

@@ -280,7 +280,7 @@ public class TicketRepoImpl implements TicketRepo {
         }
 
         int size = (int) mongoTemplate.count(query, collection);
-        return new ListTickets(size, ticketList, (int) Math.floor(size / limit));
+        return new ListTickets(size, ticketList, (int) Math.ceil((double)size / (double)limit));
 
     }
 
@@ -318,7 +318,7 @@ public class TicketRepoImpl implements TicketRepo {
 
         int size = (int) mongoTemplate.count(query, collection);
 
-        return new ListTickets(size, ticketList, (int) Math.floor(size / limit));
+        return new ListTickets(size, ticketList, (int) Math.ceil((double)size / (double)limit));
     }
 
 
@@ -390,7 +390,7 @@ public class TicketRepoImpl implements TicketRepo {
 
         int ticketCount = ticketsCount(cat, subCat, st, ticketId,date,false);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
-        return new ListTickets(ticketCount, ticketList, (int) Math.floor(ticketCount / limit));
+        return new ListTickets(ticketCount, ticketList, (int) Math.ceil((double)ticketCount /(double) limit));
     }
 
 
@@ -432,6 +432,6 @@ public class TicketRepoImpl implements TicketRepo {
 
         int ticketCount = ticketsCount(cat, subCat, -1, ticketId,date,true);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
-        return new ListTickets(ticketCount, ticketList, (int) Math.floor(ticketCount / limit));
+        return new ListTickets(ticketCount, ticketList, (int) Math.ceil((double)ticketCount / (double)limit));
     }
 }

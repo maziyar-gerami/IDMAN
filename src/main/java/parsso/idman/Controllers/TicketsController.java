@@ -121,7 +121,7 @@ public class TicketsController {
                                                       @PathVariable(name = "page") String page,
                                                       @PathVariable(name = "count") String count,
                                                       HttpServletRequest request) {
-        ListTickets ls = ticketRepo.retrieveArchivedTickets("maziyar", cat, subCat, status, page, count, from, id, date);
+        ListTickets ls = ticketRepo.retrieveArchivedTickets(request.getUserPrincipal().getName(), cat, subCat, status, page, count, from, id, date);
         return new ResponseEntity<>(ls, HttpStatus.OK);
 
     }

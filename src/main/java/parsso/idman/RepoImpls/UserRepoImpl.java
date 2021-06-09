@@ -534,7 +534,7 @@ public class UserRepoImpl implements UserRepo {
 
         int size = retrieveUsersSize(groupFilter, searchUid, searchDisplayName, userStatus);
 
-        return new ListUsers(size, userList, (int) Math.ceil(size / nCount));
+        return new ListUsers(size, userList, (int) Math.ceil((double) size / (double) nCount));
     }
 
     private Query queryBuilder(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
@@ -870,7 +870,6 @@ public class UserRepoImpl implements UserRepo {
         int n = (page) * number > users.size() ? users.size() : (page) * number;
 
         int size = users.size();
-        int pages = (int) Math.ceil(size / number);
         int start = (page - 1) * number;
 
         List<UsersExtraInfo> relativeUsers = new LinkedList<>();
@@ -880,7 +879,7 @@ public class UserRepoImpl implements UserRepo {
 
         CollectionUtils.filter(relativeUsers, PredicateUtils.notNullPredicate());
 
-        return new ListUsers(size, relativeUsers, pages);
+        return new ListUsers(size, relativeUsers, (int) Math.ceil((double)size /(double) number);
 
     }
 
