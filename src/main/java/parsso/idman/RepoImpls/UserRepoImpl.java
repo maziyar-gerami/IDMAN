@@ -633,6 +633,9 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public User retrieveUsers(String userId) {
 
+        Logger logger = LogManager.getLogger(doer);
+
+        
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
@@ -653,7 +656,7 @@ public class UserRepoImpl implements UserRepo {
                 user.setUnDeletable(false);
             }
 
-            /*
+
             try {
                 skyRoom = skyroomRepo.Run(user);
                 user.setSkyRoom(skyRoom);
@@ -662,7 +665,7 @@ public class UserRepoImpl implements UserRepo {
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom load failed").toString());
             }
 
-             */
+
 
         }
 
@@ -879,7 +882,7 @@ public class UserRepoImpl implements UserRepo {
 
         CollectionUtils.filter(relativeUsers, PredicateUtils.notNullPredicate());
 
-        return new ListUsers(size, relativeUsers, (int) Math.ceil((double)size /(double) number);
+        return new ListUsers(size, relativeUsers, (int) Math.ceil((double)size /(double) number));
 
     }
 
