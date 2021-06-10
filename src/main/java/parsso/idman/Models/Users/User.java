@@ -61,8 +61,8 @@ public class User implements UserDetails, Comparable {
     private UsersExtraInfo usersExtraInfo;
     private boolean unDeletable;
     private boolean profileInaccessibility;
-    //@JsonInclude(JsonInclude.Include.NON_NULL)
-    //SkyRoom skyRoom;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    SkyRoom skyRoom;
 
 
     public User() {

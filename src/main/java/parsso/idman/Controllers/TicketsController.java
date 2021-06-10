@@ -104,8 +104,24 @@ public class TicketsController {
                                                       @RequestParam(name = "id", defaultValue = "") String id,
                                                       @RequestParam(name = "date", defaultValue = "") String date,
                                                       @PathVariable(name = "page") String page,
-                                                      @PathVariable(name = "count") String count) {
-        ListTickets ls = ticketRepo.retrieve(cat, subCat, status, page, count, from, id, date);
+                                                      @PathVariable(name = "count") String count,
+                                                      HttpServletRequest request) {
+        ListTickets ls = ticketRepo.retrieve(request.getUserPrincipal().getName(), cat, subCat, status, page, count, from, id, date);
+        return new ResponseEntity<>(ls, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/api/superadmin/tickets/archive/{page}/{count}")
+    public ResponseEntity<ListTickets> archiveTickets(@RequestParam(name = "cat", defaultValue = "") String cat,
+                                                      @RequestParam(name = "subCat", defaultValue = "") String subCat,
+                                                      @RequestParam(name = "status", defaultValue = "") String status,
+                                                      @RequestParam(name = "from", defaultValue = "") String from,
+                                                      @RequestParam(name = "id", defaultValue = "") String id,
+                                                      @RequestParam(name = "date", defaultValue = "") String date,
+                                                      @PathVariable(name = "page") String page,
+                                                      @PathVariable(name = "count") String count,
+                                                      HttpServletRequest request) {
+        ListTickets ls = ticketRepo.retrieveArchivedTickets(request.getUserPrincipal().getName(), cat, subCat, status, page, count, from, id, date);
         return new ResponseEntity<>(ls, HttpStatus.OK);
 
     }

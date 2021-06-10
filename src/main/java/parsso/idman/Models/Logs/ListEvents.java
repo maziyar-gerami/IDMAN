@@ -17,7 +17,7 @@ public class ListEvents {
 
     public ListEvents(long size, int pages, List<Event> relativeEvents) {
         this.size = size;
-        this.pages = pages + 1;
+        this.pages = pages;
         this.eventList = relativeEvents;
     }
 

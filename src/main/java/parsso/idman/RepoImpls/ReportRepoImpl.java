@@ -43,7 +43,7 @@ public class ReportRepoImpl implements ReportRepo {
                     logDate.getHour(), logDate.getMinute(), logDate.getSecond());
             report.setDateTime(time1);
         }
-        return new ListReports(size, (int) Math.ceil(size / n), allReports);
+        return new ListReports(size, (int) Math.ceil((double)size / (double)n), allReports);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ReportRepoImpl implements ReportRepo {
 
         long size = mongoTemplate.count(query, Report.class, mainCollection);
 
-        return new ListReports(size, (int) Math.ceil(size / n), allReports);
+        return new ListReports(size, (int) Math.ceil((double)size / (double)n), allReports);
     }
 
     @Override

@@ -116,7 +116,9 @@ public class TicketRepoImpl implements TicketRepo {
         else if (ticket.getStatus() > st ) {
             messages.add(new Message(userRepo.retrieveUsers(userid), "REOPEN", true));
             messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
-        }
+        } else if (ticket.getStatus()==1 && st==1)
+            messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
+
 
         Ticket ticketToSave = new Ticket(ticket, messages);
         ticketToSave.setStatus(st);
@@ -139,7 +141,7 @@ public class TicketRepoImpl implements TicketRepo {
         return HttpStatus.OK;
     }
 
-    private int ticketsCount(String cat, String subcat, int status, String id, String date) {
+    private int ticketsCount(String cat, String subcat, int status, String id, String date, boolean archive) {
         Query query = new Query();
         if (status != -1)
             query.addCriteria(Criteria.where("status").is(status));
@@ -151,6 +153,9 @@ public class TicketRepoImpl implements TicketRepo {
         }
         if(!query.equals(""))
             query.addCriteria(Criteria.where("ID").regex(id));
+
+        if (archive)
+            query.addCriteria(Criteria.where("deleteFor").exists(true));
 
         if (!date.equals("")) {
             String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
@@ -168,6 +173,9 @@ public class TicketRepoImpl implements TicketRepo {
 
     @Override
     public HttpStatus deleteTicket(String doer, @RequestBody JSONObject jsonObject) {
+
+        logger = LogManager.getLogger(doer);
+
         List<String> deleteFor = new LinkedList<>();
 
 
@@ -256,6 +264,8 @@ public class TicketRepoImpl implements TicketRepo {
 
         Query query = new Query(Criteria.where("from").is(userId)).with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
+        query.addCriteria(Criteria.where("deleteFor").ne(userId));
+
 
         if (!date.equals("")) {
             String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
@@ -270,7 +280,7 @@ public class TicketRepoImpl implements TicketRepo {
         }
 
         int size = (int) mongoTemplate.count(query, collection);
-        return new ListTickets(size, ticketList, (int) Math.floor(size / limit));
+        return new ListTickets(size, ticketList, (int) Math.ceil((double)size / (double)limit));
 
     }
 
@@ -282,6 +292,9 @@ public class TicketRepoImpl implements TicketRepo {
         int limit = Integer.valueOf(count);
 
         Query query = new Query(Criteria.where("to").is(userId).and("status").is(1)).with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
+
+        query.addCriteria(Criteria.where("deleteFor").ne(userId));
+
 
         if (!from.equals(""))
             query.addCriteria(Criteria.where("from").regex(from));
@@ -305,8 +318,10 @@ public class TicketRepoImpl implements TicketRepo {
 
         int size = (int) mongoTemplate.count(query, collection);
 
-        return new ListTickets(size, ticketList, (int) Math.floor(size / limit));
+        return new ListTickets(size, ticketList, (int) Math.ceil((double)size / (double)limit));
     }
+
+
 
     @Override
     public HttpStatus updateTicket(String userId, String ticketId, Ticket newTicket) {
@@ -326,7 +341,7 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public ListTickets retrieve(String cat, String subCat, String status, String page, String count, String from, String ticketId, String date) {
+    public ListTickets retrieve(String doer, String cat, String subCat, String status, String page, String count, String from, String ticketId, String date) {
 
         int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
         int limit = Integer.valueOf(count);
@@ -342,6 +357,7 @@ public class TicketRepoImpl implements TicketRepo {
         else
             query = new Query(Criteria.where("status").is(st));
 
+        query.addCriteria(Criteria.where("deleteFor").ne(doer));
         query.skip(skip).limit(limit);
 
         query.with(Sort.by(Sort.Direction.DESC, "_id"));
@@ -372,8 +388,50 @@ public class TicketRepoImpl implements TicketRepo {
 
         }
 
-        int ticketCount = ticketsCount(cat, subCat, st, ticketId,date);
+        int ticketCount = ticketsCount(cat, subCat, st, ticketId,date,false);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
-        return new ListTickets(ticketCount, ticketList, (int) Math.floor(ticketCount / limit));
+        return new ListTickets(ticketCount, ticketList, (int) Math.ceil((double)ticketCount /(double) limit));
+    }
+
+
+    @Override
+    public ListTickets retrieveArchivedTickets(String doer, String cat, String subCat, String status, String page, String count, String from, String ticketId, String date) {
+
+        int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
+        int limit = Integer.valueOf(count);
+
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where("deleteFor").exists(true));
+        query.skip(skip).limit(limit);
+
+        query.with(Sort.by(Sort.Direction.DESC, "_id"));
+
+        if (!cat.equals(""))
+            query.addCriteria(Criteria.where("category").regex(cat));
+        if (!subCat.equals(""))
+            query.addCriteria(Criteria.where("subCategory").regex(subCat));
+
+        if (!from.equals(""))
+            query.addCriteria(Criteria.where("from").regex(from));
+
+        if (!ticketId.equals(""))
+            query.addCriteria(Criteria.where("ID").regex(ticketId));
+
+        if (!date.equals("")) {
+            String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+            String timeStart = time + "T00:00:00.000Z";
+            String timeEnd = time + "T23:59:59.000Z";
+
+            long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+            long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+
+            query.addCriteria(Criteria.where("creationTime").gte(eventStartDate).lte(eventEndDate));
+
+        }
+
+        int ticketCount = ticketsCount(cat, subCat, -1, ticketId,date,true);
+        List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
+        return new ListTickets(ticketCount, ticketList, (int) Math.ceil((double)ticketCount / (double)limit));
     }
 }

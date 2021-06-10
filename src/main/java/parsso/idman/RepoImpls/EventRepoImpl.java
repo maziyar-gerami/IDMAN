@@ -37,7 +37,7 @@ public class EventRepoImpl implements EventRepo {
                     eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
             event.setTime(time1);
         }
-        return new ListEvents(size, (int) Math.ceil(size / n), allEvents);
+        return new ListEvents(size, (int) Math.ceil((double)size /(double) n), allEvents);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class EventRepoImpl implements EventRepo {
 
         long size = mongoTemplate.count(query, Event.class, mainCollection);
 
-        return new ListEvents(size, (int) Math.ceil(size / n), allEvents);
+        return new ListEvents(size, (int) Math.ceil((double)size / (double)n), allEvents);
     }
 
     @Override
@@ -106,8 +106,7 @@ public class EventRepoImpl implements EventRepo {
             event.setTime(time1);
         }
 
-        int pages = (int) Math.ceil(size / limit) + 1;
-        ListEvents listEvents = new ListEvents(size, pages, eventList);
+        ListEvents listEvents = new ListEvents(size, (int) Math.ceil(size / limit), eventList);
         return listEvents;
     }
 

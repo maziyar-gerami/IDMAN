@@ -289,6 +289,9 @@
                                                 <li class="nav-item">
                                                     <a class="nav-link" @click.prevent="setActive('ticketsTab')" :class="{ active: isActive('ticketsTab') }" href="#ticketsTab">{{ticketsListText}}</a>
                                                 </li>
+                                                <li sec:authorize="hasRole('SUPERADMIN')" class="nav-item">
+                                                    <a class="nav-link" @click.prevent="setActive('archivesTab')" :class="{ active: isActive('archivesTab') }" href="#archivesTab">{{ticketArchivesText}}</a>
+                                                </li>
                                             </ul>
                                             <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
                                                 <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('chatsTab') }" id="chatsTab">
@@ -313,18 +316,18 @@
                                                             <div class="col-8"></div>
                                                         </div>
                                                         <div class="row mb-3 ml-0 mr-0">
-                                                            <div class="col-4">
+                                                            <div class="col-4 pl-1 pr-1">
                                                                 <input v-model="inboxIdSearch" type="text" :placeholder="idText" class="form-control icon-input" autocomplete="off">
                                                                 <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeInboxIdSearch()"></i>
                                                             </div>
-                                                            <div class="col-4">
+                                                            <div class="col-4 pl-1 pr-1">
                                                                 <input id="inboxDateSearch" type="text" :placeholder="createDateText" class="datePickerFa form-control icon-input" autocomplete="off">
                                                                 <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeInboxDateSearch()"></i>
                                                             </div>
-                                                            <div class="col-2">
+                                                            <div class="col-2 pl-1 pr-1">
                                                                 <button class="btn btn-danger btn-sm w-100 h-100" v-on:click="deleteInboxFilter()">{{removeFilter}}</button>
                                                             </div>
-                                                            <div class="col-2">
+                                                            <div class="col-2 pl-1 pr-1">
                                                                 <button class="btn btn-success btn-sm w-100 h-100" v-on:click="getInboxTickets()">{{submitFilter}}</button>
                                                             </div>
                                                         </div>
@@ -481,18 +484,18 @@
                                                             </div>
                                                         </div>
                                                         <div class="row mb-3 ml-0 mr-0">
-                                                            <div class="col-4">
+                                                            <div class="col-4 pl-1 pr-1">
                                                                 <input v-model="idSearch" type="text" :placeholder="idText" class="form-control icon-input" autocomplete="off">
                                                                 <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeIdSearch()"></i>
                                                             </div>
-                                                            <div class="col-4">
+                                                            <div class="col-4 pl-1 pr-1">
                                                                 <input id="dateSearch" type="text" :placeholder="createDateText" class="datePickerFa form-control icon-input" autocomplete="off">
                                                                 <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeDateSearch()"></i>
                                                             </div>
-                                                            <div class="col-2">
+                                                            <div class="col-2 pl-1 pr-1">
                                                                 <button class="btn btn-danger btn-sm w-100 h-100" v-on:click="deleteFilter()">{{removeFilter}}</button>
                                                             </div>
-                                                            <div class="col-2">
+                                                            <div class="col-2 pl-1 pr-1">
                                                                 <button class="btn btn-success btn-sm w-100 h-100" v-on:click="getTickets()">{{submitFilter}}</button>
                                                             </div>
                                                         </div>
@@ -625,6 +628,110 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div sec:authorize="hasRole('SUPERADMIN')" class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('archivesTab') }" id="archivesTab">
+                                                    <div class="desktopView">
+                                                        <div class="row mb-3 mt-3 ml-0 mr-0">
+                                                            <div class="col-4 pl-1 pr-1">
+                                                                <input v-model="archivesIdSearch" type="text" :placeholder="idText" class="form-control icon-input" autocomplete="off">
+                                                                <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeArchivesIdSearch()"></i>
+                                                            </div>
+                                                            <div class="col-4 pl-1 pr-1">
+                                                                <input id="archivesDateSearch" type="text" :placeholder="createDateText" class="datePickerFa form-control icon-input" autocomplete="off">
+                                                                <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeArchivesDateSearch()"></i>
+                                                            </div>
+                                                            <div class="col-2 pl-1 pr-1">
+                                                                <button class="btn btn-danger btn-sm w-100 h-100" v-on:click="deleteArchivesFilter()">{{removeFilter}}</button>
+                                                            </div>
+                                                            <div class="col-2 pl-1 pr-1">
+                                                                <button class="btn btn-success btn-sm w-100 h-100" v-on:click="getArchivesTickets()">{{submitFilter}}</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mobileView">
+                                                        <div class="row mb-1 mt-5 pl-1 pr-1">
+                                                            <input v-model="archivesIdSearch" type="text" :placeholder="idText" class="form-control icon-input" autocomplete="off">
+                                                            <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeArchivesIdSearch()"></i>
+                                                        </div>
+                                                        <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                            <input id="archivesDateSearch" type="text" :placeholder="createDateText" class="datePickerFa form-control icon-input" autocomplete="off">
+                                                            <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeArchivesDateSearch()"></i>
+                                                        </div>
+                                                        <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                            <button class="btn btn-danger btn-sm w-100 h-100" v-on:click="deleteArchivesFilter()">{{removeFilter}}</button>
+                                                        </div>
+                                                        <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                            <button class="btn btn-success btn-sm w-100 h-100" v-on:click="getArchivesTickets()">{{submitFilter}}</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="p-2" style="direction: rtl;">
+                                                        <v-pagination  v-model="paginationCurrentArchivesPage" :page-count="totalArchives" :classes="bootstrapPaginationClasses"
+                                                                       :labels="paginationAnchorTexts"></v-pagination>
+                                                    </div>
+                                                    <div style="overflow: auto;">
+                                                        <div class="table-wrapper">
+                                                            <div v-if="isArchivesListEmpty" class="emptyList">
+                                                                <div>
+                                                                    <i class="fa fa-signing fa-2x"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <span>{{s45}}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div v-else>
+                                                                <table class="tableList table table-responsive p-2 text-center">
+                                                                    <tr>
+                                                                        <th style="border: none;width: 5%;">#</th>
+                                                                        <th style="border: none;">{{idText}}</th>
+                                                                        <th style="border: none;">{{subjectText}}</th>
+                                                                        <th style="border: none;">{{statusText}}</th>
+                                                                        <th style="border: none;">{{fromText}}</th>
+                                                                        <th style="border: none;">{{createDateText}}</th>
+                                                                    </tr>
+                                                                    <tbody id="bodyArchives">
+                                                                    <tr v-for="ticket in sortedArchivesTickets" v-bind:key="ticket.id">
+                                                                        <td>{{ticket.orderOfRecords}}</td>
+                                                                        <td>{{ticket.id}}</td>
+                                                                        <td>{{ticket.subject}}</td>
+                                                                        <td>
+                                                                            <div v-if="ticket.status === 0">{{pendingText}}</div>
+                                                                            <div v-else-if="ticket.status === 1">{{openText}}</div>
+                                                                            <div v-else-if="ticket.status === 2">{{closedText}}</div>
+                                                                        </td>
+                                                                        <td>{{ticket.from}}</td>
+                                                                        <td>{{ticket.creationDateTime.year}}/{{ticket.creationDateTime.month}}/{{ticket.creationDateTime.day}}</td>
+                                                                        <td>
+                                                                            <button style="padding: .2rem .2rem; color: #007bff; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="detailText" class="btn btn-sm" v-on:click="detailTicket(ticket.id)">
+                                                                                <span class="fa-stack">
+                                                                                    <i class="fa fa-info fa-stack-2x"></i>
+                                                                                </span>
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="p-2" style="direction: rtl;">
+                                                        <v-pagination  v-model="paginationCurrentArchivesPage" :page-count="totalArchives" :classes="bootstrapPaginationClasses"
+                                                                       :labels="paginationAnchorTexts"></v-pagination>
+                                                    </div>
+                                                    <div class="row mt-3">
+                                                        <div class="col-8"></div>
+                                                        <div class="col-2 pr-0 pl-0 d-flex align-items-center justify-content-center">
+                                                            <label style="display: contents;">{{s36}}</label>
+                                                        </div>
+                                                        <div class="col-2 pr-2 pl-3">
+                                                            <select class="form-control" v-on:change="changeArchivesRecords($event)">
+                                                                <option value="20" selected>20</option>
+                                                                <option value="50">50</option>
+                                                                <option value="100">100</option>
+                                                                <option value="300">300</option>
+                                                                <option value="500">500</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
@@ -684,6 +791,56 @@
                                                 <button v-on:click="showList()" class="btn btn-danger">{{s17}}</button>
                                                 <button v-on:click="sendTicketReply(ticket.id, 'send')" class="btn btn-primary">{{sendText}}</button>
                                                 <button v-on:click="sendTicketReply(ticket.id, 'send&close')" class="btn btn-primary">{{sendAndCloseText}}</button>
+                                            </div>
+                                            <div class="p-3" v-bind:style="detailS">
+                                                <div class="row border-bottom">
+                                                    <div class="col">
+                                                        <h3 class="mb-3 pb-2">{{ticketingText}}</h3>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label>{{idText}}</label>
+                                                            <input v-model:value="ticketDetail.id" type="text" class="form-control" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label>{{fromText}}</label>
+                                                            <input v-model:value="ticketDetail.from" type="text" class="form-control" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3 border-bottom">
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                            <label>{{subjectText}}</label>
+                                                            <input v-model:value="ticketDetail.subject" type="text" class="form-control" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div id="chatboxDetail" class="mt-3 mb-3" style="overflow: auto;height: 40vh;">
+                                                    <div v-for="msg in ticketDetail.messages">
+                                                        <div v-if="msg.close || msg.reOpen" class="w-50 p-1 mt-3 mr-2 ml-2 alertMessage">
+                                                            <small v-if="msg.reOpen">{{alertMessage1Text}}{{msg.reOpenTime.hours}}:{{msg.reOpenTime.minutes}}:{{msg.reOpenTime.seconds}} {{msg.reOpenTime.year}}/{{msg.reOpenTime.month}}/{{msg.reOpenTime.day}}{{alertMessage2Text}}{{msg.from}}{{alertMessageOpen3Text}}</small>
+                                                            <small v-else>{{alertMessage1Text}}{{msg.closeTime.hours}}:{{msg.closeTime.minutes}}:{{msg.closeTime.seconds}} {{msg.closeTime.year}}/{{msg.closeTime.month}}/{{msg.closeTime.day}}{{alertMessage2Text}}{{msg.from}}{{alertMessageClose3Text}}</small>
+                                                        </div>
+                                                        <div v-else-if="msg.from == ticketDetail.from" class="w-75 p-2 mt-3 mr-2 ml-2 receivedMessage">
+                                                            {{msg.body}}
+                                                            <br><br>
+                                                            <small>{{msg.creationTime.hours}}:{{msg.creationTime.minutes}}:{{msg.creationTime.seconds}} {{msg.creationTime.year}}/{{msg.creationTime.month}}/{{msg.creationTime.day}} ({{msg.fromDisplayName}})</small>
+                                                        </div>
+                                                        <div v-else class="w-75 p-2 mt-3 mr-2 ml-2 sentMessage">
+                                                            {{msg.body}}
+                                                            <br><br>
+                                                            <small>{{msg.creationTime.hours}}:{{msg.creationTime.minutes}}:{{msg.creationTime.seconds}} {{msg.creationTime.year}}/{{msg.creationTime.month}}/{{msg.creationTime.day}} ({{msg.fromDisplayName}})</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <button v-on:click="showList()" class="btn btn-danger">{{s17}}</button>
                                             </div>
                                         </div>
                                     </div>
