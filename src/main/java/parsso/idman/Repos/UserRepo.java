@@ -80,5 +80,7 @@ public interface UserRepo {
 
     List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException;
 
+    String activeMobile(User user);
+
 
 }

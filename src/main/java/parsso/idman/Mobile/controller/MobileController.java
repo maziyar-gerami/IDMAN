@@ -2,6 +2,8 @@ package parsso.idman.Mobile.controller;
 
 
 import com.google.zxing.WriterException;
+import jdk.nashorn.api.scripting.JSObject;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -72,16 +74,19 @@ public class MobileController {
 
     @PostMapping("/api/mobile/active")
     public @ResponseBody
-    ResponseEntity<String> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) {
+    ResponseEntity<JSONObject> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) {
         User user = userRepo.retrieveUsers(uid);
+
+        JSONObject jsonObject = new JSONObject();
 
         if (QrToken.equals(user.getUsersExtraInfo().getQrToken()))
             if (servicesRepo.verifySMS(uid, smsCode).equals(HttpStatus.OK)) {
-                return new ResponseEntity<>(user.getUsersExtraInfo().getMobileToken(), HttpStatus.OK);
+                jsonObject.put("mobileToken", user.getUsersExtraInfo().getMobileToken());
+                jsonObject.put("UUID", userRepo.activeMobile(user));
+                return new ResponseEntity<>(jsonObject, HttpStatus.OK);
             }
-        return new ResponseEntity<>("BAD", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
     }
-
 
     //after activation
 

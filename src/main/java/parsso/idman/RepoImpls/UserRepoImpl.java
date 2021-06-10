@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
@@ -11,6 +12,8 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
@@ -52,6 +55,7 @@ import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -90,6 +94,9 @@ public class UserRepoImpl implements UserRepo {
     private String defaultPassword;
     @Value("${profile.photo.path}")
     private String uploadedFilesPath;
+    @Value("${qr.devices.path}")
+    private String qrDevicesPath;
+
     @Autowired
     private BuildAttributes buildAttributes;
     @Autowired
@@ -664,6 +671,8 @@ public class UserRepoImpl implements UserRepo {
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom load failed").toString());
             }
 
+
+
         }
 
 
@@ -998,6 +1007,55 @@ public class UserRepoImpl implements UserRepo {
         }
 
         return null;
+    }
+
+    @Override
+    public String activeMobile(User user) {
+
+        Logger logger = LogManager.getLogger("SYSTEM");
+
+        String uuid = UUID.randomUUID().toString();
+
+        {
+            //JSON parser object to parse read file
+            JSONParser jsonParser = new JSONParser();
+
+            try (FileReader reader = new FileReader(qrDevicesPath))
+            {
+                //Read JSON file
+                Object obj = jsonParser.parse(reader);
+
+                org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) obj;
+                jsonObject.put(uuid,user.getUserId());
+
+
+                ObjectMapper mapper = new ObjectMapper();
+
+                try {
+
+                    // Writing to a file
+                    mapper.writeValue(new File(qrDevicesPath), jsonObject);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                logger.warn(new ReportMessage(model,user.getUserId(),"UUID", "Insert", "success", ""));
+
+
+            } catch (FileNotFoundException e) {
+                logger.warn(new ReportMessage(model,user.getUserId(),"UUID", "Insert", "fail", "file not found"));
+            } catch (IOException e) {
+                logger.warn(new ReportMessage(model,user.getUserId(),"UUID", "Insert", "fail", "Saving problem"));
+
+            }  catch (org.json.simple.parser.ParseException e) {
+                logger.warn(new ReportMessage(model,user.getUserId(),"UUID", "Insert", "fail", "json parse"));
+
+            }
+        }
+
+
+        return uuid;
     }
 
 }
