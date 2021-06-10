@@ -18,10 +18,13 @@ document.addEventListener('DOMContentLoaded', function () {
             name: "",
             nameEN: "",
             ticket: [],
+            ticketDetail: [],
             tickets: [],
             inboxTickets: [],
+            archivesTickets: [],
             ticketsPage: [],
             inboxTicketsPage: [],
+            archivesTicketsPage: [],
             editInfo: {},
             placeholder: "text-align: right;",
             margin: "margin-right: 30px;",
@@ -30,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
             listS: "",
             replyS: "display:none",
             createS: "display:none",
+            detailS: "display:none",
             recordsShownOnPage: 20,
             currentPage: 1,
             total: 1,
@@ -38,6 +42,10 @@ document.addEventListener('DOMContentLoaded', function () {
             currentInboxPage: 1,
             totalInbox: 1,
             paginationCurrentInboxPage: 1,
+            recordsShownOnArchivesPage: 20,
+            currentArchivesPage: 1,
+            totalArchives: 1,
+            paginationCurrentArchivesPage: 1,
             bootstrapPaginationClasses: {
                 ul: 'pagination',
                 li: 'page-item',
@@ -58,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             loader: false,
             isListEmpty: false,
             isInboxListEmpty: false,
+            isArchivesListEmpty: false,
             activeItem: "chatsTab",
             searchStatus: "",
             showMeeting: false,
@@ -68,8 +77,10 @@ document.addEventListener('DOMContentLoaded', function () {
             deleteInputIcon: "left: 10%;",
             idSearch: "",
             inboxIdSearch: "",
+            archivesIdSearch: "",
             dateSearch: "",
             inboxDateSearch: "",
+            archivesDateSearch: "",
             s0: "پارسو",
             s1: "",
             s2: "خروج",
@@ -152,6 +163,8 @@ document.addEventListener('DOMContentLoaded', function () {
             alertMessageOpen3Text: " باز شد.",
             alertMessageClose3Text: " بسته شد.",
             unreadMessageText: "پیام خوانده نشده",
+            ticketArchivesText: "آرشیو تیکت ها",
+            detailText: "جزئیات",
         },
         created: function () {
             this.setDateNav();
@@ -333,6 +346,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.getSentTickets();
                 }
             },
+            changeArchivesRecords: function(event) {
+                this.recordsShownOnArchivesPage = event.target.value;
+                if(userInfo.role == "SUPERADMIN"){
+                    this.getArchivesTickets();
+                }
+            },
             getUserInfo: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
@@ -358,6 +377,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         vm.getInboxTickets();
                     }else {
                         vm.getSentTickets();
+                    }
+                    if(res.data.role == "SUPERADMIN"){
+                        vm.getArchivesTickets();
                     }
                 });
             },
@@ -465,6 +487,40 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
             },
+            getArchivesTickets: function (p) {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
+                let searchQuery = "";
+                let searchQueryInit = "?";
+                if(this.archivesIdSearch != ""){
+                    searchQuery = searchQuery + searchQueryInit + "id=" + this.archivesIdSearch;
+                    searchQueryInit = "&";
+                }
+                this.archivesDateSearch = document.getElementById("archivesDateSearch").value;
+                if(this.archivesDateSearch != ""){
+                    let tempArray = this.archivesDateSearch.split(" ");
+                    this.archivesDateSearch = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+                    searchQuery = searchQuery + searchQueryInit + "date=" + this.archivesDateSearch;
+                    searchQueryInit = "&";
+                }
+                if(p != "paginationCurrentPage"){
+                    this.currentArchivesPage = 1;
+                    this.paginationCurrentArchivesPage = this.currentArchivesPage;
+                }
+                this.archivesTickets = [];
+                this.isArchivesListEmpty = false;
+                axios.get(url + "/api/superadmin/tickets/archive/" + vm.currentArchivesPage + "/" + vm.recordsShownOnArchivesPage + searchQuery) //
+                    .then((res) => {
+                        vm.totalArchives = Math.ceil(res.data.size / vm.recordsShownOnArchivesPage);
+                        vm.archivesTickets = res.data.ticketList;
+                        for(let i = 0; i < vm.recordsShownOnArchivesPage && i < res.data.size; ++i){
+                            vm.archivesTickets[i].orderOfRecords =  ((vm.currentArchivesPage - 1) * vm.recordsShownOnArchivesPage) + (i + 1);
+                        }
+                        if(res.data.ticketList.length == 0){
+                            vm.isArchivesListEmpty = true;
+                        }
+                    });
+            },
             getSentTickets: function (p) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
@@ -501,16 +557,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.listS = "";
                 this.replyS = "display:none";
                 this.createS = "display:none";
+                this.detailS = "display:none";
             },
             showCreate: function () {
                 this.listS = "display:none";
                 this.replyS = "display:none";
                 this.createS = "";
+                this.detailS = "display:none";
             },
             replyTicket: function (id) {
                 this.listS = "display:none";
                 this.replyS = "";
                 this.createS = "display:none";
+                this.detailS = "display:none";
+                this.ticket = [];
                 /*let chatbox = document.getElementById("chatbox");
                 chatbox.scrollTop = chatbox.scrollHeight - chatbox.clientHeight;*/
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -518,6 +578,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 axios.get(url + "/api/user/ticket/" + id) //
                     .then((res) => {
                         vm.ticket = res.data;
+                    });
+            },
+            detailTicket: function (id) {
+                this.listS = "display:none";
+                this.replyS = "display:none";
+                this.createS = "display:none";
+                this.detailS = "";
+                this.ticketDetail = [];
+                /*let chatbox = document.getElementById("chatbox");
+                chatbox.scrollTop = chatbox.scrollHeight - chatbox.clientHeight;*/
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
+                axios.get(url + "/api/user/ticket/" + id) //
+                    .then((res) => {
+                        vm.ticketDetail = res.data;
                     });
             },
             sendTicketReply: function (id, sendType) {
@@ -756,6 +831,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById("inboxDateSearch").value = "";
                 this.getInboxTickets();
             },
+            deleteArchivesFilter: function () {
+                this.archivesIdSearch = "";
+                document.getElementById("archivesDateSearch").value = "";
+                this.getArchivesTickets();
+            },
             removeIdSearch: function () {
                 this.idSearch = "";
                 this.getTickets();
@@ -771,6 +851,14 @@ document.addEventListener('DOMContentLoaded', function () {
             removeInboxDateSearch: function () {
                 document.getElementById("inboxDateSearch").value = "";
                 this.getInboxTickets();
+            },
+            removeArchivesIdSearch: function () {
+                this.archivesIdSearch = "";
+                this.getArchivesTickets();
+            },
+            removeArchivesDateSearch: function () {
+                document.getElementById("archivesDateSearch").value = "";
+                this.getArchivesTickets();
             },
             changeLang: function () {
                 if(this.lang == "EN"){
@@ -853,6 +941,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.alertMessageOpen3Text = ", Opened the Ticket.";
                     this.alertMessageClose3Text = ", Closed the Ticket.";
                     this.unreadMessageText ="Unread Message";
+                    this.ticketArchivesText = "Ticket Archives";
+                    this.detailText = "Detail";
                 }else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
@@ -933,7 +1023,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.alertMessage2Text = " توسط کاربر ";
                     this.alertMessageOpen3Text = " باز شد.";
                     this.alertMessageClose3Text = " بسته شد.";
-                    this.unreadMessageText ="پیام خوانده نشده";
+                    this.unreadMessageText = "پیام خوانده نشده";
+                    this.ticketArchivesText = "آرشیو تیکت ها";
+                    this.detailText = "جزئیات";
                 }
             }
         },
@@ -945,6 +1037,10 @@ document.addEventListener('DOMContentLoaded', function () {
             sortedInboxTickets: function () {
                 this.inboxTicketsPage = this.inboxTickets;
                 return this.inboxTicketsPage;
+            },
+            sortedArchivesTickets: function () {
+                this.archivesTicketsPage = this.archivesTickets;
+                return this.archivesTicketsPage;
             },
         },
         watch : {
@@ -963,7 +1059,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         this.getSentTickets("paginationCurrentPage");
                     }
                 }
-            }
+            },
+            paginationCurrentArchivesPage : function () {
+                if(this.paginationCurrentArchivesPage != this.currentArchivesPage){
+                    this.currentArchivesPage = this.paginationCurrentArchivesPage;
+                    if(userInfo.role == "SUPERADMIN"){
+                        this.getArchivesTickets("paginationCurrentPage");
+                    }
+                }
+            },
         }
     });
 })
