@@ -1042,6 +1042,8 @@ public class UserRepoImpl implements UserRepo {
 
                 logger.warn(new ReportMessage(model,user.getUserId(),"UUID", "Insert", "success", ""));
 
+                return uuid;
+
 
             } catch (FileNotFoundException e) {
                 logger.warn(new ReportMessage(model,user.getUserId(),"UUID", "Insert", "fail", "file not found"));
@@ -1055,7 +1057,7 @@ public class UserRepoImpl implements UserRepo {
         }
 
 
-        return uuid;
+        return null;
     }
 
 }
