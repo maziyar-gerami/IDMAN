@@ -40,6 +40,7 @@ public class UsersExtraInfo {
     private String status;
     private long passwordChangedTime;
 
+
     public UsersExtraInfo() {
 
     }
