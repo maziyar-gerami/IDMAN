@@ -45,15 +45,6 @@ public class MicroService implements Comparable {
         this.position = 0;
     }
 
-    public MicroService(long id, String name, String serviceId, String description, String logo) {
-        this._id = id;
-        this.name = name;
-        this.serviceId = serviceId;
-        this.description = description;
-        this.logo = logo;
-    }
-
-
     public MicroService(Service service, MicroService microService) {
         this._id = service.getId();
         this.name = service.getName();

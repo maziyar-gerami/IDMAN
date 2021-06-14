@@ -672,7 +672,8 @@ public class UserRepoImpl implements UserRepo {
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom load failed").toString());
             }
 
-             
+
+
 
         }
 
@@ -1017,6 +1018,8 @@ public class UserRepoImpl implements UserRepo {
 
         String uuid = UUID.randomUUID().toString();
 
+        String action = "Insert";
+
         {
             //JSON parser object to parse read file
             JSONParser jsonParser = new JSONParser();
@@ -1027,13 +1030,20 @@ public class UserRepoImpl implements UserRepo {
                 Object obj = jsonParser.parse(reader);
                 org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) obj;
 
+                boolean existed = false;
+
                 for(Iterator iterator = jsonObject.keySet().iterator(); iterator.hasNext();) {
-                    String key = (String) iterator.next();
-                    String value = (String) jsonObject.get(key);
-                    if (value.equalsIgnoreCase(user.getUserId())) {
-                        jsonObject.remove(key,value);
-                        break;
+                    try {
+                        String key = (String) iterator.next();
+                        String value = (String) jsonObject.get(key);
+                        if (value.equalsIgnoreCase(user.getUserId())) {
+                            jsonObject.remove(key,value);
+                            existed = true;
+                        }
+                    }catch (Exception e){
+                        
                     }
+
                 }
 
                 jsonObject.put(uuid,user.getUserId());
@@ -1049,22 +1059,24 @@ public class UserRepoImpl implements UserRepo {
                     e.printStackTrace();
                 }
 
-                logger.warn(new ReportMessage(model,user.getUserId(),"UUID", "Insert", "success", ""));
+                if(!existed)
+                    action = "Update";
+
+                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "success", ""));
 
                 return uuid;
 
 
             } catch (FileNotFoundException e) {
-                logger.warn(new ReportMessage(model,user.getUserId(),"UUID", "Insert", "fail", "file not found"));
+                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "file not found"));
             } catch (IOException e) {
-                logger.warn(new ReportMessage(model,user.getUserId(),"UUID", "Insert", "fail", "Saving problem"));
+                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "Saving problem"));
 
             }  catch (org.json.simple.parser.ParseException e) {
-                logger.warn(new ReportMessage(model,user.getUserId(),"UUID", "Insert", "fail", "json parse"));
+                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "json parse"));
 
             }
         }
-
 
         return null;
     }
