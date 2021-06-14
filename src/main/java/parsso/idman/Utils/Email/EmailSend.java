@@ -22,7 +22,7 @@ public class EmailSend {
     String password;
 
     // Assuming you are sending email from through gmails
-    @Value("${host.email.sender}")
+    @Value("${spring.mail.host}")
     String host;
 
     public void sendMail(String to, String uid, String name, String token) {
