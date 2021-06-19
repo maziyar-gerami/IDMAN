@@ -25,6 +25,18 @@ public class EmailSend {
     @Value("${spring.mail.host}")
     String host;
 
+    @Value("${spring.mail.port}")
+    String port;
+
+    @Value("${spring.mail.properties.mail.smtp.auth}")
+    String auth;
+
+    @Value("${spring.mail.smtp.ssl.enable}")
+    String sslEnabled;
+
+
+
+
     public void sendMail(String to, String uid, String name, String token) {
 
 
@@ -38,13 +50,8 @@ public class EmailSend {
         String stringLink = "لینک بازنشانی رمز عبور: ";
 
         // Get system properties
-        Properties properties = System.getProperties();
+        Properties properties = setupMailServer(System.getProperties());
 
-        // Setup mail server
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", "465");
-        properties.put("mail.smtp.ssl.enable", "true");
-        properties.put("mail.smtp.auth", "true");
 
         // Get the Session object.// and pass username and password
         Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
@@ -95,13 +102,9 @@ public class EmailSend {
 
 
         // Get system properties
-        Properties properties = System.getProperties();
+        Properties properties = setupMailServer(System.getProperties());
 
-        // Setup mail server
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", "465");
-        properties.put("mail.smtp.ssl.enable", "true");
-        properties.put("mail.smtp.auth", "true");
+
 
         // Get the Session object.// and pass username and password
         Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
@@ -140,6 +143,14 @@ public class EmailSend {
             mex.printStackTrace();
         }
 
+    }
+
+    private  Properties setupMailServer(Properties properties){
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.port", port);
+        properties.put("mail.smtp.ssl.enable", sslEnabled);
+        properties.put("mail.smtp.auth", auth);
+        return properties;
     }
 
 }
