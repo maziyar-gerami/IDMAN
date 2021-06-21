@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Models.Logs.Setting;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.ConfigRepo;
+import parsso.idman.Repos.EmailService;
 import parsso.idman.Repos.SettingsRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -31,16 +31,22 @@ public class SettingsRepoImpl implements SettingsRepo {
     UserRepo userRepo;
     @Autowired
     InstantMessage instantMessage;
-    @Autowired
-    Email email;
+
     @Autowired
     ConfigRepo configRepo;
+
     @Autowired
+    EmailService emailService;
+
     private SettingsRepo settingsRepo;
     @Value("${max.pwd.lifetime.hours}")
     private long maxPwdLifetime;
     @Value("${expire.pwd.message.hours}")
     private long expirePwdMessageTime;
+
+
+
+
 
     @Override
     public HttpStatus emailNotification() {
@@ -82,7 +88,7 @@ public class SettingsRepoImpl implements SettingsRepo {
                     if (method.equalsIgnoreCase("instantMessage"))
                         instantMessage.sendWarnExpireMessage(user, String.valueOf(deadline / millis - ((new Date().getTime() - pwdChangedTime.getTime()) / millis)));
                     else if (method.equalsIgnoreCase("email"))
-                        email.sendWarnExpireMessage(user, String.valueOf(deadline / millis - ((new Date().getTime() - pwdChangedTime.getTime()) / millis)));
+                        sendWarnExpireMessage(user, String.valueOf(deadline / millis - ((new Date().getTime() - pwdChangedTime.getTime()) / millis)));
 
                 }
             } catch (java.text.ParseException e) {
@@ -93,4 +99,25 @@ public class SettingsRepoImpl implements SettingsRepo {
         }
         return HttpStatus.OK;
     }
+
+
+
+    public void sendWarnExpireMessage(User user, String day) {
+
+        try {
+            emailService.sendMail(user, day);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
+
+
+
+
+
 }

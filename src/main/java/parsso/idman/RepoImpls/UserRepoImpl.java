@@ -12,12 +12,9 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.info.BuildProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -35,7 +32,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.Group.GroupsChecks;
 import parsso.idman.Helpers.User.*;
@@ -55,7 +51,6 @@ import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -107,14 +102,16 @@ public class UserRepoImpl implements UserRepo {
     private UserAttributeMapper userAttributeMapper;
     @Autowired
     private SimpleUserAttributeMapper simpleUserAttributeMapper;
-    @Autowired
-    private Email emailClass;
+
     @Autowired
     private BuildDnUser buildDnUser;
     @Autowired
     private DashboardData dashboardData;
     @Autowired
     private ImportUsers importUsers;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public JSONObject create(String doerID, User p) {
@@ -701,12 +698,12 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public List<JSONObject> checkMail(String email) {
-        return emailClass.checkMail(email);
+        return emailService.checkMail(email);
     }
 
     @Override
     public HttpStatus sendEmail(JSONObject jsonObject) {
-        return emailClass.sendEmail(jsonObject);
+        return emailService.sendMail(jsonObject);
     }
 
     @Override
@@ -940,8 +937,8 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public int sendEmail(String email, String uid, String cid, String answer) {
         if (uid != null)
-            return emailClass.sendEmail(email, uid, cid, answer);
-        return emailClass.sendEmail(email, cid, answer);
+            return emailService.sendMail(email, uid, cid, answer);
+        return emailService.sendMail(email, cid, answer);
     }
 
     public String createUrl(String userId, String token) {
