@@ -666,7 +666,6 @@ public class UserRepoImpl implements UserRepo {
                 user.setSkyRoom(skyRoom);
             } catch (IOException e) {
                 user.setSkyRoom(null);
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom load failed").toString());
             }
 
 

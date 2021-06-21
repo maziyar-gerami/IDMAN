@@ -61,12 +61,13 @@ public class EmailServiceImpl implements EmailService {
 
 
 
-    public void sendSimpleMessage(String to, String subject, String text) {
+    public void sendSimpleMessage(User user, String subject, String url) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
-        message.setTo(to);
+        message.setTo(user.getMail());
         message.setSubject(subject);
-        message.setText(text);
+        Variables.template(user, url);
+        message.setText(Variables.template(user, url));
         mailSender.send(message);}
 
 
@@ -81,7 +82,7 @@ public class EmailServiceImpl implements EmailService {
 
             Thread thread = new Thread() {
                 public void run() {
-                    sendSimpleMessage(email, "subject", "\n" + fullUrl);
+                    sendSimpleMessage(user, Variables.email_recoverySubject, "\n" + fullUrl);
 
                 }
             };
@@ -143,14 +144,13 @@ public class EmailServiceImpl implements EmailService {
 
             String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
-            Thread thread = new Thread() {
-                public void run() {
-                    //TODO: Imortant
-                    sendSimpleMessage(email, "subject", "\n" + fullUrl);
+            try {
+                sendSimpleMessage(user, Variables.email_recoverySubject, Variables.template(user,fullUrl));
 
-                }
-            };
-            thread.start();
+            }catch (Exception e){
+                return 0;
+            }
+
             mongoTemplate.remove(query, collection);
             return Integer.valueOf(EMAIL_VALID_TIME);
         } else
@@ -168,7 +168,7 @@ public class EmailServiceImpl implements EmailService {
 
         String text = user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')) + start + day + middle + end;
 
-        sendSimpleMessage(user.getMail(),subject,text);
+        sendSimpleMessage(user,subject,text);
 
     }
 
@@ -197,15 +197,10 @@ public class EmailServiceImpl implements EmailService {
                     tokenClass.insertEmailToken(user);
 
                     String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
-                    //Thread thread = new Thread() {
-                        //public void run() {
-                            //TODO:IMPORTANT
-                            //sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
-                            sendSimpleMessage(user.getMail(), "Hi", "Hi there");
-                        //}
-                    //};
+                    try {
+                        sendSimpleMessage(user, Variables.email_recoverySubject, fullUrl);
+                    } catch (Exception e){ return 0;}
 
-                    //thread.start();
                     mongoTemplate.remove(query, collection);
                     return Integer.valueOf(EMAIL_VALID_TIME);
 
@@ -232,83 +227,4 @@ public class EmailServiceImpl implements EmailService {
         return jsonArray;
     }
 
-    public int sendEmail(String email, String cid, String answer) {
-
-        Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
-        if ((captcha) == null)
-            return -1;
-        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query, collection);
-            return -1;
-        }
-
-        if (checkMail(email) != null) {
-            User user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
-
-            tokenClass.insertEmailToken(user);
-
-            String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
-
-            Thread thread = new Thread() {
-                public void run() {
-                    //TODO: IMPORTANT
-                    //sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
-
-                    sendSimpleMessage(user.getMail(), "Hi", "Hi there");
-
-                }
-            };
-            thread.start();
-            mongoTemplate.remove(query, collection);
-            return Integer.valueOf(EMAIL_VALID_TIME);
-        } else
-            return 0;
-    }
-
-    public int sendEmail(String email, String uid, String cid, String answer) {
-
-        Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
-        if ((captcha) == null)
-            return -1;
-        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query, collection);
-            return -1;
-        }
-
-        if (checkMail(email) != null & userRepo.retrieveUsers(uid).getUserId() != null) {
-            List<JSONObject> ids = checkMail(email);
-            List<User> people = new LinkedList<>();
-            User user = userRepo.retrieveUsers(uid);
-            for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
-
-            for (User p : people) {
-
-                if (user.equals(p)) {
-
-                    tokenClass.insertEmailToken(user);
-
-                    String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
-                    Thread thread = new Thread() {
-                        public void run() {
-                            //sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
-                            sendSimpleMessage(user.getMail(), "Hi", "Hi there");
-
-                        }
-                    };
-
-                    thread.start();
-                    mongoTemplate.remove(query, collection);
-                    return Integer.valueOf(EMAIL_VALID_TIME);
-
-
-                }
-            }
-
-        } else
-            return 0;
-
-        return 0;
-    }
 }
