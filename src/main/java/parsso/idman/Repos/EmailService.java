@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Users.User;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @Service
@@ -15,7 +16,7 @@ public interface EmailService {
 
     int sendMail(String email, String cid, String answer);
 
-    void sendMail(User user, String day);
+    void sendMail(User user, String day) throws MessagingException;
 
     int sendMail(String email, String uid, String cid, String answer);
 

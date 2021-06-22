@@ -1,9 +1,11 @@
 package parsso.idman.RepoImpls;
 
 
+import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -12,7 +14,9 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.Helpers.Variables;
@@ -21,6 +25,8 @@ import parsso.idman.Repos.EmailService;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Captcha.Models.CAPTCHA;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.naming.directory.SearchControls;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -59,6 +65,12 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     UserRepo userRepo;
 
+    @Autowired
+    private TemplateEngine templateEngine;
+
+
+    @Autowired
+    MailProperties mailProperties;
 
 
     public void sendSimpleMessage(User user, String subject, String url) {
@@ -68,7 +80,23 @@ public class EmailServiceImpl implements EmailService {
         message.setSubject(subject);
         Variables.template(user, url);
         message.setText(Variables.template(user, url));
-        mailSender.send(message);}
+        mailSender.send(message);
+    }
+
+    public void sendHtmlMessage(User user, String subject, String url) throws javax.mail.MessagingException {
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom(from);
+        helper.setTo(user.getMail());
+        helper.setSubject(subject);
+        String s = Variables.template(user,url);
+        helper.setText(Variables.template(user, url),true);
+
+        mailSender.send(message);
+    }
+
 
 
     public HttpStatus sendMail(String email) {
@@ -81,8 +109,9 @@ public class EmailServiceImpl implements EmailService {
 
 
             Thread thread = new Thread() {
+                @SneakyThrows
                 public void run() {
-                    sendSimpleMessage(user, Variables.email_recoverySubject, "\n" + fullUrl);
+                    sendHtmlMessage(user, Variables.email_recoverySubject, "\n" + fullUrl);
 
                 }
             };
@@ -145,7 +174,7 @@ public class EmailServiceImpl implements EmailService {
             String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
             try {
-                sendSimpleMessage(user, Variables.email_recoverySubject, Variables.template(user,fullUrl));
+                sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
 
             }catch (Exception e){
                 return 0;
@@ -158,7 +187,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendMail(User user, String day) {
+    public void sendMail(User user, String day) throws MessagingException {
 
         String subject = "اخطار انقضای رمز عبور پارسو";
         String start = " عزیز \n" +
@@ -168,7 +197,7 @@ public class EmailServiceImpl implements EmailService {
 
         String text = user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')) + start + day + middle + end;
 
-        sendSimpleMessage(user,subject,text);
+        sendHtmlMessage(user,subject,text);
 
     }
 
@@ -198,7 +227,7 @@ public class EmailServiceImpl implements EmailService {
 
                     String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
                     try {
-                        sendSimpleMessage(user, Variables.email_recoverySubject, fullUrl);
+                        sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
                     } catch (Exception e){ return 0;}
 
                     mongoTemplate.remove(query, collection);
