@@ -32,7 +32,7 @@ public class Variables {
 
         return
 
-                "<p style=\"text-align:right;\" dir=\"rtl\"><b>"+user.getDisplayName().substring(0, user.getDisplayName().indexOf(' '))+"عزیز"+"</b></p>" +
+                "<p style=\"text-align:right;\" dir=\"rtl\"><b>"+user.getDisplayName().substring(0, user.getDisplayName().indexOf(' '))+" عزیز "+"</b></p>" +
                         "<p style=\"text-align:right;\" dir=\"rtl\">"+email_body +"</p>"+
                         "<p style=\"text-align:right;\" dir=\"rtl\">"+email_stringUid +user.getUserId() + "</p>"+
                         "<p style=\"text-align:right;\" dir=\"rtl\">" +email_stringLink + "<a href="+url+">" + url + "</a></p>"+
