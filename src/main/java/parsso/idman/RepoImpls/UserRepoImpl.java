@@ -1029,16 +1029,15 @@ public class UserRepoImpl implements UserRepo {
                 boolean existed = false;
 
                 for(Iterator iterator = jsonObject.keySet().iterator(); iterator.hasNext();) {
-                    try {
+
                         String key = (String) iterator.next();
                         String value = (String) jsonObject.get(key);
                         if (value.equalsIgnoreCase(user.getUserId())) {
                             jsonObject.remove(key,value);
                             existed = true;
+                            break;
                         }
-                    }catch (Exception e){
-                        
-                    }
+
 
                 }
 
