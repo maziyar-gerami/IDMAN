@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
       inviteToMeetingText: "دعوت به جلسه",
       copyText: "کپی",
       returnText: "بازگشت",
+      contentLang: "fa",
     },
     created: function () {
       this.setDateNav();
@@ -214,10 +215,10 @@ document.addEventListener('DOMContentLoaded', function () {
         this.configsList = [];
         this.configsDescription = [];
         this.configsGroupNames = [];
-        axios.get(url + "/api/configs") //
+        axios.get(url + "/api/configs") // /settings?lang=" + vm.contentLang
         .then((res) => {
           vm.configsList = res.data;
-          for(var i = 0; i < vm.configsList.length; ++i){
+          for(let i = 0; i < vm.configsList.length; ++i){
             if(vm.configsGroupNames.indexOf(vm.configsList[i].group) == -1){
               vm.configsGroupNames[j] = vm.configsList[i].group;
               if(j == 0){
@@ -237,9 +238,9 @@ document.addEventListener('DOMContentLoaded', function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         axios({
-          method: 'put',
-          url: url + '/api/configs',  //
-          headers: {'Content-Type': 'application/json'},
+          method: "put",
+          url: url + "/api/configs",  //
+          headers: {"Content-Type": "application/json"},
           data: JSON.stringify(vm.configsList).replace(/\\\\/g, "\\")
         })
         .then((res) => {
@@ -386,6 +387,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.inviteToMeetingText = "Invite To Meeting";
           this.copyText = "Copy";
           this.returnText = "Return";
+          this.contentLang = "en";
+          //this.getConfigs();
         }else {
             window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
@@ -437,6 +440,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.inviteToMeetingText = "دعوت به جلسه";
             this.copyText = "کپی";
             this.returnText = "بازگشت";
+            this.contentLang = "fa";
+            //this.getConfigs();
         }
       }
     },

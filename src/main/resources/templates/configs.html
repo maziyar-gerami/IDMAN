@@ -248,10 +248,10 @@
                                                 <div style="overflow: auto;">
                                                     <div class="table-wrapper">
                                                         <div class="tab-content py-3" style="background-color: white; padding: 2%; font-size: 15px; direction: rtl;">
-                                                            <div class="tab-pane fade" v-for="groups in configsGroupNames" v-bind:key="groups" :class="{ 'active show': isActive(groups) }" v-bind:id="groups">
-                                                                <div v-for="description in configsDescription" v-if="groupSearchDescription(groups,description)">
+                                                            <div class="tab-pane fade" v-for="group in configsGroupNames" v-bind:key="group" :class="{ 'active show': isActive(group) }" v-bind:id="group">
+                                                                <div v-for="description in configsDescription" v-if="groupSearchDescription(group,description)">
                                                                     <h5 class="border-bottom pb-1 pt-1 mb-3 mt-5 config-head"><span>{{description}}</span></h5>
-                                                                    <div v-for="config in configsList" v-bind:key="config" class="form-group" v-if="config.description === description">
+                                                                    <div v-for="config in configsList" v-bind:key="config" class="form-group" v-if="config.description === description && config.group === group">
                                                                         <table class="table">
                                                                             <tbody id="body">
                                                                                 <tr>
