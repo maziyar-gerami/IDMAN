@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
             alertMessage2Text: " توسط کاربر ",
             alertMessageOpen3Text: " باز شد.",
             alertMessageClose3Text: " بسته شد.",
-            unreadMessageText: "پیام خوانده نشده",
+            unreadMessageText: "پیام پاسخ داده نشده",
             ticketArchivesText: "آرشیو تیکت ها",
             detailText: "جزئیات",
         },
@@ -940,7 +940,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.alertMessage2Text = " User ";
                     this.alertMessageOpen3Text = ", Opened the Ticket.";
                     this.alertMessageClose3Text = ", Closed the Ticket.";
-                    this.unreadMessageText ="Unread Message";
+                    this.unreadMessageText ="Unanswered Message";
                     this.ticketArchivesText = "Ticket Archives";
                     this.detailText = "Detail";
                 }else {
@@ -1023,7 +1023,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.alertMessage2Text = " توسط کاربر ";
                     this.alertMessageOpen3Text = " باز شد.";
                     this.alertMessageClose3Text = " بسته شد.";
-                    this.unreadMessageText = "پیام خوانده نشده";
+                    this.unreadMessageText = "پیام پاسخ داده نشده";
                     this.ticketArchivesText = "آرشیو تیکت ها";
                     this.detailText = "جزئیات";
                 }
