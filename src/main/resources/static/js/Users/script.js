@@ -434,10 +434,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         }else if(window.localStorage.getItem("lang") === "EN") {
                             vm.s1 = vm.nameEN;
                         }
-                        if(res.data.skyRoom.enable){
-                            vm.showMeeting = true;
-                            vm.meetingAdminLink = res.data.skyRoom.presenter;
-                            vm.meetingGuestLink = res.data.skyRoom.students;
+                        if(typeof res.data.skyRoom !== "undefined"){
+                            if(res.data.skyRoom.enable){
+                                vm.showMeeting = true;
+                                vm.meetingAdminLink = res.data.skyRoom.presenter;
+                                vm.meetingGuestLink = res.data.skyRoom.students;
+                            }
                         }
                     });
             },
@@ -795,7 +797,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             editUser: function (id) {
                 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                const mobileRegex = /^09\d{9}$/;
+                const mobileRegex = /^(\+98|0)?9\d{9}$/;
 
                 if(id == "" ||
                 document.getElementById("editInfo.displayNameUpdate").value == "" ||
@@ -1013,7 +1015,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 var unDeletableVar = false;
                 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                const mobileRegex = /^09\d{9}$/;
+                const mobileRegex = /^(\+98|0)?9\d{9}$/;
 
                 if(document.getElementById("editInfo.userIdCreate").value == "" ||
                     document.getElementById("editInfo.displayNameCreate").value == "" ||

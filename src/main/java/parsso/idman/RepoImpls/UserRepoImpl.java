@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
@@ -11,10 +12,9 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.info.BuildProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -32,7 +32,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.Group.GroupsChecks;
 import parsso.idman.Helpers.User.*;
@@ -90,6 +89,9 @@ public class UserRepoImpl implements UserRepo {
     private String defaultPassword;
     @Value("${profile.photo.path}")
     private String uploadedFilesPath;
+    @Value("${qr.devices.path}")
+    private String qrDevicesPath;
+
     @Autowired
     private BuildAttributes buildAttributes;
     @Autowired
@@ -100,14 +102,16 @@ public class UserRepoImpl implements UserRepo {
     private UserAttributeMapper userAttributeMapper;
     @Autowired
     private SimpleUserAttributeMapper simpleUserAttributeMapper;
-    @Autowired
-    private Email emailClass;
+
     @Autowired
     private BuildDnUser buildDnUser;
     @Autowired
     private DashboardData dashboardData;
     @Autowired
     private ImportUsers importUsers;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public JSONObject create(String doerID, User p) {
@@ -656,13 +660,16 @@ public class UserRepoImpl implements UserRepo {
                 user.setUnDeletable(false);
             }
 
+
             try {
                 skyRoom = skyroomRepo.Run(user);
                 user.setSkyRoom(skyRoom);
             } catch (IOException e) {
                 user.setSkyRoom(null);
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "retrieve", "failed", "Skyroom load failed").toString());
             }
+
+
+
 
         }
 
@@ -690,12 +697,12 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public List<JSONObject> checkMail(String email) {
-        return emailClass.checkMail(email);
+        return emailService.checkMail(email);
     }
 
     @Override
     public HttpStatus sendEmail(JSONObject jsonObject) {
-        return emailClass.sendEmail(jsonObject);
+        return emailService.sendMail(jsonObject);
     }
 
     @Override
@@ -929,8 +936,8 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public int sendEmail(String email, String uid, String cid, String answer) {
         if (uid != null)
-            return emailClass.sendEmail(email, uid, cid, answer);
-        return emailClass.sendEmail(email, cid, answer);
+            return emailService.sendMail(email, uid, cid, answer);
+        return emailService.sendMail(email, cid, answer);
     }
 
     public String createUrl(String userId, String token) {
@@ -995,6 +1002,75 @@ public class UserRepoImpl implements UserRepo {
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
             return excelAnalyzer.csvSheetAnalyzer(doer, csvReader, ou, true);
+        }
+
+        return null;
+    }
+
+    @Override
+    public String activeMobile(User user) {
+
+        Logger logger = LogManager.getLogger("SYSTEM");
+
+        String uuid = UUID.randomUUID().toString();
+
+        String action = "Insert";
+
+        {
+            //JSON parser object to parse read file
+            JSONParser jsonParser = new JSONParser();
+
+            try (FileReader reader = new FileReader(qrDevicesPath))
+            {
+                //Read JSON file
+                Object obj = jsonParser.parse(reader);
+                org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) obj;
+
+                boolean existed = false;
+
+                for(Iterator iterator = jsonObject.keySet().iterator(); iterator.hasNext();) {
+
+                        String key = (String) iterator.next();
+                        String value = (String) jsonObject.get(key);
+                        if (value.equalsIgnoreCase(user.getUserId())) {
+                            jsonObject.remove(key,value);
+                            existed = true;
+                            break;
+                        }
+
+
+                }
+
+                jsonObject.put(uuid,user.getUserId());
+
+                ObjectMapper mapper = new ObjectMapper();
+
+                try {
+
+                    // Writing to a file
+                    mapper.writeValue(new File(qrDevicesPath), jsonObject);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(!existed)
+                    action = "Update";
+
+                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "success", ""));
+
+                return uuid;
+
+
+            } catch (FileNotFoundException e) {
+                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "file not found"));
+            } catch (IOException e) {
+                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "Saving problem"));
+
+            }  catch (org.json.simple.parser.ParseException e) {
+                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "json parse"));
+
+            }
         }
 
         return null;

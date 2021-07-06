@@ -29,8 +29,7 @@ public class Token {
     BuildAttributes buildAttributes;
     @Autowired
     LdapTemplate ldapTemplate;
-    @Autowired
-    Email emailClass;
+
     @Autowired
     InstantMessage instantMessage;
     @Autowired

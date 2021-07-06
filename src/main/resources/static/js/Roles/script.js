@@ -152,10 +152,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     }else if(window.localStorage.getItem("lang") === "EN") {
                         vm.usernameText = vm.nameEN;
                     }
-                    if(res.data.skyRoom.enable){
-                        vm.showMeeting = true;
-                        vm.meetingAdminLink = res.data.skyRoom.presenter;
-                        vm.meetingGuestLink = res.data.skyRoom.students;
+                    if(typeof res.data.skyRoom !== "undefined"){
+                        if(res.data.skyRoom.enable){
+                            vm.showMeeting = true;
+                            vm.meetingAdminLink = res.data.skyRoom.presenter;
+                            vm.meetingGuestLink = res.data.skyRoom.students;
+                        }
                     }
                 });
             },

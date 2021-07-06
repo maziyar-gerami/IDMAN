@@ -1,68 +1,105 @@
-package parsso.idman.Helpers.Communicate;
+package parsso.idman.RepoImpls;
 
 
+import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Users.User;
-import parsso.idman.RepoImpls.UserRepoImpl;
+import parsso.idman.Repos.EmailService;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Captcha.Models.CAPTCHA;
-import parsso.idman.Utils.Email.EmailSend;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.naming.directory.SearchControls;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @Service
-public class Email {
+public class EmailServiceImpl implements EmailService {
 
-    private final String collection = Variables.col_captchas;
+    @Value("${spring.mail.username}")
+    String from;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
     @Autowired
     LdapTemplate ldapTemplate;
+
     @Autowired
     UserAttributeMapper userAttributeMapper;
-    @Autowired
-    Token tokenClass;
-    @Autowired
-    UserRepo userRepo;
-    @Autowired
-    UserRepoImpl userRepoImp;
-    @Autowired
-    MongoTemplate mongoTemplate;
-    @Autowired
-    EmailSend emailSend;
-    @Value("${token.valid.email}")
-    private String EMAIL_VALID_TIME;
 
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
 
-    public List<JSONObject> checkMail(String email) {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
-        List<JSONObject> jsonArray = new LinkedList<>();
-        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("mail", email).encode(), userAttributeMapper);
-        JSONObject jsonObject;
-        for (User user : people) {
-            jsonObject = new JSONObject();
-            jsonObject.put("userId", user.getUserId());
-            jsonArray.add(jsonObject);
-        }
-        return jsonArray;
+    @Value("${token.valid.email}")
+    private String EMAIL_VALID_TIME;
+
+
+    private final String collection = Variables.col_captchas;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
+
+    @Autowired
+    Token tokenClass;
+
+    @Autowired
+    UserRepo userRepo;
+
+    @Autowired
+    private TemplateEngine templateEngine;
+
+
+    @Autowired
+    MailProperties mailProperties;
+
+
+    public void sendSimpleMessage(User user, String subject, String url) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(user.getMail());
+        message.setSubject(subject);
+        Variables.template(user, url);
+        message.setText(Variables.template(user, url));
+        mailSender.send(message);
     }
 
-    public HttpStatus sendEmail(String email) {
+    public void sendHtmlMessage(User user, String subject, String url) throws javax.mail.MessagingException {
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom(from);
+        helper.setTo(user.getMail());
+        helper.setSubject(subject);
+        String s = Variables.template(user,url);
+        helper.setText(Variables.template(user, url),true);
+
+        mailSender.send(message);
+    }
+
+
+
+    public HttpStatus sendMail(String email) {
         if (checkMail(email) != null) {
             User user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
@@ -72,8 +109,9 @@ public class Email {
 
 
             Thread thread = new Thread() {
+                @SneakyThrows
                 public void run() {
-                    emailSend.sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
+                    sendHtmlMessage(user, Variables.email_recoverySubject, "\n" + fullUrl);
 
                 }
             };
@@ -85,13 +123,14 @@ public class Email {
             return HttpStatus.FORBIDDEN;
     }
 
-    public HttpStatus sendEmail(JSONObject jsonObject) {
+    @Override
+    public HttpStatus sendMail(JSONObject jsonObject) {
         if (jsonObject.size() == 0) {
             List<User> users = userRepo.retrieveUsersFull();
 
             for (User user : users)
                 if (!user.getUsersExtraInfo().getRole().equals("SUPERADMIN") && user.getMail() != null && user.getMail() != null && user.getMail() != "" && user.getMail() != " ")
-                    sendEmail(user.getMail());
+                    sendMail(user.getMail());
 
         } else {
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
@@ -101,7 +140,7 @@ public class Email {
                 {
                     Thread thread = new Thread() {
                         public void run() {
-                            sendEmail(user.getMail());
+                            sendMail(user.getMail());
 
                         }
                     };
@@ -115,7 +154,8 @@ public class Email {
         return HttpStatus.OK;
     }
 
-    public int sendEmail(String email, String cid, String answer) {
+    @Override
+    public int sendMail(String email, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -133,20 +173,36 @@ public class Email {
 
             String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
-            Thread thread = new Thread() {
-                public void run() {
-                    emailSend.sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
+            try {
+                sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
 
-                }
-            };
-            thread.start();
+            }catch (Exception e){
+                return 0;
+            }
+
             mongoTemplate.remove(query, collection);
             return Integer.valueOf(EMAIL_VALID_TIME);
         } else
             return 0;
     }
 
-    public int sendEmail(String email, String uid, String cid, String answer) {
+    @Override
+    public void sendMail(User user, String day) throws MessagingException {
+
+        String subject = "اخطار انقضای رمز عبور پارسو";
+        String start = " عزیز \n" +
+                "رمز عبور شما کمتر از ";
+        String middle = " روز دیگر منقضی می شود.\n";
+        String end = "\n\nبرای جلوگیری از غیرفعال شدن حساب کاربری، هرچه زودتر به تغییر رمز عبور خود از طریق پارسو اقدام فرمایید.";
+
+        String text = user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')) + start + day + middle + end;
+
+        sendHtmlMessage(user,subject,text);
+
+    }
+
+    @Override
+    public int sendMail(String email, String uid, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -169,17 +225,13 @@ public class Email {
 
                     tokenClass.insertEmailToken(user);
 
-                    String fullUrl = userRepoImp.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
-                    Thread thread = new Thread() {
-                        public void run() {
-                            emailSend.sendMail(email, user.getUserId(), user.getDisplayName(), "\n" + fullUrl);
-                        }
-                    };
+                    String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
+                    try {
+                        sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
+                    } catch (Exception e){ return 0;}
 
-                    thread.start();
                     mongoTemplate.remove(query, collection);
                     return Integer.valueOf(EMAIL_VALID_TIME);
-
 
                 }
             }
@@ -190,14 +242,18 @@ public class Email {
         return 0;
     }
 
-
-    public void sendWarnExpireMessage(User user, String day) {
-
-        try {
-            emailSend.sendMail(user, day);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public List<JSONObject> checkMail(String email) {
+        SearchControls searchControls = new SearchControls();
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+        List<JSONObject> jsonArray = new LinkedList<>();
+        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("mail", email).encode(), userAttributeMapper);
+        JSONObject jsonObject;
+        for (User user : people) {
+            jsonObject = new JSONObject();
+            jsonObject.put("userId", user.getUserId());
+            jsonArray.add(jsonObject);
         }
-
+        return jsonArray;
     }
+
 }

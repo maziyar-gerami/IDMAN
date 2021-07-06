@@ -225,10 +225,12 @@ document.addEventListener('DOMContentLoaded', function () {
                             document.getElementById("editButton").style = "display: none;";
                             vm.U17 = "اطلاعات کاربری";
                         }
-                        if(res.data.skyRoom.enable){
-                            vm.showMeeting = true;
-                            vm.meetingAdminLink = res.data.skyRoom.presenter;
-                            vm.meetingGuestLink = res.data.skyRoom.students;
+                        if(typeof res.data.skyRoom !== "undefined"){
+                            if(res.data.skyRoom.enable){
+                                vm.showMeeting = true;
+                                vm.meetingAdminLink = res.data.skyRoom.presenter;
+                                vm.meetingGuestLink = res.data.skyRoom.students;
+                            }
                         }
                     });
             },

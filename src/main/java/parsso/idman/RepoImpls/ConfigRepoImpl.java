@@ -13,7 +13,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.Communicate.Email;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Helpers.Variables;
@@ -46,8 +45,6 @@ public class ConfigRepoImpl implements ConfigRepo {
     MongoTemplate mongoTemplate;
     @Autowired
     InstantMessage instantMessage;
-    @Autowired
-    Email email;
     @Autowired
     UserRepo userRepo;
     String model = "Config";

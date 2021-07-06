@@ -2,6 +2,7 @@ package parsso.idman.Mobile.controller;
 
 
 import com.google.zxing.WriterException;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
 import parsso.idman.Models.Logs.ListEvents;
 import parsso.idman.Models.Services.Service;
+import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
@@ -72,40 +74,31 @@ public class MobileController {
 
     @PostMapping("/api/mobile/active")
     public @ResponseBody
-    ResponseEntity<String> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) {
+    ResponseEntity<JSONObject> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) {
         User user = userRepo.retrieveUsers(uid);
+
+        JSONObject jsonObject = new JSONObject();
 
         if (QrToken.equals(user.getUsersExtraInfo().getQrToken()))
             if (servicesRepo.verifySMS(uid, smsCode).equals(HttpStatus.OK)) {
-                return new ResponseEntity<>(user.getUsersExtraInfo().getMobileToken(), HttpStatus.OK);
+                jsonObject.put("mobileToken", user.getUsersExtraInfo().getMobileToken());
+                jsonObject.put("UUID", userRepo.activeMobile(user));
+                return new ResponseEntity<>(jsonObject, HttpStatus.OK);
             }
-        return new ResponseEntity<>("BAD", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
     }
-
 
     //after activation
 
     @PostMapping("/api/mobile/services")
     public @ResponseBody
-    ResponseEntity<List<Service>> M_listServices(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
+    ResponseEntity<List<MicroService>> M_listServices(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
         User user = userRepo.retrieveUsers(uid);
         if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
-            return new ResponseEntity<>(serviceRepo.listServicesFull(), HttpStatus.OK);
+            return new ResponseEntity<>(serviceRepo.listUserServices(user), HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
     }
-/*
-    @PostMapping("/api/mobile/events")
-    public @ResponseBody
-    ResponseEntity<List<Event>> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, ParseException, org.json.simple.parser.ParseException {
-        User user = userRepo.retrieveUser(uid);
-        if (MobileToken.equals(user.getTokens().getMobileToken()))
-            return new ResponseEntity<>(eventRepo.getMainListEvents(), HttpStatus.OK);
-        else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-    }
-
- */
 
     @PostMapping("/api/mobile/events/{page}/{n}")
     public @ResponseBody

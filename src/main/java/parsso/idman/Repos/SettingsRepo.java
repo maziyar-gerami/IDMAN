@@ -15,4 +15,5 @@ public interface SettingsRepo {
     HttpStatus messageNotification();
 
     List<Setting> retrieveTFSetting() throws IOException;
+
 }
