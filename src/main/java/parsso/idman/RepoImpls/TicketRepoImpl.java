@@ -18,15 +18,12 @@ import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Message;
 import parsso.idman.Models.Tickets.Ticket;
 import parsso.idman.Models.Time;
-import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.TicketRepo;
 import parsso.idman.Repos.UserRepo;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class TicketRepoImpl implements TicketRepo {
@@ -262,9 +259,9 @@ public class TicketRepoImpl implements TicketRepo {
 
         int limit = Integer.valueOf(count);
 
-        Query query = new Query(Criteria.where("from").is(userId)).with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
+        Query query = new Query(Criteria.where("from").is(userId).and("deleteFor").ne(userId))
+        .with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
-        query.addCriteria(Criteria.where("deleteFor").ne(userId));
 
 
         if (!date.equals("")) {
