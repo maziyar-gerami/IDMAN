@@ -205,6 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
         returnText: "بازگشت",
         inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
         inputPersianFilterText: " (تنها حروف فارسی و اعداد مجاز می باشند)",
+        dynamicOTPPassword: "رمز پویا (یکبار مصرف)",
       },
       created: function () {
         this.setDateNav();
@@ -1460,6 +1461,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.inviteToMeetingText = "Invite To Meeting";
             this.copyText = "Copy";
             this.returnText = "Return";
+            this.dynamicOTPPassword = "Dynamic Password (OTP)";
           }else {
               window.localStorage.setItem("lang", "FA");
               this.margin = "margin-right: 30px;";
@@ -1574,6 +1576,7 @@ document.addEventListener('DOMContentLoaded', function () {
               this.inviteToMeetingText = "دعوت به جلسه";
               this.copyText = "کپی";
               this.returnText = "بازگشت";
+              this.dynamicOTPPassword = "رمز پویا (یکبار مصرف)";
           }
         },
         div: function (a, b) {
