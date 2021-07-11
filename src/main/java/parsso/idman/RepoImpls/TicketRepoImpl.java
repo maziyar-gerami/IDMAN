@@ -113,7 +113,7 @@ public class TicketRepoImpl implements TicketRepo {
         else if (ticket.getStatus() > st ) {
             messages.add(new Message(userRepo.retrieveUsers(userid), "REOPEN", true));
             messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
-        } else 
+        } else
             messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
 
 
