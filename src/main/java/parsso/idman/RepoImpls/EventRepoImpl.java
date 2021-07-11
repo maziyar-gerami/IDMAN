@@ -63,8 +63,8 @@ public class EventRepoImpl implements EventRepo {
 
 
         String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
-        String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
+        String timeStart = time + "T00:00:00.000Z";
+        String timeEnd = time + "T23:59:59.000Z";
 
         long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
         long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
@@ -89,8 +89,8 @@ public class EventRepoImpl implements EventRepo {
     public ListEvents getListUserEventByDate(String date, String userId, int skip, int limit) {
 
         String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00.000" + zoneId.toString().substring(3);
-        String timeEnd = time + "T23:59:59.000" + zoneId.toString().substring(3);
+        String timeStart = time + "T00:00:00.000Z";
+        String timeEnd = time + "T23:59:59.000Z";
 
         long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
         long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;

@@ -70,8 +70,8 @@ public class ReportRepoImpl implements ReportRepo {
 
 
         String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
-        String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
+        String timeStart = time + "T00:00:00.000Z";
+        String timeEnd = time + "T23:59:59.000Z";
 
         long logStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
         long logEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
@@ -97,8 +97,8 @@ public class ReportRepoImpl implements ReportRepo {
     public ListReports getListUserLogByDate(String date, String userId, int skip, int limit) {
 
         String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
-        String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
+        String timeStart = time + "T00:00:00.000Z";
+        String timeEnd = time + "T23:59:59.000Z";
 
         long logStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
         long logEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;

@@ -13,7 +13,8 @@ import parsso.idman.Models.Time;
 import parsso.idman.Repos.AuditRepo;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -23,6 +24,9 @@ public class AuditRepoImpl implements AuditRepo {
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+
 
     @Override
     public ListAudits getListSizeAudits(int p, int n) {
@@ -48,11 +52,17 @@ public class AuditRepoImpl implements AuditRepo {
 
 
         String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00";
-        String timeEnd = time + "T23:59:59";
-        Query query = new Query(Criteria.where("principal").is(userId).and("whenActionWasPerformed")
-                .gte(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(timeStart))
-                .lte(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(timeEnd)));
+        String timeStart = time + "T00:00:00.000Z";
+        String timeEnd = time + "T23:59:59.000Z";
+
+        long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+        long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+
+
+        Query query = new Query(Criteria.where("principal").is(userId));
+        query.addCriteria(new Criteria("whenActionWasPerformed")
+                .gte(eventStartDate)
+                .lte(eventEndDate));
         long size = mongoTemplate.count(query, Audit.class, mainCollection);
         query.skip((skip - 1) * (limit)).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
         List<Audit> auditList = mongoTemplate.find(query, Audit.class, mainCollection);
@@ -65,14 +75,20 @@ public class AuditRepoImpl implements AuditRepo {
 
 
         String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00";
-        String timeEnd = time + "T23:59:59";
+        String timeStart = time + "T00:00:000Z";
+        String timeEnd = time + "T23:59:000Z";
+
+        long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+        long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+
 
         Query query = new Query(Criteria.where("whenActionWasPerformed")
-                .gte(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(timeStart))
-                .lte(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(timeEnd)));
-        long size = mongoTemplate.count(query, Audit.class, mainCollection);
+                .gte(eventStartDate)
+                .lte(eventEndDate));
+
         query.skip((p - 1) * n).limit(n);
+        long size = mongoTemplate.count(query, Audit.class, mainCollection);
+
 
         List<Audit> allAudit = mongoTemplate.find(query, Audit.class, mainCollection);
         return new ListAudits(allAudit, size, (int) Math.ceil((double)size / (double)n));
