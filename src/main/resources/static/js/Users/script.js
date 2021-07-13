@@ -237,6 +237,12 @@ document.addEventListener('DOMContentLoaded', function () {
             inviteToMeetingText: "دعوت به جلسه",
             copyText: "کپی",
             returnText: "بازگشت",
+            expirePasswordConfirmationText: "رمزعبور کاربران انتخاب شده منقضی شد.",
+            expireAllPasswordsConfirmationText: "رمزعبور تمامی کاربران منقضی شد.",
+            expirePasswordConfirmation: false,
+            expireAllPasswordsConfirmation: false,
+            expirePasswordText: "انقضای رمزعبور",
+            expireAllPasswordsText: "انقضای رمزعبور همه",
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه کاربری",
@@ -620,9 +626,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (check == true) {
                             this.loader = true;
                             axios({
-                                method: 'delete',
+                                method: "delete",
                                 url: url + "/api/users", //
-                                headers: {'Content-Type': 'application/json'},
+                                headers: {"Content-Type": "application/json"},
                                 data: JSON.stringify({
                                     names: selectedUsers
                                 }).replace(/\\\\/g, "\\")
@@ -655,9 +661,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     if(selectedUsers.length != 0){
                         this.loader = true;
                         axios({
-                            method: 'post',
+                            method: "post",
                             url: url + "/api/users/sendMail", //
-                            headers: {'Content-Type': 'application/json'},
+                            headers: {"Content-Type": "application/json"},
                             data: JSON.stringify({
                                 names: selectedUsers
                             }).replace(/\\\\/g, "\\")
@@ -671,6 +677,53 @@ document.addEventListener('DOMContentLoaded', function () {
                     }else{
                         alert(this.s56);
                     }
+                }else if(action == "expirePassword"){
+                    selectedUsers = [];
+                    for(let i = 0; i < vm.users.length; ++i){
+                        if(document.getElementById("checkbox-" + vm.users[i].userId).checked){
+                            selectedUsers.push(vm.users[i].userId.toString());
+                        }
+                    }
+                    if(selectedUsers.length != 0){
+                        this.loader = true;
+                        axios({
+                            method: "put",
+                            url: url + "/api/users/password/expire", //
+                            headers: {"Content-Type": "application/json"},
+                            data: JSON.stringify({
+                                names: selectedUsers
+                            }).replace(/\\\\/g, "\\")
+                        }).then((res) => {
+                            vm.loader = false;
+                            vm.expirePasswordConfirmation = true;
+                            setTimeout(function(){ vm.expirePasswordConfirmation = false; }, 3000);
+                        }).catch((error) => {
+                            vm.loader = false;
+                        });
+                    }else{
+                        alert(this.s56);
+                    }
+                }
+            },
+            expirePassword: function (){
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
+                let check = confirm(this.s26);
+                if (check == true) {
+                    this.loader = true;
+                    axios({
+                        method: "put",
+                        url: url + "/api/users/password/expire", //
+                        headers: {"Content-Type": "application/json"}
+                    }).then((res) => {
+                        vm.loader = false;
+                        vm.expireAllPasswordsConfirmation = true;
+                        setTimeout(function () {
+                            vm.expireAllPasswordsConfirmation = false;
+                        }, 3000);
+                    }).catch((error) => {
+                        vm.loader = false;
+                    });
                 }
             },
             deleteFilter: function () {
@@ -1486,6 +1539,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.inviteToMeetingText = "Invite To Meeting";
                     this.copyText = "Copy";
                     this.returnText = "Return";
+                    this.expirePasswordConfirmationText = "Selected Users Passwords Were Expired.";
+                    this.expireAllPasswordsConfirmationText = "All Users Passwords Were Expired.";
+                    this.expirePasswordText = "Expire Password";
+                    this.expireAllPasswordsText = "Expire All Passwords";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -1623,6 +1680,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.inviteToMeetingText = "دعوت به جلسه";
                     this.copyText = "کپی";
                     this.returnText = "بازگشت";
+                    this.expirePasswordConfirmationText = "رمزعبور کاربران انتخاب شده منقضی شد.";
+                    this.expireAllPasswordsConfirmationText = "رمزعبور تمامی کاربران منقضی شد.";
+                    this.expirePasswordText = "انقضای رمزعبور";
+                    this.expireAllPasswordsText = "انقضای رمزعبور همه";
                     this.U0 = "رمز";
                     this.U1 = "کاربران";
                     this.U2 = "شناسه کاربری";

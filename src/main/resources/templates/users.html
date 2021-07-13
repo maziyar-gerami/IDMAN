@@ -323,7 +323,18 @@
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-6" :style="col2Style"></div>
+                                                            <div class="col-6" :style="col2Style">
+                                                                <div class="col-6 pl-1 pr-1">
+                                                                    <button class="w-100 btn btn-primary" v-on:click="changeSelected('expirePassword')">
+                                                                        {{expirePasswordText}}
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col-6 pl-1 pr-1">
+                                                                    <button class="w-100 btn btn-primary" v-on:click="expirePassword()">
+                                                                        {{expireAllPasswordsText}}
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                             </div>
                                             <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
                                                             <div class="col-3 pl-1 pr-1">
@@ -392,6 +403,16 @@
                                                                         {{s59}}
                                                                     </button>
                                                                 </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                    <button class="w-100 btn btn-primary" v-on:click="changeSelected('expirePassword')">
+                                                        {{expirePasswordText}}
+                                                    </button>
+                                                </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                    <button class="w-100 btn btn-primary" v-on:click="expirePassword()">
+                                                        {{expireAllPasswordsText}}
+                                                    </button>
+                                                </div>
                                             </div>
                                             <div class="mobileView">
                                                                 <div class="row mb-1 mt-1 pl-1 pr-1">
@@ -448,6 +469,12 @@
                                             </div>
                                             <div v-bind:style="resetPassEmailSent ? 'visibility: visible;' : 'visibility: hidden;' ">
                                                 <p class="rounded" style="background-color:rgba(144, 238, 144, 0.521); padding: 1%;">{{s52}}</p>
+                                            </div>
+                                            <div v-if="expirePasswordConfirmation">
+                                                <p class="rounded" style="background-color:rgba(144, 238, 144, 0.521); padding: 1%;">{{expirePasswordConfirmationText}}</p>
+                                            </div>
+                                            <div v-if="expireAllPasswordsConfirmation">
+                                                <p class="rounded" style="background-color:rgba(144, 238, 144, 0.521); padding: 1%;">{{expireAllPasswordsConfirmationText}}</p>
                                             </div>
                                             <div class="p-2" style="direction: rtl;">
                                                 <v-pagination v-model="paginationCurrentPage" :page-count="total" :classes="bootstrapPaginationClasses"

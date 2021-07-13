@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s31: "./events",
             s32: "حذف گروه",
             s33: "اعمال",
-            s34: "آیا از حذف گروه های انتخاب شده اطمینان دارید؟",
+            s34: "آیا از اعمال این تغییرات اطمینان دارید؟",
             s35: "هیچ گروهی انتخاب نشده است.",
             s36: "تعداد رکورد ها: ",
             s37: "ممیزی ها",
@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
             inviteToMeetingText: "دعوت به جلسه",
             copyText: "کپی",
             returnText: "بازگشت",
+            expirePasswordText: "انقضای رمزعبور",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام انگلیسی",
@@ -482,6 +483,28 @@ document.addEventListener('DOMContentLoaded', function () {
                     }else{
                         alert(this.s35);
                     }
+                }else if(action == "expirePassword"){
+                    selectedGroups = [];
+                    for(let i = 0; i < vm.groups.length; ++i){
+                        if(document.getElementById("checkbox-" + vm.groups[i].id).checked){
+                            selectedGroups.push(vm.groups[i].id.toString());
+                        }
+                    }
+                    if(selectedGroups.length != 0){
+                        var check = confirm(this.s34);
+                        if (check == true) {
+                            for(let i = 0; i < selectedGroups.length; ++i){
+                                axios({
+                                    method: "put",
+                                    url: url + "/api/groups/password/expire/" + selectedGroups[i], //
+                                    headers: {"Content-Type": "application/json"}
+                                }).then((res) => {
+                                });
+                            }
+                        }
+                    }else{
+                        alert(this.s35);
+                    }
                 }
             },
             rowSelected:function(id) {
@@ -801,6 +824,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.inviteToMeetingText = "Invite To Meeting";
                     this.copyText = "Copy";
                     this.returnText = "Return";
+                    this.expirePasswordText = "Expire Password";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
@@ -886,6 +910,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.inviteToMeetingText = "دعوت به جلسه";
                     this.copyText = "کپی";
                     this.returnText = "بازگشت";
+                    this.expirePasswordText = "انقضای رمزعبور";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";
