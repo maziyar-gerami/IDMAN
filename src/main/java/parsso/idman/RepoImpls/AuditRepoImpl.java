@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Logs.ListAudits;
 import parsso.idman.Models.Time;
@@ -25,7 +26,7 @@ public class AuditRepoImpl implements AuditRepo {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
 
     @Override
@@ -49,7 +50,6 @@ public class AuditRepoImpl implements AuditRepo {
 
     @Override
     public ListAudits getListUserAuditByDate(String date, String userId, int skip, int limit) throws ParseException {
-
 
         String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
         String timeStart = time + "T00:00:00.000Z";

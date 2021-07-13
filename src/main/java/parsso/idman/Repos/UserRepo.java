@@ -40,6 +40,8 @@ public interface UserRepo {
 
     HttpStatus update(String doer, String uid, User p);
 
+    List<User> getUsersOfOu(String ou);
+
     HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou);
 
     User retrieveUsers(String userId);
@@ -82,5 +84,5 @@ public interface UserRepo {
 
     String activeMobile(User user);
 
-
+    HttpStatus expirePassword(String name, JSONObject jsonObject);
 }

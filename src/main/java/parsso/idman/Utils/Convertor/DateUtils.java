@@ -1,6 +1,8 @@
 package parsso.idman.Utils.Convertor;
 
 
+import parsso.idman.Helpers.Variables;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -14,7 +16,7 @@ public class DateUtils {
      * The maximum date possible.
      */
     public static Date MAX_DATE = new Date(Long.MAX_VALUE);
-    static ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    static ZoneId zoneId = ZoneId.of(Variables.ZONE);
     OffsetDateTime offsetDateTime = OffsetDateTime.now();
     ZonedDateTime zonedDateTime = offsetDateTime.atZoneSameInstant(zoneId);
 

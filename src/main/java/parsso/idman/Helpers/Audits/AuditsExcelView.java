@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Time;
 import parsso.idman.Repos.AuditRepo;
@@ -29,7 +30,7 @@ public class AuditsExcelView extends AbstractXlsView {
     public static String mainCollection = "MongoDbCasAuditRepository";
     @Autowired
     AuditRepo auditRepo;
-    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.time.ZoneId;
@@ -19,7 +20,7 @@ import java.util.Map;
 public class AccessStrategy {
 
     @JsonIgnore
-    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @JsonProperty("@class")
     private String atClass;
     @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -39,6 +39,7 @@ import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.SkyRoom;
+import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
@@ -52,6 +53,7 @@ import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -91,6 +93,9 @@ public class UserRepoImpl implements UserRepo {
     private String uploadedFilesPath;
     @Value("${qr.devices.path}")
     private String qrDevicesPath;
+
+    public ZoneId zoneId = ZoneId.of(Variables.ZONE);
+
 
     @Autowired
     private BuildAttributes buildAttributes;
@@ -593,23 +598,32 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) {
-        Logger logger = LogManager.getLogger(doerID);
-
+    public List<User> getUsersOfOu(String ou){
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("objectclass", "person"));
-        andFilter.and(new EqualsFilter("ou", old_ou));
+        andFilter.and(new EqualsFilter("ou", ou));
 
-        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, andFilter.toString(), searchControls,
+        List<User> users = ldapTemplate.search("ou=People," + BASE_DN, andFilter.toString(), searchControls,
                 userAttributeMapper);
+
+        for (User user:users)
+            user.setUsersExtraInfo(mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class,Variables.col_usersExtraInfo));
+
+
+        return users;
+    }
+
+    @Override
+    public HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) {
+        Logger logger = LogManager.getLogger(doerID);
 
         try {
 
-            for (User user : people) {
+            for (User user : getUsersOfOu(old_ou)) {
 
                 DirContextOperations context = buildAttributes.buildAttributes(doerID, user.getUserId(), user, buildDnUser.buildDn(user.getUserId()));
 
@@ -782,6 +796,8 @@ public class UserRepoImpl implements UserRepo {
         User user = retrieveUsers(uid);
 
         if (user.isEnabled()) {
+
+
             modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime", "40400404040404.950Z"));
 
             try {
@@ -790,7 +806,6 @@ public class UserRepoImpl implements UserRepo {
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                e.printStackTrace();
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "disable", "failed", "writing to ldap").toString());
                 return HttpStatus.BAD_REQUEST;
             }
@@ -822,11 +837,8 @@ public class UserRepoImpl implements UserRepo {
                 try {
                     modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
                     ldapTemplate.modifyAttributes(dn, modificationItems);
+                } catch (Exception e) {}
 
-
-                } catch (Exception e) {
-
-                }
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "unlock", "success", "").toString());
                 return HttpStatus.OK;
 
@@ -949,6 +961,10 @@ public class UserRepoImpl implements UserRepo {
         User user = retrieveUsers(userId);
 
         user = setRole(user);
+
+        try {
+            unlock("SYSTEM", userId);
+        }catch (Exception e){}
 
         HttpStatus httpStatus;
         if (token.equals("ParssoIdman"))
@@ -1075,6 +1091,57 @@ public class UserRepoImpl implements UserRepo {
 
         return null;
     }
+
+    @Override
+    public HttpStatus expirePassword(String doer, JSONObject jsonObject) {
+
+        Logger logger = LogManager.getLogger(doer);
+        Name dn;
+        List<UsersExtraInfo> users = new LinkedList<>();
+
+        if (((List) jsonObject.get("names")).size() == 0) {
+            users.addAll(mongoTemplate.find(new Query(),UsersExtraInfo.class,Variables.col_usersExtraInfo));
+
+
+        } else {
+            ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+            for (Object temp : jsonArray)
+                users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())),UsersExtraInfo.class,Variables.col_usersExtraInfo));
+        }
+        for (UsersExtraInfo extraInfo : users) {
+            if (!extraInfo.getRole().equals("SUPERADMIN")) {
+                dn = buildDnUser.buildDn(extraInfo.getUserId());
+
+                ModificationItem[] modificationItems;
+                modificationItems = new ModificationItem[1];
+
+                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime", Time.getCurrentTimeStampOffset()));
+
+                try {
+                    ldapTemplate.modifyAttributes(dn, modificationItems);
+                    logger.warn(new ReportMessage(model, extraInfo.getUserId(), "expire password", "add", "success", "").toString());
+
+
+                } catch (Exception e) {
+                    try {
+                        modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime", Time.getCurrentTimeStampOffset()));
+                        ldapTemplate.modifyAttributes(dn, modificationItems);
+                        logger.warn(new ReportMessage(model, extraInfo.getUserId(),  "expire password", "replace", "success", "").toString());
+                    } catch (Exception e1) {
+                        logger.warn(new ReportMessage(model, extraInfo.getUserId(),  "expire password", "Add", "failed", "writing to ldap").toString());
+                    }
+                }
+            }else {
+                logger.warn(new ReportMessage(model, extraInfo.getUserId(),  "expire password", "Add", "failed", "Superusers cant be expired").toString());
+
+            }
+
+        }
+
+        return HttpStatus.OK;
+    }
+
+
 
 }
 

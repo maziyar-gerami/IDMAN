@@ -3,6 +3,7 @@ package parsso.idman.Utils.Convertor;
 
 import lombok.Getter;
 import lombok.Setter;
+import parsso.idman.Helpers.Variables;
 
 import java.time.ZoneId;
 
@@ -11,7 +12,7 @@ import java.time.ZoneId;
 
 public class DateConverter {
 
-    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
     private int day, month, year;
     private int jYear, jMonth, jDay;
     private int gYear, gMonth, gDay;

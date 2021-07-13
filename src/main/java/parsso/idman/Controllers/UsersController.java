@@ -15,6 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.User.UsersExcelView;
+import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
@@ -116,6 +117,15 @@ public class UsersController {
         if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
 
         return new ResponseEntity<>(userRepo.changePassword(principal.getName(), oldPassword, newPassword, token));
+
+    }
+
+    @PutMapping("/api/users/password/expire")
+    public ResponseEntity<HttpStatus> expirePassword(HttpServletRequest request,
+                                                     @RequestBody JSONObject jsonObject) {
+        Principal principal = request.getUserPrincipal();
+
+        return new ResponseEntity<>(userRepo.expirePassword(principal.getName(), jsonObject));
 
     }
 
@@ -503,5 +513,9 @@ public class UsersController {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> resetPassMessage1() {
+        return new ResponseEntity<>(Time.epochToDate(1), HttpStatus.OK);
+    }
 
 }

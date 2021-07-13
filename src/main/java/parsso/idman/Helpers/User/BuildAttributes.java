@@ -15,6 +15,9 @@ import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
 import javax.naming.directory.*;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 @Service
 public class BuildAttributes {
@@ -29,6 +32,8 @@ public class BuildAttributes {
     private UserRepo userRepo;
     @Autowired
     private LdapTemplate ldapTemplate;
+
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
     public Attributes BuildAttributes(User p) {
 
@@ -70,7 +75,12 @@ public class BuildAttributes {
             attrs.put("pwdAccountLockedTime", p.isEnabled());
 
         if (p.getEndTime() != null) {
-            attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
+
+            Instant instant = Instant.now(); //can be LocalDateTime
+            ZoneId systemZone = zoneId; // my timezone
+            ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
+
+            attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime() + 'Z'));
         }
 
         attrs.put("pwdAttribute", "userPassword");
@@ -181,13 +191,15 @@ public class BuildAttributes {
                 }
         }
 
+        Instant instant = Instant.now(); //can be LocalDateTime
+        ZoneId systemZone = zoneId; // my timezone
+        ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
+
 
         //EndTime
         if (p.getEndTime() != null && p.getEndTime() != "") {
-            if (p.getEndTime().charAt(p.getEndTime().length() - 1) == 'Z')
-                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()));
-            else
-                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
+                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) +
+                        'Z');
 
         } else
             context.removeAttributeValue("pwdEndTime", old.getEndTime());

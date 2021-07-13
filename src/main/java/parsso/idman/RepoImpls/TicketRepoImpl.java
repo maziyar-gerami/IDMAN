@@ -39,7 +39,7 @@ public class TicketRepoImpl implements TicketRepo {
     @Autowired
     UserRepo userRepo;
 
-    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
 
     @Override

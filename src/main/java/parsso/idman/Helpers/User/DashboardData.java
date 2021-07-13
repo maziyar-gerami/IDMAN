@@ -46,7 +46,7 @@ public class DashboardData {
     @Autowired
     LdapTemplate ldapTemplate;
 
-    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
     Users fUsers;
     Services fServices;

@@ -26,7 +26,7 @@ public class LogsExcelView extends AbstractXlsView {
     public static String mainCollection = Variables.col_log;
     @Autowired
     ReportRepo reportRepo;
-    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
 
     @Override
