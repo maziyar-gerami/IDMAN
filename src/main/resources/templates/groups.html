@@ -211,7 +211,12 @@
                                                                     {{U17}}
                                                                 </button>
                                                         </div>
-                                                        <div class="col-8"></div>
+                                                        <div class="col-3 pl-1 pr-1">
+                                                            <button class="w-100 btn btn-primary" v-on:click="changeSelected('expirePassword')">
+                                                                {{expirePasswordText}}
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-5"></div>
                                                     </div>
                 
                                                     <div class="mobileView">
@@ -230,6 +235,11 @@
                                                                     </span>
                                                                     {{U17}}
                                                                 </button>
+                                                        </div>
+                                                        <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                            <button class="w-100 btn btn-primary btn-sm" v-on:click="changeSelected('expirePassword')">
+                                                                {{expirePasswordText}}
+                                                            </button>
                                                         </div>
                                                     </div>
 

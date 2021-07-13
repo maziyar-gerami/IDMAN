@@ -80,7 +80,7 @@ public class BuildAttributes {
             ZoneId systemZone = zoneId; // my timezone
             ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
 
-            attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime() + 'Z'));
+            attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime() )+ 'Z');
         }
 
         attrs.put("pwdAttribute", "userPassword");

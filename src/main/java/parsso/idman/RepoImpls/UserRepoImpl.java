@@ -1119,6 +1119,11 @@ public class UserRepoImpl implements UserRepo {
 
                 try {
                     ldapTemplate.modifyAttributes(dn, modificationItems);
+                    ldapTemplate.modifyAttributes(dn, modificationItems);
+                    mongoTemplate.remove(new Query(Criteria.where("userId").is(extraInfo.getUserId())),Variables.col_usersExtraInfo);
+                    extraInfo.setStatus("lock");
+                    mongoTemplate.save(extraInfo,Variables.col_usersExtraInfo);
+
                     logger.warn(new ReportMessage(model, extraInfo.getUserId(), "expire password", "add", "success", "").toString());
 
 
@@ -1126,6 +1131,9 @@ public class UserRepoImpl implements UserRepo {
                     try {
                         modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime", Time.getCurrentTimeStampOffset()));
                         ldapTemplate.modifyAttributes(dn, modificationItems);
+                        mongoTemplate.remove(new Query(Criteria.where("userId").is(extraInfo.getUserId())),Variables.col_usersExtraInfo);
+                        extraInfo.setStatus("lock");
+                        mongoTemplate.save(extraInfo,Variables.col_usersExtraInfo);
                         logger.warn(new ReportMessage(model, extraInfo.getUserId(),  "expire password", "replace", "success", "").toString());
                     } catch (Exception e1) {
                         logger.warn(new ReportMessage(model, extraInfo.getUserId(),  "expire password", "Add", "failed", "writing to ldap").toString());

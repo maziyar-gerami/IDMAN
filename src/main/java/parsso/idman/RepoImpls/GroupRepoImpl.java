@@ -157,6 +157,9 @@ public class GroupRepoImpl implements GroupRepo {
 
                 try {
                     ldapTemplate.modifyAttributes(dn, modificationItems);
+                    mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())),Variables.col_usersExtraInfo);
+                    user.setStatus("lock");
+                    mongoTemplate.save(user,Variables.col_usersExtraInfo);
                     logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "add", "success", "").toString());
 
 
@@ -164,6 +167,9 @@ public class GroupRepoImpl implements GroupRepo {
                     try {
                         modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime", Time.getCurrentTimeStampOffset()));
                         ldapTemplate.modifyAttributes(dn, modificationItems);
+                        mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())),Variables.col_usersExtraInfo);
+                        user.setStatus("lock");
+                        mongoTemplate.save(user,Variables.col_usersExtraInfo);
                         logger.warn(new ReportMessage("User", user.getUserId(),  "expire password", "replace", "success", "").toString());
                     } catch (Exception e1) {
                         logger.warn(new ReportMessage("User", user.getUserId(),  "expire password", "Add", "failed", "writing to ldap").toString());
