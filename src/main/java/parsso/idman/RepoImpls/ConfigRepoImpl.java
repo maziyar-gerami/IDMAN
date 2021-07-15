@@ -311,6 +311,7 @@ public class ConfigRepoImpl implements ConfigRepo {
         String[] files = folder.list();
         List<Config> configs = new LinkedList<>();
         Config config = null;
+        if(files != null )
         for (String file : files) {
             if (file.endsWith(".properties"))
                 config = new Config();
