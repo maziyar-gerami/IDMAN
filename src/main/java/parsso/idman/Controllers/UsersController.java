@@ -14,12 +14,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.Communicate.Token;
+import parsso.idman.Helpers.User.ImportUsers;
+import parsso.idman.Helpers.User.Operations;
 import parsso.idman.Helpers.User.UsersExcelView;
-import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.RepoImpls.SystemRefreshRepoImpl;
+import parsso.idman.Repos.EmailService;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,16 +40,14 @@ public class UsersController {
 
     // default sequence of variables which can be changed using frontend
     private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-    @Autowired
-    Token tokenClass;
-    @Autowired
-    UsersExcelView excelView;
-    @Autowired
-    SystemRefreshRepoImpl systemRefreshRepoImpl;
-    @Autowired
-    private InstantMessage instantMessage;
-    @Autowired
-    private UserRepo userRepo;
+    @Autowired Token tokenClass;
+    @Autowired UsersExcelView excelView;
+    @Autowired SystemRefreshRepoImpl systemRefreshRepoImpl;
+    @Autowired private InstantMessage instantMessage;
+    @Autowired private UserRepo userRepo;
+    @Autowired ImportUsers importUsers;
+    @Autowired Operations operations;
+    @Autowired EmailService emailService;
 
 
     //*************************************** APIs ***************************************
@@ -262,7 +262,7 @@ public class UsersController {
     @PutMapping("/api/users/enable/u/{id}")
     public ResponseEntity<HttpStatus> enable(HttpServletRequest request, @PathVariable("id") String uid) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.enable(principal.getName(), uid));
+        return new ResponseEntity<>(operations.enable(principal.getName(), uid));
     }
 
     /**
@@ -273,7 +273,7 @@ public class UsersController {
     @PutMapping("/api/users/disable/u/{id}")
     public ResponseEntity<HttpStatus> disable(HttpServletRequest request, @PathVariable("id") String uid) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.disable(principal.getName(), uid));
+        return new ResponseEntity<>(operations.disable(principal.getName(), uid));
     }
 
 
@@ -285,7 +285,7 @@ public class UsersController {
     @PutMapping("/api/users/unlock/u/{id}")
     public ResponseEntity<HttpStatus> lockUnlock(HttpServletRequest request, @PathVariable("id") String uid) {
         Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.unlock(principal.getName(), uid));
+        return new ResponseEntity<>(operations.unlock(principal.getName(), uid));
     }
 
 
@@ -300,7 +300,7 @@ public class UsersController {
     @PostMapping("/api/users/import")
     public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException {
 
-        JSONObject jsonObject = userRepo.importFileUsers(request.getUserPrincipal().getName(), file, defaultSequence, true);
+        JSONObject jsonObject = importUsers.importFileUsers(request.getUserPrincipal().getName(), file, defaultSequence, true);
         if (Integer.valueOf(jsonObject.getAsString("nUnSuccessful")) == 0)
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
@@ -320,7 +320,7 @@ public class UsersController {
      */
     @PostMapping("/api/users/sendMail")
     public ResponseEntity<HttpStatus> sendMultipleMailByAdmin(@RequestBody JSONObject jsonObject) {
-        return new ResponseEntity<>(userRepo.sendEmail(jsonObject), HttpStatus.OK);
+        return new ResponseEntity<>(emailService.sendMail(jsonObject), HttpStatus.OK);
     }
 
 
@@ -453,7 +453,7 @@ public class UsersController {
      */
     @GetMapping("/api/public/checkMail/{email}")
     public HttpEntity<List<JSONObject>> checkMail(@PathVariable("email") String email) {
-        return new ResponseEntity<List<JSONObject>>(userRepo.checkMail(email), HttpStatus.OK);
+        return new ResponseEntity<List<JSONObject>>(emailService.checkMail(email), HttpStatus.OK);
     }
 
     /**
@@ -511,11 +511,6 @@ public class UsersController {
     @GetMapping("/api/public/validateMessageToken/{uId}/{token}")
     public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));
-    }
-
-    @GetMapping("/test")
-    public ResponseEntity<String> resetPassMessage1() {
-        return new ResponseEntity<>(Time.epochToDate(1), HttpStatus.OK);
     }
 
 }

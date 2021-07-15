@@ -28,10 +28,9 @@ public class BuildAttributes {
     BuildDnUser buildDnUser;
     @Value("${default.user.password}")
     private String defaultPassword;
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private LdapTemplate ldapTemplate;
+    @Autowired private UserRepo userRepo;
+    @Autowired private LdapTemplate ldapTemplate;
+    @Autowired private Operations operations;
 
     ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
@@ -151,22 +150,22 @@ public class BuildAttributes {
 
         //cStatus for changing status
         if (p.getCStatus() != null) {
-            if (p.getCStatus().equals("enable")) userRepo.enable(doerID, uid);
-            else if (p.getCStatus().equals("disable")) userRepo.disable(doerID, uid);
-            else if (p.getCStatus().equals("unlock")) userRepo.unlock(doerID, uid);
+            if (p.getCStatus().equals("enable")) operations.enable(doerID, uid);
+            else if (p.getCStatus().equals("disable")) operations.disable(doerID, uid);
+            else if (p.getCStatus().equals("unlock")) operations.unlock(doerID, uid);
         } else {
             if (p.getStatus() != null) {
                 String oldStatus = old.getStatus();
                 String newStatus = p.getStatus();
 
                 if (oldStatus.equals("enable") && newStatus.equals("disable"))
-                    userRepo.disable(doerID, uid);
+                    operations.disable(doerID, uid);
 
                 else if (oldStatus.equals("disable") && newStatus.equals("enable"))
-                    userRepo.enable(doerID, uid);
+                    operations.enable(doerID, uid);
 
                 else if (oldStatus.equals("lock") && newStatus.equals("enable"))
-                    userRepo.unlock(doerID, uid);
+                    operations.unlock(doerID, uid);
 
             }
 

@@ -26,6 +26,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 
     @Override
     public MongoClient mongoClient() {
+
         return MongoClients.create(connectionString);
     }
 

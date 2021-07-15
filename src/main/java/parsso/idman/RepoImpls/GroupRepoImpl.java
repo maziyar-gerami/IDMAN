@@ -22,7 +22,6 @@ import parsso.idman.Helpers.User.BuildDnUser;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.GroupRepo;
@@ -31,11 +30,12 @@ import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
-import javax.naming.directory.*;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.SearchControls;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class GroupRepoImpl implements GroupRepo {
@@ -139,48 +139,18 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
     @Override
-    public HttpStatus expireUsersGroupPassword(String doer, String ou) {
+    public HttpStatus expireUsersGroupPassword(String doer, JSONObject jsonObject) {
 
-        Logger logger = LogManager.getLogger(doer);
-        Name dn;
+        List<UsersExtraInfo> users = new LinkedList<>();
+        for (String groupID: (List<String>) jsonObject.get("names"))
+            users.addAll(mongoTemplate.find(new Query(Criteria.where("memberOf").is(groupID))
+                    , UsersExtraInfo.class,Variables.col_usersExtraInfo));
 
-        List<UsersExtraInfo> users = mongoTemplate.find(new Query(), UsersExtraInfo.class,Variables.col_usersExtraInfo);
+        Set<UsersExtraInfo> set = new HashSet<>(users);
+        users.clear();
+        users.addAll(set);
 
-        for (UsersExtraInfo user : users) {
-            if (!user.getRole().equals("SUPERADMIN")) {
-                dn = buildDnUser.buildDn(user.getUserId());
-
-                ModificationItem[] modificationItems;
-                modificationItems = new ModificationItem[1];
-
-                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime", Time.getCurrentTimeStampOffset()));
-
-                try {
-                    ldapTemplate.modifyAttributes(dn, modificationItems);
-                    mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())),Variables.col_usersExtraInfo);
-                    user.setStatus("lock");
-                    mongoTemplate.save(user,Variables.col_usersExtraInfo);
-                    logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "add", "success", "").toString());
-
-
-                } catch (Exception e) {
-                    try {
-                        modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime", Time.getCurrentTimeStampOffset()));
-                        ldapTemplate.modifyAttributes(dn, modificationItems);
-                        mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())),Variables.col_usersExtraInfo);
-                        user.setStatus("lock");
-                        mongoTemplate.save(user,Variables.col_usersExtraInfo);
-                        logger.warn(new ReportMessage("User", user.getUserId(),  "expire password", "replace", "success", "").toString());
-                    } catch (Exception e1) {
-                        logger.warn(new ReportMessage("User", user.getUserId(),  "expire password", "Add", "failed", "writing to ldap").toString());
-                    }
-                }
-            } else {
-                logger.warn(new ReportMessage("User", user.getUserId(),  "expire password", "Add", "failed", "Cant add to SUPERUSER role").toString());
-
-            }
-        }
-        return HttpStatus.OK;
+        return userRepo.expire(doer,users);
     }
 
 

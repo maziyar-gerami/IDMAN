@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Repos.UserRepo;
 
@@ -25,8 +26,8 @@ import java.io.IOException;
 public class DashboardController {
 
     @Qualifier("userRepoImpl")
-    @Autowired
-    private UserRepo userRepo;
+    @Autowired private UserRepo userRepo;
+    @Autowired private DashboardData dashboardData;
 
     @Value("${cas.url.logout.path}")
     private String casLogout;
@@ -83,7 +84,7 @@ public class DashboardController {
     @GetMapping("/api/dashboard")
     public ResponseEntity<Dashboard> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException, InterruptedException {
 
-        return new ResponseEntity<>(userRepo.retrieveDashboardData(), HttpStatus.OK);
+        return new ResponseEntity<>(dashboardData.retrieveDashboardData(), HttpStatus.OK);
     }
 
 

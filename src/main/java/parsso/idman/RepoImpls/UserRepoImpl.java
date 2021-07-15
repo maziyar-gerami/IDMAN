@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
@@ -12,7 +11,6 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -36,7 +34,6 @@ import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.Group.GroupsChecks;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.SkyRoom;
 import parsso.idman.Models.Time;
@@ -59,64 +56,36 @@ import java.util.*;
 @Service
 public class UserRepoImpl implements UserRepo {
 
-    @Autowired
-    FilesStorageService storageService;
-    String userExtraInfoCollection = Variables.col_usersExtraInfo;
-    @Value("${user.profile.access}")
-    String profileAccessiblity;
-    @Autowired
-    ExcelAnalyzer excelAnalyzer;
+
     String model = "User";
-    @Autowired
-    SkyroomRepo skyroomRepo;
-    @Value("${skyroom.api.key}")
-    String skyRoomApiKey;
-    @Autowired
-    GroupRepo groupRepo;
-    @Autowired
-    SystemRefresh systemRefresh;
-    @Autowired
-    GroupsChecks groupsChecks;
-    @Value("${base.url}")
-    private String BASE_URL;
-    @Value("${spring.ldap.base.dn}")
-    private String BASE_DN;
-    @Value("${get.users.time.interval}")
-    private int apiHours;
-    @Value("${user.profile.access}")
-    private String access;
-    @Autowired
-    private LdapTemplate ldapTemplate;
-    @Value("${default.user.password}")
-    private String defaultPassword;
-    @Value("${profile.photo.path}")
-    private String uploadedFilesPath;
-    @Value("${qr.devices.path}")
-    private String qrDevicesPath;
+    String userExtraInfoCollection = Variables.col_usersExtraInfo;
+    @Value("${user.profile.access}") String profileAccessiblity;
+    @Value("${base.url}") private String BASE_URL;
+    @Value("${spring.ldap.base.dn}") private String BASE_DN;
+    @Value("${get.users.time.interval}") private int apiHours;
+    @Value("${user.profile.access}") private String access;
+    @Value("${default.user.password}") private String defaultPassword;
+    @Value("${profile.photo.path}")private String uploadedFilesPath;
+    @Value("${skyroom.api.key}") String skyRoomApiKey;
+    @Autowired ExcelAnalyzer excelAnalyzer;
+    @Autowired SkyroomRepo skyroomRepo;
+    @Autowired GroupRepo groupRepo;
+    @Autowired SystemRefresh systemRefresh;
+    @Autowired GroupsChecks groupsChecks;
+    @Autowired Operations operations;
+    @Autowired private LdapTemplate ldapTemplate;
+    @Autowired FilesStorageService storageService;
+    @Autowired private BuildAttributes buildAttributes;
+    @Autowired private Token tokenClass;
+    @Autowired private MongoTemplate mongoTemplate;
+    @Autowired private UserAttributeMapper userAttributeMapper;
+    @Autowired private SimpleUserAttributeMapper simpleUserAttributeMapper;
+    @Autowired private BuildDnUser buildDnUser;
+    @Autowired private DashboardData dashboardData;
+    @Autowired private ImportUsers importUsers;
+    @Autowired private EmailService emailService;
 
     public ZoneId zoneId = ZoneId.of(Variables.ZONE);
-
-
-    @Autowired
-    private BuildAttributes buildAttributes;
-    @Autowired
-    private Token tokenClass;
-    @Autowired
-    private MongoTemplate mongoTemplate;
-    @Autowired
-    private UserAttributeMapper userAttributeMapper;
-    @Autowired
-    private SimpleUserAttributeMapper simpleUserAttributeMapper;
-
-    @Autowired
-    private BuildDnUser buildDnUser;
-    @Autowired
-    private DashboardData dashboardData;
-    @Autowired
-    private ImportUsers importUsers;
-
-    @Autowired
-    private EmailService emailService;
 
     @Override
     public JSONObject create(String doerID, User p) {
@@ -162,7 +131,7 @@ public class UserRepoImpl implements UserRepo {
 
                     if (p.getStatus() != null)
                         if (p.getStatus().equals("disable"))
-                            disable(doerID, p.getUserId());
+                            operations.disable(doerID, p.getUserId());
 
 
                     usersExtraInfo = new UsersExtraInfo(p, p.getPhoto(), p.isUnDeletable());
@@ -275,17 +244,13 @@ public class UserRepoImpl implements UserRepo {
         return HttpStatus.OK;
     }
 
-
     @Override
     public JSONObject createUserImport(String doerID, User p) {
-
 
         if (p.getUserPassword() == null)
             p.setUserPassword(defaultPassword);
 
         return create(doerID, p);
-
-
     }
 
     @Override
@@ -709,54 +674,7 @@ public class UserRepoImpl implements UserRepo {
         return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("ou", groupId).encode(), searchControls, simpleUserAttributeMapper);
     }
 
-    @Override
-    public List<JSONObject> checkMail(String email) {
-        return emailService.checkMail(email);
-    }
 
-    @Override
-    public HttpStatus sendEmail(JSONObject jsonObject) {
-        return emailService.sendMail(jsonObject);
-    }
-
-    @Override
-    public Dashboard retrieveDashboardData() throws InterruptedException {
-
-
-        return dashboardData.retrieveDashboardData();
-    }
-
-    @Override
-    public HttpStatus enable(String doer, String uid) {
-
-        Logger logger = LogManager.getLogger(doer);
-
-
-        Name dn = buildDnUser.buildDn(uid);
-
-        ModificationItem[] modificationItems;
-        modificationItems = new ModificationItem[1];
-
-        User user = retrieveUsers(uid);
-        String status = user.getStatus();
-
-        if (status.equalsIgnoreCase("disable")) {
-            modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
-
-            try {
-                ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "enable", "success", "").toString());
-
-                return HttpStatus.OK;
-
-            } catch (Exception e) {
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "enable", "failed", "writing to ldap").toString());
-                return HttpStatus.BAD_REQUEST;
-            }
-        } else {
-            return HttpStatus.BAD_REQUEST;
-        }
-    }
 
     public HttpStatus removeCurrentEndTime(String uid) {
 
@@ -783,75 +701,9 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
-    @Override
-    public HttpStatus disable(String doerID, String uid) {
-        Logger logger = LogManager.getLogger(doerID);
 
 
-        Name dn = buildDnUser.buildDn(uid);
 
-        ModificationItem[] modificationItems;
-        modificationItems = new ModificationItem[1];
-
-        User user = retrieveUsers(uid);
-
-        if (user.isEnabled()) {
-
-
-            modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime", "40400404040404.950Z"));
-
-            try {
-                ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "disable", "success", "").toString());
-                return HttpStatus.OK;
-
-            } catch (Exception e) {
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "disable", "failed", "writing to ldap").toString());
-                return HttpStatus.BAD_REQUEST;
-            }
-        } else {
-            return HttpStatus.BAD_REQUEST;
-        }
-    }
-
-    @Override
-    public HttpStatus unlock(String doerID, String uid) {
-
-        Logger logger = LogManager.getLogger(doerID);
-
-
-        Name dn = buildDnUser.buildDn(uid);
-
-        ModificationItem[] modificationItems;
-        modificationItems = new ModificationItem[1];
-
-        User user = retrieveUsers(uid);
-        String locked = user.getStatus();
-
-        if (locked.equalsIgnoreCase("lock")) {
-            modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
-
-            try {
-                ldapTemplate.modifyAttributes(dn, modificationItems);
-
-                try {
-                    modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
-                    ldapTemplate.modifyAttributes(dn, modificationItems);
-                } catch (Exception e) {}
-
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "unlock", "success", "").toString());
-                return HttpStatus.OK;
-
-            } catch (Exception e) {
-
-                return HttpStatus.BAD_REQUEST;
-            }
-
-        } else {
-            return HttpStatus.BAD_REQUEST;
-        }
-
-    }
 
     @Override
     public int requestToken(User user) {
@@ -963,7 +815,7 @@ public class UserRepoImpl implements UserRepo {
         user = setRole(user);
 
         try {
-            unlock("SYSTEM", userId);
+            operations.unlock("SYSTEM", userId);
         }catch (Exception e){}
 
         HttpStatus httpStatus;
@@ -983,11 +835,6 @@ public class UserRepoImpl implements UserRepo {
         } else {
             return HttpStatus.FORBIDDEN;
         }
-    }
-
-    @Override
-    public JSONObject importFileUsers(String doerId, MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
-        return importUsers.importFileUsers(doerId, file, sequence, hasHeader);
     }
 
     @Override
@@ -1024,75 +871,6 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public String activeMobile(User user) {
-
-        Logger logger = LogManager.getLogger("SYSTEM");
-
-        String uuid = UUID.randomUUID().toString();
-
-        String action = "Insert";
-
-        {
-            //JSON parser object to parse read file
-            JSONParser jsonParser = new JSONParser();
-
-            try (FileReader reader = new FileReader(qrDevicesPath))
-            {
-                //Read JSON file
-                Object obj = jsonParser.parse(reader);
-                org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) obj;
-
-                boolean existed = false;
-
-                for(Iterator iterator = jsonObject.keySet().iterator(); iterator.hasNext();) {
-
-                        String key = (String) iterator.next();
-                        String value = (String) jsonObject.get(key);
-                        if (value.equalsIgnoreCase(user.getUserId())) {
-                            jsonObject.remove(key,value);
-                            existed = true;
-                            break;
-                        }
-
-
-                }
-
-                jsonObject.put(uuid,user.getUserId());
-
-                ObjectMapper mapper = new ObjectMapper();
-
-                try {
-
-                    // Writing to a file
-                    mapper.writeValue(new File(qrDevicesPath), jsonObject);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                if(!existed)
-                    action = "Update";
-
-                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "success", ""));
-
-                return uuid;
-
-
-            } catch (FileNotFoundException e) {
-                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "file not found"));
-            } catch (IOException e) {
-                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "Saving problem"));
-
-            }  catch (org.json.simple.parser.ParseException e) {
-                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "json parse"));
-
-            }
-        }
-
-        return null;
-    }
-
-    @Override
     public HttpStatus expirePassword(String doer, JSONObject jsonObject) {
 
         Logger logger = LogManager.getLogger(doer);
@@ -1108,9 +886,16 @@ public class UserRepoImpl implements UserRepo {
             for (Object temp : jsonArray)
                 users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())),UsersExtraInfo.class,Variables.col_usersExtraInfo));
         }
-        for (UsersExtraInfo extraInfo : users) {
-            if (!extraInfo.getRole().equals("SUPERADMIN")) {
-                dn = buildDnUser.buildDn(extraInfo.getUserId());
+
+        return expire(doer,users);
+    }
+
+    @Override
+    public HttpStatus expire(String doer, List<UsersExtraInfo> users){
+        Logger logger = LogManager.getLogger(doer);
+
+        for (UsersExtraInfo user : users) {
+            if (!user.getRole().equals("SUPERADMIN")) {
 
                 ModificationItem[] modificationItems;
                 modificationItems = new ModificationItem[1];
@@ -1118,37 +903,30 @@ public class UserRepoImpl implements UserRepo {
                 modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime", Time.getCurrentTimeStampOffset()));
 
                 try {
-                    ldapTemplate.modifyAttributes(dn, modificationItems);
-                    ldapTemplate.modifyAttributes(dn, modificationItems);
-                    mongoTemplate.remove(new Query(Criteria.where("userId").is(extraInfo.getUserId())),Variables.col_usersExtraInfo);
-                    extraInfo.setStatus("lock");
-                    mongoTemplate.save(extraInfo,Variables.col_usersExtraInfo);
-
-                    logger.warn(new ReportMessage(model, extraInfo.getUserId(), "expire password", "add", "success", "").toString());
+                    ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
+                    mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
+                    mongoTemplate.save(user,Variables.col_usersExtraInfo);
+                    logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "add", "success", "").toString());
 
 
                 } catch (Exception e) {
                     try {
                         modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime", Time.getCurrentTimeStampOffset()));
-                        ldapTemplate.modifyAttributes(dn, modificationItems);
-                        mongoTemplate.remove(new Query(Criteria.where("userId").is(extraInfo.getUserId())),Variables.col_usersExtraInfo);
-                        extraInfo.setStatus("lock");
-                        mongoTemplate.save(extraInfo,Variables.col_usersExtraInfo);
-                        logger.warn(new ReportMessage(model, extraInfo.getUserId(),  "expire password", "replace", "success", "").toString());
+                        ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
+                        mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())),Variables.col_usersExtraInfo);
+                        mongoTemplate.save(user,Variables.col_usersExtraInfo);
+                        logger.warn(new ReportMessage("User", user.getUserId(),  "expire password", "replace", "success", "").toString());
                     } catch (Exception e1) {
-                        logger.warn(new ReportMessage(model, extraInfo.getUserId(),  "expire password", "Add", "failed", "writing to ldap").toString());
+                        logger.warn(new ReportMessage("User", user.getUserId(),  "expire password", "Add", "failed", "writing to ldap").toString());
                     }
                 }
-            }else {
-                logger.warn(new ReportMessage(model, extraInfo.getUserId(),  "expire password", "Add", "failed", "Superusers cant be expired").toString());
+            } else {
+                logger.warn(new ReportMessage("User", user.getUserId(),  "expire password", "Add", "failed", "Cant add to SUPERUSER role").toString());
 
             }
-
         }
-
         return HttpStatus.OK;
     }
-
 
 
 }
