@@ -76,13 +76,13 @@ document.addEventListener('DOMContentLoaded', function () {
             s24: "ارسال موفقیت آمیز بود.",
             s25: "لطفا به mailbox خود مراجعه نموده و طبق راهنما، باقی مراحل را انجام دهید.",
             s26: "بازگشت به صفحه ورود",
-            s27: "ایمیل وارد شده در پایگاه داده ما وجود ندارد.",
-            s28: "لطفا با دقت بیشتری نسبت به ورود آدرس ایمیل اقدام نمایید:",
+            s27: "اطلاعات شما در پایگاه داده ما وجود ندارد.",
+            s28: "لطفا با دقت بیشتری نسبت به ورود اطلاعات خود اقدام نمایید:",
             s29: "لطفا جهت تکمیل مراحل، شناسه کاربری خود را وارد نمایید:",
             s30: "لطفا جهت بازنشانی رمز عبور، شماره موبایل خود را وارد کنید:",
             s31: "لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.",
-            s32: "شماره موبایل وارد شده در پایگاه داده ما وجود ندارد.",
-            s33: "لطفا با دقت بیشتری نسبت به ورود شماره موبایل اقدام نمایید:",
+            s32: "اطلاعات شما در پایگاه داده ما وجود ندارد.",
+            s33: "لطفا با دقت بیشتری نسبت به ورود اطلاعات خود اقدام نمایید:",
             s34: "شماره موبایل",
             s35: "شما در حال انتقال به صفحه بازنشانی رمز عبور هستید...",
             s36: "شناسه کاربری",
@@ -394,7 +394,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                                     }
                                                 }
                                             });
-
                                         break;
                                     }
                                 }
@@ -443,13 +442,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s24 = "Submission Was Successful.";
                     this.s25 = "Please Go To Your mailbox And Follow The Instructions.";
                     this.s26 = "Return To The Login Page";
-                    this.s27 = "There Is No Such Email Address In Our Database.";
-                    this.s28 = "Please Enter Your Email Address More Carefully:";
+                    this.s27 = "There Is No Such Information In Our Database.";
+                    this.s28 = "Please Enter Your Information More Carefully:";
                     this.s29 = "Please Enter Your ID To Complete The Process:";
                     this.s30 = "Please Enter Your Mobile Number To Reset Your Password:";
                     this.s31 = "Please Go To Your SMS Inbox And Enter The Code We Sent You.";
-                    this.s32 = "There Is No Such Mobile Number In Our Database.";
-                    this.s33 = "Please Enter Your Mobile Number More Carefully:";
+                    this.s32 = "There Is No Such Information In Our Database.";
+                    this.s33 = "Please Enter Your Information More Carefully:";
                     this.s34 = "Mobile Number";
                     this.s35 = "We Are Redirecting You To Password Reset Page...";
                     this.s36= "ID";
@@ -487,13 +486,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s24 = "ارسال موفقیت آمیز بود.";
                     this.s25 = "لطفا به mailbox خود مراجعه نموده و طبق راهنما، باقی مراحل را انجام دهید.";
                     this.s26 = "بازگشت به صفحه ورود";
-                    this.s27 = "ایمیل وارد شده در پایگاه داده ما وجود ندارد.";
-                    this.s28 = "لطفا با دقت بیشتری نسبت به ورود آدرس ایمیل اقدام نمایید:";
+                    this.s27 = "اطلاعات شما در پایگاه داده ما وجود ندارد.";
+                    this.s28 = "لطفا با دقت بیشتری نسبت به ورود اطلاعات خود اقدام نمایید:";
                     this.s29 = "لطفا جهت تکمیل مراحل، شناسه کاربری خود را وارد نمایید:";
                     this.s30 = "لطفا جهت بازنشانی رمز عبور، شماره موبایل خود را وارد کنید:";
                     this.s31 = "لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.";
-                    this.s32 = "شماره موبایل وارد شده در پایگاه داده ما وجود ندارد.";
-                    this.s33 = "لطفا با دقت بیشتری نسبت به ورود شماره موبایل اقدام نمایید:";
+                    this.s32 = "اطلاعات شما در پایگاه داده ما وجود ندارد.";
+                    this.s33 = "لطفا با دقت بیشتری نسبت به ورود اطلاعات خود اقدام نمایید:";
                     this.s34 = "شماره موبایل";
                     this.s35 = "شما در حال انتقال به صفحه بازنشانی رمز عبور هستید...";
                     this.s36 = "شناسه کاربری";
