@@ -15,6 +15,9 @@ import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
 import javax.naming.directory.*;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 @Service
 public class BuildAttributes {
@@ -25,10 +28,11 @@ public class BuildAttributes {
     BuildDnUser buildDnUser;
     @Value("${default.user.password}")
     private String defaultPassword;
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private LdapTemplate ldapTemplate;
+    @Autowired private UserRepo userRepo;
+    @Autowired private LdapTemplate ldapTemplate;
+    @Autowired private Operations operations;
+
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
     public Attributes BuildAttributes(User p) {
 
@@ -70,7 +74,12 @@ public class BuildAttributes {
             attrs.put("pwdAccountLockedTime", p.isEnabled());
 
         if (p.getEndTime() != null) {
-            attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
+
+            Instant instant = Instant.now(); //can be LocalDateTime
+            ZoneId systemZone = zoneId; // my timezone
+            ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
+
+            attrs.put("pwdEndTime", Time.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
         }
 
         attrs.put("pwdAttribute", "userPassword");
@@ -141,22 +150,22 @@ public class BuildAttributes {
 
         //cStatus for changing status
         if (p.getCStatus() != null) {
-            if (p.getCStatus().equals("enable")) userRepo.enable(doerID, uid);
-            else if (p.getCStatus().equals("disable")) userRepo.disable(doerID, uid);
-            else if (p.getCStatus().equals("unlock")) userRepo.unlock(doerID, uid);
+            if (p.getCStatus().equals("enable")) operations.enable(doerID, uid);
+            else if (p.getCStatus().equals("disable")) operations.disable(doerID, uid);
+            else if (p.getCStatus().equals("unlock")) operations.unlock(doerID, uid);
         } else {
             if (p.getStatus() != null) {
                 String oldStatus = old.getStatus();
                 String newStatus = p.getStatus();
 
                 if (oldStatus.equals("enable") && newStatus.equals("disable"))
-                    userRepo.disable(doerID, uid);
+                    operations.disable(doerID, uid);
 
                 else if (oldStatus.equals("disable") && newStatus.equals("enable"))
-                    userRepo.enable(doerID, uid);
+                    operations.enable(doerID, uid);
 
                 else if (oldStatus.equals("lock") && newStatus.equals("enable"))
-                    userRepo.unlock(doerID, uid);
+                    operations.unlock(doerID, uid);
 
             }
 
@@ -181,13 +190,14 @@ public class BuildAttributes {
                 }
         }
 
+        Instant instant = Instant.now(); //can be LocalDateTime
+        ZoneId systemZone = zoneId; // my timezone
+        ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
+
 
         //EndTime
         if (p.getEndTime() != null && p.getEndTime() != "") {
-            if (p.getEndTime().charAt(p.getEndTime().length() - 1) == 'Z')
-                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()));
-            else
-                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) + 'Z');
+                context.setAttributeValue("pwdEndTime", Time.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
 
         } else
             context.removeAttributeValue("pwdEndTime", old.getEndTime());

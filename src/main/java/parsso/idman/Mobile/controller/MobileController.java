@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
 import parsso.idman.Models.Logs.ListEvents;
-import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.EventRepo;
@@ -27,17 +26,15 @@ import java.util.List;
 @RestController
 public class MobileController {
 
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private ServicesRepoImpl servicesRepo;
-    @Autowired
-    private EventRepo eventRepo;
-    @Autowired
-    private ServiceRepo serviceRepo;
+    @Value(value = "${base.url}") private String url;
 
-    @Value(value = "${base.url}")
-    private String url;
+    @Autowired private UserRepo userRepo;
+    @Autowired private ServicesRepoImpl servicesRepo;
+    @Autowired private EventRepo eventRepo;
+    @Autowired private ServiceRepo serviceRepo;
+    @Autowired private parsso.idman.Helpers.User.Operations operations;
+
+
 
     @GetMapping(value = "/api/mobile/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody
@@ -82,7 +79,7 @@ public class MobileController {
         if (QrToken.equals(user.getUsersExtraInfo().getQrToken()))
             if (servicesRepo.verifySMS(uid, smsCode).equals(HttpStatus.OK)) {
                 jsonObject.put("mobileToken", user.getUsersExtraInfo().getMobileToken());
-                jsonObject.put("UUID", userRepo.activeMobile(user));
+                jsonObject.put("UUID", operations.activeMobile(user));
                 return new ResponseEntity<>(jsonObject, HttpStatus.OK);
             }
         return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);

@@ -13,7 +13,7 @@ public class Variables {
     public static String col_properties = "IDMAN_Properties";
     public static String col_propertiesBackup = "IDMAN_PropertiesBackup";
     public static String col_publicMessage = "IDMAN_PublicMessage";
-    public static String col_usersExtraInfo = "IDMAN_UserExtraInfo";
+    public static String col_usersExtraInfo = "IDMAN_UsersExtraInfo";
     public static String col_services = "IDMAN_Services";
     public static String col_servicesExtraInfo = "IDMAN_ServicesExtraInfo";
     public static String col_tickets = "IDMAN_Tickets";
@@ -28,6 +28,7 @@ public class Variables {
     static String email_stringUid = "نام کاربری: ";
     static String email_stringLink = "لینک بازنشانی رمز عبور: ";
     static String logo = "https://blog.pars-sso.ir/wp-content/uploads/2021/02/magit-logo.png";
+    public static String ZONE = "Asia/Tehran";
     public static String template(User user, String url){
 
         return

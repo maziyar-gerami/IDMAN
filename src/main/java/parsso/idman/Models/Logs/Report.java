@@ -37,6 +37,10 @@ public class Report {
     @JsonIgnore
     String thrown;
 
+    public Time getDateTime() {
+        return Time.longToPersianTime(date.getTime());
+    }
+
     public String getDetails() {
         return source.toString();
     }

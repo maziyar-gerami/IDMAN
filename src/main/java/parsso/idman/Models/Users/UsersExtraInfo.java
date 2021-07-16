@@ -27,7 +27,6 @@ public class UsersExtraInfo {
     private long creationTimeStamp;
     private String photoName;
     private boolean unDeletable;
-    @JsonIgnore
     private String role;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String category;

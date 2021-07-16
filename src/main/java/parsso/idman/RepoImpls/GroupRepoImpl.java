@@ -35,9 +35,7 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.SearchControls;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class GroupRepoImpl implements GroupRepo {
@@ -138,6 +136,21 @@ public class GroupRepoImpl implements GroupRepo {
 
         }
         return groups;
+    }
+
+    @Override
+    public HttpStatus expireUsersGroupPassword(String doer, JSONObject jsonObject) {
+
+        List<UsersExtraInfo> users = new LinkedList<>();
+        for (String groupID: (List<String>) jsonObject.get("names"))
+            users.addAll(mongoTemplate.find(new Query(Criteria.where("memberOf").is(groupID))
+                    , UsersExtraInfo.class,Variables.col_usersExtraInfo));
+
+        Set<UsersExtraInfo> set = new HashSet<>(users);
+        users.clear();
+        users.addAll(set);
+
+        return userRepo.expire(doer,users);
     }
 
 
@@ -312,7 +325,6 @@ public class GroupRepoImpl implements GroupRepo {
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                e.printStackTrace();
                 logger.warn(new ReportMessage(model, doerID, ou.getId(), "update", "failed", "writing to ldap").toString());
 
                 return HttpStatus.BAD_REQUEST;

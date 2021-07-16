@@ -355,8 +355,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent.serverIP = item.serverIP;
             tempEvent.service = item.service;
 
-            let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-            tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+            tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
             tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
 
             var osName = item.agentInfo.os.toLowerCase();
@@ -437,8 +436,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent.clientIP = item.clientIP;
             tempEvent.service = item.service;
 
-            let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-            tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+            tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
             tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
 
             var osName = item.agentInfo.os.toLowerCase();
@@ -525,8 +523,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent.clientIP = item.clientIP;
                 tempEvent.service = item.service;
 
-                let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-                tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+                tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
                 tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
 
                 var osName = item.agentInfo.os.toLowerCase();
@@ -613,8 +610,7 @@ document.addEventListener('DOMContentLoaded', function () {
               tempEvent.serverIP = item.serverIP;
               tempEvent.service = item.service;
 
-              let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-              tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+              tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
               tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
 
               var osName = item.agentInfo.os.toLowerCase();
@@ -709,8 +705,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent.serverIP = item.serverIP;
                 tempEvent.service = item.service;
 
-                let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-                tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+                tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
                 tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
 
                 var osName = item.agentInfo.os.toLowerCase();
@@ -798,8 +793,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent.serverIP = item.serverIP;
                 tempEvent.service = item.service;
 
-                let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-                tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+                tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
                 tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
 
                 var osName = item.agentInfo.os.toLowerCase();

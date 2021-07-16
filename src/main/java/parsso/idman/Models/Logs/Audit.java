@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.bson.types.ObjectId;
 import parsso.idman.Models.Time;
 
-import java.util.Calendar;
 import java.util.Date;
 
 @Setter
@@ -23,27 +22,10 @@ public class Audit {
 
     private Time time;
 
+
+
     public Time getTime() {
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(whenActionWasPerformed);
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH) + 1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        int minute = cal.get(Calendar.MINUTE);
-        int seconds = cal.get(Calendar.SECOND);
-
-
-        time = new Time(year
-                , month
-                , day
-                , hour
-                , minute
-                , seconds);
-
-        return time;
+        return Time.longToPersianTime(whenActionWasPerformed.getTime());
     }
 
 

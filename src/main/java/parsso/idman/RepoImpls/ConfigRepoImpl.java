@@ -108,23 +108,26 @@ public class ConfigRepoImpl implements ConfigRepo {
 
             int equalIndex = line.indexOf('=');
 
-            name = line.substring(0, equalIndex);
+            if (equalIndex>0) {
+                name = line.substring(0, equalIndex);
 
-            value = line.substring(equalIndex + 1);
+                value = line.substring(equalIndex + 1);
 
-            setting.setName(name);
+                setting.setName(name);
 
-            setting.setValue(value.trim());
+                setting.setValue(value.trim());
 
-            setting.setDescription(description);
+                setting.setDescription(description);
 
-            setting.setGroup(groupName.trim());
+                setting.setGroup(groupName.trim());
 
-            setting.setSystem(system.trim());
+                setting.setSystem(system.trim());
 
-            settings.add(setting);
+                settings.add(setting);
 
+            }
             setting = new Setting();
+
 
         }
 
@@ -245,6 +248,9 @@ public class ConfigRepoImpl implements ConfigRepo {
 
         Path copied = Paths.get(pathToProperties);
         String s = backUpPath + date + "_application.properties";
+
+        new File(backUpPath).mkdirs();
+
         Path originalPath = Paths.get(s);
         try {
             Files.copy(copied, originalPath);
@@ -308,6 +314,7 @@ public class ConfigRepoImpl implements ConfigRepo {
         String[] files = folder.list();
         List<Config> configs = new LinkedList<>();
         Config config = null;
+        if(files != null )
         for (String file : files) {
             if (file.endsWith(".properties"))
                 config = new Config();

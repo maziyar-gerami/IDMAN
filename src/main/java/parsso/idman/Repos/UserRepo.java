@@ -2,10 +2,8 @@ package parsso.idman.Repos;
 
 
 import net.minidev.json.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
@@ -40,15 +38,13 @@ public interface UserRepo {
 
     HttpStatus update(String doer, String uid, User p);
 
+    List<User> getUsersOfOu(String ou);
+
     HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou);
 
     User retrieveUsers(String userId);
 
     List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
-
-    List<JSONObject> checkMail(String token);
-
-    HttpStatus sendEmail(JSONObject jsonObject);
 
     ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus);
 
@@ -56,17 +52,7 @@ public interface UserRepo {
 
     HttpStatus updatePass(String userId, String oldPass, String token);
 
-    JSONObject importFileUsers(String doerId, MultipartFile file, int[] sequence, boolean hasHeader) throws IOException;
-
-    Dashboard retrieveDashboardData() throws IOException, ParseException, java.text.ParseException, InterruptedException;
-
-    HttpStatus enable(String doerID, String uid);
-
     String createUrl(String userId, String token);
-
-    HttpStatus disable(String doerID, String uid);
-
-    HttpStatus unlock(String doerID, String uid);
 
     int requestToken(User user);
 
@@ -80,7 +66,7 @@ public interface UserRepo {
 
     List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException;
 
-    String activeMobile(User user);
+    HttpStatus expirePassword(String name, JSONObject jsonObject);
 
-
+    HttpStatus expire(String doer, List<UsersExtraInfo> users);
 }

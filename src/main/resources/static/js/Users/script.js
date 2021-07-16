@@ -714,7 +714,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     axios({
                         method: "put",
                         url: url + "/api/users/password/expire", //
-                        headers: {"Content-Type": "application/json"}
+                        headers: {"Content-Type": "application/json"},
+                        data: JSON.stringify({
+                            names: []
+                        }).replace(/\\\\/g, "\\")
                     }).then((res) => {
                         vm.loader = false;
                         vm.expireAllPasswordsConfirmation = true;

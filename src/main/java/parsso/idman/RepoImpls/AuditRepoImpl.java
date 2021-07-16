@@ -7,13 +7,15 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Logs.ListAudits;
+import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Time;
 import parsso.idman.Repos.AuditRepo;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -23,6 +25,9 @@ public class AuditRepoImpl implements AuditRepo {
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
+
 
     @Override
     public ListAudits getListSizeAudits(int p, int n) {
@@ -44,19 +49,24 @@ public class AuditRepoImpl implements AuditRepo {
     }
 
     @Override
-    public ListAudits getListUserAuditByDate(String date, String userId, int skip, int limit) throws ParseException {
+    public ListAudits getListUserAuditByDate(String date, String userId, int p, int n) throws ParseException {
 
+        int skip = (p-1)*n;
+        int limit = n;
 
-        String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00";
-        String timeEnd = time + "T23:59:59";
-        Query query = new Query(Criteria.where("principal").is(userId).and("whenActionWasPerformed")
-                .gte(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(timeStart))
-                .lte(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(timeEnd)));
-        long size = mongoTemplate.count(query, Audit.class, mainCollection);
-        query.skip((skip - 1) * (limit)).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
-        List<Audit> auditList = mongoTemplate.find(query, Audit.class, mainCollection);
-        return new ListAudits(auditList, size, (int) Math.ceil((double)size / (double)limit));
+        Time time = new Time(Integer.valueOf(date.substring(4)),
+                Integer.valueOf(date.substring(2, 4)),
+                Integer.valueOf(date.substring(0, 2)));
+        long [] range = Time.specificDateToEpochRange(time, zoneId);
+
+        Query query = new Query(Criteria.where("whenActionWasPerformed")
+                .gte(Time.convertEpochToDate(range[0])).lte(Time.convertEpochToDate(range[1])).and("principal").is(userId));
+
+        long size = mongoTemplate.find(query, Report.class,  mainCollection).size();
+
+        List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "whenActionWasPerformed")).skip(skip).limit(limit),Audit.class, mainCollection);
+
+        return new ListAudits(reportList, size, (int) Math.ceil(size / limit));
 
     }
 
@@ -64,18 +74,22 @@ public class AuditRepoImpl implements AuditRepo {
     public ListAudits getAuditsByDate(String date, int p, int n) throws ParseException {
 
 
-        String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00";
-        String timeEnd = time + "T23:59:59";
+        int skip = (p-1)*n;
+        int limit = n;
+
+        Time time = new Time(Integer.valueOf(date.substring(4)),
+                Integer.valueOf(date.substring(2, 4)),
+                Integer.valueOf(date.substring(0, 2)));
+        long [] range = Time.specificDateToEpochRange(time, zoneId);
 
         Query query = new Query(Criteria.where("whenActionWasPerformed")
-                .gte(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(timeStart))
-                .lte(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(timeEnd)));
-        long size = mongoTemplate.count(query, Audit.class, mainCollection);
-        query.skip((p - 1) * n).limit(n);
+                .gte(Time.convertEpochToDate(range[0])).lte(Time.convertEpochToDate(range[1])));
 
-        List<Audit> allAudit = mongoTemplate.find(query, Audit.class, mainCollection);
-        return new ListAudits(allAudit, size, (int) Math.ceil((double)size / (double)n));
+        long size = mongoTemplate.find(query, Report.class,  mainCollection).size();
+
+        List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "whenActionWasPerformed")).skip(skip).limit(limit),Audit.class, mainCollection);
+
+        return new ListAudits(reportList, size, (int) Math.ceil(size / limit));
 
     }
 

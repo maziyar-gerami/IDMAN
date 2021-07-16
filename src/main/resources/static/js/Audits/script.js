@@ -363,8 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent.serverIpAddress = item.serverIpAddress;
             tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
 
-            let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-            tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+            tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
             tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
             
             vm.audits.push(tempEvent);
@@ -397,8 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent.clientIpAddress = item.clientIpAddress;
             tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
 
-            let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-            tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+            tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
             tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
             
             vm.audit.push(tempEvent);
@@ -437,8 +435,7 @@ document.addEventListener('DOMContentLoaded', function () {
               tempEvent.clientIpAddress = item.clientIpAddress;
               tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
 
-              let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-              tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+              tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
               tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
                 
               vm.audit.push(tempEvent);
@@ -477,8 +474,7 @@ document.addEventListener('DOMContentLoaded', function () {
               tempEvent.serverIpAddress = item.serverIpAddress;
               tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
 
-              let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-              tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+              tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
               tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
               
               vm.audits.push(tempEvent);
@@ -525,8 +521,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent.serverIpAddress = item.serverIpAddress;
                 tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
 
-                let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-                tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+                tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
                 tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
                 
                 vm.audits.push(tempEvent);
@@ -566,8 +561,7 @@ document.addEventListener('DOMContentLoaded', function () {
               tempEvent.serverIpAddress = item.serverIpAddress;
               tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
 
-              let dateArray = vm.gregorian_to_jalali(item.time.year, item.time.month, item.time.day)
-              tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+              tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
               tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
                 
               vm.audits.push(tempEvent);

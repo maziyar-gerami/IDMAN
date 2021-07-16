@@ -54,7 +54,11 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         int roomId = CreateRoom(Classname);
         AddUserRooms(userId, roomId);
         Realname = user.getFirstName() + " " + user.getLastName();
-        return new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole(), CreateLoginUrl(roomId, String.valueOf(userId), Realname), GetRoomGuestUrl(roomId));
+        try {
+            return new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole(), CreateLoginUrl(roomId, String.valueOf(userId), Realname), GetRoomGuestUrl(roomId));
+        }catch (Exception e){
+            return null;
+        }
     }
 
     public JSONObject Post(String json) throws IOException {

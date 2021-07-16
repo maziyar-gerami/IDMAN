@@ -3,19 +3,20 @@ package parsso.idman.Models;
 
 import lombok.Getter;
 import lombok.Setter;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Utils.Convertor.DateConverter;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
 import java.util.Calendar;
+import java.util.Date;
 
 @Setter
 @Getter
 
 public class Time {
-    static ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    static ZoneId zoneId = ZoneId.of(Variables.ZONE);
     private int year;
     private int month;
     private int day;
@@ -87,6 +88,44 @@ public class Time {
                 + String.format("%02d", time.getDay()) + " "
                 + String.format("%02d", time.getHours()) + ":"
                 + String.format("%02d", time.getMinutes());
+    }
+
+    public static String getCurrentTimeStampOffset() {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMddHHmmss.SSS");
+        Date now = new Date();
+        String strDate = sdfDate.format(now);
+
+        Instant instant = Instant.now(); //can be LocalDateTime
+        ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
+        ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
+
+
+        return strDate+currentOffsetForMyZone.toString().replaceAll(":","");
+    }
+
+    public static String epochToDateLdapFormat(long timeInMilliseconds) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss.SSS");
+
+        String strDate = formatter.format(new Date(timeInMilliseconds));
+
+        Instant instant = Instant.now(); //can be LocalDateTime
+        ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
+        ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
+
+        return strDate+currentOffsetForMyZone.toString().replaceAll(":","");
+    }
+
+    public static long[] specificDateToEpochRange(Time time, ZoneId zoneId) throws ParseException {
+
+        long[] result = new long[2];
+
+        LocalDate day = LocalDate.of(time.getYear(),time.getMonth(),time.getDay()) ;
+
+        result[0] = day.atStartOfDay().atZone(zoneId).toEpochSecond() * 1000;
+        result[1] = day.plusDays(1).atStartOfDay().atZone(zoneId).toEpochSecond() * 1000;
+
+        return result;
+
     }
 
     public static String setEndTime(String input) {
@@ -205,6 +244,10 @@ public class Time {
                 String.format("%03d", Integer.valueOf(timeObject.getMilliSeconds())) + "+0330";
 
         return timeObject.getYear() + timeObject.getMonth() + timeObject.getDay() + time;
+    }
+
+    public static Date convertEpochToDate(long epoch){
+        return new Date(epoch);
     }
 
     public static Time longToPersianTime(Long in) {

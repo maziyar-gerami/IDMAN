@@ -116,6 +116,12 @@ public class User implements UserDetails, Comparable {
         return list;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId='" + userId + '\'' +
+                '}';
+    }
 
     @JsonIgnore
     @Override

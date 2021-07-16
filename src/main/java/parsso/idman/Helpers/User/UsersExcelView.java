@@ -82,30 +82,39 @@ public class UsersExcelView extends AbstractXlsView {
         int rowCount = 1;
 
         for (User user : users) {
+
             HSSFRow aRow = sheet.createRow(rowCount++);
             aRow.createCell(0).setCellValue(user.getUserId());
-            if (user.getFirstName() != null)
-                aRow.createCell(1).setCellValue(user.getFirstName());
-            if (user.getLastName() != null)
-                aRow.createCell(2).setCellValue(user.getLastName());
-            if (user.getDisplayName() != null)
-                aRow.createCell(3).setCellValue(user.getDisplayName());
-            if (user.getMobile() != null)
-                aRow.createCell(4).setCellValue(user.getMobile());
-            if (user.getMail() != null)
-                aRow.createCell(5).setCellValue(user.getMail());
-            if (user.getMemberOf() != null)
-                aRow.createCell(6).setCellValue(user.getExportMemberOf());
-            if (user.getDescription() != null)
-                aRow.createCell(7).setCellValue(user.getDescription());
-            if (user.getStatus() != null)
-                aRow.createCell(8).setCellValue(user.getStatus());
-            if (user.getEmployeeNumber() != null)
-                aRow.createCell(9).setCellValue(user.getEmployeeNumber());
-            if (user.getEndTime() != null)
-                aRow.createCell(10).setCellValue(user.getExportEndTime());
+            try { aRow.createCell(1).setCellValue(user.getFirstName()); }
+            catch (Exception e){aRow.createCell(1).setCellValue("");}
+
+            try {aRow.createCell(2).setCellValue(user.getLastName());}
+            catch (Exception e){aRow.createCell(2).setCellValue("");}
+
+            try { aRow.createCell(3).setCellValue(user.getDisplayName());}
+            catch (Exception e){aRow.createCell(3).setCellValue("");}
+
+            try {aRow.createCell(4).setCellValue(user.getMobile());}
+            catch (Exception e){aRow.createCell(4).setCellValue("");}
+
+            try {aRow.createCell(5).setCellValue(user.getMail());}
+            catch (Exception e){aRow.createCell(5).setCellValue("");}
+
+            try {aRow.createCell(6).setCellValue(user.getExportMemberOf());}
+            catch (Exception e){aRow.createCell(6).setCellValue("");}
+
+            try { aRow.createCell(7).setCellValue(user.getDescription()); }
+            catch (Exception e){aRow.createCell(7).setCellValue("");}
+
+            try {aRow.createCell(8).setCellValue(user.getStatus());}
+            catch (Exception e){aRow.createCell(8).setCellValue("");}
+
+            try{aRow.createCell(9).setCellValue(user.getEmployeeNumber());}
+            catch (Exception e){aRow.createCell(9).setCellValue("");}
+
+            try {aRow.createCell(10).setCellValue(user.getExportEndTime());}
+            catch (Exception e){aRow.createCell(10).setCellValue("");}
 
         }
-
     }
 }

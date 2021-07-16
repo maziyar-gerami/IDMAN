@@ -3,6 +3,8 @@ package parsso.idman.Utils.Convertor;
 
 import lombok.Getter;
 import lombok.Setter;
+import parsso.idman.Helpers.Variables;
+import parsso.idman.Models.Time;
 
 import java.time.ZoneId;
 
@@ -11,7 +13,7 @@ import java.time.ZoneId;
 
 public class DateConverter {
 
-    ZoneId zoneId = ZoneId.of("Asia/Tehran");
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
     private int day, month, year;
     private int jYear, jMonth, jDay;
     private int gYear, gMonth, gDay;
@@ -267,6 +269,13 @@ public class DateConverter {
         this.year = gYear;
         this.month = gMonth;
         this.day = gDay;
+    }
+
+    public Time persianToGregorianTime(int year, int month, int day) {
+        int jd = Jal2JD(year, month, day);
+        JD2JG(jd, 0);
+        return new Time(gYear,gMonth,gDay);
+
     }
 
 

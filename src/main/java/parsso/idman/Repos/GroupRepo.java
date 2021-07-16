@@ -24,5 +24,5 @@ public interface GroupRepo {
 
     List<Group> retrieveCurrentUserGroup(User user);
 
-
+    HttpStatus expireUsersGroupPassword(String name, JSONObject jsonObject);
 }
