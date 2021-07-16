@@ -13,6 +13,7 @@ import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Time;
 import parsso.idman.Repos.ReportRepo;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -66,57 +67,44 @@ public class ReportRepoImpl implements ReportRepo {
     }
 
     @Override
-    public ListReports getLogsByDate(String date, int p, int n) {
+    public ListReports getLogsByDate(String date, int p, int n) throws ParseException {
 
+        int skip = (p-1)*n;
+        int limit = n;
 
-        String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00.000Z";
-        String timeEnd = time + "T23:59:59.000Z";
+        Time time = new Time(Integer.valueOf(date.substring(4)),
+                Integer.valueOf(date.substring(2, 4)),
+                Integer.valueOf(date.substring(0, 2)));
+        long [] range = Time.specificDateToEpochRange(time, zoneId);
 
-        long logStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
-        long logEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+        Query query = new Query(Criteria.where("millis").gte(range[0]).lte(range[1]));
 
-        Query query = new Query(Criteria.where("millis").gte(logStartDate).lte(logEndDate));
-        List<Report> allReports = mongoTemplate.find(query, Report.class, mainCollection);
+        long size = mongoTemplate.find(query,Report.class,  mainCollection).size();
 
-        for (Report report : allReports) {
-            OffsetDateTime logDate = report.getDate().toInstant()
-                    .atOffset(zoneId.getRules().getOffset(instant));
-            Time time1 = new Time(logDate.getYear(), logDate.getMonthValue(), logDate.getDayOfMonth(),
-                    logDate.getHour(), logDate.getMinute(), logDate.getSecond());
-            report.setDateTime(time1);
-        }
-
-
-        long size = mongoTemplate.count(query, Report.class, mainCollection);
-
-        return new ListReports(size, (int) Math.ceil((double)size / (double)n), allReports);
-    }
-
-    @Override
-    public ListReports getListUserLogByDate(String date, String userId, int skip, int limit) {
-
-        String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00.000Z";
-        String timeEnd = time + "T23:59:59.000Z";
-
-        long logStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
-        long logEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
-        Query query = new Query(Criteria.where("loggerName").is(userId).and("millis").gte(logStartDate).lte(logEndDate));
-        long size = mongoTemplate.count(query, ListReports.class, mainCollection);
-        query.skip((skip - 1) * (limit)).limit(limit).with(Sort.by(Sort.Direction.DESC, "millis"));
-        List<Report> reportList = mongoTemplate.find(query, Report.class, mainCollection);
-
-        for (Report report : reportList) {
-            OffsetDateTime logDate = report.getDate().toInstant()
-                    .atOffset(zoneId.getRules().getOffset(instant));
-            Time time1 = new Time(logDate.getYear(), logDate.getMonthValue(), logDate.getDayOfMonth(),
-                    logDate.getHour(), logDate.getMinute(), logDate.getSecond());
-            report.setDateTime(time1);
-        }
+        List<Report> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "millis")).skip(skip).limit(limit),Report.class, mainCollection);
 
         ListReports listReports = new ListReports(size, (int) Math.ceil(size / limit), reportList);
         return listReports;
+    }
+
+    @Override
+    public ListReports getListUserLogByDate(String date, String userId, int p, int n) throws ParseException {
+
+        int skip = (p-1)*n;
+        int limit = n;
+
+        Time time = new Time(Integer.valueOf(date.substring(4)),
+                Integer.valueOf(date.substring(2, 4)),
+                Integer.valueOf(date.substring(0, 2)));
+        long [] range = Time.specificDateToEpochRange(time, zoneId);
+
+        Query query = new Query(Criteria.where("millis").gte(range[0]).lte(range[1]).and("loggerName").is(userId));
+
+        long size = mongoTemplate.find(query,Report.class,  mainCollection).size();
+
+        List<Report> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "millis")).skip(skip).limit(limit),Report.class, mainCollection);
+
+        return new ListReports(size, (int) Math.ceil(size / limit), reportList);
     }
 
     @Override

@@ -248,6 +248,9 @@ public class ConfigRepoImpl implements ConfigRepo {
 
         Path copied = Paths.get(pathToProperties);
         String s = backUpPath + date + "_application.properties";
+
+        new File(backUpPath).mkdirs();
+
         Path originalPath = Paths.get(s);
         try {
             Files.copy(copied, originalPath);

@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Logs.ListEvents;
+import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Time;
 import parsso.idman.Repos.EventRepo;
 
+import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -60,55 +62,45 @@ public class EventRepoImpl implements EventRepo {
     }
 
     @Override
-    public ListEvents getEventsByDate(String date, int p, int n) {
+    public ListEvents getEventsByDate(String date, int p, int n) throws ParseException {
 
 
-        String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00.000Z";
-        String timeEnd = time + "T23:59:59.000Z";
+        int skip = (p-1)*n;
+        int limit = n;
 
-        long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
-        long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
+        Time time = new Time(Integer.valueOf(date.substring(4)),
+                Integer.valueOf(date.substring(2, 4)),
+                Integer.valueOf(date.substring(0, 2)));
+        long [] range = Time.specificDateToEpochRange(time, zoneId);
 
-        Query query = new Query(Criteria.where("_id").gte(eventStartDate).lte(eventEndDate));
-        List<Event> allEvents = mongoTemplate.find(query, Event.class, mainCollection);
+        Query query = new Query(Criteria.where("_id").gte(range[0]).lte(range[1]));
 
-        for (Event event : allEvents) {
-            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
-            Time time1 = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
-                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
-            event.setTime(time1);
-        }
+        long size = mongoTemplate.find(query, Event.class,  mainCollection).size();
 
+        List<Event> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit),Event.class, mainCollection);
 
-        long size = mongoTemplate.count(query, Event.class, mainCollection);
-
-        return new ListEvents(size, (int) Math.ceil((double)size / (double)n), allEvents);
+        ListEvents listReports = new ListEvents(size, (int) Math.ceil(size / limit), reportList);
+        return listReports;
     }
 
     @Override
-    public ListEvents getListUserEventByDate(String date, String userId, int skip, int limit) {
+    public ListEvents getListUserEventByDate(String date, String userId, int p, int n) throws ParseException {
 
-        String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
-        String timeStart = time + "T00:00:00.000Z";
-        String timeEnd = time + "T23:59:59.000Z";
+        int skip = (p-1)*n;
+        int limit = n;
 
-        long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
-        long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
-        Query query = new Query(Criteria.where("principalId").is(userId).and("_id").gte(eventStartDate).lte(eventEndDate));
-        long size = mongoTemplate.count(query, ListEvents.class, mainCollection);
-        query.skip((skip - 1) * (limit)).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
-        List<Event> eventList = mongoTemplate.find(query, Event.class, mainCollection);
+        Time time = new Time(Integer.valueOf(date.substring(4)),
+                Integer.valueOf(date.substring(2, 4)),
+                Integer.valueOf(date.substring(0, 2)));
+        long [] range = Time.specificDateToEpochRange(time, zoneId);
 
-        for (Event event : eventList) {
-            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
-            Time time1 = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
-                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
-            event.setTime(time1);
-        }
+        Query query = new Query(Criteria.where("_id").gte(range[0]).lte(range[1]).and("principalId").is(userId));
 
-        ListEvents listEvents = new ListEvents(size, (int) Math.ceil(size / limit), eventList);
-        return listEvents;
+        long size = mongoTemplate.find(query, Report.class,  mainCollection).size();
+
+        List<Event> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit),Event.class, mainCollection);
+
+        return new ListEvents(size, (int) Math.ceil(size / limit), reportList);
     }
 
     @Override

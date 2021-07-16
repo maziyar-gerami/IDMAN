@@ -6,6 +6,7 @@ import lombok.Setter;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Utils.Convertor.DateConverter;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.Calendar;
@@ -112,6 +113,19 @@ public class Time {
         ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
 
         return strDate+currentOffsetForMyZone.toString().replaceAll(":","");
+    }
+
+    public static long[] specificDateToEpochRange(Time time, ZoneId zoneId) throws ParseException {
+
+        long[] result = new long[2];
+
+        LocalDate day = LocalDate.of(time.getYear(),time.getMonth(),time.getDay()) ;
+
+        result[0] = day.atStartOfDay().atZone(zoneId).toEpochSecond() * 1000;
+        result[1] = day.plusDays(1).atStartOfDay().atZone(zoneId).toEpochSecond() * 1000;
+
+        return result;
+
     }
 
     public static String setEndTime(String input) {
@@ -230,6 +244,10 @@ public class Time {
                 String.format("%03d", Integer.valueOf(timeObject.getMilliSeconds())) + "+0330";
 
         return timeObject.getYear() + timeObject.getMonth() + timeObject.getDay() + time;
+    }
+
+    public static Date convertEpochToDate(long epoch){
+        return new Date(epoch);
     }
 
     public static Time longToPersianTime(Long in) {

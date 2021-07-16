@@ -83,8 +83,8 @@ public class Event implements Serializable {
 
     }
 
-    public String getServerip() {
-        return this.properties.serverip;
+    public Time getTime() {
+        return Time.longToPersianTime(Long.valueOf(_id));
     }
 
     public AgentInfo getAgentInfo() {
