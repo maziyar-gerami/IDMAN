@@ -79,7 +79,7 @@ public class BuildAttributes {
             ZoneId systemZone = zoneId; // my timezone
             ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
 
-            attrs.put("pwdEndTime", Time.setEndTime(p.getEndTime() )+ 'Z');
+            attrs.put("pwdEndTime", Time.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
         }
 
         attrs.put("pwdAttribute", "userPassword");
@@ -197,8 +197,7 @@ public class BuildAttributes {
 
         //EndTime
         if (p.getEndTime() != null && p.getEndTime() != "") {
-                context.setAttributeValue("pwdEndTime", Time.setEndTime(p.getEndTime()) +
-                        'Z');
+                context.setAttributeValue("pwdEndTime", Time.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
 
         } else
             context.removeAttributeValue("pwdEndTime", old.getEndTime());

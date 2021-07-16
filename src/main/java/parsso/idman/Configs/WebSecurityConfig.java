@@ -76,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-/*
+
 
 
 
@@ -179,7 +179,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-*/
+
 
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .csrf().disable()

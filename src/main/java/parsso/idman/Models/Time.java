@@ -103,7 +103,7 @@ public class Time {
         return strDate+currentOffsetForMyZone.toString().replaceAll(":","");
     }
 
-    public static String epochToDate(long timeInMilliseconds) {
+    public static String epochToDateLdapFormat(long timeInMilliseconds) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss.SSS");
 
         String strDate = formatter.format(new Date(timeInMilliseconds));
