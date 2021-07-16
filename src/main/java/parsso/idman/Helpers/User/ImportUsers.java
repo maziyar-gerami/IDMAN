@@ -17,7 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Models.Time;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
 
@@ -78,7 +78,7 @@ public class ImportUsers {
 
             if ((row.getCell(sequence[11]) != null) && !(row.getCell(sequence[11]).equals("")))
                 try {
-                    user.setEndTime(Time.setEndTime(formatter.formatCellValue(row.getCell(sequence[11]))));
+                    user.setEndTime(TimeHelper.setEndTime(formatter.formatCellValue(row.getCell(sequence[11]))));
                 } catch (Exception e) {
 
                 }

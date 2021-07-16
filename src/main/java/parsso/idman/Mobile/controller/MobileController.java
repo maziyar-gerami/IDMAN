@@ -26,14 +26,19 @@ import java.util.List;
 @RestController
 public class MobileController {
 
-    @Value(value = "${base.url}") private String url;
+    @Value(value = "${base.url}")
+    private String url;
 
-    @Autowired private UserRepo userRepo;
-    @Autowired private ServicesRepoImpl servicesRepo;
-    @Autowired private EventRepo eventRepo;
-    @Autowired private ServiceRepo serviceRepo;
-    @Autowired private parsso.idman.Helpers.User.Operations operations;
-
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private ServicesRepoImpl servicesRepo;
+    @Autowired
+    private EventRepo eventRepo;
+    @Autowired
+    private ServiceRepo serviceRepo;
+    @Autowired
+    private parsso.idman.Helpers.User.Operations operations;
 
 
     @GetMapping(value = "/api/mobile/qrcode", produces = MediaType.IMAGE_PNG_VALUE)

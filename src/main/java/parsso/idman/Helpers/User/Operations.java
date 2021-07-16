@@ -28,11 +28,15 @@ import java.util.UUID;
 @Service
 public class Operations {
 
-    private String model = "Users";
-    @Value("${qr.devices.path}")private String qrDevicesPath;
-    @Autowired BuildDnUser buildDnUser;
-    @Autowired UserRepo userRepo;
-    @Autowired LdapTemplate ldapTemplate;
+    @Autowired
+    BuildDnUser buildDnUser;
+    @Autowired
+    UserRepo userRepo;
+    @Autowired
+    LdapTemplate ldapTemplate;
+    private final String model = "Users";
+    @Value("${qr.devices.path}")
+    private String qrDevicesPath;
 
     public HttpStatus enable(String doer, String uid) {
 
@@ -117,7 +121,8 @@ public class Operations {
                 try {
                     modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
                     ldapTemplate.modifyAttributes(dn, modificationItems);
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
 
                 logger.warn(new ReportMessage(model, user.getUserId(), "", "unlock", "success", "").toString());
                 return HttpStatus.OK;
@@ -145,26 +150,25 @@ public class Operations {
             //JSON parser object to parse read file
             JSONParser jsonParser = new JSONParser();
 
-            try (FileReader reader = new FileReader(qrDevicesPath))
-            {
+            try (FileReader reader = new FileReader(qrDevicesPath)) {
                 //Read JSON file
                 Object obj = jsonParser.parse(reader);
                 org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) obj;
 
                 boolean existed = false;
 
-                for(Iterator iterator = jsonObject.keySet().iterator(); iterator.hasNext();) {
+                for (Iterator iterator = jsonObject.keySet().iterator(); iterator.hasNext(); ) {
 
                     String key = (String) iterator.next();
                     String value = (String) jsonObject.get(key);
                     if (value.equalsIgnoreCase(user.getUserId())) {
-                        jsonObject.remove(key,value);
+                        jsonObject.remove(key, value);
                         existed = true;
                         break;
                     }
                 }
 
-                jsonObject.put(uuid,user.getUserId());
+                jsonObject.put(uuid, user.getUserId());
 
                 ObjectMapper mapper = new ObjectMapper();
 
@@ -177,21 +181,21 @@ public class Operations {
                     e.printStackTrace();
                 }
 
-                if(!existed)
+                if (!existed)
                     action = "Update";
 
-                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "success", ""));
+                logger.warn(new ReportMessage(model, user.getUserId(), "DeviceID", action, "success", ""));
 
                 return uuid;
 
 
             } catch (FileNotFoundException e) {
-                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "file not found"));
+                logger.warn(new ReportMessage(model, user.getUserId(), "DeviceID", action, "fail", "file not found"));
             } catch (IOException e) {
-                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "Saving problem"));
+                logger.warn(new ReportMessage(model, user.getUserId(), "DeviceID", action, "fail", "Saving problem"));
 
-            }  catch (org.json.simple.parser.ParseException e) {
-                logger.warn(new ReportMessage(model,user.getUserId(),"DeviceID", action, "fail", "json parse"));
+            } catch (org.json.simple.parser.ParseException e) {
+                logger.warn(new ReportMessage(model, user.getUserId(), "DeviceID", action, "fail", "json parse"));
 
             }
         }

@@ -46,6 +46,8 @@ public interface UserRepo {
 
     List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
 
+    String getByMobile(String mobile);
+
     ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus);
 
     int sendEmail(String email, String uid, String cid, String answer);

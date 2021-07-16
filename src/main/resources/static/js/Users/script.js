@@ -881,87 +881,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     let endTimeFinal = null;
-                    if(document.getElementById('endTime').value != ""){
-                        let dateEndTemp = document.getElementById('endTime').value.split("  ");
-                        let dateEnd = dateEndTemp[0].split(' ');
-                        let dateEndFinal;
-                        dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
-                        dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
+                    if(document.getElementById("endTime").value != ""){
+                        let dateEndTemp = document.getElementById("endTime").value.split("  ");
+                        let dateEnd = dateEndTemp[0].split(" ");
+                        dateEnd[dateEnd.length-1] = parseInt(this.FaNumToEnNum(dateEnd[dateEnd.length-1]));
+                        dateEnd[dateEnd.length-3] = parseInt(this.FaNumToEnNum(dateEnd[dateEnd.length-3]));
+                        dateEnd[dateEnd.length-2] = parseInt(this.StrMonthToNumMonth(dateEnd[dateEnd.length-2]));
 
-                        switch(dateEnd[dateEnd.length-2]) {
-                        case "فروردین":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "اردیبهشت":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "خرداد":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "تیر":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "مرداد":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "شهریور":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "مهر":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "آبان":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "آذر":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "دی":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "بهمن":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
-                            break;
-                        case "اسفند":
-                            dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
-                            break;
-                        default:
-                            console.log("Wrong Input for Month");
-                        }
+                        let timeEnd = dateEndTemp[1].split(":");
+                        timeEnd[0] = parseInt(this.FaNumToEnNum(timeEnd[0]));
+                        timeEnd[1] = parseInt(this.FaNumToEnNum(timeEnd[1]));
 
-                        let timeEnd = dateEndTemp[1].split(':');
-
-                        timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
-                        
-                        let dateE = dateEndFinal.split('-');
-
-                        if(parseInt(dateE[1]) < 7){
-                        timeEnd = timeEnd + ":00.000+4:30";
-                        }else{
-                        timeEnd = timeEnd + ":00.000+3:30";
-                        }
-
-                        let TempE = timeEnd.split(':');
-                        if(TempE[0].length == 1){
-                        TempE[0] = '0' + TempE[0];
-                        timeEnd = "";
-                        for(i = 0; i < TempE.length; ++i){
-                            timeEnd = timeEnd + TempE[i] + ':';
-                        }
-                        timeEnd = timeEnd.substring(0,timeEnd.length-1);
-                        }
-
-                        TempE = dateEndFinal.split('-');
-                        if(TempE[1].length == 1){
-                        TempE[1] = '0' + TempE[1];
-                        }
-                        if(TempE[2].length == 1){
-                        TempE[2] = '0' + TempE[2];
-                        }
-                        
-                        dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
-
-                        endTimeFinal = dateEndFinal + "T" + timeEnd;
+                        endTimeFinal = new persianDate([dateEnd[dateEnd.length-1], dateEnd[dateEnd.length-2], dateEnd[dateEnd.length-3], timeEnd[0], timeEnd[1]]).unix();
                     }
 
                     if (check == true) {
@@ -989,9 +920,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
 
                         axios({
-                            method: 'put',
-                            url: url + '/api/users/u/' + id,  //
-                            headers: {'Content-Type': 'application/json'},
+                            method: "put",
+                            url: url + "/api/users/u/" + id,  //
+                            headers: {"Content-Type": "application/json"},
                             data: JSON.stringify({
                                 userId: id,
                                 firstName: document.getElementById('editInfo.firstNameUpdate').value,
@@ -1098,95 +1029,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     let endTimeFinal = null;
-                    if(document.getElementById('endTimeCreate').value != ""){
-                        let dateEndTemp = document.getElementById('endTimeCreate').value.split("  ");
-                        let dateEnd = dateEndTemp[0].split(' ');
-                        let dateEndFinal;
-                        dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
-                        dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
+                    if(document.getElementById("endTimeCreate").value != ""){
+                        let dateEndTemp = document.getElementById("endTimeCreate").value.split("  ");
+                        let dateEnd = dateEndTemp[0].split(" ");
+                        dateEnd[dateEnd.length-1] = parseInt(this.FaNumToEnNum(dateEnd[dateEnd.length-1]));
+                        dateEnd[dateEnd.length-3] = parseInt(this.FaNumToEnNum(dateEnd[dateEnd.length-3]));
+                        dateEnd[dateEnd.length-2] = parseInt(this.StrMonthToNumMonth(dateEnd[dateEnd.length-2]));
 
+                        let timeEnd = dateEndTemp[1].split(":");
+                        timeEnd[0] = parseInt(this.FaNumToEnNum(timeEnd[0]));
+                        timeEnd[1] = parseInt(this.FaNumToEnNum(timeEnd[1]));
 
-                        switch(dateEnd[dateEnd.length-2]) {
-                            case "فروردین":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
-                                break;
-                            case "اردیبهشت":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
-                                break;
-                            case "خرداد":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
-                                break;
-                            case "تیر":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
-                                break;
-                            case "مرداد":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
-                                break;
-                            case "شهریور":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
-                                break;
-                            case "مهر":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
-                                break;
-                            case "آبان":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
-                                break;
-                            case "آذر":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
-                                break;
-                            case "دی":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
-                                break;
-                            case "بهمن":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
-                                break;
-                            case "اسفند":
-                                dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
-                                break;
-                            default:
-                                console.log("Wrong Input for Month");
-                        }
-
-                        let timeEnd = dateEndTemp[1].split(':');
-
-                        timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
-
-                        let dateE = dateEndFinal.split('-');
-
-                        if(parseInt(dateE[1]) < 7){
-                            timeEnd = timeEnd + ":00.000+4:30";
-                        }else{
-                            timeEnd = timeEnd + ":00.000+3:30";
-                        }
-
-                        let TempE = timeEnd.split(':');
-                        if(TempE[0].length == 1){
-                            TempE[0] = '0' + TempE[0];
-                            timeEnd = "";
-                            for(i = 0; i < TempE.length; ++i){
-                                timeEnd = timeEnd + TempE[i] + ':';
-                            }
-                            timeEnd = timeEnd.substring(0,timeEnd.length-1);
-                        }
-
-                        TempE = dateEndFinal.split('-');
-                        if(TempE[1].length == 1){
-                            TempE[1] = '0' + TempE[1];
-                        }
-                        if(TempE[2].length == 1){
-                            TempE[2] = '0' + TempE[2];
-                        }
-
-                        dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
-
-                        endTimeFinal = dateEndFinal + "T" + timeEnd;
+                        endTimeFinal = new persianDate([dateEnd[dateEnd.length-1], dateEnd[dateEnd.length-2], dateEnd[dateEnd.length-3], timeEnd[0], timeEnd[1]]).unix();
                     }
 
                     if(check==true) {
                         axios({
-                            method: 'post',
+                            method: "post",
                             url: url + "/api/users",  //
-                            headers: {'Content-Type': 'application/json'},
+                            headers: {"Content-Type": "application/json"},
                             data: JSON.stringify({
                                     userId: document.getElementById('editInfo.userIdCreate').value,
                                     firstName: document.getElementById('editInfo.firstNameCreate').value,
@@ -1337,6 +1198,48 @@ document.addEventListener('DOMContentLoaded', function () {
                   }
                 }
                 return sEn;
+            },
+            StrMonthToNumMonth: function (str) {
+                switch(str) {
+                    case "فروردین":
+                        return "01";
+                        break;
+                    case "اردیبهشت":
+                        return "02";
+                        break;
+                    case "خرداد":
+                        return "03";
+                        break;
+                    case "تیر":
+                        return "04";
+                        break;
+                    case "مرداد":
+                        return "05";
+                        break;
+                    case "شهریور":
+                        return "06";
+                        break;
+                    case "مهر":
+                        return "07";
+                        break;
+                    case "آبان":
+                        return "08";
+                        break;
+                    case "آذر":
+                        return "09";
+                        break;
+                    case "دی":
+                        return "10";
+                        break;
+                    case "بهمن":
+                        return "11";
+                        break;
+                    case "اسفند":
+                        return "12";
+                        break;
+                    default:
+                        console.log("Wrong Input for Month");
+                }
             },
             rowSelected:function(id) {
                 let row = document.getElementById("row-" + id);

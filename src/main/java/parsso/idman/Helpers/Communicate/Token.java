@@ -132,7 +132,13 @@ public class Token {
 
         Query query = new Query(Criteria.where("userId").is(user.getUserId()));
 
-        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
+        UsersExtraInfo usersExtraInfo;
+
+        try {
+            usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
+        }catch (NullPointerException e){
+            usersExtraInfo = new UsersExtraInfo(user);
+        }
 
         int token = createRandomNum();
 
@@ -149,18 +155,14 @@ public class Token {
         long cTimeStamp = currentTimestamp.getTime();
         user.getUsersExtraInfo().setResetPassToken(String.valueOf(token) + cTimeStamp);
 
-
         try {
-
             mongoTemplate.save(usersExtraInfo, collection);
-
         } catch (Exception e) {
             return false;
         }
 
         return true;
     }
-
 
     public int requestToken(User user) {
         return instantMessage.sendMessage(user);

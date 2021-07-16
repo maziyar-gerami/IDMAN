@@ -72,7 +72,7 @@ public class GroupsController {
 
     @PutMapping("/api/groups/password/expire")
     public ResponseEntity<HttpStatus> expireUsersGroupPassword(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
-        return new ResponseEntity<>(groupRepo.expireUsersGroupPassword("maziyar", jsonObject));
+        return new ResponseEntity<>(groupRepo.expireUsersGroupPassword(request.getUserPrincipal().getName(), jsonObject));
     }
 
 }

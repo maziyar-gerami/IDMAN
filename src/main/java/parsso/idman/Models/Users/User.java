@@ -11,8 +11,8 @@ import org.bson.types.ObjectId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Models.SkyRoom;
-import parsso.idman.Models.Time;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +26,8 @@ public class User implements UserDetails, Comparable {
     private static final String PREFIX = "ROLE_";
     @JsonIgnore
     ObjectId _id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    SkyRoom skyRoom;
     private String userId;
     private String firstName;
     private String lastName;
@@ -61,8 +63,6 @@ public class User implements UserDetails, Comparable {
     private UsersExtraInfo usersExtraInfo;
     private boolean unDeletable;
     private boolean profileInaccessibility;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    SkyRoom skyRoom;
 
 
     public User() {
@@ -71,7 +71,7 @@ public class User implements UserDetails, Comparable {
     }
 
     public String getExportEndTime() {
-        return Time.getExportEndTime(getEndTime());
+        return TimeHelper.getExportEndTime(getEndTime());
     }
 
     public String getExportMemberOf() {

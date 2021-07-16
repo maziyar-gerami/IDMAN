@@ -48,7 +48,8 @@ public class Level {
         else if (levels.valueOf(doer.getUsersExtraInfo().getRole()).compareTo(levels.valueOf(user.getUsersExtraInfo().getRole())) > 0)
             return false;
 
-        else return levels.valueOf(doer.getUsersExtraInfo().getRole()).compareTo(levels.valueOf(user.getUsersExtraInfo().getRole())) < 0;
+        else
+            return levels.valueOf(doer.getUsersExtraInfo().getRole()).compareTo(levels.valueOf(user.getUsersExtraInfo().getRole())) < 0;
 
     }
 

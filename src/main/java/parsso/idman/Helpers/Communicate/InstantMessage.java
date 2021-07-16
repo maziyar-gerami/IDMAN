@@ -88,29 +88,38 @@ public class InstantMessage {
             mongoTemplate.remove(query, collection);
             return -1;
         }
-        if (checkMobile(mobile).size() > 0) {
-            User user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
-            if (tokenClass.insertMobileToken(user)) {
-                try {
-                    String receptor = mobile;
-                    String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
-                    KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-                    api.verifyLookup(receptor, message, "", "", "mfa");
-                    mongoTemplate.remove(query, collection);
-                    return Integer.valueOf(SMS_VALID_TIME);
 
-                } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                    System.out.print("HttpException  : " + ex.getMessage());
-                    return 0;
-                } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                    System.out.print("ApiException : " + ex.getMessage());
-                    return 0;
-                }
-            } else
+        User user = new User();
+
+        if (checkMobile(mobile).size() == 0)
+            return -3;
+
+        else if (checkMobile(mobile).size() > 1)
+            return -2;
+
+        else if (checkMobile(mobile).size() == 1)
+            user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+
+        if (tokenClass.insertMobileToken(user)) {
+            try {
+                String receptor = mobile;
+                String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+                KavenegarApi api = new KavenegarApi(SMS_API_KEY);
+                api.verifyLookup(receptor, message, "", "", "mfa");
+                mongoTemplate.remove(query, collection);
+                return Integer.valueOf(SMS_VALID_TIME);
+
+            } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                System.out.print("HttpException  : " + ex.getMessage());
                 return 0;
-
+            } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                System.out.print("ApiException : " + ex.getMessage());
+                return 0;
+            }
         } else
             return 0;
+
+
     }
 
     private int sendMessageMagfa(String mobile, String cid, String answer) {
@@ -122,8 +131,17 @@ public class InstantMessage {
             mongoTemplate.remove(query, collection);
             return -1;
         }
-        if (checkMobile(mobile).size() > 0) {
-            User user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+
+        User user = new User();
+
+        if (checkMobile(mobile).size() == 0)
+            return -3;
+
+        else if (checkMobile(mobile).size() > 1)
+            return -2;
+
+        else if (checkMobile(mobile).size() == 1)
+             user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
             if (tokenClass.insertMobileToken(user)) {
                 try {
                     Texts texts = new Texts();
@@ -145,7 +163,7 @@ public class InstantMessage {
             } else
                 return 0;
 
-        }
+
         return 0;
     }
 
@@ -229,10 +247,19 @@ public class InstantMessage {
             return -1;
         }
 
+        User user = new User();
+
+        if (checkMobile(mobile).size() == 0)
+            return -3;
+
+        else if (checkMobile(mobile).size() > 1)
+            return -2;
+
+
         if (checkMobile(mobile) != null & userRepo.retrieveUsers(uId).getUserId() != null) {
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
-            User user = userRepo.retrieveUsers(uId);
+            user = userRepo.retrieveUsers(uId);
             for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
 
             for (User p : people) {
@@ -258,16 +285,14 @@ public class InstantMessage {
                         }
 
                     }
-
-
                 }
             }
+
 
         } else
             return 0;
 
         return 0;
-
     }
 
 
@@ -281,10 +306,18 @@ public class InstantMessage {
             return -1;
         }
 
+        User user = new User();
+
+        if (checkMobile(mobile).size() == 0)
+            return -3;
+
+        else if (checkMobile(mobile).size() > 1)
+            return -2;
+
         if (checkMobile(mobile) != null & userRepo.retrieveUsers(uId).getUserId() != null) {
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
-            User user = userRepo.retrieveUsers(uId);
+            user = userRepo.retrieveUsers(uId);
             for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
 
             for (User p : people) {
@@ -320,7 +353,6 @@ public class InstantMessage {
             return 0;
 
         return 0;
-
     }
 
 

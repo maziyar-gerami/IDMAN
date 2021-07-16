@@ -35,43 +35,30 @@ import java.util.List;
 @Service
 public class EmailServiceImpl implements EmailService {
 
+    private final String collection = Variables.col_captchas;
     @Value("${spring.mail.username}")
     String from;
-
-    @Autowired
-    private JavaMailSender mailSender;
-
     @Autowired
     LdapTemplate ldapTemplate;
 
     @Autowired
     UserAttributeMapper userAttributeMapper;
-
-    @Value("${spring.ldap.base.dn}")
-    private String BASE_DN;
-
-    @Value("${token.valid.email}")
-    private String EMAIL_VALID_TIME;
-
-
-    private final String collection = Variables.col_captchas;
-
     @Autowired
     MongoTemplate mongoTemplate;
-
     @Autowired
     Token tokenClass;
-
     @Autowired
     UserRepo userRepo;
-
-    @Autowired
-    private TemplateEngine templateEngine;
-
-
     @Autowired
     MailProperties mailProperties;
-
+    @Autowired
+    private JavaMailSender mailSender;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
+    @Value("${token.valid.email}")
+    private String EMAIL_VALID_TIME;
+    @Autowired
+    private TemplateEngine templateEngine;
 
     public void sendSimpleMessage(User user, String subject, String url) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -91,12 +78,11 @@ public class EmailServiceImpl implements EmailService {
         helper.setFrom(from);
         helper.setTo(user.getMail());
         helper.setSubject(subject);
-        String s = Variables.template(user,url);
-        helper.setText(Variables.template(user, url),true);
+        String s = Variables.template(user, url);
+        helper.setText(Variables.template(user, url), true);
 
         mailSender.send(message);
     }
-
 
 
     public HttpStatus sendMail(String email) {
@@ -166,8 +152,16 @@ public class EmailServiceImpl implements EmailService {
             return -1;
         }
 
-        if (checkMail(email) != null) {
-            User user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
+        User user = new User();
+
+        if (checkMail(email).size() == 0)
+            return -3;
+
+        else if (checkMail(email).size() > 1)
+            return -2;
+
+        if (checkMail(email).size() ==1) {
+            user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
 
@@ -176,7 +170,7 @@ public class EmailServiceImpl implements EmailService {
             try {
                 sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 return 0;
             }
 
@@ -197,7 +191,7 @@ public class EmailServiceImpl implements EmailService {
 
         String text = user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')) + start + day + middle + end;
 
-        sendHtmlMessage(user,subject,text);
+        sendHtmlMessage(user, subject, text);
 
     }
 
@@ -212,6 +206,8 @@ public class EmailServiceImpl implements EmailService {
             mongoTemplate.remove(query, collection);
             return -1;
         }
+
+
 
         if (checkMail(email) != null & userRepo.retrieveUsers(uid).getUserId() != null) {
             List<JSONObject> ids = checkMail(email);
@@ -228,7 +224,9 @@ public class EmailServiceImpl implements EmailService {
                     String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
                     try {
                         sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
-                    } catch (Exception e){ return 0;}
+                    } catch (Exception e) {
+                        return 0;
+                    }
 
                     mongoTemplate.remove(query, collection);
                     return Integer.valueOf(EMAIL_VALID_TIME);
@@ -236,10 +234,11 @@ public class EmailServiceImpl implements EmailService {
                 }
             }
 
+            return -2;
+
         } else
             return 0;
 
-        return 0;
     }
 
     public List<JSONObject> checkMail(String email) {

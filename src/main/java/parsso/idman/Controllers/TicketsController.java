@@ -14,7 +14,6 @@ import parsso.idman.Repos.TicketRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.stream.Collectors;
 
 @Controller
 public class TicketsController {
@@ -69,7 +68,7 @@ public class TicketsController {
                                                   @RequestParam(name = "date", defaultValue = "") String date,
                                                   @PathVariable(name = "count") String count) {
 
-        return new ResponseEntity<>(ticketRepo.retrieveSentTickets(request.getUserPrincipal().getName().toLowerCase(), page, count,date), HttpStatus.OK);
+        return new ResponseEntity<>(ticketRepo.retrieveSentTickets(request.getUserPrincipal().getName().toLowerCase(), page, count, date), HttpStatus.OK);
     }
 
     @PutMapping("/api/supporter/ticket/status/{status}")

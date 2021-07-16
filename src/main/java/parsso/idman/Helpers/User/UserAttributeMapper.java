@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.UserRepo;
@@ -63,7 +63,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
             user.setUnDeletable(usersExtraInfo.isUnDeletable());
 
             //user.getUsersExtraInfo().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
-            user.setEndTime(null != attributes.get("pwdEndTime") ? Time.setEndTime(attributes.get("pwdEndTime").get().toString()) : null);
+            user.setEndTime(null != attributes.get("pwdEndTime") ? TimeHelper.setEndTime(attributes.get("pwdEndTime").get().toString()) : null);
 
             if (usersExtraInfo.getRole() == null)
                 user.setRole(usersExtraInfo.getRole());

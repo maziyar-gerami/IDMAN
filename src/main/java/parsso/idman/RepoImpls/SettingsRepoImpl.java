@@ -45,9 +45,6 @@ public class SettingsRepoImpl implements SettingsRepo {
     private long expirePwdMessageTime;
 
 
-
-
-
     @Override
     public HttpStatus emailNotification() {
         try {
@@ -101,7 +98,6 @@ public class SettingsRepoImpl implements SettingsRepo {
     }
 
 
-
     public void sendWarnExpireMessage(User user, String day) {
 
         try {
@@ -111,13 +107,6 @@ public class SettingsRepoImpl implements SettingsRepo {
         }
 
     }
-
-
-
-
-
-
-
 
 
 }

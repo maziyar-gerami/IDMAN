@@ -349,8 +349,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent.message = item.message;
             /*tempEvent.details = item.details;*/
 
-            let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
-            tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+            tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
             tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
             
             vm.reports.push(tempEvent);
@@ -381,8 +380,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent.message = item.message;
             /*tempEvent.details = item.details;*/
 
-            let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
-            tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+            tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
             tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
             
             vm.report.push(tempEvent);
@@ -419,8 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
               tempEvent.message = item.message;
               /*tempEvent.details = item.details;*/
 
-              let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
-              tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+              tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
               tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
                 
               vm.report.push(tempEvent);
@@ -456,8 +453,7 @@ document.addEventListener('DOMContentLoaded', function () {
               tempEvent.message = item.message;
               /*tempEvent.details = item.details;*/
 
-              let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
-              tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+              tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
               tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
               
               vm.reports.push(tempEvent);
@@ -501,8 +497,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 tempEvent.message = item.message;
                 /*tempEvent.details = item.details;*/
 
-                let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
-                tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+                tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
                 tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
                 
                 vm.reports.push(tempEvent);
@@ -539,8 +534,7 @@ document.addEventListener('DOMContentLoaded', function () {
               tempEvent.message = item.message;
               /*tempEvent.details = item.details;*/
 
-              let dateArray = vm.gregorian_to_jalali(item.dateTime.year, item.dateTime.month, item.dateTime.day)
-              tempEvent.date = dateArray[0] + "/" + dateArray[1] + "/" + dateArray[2];
+              tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
               tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
                 
               vm.reports.push(tempEvent);

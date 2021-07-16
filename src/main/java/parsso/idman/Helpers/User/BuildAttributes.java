@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
 
@@ -26,13 +26,15 @@ public class BuildAttributes {
     MongoTemplate mongoTemplate;
     @Autowired
     BuildDnUser buildDnUser;
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @Value("${default.user.password}")
     private String defaultPassword;
-    @Autowired private UserRepo userRepo;
-    @Autowired private LdapTemplate ldapTemplate;
-    @Autowired private Operations operations;
-
-    ZoneId zoneId = ZoneId.of(Variables.ZONE);
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private LdapTemplate ldapTemplate;
+    @Autowired
+    private Operations operations;
 
     public Attributes BuildAttributes(User p) {
 
@@ -79,7 +81,7 @@ public class BuildAttributes {
             ZoneId systemZone = zoneId; // my timezone
             ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
 
-            attrs.put("pwdEndTime", Time.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+            attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
         }
 
         attrs.put("pwdAttribute", "userPassword");
@@ -197,7 +199,7 @@ public class BuildAttributes {
 
         //EndTime
         if (p.getEndTime() != null && p.getEndTime() != "") {
-                context.setAttributeValue("pwdEndTime", Time.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+            context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
 
         } else
             context.removeAttributeValue("pwdEndTime", old.getEndTime());

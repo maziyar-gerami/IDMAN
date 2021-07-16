@@ -108,7 +108,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 
             int equalIndex = line.indexOf('=');
 
-            if (equalIndex>0) {
+            if (equalIndex > 0) {
                 name = line.substring(0, equalIndex);
 
                 value = line.substring(equalIndex + 1);
@@ -314,56 +314,56 @@ public class ConfigRepoImpl implements ConfigRepo {
         String[] files = folder.list();
         List<Config> configs = new LinkedList<>();
         Config config = null;
-        if(files != null )
-        for (String file : files) {
-            if (file.endsWith(".properties"))
-                config = new Config();
+        if (files != null)
+            for (String file : files) {
+                if (file.endsWith(".properties"))
+                    config = new Config();
 
-            try {
+                try {
 
-                config.setName(file);
-                SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+                    config.setName(file);
+                    SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
 
-                Date date = parserSDF.parse(file);
+                    Date date = parserSDF.parse(file);
 
-                Calendar myCal = new GregorianCalendar();
-                myCal.setTime(date);
+                    Calendar myCal = new GregorianCalendar();
+                    myCal.setTime(date);
 
-                DateConverter dateConverter = new DateConverter();
+                    DateConverter dateConverter = new DateConverter();
 
-                dateConverter.gregorianToPersian(myCal.get(Calendar.YEAR), myCal.get(Calendar.MONTH) + 1, myCal.get(Calendar.DAY_OF_MONTH));
+                    dateConverter.gregorianToPersian(myCal.get(Calendar.YEAR), myCal.get(Calendar.MONTH) + 1, myCal.get(Calendar.DAY_OF_MONTH));
 
-                int inPersianDay = dateConverter.getDay();
-                int inPersianMonth = dateConverter.getMonth();
-                int inPersianYear = dateConverter.getYear();
+                    int inPersianDay = dateConverter.getDay();
+                    int inPersianMonth = dateConverter.getMonth();
+                    int inPersianYear = dateConverter.getYear();
 
-                Time time = new Time(
-                        inPersianYear,
-                        inPersianMonth,
-                        inPersianDay,
+                    Time time = new Time(
+                            inPersianYear,
+                            inPersianMonth,
+                            inPersianDay,
 
-                        myCal.get(Calendar.HOUR_OF_DAY),
-                        myCal.get(Calendar.MINUTE),
-                        myCal.get(Calendar.SECOND)
-                );
+                            myCal.get(Calendar.HOUR_OF_DAY),
+                            myCal.get(Calendar.MINUTE),
+                            myCal.get(Calendar.SECOND)
+                    );
 
-                config.setDateTime(time);
-                Resource resource = new ClassPathResource(backUpOfProperties);
-                File filetemp = resource.getFile().getAbsoluteFile();
-                Scanner myReader = new Scanner(filetemp);
+                    config.setDateTime(time);
+                    Resource resource = new ClassPathResource(backUpOfProperties);
+                    File filetemp = resource.getFile().getAbsoluteFile();
+                    Scanner myReader = new Scanner(filetemp);
 
-                int dot = file.indexOf('.');
-                String system = file.substring(20, dot);
+                    int dot = file.indexOf('.');
+                    String system = file.substring(20, dot);
 
-                List<Setting> settings = parser(myReader, system);
-                config.setSettingList(settings);
+                    List<Setting> settings = parser(myReader, system);
+                    config.setSettingList(settings);
 
-            } catch (Exception e) {
-                continue;
+                } catch (Exception e) {
+                    continue;
+                }
+                configs.add(config);
             }
-            configs.add(config);
-        }
         return configs;
     }
 

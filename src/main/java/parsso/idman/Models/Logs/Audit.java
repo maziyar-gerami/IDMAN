@@ -4,6 +4,7 @@ package parsso.idman.Models.Logs;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Models.Time;
 
 import java.util.Date;
@@ -23,9 +24,8 @@ public class Audit {
     private Time time;
 
 
-
     public Time getTime() {
-        return Time.longToPersianTime(whenActionWasPerformed.getTime());
+        return TimeHelper.longToPersianTime(whenActionWasPerformed.getTime());
     }
 
 

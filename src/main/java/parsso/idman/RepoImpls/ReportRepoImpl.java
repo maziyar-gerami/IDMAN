@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ListReports;
 import parsso.idman.Models.Logs.Report;
@@ -44,7 +45,7 @@ public class ReportRepoImpl implements ReportRepo {
                     logDate.getHour(), logDate.getMinute(), logDate.getSecond());
             report.setDateTime(time1);
         }
-        return new ListReports(size, (int) Math.ceil((double)size / (double)n), allReports);
+        return new ListReports(size, (int) Math.ceil((double) size / (double) n), allReports);
     }
 
     @Override
@@ -69,19 +70,19 @@ public class ReportRepoImpl implements ReportRepo {
     @Override
     public ListReports getLogsByDate(String date, int p, int n) throws ParseException {
 
-        int skip = (p-1)*n;
+        int skip = (p - 1) * n;
         int limit = n;
 
         Time time = new Time(Integer.valueOf(date.substring(4)),
                 Integer.valueOf(date.substring(2, 4)),
                 Integer.valueOf(date.substring(0, 2)));
-        long [] range = Time.specificDateToEpochRange(time, zoneId);
+        long[] range = TimeHelper.specificDateToEpochRange(time, zoneId);
 
         Query query = new Query(Criteria.where("millis").gte(range[0]).lte(range[1]));
 
-        long size = mongoTemplate.find(query,Report.class,  mainCollection).size();
+        long size = mongoTemplate.find(query, Report.class, mainCollection).size();
 
-        List<Report> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "millis")).skip(skip).limit(limit),Report.class, mainCollection);
+        List<Report> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "millis")).skip(skip).limit(limit), Report.class, mainCollection);
 
         ListReports listReports = new ListReports(size, (int) Math.ceil(size / limit), reportList);
         return listReports;
@@ -90,19 +91,19 @@ public class ReportRepoImpl implements ReportRepo {
     @Override
     public ListReports getListUserLogByDate(String date, String userId, int p, int n) throws ParseException {
 
-        int skip = (p-1)*n;
+        int skip = (p - 1) * n;
         int limit = n;
 
         Time time = new Time(Integer.valueOf(date.substring(4)),
                 Integer.valueOf(date.substring(2, 4)),
                 Integer.valueOf(date.substring(0, 2)));
-        long [] range = Time.specificDateToEpochRange(time, zoneId);
+        long[] range = TimeHelper.specificDateToEpochRange(time, zoneId);
 
         Query query = new Query(Criteria.where("millis").gte(range[0]).lte(range[1]).and("loggerName").is(userId));
 
-        long size = mongoTemplate.find(query,Report.class,  mainCollection).size();
+        long size = mongoTemplate.find(query, Report.class, mainCollection).size();
 
-        List<Report> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "millis")).skip(skip).limit(limit),Report.class, mainCollection);
+        List<Report> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "millis")).skip(skip).limit(limit), Report.class, mainCollection);
 
         return new ListReports(size, (int) Math.ceil(size / limit), reportList);
     }

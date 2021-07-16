@@ -56,7 +56,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         Realname = user.getFirstName() + " " + user.getLastName();
         try {
             return new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole(), CreateLoginUrl(roomId, String.valueOf(userId), Realname), GetRoomGuestUrl(roomId));
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -118,7 +118,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             if (res.getBoolean("ok")) {
                 return res.getInt("result");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
         return 0;
@@ -160,7 +160,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             if (res.getBoolean("ok")) {
                 return res.getString("result");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return "error";
         }
 
@@ -213,7 +213,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             if (res.getBoolean("ok")) {
                 return res.getJSONObject("result").getInt("id");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
         return 0;
@@ -231,7 +231,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             if (res.getBoolean("ok")) {
                 return res.getString("result");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return "error";
         }
 
