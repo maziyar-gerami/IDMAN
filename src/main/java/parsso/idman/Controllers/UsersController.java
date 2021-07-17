@@ -442,7 +442,7 @@ public class UsersController {
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("time",time);
-            jsonObject.put("userId", userRepo.getByMobile(mobile));
+            jsonObject.put("userId", uid);
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         }
         else if (time == -1)

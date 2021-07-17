@@ -97,6 +97,7 @@ public class InstantMessage {
         else if (checkMobile(mobile).size() > 1)
             return -2;
 
+
         else if (checkMobile(mobile).size() == 1)
             user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
 
@@ -236,7 +237,6 @@ public class InstantMessage {
         return jsonArray;
     }
 
-
     private int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) {
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -247,19 +247,16 @@ public class InstantMessage {
             return -1;
         }
 
-        User user = new User();
 
         if (checkMobile(mobile).size() == 0)
             return -3;
 
-        else if (checkMobile(mobile).size() > 1)
-            return -2;
+        User user = userRepo.retrieveUsers(uId);
 
 
-        if (checkMobile(mobile) != null & userRepo.retrieveUsers(uId).getUserId() != null) {
+        if (user!=null && user.getUserId() != null && tokenClass.insertMobileToken(user) ) {
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
-            user = userRepo.retrieveUsers(uId);
             for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
 
             for (User p : people) {
@@ -314,7 +311,7 @@ public class InstantMessage {
         else if (checkMobile(mobile).size() > 1)
             return -2;
 
-        if (checkMobile(mobile) != null & userRepo.retrieveUsers(uId).getUserId() != null) {
+        if (checkMobile(mobile) != null && userRepo.retrieveUsers(uId).getUserId() != null && tokenClass.insertMobileToken(user)) {
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
             user = userRepo.retrieveUsers(uId);

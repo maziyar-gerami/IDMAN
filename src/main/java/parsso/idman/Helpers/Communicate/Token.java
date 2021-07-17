@@ -164,6 +164,7 @@ public class Token {
         return true;
     }
 
+
     public int requestToken(User user) {
         return instantMessage.sendMessage(user);
     }

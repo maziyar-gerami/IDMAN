@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
@@ -43,10 +44,8 @@ import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.*;
 
 import javax.naming.Name;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
-import javax.naming.directory.SearchControls;
+import javax.naming.NamingException;
+import javax.naming.directory.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -492,13 +491,30 @@ public class UserRepoImpl implements UserRepo {
         return ldapTemplate.search("ou=People," + BASE_DN, orFilter.encode(), searchControls, new SimpleUserAttributeMapper());
 
     }
+
     @Override
-    public String getByMobile(String mobile){
-        EqualsFilter equalsFilter = new EqualsFilter("mobile",mobile);
+    public String getByMobile(String mobile) {
+        EqualsFilter equalsFilter = new EqualsFilter("mobile", mobile);
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
-        return ldapTemplate.search("ou=People," + BASE_DN,equalsFilter.encode(),searchControls,new UserAttributeMapper()).get(0).getUserId();
+        String s = null;
+        try {
+            s = ldapTemplate.search("ou=People," + BASE_DN, equalsFilter.encode(), searchControls, new AttributesMapper<String>() {
+                public String mapFromAttributes(Attributes attrs)
+                        throws NamingException {
+                    if (attrs.get("uid") != null)
+                        return attrs.get("uid").get().toString();
+
+                    return "";
+                }
+                }).get(0);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return s;
     }
+
 
     @Override
     public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
