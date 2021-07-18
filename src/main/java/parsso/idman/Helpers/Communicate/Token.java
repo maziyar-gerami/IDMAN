@@ -125,7 +125,9 @@ public class Token {
 
     public int createRandomNum() {
         Random rnd = new Random();
-        return (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)) + rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS - 1) - 1)));
+        int max = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS)));
+        int min = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)))+1;
+        return min+rnd.nextInt(max-min);
     }
 
     public boolean insertMobileToken(User user) {
