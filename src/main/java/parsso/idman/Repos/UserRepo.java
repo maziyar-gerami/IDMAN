@@ -52,7 +52,7 @@ public interface UserRepo {
 
     int sendEmail(String email, String uid, String cid, String answer);
 
-    HttpStatus updatePass(String userId, String oldPass, String token);
+    HttpStatus resetPassword(String userId, String oldPass, String token);
 
     String createUrl(String userId, String token);
 
@@ -68,7 +68,6 @@ public interface UserRepo {
 
     List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException;
 
-    HttpStatus expirePassword(String name, JSONObject jsonObject);
+    List<String> expirePassword(String name, JSONObject jsonObject);
 
-    HttpStatus expire(String doer, List<UsersExtraInfo> users);
 }

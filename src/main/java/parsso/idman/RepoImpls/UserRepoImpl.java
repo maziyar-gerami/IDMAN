@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.Group.GroupsChecks;
-import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
@@ -77,6 +76,8 @@ public class UserRepoImpl implements UserRepo {
     Operations operations;
     @Autowired
     FilesStorageService storageService;
+    @Autowired
+    ExpirePassword expirePassword;
     @Value("${base.url}")
     private String BASE_URL;
     @Value("${spring.ldap.base.dn}")
@@ -625,7 +626,6 @@ public class UserRepoImpl implements UserRepo {
         for (User user : users)
             user.setUsersExtraInfo(mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 
-
         return users;
     }
 
@@ -662,9 +662,6 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public User retrieveUsers(String userId) {
-
-        Logger logger = LogManager.getLogger("SYSTEM");
-
 
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
@@ -849,7 +846,9 @@ public class UserRepoImpl implements UserRepo {
         return BASE_URL + /*"" +*/  "/api/public/validateEmailToken/" + userId + "/" + token;
     }
 
-    public HttpStatus updatePass(String userId, String pass, String token) {
+    public HttpStatus resetPassword(String userId, String pass, String token) {
+
+        Logger logger = LogManager.getLogger(userId);
 
         User user = retrieveUsers(userId);
 
@@ -871,8 +870,16 @@ public class UserRepoImpl implements UserRepo {
 
             contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
             contextUser.setAttributeValue("userPassword", pass);
-            ldapTemplate.modifyAttributes(contextUser);
 
+            try{
+                removeCurrentEndTime(userId);
+                ldapTemplate.modifyAttributes(contextUser);
+
+                logger.warn(new ReportMessage(model, userId, "password", "reset", "success", "").toString());
+
+            }catch (Exception e){
+                logger.warn(new ReportMessage(model, userId, "password", "reset", "failed", "writing to ldap").toString());
+            }
             return HttpStatus.OK;
         } else {
             return HttpStatus.FORBIDDEN;
@@ -913,15 +920,12 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus expirePassword(String doer, JSONObject jsonObject) {
+    public List<String> expirePassword(String doer, JSONObject jsonObject) {
 
-        Logger logger = LogManager.getLogger(doer);
-        Name dn;
         List<UsersExtraInfo> users = new LinkedList<>();
 
         if (((List) jsonObject.get("names")).size() == 0) {
             users.addAll(mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo));
-
 
         } else {
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
@@ -929,47 +933,7 @@ public class UserRepoImpl implements UserRepo {
                 users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
         }
 
-        return expire(doer, users);
+        return expirePassword.expire(doer, users);
     }
-
-    @Override
-    public HttpStatus expire(String doer, List<UsersExtraInfo> users) {
-        Logger logger = LogManager.getLogger(doer);
-
-        for (UsersExtraInfo user : users) {
-            if (!user.getRole().equals("SUPERADMIN")) {
-
-                ModificationItem[] modificationItems;
-                modificationItems = new ModificationItem[1];
-
-                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime", TimeHelper.getCurrentTimeStampOffset()));
-
-                try {
-                    ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
-                    mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
-                    mongoTemplate.save(user, Variables.col_usersExtraInfo);
-                    logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "add", "success", "").toString());
-
-
-                } catch (Exception e) {
-                    try {
-                        modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime", TimeHelper.getCurrentTimeStampOffset()));
-                        ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
-                        mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
-                        mongoTemplate.save(user, Variables.col_usersExtraInfo);
-                        logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "replace", "success", "").toString());
-                    } catch (Exception e1) {
-                        logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "Add", "failed", "writing to ldap").toString());
-                    }
-                }
-            } else {
-                logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "Add", "failed", "Cant add to SUPERUSER role").toString());
-
-            }
-        }
-        return HttpStatus.OK;
-    }
-
-
 }
 

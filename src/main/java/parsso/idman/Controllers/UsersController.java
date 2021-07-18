@@ -128,11 +128,17 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/password/expire")
-    public ResponseEntity<HttpStatus> expirePassword(HttpServletRequest request,
+    public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
                                                      @RequestBody JSONObject jsonObject) {
         Principal principal = request.getUserPrincipal();
+        List<String> preventedUsers = userRepo.expirePassword(principal.getName(), jsonObject);
 
-        return new ResponseEntity<>(userRepo.expirePassword(principal.getName(), jsonObject));
+        if(preventedUsers == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else if (preventedUsers.size() == 0)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(preventedUsers,HttpStatus.PARTIAL_CONTENT);
 
     }
 
@@ -161,7 +167,6 @@ public class UsersController {
         if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(user, HttpStatus.OK);
     }
-
 
     /**
      * Retrieve user with main variables
@@ -448,9 +453,9 @@ public class UsersController {
         else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         else if (time ==-2)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.FOUND);
         else
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
@@ -463,7 +468,7 @@ public class UsersController {
     @PutMapping("/api/public/resetPass/{uid}/{token}")
     public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
                                                      @PathVariable("uid") String uid) {
-        return new ResponseEntity<>(userRepo.updatePass(uid, newPassword, token));
+        return new ResponseEntity<>(userRepo.resetPassword(uid, newPassword, token));
     }
 
 

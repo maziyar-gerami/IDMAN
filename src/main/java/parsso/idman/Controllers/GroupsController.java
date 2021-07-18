@@ -71,8 +71,17 @@ public class GroupsController {
     }
 
     @PutMapping("/api/groups/password/expire")
-    public ResponseEntity<HttpStatus> expireUsersGroupPassword(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
-        return new ResponseEntity<>(groupRepo.expireUsersGroupPassword(request.getUserPrincipal().getName(), jsonObject));
+    public ResponseEntity<List<String>> expireUsersGroupPassword(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
+
+        List<String> preventedUsers = userRepo.expirePassword(request.getUserPrincipal().getName(), jsonObject);
+
+        if(preventedUsers == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else if (preventedUsers.size() == 0)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(preventedUsers,HttpStatus.PARTIAL_CONTENT);
+
     }
 
 }
