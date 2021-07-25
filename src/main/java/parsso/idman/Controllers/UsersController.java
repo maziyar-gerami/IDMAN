@@ -378,8 +378,10 @@ public class UsersController {
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else if (time ==-2)
+            return new ResponseEntity<>(HttpStatus.FOUND);
         else
-            return new ResponseEntity<>(time, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 

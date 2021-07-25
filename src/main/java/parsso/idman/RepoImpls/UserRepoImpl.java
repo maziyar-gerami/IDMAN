@@ -688,6 +688,7 @@ public class UserRepoImpl implements UserRepo {
                 skyRoom = skyroomRepo.Run(user);
                 user.setSkyRoom(skyRoom);
             } catch (IOException e) {
+                e.printStackTrace();
                 user.setSkyRoom(null);
             }
 

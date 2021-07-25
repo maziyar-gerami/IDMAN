@@ -47,6 +47,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             int roomId = GetRoomId(Classname);
             Realname = user.getFirstName() + " " + user.getLastName();
             //System.out.println(CreateLoginUrl(roomId, String.valueOf(userId), Classname)+GetRoomGuestUrl(roomId));
+
             skyRoom = new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole()
                     , CreateLoginUrl(roomId, String.valueOf(userId), Realname), GetRoomGuestUrl(roomId));
             return skyRoom;
@@ -232,6 +233,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
                 return res.getString("result");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return "error";
         }
 

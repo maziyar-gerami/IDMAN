@@ -77,11 +77,20 @@ public class BuildAttributes {
 
         if (p.getEndTime() != null) {
 
-            Instant instant = Instant.now(); //can be LocalDateTime
-            ZoneId systemZone = zoneId; // my timezone
-            ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
+            try {
+                if(p.getEndTime().length() ==13)
+                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+                if(p.getEndTime().length() ==10)
+                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())*1000));
+                if (p.getEndTime().contains("."))
+                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(TimeHelper.convertDateToEpoch(p.getEndTime())));
 
-            attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+
+
+            }catch (Exception e){
+                attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime().substring(0, p.getEndTime().indexOf('.')))*1000));
+            }
+
         }
 
         attrs.put("pwdAttribute", "userPassword");
@@ -198,8 +207,13 @@ public class BuildAttributes {
 
 
         //EndTime
+
         if (p.getEndTime() != null && p.getEndTime() != "") {
-            context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+            if (p.getEndTime().length()==10)
+                context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())*1000));
+            else
+                context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+
 
         } else
             context.removeAttributeValue("pwdEndTime", old.getEndTime());

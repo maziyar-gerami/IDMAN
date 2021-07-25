@@ -49,9 +49,16 @@ public class TimeHelper {
     }
 
     public static String epochToDateLdapFormat(long timeInMilliseconds) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss.SSS");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 
-        String strDate = formatter.format(new Date(timeInMilliseconds));
+        String strDate = null;
+
+        if( String.valueOf(timeInMilliseconds).charAt(0) == '1')
+            strDate = formatter.format(new Date(timeInMilliseconds));
+        else if( String.valueOf(timeInMilliseconds).charAt(0) == '2')
+            strDate = String.valueOf(timeInMilliseconds);
+        
+        
 
         Instant instant = Instant.now(); //can be LocalDateTime
         ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
@@ -87,7 +94,9 @@ public class TimeHelper {
                 String s = input.substring(12, 14);
                 String S = input.substring(15, 15);
 
-                ZonedDateTime eventDate = OffsetDateTime.parse(Y + "-" + M + "-" + D + 'T' + H + ":" + m + ":" + s + "." + S).atZoneSameInstant(zoneId);
+                ZonedDateTime eventDate =
+                    OffsetDateTime.parse(Y + "-" + M + "-" + D + 'T' + H + ":" + m + ":" + s + "." + S).atZoneSameInstant(zoneId);
+
 
                 return eventDate.getYear()
                         + String.format("%02d", eventDate.getMonth())
@@ -199,6 +208,26 @@ public class TimeHelper {
                 currentOffsetForMyZone.toString().replaceAll(":","");
 
         return timeObject.getYear() + timeObject.getMonth() + timeObject.getDay() + time;
+    }
+
+    public static long convertDateToEpoch(String seTime) {
+
+        Instant instant = Instant.now(); //can be LocalDateTime
+        ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
+        ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
+
+
+        SimpleDateFormat f = new SimpleDateFormat("yyyyMMddhhmmss.SSS");
+
+        long milliseconds = 0;
+        try {
+            Date d = f.parse(seTime);
+            milliseconds = d.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return milliseconds;
     }
 
     public static Date convertEpochToDate(long epoch) {
