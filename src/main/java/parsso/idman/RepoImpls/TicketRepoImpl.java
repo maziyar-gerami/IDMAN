@@ -87,7 +87,7 @@ public class TicketRepoImpl implements TicketRepo {
         } catch (Exception e) {
             st = 1;
         }
-        if (st==0) st=1;
+        if (st == 0) st = 1;
 
         Ticket ticket = retrieveTicket(ticketID);
 
@@ -106,11 +106,10 @@ public class TicketRepoImpl implements TicketRepo {
 
 
         //check if closed or reopen, add new message
-        if(ticket.getStatus() < st && st == 2) {
+        if (ticket.getStatus() < st && st == 2) {
             messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
             messages.add(new Message(userRepo.retrieveUsers(userid), "CLOSE", true));
-        }
-        else if (ticket.getStatus() > st ) {
+        } else if (ticket.getStatus() > st) {
             messages.add(new Message(userRepo.retrieveUsers(userid), "REOPEN", true));
             messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
         } else
@@ -148,7 +147,7 @@ public class TicketRepoImpl implements TicketRepo {
             if (!subcat.equals(""))
                 query.addCriteria(Criteria.where("subCategory").regex(subcat));
         }
-        if(!query.equals(""))
+        if (!query.equals(""))
             query.addCriteria(Criteria.where("ID").regex(id));
 
         if (archive)
@@ -226,9 +225,9 @@ public class TicketRepoImpl implements TicketRepo {
             List<Message> messages = ticket.getMessages();
 
             //check if closed or reopen, add new message
-            if(ticket.getStatus() < status && status == 2)
+            if (ticket.getStatus() < status && status == 2)
                 messages.add(new Message(userRepo.retrieveUsers(doer), "CLOSE", true));
-            else if (ticket.getStatus() > status )
+            else if (ticket.getStatus() > status)
                 messages.add(new Message(userRepo.retrieveUsers(doer), "REOPEN", true));
 
             ticket.setStatus(status);
@@ -260,7 +259,7 @@ public class TicketRepoImpl implements TicketRepo {
         int limit = Integer.valueOf(count);
 
         Query query = new Query(Criteria.where("from").is(userId).and("deleteFor").ne(userId))
-        .with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
+                .with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
 
 
@@ -277,7 +276,7 @@ public class TicketRepoImpl implements TicketRepo {
         }
 
         int size = (int) mongoTemplate.count(query, collection);
-        return new ListTickets(size, ticketList, (int) Math.ceil((double)size / (double)limit));
+        return new ListTickets(size, ticketList, (int) Math.ceil((double) size / (double) limit));
 
     }
 
@@ -315,9 +314,8 @@ public class TicketRepoImpl implements TicketRepo {
 
         int size = (int) mongoTemplate.count(query, collection);
 
-        return new ListTickets(size, ticketList, (int) Math.ceil((double)size / (double)limit));
+        return new ListTickets(size, ticketList, (int) Math.ceil((double) size / (double) limit));
     }
-
 
 
     @Override
@@ -385,9 +383,9 @@ public class TicketRepoImpl implements TicketRepo {
 
         }
 
-        int ticketCount = ticketsCount(cat, subCat, st, ticketId,date,false);
+        int ticketCount = ticketsCount(cat, subCat, st, ticketId, date, false);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
-        return new ListTickets(ticketCount, ticketList, (int) Math.ceil((double)ticketCount /(double) limit));
+        return new ListTickets(ticketCount, ticketList, (int) Math.ceil((double) ticketCount / (double) limit));
     }
 
 
@@ -427,8 +425,8 @@ public class TicketRepoImpl implements TicketRepo {
 
         }
 
-        int ticketCount = ticketsCount(cat, subCat, -1, ticketId,date,true);
+        int ticketCount = ticketsCount(cat, subCat, -1, ticketId, date, true);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
-        return new ListTickets(ticketCount, ticketList, (int) Math.ceil((double)ticketCount / (double)limit));
+        return new ListTickets(ticketCount, ticketList, (int) Math.ceil((double) ticketCount / (double) limit));
     }
 }

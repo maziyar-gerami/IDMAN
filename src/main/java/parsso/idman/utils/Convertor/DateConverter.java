@@ -274,7 +274,7 @@ public class DateConverter {
     public Time persianToGregorianTime(int year, int month, int day) {
         int jd = Jal2JD(year, month, day);
         JD2JG(jd, 0);
-        return new Time(gYear,gMonth,gDay);
+        return new Time(gYear, gMonth, gDay);
 
     }
 

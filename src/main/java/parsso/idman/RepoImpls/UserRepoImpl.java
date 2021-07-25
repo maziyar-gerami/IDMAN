@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
@@ -36,17 +37,14 @@ import parsso.idman.Helpers.User.*;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.SkyRoom;
-import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.*;
 
 import javax.naming.Name;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
-import javax.naming.directory.SearchControls;
+import javax.naming.NamingException;
+import javax.naming.directory.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -57,35 +55,61 @@ import java.util.*;
 public class UserRepoImpl implements UserRepo {
 
 
+    public ZoneId zoneId = ZoneId.of(Variables.ZONE);
     String model = "User";
     String userExtraInfoCollection = Variables.col_usersExtraInfo;
-    @Value("${user.profile.access}") String profileAccessiblity;
-    @Value("${base.url}") private String BASE_URL;
-    @Value("${spring.ldap.base.dn}") private String BASE_DN;
-    @Value("${get.users.time.interval}") private int apiHours;
-    @Value("${user.profile.access}") private String access;
-    @Value("${default.user.password}") private String defaultPassword;
-    @Value("${profile.photo.path}")private String uploadedFilesPath;
-    @Value("${skyroom.api.key}") String skyRoomApiKey;
-    @Autowired ExcelAnalyzer excelAnalyzer;
-    @Autowired SkyroomRepo skyroomRepo;
-    @Autowired GroupRepo groupRepo;
-    @Autowired SystemRefresh systemRefresh;
-    @Autowired GroupsChecks groupsChecks;
-    @Autowired Operations operations;
-    @Autowired private LdapTemplate ldapTemplate;
-    @Autowired FilesStorageService storageService;
-    @Autowired private BuildAttributes buildAttributes;
-    @Autowired private Token tokenClass;
-    @Autowired private MongoTemplate mongoTemplate;
-    @Autowired private UserAttributeMapper userAttributeMapper;
-    @Autowired private SimpleUserAttributeMapper simpleUserAttributeMapper;
-    @Autowired private BuildDnUser buildDnUser;
-    @Autowired private DashboardData dashboardData;
-    @Autowired private ImportUsers importUsers;
-    @Autowired private EmailService emailService;
-
-    public ZoneId zoneId = ZoneId.of(Variables.ZONE);
+    @Value("${user.profile.access}")
+    String profileAccessiblity;
+    @Value("${skyroom.api.key}")
+    String skyRoomApiKey;
+    @Autowired
+    ExcelAnalyzer excelAnalyzer;
+    @Autowired
+    SkyroomRepo skyroomRepo;
+    @Autowired
+    GroupRepo groupRepo;
+    @Autowired
+    SystemRefresh systemRefresh;
+    @Autowired
+    GroupsChecks groupsChecks;
+    @Autowired
+    Operations operations;
+    @Autowired
+    FilesStorageService storageService;
+    @Autowired
+    ExpirePassword expirePassword;
+    @Value("${base.url}")
+    private String BASE_URL;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
+    @Value("${get.users.time.interval}")
+    private int apiHours;
+    @Value("${user.profile.access}")
+    private String access;
+    @Value("${default.user.password}")
+    private String defaultPassword;
+    @Value("${profile.photo.path}")
+    private String uploadedFilesPath;
+    @Autowired
+    private LdapTemplate ldapTemplate;
+    @Autowired
+    private BuildAttributes buildAttributes;
+    @Autowired
+    private Token tokenClass;
+    @Autowired
+    private MongoTemplate mongoTemplate;
+    @Autowired
+    private UserAttributeMapper userAttributeMapper;
+    @Autowired
+    private SimpleUserAttributeMapper simpleUserAttributeMapper;
+    @Autowired
+    private BuildDnUser buildDnUser;
+    @Autowired
+    private DashboardData dashboardData;
+    @Autowired
+    private ImportUsers importUsers;
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public JSONObject create(String doerID, User p) {
@@ -470,6 +494,30 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
+    public String getByMobile(String mobile) {
+        EqualsFilter equalsFilter = new EqualsFilter("mobile", mobile);
+        SearchControls searchControls = new SearchControls();
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+        String s = null;
+        try {
+            s = ldapTemplate.search("ou=People," + BASE_DN, equalsFilter.encode(), searchControls, new AttributesMapper<String>() {
+                public String mapFromAttributes(Attributes attrs)
+                        throws NamingException {
+                    if (attrs.get("uid") != null)
+                        return attrs.get("uid").get().toString();
+
+                    return "";
+                }
+                }).get(0);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return s;
+    }
+
+
+    @Override
     public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
         Thread thread = new Thread() {
@@ -563,7 +611,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<User> getUsersOfOu(String ou){
+    public List<User> getUsersOfOu(String ou) {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
@@ -575,9 +623,8 @@ public class UserRepoImpl implements UserRepo {
         List<User> users = ldapTemplate.search("ou=People," + BASE_DN, andFilter.toString(), searchControls,
                 userAttributeMapper);
 
-        for (User user:users)
-            user.setUsersExtraInfo(mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class,Variables.col_usersExtraInfo));
-
+        for (User user : users)
+            user.setUsersExtraInfo(mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 
         return users;
     }
@@ -616,9 +663,6 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public User retrieveUsers(String userId) {
 
-        Logger logger = LogManager.getLogger("SYSTEM");
-
-        
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
@@ -644,10 +688,9 @@ public class UserRepoImpl implements UserRepo {
                 skyRoom = skyroomRepo.Run(user);
                 user.setSkyRoom(skyRoom);
             } catch (IOException e) {
+                e.printStackTrace();
                 user.setSkyRoom(null);
             }
-
-
 
 
         }
@@ -675,7 +718,6 @@ public class UserRepoImpl implements UserRepo {
     }
 
 
-
     public HttpStatus removeCurrentEndTime(String uid) {
 
         Name dn = buildDnUser.buildDn(uid);
@@ -700,9 +742,6 @@ public class UserRepoImpl implements UserRepo {
             return HttpStatus.BAD_REQUEST;
         }
     }
-
-
-
 
 
     @Override
@@ -750,7 +789,7 @@ public class UserRepoImpl implements UserRepo {
 
         CollectionUtils.filter(relativeUsers, PredicateUtils.notNullPredicate());
 
-        return new ListUsers(size, relativeUsers, (int) Math.ceil((double)size /(double) number));
+        return new ListUsers(size, relativeUsers, (int) Math.ceil((double) size / (double) number));
 
     }
 
@@ -758,13 +797,13 @@ public class UserRepoImpl implements UserRepo {
     public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
         List<String> add = (List<String>) gu.get("add");
         List<String> remove = (List<String>) gu.get("remove");
-        List <String> groups = new LinkedList<>();
+        List<String> groups = new LinkedList<>();
         for (String uid : add) {
             User user = retrieveUsers(uid);
             if (user.getMemberOf() != null) {
                 if (!user.getMemberOf().contains(groupId))
                     user.getMemberOf().add(groupId);
-            }else {
+            } else {
                 groups.add(groupId);
                 user.setMemberOf(groups);
             }
@@ -808,7 +847,9 @@ public class UserRepoImpl implements UserRepo {
         return BASE_URL + /*"" +*/  "/api/public/validateEmailToken/" + userId + "/" + token;
     }
 
-    public HttpStatus updatePass(String userId, String pass, String token) {
+    public HttpStatus resetPassword(String userId, String pass, String token) {
+
+        Logger logger = LogManager.getLogger(userId);
 
         User user = retrieveUsers(userId);
 
@@ -816,7 +857,8 @@ public class UserRepoImpl implements UserRepo {
 
         try {
             operations.unlock("SYSTEM", userId);
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
 
         HttpStatus httpStatus;
         if (token.equals("ParssoIdman"))
@@ -829,8 +871,16 @@ public class UserRepoImpl implements UserRepo {
 
             contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
             contextUser.setAttributeValue("userPassword", pass);
-            ldapTemplate.modifyAttributes(contextUser);
 
+            try{
+                removeCurrentEndTime(userId);
+                ldapTemplate.modifyAttributes(contextUser);
+
+                logger.warn(new ReportMessage(model, userId, "password", "reset", "success", "").toString());
+
+            }catch (Exception e){
+                logger.warn(new ReportMessage(model, userId, "password", "reset", "failed", "writing to ldap").toString());
+            }
             return HttpStatus.OK;
         } else {
             return HttpStatus.FORBIDDEN;
@@ -871,63 +921,20 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus expirePassword(String doer, JSONObject jsonObject) {
+    public List<String> expirePassword(String doer, JSONObject jsonObject) {
 
-        Logger logger = LogManager.getLogger(doer);
-        Name dn;
         List<UsersExtraInfo> users = new LinkedList<>();
 
         if (((List) jsonObject.get("names")).size() == 0) {
-            users.addAll(mongoTemplate.find(new Query(),UsersExtraInfo.class,Variables.col_usersExtraInfo));
-
+            users.addAll(mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 
         } else {
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
             for (Object temp : jsonArray)
-                users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())),UsersExtraInfo.class,Variables.col_usersExtraInfo));
+                users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
         }
 
-        return expire(doer,users);
+        return expirePassword.expire(doer, users);
     }
-
-    @Override
-    public HttpStatus expire(String doer, List<UsersExtraInfo> users){
-        Logger logger = LogManager.getLogger(doer);
-
-        for (UsersExtraInfo user : users) {
-            if (!user.getRole().equals("SUPERADMIN")) {
-
-                ModificationItem[] modificationItems;
-                modificationItems = new ModificationItem[1];
-
-                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime", Time.getCurrentTimeStampOffset()));
-
-                try {
-                    ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
-                    mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
-                    mongoTemplate.save(user,Variables.col_usersExtraInfo);
-                    logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "add", "success", "").toString());
-
-
-                } catch (Exception e) {
-                    try {
-                        modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime", Time.getCurrentTimeStampOffset()));
-                        ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
-                        mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())),Variables.col_usersExtraInfo);
-                        mongoTemplate.save(user,Variables.col_usersExtraInfo);
-                        logger.warn(new ReportMessage("User", user.getUserId(),  "expire password", "replace", "success", "").toString());
-                    } catch (Exception e1) {
-                        logger.warn(new ReportMessage("User", user.getUserId(),  "expire password", "Add", "failed", "writing to ldap").toString());
-                    }
-                }
-            } else {
-                logger.warn(new ReportMessage("User", user.getUserId(),  "expire password", "Add", "failed", "Cant add to SUPERUSER role").toString());
-
-            }
-        }
-        return HttpStatus.OK;
-    }
-
-
 }
 

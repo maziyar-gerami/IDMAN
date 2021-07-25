@@ -26,8 +26,10 @@ import java.io.IOException;
 public class DashboardController {
 
     @Qualifier("userRepoImpl")
-    @Autowired private UserRepo userRepo;
-    @Autowired private DashboardData dashboardData;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private DashboardData dashboardData;
 
     @Value("${cas.url.logout.path}")
     private String casLogout;

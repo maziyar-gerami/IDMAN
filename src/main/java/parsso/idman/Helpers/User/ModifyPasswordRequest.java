@@ -37,6 +37,7 @@ public class ModifyPasswordRequest
      * The password to change to
      */
     private final String mPassword;
+
     /**
      * Creates a new <code>ModifyPasswordRequest</code> instance.
      *

@@ -19,6 +19,7 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.User.BuildDnUser;
+import parsso.idman.Helpers.User.ExpirePassword;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
@@ -42,10 +43,13 @@ public class GroupRepoImpl implements GroupRepo {
 
 
     private final String usersExtraInfoCollection = Variables.col_usersExtraInfo;
+    private final String model = "Groups";
     @Autowired
     BuildDnUser buildDnUser;
     @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
+    ExpirePassword expirePassword;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
     @Autowired
@@ -54,7 +58,6 @@ public class GroupRepoImpl implements GroupRepo {
     private UserRepo userRepo;
     @Autowired
     private ServiceRepo serviceRepo;
-    private final String model = "Groups";
 
     @Override
     public HttpStatus remove(String doerID, JSONObject jsonObject) {
@@ -139,18 +142,18 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
     @Override
-    public HttpStatus expireUsersGroupPassword(String doer, JSONObject jsonObject) {
+    public List<String> expireUsersGroupPassword(String doer, JSONObject jsonObject) {
 
         List<UsersExtraInfo> users = new LinkedList<>();
-        for (String groupID: (List<String>) jsonObject.get("names"))
+        for (String groupID : (List<String>) jsonObject.get("names"))
             users.addAll(mongoTemplate.find(new Query(Criteria.where("memberOf").is(groupID))
-                    , UsersExtraInfo.class,Variables.col_usersExtraInfo));
+                    , UsersExtraInfo.class, Variables.col_usersExtraInfo));
 
         Set<UsersExtraInfo> set = new HashSet<>(users);
         users.clear();
         users.addAll(set);
 
-        return userRepo.expire(doer,users);
+        return expirePassword.expire(doer, users);
     }
 
 
@@ -159,6 +162,7 @@ public class GroupRepoImpl implements GroupRepo {
         BasicAttribute ocattr = new BasicAttribute("objectclass");
         ocattr.add("extensibleObject");
         ocattr.add("organizationalUnit");
+        ocattr.add("top");
         ocattr.add("top");
 
         Attributes attrs = new BasicAttributes();

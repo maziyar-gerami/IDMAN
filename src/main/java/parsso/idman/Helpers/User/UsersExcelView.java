@@ -85,35 +85,65 @@ public class UsersExcelView extends AbstractXlsView {
 
             HSSFRow aRow = sheet.createRow(rowCount++);
             aRow.createCell(0).setCellValue(user.getUserId());
-            try { aRow.createCell(1).setCellValue(user.getFirstName()); }
-            catch (Exception e){aRow.createCell(1).setCellValue("");}
+            try {
+                aRow.createCell(1).setCellValue(user.getFirstName());
+            } catch (Exception e) {
+                aRow.createCell(1).setCellValue("");
+            }
 
-            try {aRow.createCell(2).setCellValue(user.getLastName());}
-            catch (Exception e){aRow.createCell(2).setCellValue("");}
+            try {
+                aRow.createCell(2).setCellValue(user.getLastName());
+            } catch (Exception e) {
+                aRow.createCell(2).setCellValue("");
+            }
 
-            try { aRow.createCell(3).setCellValue(user.getDisplayName());}
-            catch (Exception e){aRow.createCell(3).setCellValue("");}
+            try {
+                aRow.createCell(3).setCellValue(user.getDisplayName());
+            } catch (Exception e) {
+                aRow.createCell(3).setCellValue("");
+            }
 
-            try {aRow.createCell(4).setCellValue(user.getMobile());}
-            catch (Exception e){aRow.createCell(4).setCellValue("");}
+            try {
+                aRow.createCell(4).setCellValue(user.getMobile());
+            } catch (Exception e) {
+                aRow.createCell(4).setCellValue("");
+            }
 
-            try {aRow.createCell(5).setCellValue(user.getMail());}
-            catch (Exception e){aRow.createCell(5).setCellValue("");}
+            try {
+                aRow.createCell(5).setCellValue(user.getMail());
+            } catch (Exception e) {
+                aRow.createCell(5).setCellValue("");
+            }
 
-            try {aRow.createCell(6).setCellValue(user.getExportMemberOf());}
-            catch (Exception e){aRow.createCell(6).setCellValue("");}
+            try {
+                aRow.createCell(6).setCellValue(user.getExportMemberOf());
+            } catch (Exception e) {
+                aRow.createCell(6).setCellValue("");
+            }
 
-            try { aRow.createCell(7).setCellValue(user.getDescription()); }
-            catch (Exception e){aRow.createCell(7).setCellValue("");}
+            try {
+                aRow.createCell(7).setCellValue(user.getDescription());
+            } catch (Exception e) {
+                aRow.createCell(7).setCellValue("");
+            }
 
-            try {aRow.createCell(8).setCellValue(user.getStatus());}
-            catch (Exception e){aRow.createCell(8).setCellValue("");}
+            try {
+                aRow.createCell(8).setCellValue(user.getStatus());
+            } catch (Exception e) {
+                aRow.createCell(8).setCellValue("");
+            }
 
-            try{aRow.createCell(9).setCellValue(user.getEmployeeNumber());}
-            catch (Exception e){aRow.createCell(9).setCellValue("");}
+            try {
+                aRow.createCell(9).setCellValue(user.getEmployeeNumber());
+            } catch (Exception e) {
+                aRow.createCell(9).setCellValue("");
+            }
 
-            try {aRow.createCell(10).setCellValue(user.getExportEndTime());}
-            catch (Exception e){aRow.createCell(10).setCellValue("");}
+            try {
+                aRow.createCell(10).setCellValue(user.getExportEndTime());
+            } catch (Exception e) {
+                aRow.createCell(10).setCellValue("");
+            }
 
         }
     }

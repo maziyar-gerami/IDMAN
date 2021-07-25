@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
 
@@ -26,13 +26,15 @@ public class BuildAttributes {
     MongoTemplate mongoTemplate;
     @Autowired
     BuildDnUser buildDnUser;
+    ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @Value("${default.user.password}")
     private String defaultPassword;
-    @Autowired private UserRepo userRepo;
-    @Autowired private LdapTemplate ldapTemplate;
-    @Autowired private Operations operations;
-
-    ZoneId zoneId = ZoneId.of(Variables.ZONE);
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private LdapTemplate ldapTemplate;
+    @Autowired
+    private Operations operations;
 
     public Attributes BuildAttributes(User p) {
 
@@ -75,11 +77,20 @@ public class BuildAttributes {
 
         if (p.getEndTime() != null) {
 
-            Instant instant = Instant.now(); //can be LocalDateTime
-            ZoneId systemZone = zoneId; // my timezone
-            ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
+            try {
+                if(p.getEndTime().length() ==13)
+                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+                if(p.getEndTime().length() ==10)
+                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())*1000));
+                if (p.getEndTime().contains("."))
+                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(TimeHelper.convertDateToEpoch(p.getEndTime())));
 
-            attrs.put("pwdEndTime", Time.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+
+
+            }catch (Exception e){
+                attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime().substring(0, p.getEndTime().indexOf('.')))*1000));
+            }
+
         }
 
         attrs.put("pwdAttribute", "userPassword");
@@ -196,8 +207,17 @@ public class BuildAttributes {
 
 
         //EndTime
+
         if (p.getEndTime() != null && p.getEndTime() != "") {
-                context.setAttributeValue("pwdEndTime", Time.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+            if (p.getEndTime().length()==10)
+                context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())*1000));
+            else
+                try {
+                    context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+                } catch (NumberFormatException e){
+                    context.setAttributeValue("pwdEndTime", p.getEndTime());
+                }
+
 
         } else
             context.removeAttributeValue("pwdEndTime", old.getEndTime());

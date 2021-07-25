@@ -4,6 +4,7 @@ package parsso.idman.Models.Logs;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Models.Time;
 
 import java.util.Date;
@@ -38,7 +39,7 @@ public class Report {
     String thrown;
 
     public Time getDateTime() {
-        return Time.longToPersianTime(date.getTime());
+        return TimeHelper.longToPersianTime(date.getTime());
     }
 
     public String getDetails() {

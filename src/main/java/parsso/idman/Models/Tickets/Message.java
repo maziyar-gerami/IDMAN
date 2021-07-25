@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.User;
 
@@ -60,25 +61,24 @@ public class Message {
         this.fromDisplayName = by.getDisplayName();
         long now = new Date().getTime();
         this.creationLong = now;
-        if (action.equals("CLOSE")){
+        if (action.equals("CLOSE")) {
             this.close = state;
             this.closeLong = now;
-        }
-        else if (action.equals("REOPEN")) {
+        } else if (action.equals("REOPEN")) {
             this.reOpen = true;
             this.reOpenLong = now;
         }
     }
 
     public Time getCreationTime() {
-        return Time.longToPersianTime(creationLong);
+        return TimeHelper.longToPersianTime(creationLong);
     }
 
     public Time getCloseTime() {
-        return Time.longToPersianTime(closeLong);
+        return TimeHelper.longToPersianTime(closeLong);
     }
 
     public Time getReOpenTime() {
-        return Time.longToPersianTime(reOpenLong);
+        return TimeHelper.longToPersianTime(reOpenLong);
     }
 }

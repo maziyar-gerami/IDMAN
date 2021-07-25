@@ -125,14 +125,22 @@ public class Token {
 
     public int createRandomNum() {
         Random rnd = new Random();
-        return (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)) + rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS - 1) - 1)));
+        int max = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS)));
+        int min = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)))+1;
+        return min+rnd.nextInt(max-min);
     }
 
     public boolean insertMobileToken(User user) {
 
         Query query = new Query(Criteria.where("userId").is(user.getUserId()));
 
-        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
+        UsersExtraInfo usersExtraInfo;
+
+        try {
+            usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
+        }catch (NullPointerException e){
+            usersExtraInfo = new UsersExtraInfo(user);
+        }
 
         int token = createRandomNum();
 
@@ -149,11 +157,8 @@ public class Token {
         long cTimeStamp = currentTimestamp.getTime();
         user.getUsersExtraInfo().setResetPassToken(String.valueOf(token) + cTimeStamp);
 
-
         try {
-
             mongoTemplate.save(usersExtraInfo, collection);
-
         } catch (Exception e) {
             return false;
         }

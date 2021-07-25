@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.Helpers.Events.ActionInfo;
 import parsso.idman.Helpers.Events.AgentInfo;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Models.Time;
 import ua_parser.Client;
 import ua_parser.Parser;
@@ -84,7 +85,7 @@ public class Event implements Serializable {
     }
 
     public Time getTime() {
-        return Time.longToPersianTime(Long.valueOf(_id));
+        return TimeHelper.longToPersianTime(Long.valueOf(_id));
     }
 
     public AgentInfo getAgentInfo() {

@@ -40,14 +40,22 @@ public class UsersController {
 
     // default sequence of variables which can be changed using frontend
     private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-    @Autowired Token tokenClass;
-    @Autowired UsersExcelView excelView;
-    @Autowired SystemRefreshRepoImpl systemRefreshRepoImpl;
-    @Autowired private InstantMessage instantMessage;
-    @Autowired private UserRepo userRepo;
-    @Autowired ImportUsers importUsers;
-    @Autowired Operations operations;
-    @Autowired EmailService emailService;
+    @Autowired
+    Token tokenClass;
+    @Autowired
+    UsersExcelView excelView;
+    @Autowired
+    SystemRefreshRepoImpl systemRefreshRepoImpl;
+    @Autowired
+    ImportUsers importUsers;
+    @Autowired
+    Operations operations;
+    @Autowired
+    EmailService emailService;
+    @Autowired
+    private InstantMessage instantMessage;
+    @Autowired
+    private UserRepo userRepo;
 
 
     //*************************************** APIs ***************************************
@@ -75,7 +83,6 @@ public class UsersController {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(userRepo.update(principal.getName(), principal.getName(), user));
     }
-
 
 
     /**
@@ -121,11 +128,17 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/password/expire")
-    public ResponseEntity<HttpStatus> expirePassword(HttpServletRequest request,
+    public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
                                                      @RequestBody JSONObject jsonObject) {
         Principal principal = request.getUserPrincipal();
+        List<String> preventedUsers = userRepo.expirePassword(principal.getName(), jsonObject);
 
-        return new ResponseEntity<>(userRepo.expirePassword(principal.getName(), jsonObject));
+        if(preventedUsers == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else if (preventedUsers.size() == 0)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(preventedUsers,HttpStatus.PARTIAL_CONTENT);
 
     }
 
@@ -154,7 +167,6 @@ public class UsersController {
         if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(user, HttpStatus.OK);
     }
-
 
     /**
      * Retrieve user with main variables
@@ -366,8 +378,10 @@ public class UsersController {
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else if (time ==-2)
+            return new ResponseEntity<>(HttpStatus.FOUND);
         else
-            return new ResponseEntity<>(time, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
@@ -383,12 +397,15 @@ public class UsersController {
                                             @PathVariable("answer") String answer) {
 
         int time = userRepo.sendEmail(email, null, cid, answer);
-        if (time > 0)
+        if (time > 0) {
             return new ResponseEntity<>(time, HttpStatus.OK);
+        }
         else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else if (time ==-2)
+            return new ResponseEntity<>(HttpStatus.FOUND);
         else
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
     }
 
@@ -399,16 +416,22 @@ public class UsersController {
      * @return the http status code
      */
     @GetMapping("/api/public/sendSMS/{mobile}/{cid}/{answer}")
-    public ResponseEntity<Integer> sendMessage(@PathVariable("mobile") String mobile,
+    public ResponseEntity<JSONObject> sendMessage(@PathVariable("mobile") String mobile,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
         int time = instantMessage.sendMessage(mobile, cid, answer);
-        if (time > 0)
-            return new ResponseEntity<>(time, HttpStatus.OK);
+        if (time > 0) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("time",time);
+            jsonObject.put("userId", userRepo.getByMobile(mobile));
+            return new ResponseEntity<>(jsonObject, HttpStatus.OK);
+        }
         else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else if (time==-2)
+            return new ResponseEntity<>(HttpStatus.FOUND);
         else
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -418,17 +441,23 @@ public class UsersController {
      * @return the http status code
      */
     @GetMapping("/api/public/sendSMS/{mobile}/{uid}/{cid}/{answer}")
-    public ResponseEntity<Integer> sendMessage(@PathVariable("mobile") String mobile,
+    public ResponseEntity<JSONObject> sendMessage(@PathVariable("mobile") String mobile,
                                                @PathVariable("uid") String uid,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
         int time = instantMessage.sendMessage(mobile, uid, cid, answer);
-        if (time > 0)
-            return new ResponseEntity<>(time, HttpStatus.OK);
+        if (time > 0) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("time",time);
+            jsonObject.put("userId", uid);
+            return new ResponseEntity<>(jsonObject, HttpStatus.OK);
+        }
         else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else if (time ==-2)
+            return new ResponseEntity<>(HttpStatus.FOUND);
         else
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
@@ -441,7 +470,7 @@ public class UsersController {
     @PutMapping("/api/public/resetPass/{uid}/{token}")
     public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
                                                      @PathVariable("uid") String uid) {
-        return new ResponseEntity<>(userRepo.updatePass(uid, newPassword, token));
+        return new ResponseEntity<>(userRepo.resetPassword(uid, newPassword, token));
     }
 
 

@@ -493,14 +493,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     if(selectedGroups.length != 0){
                         var check = confirm(this.s34);
                         if (check == true) {
-                            for(let i = 0; i < selectedGroups.length; ++i){
-                                axios({
-                                    method: "put",
-                                    url: url + "/api/groups/password/expire/" + selectedGroups[i], //
-                                    headers: {"Content-Type": "application/json"}
-                                }).then((res) => {
-                                });
-                            }
+                            axios({
+                                method: "put",
+                                url: url + "/api/groups/password/expire", //
+                                headers: {"Content-Type": "application/json"},
+                                data: JSON.stringify({
+                                    names: selectedGroups
+                                }).replace(/\\\\/g, "\\")
+                            }).then((res) => {
+                                vm.getGroups();
+                            });
                         }
                     }else{
                         alert(this.s35);

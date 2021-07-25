@@ -47,6 +47,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             int roomId = GetRoomId(Classname);
             Realname = user.getFirstName() + " " + user.getLastName();
             //System.out.println(CreateLoginUrl(roomId, String.valueOf(userId), Classname)+GetRoomGuestUrl(roomId));
+
             skyRoom = new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole()
                     , CreateLoginUrl(roomId, String.valueOf(userId), Realname), GetRoomGuestUrl(roomId));
             return skyRoom;
@@ -56,7 +57,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         Realname = user.getFirstName() + " " + user.getLastName();
         try {
             return new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole(), CreateLoginUrl(roomId, String.valueOf(userId), Realname), GetRoomGuestUrl(roomId));
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -77,6 +78,8 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             con.setRequestProperty("Accept", "gzip, deflate");
             con.setRequestProperty("Connection", "close");
             con.setDoOutput(true);
+
+
             try (OutputStream os = con.getOutputStream()) {
                 os.write(json.getBytes());
             }
@@ -113,12 +116,18 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         params.put("status", 1);
         params.put("is_public", true);
         root.put("params", params);
-        JSONObject res = Post(root.toString());
+        JSONObject res;
+        try {
+            res = Post(root.toString());
+
+        } catch (Exception e){
+            return 0;
+        }
         try {
             if (res.getBoolean("ok")) {
                 return res.getInt("result");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
         return 0;
@@ -160,7 +169,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             if (res.getBoolean("ok")) {
                 return res.getString("result");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return "error";
         }
 
@@ -213,26 +222,29 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             if (res.getBoolean("ok")) {
                 return res.getJSONObject("result").getInt("id");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
         return 0;
     }
 
     public String GetRoomGuestUrl(int room_id) throws IOException {
-        JSONObject root = new JSONObject();
-        root.put("action", "getRoomUrl");
-        JSONObject params = new JSONObject();
-        params.put("room_id", room_id);
-        params.put("language", "fa");
-        root.put("params", params);
-        JSONObject res = Post(root.toString());
-        try {
-            if (res.getBoolean("ok")) {
-                return res.getString("result");
+        if (skyroomEnable.equalsIgnoreCase("true")) {
+            JSONObject root = new JSONObject();
+            root.put("action", "getRoomUrl");
+            JSONObject params = new JSONObject();
+            params.put("room_id", room_id);
+            params.put("language", "fa");
+            root.put("params", params);
+            JSONObject res = Post(root.toString());
+            try {
+                if (res.getBoolean("ok")) {
+                    return res.getString("result");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "error";
             }
-        } catch (Exception e){
-            return "error";
         }
 
         return "error";

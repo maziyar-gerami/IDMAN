@@ -70,7 +70,7 @@ public class LogsExcelView extends AbstractXlsView {
         for (Report report : reports) {
             dateConverter.gregorianToPersian(report.getDateTime().getYear(), report.getDateTime().getMonth(), report.getDateTime().getDay());
             HSSFRow aRow = sheet.createRow(rowCount++);
-            Time time = Time.longToPersianTime(report.getMillis());
+            Time time = TimeHelper.longToPersianTime(report.getMillis());
             aRow.createCell(0).setCellValue(report.getLoggerName());
             aRow.createCell(1).setCellValue(report.getMessage());
             aRow.createCell(2).setCellValue(time.getYear() + "/" + time.getMonth() + "/" + time.getDay());
