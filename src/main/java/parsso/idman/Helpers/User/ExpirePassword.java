@@ -34,8 +34,11 @@ public class ExpirePassword {
 
         List<String> superAdminUsers = new LinkedList<>();
 
+
         for (UsersExtraInfo user : users) {
-            if (!user.getRole().equals("SUPERADMIN")) {
+            if(user==null)
+                continue;
+            if ( !user.getRole().equals("SUPERADMIN")) {
 
                 ModificationItem[] modificationItems;
                 modificationItems = new ModificationItem[1];

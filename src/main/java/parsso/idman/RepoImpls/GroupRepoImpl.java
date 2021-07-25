@@ -163,6 +163,7 @@ public class GroupRepoImpl implements GroupRepo {
         ocattr.add("extensibleObject");
         ocattr.add("organizationalUnit");
         ocattr.add("top");
+        ocattr.add("top");
 
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);

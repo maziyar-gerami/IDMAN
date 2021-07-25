@@ -212,7 +212,11 @@ public class BuildAttributes {
             if (p.getEndTime().length()==10)
                 context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())*1000));
             else
-                context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+                try {
+                    context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+                } catch (NumberFormatException e){
+                    context.setAttributeValue("pwdEndTime", p.getEndTime());
+                }
 
 
         } else
