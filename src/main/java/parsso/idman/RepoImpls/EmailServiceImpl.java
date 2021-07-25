@@ -209,7 +209,7 @@ public class EmailServiceImpl implements EmailService {
 
 
 
-        if (checkMail(email) != null & userRepo.retrieveUsers(uid).getUserId() != null) {
+        if (checkMail(email) != null && userRepo.retrieveUsers(uid)!=null && userRepo.retrieveUsers(uid).getUserId() != null) {
             List<JSONObject> ids = checkMail(email);
             List<User> people = new LinkedList<>();
             User user = userRepo.retrieveUsers(uid);
