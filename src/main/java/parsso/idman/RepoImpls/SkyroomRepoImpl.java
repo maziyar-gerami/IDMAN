@@ -78,6 +78,8 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             con.setRequestProperty("Accept", "gzip, deflate");
             con.setRequestProperty("Connection", "close");
             con.setDoOutput(true);
+
+
             try (OutputStream os = con.getOutputStream()) {
                 os.write(json.getBytes());
             }
@@ -114,7 +116,13 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         params.put("status", 1);
         params.put("is_public", true);
         root.put("params", params);
-        JSONObject res = Post(root.toString());
+        JSONObject res;
+        try {
+            res = Post(root.toString());
+
+        } catch (Exception e){
+            return 0;
+        }
         try {
             if (res.getBoolean("ok")) {
                 return res.getInt("result");
@@ -221,20 +229,22 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     }
 
     public String GetRoomGuestUrl(int room_id) throws IOException {
-        JSONObject root = new JSONObject();
-        root.put("action", "getRoomUrl");
-        JSONObject params = new JSONObject();
-        params.put("room_id", room_id);
-        params.put("language", "fa");
-        root.put("params", params);
-        JSONObject res = Post(root.toString());
-        try {
-            if (res.getBoolean("ok")) {
-                return res.getString("result");
+        if (skyroomEnable.equalsIgnoreCase("true")) {
+            JSONObject root = new JSONObject();
+            root.put("action", "getRoomUrl");
+            JSONObject params = new JSONObject();
+            params.put("room_id", room_id);
+            params.put("language", "fa");
+            root.put("params", params);
+            JSONObject res = Post(root.toString());
+            try {
+                if (res.getBoolean("ok")) {
+                    return res.getString("result");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "error";
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "error";
         }
 
         return "error";
