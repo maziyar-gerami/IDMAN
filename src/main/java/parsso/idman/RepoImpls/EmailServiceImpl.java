@@ -73,17 +73,27 @@ public class EmailServiceImpl implements EmailService {
     }
 
     public void sendHtmlMessage(User user, String subject, String url) throws javax.mail.MessagingException {
-
+        Logger logger = LogManager.getLogger("test");
+        logger.warn("Sending HTML message...");
+        logger.warn("User is: "+ user);
+        logger.warn("subject is: "+ subject);
+        logger.warn("url is: "+ url);
         MimeMessage message = mailSender.createMimeMessage();
+        logger.warn("message is: "+ message);
         MimeMessageHelper helper = new MimeMessageHelper(message);
-
+        logger.warn("Helper defined");
         helper.setFrom(from);
+        logger.warn("Helper set from:"+from);
         helper.setTo(user.getMail());
+        logger.warn("Helper set to:"+user.getMail());
         helper.setSubject(subject);
+        logger.warn("Helper set subject:"+subject);
         String s = Variables.template(user, url);
         helper.setText(Variables.template(user, url), true);
-
+        logger.warn("text is: "+s);
         mailSender.send(message);
+        logger.warn("message sent");
+
     }
 
 
