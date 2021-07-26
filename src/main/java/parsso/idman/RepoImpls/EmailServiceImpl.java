@@ -91,8 +91,12 @@ public class EmailServiceImpl implements EmailService {
         String s = Variables.template(user, url);
         helper.setText(Variables.template(user, url), true);
         logger.warn("text is: "+s);
-        mailSender.send(message);
-        logger.warn("message sent");
+        try {
+            logger.warn("message sent");
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
