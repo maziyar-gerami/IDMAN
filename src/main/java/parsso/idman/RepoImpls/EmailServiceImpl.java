@@ -3,6 +3,8 @@ package parsso.idman.RepoImpls;
 
 import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
@@ -143,6 +145,10 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public int sendMail(String email, String cid, String answer) {
 
+        Logger logger = LogManager.getLogger("test");
+
+        logger.warn("sending mail to: "+ email);
+
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if ((captcha) == null)
@@ -164,11 +170,14 @@ public class EmailServiceImpl implements EmailService {
             user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
+            logger.warn("token inserted");
 
             String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
             try {
                 sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
+                logger.warn("mail sent to: "+ user.getUserId());
+
 
             } catch (Exception e) {
                 return 0;
@@ -197,6 +206,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public int sendMail(String email, String uid, String cid, String answer) {
+        Logger logger = LogManager.getLogger("test");
+
+        logger.warn("sending mail to: "+ email +" with userId :"+uid);
 
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -207,23 +219,29 @@ public class EmailServiceImpl implements EmailService {
             return -1;
         }
 
-
-
         if (checkMail(email) != null && userRepo.retrieveUsers(uid)!=null && userRepo.retrieveUsers(uid).getUserId() != null) {
+            logger.warn("check mail: "+ checkMail(email));
+            logger.warn("user : "+ userRepo.retrieveUsers(uid));
+            logger.warn("userID : "+ userRepo.retrieveUsers(uid).getUserId());
             List<JSONObject> ids = checkMail(email);
             List<User> people = new LinkedList<>();
             User user = userRepo.retrieveUsers(uid);
             for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
 
+            logger.warn("people : "+ people);
             for (User p : people) {
 
                 if (user.equals(p)) {
 
                     tokenClass.insertEmailToken(user);
+                    logger.warn("token inserted");
 
                     String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
                     try {
+
                         sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
+                        logger.warn("Message send to: " +user.getUserId());
+
                     } catch (Exception e) {
                         return 0;
                     }
