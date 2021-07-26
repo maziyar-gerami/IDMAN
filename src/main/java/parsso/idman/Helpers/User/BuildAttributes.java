@@ -206,25 +206,29 @@ public class BuildAttributes {
         ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
 
 
-        //EndTime
-
-        if (p.getEndTime() != null && p.getEndTime() != "") {
-            if (p.getEndTime().length()==10)
-                context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())*1000));
-            else
-                try {
-                    context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
-                } catch (NumberFormatException e){
-                    context.setAttributeValue("pwdEndTime", p.getEndTime());
-                }
-
-
-        } else
-            context.removeAttributeValue("pwdEndTime", old.getEndTime());
-
-
         if (p.getUsersExtraInfo() != null && p.getUsersExtraInfo().getResetPassToken() != null)
             mongoTemplate.save(p.getUsersExtraInfo(), Variables.col_usersExtraInfo);
+
+
+        //EndTime
+        if (p.getEndTime()!=null&&!p.getEndTime().equals(old.getEndTime()) && p.getEndTime().charAt(0)!=('-')){
+            if (p.getEndTime() != null && p.getEndTime() != "") {
+                if (p.getEndTime().length() == 10)
+                    context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime()) * 1000));
+                else
+                    try {
+                        context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+                    } catch (NumberFormatException e) {
+                        if(p.getEndTime().contains("+"))
+                            context.setAttributeValue("pwdEndTime", p.getEndTime());
+                        else
+                            context.setAttributeValue("pwdEndTime", p.getEndTime()+currentOffsetForMyZone.toString().replaceAll(":",""));
+
+                    }
+
+            } else if (p.getEndTime() != null && p.getEndTime() == "")
+                context.removeAttributeValue("pwdEndTime", old.getEndTime());
+
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
@@ -243,6 +247,7 @@ public class BuildAttributes {
             ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
         }
 
+    }
         return context;
     }
 
