@@ -237,6 +237,8 @@ public class EmailServiceImpl implements EmailService {
                     logger.warn("token inserted");
 
                     String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
+                    logger.warn("full url is: "+ fullUrl);
+
                     try {
 
                         sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
