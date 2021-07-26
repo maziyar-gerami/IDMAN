@@ -422,10 +422,10 @@ public class UsersController {
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
         Logger logger = LogManager.getLogger("test");
-        logger.info("Enter First Api");
+        logger.warn("Enter First Api");
 
         int time = instantMessage.sendMessage(mobile, cid, answer);
-        logger.info("response of sendMessage function is " + time);
+        logger.warn("response of sendMessage function is " + time);
 
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
@@ -454,9 +454,9 @@ public class UsersController {
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
         Logger logger = LogManager.getLogger("test");
-        logger.info("Enter Second Api");
+        logger.warn("Enter Second Api");
         int time = instantMessage.sendMessage(mobile, uid, cid, answer);
-        logger.info("response of sendMessage function is " + time);
+        logger.warn("response of sendMessage function is " + time);
 
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
