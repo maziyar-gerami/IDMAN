@@ -2,6 +2,8 @@ package parsso.idman.Helpers.Communicate;
 
 
 import net.minidev.json.JSONObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +57,10 @@ public class InstantMessage {
     private MagfaSMSSendRepo magfaSMSSendRepo;
 
     public int sendMessage(String mobile, String cid, String answer) {
+        Logger logger = LogManager.getLogger("test");
+        logger.info("Enter sendMessage function");
+        logger.info("SMS sdk is "+ SMS_sdk);
+
         if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
             return sendMessageKaveNegar(mobile, cid, answer);
         else if (SMS_sdk.equalsIgnoreCase("Magfa"))
@@ -71,6 +77,8 @@ public class InstantMessage {
     }
 
     public int sendMessage(String mobile, String uid, String cid, String answer) {
+        Logger logger = LogManager.getLogger("test");
+        logger.info("Enter second sendMessage function");
         if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
             return sendMessageKaveNegar(mobile, uid, cid, answer);
         else if (SMS_sdk.equalsIgnoreCase("Magfa"))
@@ -80,29 +88,47 @@ public class InstantMessage {
 
 
     private int sendMessageKaveNegar(String mobile, String cid, String answer) {
+
+        Logger logger = LogManager.getLogger("test");
+        logger.info("Enter sendMessageKaveNegar function");
+
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
-        if (captcha == null)
+        if (captcha == null) {
+            logger.info("Captcha is incorrect");
+
             return -1;
+
+        }
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
+            logger.info("Captcha is removed");
             mongoTemplate.remove(query, collection);
             return -1;
         }
 
         User user = new User();
 
-        if (checkMobile(mobile).size() == 0)
+        if (checkMobile(mobile).size() == 0) {
+            logger.info("Mobile no doesnt exist");
             return -3;
+        }
 
-        else if (checkMobile(mobile).size() > 1)
+        else if (checkMobile(mobile).size() > 1) {
+            logger.info("there are more than one user with specified number");
             return -2;
+        }
 
 
-        else if (checkMobile(mobile).size() == 1)
+        else if (checkMobile(mobile).size() == 1) {
+            logger.info("there is only one user for specified number");
             user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+        }
 
         if (tokenClass.insertMobileToken(user)) {
+            logger.info("token inserted");
             try {
+                logger.info("try sending message");
+
                 String receptor = mobile;
                 String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
                 KavenegarApi api = new KavenegarApi(SMS_API_KEY);
@@ -111,41 +137,67 @@ public class InstantMessage {
                 return Integer.valueOf(SMS_VALID_TIME);
 
             } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                logger.info("problem sending message");
+
                 System.out.print("HttpException  : " + ex.getMessage());
                 return 0;
             } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                logger.info("problem sending message");
+
                 System.out.print("ApiException : " + ex.getMessage());
                 return 0;
             }
-        } else
-            return 0;
+        }
+
+        logger.info("problem inserting token");
+
+        return 0;
 
 
     }
 
+
     private int sendMessageMagfa(String mobile, String cid, String answer) {
+
+        Logger logger = LogManager.getLogger("test");
+        logger.info("Enter magfa function");
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
-        if (captcha == null)
+        if (captcha == null) {
+            logger.info("Captcha is incorrect");
+
             return -1;
+
+        }
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
+            logger.info("Captcha is removed");
             mongoTemplate.remove(query, collection);
             return -1;
         }
 
         User user = new User();
 
-        if (checkMobile(mobile).size() == 0)
+        if (checkMobile(mobile).size() == 0) {
+            logger.info("Mobile no doesnt exist");
             return -3;
+        }
 
-        else if (checkMobile(mobile).size() > 1)
+        else if (checkMobile(mobile).size() > 1) {
+            logger.info("there are more than one user with specified number");
             return -2;
+        }
 
-        else if (checkMobile(mobile).size() == 1)
-             user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
-            if (tokenClass.insertMobileToken(user)) {
-                try {
-                    Texts texts = new Texts();
+        else if (checkMobile(mobile).size() == 1) {
+            logger.info("there is only one user for specified number");
+            user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+        }
+             if (tokenClass.insertMobileToken(user)) {
+                 logger.info("token inserted");
+
+                 try {
+                     logger.info("try sending message");
+
+                     Texts texts = new Texts();
                     texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS)));
                     magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
 
@@ -153,12 +205,15 @@ public class InstantMessage {
                     return Integer.valueOf(SMS_VALID_TIME);
 
                 } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                     logger.info("problem sending message");
                     System.out.print("HttpException  : " + ex.getMessage());
                     return 0;
                 } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                     logger.info("problem sending message");
                     System.out.print("ApiException : " + ex.getMessage());
                     return 0;
                 } catch (MalformedURLException e) {
+                     logger.info("problem sending message");
                     e.printStackTrace();
                 }
             } else
@@ -238,23 +293,35 @@ public class InstantMessage {
     }
 
     private int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) {
+
+        Logger logger = LogManager.getLogger("test");
+        logger.info("Enter sendMessageKaveNegar function");
+
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
-        if (captcha == null)
+        if (captcha == null) {
+            logger.info("Captcha is incorrect");
+
             return -1;
+
+        }
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
+            logger.info("Captcha is removed");
             mongoTemplate.remove(query, collection);
             return -1;
         }
 
 
-        if (checkMobile(mobile).size() == 0)
+        if (checkMobile(mobile).size() == 0) {
+            logger.info("Mobile no doesnt exist");
             return -3;
+        }
 
         User user = userRepo.retrieveUsers(uId);
 
 
         if (user!=null && user.getUserId() != null && tokenClass.insertMobileToken(user) ) {
+            logger.info("token inserted");
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
             for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
@@ -272,10 +339,14 @@ public class InstantMessage {
                             mongoTemplate.remove(query, collection);
                             return Integer.valueOf(SMS_VALID_TIME);
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                            logger.info("problem sending message");
+
                             System.out.print("HttpException  : " + ex.getMessage());
                             return 0;
 
                         } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                            logger.info("problem sending message");
+
                             System.out.print("ApiException : " + ex.getMessage());
                             return 0;
 
@@ -286,14 +357,18 @@ public class InstantMessage {
             }
 
 
-        } else
-            return 0;
+        } else{
+            logger.info("problem inserting token");
+
+            return 0;}
 
         return 0;
     }
 
 
     private int sendMessageMagfa(String mobile, String uId, String cid, String answer) {
+        Logger logger = LogManager.getLogger("test");
+        logger.info("Enter sendMessageKaveNegar function");
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null)
@@ -305,13 +380,16 @@ public class InstantMessage {
 
         User user = new User();
 
-        if (checkMobile(mobile).size() == 0)
-            return -3;
+        if (checkMobile(mobile).size() == 0) {
+            logger.info("Mobile no doesnt exist");
 
-        else if (checkMobile(mobile).size() > 1)
-            return -2;
+            return -3;
+        }
+
 
         if (checkMobile(mobile) != null && userRepo.retrieveUsers(uId).getUserId() != null && tokenClass.insertMobileToken(user)) {
+            logger.info("token inserted");
+
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
             user = userRepo.retrieveUsers(uId);
@@ -321,6 +399,7 @@ public class InstantMessage {
                 if (p.getUserId().equals(user.getUserId())) {
 
                     if (tokenClass.insertMobileToken(user)) {
+                        logger.info("token inserted");
 
                         try {
                             Texts texts = new Texts();
@@ -329,10 +408,14 @@ public class InstantMessage {
                             mongoTemplate.remove(query, collection);
                             return Integer.valueOf(SMS_VALID_TIME);
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                            logger.info("problem sending message");
+
                             System.out.print("HttpException  : " + ex.getMessage());
                             return 0;
 
                         } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                            logger.info("problem sending message");
+
                             System.out.print("ApiException : " + ex.getMessage());
                             return 0;
 
@@ -346,8 +429,11 @@ public class InstantMessage {
                 }
             }
 
-        } else
+        } else {
+            logger.info("problem inserting token");
             return 0;
+
+        }
 
         return 0;
     }

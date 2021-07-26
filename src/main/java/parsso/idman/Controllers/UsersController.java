@@ -2,6 +2,8 @@ package parsso.idman.Controllers;
 
 
 import net.minidev.json.JSONObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -419,11 +421,17 @@ public class UsersController {
     public ResponseEntity<JSONObject> sendMessage(@PathVariable("mobile") String mobile,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
+        Logger logger = LogManager.getLogger("test");
+        logger.info("Enter First Api");
+
         int time = instantMessage.sendMessage(mobile, cid, answer);
+        logger.info("response of sendMessage function is " + time);
+
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("time",time);
             jsonObject.put("userId", userRepo.getByMobile(mobile));
+
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         }
         else if (time == -1)
@@ -445,7 +453,11 @@ public class UsersController {
                                                @PathVariable("uid") String uid,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
+        Logger logger = LogManager.getLogger("test");
+        logger.info("Enter Second Api");
         int time = instantMessage.sendMessage(mobile, uid, cid, answer);
+        logger.info("response of sendMessage function is " + time);
+
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("time",time);
