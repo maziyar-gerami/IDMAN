@@ -73,28 +73,16 @@ public class EmailServiceImpl implements EmailService {
     }
 
     public void sendHtmlMessage(User user, String subject, String url) throws javax.mail.MessagingException {
-        Logger logger = LogManager.getLogger("test");
-        logger.warn("Sending HTML message...");
-        logger.warn("User is: "+ user);
-        logger.warn("subject is: "+ subject);
-        logger.warn("url is: "+ url);
         MimeMessage message = mailSender.createMimeMessage();
-        logger.warn("message is: "+ message);
         MimeMessageHelper helper = new MimeMessageHelper(message);
-        logger.warn("Helper defined");
         helper.setFrom(from);
-        logger.warn("Helper set from:"+from);
         helper.setTo(user.getMail());
-        logger.warn("Helper set to:"+user.getMail());
         helper.setSubject(subject);
-        logger.warn("Helper set subject:"+subject);
         String s = Variables.template(user, url);
         helper.setText(Variables.template(user, url), true);
-        logger.warn("text is: "+s);
         try {
-            logger.warn("message sent");
-
-        } catch (Exception e){
+            mailSender.send(message);
+        }catch (Exception e){
             e.printStackTrace();
         }
 
@@ -159,9 +147,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public int sendMail(String email, String cid, String answer) {
 
-        Logger logger = LogManager.getLogger("test");
 
-        logger.warn("sending mail to: "+ email);
 
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -184,13 +170,11 @@ public class EmailServiceImpl implements EmailService {
             user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
-            logger.warn("token inserted");
 
             String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
             try {
                 sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
-                logger.warn("mail sent to: "+ user.getUserId());
 
 
             } catch (Exception e) {
@@ -222,7 +206,6 @@ public class EmailServiceImpl implements EmailService {
     public int sendMail(String email, String uid, String cid, String answer) {
         Logger logger = LogManager.getLogger("test");
 
-        logger.warn("sending mail to: "+ email +" with userId :"+uid);
 
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -234,9 +217,6 @@ public class EmailServiceImpl implements EmailService {
         }
 
         if (checkMail(email) != null && userRepo.retrieveUsers(uid)!=null && userRepo.retrieveUsers(uid).getUserId() != null) {
-            logger.warn("check mail: "+ checkMail(email));
-            logger.warn("user : "+ userRepo.retrieveUsers(uid));
-            logger.warn("userID : "+ userRepo.retrieveUsers(uid).getUserId());
             List<JSONObject> ids = checkMail(email);
             List<User> people = new LinkedList<>();
             User user = userRepo.retrieveUsers(uid);
@@ -248,15 +228,13 @@ public class EmailServiceImpl implements EmailService {
                 if (user.equals(p)) {
 
                     tokenClass.insertEmailToken(user);
-                    logger.warn("token inserted");
 
                     String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
-                    logger.warn("full url is: "+ fullUrl);
+
 
                     try {
 
                         sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
-                        logger.warn("Message send to: " +user.getUserId());
 
                     } catch (Exception e) {
                         return 0;
