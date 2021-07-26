@@ -57,9 +57,6 @@ public class InstantMessage {
     private MagfaSMSSendRepo magfaSMSSendRepo;
 
     public int sendMessage(String mobile, String cid, String answer) {
-        Logger logger = LogManager.getLogger("test");
-        logger.warn("Enter sendMessage function");
-        logger.warn("SMS sdk is "+ SMS_sdk);
 
         if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
             return sendMessageKaveNegar(mobile, cid, answer);
@@ -77,8 +74,6 @@ public class InstantMessage {
     }
 
     public int sendMessage(String mobile, String uid, String cid, String answer) {
-        Logger logger = LogManager.getLogger("test");
-        logger.warn("Enter second sendMessage function");
         if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
             return sendMessageKaveNegar(mobile, uid, cid, answer);
         else if (SMS_sdk.equalsIgnoreCase("Magfa"))
@@ -89,45 +84,30 @@ public class InstantMessage {
 
     private int sendMessageKaveNegar(String mobile, String cid, String answer) {
 
-        Logger logger = LogManager.getLogger("test");
-        logger.warn("Enter sendMessageKaveNegar function");
-
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
-        if (captcha == null) {
-            logger.warn("Captcha is incorrect");
-
+        if (captcha == null)
             return -1;
 
-        }
-        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            logger.warn("Captcha is removed");
+        if (!(answer.equalsIgnoreCase(captcha.getPhrase())))
             mongoTemplate.remove(query, collection);
-            return -1;
-        }
 
         User user = new User();
 
-        if (checkMobile(mobile).size() == 0) {
-            logger.warn("Mobile no doesnt exist");
+        List<JSONObject> checked = checkMobile(mobile);
+
+        if (checked.size() == 0)
             return -3;
-        }
 
-        else if (checkMobile(mobile).size() > 1) {
-            logger.warn("there are more than one user with specified number");
+        else if (checked.size() > 1)
             return -2;
-        }
 
 
-        else if (checkMobile(mobile).size() == 1) {
-            logger.warn("there is only one user for specified number");
+        else if (checked.size() == 1)
             user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
-        }
 
         if (tokenClass.insertMobileToken(user)) {
-            logger.warn("token inserted");
             try {
-                logger.warn("try sending message");
 
                 String receptor = mobile;
                 String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
@@ -137,19 +117,16 @@ public class InstantMessage {
                 return Integer.valueOf(SMS_VALID_TIME);
 
             } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                logger.warn("problem sending message");
 
                 System.out.print("HttpException  : " + ex.getMessage());
                 return 0;
             } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                logger.warn("problem sending message");
 
                 System.out.print("ApiException : " + ex.getMessage());
                 return 0;
             }
         }
 
-        logger.warn("problem inserting token");
 
         return 0;
 
@@ -159,43 +136,33 @@ public class InstantMessage {
 
     private int sendMessageMagfa(String mobile, String cid, String answer) {
 
-        Logger logger = LogManager.getLogger("test");
-        logger.warn("Enter magfa function");
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
-        if (captcha == null) {
-            logger.warn("Captcha is incorrect");
-
+        if (captcha == null)
             return -1;
 
-        }
+
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            logger.warn("Captcha is removed");
             mongoTemplate.remove(query, collection);
             return -1;
         }
 
         User user = new User();
 
-        if (checkMobile(mobile).size() == 0) {
-            logger.warn("Mobile no doesnt exist");
+        if (checkMobile(mobile).size() == 0)
             return -3;
-        }
 
-        else if (checkMobile(mobile).size() > 1) {
-            logger.warn("there are more than one user with specified number");
+
+        else if (checkMobile(mobile).size() > 1)
             return -2;
-        }
 
-        else if (checkMobile(mobile).size() == 1) {
-            logger.warn("there is only one user for specified number");
+
+        else if (checkMobile(mobile).size() == 1)
             user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
-        }
+
              if (tokenClass.insertMobileToken(user)) {
-                 logger.warn("token inserted");
 
                  try {
-                     logger.warn("try sending message");
 
                      Texts texts = new Texts();
                     texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS)));
@@ -205,15 +172,12 @@ public class InstantMessage {
                     return Integer.valueOf(SMS_VALID_TIME);
 
                 } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                     logger.warn("problem sending message");
                     System.out.print("HttpException  : " + ex.getMessage());
                     return 0;
                 } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                     logger.warn("problem sending message");
                     System.out.print("ApiException : " + ex.getMessage());
                     return 0;
                 } catch (MalformedURLException e) {
-                     logger.warn("problem sending message");
                     e.printStackTrace();
                 }
             } else
@@ -294,26 +258,21 @@ public class InstantMessage {
 
     private int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) {
 
-        Logger logger = LogManager.getLogger("test");
-        logger.warn("Enter sendMessageKaveNegar function");
 
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null) {
-            logger.warn("Captcha is incorrect");
 
             return -1;
 
         }
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            logger.warn("Captcha is removed");
             mongoTemplate.remove(query, collection);
             return -1;
         }
 
 
         if (checkMobile(mobile).size() == 0) {
-            logger.warn("Mobile no doesnt exist");
             return -3;
         }
 
@@ -321,7 +280,6 @@ public class InstantMessage {
 
 
         if (user!=null && user.getUserId() != null && tokenClass.insertMobileToken(user) ) {
-            logger.warn("token inserted");
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
             for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
@@ -339,13 +297,11 @@ public class InstantMessage {
                             mongoTemplate.remove(query, collection);
                             return Integer.valueOf(SMS_VALID_TIME);
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                            logger.warn("problem sending message");
 
                             System.out.print("HttpException  : " + ex.getMessage());
                             return 0;
 
                         } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                            logger.warn("problem sending message");
 
                             System.out.print("ApiException : " + ex.getMessage());
                             return 0;
@@ -358,7 +314,6 @@ public class InstantMessage {
 
 
         } else{
-            logger.warn("problem inserting token");
 
             return 0;}
 
@@ -368,7 +323,6 @@ public class InstantMessage {
 
     private int sendMessageMagfa(String mobile, String uId, String cid, String answer) {
         Logger logger = LogManager.getLogger("test");
-        logger.warn("Enter sendMessageKaveNegar function");
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null)
@@ -381,14 +335,12 @@ public class InstantMessage {
         User user = new User();
 
         if (checkMobile(mobile).size() == 0) {
-            logger.warn("Mobile no doesnt exist");
 
             return -3;
         }
-
+        user = userRepo.retrieveUsers(uId);
 
         if (checkMobile(mobile) != null && userRepo.retrieveUsers(uId).getUserId() != null && tokenClass.insertMobileToken(user)) {
-            logger.warn("token inserted");
 
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
@@ -399,7 +351,6 @@ public class InstantMessage {
                 if (p.getUserId().equals(user.getUserId())) {
 
                     if (tokenClass.insertMobileToken(user)) {
-                        logger.warn("token inserted");
 
                         try {
                             Texts texts = new Texts();
@@ -408,13 +359,11 @@ public class InstantMessage {
                             mongoTemplate.remove(query, collection);
                             return Integer.valueOf(SMS_VALID_TIME);
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                            logger.warn("problem sending message");
 
                             System.out.print("HttpException  : " + ex.getMessage());
                             return 0;
 
                         } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                            logger.warn("problem sending message");
 
                             System.out.print("ApiException : " + ex.getMessage());
                             return 0;
@@ -430,7 +379,6 @@ public class InstantMessage {
             }
 
         } else {
-            logger.warn("problem inserting token");
             return 0;
 
         }
