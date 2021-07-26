@@ -421,11 +421,8 @@ public class UsersController {
     public ResponseEntity<JSONObject> sendMessage(@PathVariable("mobile") String mobile,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
-        Logger logger = LogManager.getLogger("test");
-        logger.warn("Enter First Api");
 
         int time = instantMessage.sendMessage(mobile, cid, answer);
-        logger.warn("response of sendMessage function is " + time);
 
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
@@ -453,10 +450,7 @@ public class UsersController {
                                                @PathVariable("uid") String uid,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
-        Logger logger = LogManager.getLogger("test");
-        logger.warn("Enter Second Api");
         int time = instantMessage.sendMessage(mobile, uid, cid, answer);
-        logger.warn("response of sendMessage function is " + time);
 
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
