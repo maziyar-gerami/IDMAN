@@ -2,8 +2,6 @@ package parsso.idman.Controllers;
 
 
 import net.minidev.json.JSONObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -464,6 +462,30 @@ public class UsersController {
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/api/public/sendTokenUser/{uid}/{cid}/{answer}")
+    public ResponseEntity<JSONObject> sendMessageUser(
+                                                  @PathVariable("uid") String uid,
+                                                  @PathVariable("cid") String cid,
+                                                  @PathVariable("answer") String answer) {
+        User user = userRepo.retrieveUsers(uid);
+        if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        int time = instantMessage.sendMessage(userRepo.retrieveUsers(uid).getMobile(), cid, answer);
+
+        if (time > 0) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("time",time);
+            jsonObject.put("userId", uid);
+            return new ResponseEntity<>(jsonObject, HttpStatus.OK);
+        }
+        else if (time == -1)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else if (time ==-2)
+            return new ResponseEntity<>(HttpStatus.FOUND);
+        else
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
