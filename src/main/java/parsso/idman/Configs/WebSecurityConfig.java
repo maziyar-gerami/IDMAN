@@ -77,7 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-
+/*
 
 
                 .authorizeRequests()
@@ -176,7 +176,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
 
-
+*/
 
 
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
