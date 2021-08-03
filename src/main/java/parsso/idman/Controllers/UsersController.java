@@ -472,7 +472,7 @@ public class UsersController {
         User user = userRepo.retrieveUsers(uid);
         if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        int time = instantMessage.sendMessage(userRepo.retrieveUsers(uid).getMobile(), cid, answer);
+        int time = instantMessage.sendMessage(user, cid, answer);
 
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();

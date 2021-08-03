@@ -65,6 +65,15 @@ public class InstantMessage {
         return 0;
     }
 
+    public int sendMessage(User user, String cid, String answer) {
+
+        if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
+            return sendMessageKaveNegar(user, cid, answer);
+        else if (SMS_sdk.equalsIgnoreCase("Magfa"))
+            return sendMessageMagfa(user, cid, answer);
+        return 0;
+    }
+
     public int sendMessage(User user) {
         if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
             return sendMessageKaveNegar(user);
@@ -133,6 +142,89 @@ public class InstantMessage {
 
     }
 
+    private int sendMessageKaveNegar(User user, String cid, String answer) {
+
+        Query query = new Query(Criteria.where("_id").is(cid));
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        if (captcha == null)
+            return -1;
+
+        if (!(answer.equalsIgnoreCase(captcha.getPhrase())))
+            mongoTemplate.remove(query, collection);
+
+
+        if (user==null || user.getUserId()==null)
+            return -3;
+
+
+        if (tokenClass.insertMobileToken(user)) {
+            try {
+
+                String receptor = user.getMobile();
+                String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+                KavenegarApi api = new KavenegarApi(SMS_API_KEY);
+                api.verifyLookup(receptor, message, "", "", "mfa");
+                mongoTemplate.remove(query, collection);
+                return Integer.valueOf(SMS_VALID_TIME);
+
+            } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+
+                System.out.print("HttpException  : " + ex.getMessage());
+                return 0;
+            } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+
+                System.out.print("ApiException : " + ex.getMessage());
+                return 0;
+            }
+        }
+
+        return 0;
+
+    }
+
+    private int sendMessageMagfa(User user, String cid, String answer) {
+
+        Query query = new Query(Criteria.where("_id").is(cid));
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        if (captcha == null)
+            return -1;
+
+
+        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
+            mongoTemplate.remove(query, collection);
+            return -1;
+        }
+
+
+        if (user == null || user.getUserId() == null)
+            return -3;
+
+        if (tokenClass.insertMobileToken(user)) {
+
+            try {
+
+                Texts texts = new Texts();
+                texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS)));
+                magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
+
+                mongoTemplate.remove(query, collection);
+                return Integer.valueOf(SMS_VALID_TIME);
+
+            } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                System.out.print("HttpException  : " + ex.getMessage());
+                return 0;
+            } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                System.out.print("ApiException : " + ex.getMessage());
+                return 0;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        } else
+            return 0;
+
+
+        return 0;
+    }
 
     private int sendMessageMagfa(String mobile, String cid, String answer) {
 
