@@ -29,9 +29,12 @@ public class SkyroomController {
     @GetMapping("/api/skyroom")
     ResponseEntity<SkyRoom> hello(HttpServletRequest request) throws IOException {
         if (skyroomEnable.equalsIgnoreCase("true"))
-            return new ResponseEntity<>(runSkyroom.Run(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
+            try {
+                return new ResponseEntity<>(runSkyroom.Run(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
+            }catch (Exception e){
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
         else
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-
     }
 }

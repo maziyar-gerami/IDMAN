@@ -157,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
             copyText: "کپی",
             returnText: "بازگشت",
             expirePasswordText: "انقضای رمزعبور",
+            usersCountText: "تعداد اعضا",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام انگلیسی",
@@ -827,6 +828,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.copyText = "Copy";
                     this.returnText = "Return";
                     this.expirePasswordText = "Expire Password";
+                    this.usersCountText = "Users Count";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
@@ -913,6 +915,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.copyText = "کپی";
                     this.returnText = "بازگشت";
                     this.expirePasswordText = "انقضای رمزعبور";
+                    this.usersCountText = "تعداد اعضا";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";

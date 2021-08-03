@@ -2,6 +2,8 @@ package parsso.idman.Helpers.Communicate;
 
 
 import net.minidev.json.JSONObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -55,10 +57,20 @@ public class InstantMessage {
     private MagfaSMSSendRepo magfaSMSSendRepo;
 
     public int sendMessage(String mobile, String cid, String answer) {
+
         if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
             return sendMessageKaveNegar(mobile, cid, answer);
         else if (SMS_sdk.equalsIgnoreCase("Magfa"))
             return sendMessageMagfa(mobile, cid, answer);
+        return 0;
+    }
+
+    public int sendMessage(User user, String cid, String answer) {
+
+        if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
+            return sendMessageKaveNegar(user, cid, answer);
+        else if (SMS_sdk.equalsIgnoreCase("Magfa"))
+            return sendMessageMagfa(user, cid, answer);
         return 0;
     }
 
@@ -80,33 +92,121 @@ public class InstantMessage {
 
 
     private int sendMessageKaveNegar(String mobile, String cid, String answer) {
+
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null)
             return -1;
+
+        if (!(answer.equalsIgnoreCase(captcha.getPhrase())))
+            mongoTemplate.remove(query, collection);
+
+        User user = new User();
+
+        List<JSONObject> checked = checkMobile(mobile);
+
+        if (checked.size() == 0)
+            return -3;
+
+        else if (checked.size() > 1)
+            return -2;
+
+
+        else if (checked.size() == 1)
+            user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+
+        if (tokenClass.insertMobileToken(user)) {
+            try {
+
+                String receptor = mobile;
+                String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+                KavenegarApi api = new KavenegarApi(SMS_API_KEY);
+                api.verifyLookup(receptor, message, "", "", "mfa");
+                mongoTemplate.remove(query, collection);
+                return Integer.valueOf(SMS_VALID_TIME);
+
+            } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+
+                System.out.print("HttpException  : " + ex.getMessage());
+                return 0;
+            } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+
+                System.out.print("ApiException : " + ex.getMessage());
+                return 0;
+            }
+        }
+
+
+        return 0;
+
+
+    }
+
+    private int sendMessageKaveNegar(User user, String cid, String answer) {
+
+        Query query = new Query(Criteria.where("_id").is(cid));
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        if (captcha == null)
+            return -1;
+
+        if (!(answer.equalsIgnoreCase(captcha.getPhrase())))
+            mongoTemplate.remove(query, collection);
+
+
+        if (user==null || user.getUserId()==null)
+            return -3;
+
+
+        if (tokenClass.insertMobileToken(user)) {
+            try {
+
+                String receptor = user.getMobile();
+                String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+                KavenegarApi api = new KavenegarApi(SMS_API_KEY);
+                api.verifyLookup(receptor, message, "", "", "mfa");
+                mongoTemplate.remove(query, collection);
+                return Integer.valueOf(SMS_VALID_TIME);
+
+            } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+
+                System.out.print("HttpException  : " + ex.getMessage());
+                return 0;
+            } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+
+                System.out.print("ApiException : " + ex.getMessage());
+                return 0;
+            }
+        }
+
+        return 0;
+
+    }
+
+    private int sendMessageMagfa(User user, String cid, String answer) {
+
+        Query query = new Query(Criteria.where("_id").is(cid));
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        if (captcha == null)
+            return -1;
+
+
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
             mongoTemplate.remove(query, collection);
             return -1;
         }
 
-        User user = new User();
 
-        if (checkMobile(mobile).size() == 0)
+        if (user == null || user.getUserId() == null)
             return -3;
 
-        else if (checkMobile(mobile).size() > 1)
-            return -2;
-
-
-        else if (checkMobile(mobile).size() == 1)
-            user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
-
         if (tokenClass.insertMobileToken(user)) {
+
             try {
-                String receptor = mobile;
-                String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
-                KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-                api.verifyLookup(receptor, message, "", "", "mfa");
+
+                Texts texts = new Texts();
+                texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS)));
+                magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
+
                 mongoTemplate.remove(query, collection);
                 return Integer.valueOf(SMS_VALID_TIME);
 
@@ -116,18 +216,24 @@ public class InstantMessage {
             } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
                 System.out.print("ApiException : " + ex.getMessage());
                 return 0;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
             }
         } else
             return 0;
 
 
+        return 0;
     }
 
     private int sendMessageMagfa(String mobile, String cid, String answer) {
+
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null)
             return -1;
+
+
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
             mongoTemplate.remove(query, collection);
             return -1;
@@ -138,14 +244,19 @@ public class InstantMessage {
         if (checkMobile(mobile).size() == 0)
             return -3;
 
+
         else if (checkMobile(mobile).size() > 1)
             return -2;
 
+
         else if (checkMobile(mobile).size() == 1)
-             user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
-            if (tokenClass.insertMobileToken(user)) {
-                try {
-                    Texts texts = new Texts();
+            user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+
+             if (tokenClass.insertMobileToken(user)) {
+
+                 try {
+
+                     Texts texts = new Texts();
                     texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS)));
                     magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
 
@@ -238,18 +349,24 @@ public class InstantMessage {
     }
 
     private int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) {
+
+
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
-        if (captcha == null)
+        if (captcha == null) {
+
             return -1;
+
+        }
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
             mongoTemplate.remove(query, collection);
             return -1;
         }
 
 
-        if (checkMobile(mobile).size() == 0)
+        if (checkMobile(mobile).size() == 0) {
             return -3;
+        }
 
         User user = userRepo.retrieveUsers(uId);
 
@@ -272,10 +389,12 @@ public class InstantMessage {
                             mongoTemplate.remove(query, collection);
                             return Integer.valueOf(SMS_VALID_TIME);
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+
                             System.out.print("HttpException  : " + ex.getMessage());
                             return 0;
 
                         } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+
                             System.out.print("ApiException : " + ex.getMessage());
                             return 0;
 
@@ -286,14 +405,16 @@ public class InstantMessage {
             }
 
 
-        } else
-            return 0;
+        } else{
+
+            return 0;}
 
         return 0;
     }
 
 
     private int sendMessageMagfa(String mobile, String uId, String cid, String answer) {
+        Logger logger = LogManager.getLogger("test");
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if (captcha == null)
@@ -305,13 +426,14 @@ public class InstantMessage {
 
         User user = new User();
 
-        if (checkMobile(mobile).size() == 0)
-            return -3;
+        if (checkMobile(mobile).size() == 0) {
 
-        else if (checkMobile(mobile).size() > 1)
-            return -2;
+            return -3;
+        }
+        user = userRepo.retrieveUsers(uId);
 
         if (checkMobile(mobile) != null && userRepo.retrieveUsers(uId).getUserId() != null && tokenClass.insertMobileToken(user)) {
+
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
             user = userRepo.retrieveUsers(uId);
@@ -329,10 +451,12 @@ public class InstantMessage {
                             mongoTemplate.remove(query, collection);
                             return Integer.valueOf(SMS_VALID_TIME);
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+
                             System.out.print("HttpException  : " + ex.getMessage());
                             return 0;
 
                         } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+
                             System.out.print("ApiException : " + ex.getMessage());
                             return 0;
 
@@ -346,8 +470,10 @@ public class InstantMessage {
                 }
             }
 
-        } else
+        } else {
             return 0;
+
+        }
 
         return 0;
     }

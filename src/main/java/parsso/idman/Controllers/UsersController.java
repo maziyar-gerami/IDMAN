@@ -419,11 +419,14 @@ public class UsersController {
     public ResponseEntity<JSONObject> sendMessage(@PathVariable("mobile") String mobile,
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
+
         int time = instantMessage.sendMessage(mobile, cid, answer);
+
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("time",time);
             jsonObject.put("userId", userRepo.getByMobile(mobile));
+
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         }
         else if (time == -1)
@@ -446,6 +449,7 @@ public class UsersController {
                                                @PathVariable("cid") String cid,
                                                @PathVariable("answer") String answer) {
         int time = instantMessage.sendMessage(mobile, uid, cid, answer);
+
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("time",time);
@@ -458,6 +462,30 @@ public class UsersController {
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/api/public/sendTokenUser/{uid}/{cid}/{answer}")
+    public ResponseEntity<JSONObject> sendMessageUser(
+                                                  @PathVariable("uid") String uid,
+                                                  @PathVariable("cid") String cid,
+                                                  @PathVariable("answer") String answer) {
+        User user = userRepo.retrieveUsers(uid);
+        if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        int time = instantMessage.sendMessage(user, cid, answer);
+
+        if (time > 0) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("time",time);
+            jsonObject.put("userId", uid);
+            return new ResponseEntity<>(jsonObject, HttpStatus.OK);
+        }
+        else if (time == -1)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else if (time ==-2)
+            return new ResponseEntity<>(HttpStatus.FOUND);
+        else
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 

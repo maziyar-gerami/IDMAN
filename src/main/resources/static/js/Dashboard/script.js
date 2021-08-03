@@ -116,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function () {
       this.getServices();
       this.getUserPic();
       this.getGroups();
-      this.getMeetingInfo();
       if(window.localStorage.getItem("lang") === null){
           window.localStorage.setItem("lang", "FA");
       }else if(window.localStorage.getItem("lang") === "EN") {
@@ -190,8 +189,8 @@ document.addEventListener('DOMContentLoaded', function () {
           });
       },
       getUserInfo: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         axios.get(url + "/api/user") //
           .then((res) => {
             vm.username = res.data.userId;

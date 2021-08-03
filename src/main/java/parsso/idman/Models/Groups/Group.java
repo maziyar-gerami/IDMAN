@@ -17,11 +17,13 @@ public class Group {
     private String id;
     private String name;
     private String description;
+    private long usersCount;
 
-    public Group(String name, String description) {
+    public Group(String name, String description, long usersCount) {
 
         this.name = name;
         this.description = description;
+        this.usersCount = usersCount;
     }
 
     public Group() {

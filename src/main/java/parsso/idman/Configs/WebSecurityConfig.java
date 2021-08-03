@@ -77,7 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-
+/*
 
 
                 .authorizeRequests()
@@ -87,6 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/fonts/**").permitAll()
                 .antMatchers("/images/**").permitAll()
+                .antMatchers("/public/Parsso-User-Guide.pdf").permitAll()
 
                 //pages
                 .antMatchers("/resetpassword").permitAll()
@@ -175,7 +176,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
 
-
+*/
 
 
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)

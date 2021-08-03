@@ -208,9 +208,7 @@ public class UserRepoImpl implements UserRepo {
         DirContextOperations context;
 
         //remove current pwdEndTime
-        if ((p.getEndTime() != null && p.getEndTime().equals("")))
-            removeCurrentEndTime(p.getUserId());
-        else if (p.getEndTime() != null &&
+        if (p.getEndTime() == null ||
                 p.getEndTime().equals("")
                 && user.getEndTime() != null)
             removeCurrentEndTime(p.getUserId());
@@ -852,6 +850,8 @@ public class UserRepoImpl implements UserRepo {
         Logger logger = LogManager.getLogger(userId);
 
         User user = retrieveUsers(userId);
+
+
 
         user = setRole(user);
 

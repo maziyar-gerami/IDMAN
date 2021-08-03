@@ -269,6 +269,7 @@
                                                                             <th style="border: none;">#</th>
                                                                             <th style="border: none;">{{U2}}</th>
                                                                             <th style="border: none;">{{U3}}</th>
+                                                                            <th style="border: none;">{{usersCountText}}</th>
                                                                         </tr>
                                                                         <tbody id="body">
                                                                                 <tr v-for="group in sortedGroups" v-bind:key="group.id" :id="'row-' + group.id">
@@ -281,6 +282,7 @@
                                                                                     <td>{{group.orderOfRecords}}</td>
                                                                                     <td>{{group.id}}</td>
                                                                                     <td>{{group.name}}</td>
+                                                                                    <td>{{group.usersCount}}</td>
                                                                                     <td>
                                                                                         <button style="padding: .2rem .2rem; color: #ffc107; font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="U13" class="btn btn-sm" v-on:click="editGroupS(group.id)">
                                                                                             <span class="fa-passwd-reset fa-stack">
@@ -410,6 +412,10 @@
                                     <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
                                         <div class="p-3" v-bind:style="editS">
                                             <h3 class="mb-3 pb-2 border-bottom">{{s30}}</h3>
+                                            <div class="form-group">
+                                                <label>{{usersCountText}}</label>
+                                                <input v-bind:value="group.usersCount" id="group.usersCount" type="text" class="form-control" disabled>
+                                            </div>
                                             <div class="form-group">
                                                 <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
                                                 <input v-bind:value="group.id" id="group.idUpdate" type="text" v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck"

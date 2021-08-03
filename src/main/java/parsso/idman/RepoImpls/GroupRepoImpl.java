@@ -41,7 +41,6 @@ import java.util.*;
 @Service
 public class GroupRepoImpl implements GroupRepo {
 
-
     private final String usersExtraInfoCollection = Variables.col_usersExtraInfo;
     private final String model = "Groups";
     @Autowired
@@ -78,7 +77,6 @@ public class GroupRepoImpl implements GroupRepo {
             } catch (Exception e) {
                 logger.warn(new ReportMessage(model, group.getId(), "Group", "remove", "failed", "writing to ldap").toString());
             }
-
 
             for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(group.getId())) {
                 if (user != null && user.getMemberOf() != null)
@@ -348,6 +346,7 @@ public class GroupRepoImpl implements GroupRepo {
             group.setId(null != attributes.get("ou") ? attributes.get("ou").get().toString() : null);
             group.setName(null != attributes.get("name") ? attributes.get("name").get().toString() : null);
             group.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
+            group.setUsersCount(mongoTemplate.count(new Query(Criteria.where("memberOf").is(group.getId())),Variables.col_usersExtraInfo));
             return group;
         }
     }
