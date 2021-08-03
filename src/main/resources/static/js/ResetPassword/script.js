@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
             dateNavEn: "",
             dateNavText: "",
             userInfo: [],
+            userId: "",
+            userIdSMSCode: "",
             email: "",
             emailE: "",
             mobile: "",
@@ -29,6 +31,12 @@ document.addEventListener('DOMContentLoaded', function () {
             margin: "margin-right: 30px;",
             lang: "EN",
             isRtl: true,
+            sendUserId: true,
+            SuccessUserId: false,
+            ErrorUserId: false,
+            ErrorUserIdSMSCode: false,
+            ErrorUserIdSMSCode403: false,
+            ErrorUserIdSMSCode408: false,
             sendE: true,
             sendU: false,
             Success: false,
@@ -44,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
             editS: "display:none",
             addS: "display:none",
             showS: "",
-            activeItem: "sms",
+            activeItem: "userId",
             captcha: "",
             captchaId: "",
             capAnswer: "",
@@ -97,6 +105,9 @@ document.addEventListener('DOMContentLoaded', function () {
             s46: "کد امنیتی",
             mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
             tryAgainText: "تلاش دوباره",
+            personnelNumberText: "شماره پرسنلی",
+            enterPersonnelNumberText: "لطفا جهت بازنشانی رمز عبور، شماره پرسنلی خود را وارد کنید:",
+            emptyPersonnelNumberText: "شماره پرسنلی خود را وارد کنید",
         },
         created: function () {
             this.setDateNav();
@@ -117,9 +128,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 persianDate.toLocale("fa");
                 this.dateNavText = this.dateNav;
             },
-            getCaptcha: function  () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
+            getCaptcha: function () {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
                 
                 axios.get(url + "/api/captcha/request") //
                 .then((res) => {
@@ -135,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.activeItem = menuItem;
                 this.getCaptcha();
             },
-            sendEmail: function  (email) {
+            sendEmail: function (email) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -216,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert(this.s41);
                 }
             },
-            checkSMS: function  (code) {
+            checkSMS: function (code) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
 
@@ -255,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert(this.s43);
                 }
             },
-            sendSMS: function  (mobile) {
+            sendSMS: function (mobile) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 const mobileRegex = /^09\d{9}$/;
@@ -351,7 +362,70 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert(this.s41);
                 }
             },
-            tryAgain: function  (option) {
+            sendUID: function (uid) {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
+                if(uid !== ""){
+                    if(vm.capAnswer !== ""){
+                        vm.loader = true;
+                        axios.get(url + "/api/public/sendTokenUser/" + uid + "/" + vm.captchaId + "/" + vm.capAnswer) //
+                            .then((res) => {
+                                vm.loader = false;
+                                vm.sendUserId = false;
+                                vm.SuccessUserId = true;
+                                vm.ErrorUserId = false;
+                                vm.ErrorUserIdSMSCode = false;
+                            }).catch((error) => {
+                                if (error.response) {
+                                    vm.loader = false;
+                                    if(error.response.status === 404){
+                                        vm.userId = "";
+                                        vm.sendUserId = false;
+                                        vm.SuccessUserId = false;
+                                        vm.ErrorUserId = true;
+                                        vm.ErrorUserIdSMSCode = false;
+                                    }
+                                }
+                            });
+                    }else{
+                        alert(this.s44);
+                    }
+                }else{
+                    alert(this.emptyPersonnelNumberText);
+                }
+            },
+            checkUIDSMS: function (code) {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
+
+                if(code !== ""){
+                    vm.loader = true;
+                    axios.get(url + "/api/public/validateMessageToken/" + vm.userId + "/" + code) //
+                        .then((res) => {
+                            vm.loader = false;
+                            window.location.replace(url + "/newpassword?uid=" + vm.userId + "&token=" + code);
+                        })
+                        .catch((error) => {
+                            if (error.response) {
+                                vm.loader = false;
+                                vm.sendUserId = false;
+                                vm.SuccessUserId = false;
+                                vm.ErrorUserId = false;
+                                vm.ErrorUserIdSMSCode = true;
+                                if(error.response.status === 403){
+                                    vm.ErrorUserIdSMSCode403 = true;
+                                    vm.ErrorUserIdSMSCode408 = false;
+                                }else if(error.response.status === 408){
+                                    vm.ErrorUserIdSMSCode403 = false;
+                                    vm.ErrorUserIdSMSCode408 = true;
+                                }
+                            }
+                        });
+                }else{
+                    alert(this.s43);
+                }
+            },
+            tryAgain: function (option) {
                 if(option === "email"){
                     this.emailE = "";
                     this.usernameE = "";
@@ -369,6 +443,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.SuccessS = false;
                     this.ErrorS = false;
                     this.ErrorSMSCode = false;
+                }
+                else if(option === "userId"){
+                    this.userId = "";
+                    this.sendUserId = true;
+                    this.SuccessUserId = false;
+                    this.ErrorUserId = false;
+                    this.ErrorUserIdSMSCode = false;
                 }
                 this.getCaptcha();
             },
@@ -417,6 +498,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s45 = "Security Code Answer Is Incorrect, Try Again.";
                     this.s46 = "Security Code";
                     this.mobileFormatErrorText = "Enter Phone Number Format Correctly";
+                    this.tryAgainText = "Try Again";
+                    this.personnelNumberText = "Personnel Number";
+                    this.enterPersonnelNumberText = "Please Enter Your Personnel Number To Reset Your Password:";
+                    this.emptyPersonnelNumberText = "Please Enter Your Personnel Number";
                 } else{
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
@@ -461,6 +546,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s45 = "جواب کد امنیتی اشتباه است، دوباره تلاش کنید.";
                     this.s46 = "کد امنیتی";
                     this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
+                    this.tryAgainText = "تلاش دوباره";
+                    this.personnelNumberText = "شماره پرسنلی";
+                    this.enterPersonnelNumberText = "لطفا جهت بازنشانی رمز عبور، شماره پرسنلی خود را وارد کنید:";
+                    this.emptyPersonnelNumberText = "شماره پرسنلی خود را وارد کنید";
                 }
             }
         }
