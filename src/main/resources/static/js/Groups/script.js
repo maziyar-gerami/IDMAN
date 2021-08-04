@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s36: "تعداد رکورد ها: ",
             s37: "ممیزی ها",
             s38: "/audits",
-            s39: "لیست کاربران",
+            s39: "لیست کاربران خارج از گروه ",
             s40: "جستجو...",
             s41: "افزودن به گروه",
             s42: "کاربری یافت نشد",
@@ -158,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
             returnText: "بازگشت",
             expirePasswordText: "انقضای رمزعبور",
             usersCountText: "تعداد اعضا",
+            membersText: "نفر",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام انگلیسی",
@@ -795,11 +796,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s35 = "No Group is Selected.";
                     this.s36 = "Records a Page: ";
                     this.s37 = "Audits";
-                    this.s39 = "Users List";
+                    this.s39 = "Non-member Users List ";
                     this.s40 = "Search...";
                     this.s41 = "Add to Group";
                     this.s42 = "No User Found";
-                    this.s43 = "List of Group Members";
+                    this.s43 = "List of Group Members ";
                     this.s44 = "Remove from Group";
                     this.s45 = "No Group Found";
                     this.s46 = "Groups List";
@@ -829,6 +830,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.returnText = "Return";
                     this.expirePasswordText = "Expire Password";
                     this.usersCountText = "Users Count";
+                    this.membersText = "Members";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
@@ -882,11 +884,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s35 = "هیچ گروهی انتخاب نشده است.";
                     this.s36 = "تعداد رکورد ها: ";
                     this.s37 = "ممیزی ها";
-                    this.s39 = "لیست کاربران";
+                    this.s39 = "لیست کاربران خارج از گروه";
                     this.s40 = "جستجو...";
                     this.s41 = "افزودن به گروه";
                     this.s42 = "کاربری یافت نشد";
-                    this.s43 = "لیست اعضای گروه";
+                    this.s43 = "لیست اعضای گروه ";
                     this.s44 = "حذف از گروه";
                     this.s45 = "گروهی یافت نشد";
                     this.s46 = "لیست گروه ها";
@@ -916,6 +918,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.returnText = "بازگشت";
                     this.expirePasswordText = "انقضای رمزعبور";
                     this.usersCountText = "تعداد اعضا";
+                    this.membersText = "نفر";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";

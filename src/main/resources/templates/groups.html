@@ -413,10 +413,6 @@
                                         <div class="p-3" v-bind:style="editS">
                                             <h3 class="mb-3 pb-2 border-bottom">{{s30}}</h3>
                                             <div class="form-group">
-                                                <label>{{usersCountText}}</label>
-                                                <input v-bind:value="group.usersCount" id="group.usersCount" type="text" class="form-control" disabled>
-                                            </div>
-                                            <div class="form-group">
                                                 <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
                                                 <input v-bind:value="group.id" id="group.idUpdate" type="text" v-on:keypress="englishInputCharCheck" v-on:paste="englishInputCharCheck"
                                                     class="form-control" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
@@ -510,7 +506,7 @@
                                                         <div class="card mb-3">
                                                             <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
                                                                 <div>
-                                                                    <span>{{s43}}</span>
+                                                                    <span>{{s43}} ({{group.usersCount}} {{membersText}})</span>
                                                                 </div> 
                                                                 <div class="d-flex">
                                                                     <div style="width: 250px;">
