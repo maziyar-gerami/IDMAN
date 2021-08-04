@@ -36,7 +36,6 @@ import parsso.idman.Helpers.Group.GroupsChecks;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.SkyRoom;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
@@ -668,8 +667,6 @@ public class UserRepoImpl implements UserRepo {
         UsersExtraInfo usersExtraInfo = null;
         List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, userAttributeMapper);
 
-        SkyRoom skyRoom = null;
-
         if (people.size() != 0) {
             user = people.get(0);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
@@ -681,18 +678,7 @@ public class UserRepoImpl implements UserRepo {
                 user.setUnDeletable(false);
             }
 
-
-            try {
-                skyRoom = skyroomRepo.Run(user);
-                user.setSkyRoom(skyRoom);
-            } catch (IOException e) {
-                e.printStackTrace();
-                user.setSkyRoom(null);
-            }
-
-
         }
-
 
         if (user.getRole() == null)
             user = setRole(user);
