@@ -24,7 +24,8 @@ public class SkyroomController {
     UserRepo userRepo;
 
     @Value("${skyroom.enable}")
-    private String skyroomEnable;
+    String skyroomEnable;
+
 
     @Deprecated
     @GetMapping("/api/skyroom")
@@ -49,5 +50,7 @@ public class SkyroomController {
         }
         else
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+
     }
 }
