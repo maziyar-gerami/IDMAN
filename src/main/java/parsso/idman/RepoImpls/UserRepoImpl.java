@@ -36,7 +36,6 @@ import parsso.idman.Helpers.Group.GroupsChecks;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.SkyRoom;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
@@ -90,6 +89,9 @@ public class UserRepoImpl implements UserRepo {
     private String defaultPassword;
     @Value("${profile.photo.path}")
     private String uploadedFilesPath;
+    @Value("${skyroom.enable}")
+    private String skyroomEnable;
+
     @Autowired
     private LdapTemplate ldapTemplate;
     @Autowired
@@ -110,6 +112,7 @@ public class UserRepoImpl implements UserRepo {
     private ImportUsers importUsers;
     @Autowired
     private EmailService emailService;
+
 
     @Override
     public JSONObject create(String doerID, User p) {
@@ -668,8 +671,6 @@ public class UserRepoImpl implements UserRepo {
         UsersExtraInfo usersExtraInfo = null;
         List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, userAttributeMapper);
 
-        SkyRoom skyRoom = null;
-
         if (people.size() != 0) {
             user = people.get(0);
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
@@ -681,17 +682,9 @@ public class UserRepoImpl implements UserRepo {
                 user.setUnDeletable(false);
             }
 
-
-            try {
-                skyRoom = skyroomRepo.Run(user);
-                user.setSkyRoom(skyRoom);
-            } catch (IOException e) {
-                e.printStackTrace();
-                user.setSkyRoom(null);
-            }
-
-
         }
+
+        user.setSkyroomAccess(skyRoomAccess(user));
 
 
         if (user.getRole() == null)
@@ -703,6 +696,19 @@ public class UserRepoImpl implements UserRepo {
             return null;
 
         else return user;
+    }
+
+    private Boolean skyRoomAccess(User user) {
+        Boolean isEnable = skyroomEnable.equalsIgnoreCase("true") ? true :false;
+
+        boolean accessRole = false;
+        if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("superadmin") ||
+                user.getUsersExtraInfo().getRole().equalsIgnoreCase("admin") ||
+                user.getUsersExtraInfo().getRole().equalsIgnoreCase("supporter") ||
+                user.getUsersExtraInfo().getRole().equalsIgnoreCase("presenter"))
+            accessRole = true;
+
+        return isEnable & accessRole;
     }
 
     @Override

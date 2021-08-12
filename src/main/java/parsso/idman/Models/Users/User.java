@@ -63,6 +63,7 @@ public class User implements UserDetails, Comparable {
     private UsersExtraInfo usersExtraInfo;
     private boolean unDeletable;
     private boolean profileInaccessibility;
+    Boolean skyroomAccess;
 
 
     public User() {

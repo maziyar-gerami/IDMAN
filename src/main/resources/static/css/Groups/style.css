@@ -265,6 +265,7 @@ html,body {
 }
 
 #overlayBody{
+  display: none;
   height: 90%;
   overflow: auto;
 }

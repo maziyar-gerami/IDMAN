@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlElement;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -68,8 +67,7 @@ public class ServicesController {
             mongoTemplate.save(simpleUser, Variables.col_usersExtraInfo);
         }
 
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(principal.getName())), HttpStatus.OK);
+        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(currentUserId)), HttpStatus.OK);
     }
 
     @GetMapping("/api/services/full")

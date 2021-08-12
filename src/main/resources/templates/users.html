@@ -129,6 +129,9 @@
 <div id="app">
     <div id="overlay">
         <div id="overlayContent" v-bind:class="{rtl: isRtl}">
+            <div v-if="overlayLoader" style="text-align: center;">
+                <roller-loader color="#007bff"/>
+            </div>
             <div id="overlayBody">
                 <div class="form-group">
                     <div class="row mt-3 mb-5 ml-0 mr-0">
