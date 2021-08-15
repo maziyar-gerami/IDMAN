@@ -11,6 +11,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.Group.GroupsChecks;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
@@ -63,6 +65,8 @@ public class UserRepoImpl implements UserRepo {
     String skyRoomApiKey;
     @Autowired
     ExcelAnalyzer excelAnalyzer;
+    @Autowired
+    UniformLogger uniformLogger;
     @Autowired
     SkyroomRepo skyroomRepo;
     @Autowired
@@ -112,10 +116,12 @@ public class UserRepoImpl implements UserRepo {
     private ImportUsers importUsers;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    TranscriptRepo transcriptRepo;
 
 
     @Override
-    public JSONObject create(String doerID, User p) {
+    public JSONObject create(String doerID, User p) throws IOException, ParseException {
 
         p.setUserId(p.getUserId().toLowerCase());
 
@@ -194,7 +200,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus update(String doerID, String usid, User p) {
+    public HttpStatus update(String doerID, String usid, User p) throws IOException, ParseException {
 
 
         Logger logger = LogManager.getLogger(doerID);
@@ -270,7 +276,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public JSONObject createUserImport(String doerID, User p) {
+    public JSONObject createUserImport(String doerID, User p) throws IOException, ParseException {
 
         if (p.getUserPassword() == null)
             p.setUserPassword(defaultPassword);
@@ -279,7 +285,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<String> remove(String doer, JSONObject jsonObject) {
+    public List<String> remove(String doer, JSONObject jsonObject) throws IOException, ParseException {
 
         Logger logger = LogManager.getLogger(doer);
 
@@ -355,7 +361,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token) {
+    public HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token) throws IOException, ParseException {
 
         Logger logger = LogManager.getLogger(uId);
 
@@ -441,7 +447,7 @@ public class UserRepoImpl implements UserRepo {
 
 
     @Override
-    public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException {
+    public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException, ParseException {
 
         Logger logger = LogManager.getLogger(name);
 
@@ -459,6 +465,7 @@ public class UserRepoImpl implements UserRepo {
 
         user.setPhoto(s);
         logger.warn(new ReportMessage(model, name, "profile image", "change", "success", "").toString());
+        mongoTemplate.save(new ReportMessage(model, name, "profile image", "change", "success", ""),"II_log");
         if (update(user.getUserId(), user.getUserId(), user) == HttpStatus.OK) {
             oldPic.delete();
 
@@ -577,7 +584,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public User getName(String uid, String token) {
+    public User getName(String uid, String token) throws IOException, ParseException {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         if (tokenClass.checkToken(uid, token) == HttpStatus.OK)
@@ -662,7 +669,7 @@ public class UserRepoImpl implements UserRepo {
 
 
     @Override
-    public User retrieveUsers(String userId) {
+    public User retrieveUsers(String userId) throws IOException, ParseException {
 
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
@@ -686,6 +693,8 @@ public class UserRepoImpl implements UserRepo {
 
         user.setSkyroomAccess(skyRoomAccess(user));
 
+
+        user.setServiceLicense(transcriptRepo.servicesOfUser(userId));
 
         if (user.getRole() == null)
             user = setRole(user);
@@ -722,7 +731,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
 
-    public HttpStatus removeCurrentEndTime(String uid) {
+    public HttpStatus removeCurrentEndTime(String uid) throws IOException, ParseException {
 
         Name dn = buildDnUser.buildDn(uid);
 
@@ -798,7 +807,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
+    public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) throws IOException, ParseException {
         List<String> add = (List<String>) gu.get("add");
         List<String> remove = (List<String>) gu.get("remove");
         List<String> groups = new LinkedList<>();
@@ -841,7 +850,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public int sendEmail(String email, String uid, String cid, String answer) {
+    public int sendEmail(String email, String uid, String cid, String answer) throws IOException, ParseException {
         if (uid != null)
             return emailService.sendMail(email, uid, cid, answer);
         return emailService.sendMail(email, cid, answer);
@@ -851,7 +860,7 @@ public class UserRepoImpl implements UserRepo {
         return BASE_URL + /*"" +*/  "/api/public/validateEmailToken/" + userId + "/" + token;
     }
 
-    public HttpStatus resetPassword(String userId, String pass, String token) {
+    public HttpStatus resetPassword(String userId, String pass, String token) throws IOException, ParseException {
 
         Logger logger = LogManager.getLogger(userId);
 
@@ -894,7 +903,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException {
+    public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException {
         InputStream insfile = file.getInputStream();
 
         if (file.getOriginalFilename().endsWith(".xlsx")) {

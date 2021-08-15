@@ -43,7 +43,7 @@ public class MobileController {
 
     @GetMapping(value = "/api/mobile/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody
-    byte[] GetQr(HttpServletRequest request) throws IOException, WriterException {
+    byte[] GetQr(HttpServletRequest request) throws IOException, WriterException, org.json.simple.parser.ParseException {
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUsers(principal.getName());
         String temp = url + "/api/mobile/sendsms" + "," + user.getUserId() + "," + user.getUsersExtraInfo().getQrToken();
@@ -53,7 +53,7 @@ public class MobileController {
 
     @PostMapping("/api/mobile/mobnumber")
     public @ResponseBody
-    ResponseEntity<String> mobileNumber(@RequestParam("uid") String uid, @RequestParam("qrToken") String QrToken) {
+    ResponseEntity<String> mobileNumber(@RequestParam("uid") String uid, @RequestParam("qrToken") String QrToken) throws IOException, org.json.simple.parser.ParseException {
         User user = userRepo.retrieveUsers(uid);
 
         if (QrToken.equals(user.getUsersExtraInfo().getQrToken())) {
@@ -64,7 +64,7 @@ public class MobileController {
 
     @PostMapping("/api/mobile/sendsms")
     public @ResponseBody
-    ResponseEntity<HttpStatus> sendSMS(@RequestParam("uid") String uid, @RequestParam("qrToken") String QrToken) {
+    ResponseEntity<HttpStatus> sendSMS(@RequestParam("uid") String uid, @RequestParam("qrToken") String QrToken) throws IOException, org.json.simple.parser.ParseException {
         User user = userRepo.retrieveUsers(uid);
 
         if (QrToken.equals(user.getUsersExtraInfo().getQrToken())) {
@@ -76,7 +76,7 @@ public class MobileController {
 
     @PostMapping("/api/mobile/active")
     public @ResponseBody
-    ResponseEntity<JSONObject> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) {
+    ResponseEntity<JSONObject> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) throws IOException, org.json.simple.parser.ParseException {
         User user = userRepo.retrieveUsers(uid);
 
         JSONObject jsonObject = new JSONObject();
@@ -117,7 +117,7 @@ public class MobileController {
 
     @PostMapping("/api/mobile/user")
     public @ResponseBody
-    ResponseEntity<User> M_retrieveUser(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) {
+    ResponseEntity<User> M_retrieveUser(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
         User user = userRepo.retrieveUsers(uid);
         if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
             return new ResponseEntity<>(user, HttpStatus.OK);
@@ -127,7 +127,7 @@ public class MobileController {
 
     @PostMapping("/api/mobile/photo")
     public @ResponseBody
-    ResponseEntity<byte[]> M_retrieveUserPhoto(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) {
+    ResponseEntity<byte[]> M_retrieveUserPhoto(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
         User user = userRepo.retrieveUsers(uid);
         if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
             return new ResponseEntity<>(userRepo.showProfilePic(user), HttpStatus.OK);

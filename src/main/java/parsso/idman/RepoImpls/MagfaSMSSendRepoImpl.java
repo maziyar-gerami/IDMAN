@@ -3,8 +3,10 @@ package parsso.idman.RepoImpls;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Repos.MagfaSMSSendRepo;
 import parsso.idman.Utils.SMS.Magfa.Classes.*;
@@ -24,7 +26,8 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
     Logger logger = LogManager.getLogger("System");
 
     String model = "MagfaSMS";
-
+    @Autowired
+    UniformLogger uniformLogger;
 
     @Value("${SMS.Magfa.username}")
     String username;

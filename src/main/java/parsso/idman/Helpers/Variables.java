@@ -18,9 +18,29 @@ public class Variables {
     public static String col_servicesExtraInfo = "IDMAN_ServicesExtraInfo";
     public static String col_tickets = "IDMAN_Tickets";
 
+    public static String RESULT_FAILED = "Failed";
+    public static String RESULT_SUCCESS = "Success";
+
+    public static String ACTION_CREATE = "Create";
+    public static String ACTION_UPDATE = "Update";
+    public static String ACTION_INSERT = "Insert";
+    public static String ACTION_DELETE = "Delete";
+    public static String ACTION_Retrieve = "Retrieve";
+    public static final String ACTION_GET ="Get" ;
+
+
+    public static String MODEL_USER = "User";
+    public static String MODEL_SERVICE = "Service";
+    public static String MODEL_GROUP = "Group";
+    public static String MODEL_TICKETING = "Ticketing";
+    public static String MODEL_ROLE = "Role";
+
+
+
 
     public static String email_recoverySubject = "بازنشانی رمز عبور";
     public static String ZONE = "Asia/Tehran";
+    public static String col_idmanlog = "IDMAN_IdmanLog";
     static String email_body = "شما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید." +
             "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +
             "در غیر این صورت با کلیک بر روی  لینک زیر نسبت به بازنشانی و تغییر رمز عبور خود اقدام نمایید.\n";

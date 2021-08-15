@@ -25,7 +25,7 @@ public class MicroService implements Comparable {
     private String logo;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String url;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int position;
 
     public MicroService(String serviceId, List<String> machines) {
@@ -54,6 +54,12 @@ public class MicroService implements Comparable {
         this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
         this.position = (null != microService ? microService.getPosition() : 0);
 
+    }
+
+    public MicroService(Service service) {
+        this._id = service.getId();
+        this.serviceId = service.getServiceId();
+        this.description = service.getDescription();
     }
 
     @Override

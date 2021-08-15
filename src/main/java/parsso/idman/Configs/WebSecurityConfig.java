@@ -127,6 +127,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //****************** SUPERADMIN & ADMIN & SUPPORTER Objects************************
                 //pages
                 .antMatchers("/services").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
+                .antMatchers("/transcripts").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/createservice").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/users").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/groups").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")

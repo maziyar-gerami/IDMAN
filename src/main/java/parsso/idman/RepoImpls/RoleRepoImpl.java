@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.UserRole;
@@ -24,7 +25,8 @@ public class RoleRepoImpl implements RolesRepo {
     final String collection = Variables.col_usersExtraInfo;
     String model = "Role";
 
-
+    @Autowired
+    UniformLogger uniformLogger;
     @Autowired
     MongoTemplate mongoTemplate;
 

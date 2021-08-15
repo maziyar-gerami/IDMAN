@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import parsso.idman.Models.Logs.Transcript;
 
 
 @Getter
@@ -18,6 +19,7 @@ public class Group {
     private String name;
     private String description;
     private long usersCount;
+    private Transcript serviceLicense;
 
     public Group(String name, String description, long usersCount) {
 

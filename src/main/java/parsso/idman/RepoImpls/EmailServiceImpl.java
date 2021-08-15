@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
@@ -20,6 +21,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import parsso.idman.Helpers.Communicate.Token;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Users.User;
@@ -30,6 +32,7 @@ import parsso.idman.Utils.Captcha.Models.CAPTCHA;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.naming.directory.SearchControls;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,7 +45,8 @@ public class EmailServiceImpl implements EmailService {
     String from;
     @Autowired
     LdapTemplate ldapTemplate;
-
+    @Autowired
+    UniformLogger uniformLogger;
     @Autowired
     UserAttributeMapper userAttributeMapper;
     @Autowired
@@ -89,7 +93,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
 
-    public HttpStatus sendMail(String email) {
+    public HttpStatus sendMail(String email) throws IOException, ParseException {
         if (checkMail(email) != null) {
             User user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
@@ -114,7 +118,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public HttpStatus sendMail(JSONObject jsonObject) {
+    public HttpStatus sendMail(JSONObject jsonObject) throws IOException, ParseException {
         if (jsonObject.size() == 0) {
             List<User> users = userRepo.retrieveUsersFull();
 
@@ -129,6 +133,7 @@ public class EmailServiceImpl implements EmailService {
                 User user = userRepo.retrieveUsers(temp.toString());
                 {
                     Thread thread = new Thread() {
+                        @SneakyThrows
                         public void run() {
                             sendMail(user.getMail());
 
@@ -145,7 +150,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public int sendMail(String email, String cid, String answer) {
+    public int sendMail(String email, String cid, String answer) throws IOException, ParseException {
 
 
 
@@ -203,7 +208,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public int sendMail(String email, String uid, String cid, String answer) {
+    public int sendMail(String email, String uid, String cid, String answer) throws IOException, ParseException {
         Logger logger = LogManager.getLogger("test");
 
 

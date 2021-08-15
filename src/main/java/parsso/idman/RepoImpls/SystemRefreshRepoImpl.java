@@ -17,6 +17,7 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.NotFilter;
 import org.springframework.ldap.filter.PresentFilter;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
 import parsso.idman.Helpers.User.UserAttributeMapper;
@@ -48,6 +49,9 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+    @Autowired
+    UniformLogger uniformLogger;
 
     @Autowired
     LdapTemplate ldapTemplate;

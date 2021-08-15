@@ -3,6 +3,10 @@ package parsso.idman.Models.Logs;
 
 import lombok.Getter;
 import lombok.Setter;
+import parsso.idman.Helpers.TimeHelper;
+import parsso.idman.Models.Time;
+
+import java.util.Date;
 
 @Setter
 @Getter
@@ -14,6 +18,10 @@ public class ReportMessage {
     String result;
     String action;
     String description;
+    String from;
+    String to;
+    long millis;
+    Time time;
 
     public ReportMessage(String model, String instance, String attribute, String action, String result, String description) {
         this.model = model;
@@ -22,6 +30,8 @@ public class ReportMessage {
         this.result = result;
         this.action = action;
         this.description = description;
+        this.millis = new Date().getTime();
+        time = TimeHelper.longToPersianTime(millis);
     }
 
 

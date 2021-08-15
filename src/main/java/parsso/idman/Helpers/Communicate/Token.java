@@ -1,6 +1,7 @@
 package parsso.idman.Helpers.Communicate;
 
 
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -16,6 +17,7 @@ import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.UserRepo;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Random;
@@ -45,7 +47,7 @@ public class Token {
     @Value("${sms.validation.digits}")
     private int SMS_VALIDATION_DIGITS;
 
-    public HttpStatus checkToken(String userId, String token) {
+    public HttpStatus checkToken(String userId, String token) throws IOException, ParseException {
         // return OK or code 200: token is valid and time is ok
         // return requestTimeOut or error 408: token is valid but time is not ok
         // return forbidden or error code 403: token is not valid

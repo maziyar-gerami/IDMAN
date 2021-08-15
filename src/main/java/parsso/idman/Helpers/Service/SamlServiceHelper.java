@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.Service;
@@ -40,6 +41,8 @@ public class SamlServiceHelper {
     MongoTemplate mongoTemplate;
     @Autowired
     ServiceRepo serviceRepo;
+    @Autowired
+    UniformLogger uniformLogger;
 
     public SamlService buildSamlService(JSONObject jo) {
 

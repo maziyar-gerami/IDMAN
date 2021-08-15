@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Config;
 import parsso.idman.Models.Logs.ReportMessage;
@@ -50,12 +51,15 @@ public class ConfigRepoImpl implements ConfigRepo {
     String model = "Config";
     @Autowired
     private ApplicationContext appContext;
+    @Autowired
+    UniformLogger uniformLogger;
     @Value("${external.config}")
     private String pathToProperties;
     @Value("${external.config.backup}")
     private String backUpOfProperties;
     @Value("${backup.path}")
     private String backUpPath;
+
 
     public static List<Setting> parser(Scanner reader, String system) {
 

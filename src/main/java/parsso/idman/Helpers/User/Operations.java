@@ -2,14 +2,14 @@ package parsso.idman.Helpers.User;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
@@ -37,11 +37,10 @@ public class Operations {
     private final String model = "Users";
     @Value("${qr.devices.path}")
     private String qrDevicesPath;
+    @Autowired
+    UniformLogger uniformLogger;
 
-    public HttpStatus enable(String doer, String uid) {
-
-        Logger logger = LogManager.getLogger(doer);
-
+    public HttpStatus enable(String doer, String uid) throws IOException, ParseException {
 
         Name dn = buildDnUser.buildDn(uid);
 
@@ -56,12 +55,13 @@ public class Operations {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "enable", "success", "").toString());
+                uniformLogger.record(doer,new ReportMessage(model, user.getUserId(), "", "Enable", "Success", ""));
+
 
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "enable", "failed", "writing to ldap").toString());
+                uniformLogger.record(doer,new ReportMessage(model, user.getUserId(), "", "Enable", "Failed", "Writing to ldap"));
                 return HttpStatus.BAD_REQUEST;
             }
         } else {
@@ -69,9 +69,7 @@ public class Operations {
         }
     }
 
-    public HttpStatus disable(String doerID, String uid) {
-        Logger logger = LogManager.getLogger(doerID);
-
+    public HttpStatus disable(String doerID, String uid) throws IOException, ParseException {
 
         Name dn = buildDnUser.buildDn(uid);
 
@@ -87,11 +85,11 @@ public class Operations {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "disable", "success", "").toString());
+                uniformLogger.record(doerID, new ReportMessage(model, user.getUserId(), "", "Disable", "Success", ""));
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "disable", "failed", "writing to ldap").toString());
+                uniformLogger.record(doerID, new ReportMessage(model, user.getUserId(), "", "Disable", "Failed", "Writing to ldap"));
                 return HttpStatus.BAD_REQUEST;
             }
         } else {
@@ -99,10 +97,7 @@ public class Operations {
         }
     }
 
-    public HttpStatus unlock(String doerID, String uid) {
-
-        Logger logger = LogManager.getLogger(doerID);
-
+    public HttpStatus unlock(String doerID, String uid) throws IOException, ParseException {
 
         Name dn = buildDnUser.buildDn(uid);
 
@@ -122,13 +117,14 @@ public class Operations {
                     modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
                     ldapTemplate.modifyAttributes(dn, modificationItems);
                 } catch (Exception e) {
+                    uniformLogger.record(doerID,new ReportMessage(model, user.getUserId(), "", "Unlock", "Failed", "Problem with LDAP modifyAttribute"));
                 }
 
-                logger.warn(new ReportMessage(model, user.getUserId(), "", "unlock", "success", "").toString());
+                uniformLogger.record(doerID,new ReportMessage(model, user.getUserId(), "", "Unlock", "Success", ""));
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-
+                uniformLogger.record(doerID,new ReportMessage(model, user.getUserId(), "", "Unlock", "Failed", "Problem with LDAP modifyAttribute"));
                 return HttpStatus.BAD_REQUEST;
             }
 
@@ -139,8 +135,6 @@ public class Operations {
     }
 
     public String activeMobile(User user) {
-
-        Logger logger = LogManager.getLogger("SYSTEM");
 
         String uuid = UUID.randomUUID().toString();
 
@@ -173,33 +167,30 @@ public class Operations {
                 ObjectMapper mapper = new ObjectMapper();
 
                 try {
-
                     // Writing to a file
                     mapper.writeValue(new File(qrDevicesPath), jsonObject);
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    uniformLogger.record(user.getUserId(),new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "Saving File problem"));
+
                 }
 
                 if (!existed)
                     action = "Update";
-
-                logger.warn(new ReportMessage(model, user.getUserId(), "DeviceID", action, "success", ""));
-
+                uniformLogger.record(user.getUserId() ,new ReportMessage(model, user.getUserId(), "DeviceID", action, "Success", ""));
                 return uuid;
 
 
             } catch (FileNotFoundException e) {
-                logger.warn(new ReportMessage(model, user.getUserId(), "DeviceID", action, "fail", "file not found"));
+                uniformLogger.record(user.getUserId(),new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "File not found"));
             } catch (IOException e) {
-                logger.warn(new ReportMessage(model, user.getUserId(), "DeviceID", action, "fail", "Saving problem"));
+                uniformLogger.record(user.getUserId(),new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "Saving problem"));
 
             } catch (org.json.simple.parser.ParseException e) {
-                logger.warn(new ReportMessage(model, user.getUserId(), "DeviceID", action, "fail", "json parse"));
+                uniformLogger.record(user.getUserId(),new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "Json ّfile parse problem"));
 
             }
         }
-
         return null;
     }
 
