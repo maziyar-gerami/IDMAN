@@ -30,7 +30,6 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     }
 
 
-
     @Override
     public Collection getMappingBasePackages() {
         return Collections.singleton(Token.collection);

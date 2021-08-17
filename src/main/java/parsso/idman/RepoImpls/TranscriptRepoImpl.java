@@ -44,14 +44,14 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 
         List<Service> allServices = serviceRepo.listServicesFull();
 
-        for (Service service:allServices)
-            if(service.getAccessStrategy().getRequiredAttributes().get("ou")!=null)
-                for (Object name: (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
+        for (Service service : allServices)
+            if (service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
+                for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
                     if (ouid.equalsIgnoreCase(name.toString()))
                         licensed.add(new MicroService(service));
 
 
-        return new License(licensed,null);
+        return new License(licensed, null);
 
     }
 
@@ -66,7 +66,7 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 
         List<String> memberOf = user.getMemberOf();
 
-        for (Service service:allServices) {
+        for (Service service : allServices) {
             if (service.getAccessStrategy().getRequiredAttributes().get("uid") != null)
                 for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("uid"))).get(1))
                     if (userId.equalsIgnoreCase(name.toString()))
@@ -78,29 +78,29 @@ public class TranscriptRepoImpl implements TranscriptRepo {
                         unLicensed.add(new MicroService(service));
         }
 
-                    for (Service service:allServices) {
-                        for (String groupStr : memberOf)
-                            if (service.getAccessStrategy().getRequiredAttributes() != null && service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
-                                for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
-                                    if (groupStr.equalsIgnoreCase(name.toString()))
-                                        if (!contains(unLicensed,service.getId()) && !contains(licensed,service.getId()))
-                                            licensed.add(new MicroService(service));
-                    }
+        for (Service service : allServices) {
+            for (String groupStr : memberOf)
+                if (service.getAccessStrategy().getRequiredAttributes() != null && service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
+                    for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
+                        if (groupStr.equalsIgnoreCase(name.toString()))
+                            if (!contains(unLicensed, service.getId()) && !contains(licensed, service.getId()))
+                                licensed.add(new MicroService(service));
+        }
 
-        return new License(licensed,  unLicensed);
+        return new License(licensed, unLicensed);
     }
 
-    private boolean contains(List<MicroService> microServices, Long id){
-        for (MicroService microservice:microServices)
+    private boolean contains(List<MicroService> microServices, Long id) {
+        for (MicroService microservice : microServices)
             if (microservice.get_id() == id)
                 return true;
 
-            return false;
+        return false;
     }
 
     @Override
     public Transcript usersAndGroupsOfService(long serviceId) throws IOException, ParseException {
-        return new Transcript(usersLicense.users(serviceId),groupLicense.groups(serviceId));
+        return new Transcript(usersLicense.users(serviceId), groupLicense.groups(serviceId));
     }
 }
 

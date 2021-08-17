@@ -13,7 +13,7 @@ public class UniformLogger {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    public void record(String doerId,ReportMessage reportMessage){
+    public void record(String doerId, ReportMessage reportMessage) {
         Logger logger = LogManager.getLogger(doerId);
 
         logger.warn(reportMessage.toString());

@@ -130,16 +130,16 @@ public class UsersController {
 
     @PutMapping("/api/users/password/expire")
     public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
-                                                     @RequestBody JSONObject jsonObject) {
+                                                       @RequestBody JSONObject jsonObject) {
         Principal principal = request.getUserPrincipal();
         List<String> preventedUsers = userRepo.expirePassword(principal.getName(), jsonObject);
 
-        if(preventedUsers == null)
+        if (preventedUsers == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else if (preventedUsers.size() == 0)
             return new ResponseEntity<>(HttpStatus.OK);
         else
-            return new ResponseEntity<>(preventedUsers,HttpStatus.PARTIAL_CONTENT);
+            return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
 
     }
 
@@ -379,7 +379,7 @@ public class UsersController {
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if (time ==-2)
+        else if (time == -2)
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -400,10 +400,9 @@ public class UsersController {
         int time = userRepo.sendEmail(email, null, cid, answer);
         if (time > 0) {
             return new ResponseEntity<>(time, HttpStatus.OK);
-        }
-        else if (time == -1)
+        } else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if (time ==-2)
+        else if (time == -2)
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -418,21 +417,20 @@ public class UsersController {
      */
     @GetMapping("/api/public/sendSMS/{mobile}/{cid}/{answer}")
     public ResponseEntity<JSONObject> sendMessage(@PathVariable("mobile") String mobile,
-                                               @PathVariable("cid") String cid,
-                                               @PathVariable("answer") String answer) throws IOException, ParseException {
+                                                  @PathVariable("cid") String cid,
+                                                  @PathVariable("answer") String answer) throws IOException, ParseException {
 
         int time = instantMessage.sendMessage(mobile, cid, answer);
 
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("time",time);
+            jsonObject.put("time", time);
             jsonObject.put("userId", userRepo.getByMobile(mobile));
 
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
-        }
-        else if (time == -1)
+        } else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if (time==-2)
+        else if (time == -2)
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -446,20 +444,19 @@ public class UsersController {
      */
     @GetMapping("/api/public/sendSMS/{mobile}/{uid}/{cid}/{answer}")
     public ResponseEntity<JSONObject> sendMessage(@PathVariable("mobile") String mobile,
-                                               @PathVariable("uid") String uid,
-                                               @PathVariable("cid") String cid,
-                                               @PathVariable("answer") String answer) throws IOException, ParseException {
+                                                  @PathVariable("uid") String uid,
+                                                  @PathVariable("cid") String cid,
+                                                  @PathVariable("answer") String answer) throws IOException, ParseException {
         int time = instantMessage.sendMessage(mobile, uid, cid, answer);
 
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("time",time);
+            jsonObject.put("time", time);
             jsonObject.put("userId", uid);
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
-        }
-        else if (time == -1)
+        } else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if (time ==-2)
+        else if (time == -2)
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -467,9 +464,9 @@ public class UsersController {
 
     @GetMapping("/api/public/sendTokenUser/{uid}/{cid}/{answer}")
     public ResponseEntity<JSONObject> sendMessageUser(
-                                                  @PathVariable("uid") String uid,
-                                                  @PathVariable("cid") String cid,
-                                                  @PathVariable("answer") String answer) throws IOException, ParseException {
+            @PathVariable("uid") String uid,
+            @PathVariable("cid") String cid,
+            @PathVariable("answer") String answer) throws IOException, ParseException {
         User user = userRepo.retrieveUsers(uid);
         if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
@@ -477,13 +474,12 @@ public class UsersController {
 
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("time",time);
+            jsonObject.put("time", time);
             jsonObject.put("userId", uid);
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
-        }
-        else if (time == -1)
+        } else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if (time ==-2)
+        else if (time == -2)
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

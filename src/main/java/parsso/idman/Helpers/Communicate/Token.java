@@ -128,8 +128,8 @@ public class Token {
     public int createRandomNum() {
         Random rnd = new Random();
         int max = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS)));
-        int min = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)))+1;
-        return min+rnd.nextInt(max-min);
+        int min = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1))) + 1;
+        return min + rnd.nextInt(max - min);
     }
 
     public boolean insertMobileToken(User user) {
@@ -140,7 +140,7 @@ public class Token {
 
         try {
             usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             usersExtraInfo = new UsersExtraInfo(user);
         }
 

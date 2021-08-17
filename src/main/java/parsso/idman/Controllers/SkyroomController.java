@@ -48,8 +48,7 @@ public class SkyroomController {
             } catch (Exception e) {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
-        }
-        else
+        } else
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 

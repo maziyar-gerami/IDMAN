@@ -6,6 +6,7 @@ import parsso.idman.Models.Users.User;
 public class Variables {
 
 
+    public static final String ACTION_GET = "Get";
     public static String col_captchas = "IDMAN_Captchas";
     public static String col_events = "IDMAN_Events";
     public static String col_extraInfo = "IDMAN_ExtraInfo";
@@ -17,25 +18,18 @@ public class Variables {
     public static String col_services = "IDMAN_Services";
     public static String col_servicesExtraInfo = "IDMAN_ServicesExtraInfo";
     public static String col_tickets = "IDMAN_Tickets";
-
     public static String RESULT_FAILED = "Failed";
     public static String RESULT_SUCCESS = "Success";
-
     public static String ACTION_CREATE = "Create";
     public static String ACTION_UPDATE = "Update";
     public static String ACTION_INSERT = "Insert";
     public static String ACTION_DELETE = "Delete";
     public static String ACTION_Retrieve = "Retrieve";
-    public static final String ACTION_GET ="Get" ;
-
-
     public static String MODEL_USER = "User";
     public static String MODEL_SERVICE = "Service";
     public static String MODEL_GROUP = "Group";
     public static String MODEL_TICKETING = "Ticketing";
     public static String MODEL_ROLE = "Role";
-
-
 
 
     public static String email_recoverySubject = "بازنشانی رمز عبور";

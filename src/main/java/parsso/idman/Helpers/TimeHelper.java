@@ -53,12 +53,11 @@ public class TimeHelper {
 
         String strDate = null;
 
-        if( String.valueOf(timeInMilliseconds).charAt(0) == '1')
+        if (String.valueOf(timeInMilliseconds).charAt(0) == '1')
             strDate = formatter.format(new Date(timeInMilliseconds));
-        else if( String.valueOf(timeInMilliseconds).charAt(0) == '2')
+        else if (String.valueOf(timeInMilliseconds).charAt(0) == '2')
             strDate = String.valueOf(timeInMilliseconds);
-        
-        
+
 
         Instant instant = Instant.now(); //can be LocalDateTime
         ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
@@ -95,7 +94,7 @@ public class TimeHelper {
                 String S = input.substring(15, 15);
 
                 ZonedDateTime eventDate =
-                    OffsetDateTime.parse(Y + "-" + M + "-" + D + 'T' + H + ":" + m + ":" + s + "." + S).atZoneSameInstant(zoneId);
+                        OffsetDateTime.parse(Y + "-" + M + "-" + D + 'T' + H + ":" + m + ":" + s + "." + S).atZoneSameInstant(zoneId);
 
 
                 return eventDate.getYear()
@@ -169,7 +168,6 @@ public class TimeHelper {
     }
 
 
-
     public static String convertDateTimeJalali(String seTime) {
 
         parsso.idman.Models.Time timeObject = stringToTime(seTime);
@@ -205,7 +203,7 @@ public class TimeHelper {
                 String.format("%02d", Integer.valueOf(timeObject.getMinutes())) +
                 String.format("%02d", Integer.valueOf(timeObject.getSeconds())) + "." +
                 String.format("%03d", Integer.valueOf(timeObject.getMilliSeconds())) +
-                currentOffsetForMyZone.toString().replaceAll(":","");
+                currentOffsetForMyZone.toString().replaceAll(":", "");
 
         return timeObject.getYear() + timeObject.getMonth() + timeObject.getDay() + time;
     }

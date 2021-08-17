@@ -24,13 +24,17 @@ import java.util.List;
 @Service
 public class ExpirePassword {
 
-    @Autowired LdapTemplate ldapTemplate;
+    @Autowired
+    LdapTemplate ldapTemplate;
 
-    @Autowired MongoTemplate mongoTemplate;
+    @Autowired
+    MongoTemplate mongoTemplate;
 
-    @Autowired BuildDnUser buildDnUser;
+    @Autowired
+    BuildDnUser buildDnUser;
 
-    @Autowired UniformLogger uniformLogger;
+    @Autowired
+    UniformLogger uniformLogger;
 
     public List<String> expire(String doer, List<UsersExtraInfo> users) {
         Logger logger = LogManager.getLogger(doer);
@@ -39,9 +43,9 @@ public class ExpirePassword {
 
 
         for (UsersExtraInfo user : users) {
-            if(user==null)
+            if (user == null)
                 continue;
-            if ( !user.getRole().equals("SUPERADMIN")) {
+            if (!user.getRole().equals("SUPERADMIN")) {
 
                 ModificationItem[] modificationItems;
                 modificationItems = new ModificationItem[1];

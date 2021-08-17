@@ -74,7 +74,7 @@ public class GroupRepoImpl implements GroupRepo {
         DirContextOperations context;
         Iterator<String> iterator = jsonArray.iterator();
         while (iterator.hasNext()) {
-            Group group = retrieveOu(false,iterator.next());
+            Group group = retrieveOu(false, iterator.next());
 
             Name dn = buildDn(group.getId());
             try {
@@ -121,7 +121,7 @@ public class GroupRepoImpl implements GroupRepo {
 
 
     @Override
-    public Group retrieveOu(boolean simple,String uid) throws IOException, ParseException {
+    public Group retrieveOu(boolean simple, String uid) throws IOException, ParseException {
 
         List<Group> groups = retrieve();
 
@@ -129,9 +129,8 @@ public class GroupRepoImpl implements GroupRepo {
             if (!simple && group.getId().equalsIgnoreCase(uid)) {
                 group.setService(transcriptRepo.servicesOfGroup(uid));
                 return group;
-            }
-            else if (simple && group.getId().equalsIgnoreCase(uid))
-            return group;
+            } else if (simple && group.getId().equalsIgnoreCase(uid))
+                return group;
         }
         return null;
     }
@@ -142,7 +141,7 @@ public class GroupRepoImpl implements GroupRepo {
         List<Group> groups = new ArrayList<Group>();
         try {
             for (int i = 0; i < memberOf.size(); ++i) {
-                groups.add(retrieveOu(false,memberOf.get(i)));
+                groups.add(retrieveOu(false, memberOf.get(i)));
             }
         } catch (NullPointerException e) {
 
@@ -220,8 +219,6 @@ public class GroupRepoImpl implements GroupRepo {
 
         if (gt.size() != 0)
             return null;
-
-
 
 
         return gt;
@@ -363,7 +360,7 @@ public class GroupRepoImpl implements GroupRepo {
             group.setId(null != attributes.get("ou") ? attributes.get("ou").get().toString() : null);
             group.setName(null != attributes.get("name") ? attributes.get("name").get().toString() : null);
             group.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
-            group.setUsersCount(mongoTemplate.count(new Query(Criteria.where("memberOf").is(group.getId())),Variables.col_usersExtraInfo));
+            group.setUsersCount(mongoTemplate.count(new Query(Criteria.where("memberOf").is(group.getId())), Variables.col_usersExtraInfo));
             return group;
         }
     }

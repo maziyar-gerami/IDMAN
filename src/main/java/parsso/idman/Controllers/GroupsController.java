@@ -66,7 +66,7 @@ public class GroupsController {
 
     @GetMapping("/api/groups/{id}")
     public ResponseEntity<Group> retrieveOU(@PathVariable("id") String id) throws IOException, ParseException {
-        return new ResponseEntity<>(groupRepo.retrieveOu(false,id), HttpStatus.OK);
+        return new ResponseEntity<>(groupRepo.retrieveOu(false, id), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/groups")
@@ -79,12 +79,12 @@ public class GroupsController {
 
         List<String> preventedUsers = userRepo.expirePassword(request.getUserPrincipal().getName(), jsonObject);
 
-        if(preventedUsers == null)
+        if (preventedUsers == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else if (preventedUsers.size() == 0)
             return new ResponseEntity<>(HttpStatus.OK);
         else
-            return new ResponseEntity<>(preventedUsers,HttpStatus.PARTIAL_CONTENT);
+            return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
 
     }
 
@@ -94,18 +94,18 @@ public class GroupsController {
         ArrayList temp = new ArrayList();
         JSONObject jsonObject = new JSONObject();
         List<UsersExtraInfo> users = userRepo.retrieveGroupsUsers(gid);
-        for (UsersExtraInfo usersExtraInfo:users) {
-           temp.add(usersExtraInfo.getUserId());
+        for (UsersExtraInfo usersExtraInfo : users) {
+            temp.add(usersExtraInfo.getUserId());
         }
         jsonObject.put("names", temp);
         List<String> preventedUsers = userRepo.expirePassword(request.getUserPrincipal().getName(), jsonObject);
 
-        if(preventedUsers == null)
+        if (preventedUsers == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else if (preventedUsers.size() == 0)
             return new ResponseEntity<>(HttpStatus.OK);
         else
-            return new ResponseEntity<>(preventedUsers,HttpStatus.PARTIAL_CONTENT);
+            return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
 
     }
 

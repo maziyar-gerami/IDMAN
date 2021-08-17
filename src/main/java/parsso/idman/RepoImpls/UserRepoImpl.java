@@ -81,6 +81,8 @@ public class UserRepoImpl implements UserRepo {
     FilesStorageService storageService;
     @Autowired
     ExpirePassword expirePassword;
+    @Autowired
+    TranscriptRepo transcriptRepo;
     @Value("${base.url}")
     private String BASE_URL;
     @Value("${spring.ldap.base.dn}")
@@ -95,7 +97,6 @@ public class UserRepoImpl implements UserRepo {
     private String uploadedFilesPath;
     @Value("${skyroom.enable}")
     private String skyroomEnable;
-
     @Autowired
     private LdapTemplate ldapTemplate;
     @Autowired
@@ -116,9 +117,6 @@ public class UserRepoImpl implements UserRepo {
     private ImportUsers importUsers;
     @Autowired
     private EmailService emailService;
-    @Autowired
-    TranscriptRepo transcriptRepo;
-
 
     @Override
     public JSONObject create(String doerID, User p) throws IOException, ParseException {
@@ -219,7 +217,7 @@ public class UserRepoImpl implements UserRepo {
         //remove current pwdEndTime
         if (p.getEndTime() == null ||
                 p.getEndTime().equals("")
-                && user.getEndTime() != null)
+                        && user.getEndTime() != null)
             removeCurrentEndTime(p.getUserId());
 
         context = buildAttributes.buildAttributes(doerID, usid, p, dn);
@@ -465,7 +463,7 @@ public class UserRepoImpl implements UserRepo {
 
         user.setPhoto(s);
         logger.warn(new ReportMessage(model, name, "profile image", "change", "success", "").toString());
-        mongoTemplate.save(new ReportMessage(model, name, "profile image", "change", "success", ""),"II_log");
+        mongoTemplate.save(new ReportMessage(model, name, "profile image", "change", "success", ""), "II_log");
         if (update(user.getUserId(), user.getUserId(), user) == HttpStatus.OK) {
             oldPic.delete();
 
@@ -516,7 +514,7 @@ public class UserRepoImpl implements UserRepo {
 
                     return "";
                 }
-                }).get(0);
+            }).get(0);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -707,7 +705,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     private Boolean skyRoomAccess(User user) {
-        Boolean isEnable = skyroomEnable.equalsIgnoreCase("true") ? true :false;
+        Boolean isEnable = skyroomEnable.equalsIgnoreCase("true");
 
         boolean accessRole = false;
         if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("superadmin") ||
@@ -866,7 +864,6 @@ public class UserRepoImpl implements UserRepo {
         User user = retrieveUsers(userId);
 
 
-
         user = setRole(user);
 
         try {
@@ -886,13 +883,13 @@ public class UserRepoImpl implements UserRepo {
             contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
             contextUser.setAttributeValue("userPassword", pass);
 
-            try{
+            try {
                 removeCurrentEndTime(userId);
                 ldapTemplate.modifyAttributes(contextUser);
 
                 logger.warn(new ReportMessage(model, userId, "password", "reset", "success", "").toString());
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 logger.warn(new ReportMessage(model, userId, "password", "reset", "failed", "writing to ldap").toString());
             }
             return HttpStatus.OK;

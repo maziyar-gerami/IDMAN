@@ -29,6 +29,7 @@ public class User implements UserDetails, Comparable {
     ObjectId _id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     SkyRoom skyRoom;
+    Boolean skyroomAccess;
     private String userId;
     private String firstName;
     private String lastName;
@@ -64,7 +65,6 @@ public class User implements UserDetails, Comparable {
     private UsersExtraInfo usersExtraInfo;
     private boolean unDeletable;
     private boolean profileInaccessibility;
-    Boolean skyroomAccess;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private License services;
 

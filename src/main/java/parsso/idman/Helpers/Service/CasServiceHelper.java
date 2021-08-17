@@ -300,7 +300,7 @@ public class CasServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            uniformLogger.record(doerID,new ReportMessage(model, String.valueOf(id), "",
+            uniformLogger.record(doerID, new ReportMessage(model, String.valueOf(id), "",
                     Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
             return HttpStatus.OK;
         } catch (IOException e) {
@@ -338,8 +338,8 @@ public class CasServiceHelper {
                     try {
                         machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
                     } catch (Exception e) {
-                        uniformLogger.record("System",new ReportMessage(Variables.MODEL_SERVICE,service.getServiceId(),
-                                "IP",Variables.ACTION_GET,Variables.RESULT_FAILED,""));
+                        uniformLogger.record("System", new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                                "IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
                         machines = null;
                     }
 
@@ -355,14 +355,14 @@ public class CasServiceHelper {
                 file.close();
 
                 mongoTemplate.save(microService, collection);
-                uniformLogger.record(doerID,new ReportMessage(Variables.MODEL_SERVICE,service.getServiceId(),
-                        "",Variables.ACTION_CREATE,Variables.RESULT_SUCCESS,""));
+                uniformLogger.record(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                        "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
 
                 return service.getId();
             } catch (IOException e) {
 
-                uniformLogger.record(doerID,new ReportMessage(Variables.MODEL_SERVICE,service.getServiceId(),
-                        "",Variables.ACTION_CREATE,Variables.RESULT_FAILED,""));
+                uniformLogger.record(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                        "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
                 return 0;
             }
 

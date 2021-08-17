@@ -50,9 +50,9 @@ public class ConfigRepoImpl implements ConfigRepo {
     UserRepo userRepo;
     String model = "Config";
     @Autowired
-    private ApplicationContext appContext;
-    @Autowired
     UniformLogger uniformLogger;
+    @Autowired
+    private ApplicationContext appContext;
     @Value("${external.config}")
     private String pathToProperties;
     @Value("${external.config.backup}")

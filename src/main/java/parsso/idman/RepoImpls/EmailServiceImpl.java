@@ -86,7 +86,7 @@ public class EmailServiceImpl implements EmailService {
         helper.setText(Variables.template(user, url), true);
         try {
             mailSender.send(message);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -153,7 +153,6 @@ public class EmailServiceImpl implements EmailService {
     public int sendMail(String email, String cid, String answer) throws IOException, ParseException {
 
 
-
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
         if ((captcha) == null)
@@ -171,7 +170,7 @@ public class EmailServiceImpl implements EmailService {
         else if (checkMail(email).size() > 1)
             return -2;
 
-        if (checkMail(email).size() ==1) {
+        if (checkMail(email).size() == 1) {
             user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
@@ -221,13 +220,13 @@ public class EmailServiceImpl implements EmailService {
             return -1;
         }
 
-        if (checkMail(email) != null && userRepo.retrieveUsers(uid)!=null && userRepo.retrieveUsers(uid).getUserId() != null) {
+        if (checkMail(email) != null && userRepo.retrieveUsers(uid) != null && userRepo.retrieveUsers(uid).getUserId() != null) {
             List<JSONObject> ids = checkMail(email);
             List<User> people = new LinkedList<>();
             User user = userRepo.retrieveUsers(uid);
             for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
 
-            logger.warn("people : "+ people);
+            logger.warn("people : " + people);
             for (User p : people) {
 
                 if (user.equals(p)) {

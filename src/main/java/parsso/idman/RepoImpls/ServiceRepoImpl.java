@@ -337,7 +337,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         }
 
         if (system.equalsIgnoreCase("cas")) {
-            id = casServiceHelper.create(doerID,jsonObject);
+            id = casServiceHelper.create(doerID, jsonObject);
             if (id > 0) {
                 if (extraInfo != null) {
                     extraInfo.setId(id);

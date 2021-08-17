@@ -155,7 +155,7 @@ public class InstantMessage {
             mongoTemplate.remove(query, collection);
 
 
-        if (user==null || user.getUserId()==null)
+        if (user == null || user.getUserId() == null)
             return -3;
 
 
@@ -254,28 +254,28 @@ public class InstantMessage {
         else if (checkMobile(mobile).size() == 1)
             user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
 
-             if (tokenClass.insertMobileToken(user)) {
+        if (tokenClass.insertMobileToken(user)) {
 
-                 try {
+            try {
 
-                     Texts texts = new Texts();
-                    texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS)));
-                    magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
+                Texts texts = new Texts();
+                texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS)));
+                magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
 
-                    mongoTemplate.remove(query, collection);
-                    return Integer.valueOf(SMS_VALID_TIME);
+                mongoTemplate.remove(query, collection);
+                return Integer.valueOf(SMS_VALID_TIME);
 
-                } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                    System.out.print("HttpException  : " + ex.getMessage());
-                    return 0;
-                } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
-                    System.out.print("ApiException : " + ex.getMessage());
-                    return 0;
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            } else
+            } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                System.out.print("HttpException  : " + ex.getMessage());
                 return 0;
+            } catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
+                System.out.print("ApiException : " + ex.getMessage());
+                return 0;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        } else
+            return 0;
 
 
         return 0;
@@ -373,7 +373,7 @@ public class InstantMessage {
         User user = userRepo.retrieveUsers(uId);
 
 
-        if (user!=null && user.getUserId() != null && tokenClass.insertMobileToken(user) ) {
+        if (user != null && user.getUserId() != null && tokenClass.insertMobileToken(user)) {
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
             for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
@@ -407,9 +407,10 @@ public class InstantMessage {
             }
 
 
-        } else{
+        } else {
 
-            return 0;}
+            return 0;
+        }
 
         return 0;
     }

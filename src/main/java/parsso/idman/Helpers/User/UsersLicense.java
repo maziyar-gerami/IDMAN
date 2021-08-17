@@ -31,15 +31,16 @@ public class UsersLicense {
             return users;
 
         JSONArray jsonArray;
-        if((JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("uid")))!=null){
-        jsonArray = (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("uid")));
-        for (Object name : jsonArray)
-            try {
-                users.add(new UsersExtraInfo(userRepo.retrieveUsers(name.toString())));
-            } catch (NullPointerException e){}
+        if (service.getAccessStrategy().getRequiredAttributes().get("uid") != null) {
+            jsonArray = (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("uid")));
+            for (Object name : jsonArray)
+                try {
+                    users.add(new UsersExtraInfo(userRepo.retrieveUsers(name.toString())));
+                } catch (NullPointerException e) {
+                }
         }
 
-        if(users.size()==0)
+        if (users.size() == 0)
             return null;
 
         return users;
@@ -57,9 +58,10 @@ public class UsersLicense {
             try {
                 uids.add(new UsersExtraInfo(userRepo.retrieveUsers(name.toString())));
 
-            } catch (NullPointerException e) { }
+            } catch (NullPointerException e) {
+            }
 
-        if(uids.size()==0)
+        if (uids.size() == 0)
             return null;
 
         return uids;
@@ -75,7 +77,7 @@ public class UsersLicense {
 
     @Setter
     @Getter
-    private class Users{
+    private class Users {
         @JsonInclude(JsonInclude.Include.NON_NULL)
 
         List licensed;
@@ -83,7 +85,7 @@ public class UsersLicense {
 
         List unLicensed;
 
-        Users(List licensed,List unLicensed){
+        Users(List licensed, List unLicensed) {
             this.licensed = licensed;
             this.unLicensed = unLicensed;
         }

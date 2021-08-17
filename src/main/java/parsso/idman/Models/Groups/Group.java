@@ -12,7 +12,7 @@ import parsso.idman.Models.License.License;
 @Getter
 @Setter
 @ToString
-public class Group  {
+public class Group {
 
     @Id
     private String id;

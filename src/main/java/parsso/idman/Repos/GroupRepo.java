@@ -22,7 +22,7 @@ public interface GroupRepo {
 
     HttpStatus remove(String doerId, JSONObject jsonObject) throws IOException, ParseException;
 
-    Group retrieveOu(boolean simple,String name) throws IOException, ParseException;
+    Group retrieveOu(boolean simple, String name) throws IOException, ParseException;
 
     List<Group> retrieveCurrentUserGroup(User user);
 
