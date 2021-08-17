@@ -74,7 +74,7 @@ public class GroupRepoImpl implements GroupRepo {
         DirContextOperations context;
         Iterator<String> iterator = jsonArray.iterator();
         while (iterator.hasNext()) {
-            Group group = retrieveOu(iterator.next());
+            Group group = retrieveOu(false,iterator.next());
 
             Name dn = buildDn(group.getId());
             try {
@@ -121,15 +121,17 @@ public class GroupRepoImpl implements GroupRepo {
 
 
     @Override
-    public Group retrieveOu(String uid) throws IOException, ParseException {
+    public Group retrieveOu(boolean simple,String uid) throws IOException, ParseException {
 
         List<Group> groups = retrieve();
 
         for (Group group : groups) {
-            if (group.getId().equalsIgnoreCase(uid)) {
-                group.setServiceLicense(transcriptRepo.servicesOfGroup(uid));
+            if (!simple && group.getId().equalsIgnoreCase(uid)) {
+                group.setService(transcriptRepo.servicesOfGroup(uid));
                 return group;
             }
+            else if (simple && group.getId().equalsIgnoreCase(uid))
+            return group;
         }
         return null;
     }
@@ -140,7 +142,7 @@ public class GroupRepoImpl implements GroupRepo {
         List<Group> groups = new ArrayList<Group>();
         try {
             for (int i = 0; i < memberOf.size(); ++i) {
-                groups.add(retrieveOu(memberOf.get(i)));
+                groups.add(retrieveOu(false,memberOf.get(i)));
             }
         } catch (NullPointerException e) {
 

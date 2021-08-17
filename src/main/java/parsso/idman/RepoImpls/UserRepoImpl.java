@@ -693,8 +693,7 @@ public class UserRepoImpl implements UserRepo {
 
         user.setSkyroomAccess(skyRoomAccess(user));
 
-
-        user.setServiceLicense(transcriptRepo.servicesOfUser(userId));
+        user.setServices(transcriptRepo.servicesOfUser(userId));
 
         if (user.getRole() == null)
             user = setRole(user);

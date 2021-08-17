@@ -66,7 +66,7 @@ public class GroupsController {
 
     @GetMapping("/api/groups/{id}")
     public ResponseEntity<Group> retrieveOU(@PathVariable("id") String id) throws IOException, ParseException {
-        return new ResponseEntity<>(groupRepo.retrieveOu(id), HttpStatus.OK);
+        return new ResponseEntity<>(groupRepo.retrieveOu(false,id), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/groups")

@@ -9,15 +9,16 @@ import lombok.Setter;
 @Getter
 public class Transcript {
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    Object licensed;
+    Object users;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    Object unLicensed;
+    Object groups;
 
 
-    public Transcript(Object licensed, Object unLicensed) {
-        this.licensed = licensed;
-        this.unLicensed = unLicensed;
+    public Transcript(Object userLicense, Object groupLicense) {
+        this.users = userLicense;
+        this.groups = groupLicense;
     }
+
 
     public Transcript() {
 

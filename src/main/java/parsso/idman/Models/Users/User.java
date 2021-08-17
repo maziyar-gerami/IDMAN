@@ -12,7 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Models.Logs.Transcript;
+import parsso.idman.Models.License.License;
 import parsso.idman.Models.SkyRoom;
 
 import java.util.ArrayList;
@@ -66,9 +66,7 @@ public class User implements UserDetails, Comparable {
     private boolean profileInaccessibility;
     Boolean skyroomAccess;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Transcript serviceLicense;
-
-
+    private License services;
 
     public User() {
         locked = false;
