@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface GroupRepo {
-
     List<Group> retrieve();
 
     List<Group> retrieve(String ou);

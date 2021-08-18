@@ -8,12 +8,10 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import parsso.idman.Models.License.License;
 
-
 @Getter
 @Setter
 @ToString
 public class Group {
-
     @Id
     private String id;
     private String name;

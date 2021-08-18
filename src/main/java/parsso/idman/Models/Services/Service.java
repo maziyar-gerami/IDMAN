@@ -43,7 +43,6 @@ public class Service implements Comparable<Service> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ExtraInfo extraInfo;
 
-
     @Override
     public int compareTo(Service second) {
         if (this.getId() > second.getId())

@@ -6,9 +6,7 @@ import parsso.idman.Models.Users.User;
 
 @Getter
 public class Level {
-
     User doer;
-
     User user;
 
     public Level(User doer, User user) {
@@ -53,5 +51,11 @@ public class Level {
 
     }
 
-    enum levels {USER, PRESENTER, ADMIN, SUPPORTER, SUPERADMIN}
+    enum levels {
+        USER,
+        PRESENTER,
+        ADMIN,
+        SUPPORTER,
+        SUPERADMIN
+    }
 }

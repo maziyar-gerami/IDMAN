@@ -36,7 +36,6 @@ public class GroupLicense {
         return groups;
     }
 
-
     public Groups groups(long serviceId) throws IOException, ParseException {
 
         return new Groups(licensedGroups(serviceId), null);

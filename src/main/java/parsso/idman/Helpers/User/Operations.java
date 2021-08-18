@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.UniformLogger;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
@@ -27,7 +28,6 @@ import java.util.UUID;
 
 @Service
 public class Operations {
-
     private final String model = "Users";
     @Autowired
     BuildDnUser buildDnUser;
@@ -55,13 +55,12 @@ public class Operations {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                uniformLogger.record(doer, new ReportMessage(model, user.getUserId(), "", "Enable", "Success", ""));
-
+                uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, user.getUserId(), "", "Enable", "Success", ""));
 
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                uniformLogger.record(doer, new ReportMessage(model, user.getUserId(), "", "Enable", "Failed", "Writing to ldap"));
+                uniformLogger.record(doer, Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "", "Enable", "Failed", "Writing to ldap"));
                 return HttpStatus.BAD_REQUEST;
             }
         } else {
@@ -80,16 +79,15 @@ public class Operations {
 
         if (user.isEnabled()) {
 
-
             modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime", "40400404040404.950Z"));
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                uniformLogger.record(doerID, new ReportMessage(model, user.getUserId(), "", "Disable", "Success", ""));
+                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, user.getUserId(), "", "Disable", "Success", ""));
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                uniformLogger.record(doerID, new ReportMessage(model, user.getUserId(), "", "Disable", "Failed", "Writing to ldap"));
+                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "", "Disable", "Failed", "Writing to ldap"));
                 return HttpStatus.BAD_REQUEST;
             }
         } else {
@@ -117,14 +115,14 @@ public class Operations {
                     modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
                     ldapTemplate.modifyAttributes(dn, modificationItems);
                 } catch (Exception e) {
-                    uniformLogger.record(doerID, new ReportMessage(model, user.getUserId(), "", "Unlock", "Failed", "Problem with LDAP modifyAttribute"));
+                    uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "", "Unlock", "Failed", "Problem with LDAP modifyAttribute"));
                 }
 
-                uniformLogger.record(doerID, new ReportMessage(model, user.getUserId(), "", "Unlock", "Success", ""));
+                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, user.getUserId(), "", "Unlock", "Success", ""));
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                uniformLogger.record(doerID, new ReportMessage(model, user.getUserId(), "", "Unlock", "Failed", "Problem with LDAP modifyAttribute"));
+                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "", "Unlock", "Failed", "Problem with LDAP modifyAttribute"));
                 return HttpStatus.BAD_REQUEST;
             }
 
@@ -171,23 +169,23 @@ public class Operations {
                     mapper.writeValue(new File(qrDevicesPath), jsonObject);
 
                 } catch (IOException e) {
-                    uniformLogger.record(user.getUserId(), new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "Saving File problem"));
+                    uniformLogger.record(user.getUserId(), Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "Saving File problem"));
 
                 }
 
                 if (!existed)
                     action = "Update";
-                uniformLogger.record(user.getUserId(), new ReportMessage(model, user.getUserId(), "DeviceID", action, "Success", ""));
+                uniformLogger.record(user.getUserId(), Variables.LEVEL_INFO, new ReportMessage(model, user.getUserId(), "DeviceID", action, "Success", ""));
                 return uuid;
 
 
             } catch (FileNotFoundException e) {
-                uniformLogger.record(user.getUserId(), new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "File not found"));
+                uniformLogger.record(user.getUserId(), Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "File not found"));
             } catch (IOException e) {
-                uniformLogger.record(user.getUserId(), new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "Saving problem"));
+                uniformLogger.record(user.getUserId(), Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "Saving problem"));
 
             } catch (org.json.simple.parser.ParseException e) {
-                uniformLogger.record(user.getUserId(), new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "Json ّfile parse problem"));
+                uniformLogger.record(user.getUserId(), Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "DeviceID", action, "Failed", "Json ّfile parse problem"));
 
             }
         }

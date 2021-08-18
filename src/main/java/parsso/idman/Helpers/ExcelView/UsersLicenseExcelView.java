@@ -61,20 +61,6 @@ public class UsersLicenseExcelView extends AbstractXlsView {
 
     private void build(String licenseStatus, HSSFSheet sheet) {
 
-            /*if(licenseStatus.equalsIgnoreCase("licensed"))
-            List<License> licenses = transcriptRepo.servicesOfUser();
-
-            // create data rows
-            int rowCount = 1;
-
-            for (User user : Users) {
-                HSSFRow aRow = sheet.createRow(rowCount++);
-                aRow.createCell(0).setCellValue(user.getUserId());
-                aRow.createCell(1).setCellValue(user.getDisplayName());
-
-                if (rowCount == 65536)
-                    break;
-            }*/
     }
 
 }

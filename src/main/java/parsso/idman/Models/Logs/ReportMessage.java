@@ -18,10 +18,11 @@ public class ReportMessage {
     String result;
     String action;
     String description;
-    String from;
-    String to;
+    Object from;
+    Object to;
     long millis;
     Time time;
+    String level;
 
     public ReportMessage(String model, String instance, String attribute, String action, String result, String description) {
         this.model = model;
@@ -34,10 +35,32 @@ public class ReportMessage {
         time = TimeHelper.longToPersianTime(millis);
     }
 
+    public ReportMessage(String model, String instance, String attribute, String action, String result, Object from, Object to, String description) {
+        this.model = model;
+        this.instance = instance;
+        this.attribute = attribute;
+        this.result = result;
+        this.action = action;
+        this.from = from;
+        this.to = to;
+        this.description = description;
+        this.millis = new Date().getTime();
+        time = TimeHelper.longToPersianTime(millis);
+    }
+
+    public ReportMessage(String action, String result, String description) {
+
+        this.action = action;
+        this.result = result;
+        this.description = description;
+        this.millis = new Date().getTime();
+        time = TimeHelper.longToPersianTime(millis);
+    }
 
     @Override
     public String toString() {
-        String first = model + separator +
+        String first = "[" + level + "]" + separator +
+                model + separator +
                 instance + separator +
                 attribute + separator +
                 action + separator +

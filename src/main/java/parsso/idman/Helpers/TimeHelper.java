@@ -9,13 +9,11 @@ import java.time.*;
 import java.util.Date;
 
 public class TimeHelper {
-
     static ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
     public static String getExportEndTime(String input) {
 
         Instant instant = Instant.now(); //can be LocalDateTime
-
 
         String Y = input.substring(0, 4);
         String M = input.substring(4, 6);
@@ -44,7 +42,6 @@ public class TimeHelper {
         ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
         ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
 
-
         return strDate + currentOffsetForMyZone.toString().replaceAll(":", "");
     }
 
@@ -57,7 +54,6 @@ public class TimeHelper {
             strDate = formatter.format(new Date(timeInMilliseconds));
         else if (String.valueOf(timeInMilliseconds).charAt(0) == '2')
             strDate = String.valueOf(timeInMilliseconds);
-
 
         Instant instant = Instant.now(); //can be LocalDateTime
         ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
@@ -96,7 +92,6 @@ public class TimeHelper {
                 ZonedDateTime eventDate =
                         OffsetDateTime.parse(Y + "-" + M + "-" + D + 'T' + H + ":" + m + ":" + s + "." + S).atZoneSameInstant(zoneId);
 
-
                 return eventDate.getYear()
                         + String.format("%02d", eventDate.getMonth())
                         + String.format("%02d", eventDate.getDayOfMonth())
@@ -133,7 +128,6 @@ public class TimeHelper {
                 ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
                 ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
 
-
                 ZonedDateTime eventDate = OffsetDateTime.parse(date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8) + 'T' + H + ":" + m + ":" + s + "." + S + currentOffsetForMyZone).atZoneSameInstant(zoneId);
 
                 return eventDate.getYear()
@@ -167,11 +161,9 @@ public class TimeHelper {
 
     }
 
-
     public static String convertDateTimeJalali(String seTime) {
 
         parsso.idman.Models.Time timeObject = stringToTime(seTime);
-
 
         String date = convertDateJalaliToGeorgian(Integer.valueOf(timeObject.getYear()), Integer.valueOf(timeObject.getMonth()), Integer.valueOf(timeObject.getDay()));
 
@@ -213,7 +205,6 @@ public class TimeHelper {
         Instant instant = Instant.now(); //can be LocalDateTime
         ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
         ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
-
 
         SimpleDateFormat f = new SimpleDateFormat("yyyyMMddhhmmss.SSS");
 

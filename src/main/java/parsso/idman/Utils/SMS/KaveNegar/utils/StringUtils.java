@@ -3,11 +3,7 @@ package parsso.idman.Utils.SMS.KaveNegar.utils;
 
 import java.util.List;
 
-/**
- * Created by mohsenk on 2/23/17.
- */
 public class StringUtils {
-
     public static String join(CharSequence delimiter, List<?> elements) {
         if (elements == null || elements.isEmpty()) {
             return "";

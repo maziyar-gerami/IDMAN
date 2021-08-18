@@ -13,7 +13,6 @@ import java.util.Collections;
 
 @Configuration
 public class MongoConfig extends AbstractMongoClientConfiguration {
-
     @Value("${mongo.uri}")
     private String connectionString;
     @Value("${mongo.db}")
@@ -28,7 +27,6 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     public MongoClient mongoClient() {
         return MongoClients.create(connectionString);
     }
-
 
     @Override
     public Collection getMappingBasePackages() {

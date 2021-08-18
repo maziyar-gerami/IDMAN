@@ -8,8 +8,6 @@ import parsso.idman.Models.Logs.Transcript;
 import java.io.IOException;
 
 public interface TranscriptRepo {
-
-
     License servicesOfGroup(String ouid) throws IOException, ParseException;
 
     License servicesOfUser(String userId) throws IOException, ParseException;

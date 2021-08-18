@@ -16,8 +16,6 @@ import java.util.LinkedList;
 @Getter
 
 public class CasService extends Service {
-
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ExpirationPolicy expirationPolicy;
     @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -24,17 +24,16 @@ import java.io.IOException;
 
 @Controller
 public class DashboardController {
-
     @Qualifier("userRepoImpl")
     @Autowired
     private UserRepo userRepo;
     @Autowired
     private DashboardData dashboardData;
-
     @Value("${cas.url.logout.path}")
     private String casLogout;
 
-    //*************************************** Pages ***************************************
+    //************************************* Pages ****************************************
+
 
     @GetMapping("/")
     public String Root() {
@@ -76,13 +75,9 @@ public class DashboardController {
     }
 
 
-    //*************************************** APIs ***************************************
+    //************************************* APIs ****************************************
 
-    /**
-     * get the information for dashboard
-     *
-     * @return a json file containing tha data
-     */
+
     @GetMapping("/api/dashboard")
     public ResponseEntity<Dashboard> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException, InterruptedException {
 
@@ -90,7 +85,8 @@ public class DashboardController {
     }
 
 
-    //*************************************** Pages ***************************************
+    //************************************* Pages ****************************************
+
 
     @GetMapping("/users")
     public String Users() {

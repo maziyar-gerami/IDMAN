@@ -19,21 +19,21 @@ import java.io.IOException;
 
 @Controller
 public class TicketsController {
-
     @Autowired
     TicketRepo ticketRepo;
-
     @Autowired
     UserRepo userRepo;
 
-    //*************************************** Pages ***************************************
+    //************************************* Pages ****************************************
+
 
     @GetMapping("/ticketing")
     public String Reports() {
         return "ticketing";
     }
 
-    //*************************************** APIs ***************************************
+    //************************************* APIs ****************************************
+
 
     @PostMapping("/api/user/ticket")
     public ResponseEntity<HttpStatus> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request) {

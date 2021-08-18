@@ -1,17 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package parsso.idman.Utils.SMS.KaveNegar.models;
 
 
 import com.google.gson.JsonObject;
 
-/**
- * @author mohsen
- */
 public class AccountInfoResult {
-
     private final Long remainCredit;
     private final Long expireDate;
     private final String type;

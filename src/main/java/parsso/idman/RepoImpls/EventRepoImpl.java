@@ -23,11 +23,8 @@ import java.util.List;
 
 @Service
 public class EventRepoImpl implements EventRepo {
-
     private static final String mainCollection = "MongoDbCasEventRepository";
     ZoneId zoneId = ZoneId.of(Variables.ZONE);
-
-
     @Autowired
     MongoTemplate mongoTemplate;
 
@@ -64,7 +61,6 @@ public class EventRepoImpl implements EventRepo {
 
     @Override
     public ListEvents getEventsByDate(String date, int p, int n) throws ParseException {
-
 
         int skip = (p - 1) * n;
         int limit = n;

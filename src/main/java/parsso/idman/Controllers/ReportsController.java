@@ -19,20 +19,20 @@ import java.text.ParseException;
 
 @Controller
 public class ReportsController {
-
     @Autowired
     private ReportRepo reportRepo;
     @Autowired
     private LogsExcelView logsExcelView;
 
-    //*************************************** Pages ***************************************
+    //************************************* Pages ****************************************
+
 
     @GetMapping("/reports")
     public String Reports() {
         return "reports";
     }
 
-    //*************************************** APIs ***************************************
+    //************************************* APIs ****************************************
 
 
     @GetMapping("/api/reports/users/{page}/{n}")
@@ -67,7 +67,6 @@ public class ReportsController {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(reportRepo.getListUserLogByDate(date, principal.getName(), page, n), HttpStatus.OK);
     }
-
 
     @GetMapping("/api/reports/users/export")
     public ModelAndView downloadExcel() {

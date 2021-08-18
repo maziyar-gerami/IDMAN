@@ -21,7 +21,6 @@ import java.util.List;
 
 @Service
 public class SettingsRepoImpl implements SettingsRepo {
-
     @Value("${interval.check.pass.hours}")
     private static long intervalCheckPassTime;
     int millis = 3600000;
@@ -31,19 +30,15 @@ public class SettingsRepoImpl implements SettingsRepo {
     UserRepo userRepo;
     @Autowired
     InstantMessage instantMessage;
-
     @Autowired
     ConfigRepo configRepo;
-
     @Autowired
     EmailService emailService;
-
     private SettingsRepo settingsRepo;
     @Value("${max.pwd.lifetime.hours}")
     private long maxPwdLifetime;
     @Value("${expire.pwd.message.hours}")
     private long expirePwdMessageTime;
-
 
     @Override
     public HttpStatus emailNotification() {
@@ -96,7 +91,6 @@ public class SettingsRepoImpl implements SettingsRepo {
         }
         return HttpStatus.OK;
     }
-
 
     public void sendWarnExpireMessage(User user, String day) {
 

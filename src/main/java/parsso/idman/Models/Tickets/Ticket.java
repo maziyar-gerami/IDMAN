@@ -43,7 +43,6 @@ public class Ticket {
     List<String> deleteFor;
     List<Message> messages;
 
-
     public Ticket() {
 
     }

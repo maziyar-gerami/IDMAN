@@ -32,7 +32,6 @@ public class JSONencoder {
                 jsonObject.put("group", setting.getGroup());
                 jsonObject.put("system", setting.getSystem());
 
-
                 jsonArray.add(jsonObject);
             }
 

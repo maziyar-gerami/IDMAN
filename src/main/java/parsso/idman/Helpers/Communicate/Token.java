@@ -25,13 +25,11 @@ import java.util.UUID;
 
 @Service
 public class Token {
-
     public static String collection = Variables.col_usersExtraInfo;
     @Autowired
     BuildAttributes buildAttributes;
     @Autowired
     LdapTemplate ldapTemplate;
-
     @Autowired
     InstantMessage instantMessage;
     @Autowired
@@ -61,7 +59,6 @@ public class Token {
             mainPartToken = mainDbToken.substring(0, 36);
         else
             mainPartToken = mainDbToken.substring(0, SMS_VALIDATION_DIGITS);
-
 
         if (token.equals(mainPartToken)) {
 
@@ -167,7 +164,6 @@ public class Token {
 
         return true;
     }
-
 
     public int requestToken(User user) {
         return instantMessage.sendMessage(user);

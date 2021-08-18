@@ -32,10 +32,8 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.Random;
 
-
 @Service
 public class ServicesRepoImpl implements ServicesRepo {
-
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static SecureRandom rnd = new SecureRandom();
     @Value("${token.valid.email}")
@@ -104,7 +102,6 @@ public class ServicesRepoImpl implements ServicesRepo {
         // return requestTimeOut or error 408: token is valid but time is not ok
         // return forbidden or error code 403: token is not valid
 
-
         User user = userRepo.retrieveUsers(userId);
 
         String mainDbToken = user.getUsersExtraInfo().getMobileToken();
@@ -114,7 +111,6 @@ public class ServicesRepoImpl implements ServicesRepo {
             mainPartToken = mainDbToken.substring(0, 36);
         else
             mainPartToken = mainDbToken.substring(0, SMS_VALIDATION_DIGITS);
-
 
         if (token.equals(mainPartToken)) {
 

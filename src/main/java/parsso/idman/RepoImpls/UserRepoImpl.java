@@ -5,8 +5,6 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -54,8 +52,6 @@ import java.util.*;
 
 @Service
 public class UserRepoImpl implements UserRepo {
-
-
     public ZoneId zoneId = ZoneId.of(Variables.ZONE);
     String model = "User";
     String userExtraInfoCollection = Variables.col_usersExtraInfo;
@@ -123,8 +119,6 @@ public class UserRepoImpl implements UserRepo {
 
         p.setUserId(p.getUserId().toLowerCase());
 
-        Logger logger = LogManager.getLogger(doerID);
-
         UsersExtraInfo usersExtraInfo = null;
 
         if (p.getUserId() == null || p.getUserId() == "") {
@@ -142,7 +136,7 @@ public class UserRepoImpl implements UserRepo {
 
                 if (p.getDisplayName() == null || p.getDisplayName() == "" ||
                         p.getMail() == null || p.getMail() == "" || p.getStatus() == null || p.getStatus() == "") {
-                    logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "essential parameter not exist").toString());
+                    uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, p.getUserId(), "", "create", "failed", "essential parameter not exist"));
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("userId", p.getUserId());
                     if (p.getDisplayName() == null || p.getDisplayName() == "")
@@ -164,29 +158,28 @@ public class UserRepoImpl implements UserRepo {
                         if (p.getStatus().equals("disable"))
                             operations.disable(doerID, p.getUserId());
 
-
                     usersExtraInfo = new UsersExtraInfo(p, p.getPhoto(), p.isUnDeletable());
                     mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
-                    logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "success", "").toString());
+                    uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, p.getUserId(), "", "create", "success", ""));
 
                     return new JSONObject();
                 } else {
-                    logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "group not exist").toString());
+                    uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, p.getUserId(), "", "create", "failed", "group not exist"));
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("userId", p.getUserId());
                     jsonObject.put("invalidGroups", groupsChecks.invalidGroups(p.getMemberOf()));
                     return jsonObject;
                 }
             } else {
-                logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "already exist").toString());
+                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, p.getUserId(), "", "create", "failed", "already exist"));
                 return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
             if (p.getUserId() != null || !p.getUserId().equals("")) {
-                logger.warn(new ReportMessage(model, p.getUserId(), "", "create", "failed", "unknown reason").toString());
+                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, p.getUserId(), "", "create", "failed", "unknown reason"));
             } else
-                logger.warn(new ReportMessage(model, "", "", "create", "failed", "UserId is empty").toString());
+                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, "", "", "create", "failed", "UserId is empty"));
             return null;
         }
     }
@@ -199,9 +192,6 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public HttpStatus update(String doerID, String usid, User p) throws IOException, ParseException {
-
-
-        Logger logger = LogManager.getLogger(doerID);
 
         p.setUserId(usid.trim());
         Name dn = buildDnUser.buildDn(p.getUserId());
@@ -239,10 +229,8 @@ public class UserRepoImpl implements UserRepo {
         } else
             usersExtraInfo.setStatus("enable");
 
-
         if (p.getMemberOf() != null)
             usersExtraInfo.setMemberOf(p.getMemberOf());
-
 
         if (p.getDisplayName() != null)
             usersExtraInfo.setDisplayName(p.getDisplayName().trim());
@@ -262,11 +250,11 @@ public class UserRepoImpl implements UserRepo {
 
             mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
-            logger.warn(new ReportMessage(model, usid, "", "update", "success", "").toString());
+            uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, usid, "", "update", "success", ""));
 
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn(new ReportMessage(model, usid, "", "update", "failed", "Writing to DB").toString());
+            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, usid, "", "update", "failed", "Writing to DB"));
 
         }
 
@@ -284,8 +272,6 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public List<String> remove(String doer, JSONObject jsonObject) throws IOException, ParseException {
-
-        Logger logger = LogManager.getLogger(doer);
 
         List<User> people = new LinkedList<>();
         List<String> undeletables = new LinkedList<>();
@@ -313,10 +299,10 @@ public class UserRepoImpl implements UserRepo {
                 try {
                     ldapTemplate.unbind(dn);
                     mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
-                    logger.warn(new ReportMessage(model, user.getUserId(), "", "remove", "success", "").toString());
+                    uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, user.getUserId(), "", "remove", "success", ""));
 
                 } catch (Exception e) {
-                    logger.warn(new ReportMessage(model, user.getUserId(), "", "remove", "failed", "unknown reason").toString());
+                    uniformLogger.record(doer, Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "", "remove", "failed", "unknown reason"));
 
                 }
 
@@ -361,14 +347,11 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token) throws IOException, ParseException {
 
-        Logger logger = LogManager.getLogger(uId);
-
         User user = retrieveUsers(uId);
 
         AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("objectclass", "person"));
         andFilter.and(new EqualsFilter("uid", uId));
-
 
         if (ldapTemplate.authenticate("ou=People," + BASE_DN, andFilter.toString(), oldPassword)) {
             if (token != null) {
@@ -381,10 +364,10 @@ public class UserRepoImpl implements UserRepo {
 
                     try {
                         ldapTemplate.modifyAttributes(contextUser);
-                        logger.warn(new ReportMessage(model, uId, "password", "change", "success", "").toString());
+                        uniformLogger.record(uId, Variables.LEVEL_INFO, new ReportMessage(model, uId, "password", "change", "success", ""));
                         return HttpStatus.OK;
                     } catch (Exception e) {
-                        logger.warn(new ReportMessage(model, uId, "password", "change", "failed", "writing to LDAP").toString());
+                        uniformLogger.record(uId, Variables.LEVEL_WARN, new ReportMessage(model, uId, "password", "change", "failed", "writing to LDAP"));
                         return HttpStatus.BAD_REQUEST;
                     }
 
@@ -443,12 +426,8 @@ public class UserRepoImpl implements UserRepo {
         return media;
     }
 
-
     @Override
     public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException, ParseException {
-
-        Logger logger = LogManager.getLogger(name);
-
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
 
@@ -462,8 +441,8 @@ public class UserRepoImpl implements UserRepo {
         File oldPic = new File(uploadedFilesPath + user.getPhoto());
 
         user.setPhoto(s);
-        logger.warn(new ReportMessage(model, name, "profile image", "change", "success", "").toString());
         mongoTemplate.save(new ReportMessage(model, name, "profile image", "change", "success", ""), "II_log");
+        uniformLogger.record(name, Variables.LEVEL_INFO, new ReportMessage(model, name, "profile image", "change", "success", ""));
         if (update(user.getUserId(), user.getUserId(), user) == HttpStatus.OK) {
             oldPic.delete();
 
@@ -522,7 +501,6 @@ public class UserRepoImpl implements UserRepo {
         return s;
     }
 
-
     @Override
     public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
@@ -538,10 +516,8 @@ public class UserRepoImpl implements UserRepo {
 
         Query query = queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus);
 
-
         if (sortType.equals(""))
             query.with(Sort.by(Sort.Direction.ASC, "userId"));
-
 
         else if (sortType.equals("uid_m2M"))
             query.with(Sort.by(Sort.Direction.ASC, "userId"));
@@ -637,7 +613,6 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) {
-        Logger logger = LogManager.getLogger(doerID);
 
         try {
 
@@ -651,20 +626,19 @@ public class UserRepoImpl implements UserRepo {
                 try {
                     ldapTemplate.modifyAttributes(context);
                 } catch (Exception e) {
-                    logger.warn(new ReportMessage(model, user.getUserId(), "group", "update", "failed", "writing to ldap").toString());
+                    uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "group", "update", "failed", "writing to ldap"));
 
                 }
             }
-            logger.warn(new ReportMessage(model, doerID, "groups", "update", "success", "").toString());
+            uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, doerID, "groups", "update", "success", ""));
 
             return HttpStatus.OK;
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model, doerID, "groups", "update", "failed", "writing to ldap").toString());
+            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, doerID, "groups", "update", "failed", "writing to ldap"));
 
             return HttpStatus.FORBIDDEN;
         }
     }
-
 
     @Override
     public User retrieveUsers(String userId) throws IOException, ParseException {
@@ -727,7 +701,6 @@ public class UserRepoImpl implements UserRepo {
         return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("ou", groupId).encode(), searchControls, simpleUserAttributeMapper);
     }
 
-
     public HttpStatus removeCurrentEndTime(String uid) throws IOException, ParseException {
 
         Name dn = buildDnUser.buildDn(uid);
@@ -752,7 +725,6 @@ public class UserRepoImpl implements UserRepo {
             return HttpStatus.BAD_REQUEST;
         }
     }
-
 
     @Override
     public int requestToken(User user) {
@@ -818,7 +790,6 @@ public class UserRepoImpl implements UserRepo {
                 user.setMemberOf(groups);
             }
 
-
             update(doerID, uid, user);
         }
         for (String uid : remove) {
@@ -859,10 +830,7 @@ public class UserRepoImpl implements UserRepo {
 
     public HttpStatus resetPassword(String userId, String pass, String token) throws IOException, ParseException {
 
-        Logger logger = LogManager.getLogger(userId);
-
         User user = retrieveUsers(userId);
-
 
         user = setRole(user);
 
@@ -887,10 +855,10 @@ public class UserRepoImpl implements UserRepo {
                 removeCurrentEndTime(userId);
                 ldapTemplate.modifyAttributes(contextUser);
 
-                logger.warn(new ReportMessage(model, userId, "password", "reset", "success", "").toString());
+                uniformLogger.record(userId, Variables.LEVEL_INFO, new ReportMessage(model, userId, "password", "reset", "success", ""));
 
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model, userId, "password", "reset", "failed", "writing to ldap").toString());
+                uniformLogger.record(userId, Variables.LEVEL_WARN, new ReportMessage(model, userId, "password", "reset", "failed", "writing to ldap"));
             }
             return HttpStatus.OK;
         } else {

@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public interface ServiceRepo {
-
     List<MicroService> listUserServices(User user) throws IOException, ParseException;
 
     List<Service> listServicesFull() throws IOException, ParseException;

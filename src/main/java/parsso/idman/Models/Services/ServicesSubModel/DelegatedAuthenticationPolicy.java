@@ -11,7 +11,6 @@ import java.util.LinkedList;
 @Getter
 
 public class DelegatedAuthenticationPolicy {
-
     @JsonProperty("@class")
     String atClass;
     Object[] allowedProviders;

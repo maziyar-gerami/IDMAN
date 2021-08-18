@@ -7,7 +7,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Setting {
-
     private String name;
     private String value;
     private String description;

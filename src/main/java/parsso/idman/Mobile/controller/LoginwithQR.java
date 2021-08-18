@@ -20,7 +20,6 @@ import java.io.IOException;
 
 @RestController
 public class LoginwithQR {
-
     private static String random = null;
     @Autowired
     WebSecurityConfig webSecurityConfig;
@@ -34,7 +33,6 @@ public class LoginwithQR {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtUtil jwtUtil;
-
 
     @GetMapping(value = "/api/mobile/qrlogin", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody
@@ -51,7 +49,6 @@ public class LoginwithQR {
             if (user.getUsersExtraInfo().getMobileToken().equals(mobileToken) && qrToken.equals(random)) {
                 authenticationManager.authenticate
                         (new UsernamePasswordAuthenticationToken(uid, mobileToken));
-
 
                 String jwt = jwtUtil.generateToken(user);
 

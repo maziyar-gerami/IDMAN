@@ -17,25 +17,23 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-
 @Controller
 public class RolesController {
-
     @Autowired
     UserRepo userRepo;
-
     @Autowired
     RolesRepo rolesRepo;
 
 
-    //*************************************** Pages ***************************************
+    //************************************* Pages ****************************************
+
 
     @GetMapping("/roles")
     public String Roles() {
         return "roles";
     }
 
-    //*************************************** APIs ***************************************
+    //************************************* APIs ****************************************
 
 
     @GetMapping("/api/roles")

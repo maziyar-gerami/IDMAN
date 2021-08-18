@@ -30,7 +30,6 @@ import java.util.*;
 
 @Component
 public class CasServiceHelper {
-
     final String model = "Service";
     private final String collection = Variables.col_services;
     @Value("${services.folder.path}")
@@ -39,7 +38,6 @@ public class CasServiceHelper {
     MongoTemplate mongoTemplate;
     @Autowired
     ServiceRepo serviceRepo;
-
     @Autowired
     UniformLogger uniformLogger;
 
@@ -58,7 +56,6 @@ public class CasServiceHelper {
         if (jo.get("privacyUrl") != null) service.setPrivacyUrl(jo.get("privacyUrl").toString());
         if (jo.get("logo") != null) service.setLogo(jo.get("logo").toString());
         if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
-
 
         if (jo.get("expirationPolicy") == null)
             service.setExpirationPolicy(new ExpirationPolicy());
@@ -232,7 +229,6 @@ public class CasServiceHelper {
                             jsonObject1 = new JSONObject((Map) temp1.get(i));
                         }
 
-
                         Contact contact = new Contact();
                         if (jsonObject1.get("name") != null) contact.setName(jsonObject1.get("name").toString());
                         if (jsonObject1.get("email") != null) {
@@ -282,7 +278,7 @@ public class CasServiceHelper {
         try {
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
-            uniformLogger.record(doerID, new ReportMessage(model, String.valueOf(id), "",
+            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, String.valueOf(id), "",
                     Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Opening file"));
             return HttpStatus.FORBIDDEN;
         }
@@ -300,11 +296,11 @@ public class CasServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            uniformLogger.record(doerID, new ReportMessage(model, String.valueOf(id), "",
+            uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, String.valueOf(id), "",
                     Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
             return HttpStatus.OK;
         } catch (IOException e) {
-            uniformLogger.record(doerID, new ReportMessage(model, String.valueOf(id), "",
+            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, String.valueOf(id), "",
                     Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Writing file"));
             return HttpStatus.FORBIDDEN;
         }
@@ -338,7 +334,7 @@ public class CasServiceHelper {
                     try {
                         machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
                     } catch (Exception e) {
-                        uniformLogger.record("System", new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                        uniformLogger.record("System", Variables.LEVEL_WARN, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
                                 "IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
                         machines = null;
                     }
@@ -355,13 +351,13 @@ public class CasServiceHelper {
                 file.close();
 
                 mongoTemplate.save(microService, collection);
-                uniformLogger.record(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
                         "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
 
                 return service.getId();
             } catch (IOException e) {
 
-                uniformLogger.record(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
                         "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
                 return 0;
             }

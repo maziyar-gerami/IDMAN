@@ -8,8 +8,6 @@ import parsso.idman.Models.PublicMessage;
 import java.util.List;
 
 public interface PubMessageRepo {
-
-
     List<PublicMessage> showVisiblePubicMessages();
 
     List<PublicMessage> showAllPubicMessages(String id);

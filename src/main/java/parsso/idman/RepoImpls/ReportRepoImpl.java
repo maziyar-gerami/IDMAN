@@ -22,14 +22,9 @@ import java.util.List;
 
 @Service
 public class ReportRepoImpl implements ReportRepo {
-
     private static final String mainCollection = Variables.col_log;
     ZoneId zoneId = ZoneId.of(Variables.ZONE);
-
-
     Instant instant = Instant.now(); //can be LocalDateTime
-
-
     @Autowired
     MongoTemplate mongoTemplate;
 

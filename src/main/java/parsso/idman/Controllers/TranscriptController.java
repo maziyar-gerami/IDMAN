@@ -15,14 +15,10 @@ import java.io.IOException;
 
 @Controller
 public class TranscriptController {
-
-
     @Autowired
     private TranscriptRepo transcriptRepo;
 
-    //*************************************** Pages ***************************************
-
-    //*************************************** APIs ***************************************
+    //************************************* APIs ****************************************
 
 
     @GetMapping("/api/transcripts/users/service/{id}")

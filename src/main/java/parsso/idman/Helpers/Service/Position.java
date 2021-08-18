@@ -17,7 +17,6 @@ import java.util.List;
 public class Position {
     @Autowired
     MongoTemplate mongoTemplate;
-
     String collection = Variables.col_servicesExtraInfo;
 
     public int lastPosition() {

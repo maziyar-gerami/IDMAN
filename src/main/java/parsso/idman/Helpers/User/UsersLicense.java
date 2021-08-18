@@ -32,7 +32,7 @@ public class UsersLicense {
 
         JSONArray jsonArray;
         if (service.getAccessStrategy().getRequiredAttributes().get("uid") != null) {
-            jsonArray = (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("uid")));
+            jsonArray = (JSONArray) service.getAccessStrategy().getRequiredAttributes().get("uid");
             for (Object name : jsonArray)
                 try {
                     users.add(new UsersExtraInfo(userRepo.retrieveUsers(name.toString())));

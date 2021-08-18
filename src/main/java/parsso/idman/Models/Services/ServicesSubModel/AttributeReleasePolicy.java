@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 
 public class AttributeReleasePolicy {
-
     @JsonProperty("@class")
     String atClass;
     boolean authorizedToReleaseCredentialPassword;

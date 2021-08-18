@@ -23,7 +23,6 @@ import java.util.List;
 @Setter
 @ToString
 public class User implements UserDetails, Comparable {
-
     private static final String PREFIX = "ROLE_";
     @JsonIgnore
     ObjectId _id;
@@ -104,7 +103,6 @@ public class User implements UserDetails, Comparable {
         return null;
     }
 
-
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -163,7 +161,6 @@ public class User implements UserDetails, Comparable {
 
         return this.getUserId().equals(other.getUserId());
     }
-
 
     @Override
     public int compareTo(Object second) {

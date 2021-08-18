@@ -21,31 +21,22 @@ import java.util.List;
 public class PasswordSettings {
     @Autowired
     LdapTemplate ldapTemplate;
-
     @Value("${pwd.min.lentgh}")
     String pwd_min_lentgh;
-
     @Value("${pwd.max.failure}")
     String pwd_max_failure;
-
     @Value("${pwd.lockout.duration}")
     String pwd_lockout_duration;
-
     @Value("${pwd.lockout}")
     String pwd_lockout;
-
     @Value("${pwd.in.history}")
     String pwd_in_history;
-
     @Value("${pwd.grace.auth.n.limit}")
     String pwd_grace_auth_n_limit;
-
     @Value("${pwd.expire.warning}")
     String pwd_expire_warning;
-
     @Value("${pwd.failure.count.interval}")
     String pwd_failure_count_interval;
-
     @Value("${pwd.check.quality}")
     String pwd_check_quality;
 

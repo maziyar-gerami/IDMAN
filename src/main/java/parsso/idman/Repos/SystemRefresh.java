@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import java.io.IOException;
 
 public interface SystemRefresh {
-
     HttpStatus userRefresh(String doer) throws IOException;
 
     HttpStatus captchaRefresh(String doer);

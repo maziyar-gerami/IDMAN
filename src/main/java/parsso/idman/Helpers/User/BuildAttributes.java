@@ -21,7 +21,6 @@ import java.time.ZoneOffset;
 
 @Service
 public class BuildAttributes {
-
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
@@ -108,7 +107,6 @@ public class BuildAttributes {
         if (p.getFirstName() != null)
             if (p.getFirstName() != "")
                 context.setAttributeValue("givenName", p.getFirstName().trim());
-
 
         //Last Name (sn) *
         if (p.getLastName() != null)
@@ -204,10 +202,8 @@ public class BuildAttributes {
         ZoneId systemZone = zoneId; // my timezone
         ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
 
-
         if (p.getUsersExtraInfo() != null && p.getUsersExtraInfo().getResetPassToken() != null)
             mongoTemplate.save(p.getUsersExtraInfo(), Variables.col_usersExtraInfo);
-
 
         //EndTime
         if (p.getEndTime() != null && !p.getEndTime().equals(old.getEndTime()) && p.getEndTime().charAt(0) != ('-')) {
@@ -227,7 +223,6 @@ public class BuildAttributes {
 
             } else if (p.getEndTime() != null && p.getEndTime() == "")
                 context.removeAttributeValue("pwdEndTime", old.getEndTime());
-
 
             ModificationItem[] modificationItems;
             modificationItems = new ModificationItem[1];

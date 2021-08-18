@@ -20,13 +20,10 @@ import java.io.IOException;
 public class SkyroomController {
     @Autowired
     SkyroomRepo runSkyroom;
-
     @Autowired
     UserRepo userRepo;
-
     @Value("${skyroom.enable}")
     String skyroomEnable;
-
 
     @Deprecated
     @GetMapping("/api/skyroom")

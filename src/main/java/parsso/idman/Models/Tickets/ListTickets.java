@@ -13,7 +13,6 @@ public class ListTickets {
     int pages;
     List<Ticket> ticketList;
 
-
     public ListTickets(int size, List<Ticket> relativeEvents, int pages) {
         this.size = size;
         this.pages = pages;

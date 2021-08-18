@@ -13,11 +13,18 @@ public class UniformLogger {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    public void record(String doerId, ReportMessage reportMessage) {
+    public void record(String doerId, String level, ReportMessage reportMessage) {
         Logger logger = LogManager.getLogger(doerId);
+        reportMessage.setLevel(level);
 
-        logger.warn(reportMessage.toString());
+        if (level.equalsIgnoreCase(Variables.LEVEL_WARN))
+            logger.warn(reportMessage.toString());
+        else if (level.equalsIgnoreCase(Variables.LEVEL_INFO))
+            logger.info(reportMessage.toString());
+        else if (level.equalsIgnoreCase(Variables.LEVEL_ERROR))
+            logger.error(reportMessage.toString());
 
         mongoTemplate.save(reportMessage, Variables.col_idmanlog);
     }
+
 }

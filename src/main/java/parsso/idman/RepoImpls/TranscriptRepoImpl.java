@@ -50,7 +50,6 @@ public class TranscriptRepoImpl implements TranscriptRepo {
                     if (ouid.equalsIgnoreCase(name.toString()))
                         licensed.add(new MicroService(service));
 
-
         return new License(licensed, null);
 
     }
@@ -105,81 +104,7 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 }
 
 
-/*
 
-    @Override
-
-
-
-    @Override
-    public Transcript licensed(String userId) throws IOException, ParseException {
-
-        List<Long> licensedServiceId = licensedService(userId);
-        List<NanoService> licensedService = new LinkedList<>();
-
-        for (long s : licensedServiceId)
-            licensedService.add(new NanoService(s, serviceRepo.retrieveService(s).getName()));
-
-        return new Transcript(null, null, licensedService);
-    }
-
-    @Override
-    public Transcript unLicensed(String userId) throws IOException, ParseException {
-        List<Long> serviceList = licensedService(userId);
-        List<NanoService> resultService = new LinkedList<>();
-        for (Service service : serviceRepo.listServicesFull())
-            if (!serviceList.contains(service.getId()))
-                resultService.add(new NanoService(service.getId(), service.getName()));
-
-
-        return new Transcript(null, null, resultService);
-    }
-
-    List<Long> licensedService(String userId) throws IOException, ParseException {
-        List<MicroService> s = serviceRepo.listUserServices(userRepo.retrieveUsers(userId));
-        List<Long> serviceList = new LinkedList();
-        for (MicroService microservice : s)
-            serviceList.add(microservice.get_id());
-
-        return serviceList;
-    }
-
-    @Setter
-    @Getter
-    class NanoService {
-        long id;
-        String name;
-
-        public NanoService(long serviceId, String serviceName) {
-            this.id = serviceId;
-            this.name = serviceName;
-        }
-    }
-
-    @Setter
-    @Getter
-    class NanoUser {
-        String id;
-        String name;
-
-        public NanoUser(String userId, String displayName) {
-            this.id = userId;
-            this.name = displayName;
-        }
-    }
-
-    @Setter
-    @Getter
-    class NanoOU {
-        String id;
-        String name;
-
-        public NanoOU(String ouid, String groupName) {
-            this.id = ouid;
-            this.name = groupName;
-        }
-    }
-*/
 
 
 

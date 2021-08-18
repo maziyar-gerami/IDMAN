@@ -4,8 +4,6 @@ package parsso.idman.Helpers.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -32,7 +30,6 @@ import java.util.*;
 
 @Component
 public class SamlServiceHelper {
-
     final String model = "Service";
     private final String collection = Variables.col_services;
     @Value("${services.folder.path}")
@@ -96,7 +93,6 @@ public class SamlServiceHelper {
                 if (jo.get("ConsentPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
                     jsonObject = new JSONObject((Map) jo.get("ConsentPolicy"));
 
-
                 ConsentPolicy consentPolicy = new ConsentPolicy();
                 consentPolicy.setAtClass((String) jsonConcentPolicy.get("@class"));
                 consentPolicy.setEnabled((boolean) jsonConcentPolicy.get("enabled"));
@@ -139,7 +135,6 @@ public class SamlServiceHelper {
 
             else if (jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
                 jsonObject = new JSONObject((Map) jo.get("multifactorPolicy"));
-
 
             if (jsonObject.get("multifactorAuthenticationProviders") != null) {
 
@@ -196,7 +191,6 @@ public class SamlServiceHelper {
                     }
                 }
 
-
                 Object[] tempObj = new Object[2];
                 tempObj[0] = temp0;
                 tempObj[1] = contacts;
@@ -208,11 +202,9 @@ public class SamlServiceHelper {
     }
 
     public long create(String doerID, JSONObject jo) {
-        Logger logger = LogManager.getLogger(doerID);
         SamlService service = buildSamlService(jo);
         service.setId(new Date().getTime());
         String json = null;
-
 
         if (service != null) {
 
@@ -220,9 +212,7 @@ public class SamlServiceHelper {
             try {
                 mongoTemplate.save(service, collection);
                 json = ow.writeValueAsString(service);
-                logger.warn("Service " + "\"" + service.getId() + "\"" + " deleted successfully");
             } catch (JsonProcessingException e) {
-                logger.warn("Deleting Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
 
                 e.printStackTrace();
             }
@@ -234,12 +224,12 @@ public class SamlServiceHelper {
                 s1 = s1.replaceAll("[-,]", "");
                 String filePath = s1 + "-" + service.getId();
 
-
                 InetAddress[] machines = null;
                 if (!(service.getServiceId().contains("localhost")))
                     try {
                         machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
-                        logger.warn("Unable to get IP from it's serverId with these serviceId: " + service.getServiceId());
+                        uniformLogger.record("System", Variables.LEVEL_WARN, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                                "IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
                     } catch (Exception e) {
                         machines = null;
                     }
@@ -257,10 +247,12 @@ public class SamlServiceHelper {
                 MicroService microService = new MicroService(service.getServiceId(), IPaddresses);
 
                 mongoTemplate.save(microService, collection);
-                logger.warn("Service " + "\"" + service.getId() + "\"" + " created successfully");
+                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                        "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
                 return service.getId();
             } catch (IOException e) {
-                logger.warn("Creating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
+                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                        "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
                 return 0;
             }
 
@@ -270,9 +262,7 @@ public class SamlServiceHelper {
     }
 
     public HttpStatus update(String doerID, long id, JSONObject jsonObject) throws IOException, ParseException {
-        Logger logger = LogManager.getLogger(doerID);
         Service oldService = serviceRepo.retrieveService(id);
-
 
         Service service = buildSamlService(jsonObject);
         service.setId(id);
@@ -283,8 +273,8 @@ public class SamlServiceHelper {
         try {
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
-            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update",
-                    "failed", "writing file").toString());
+            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, String.valueOf(id), "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Opening file"));
         }
 
         FileWriter file;
@@ -300,11 +290,11 @@ public class SamlServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update", "success", "").toString());
+            uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, String.valueOf(id), "", "update", "success", ""));
             return HttpStatus.OK;
         } catch (IOException e) {
-            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update",
-                    "failed", "writing file").toString());
+            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, String.valueOf(id), "", "update",
+                    "failed", "writing file"));
             return HttpStatus.FORBIDDEN;
         }
 

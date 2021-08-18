@@ -21,14 +21,10 @@ import java.util.List;
 
 @Service
 public class AuditRepoImpl implements AuditRepo {
-
     private final String mainCollection = "MongoDbCasAuditRepository";
-
     @Autowired
     MongoTemplate mongoTemplate;
-
     ZoneId zoneId = ZoneId.of(Variables.ZONE);
-
 
     @Override
     public ListAudits getListSizeAudits(int p, int n) {
@@ -73,7 +69,6 @@ public class AuditRepoImpl implements AuditRepo {
 
     @Override
     public ListAudits getAuditsByDate(String date, int p, int n) throws ParseException {
-
 
         int skip = (p - 1) * n;
         int limit = n;

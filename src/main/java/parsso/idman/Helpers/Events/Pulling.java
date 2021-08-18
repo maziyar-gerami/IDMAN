@@ -17,10 +17,8 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
-
 @Service
 public class Pulling {
-
     public static String mainCollection = "MongoDbCasEventRepository";
     public static String secondaryCollection = Variables.col_events;
     @Autowired
@@ -42,7 +40,6 @@ public class Pulling {
         List<parsso.idman.Models.Services.Service> services = serviceRepo.listServicesFull();
         run(secondaryEvents, services, secondaryCollection);
     }
-
 
     public void run(List<Event> events, List<parsso.idman.Models.Services.Service> services, String collection) throws UnknownHostException {
         for (Event event : events) {

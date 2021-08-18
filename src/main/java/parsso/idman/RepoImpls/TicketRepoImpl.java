@@ -30,7 +30,6 @@ import java.util.*;
 
 @Service
 public class TicketRepoImpl implements TicketRepo {
-
     final String collection = Variables.col_tickets;
     @Autowired
     TicketRepo ticketRepo;
@@ -40,12 +39,9 @@ public class TicketRepoImpl implements TicketRepo {
     UniformLogger uniformLogger;
     Logger logger;
     String model = "Tickets";
-
     @Autowired
     UserRepo userRepo;
-
     ZoneId zoneId = ZoneId.of(Variables.ZONE);
-
 
     @Override
     public HttpStatus sendTicket(Ticket ticket, String userid) {
@@ -58,11 +54,11 @@ public class TicketRepoImpl implements TicketRepo {
             Ticket ticketToSave = new Ticket(userid, ticket.getSubject(), messages);
 
             mongoTemplate.save(ticketToSave, collection);
-            logger.warn(new ReportMessage(model, ticketToSave.getID(), "", "create", "success", ""));
+            uniformLogger.record(userid, Variables.LEVEL_INFO, new ReportMessage(model, ticketToSave.getID(), "", "create", "success", ""));
 
             return HttpStatus.OK;
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model, ticket.getID(), "", "create", "failed", ""));
+            uniformLogger.record(userid, Variables.LEVEL_ERROR, new ReportMessage(model, ticket.getID(), "", "create", "failed", ""));
 
             return HttpStatus.FORBIDDEN;
         }
@@ -70,7 +66,6 @@ public class TicketRepoImpl implements TicketRepo {
 
     @Override
     public Ticket retrieveTicket(String ticketID) {
-
 
         Query query = new Query(Criteria.where("ID").is(ticketID));
         try {
@@ -109,7 +104,6 @@ public class TicketRepoImpl implements TicketRepo {
         else
             ticket.setTo(ticket.getTo());
 
-
         //check if closed or reopen, add new message
         if (ticket.getStatus() < st && st == 2) {
             messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
@@ -119,7 +113,6 @@ public class TicketRepoImpl implements TicketRepo {
             messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
         } else
             messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
-
 
         Ticket ticketToSave = new Ticket(ticket, messages);
         ticketToSave.setStatus(st);
@@ -132,10 +125,10 @@ public class TicketRepoImpl implements TicketRepo {
         try {
             mongoTemplate.remove(new Query(Criteria.where("ID").is(ticketID)), collection);
             mongoTemplate.save(ticketToSave, collection);
-            logger.warn(new ReportMessage(model, ticketToSave.getID(), "", "reply", "success", ""));
+            uniformLogger.record(userid, Variables.LEVEL_INFO, new ReportMessage(model, ticketToSave.getID(), "", "reply", "success", ""));
         } catch (Exception e) {
 
-            logger.warn(new ReportMessage(model, ticketToSave.getID(), "", "reply", "failed", "writing to MongoDB"));
+            uniformLogger.record(userid, Variables.LEVEL_WARN, new ReportMessage(model, ticketToSave.getID(), "", "reply", "failed", "writing to MongoDB"));
 
         }
 
@@ -179,7 +172,6 @@ public class TicketRepoImpl implements TicketRepo {
 
         List<String> deleteFor = new LinkedList<>();
 
-
         ArrayList jsonArray = (ArrayList) jsonObject.get("names");
         Iterator<String> iterator = jsonArray.iterator();
         int i = 0;
@@ -199,9 +191,9 @@ public class TicketRepoImpl implements TicketRepo {
 
             try {
                 mongoTemplate.save(ticket, collection);
-                logger.warn(new ReportMessage(model, ticket.getID(), "", "remove", "success", ""));
+                uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, ticket.getID(), "", "remove", "success", ""));
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model, ticket.getID(), "", "remove", "failed", "writing to MongoDB"));
+                uniformLogger.record(doer, Variables.LEVEL_WARN, new ReportMessage(model, ticket.getID(), "", "remove", "failed", "writing to MongoDB"));
                 i++;
             }
         }
@@ -216,7 +208,6 @@ public class TicketRepoImpl implements TicketRepo {
     public HttpStatus updateTicketStatus(String doer, int status, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
 
         logger = LogManager.getLogger(doer);
-
 
         ArrayList jsonArray = (ArrayList) jsonObject.get("names");
         Iterator<String> iterator = jsonArray.iterator();
@@ -241,10 +232,10 @@ public class TicketRepoImpl implements TicketRepo {
             try {
                 mongoTemplate.remove(query, collection);
                 mongoTemplate.save(ticket, collection);
-                logger.warn(new ReportMessage(model, ticket.getID(), "", "update status", "success", ""));
+                uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, ticket.getID(), "", "update status", "success", ""));
 
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model, ticket.getID(), "", "update status", "failed", "writing to MongoDB"));
+                uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, ticket.getID(), "", "update status", "failed", "writing to MongoDB"));
 
                 i++;
             }
@@ -266,7 +257,6 @@ public class TicketRepoImpl implements TicketRepo {
         Query query = new Query(Criteria.where("from").is(userId).and("deleteFor").ne(userId))
                 .with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
-
 
         if (!date.equals("")) {
             String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
@@ -296,7 +286,6 @@ public class TicketRepoImpl implements TicketRepo {
 
         query.addCriteria(Criteria.where("deleteFor").ne(userId));
 
-
         if (!from.equals(""))
             query.addCriteria(Criteria.where("from").regex(from));
 
@@ -322,7 +311,6 @@ public class TicketRepoImpl implements TicketRepo {
         return new ListTickets(size, ticketList, (int) Math.ceil((double) size / (double) limit));
     }
 
-
     @Override
     public HttpStatus updateTicket(String userId, String ticketId, Ticket newTicket) {
         logger = LogManager.getLogger(userId);
@@ -332,10 +320,10 @@ public class TicketRepoImpl implements TicketRepo {
         try {
             mongoTemplate.remove(query, collection);
             mongoTemplate.save(ticketToSave, collection);
-            logger.warn(new ReportMessage(model, ticketId, "", "update", "success", ""));
+            uniformLogger.record(userId, Variables.LEVEL_INFO, new ReportMessage(model, ticketId, "", "update", "success", ""));
             return HttpStatus.OK;
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model, ticketId, "", "update", "failed", "writing to MongoDB"));
+            uniformLogger.record(userId, Variables.LEVEL_WARN, new ReportMessage(model, ticketId, "", "update", "failed", "writing to MongoDB"));
             return HttpStatus.FORBIDDEN;
         }
     }
@@ -362,12 +350,10 @@ public class TicketRepoImpl implements TicketRepo {
 
         query.with(Sort.by(Sort.Direction.DESC, "_id"));
 
-
         if (!cat.equals(""))
             query.addCriteria(Criteria.where("category").regex(cat));
         if (!subCat.equals(""))
             query.addCriteria(Criteria.where("subCategory").regex(subCat));
-
 
         if (!from.equals(""))
             query.addCriteria(Criteria.where("from").regex(from));
@@ -392,7 +378,6 @@ public class TicketRepoImpl implements TicketRepo {
         List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
         return new ListTickets(ticketCount, ticketList, (int) Math.ceil((double) ticketCount / (double) limit));
     }
-
 
     @Override
     public ListTickets retrieveArchivedTickets(String doer, String cat, String subCat, String status, String page, String count, String from, String ticketId, String date) {

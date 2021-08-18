@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import java.util.List;
 
 public class UpdateCreator {
-
     Update update = new Update();
 
     public Update extraInfo(String photoName, boolean undDeletable) {

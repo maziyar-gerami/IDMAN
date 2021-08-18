@@ -2,8 +2,6 @@ package parsso.idman.RepoImpls;
 
 
 import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,7 +20,6 @@ import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.Helpers.Variables;
-import parsso.idman.IdmanApplication;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.User;
@@ -39,32 +36,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-
 @Service
 public class SystemRefreshRepoImpl implements SystemRefresh {
-
-
     @Autowired
     ServiceRepo serviceRepo;
-
     @Autowired
     MongoTemplate mongoTemplate;
-
     @Autowired
     UniformLogger uniformLogger;
-
     @Autowired
     LdapTemplate ldapTemplate;
-
     @Autowired
     UserRepo userRepo;
-
     @Autowired
     UserAttributeMapper userAttributeMapper;
-
     @Autowired
     SimpleUserAttributeMapper simpleUserAttributeMapper;
-
     @Autowired
     DashboardData dashboardData;
     String model = "Refresh";
@@ -79,17 +66,12 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-        Logger logger = LoggerFactory.getLogger(doer);
-
-        Logger loggerSecond = LoggerFactory.getLogger("System");
-
-
         //0. create collection, if not exist
 
         if (mongoTemplate.getCollection(userExtraInfoCollection) == null)
             mongoTemplate.createCollection(userExtraInfoCollection);
 
-        loggerSecond.warn("******* User refresh started: Step 1 *******");
+        uniformLogger.record(doer, "INFO", new ReportMessage("User refresh", "Started", "Step 1"));
 
         UsersExtraInfo userExtraInfo;
 
@@ -106,7 +88,6 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                     if (userExtraInfo.getQrToken() == null || userExtraInfo.getQrToken().equals(""))
                         userExtraInfo.setQrToken(UUID.randomUUID().toString());
-
 
                     String photoName = ldapTemplate.search(
                             "ou=People," + BASE_DN, new EqualsFilter("uid", user.getUserId()).encode(), searchControls,
@@ -160,9 +141,9 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             try {
 
                 mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
-                logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "success", "Step 1: creating documents").toString());
+                uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage("User", user.getUserId(), "", "refresh", "success", "Step 1: creating documents"));
             } catch (Exception e) {
-                logger.warn(new ReportMessage("User", user.getUserId(), "", "refresh", "failed", "writing to mongo").toString());
+                uniformLogger.record(doer, Variables.LEVEL_WARN, new ReportMessage("User", user.getUserId(), "", "refresh", "failed", "writing to mongo"));
             }
 
 
@@ -174,11 +155,9 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             e.printStackTrace();
         }
 
-        loggerSecond.warn("******* User refresh  Step 1 finished. To be continue... *******");
+        uniformLogger.record(doer, "INFO", new ReportMessage("User refresh", Variables.RESULT_FINISHED, "Step 1: Started"));
 
-
-        loggerSecond.warn("******* User refresh started: Step 2 *******");
-
+        uniformLogger.record(doer, "INFO", new ReportMessage("User refresh", Variables.RESULT_STARTED, "Step 2"));
 
         //2. cleanUp mongo
         List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, userExtraInfoCollection);
@@ -187,14 +166,13 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 List<UsersExtraInfo> usersExtraInfoList = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", usersExtraInfo.getUserId()).encode(), searchControls, simpleUserAttributeMapper);
                 if (usersExtraInfoList.size() == 0) {
                     mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
-                    logger.warn(new ReportMessage("MongoDB Document", usersExtraInfo.getUserId(), "", "remove ", "success", "Step 2: removing extra document").toString());
+                    uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage("MongoDB Document", usersExtraInfo.getUserId(), "", "remove ", "success", "Step 2: removing extra document"));
                 }
             }
 
-        loggerSecond.warn("******* User refresh  Step 2 finished *******");
+        uniformLogger.record(doer, "INFO", new ReportMessage("User refresh", Variables.RESULT_FINISHED, "Step 2"));
 
-        logger.warn(new ReportMessage(model, "", "Users", "refresh", "success", "").toString());
-
+        uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, "", "Users", "refresh", "success", ""));
 
         return HttpStatus.OK;
     }
@@ -202,23 +180,20 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     @Override
     public HttpStatus captchaRefresh(String doer) {
 
-        Logger logger = LoggerFactory.getLogger(IdmanApplication.class);
-
-        logger.warn("Captcha refresh started");
+        uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(Variables.MODEL_CAPTCHA, "", "", "Captcha refresh started", "", ""));
         if (mongoTemplate.getCollection(Variables.col_captchas) != null) {
             mongoTemplate.getCollection(Variables.col_captchas).drop();
-            logger.warn("IDMAN_captchas collection dropped");
+
         }
 
         mongoTemplate.createCollection(Variables.col_captchas);
-        logger.warn(new ReportMessage(model, "", "Captcha", "refresh", "success", "").toString());
+        uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, "", "Captcha", "refresh", "success", ""));
 
         return HttpStatus.OK;
     }
 
     @Override
     public HttpStatus serivceRefresh(String doer) throws IOException, ParseException {
-        Logger logger = LoggerFactory.getLogger(doer);
 
         if (mongoTemplate.getCollection(Variables.col_servicesExtraInfo) == null)
             mongoTemplate.createCollection(Variables.col_servicesExtraInfo);
@@ -242,12 +217,11 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
             mongoTemplate.save(serviceExtraInfo, Variables.col_servicesExtraInfo);
 
-            logger.warn(new ReportMessage(model, "", "Services", "refresh", "success", "").toString());
+            uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, "", "Services", "refresh", "success", ""));
         }
 
         List<parsso.idman.Models.Services.Service> serviceList = serviceRepo.listServicesFull();
         List<Long> ids = new LinkedList<>();
-
 
         List<MicroService> microServices = mongoTemplate.findAll(MicroService.class, Variables.col_servicesExtraInfo);
 
@@ -268,7 +242,6 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
     @Override
     public HttpStatus all(String doer) throws IOException, ParseException {
-        Logger logger = LoggerFactory.getLogger(doer);
         try {
             mongoTemplate.getCollection("IDMAN_Tokens").drop();
         } catch (Exception e) {
@@ -281,7 +254,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         userRefresh(doer);
 
-        logger.warn(new ReportMessage(model, "", "System", "refresh", "success", "").toString());
+        uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, "", "System", "refresh", "success", ""));
 
         return HttpStatus.OK;
     }
@@ -295,7 +268,6 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         AndFilter andFilter = new AndFilter();
 
-        Logger logger = LoggerFactory.getLogger("System");
         andFilter.and(new PresentFilter("pwdAccountLockedTime"));
         andFilter.and(new NotFilter(new EqualsFilter("pwdAccountLockedTime", "40400404040404.950Z")));
 
@@ -306,7 +278,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             if (!simpleUser.getStatus().equalsIgnoreCase("lock")) {
                 simpleUser.setStatus("lock");
 
-                logger.warn(new ReportMessage("User", user.getUserId(), "", "locked", "", "").toString());
+                uniformLogger.record("System", Variables.LEVEL_INFO, new ReportMessage("User", user.getUserId(), "", "locked", "", ""));
                 mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
                 mongoTemplate.save(simpleUser, userExtraInfoCollection);
             }
@@ -324,14 +296,13 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
                 mongoTemplate.save(simple, userExtraInfoCollection);
 
-                logger.warn(new ReportMessage("User", simple.getUserId(), "", "unlock", "", "due to time pass").toString());
+                uniformLogger.record("System", Variables.LEVEL_INFO, new ReportMessage("User", simple.getUserId(), "", "unlock", "", "due to time pass"));
 
 
             }
 
 
         }
-
 
         return HttpStatus.OK;
     }

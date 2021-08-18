@@ -4,9 +4,11 @@ package parsso.idman.Helpers;
 import parsso.idman.Models.Users.User;
 
 public class Variables {
-
-
     public static final String ACTION_GET = "Get";
+    public static final String LEVEL_INFO = "INFO";
+    public static final String LEVEL_WARN = "WARN";
+    public static final String LEVEL_ERROR = "ERROR";
+    public static final String MODEL_CAPTCHA = "Captcha";
     public static String col_captchas = "IDMAN_Captchas";
     public static String col_events = "IDMAN_Events";
     public static String col_extraInfo = "IDMAN_ExtraInfo";
@@ -20,6 +22,8 @@ public class Variables {
     public static String col_tickets = "IDMAN_Tickets";
     public static String RESULT_FAILED = "Failed";
     public static String RESULT_SUCCESS = "Success";
+    public static String RESULT_FINISHED = "Finished";
+    public static String RESULT_STARTED = "Started";
     public static String ACTION_CREATE = "Create";
     public static String ACTION_UPDATE = "Update";
     public static String ACTION_INSERT = "Insert";
@@ -30,8 +34,6 @@ public class Variables {
     public static String MODEL_GROUP = "Group";
     public static String MODEL_TICKETING = "Ticketing";
     public static String MODEL_ROLE = "Role";
-
-
     public static String email_recoverySubject = "بازنشانی رمز عبور";
     public static String ZONE = "Asia/Tehran";
     public static String col_idmanlog = "IDMAN_IdmanLog";

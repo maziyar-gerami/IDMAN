@@ -21,13 +21,10 @@ import java.util.List;
 
 @Service
 public class UserAttributeMapper implements AttributesMapper<User> {
-
     @Autowired
     MongoTemplate mongoTemplate;
-
     @Autowired
     LdapTemplate ldapTemplate;
-
     @Autowired
     UserRepo userRepo;
 
@@ -53,7 +50,6 @@ public class UserAttributeMapper implements AttributesMapper<User> {
         user.setMemberOf(null != attributes.get("ou") ? ls : null);
 
         Query query = new Query(Criteria.where("userId").is(user.getUserId()));
-
 
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
 

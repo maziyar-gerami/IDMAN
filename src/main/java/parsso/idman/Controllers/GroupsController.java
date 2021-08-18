@@ -22,21 +22,19 @@ import java.util.List;
 
 @Controller
 public class GroupsController {
-
     @Autowired
     private GroupRepo groupRepo;
-
     @Autowired
     private UserRepo userRepo;
 
-    //*************************************** Pages ***************************************
-
+    //************************************* Pages ****************************************
     @GetMapping("/groups")
     public String Groups() {
         return "groups";
     }
 
-    //*************************************** APIs ***************************************
+    //************************************* APIs ****************************************
+
 
     @GetMapping("/api/groups/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) throws IOException, ParseException {

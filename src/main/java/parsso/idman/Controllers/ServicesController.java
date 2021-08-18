@@ -31,7 +31,6 @@ import java.util.List;
 
 @Controller
 public class ServicesController {
-
     @Autowired
     MongoTemplate mongoTemplate;
     @Qualifier("userRepoImpl")
@@ -103,11 +102,6 @@ public class ServicesController {
         return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
     }
 
-    /**
-     * metaData for logged-in user
-     *
-     * @return the response entity
-     */
     @PostMapping("/api/services/metadata")
     public ResponseEntity<String> uploadMetadata(@RequestParam("file") MultipartFile file) {
         String result = serviceRepo.uploadMetadata(file);
@@ -116,7 +110,6 @@ public class ServicesController {
         else
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
 
     @GetMapping("/api/services/position/{serviceId}")
     public ResponseEntity<HttpStatus> increasePosition(HttpServletRequest request,
@@ -129,11 +122,6 @@ public class ServicesController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    /**
-     * metaData for logged-in user
-     *
-     * @return the response entity
-     */
     @XmlElement
     @GetMapping(value = "/api/public/metadata/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
     )

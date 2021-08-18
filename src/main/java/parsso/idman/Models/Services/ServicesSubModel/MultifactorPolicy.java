@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 
 public class MultifactorPolicy {
-
     Object[] multifactorAuthenticationProviders;
     String failureMode;
     Boolean bypassEnabled;

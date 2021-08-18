@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface UserRepo {
-
     List<String> remove(String doerID, JSONObject jsonObject) throws IOException, ParseException;
 
     HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token) throws IOException, ParseException;

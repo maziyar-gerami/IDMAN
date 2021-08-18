@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package parsso.idman.Utils.SMS.KaveNegar;
 
 
@@ -27,14 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
-/**
- * @author Kavenegar
- */
 public class KavenegarApi {
-
     static final String API_PATH = "https://api.kavenegar.com/v1/%s/%s.json";
-
     private final String apiKey;
 
     public KavenegarApi(String apiKey) {
@@ -92,10 +82,6 @@ public class KavenegarApi {
         }
     }
 
-    /*
-       Send
-    */
-
     public List<SendResult> send(String sender, List<String> receptors, String message, MessageType type, long date, List<String> localIds) throws BaseException {
 
         JsonArray entry = execute(getApiPath("sms/send"),
@@ -141,11 +127,6 @@ public class KavenegarApi {
     public SendResult send(String sender, String receptor, String message, String localId) throws BaseException {
         return send(sender, receptor, message, MessageType.MobileMemory, 0, localId);
     }
-
-
-    /*
-      SendArray
-    */
 
     public List<SendResult> sendArray(List<String> senders, List<String> receptors, List<String> messages, List<MessageType> types, long date, List<String> localIds) throws BaseException {
         String path = getApiPath("sms/sendarray");
@@ -219,12 +200,6 @@ public class KavenegarApi {
         return sendArray(senders, receptors, messages, types, date, localIds);
     }
 
-
-
-    /*
-      Status
-    */
-
     public List<StatusResult> status(List<Long> messageId) throws BaseException {
         String path = getApiPath("sms/status");
         String id = StringUtils.join(",", messageId);
@@ -242,11 +217,6 @@ public class KavenegarApi {
         return status(Arrays.asList(messageId)).get(0);
     }
 
-
-    /*
-      StatusLocalMessageIdResult
-    */
-
     public List<StatusLocalMessageIdResult> statusLocalMessageId(List<Long> localIds) throws BaseException {
         String path = getApiPath("sms/statuslocalmessageid");
         String id = StringUtils.join(",", localIds);
@@ -263,9 +233,6 @@ public class KavenegarApi {
         return statusLocalMessageId(Arrays.asList(localId)).get(0);
     }
 
-    /*
-      Select
-    */
     public List<SendResult> select(List<Long> ids) throws BaseException {
         String path = getApiPath("sms/select");
         String massageids = StringUtils.join(",", ids);
@@ -285,10 +252,6 @@ public class KavenegarApi {
         return select(messageIds).get(0);
     }
 
-    /*
-      SelectOutbox
-    */
-
     public List<SendResult> selectOutbox(long startDate, long endDate, String sender) throws BaseException {
         String path = getApiPath("sms/selectoutbox");
         JsonArray array = execute(path, "startdate", startDate, "enddate", endDate, "sender", sender).getAsJsonArray();
@@ -307,12 +270,6 @@ public class KavenegarApi {
     public List<SendResult> selectOutbox(long startDate, long endDate) throws BaseException {
         return selectOutbox(startDate, endDate, "");
     }
-
-
-
-    /*
-      LatestOutbox
-    */
 
     public List<SendResult> latestOutbox(Long pageSize, String sender) throws BaseException {
         String path = getApiPath("sms/latestoutbox");
@@ -334,12 +291,6 @@ public class KavenegarApi {
         return latestOutbox(pageSize, "");
     }
 
-
-
-    /*
-      CountOutbox
-    */
-
     public CountOutboxResult countOutbox(long startDate, long endDate, int status) throws BaseException {
         String path = getApiPath("sms/countoutbox");
         JsonObject entry = execute(path, "startdate", startDate, "enddate", endDate, "status", status).getAsJsonArray().get(0).getAsJsonObject();
@@ -353,10 +304,6 @@ public class KavenegarApi {
     public CountOutboxResult countOutbox(long startDate, long endDate) throws BaseException {
         return countOutbox(startDate, endDate, 0);
     }
-
-    /*
-      Cancel
-    */
 
     public List<StatusResult> cancel(List<Long> messageIds) throws BaseException {
         String path = getApiPath("sms/cancel");
@@ -374,9 +321,6 @@ public class KavenegarApi {
         return cancel(Arrays.asList(messageId)).get(0);
     }
 
-    /*
-      Receive
-    */
     public List<ReceiveResult> receive(String lineNumber, int isRead) throws BaseException {
         String path = getApiPath("sms/receive");
         JsonElement res = execute(path, "linenumber", lineNumber, "isread", isRead);
@@ -392,11 +336,6 @@ public class KavenegarApi {
         return list;
     }
 
-    /*
-      CountInbox
-    */
-
-
     public CountInboxResult countInbox(long startDate, long endDate, String lineNumber, int isRead) throws BaseException {
         String path = getApiPath("sms/countinbox");
         JsonObject entry = execute(path, "startdate", startDate, "enddate", endDate, "linenumber", lineNumber, "isread", isRead).getAsJsonArray().get(0).getAsJsonObject();
@@ -410,12 +349,6 @@ public class KavenegarApi {
     public CountInboxResult countInbox(long startDate, long endDate, String lineNumber) throws BaseException {
         return countInbox(startDate, endDate, lineNumber, 0);
     }
-
-
-    /*
-      SendByPostalCode
-    */
-
 
     public List<SendResult> sendByPostalCode(long postalCode, String sender, String message, long mciStartIndex, long mciCount, long mtnStartIndex, long mtnCount, long date) throws BaseException {
         String path = getApiPath("sms/sendpostalcode");
@@ -433,10 +366,6 @@ public class KavenegarApi {
         return sendByPostalCode(postalCode, sender, message, mciStartIndex, mciCount, mtnStartIndex, mtnCount, 0);
     }
 
-    /*
-      CountPostalCode
-    */
-
     public List<CountPostalCodeResult> countPostalCode(Long postalCode) throws BaseException {
         String path = getApiPath("sms/countpostalcode");
         JsonArray array = execute(path, "postalcode", postalCode).getAsJsonArray();
@@ -448,29 +377,17 @@ public class KavenegarApi {
         return list;
     }
 
-
-    /*
-      AccountInfo
-    */
     public AccountInfoResult accountInfo() throws BaseException {
         String path = getApiPath("account/info");
         JsonObject json = execute(path).getAsJsonObject();
         return new AccountInfoResult(json);
     }
 
-
-    /*
-      AccountConfig
-    */
     public AccountConfigResult accountConfig(String apiLogs, String dailyReport, String debugMode, String defaultSender, int minCreditAlarm, String resendFailed) throws BaseException {
         String path = getApiPath("account/config");
         JsonObject json = execute(path, "apilogs", dailyReport, "dailyreport", debugMode, "debugmode", debugMode, "defaultsender", defaultSender, "mincreditalarm", minCreditAlarm, "mincreditalarm", resendFailed).getAsJsonObject();
         return new AccountConfigResult(json);
     }
-
-    /*
-       VerifyLookup
-     */
 
     public SendResult verifyLookup(String receptor, String token, String token2, String token3, String template) throws BaseException {
         String path = getApiPath("verify/lookup");

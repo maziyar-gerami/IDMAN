@@ -26,7 +26,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-
 @Service
 public class DashboardData {
     public static String mainCollection = "MongoDbCasEventRepository";
@@ -45,13 +44,10 @@ public class DashboardData {
     SimpleUserAttributeMapper simpleUserAttributeMapper;
     @Autowired
     LdapTemplate ldapTemplate;
-
     ZoneId zoneId = ZoneId.of(Variables.ZONE);
-
     Users fUsers;
     Services fServices;
     Logins fLogins;
-
 
     public Dashboard retrieveDashboardData() throws IOException, InterruptedException {
 
@@ -120,7 +116,6 @@ public class DashboardData {
             for (Event event : events) {
                 ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
 
-
                 if (event.getType().equals("Unsuccessful Login") && DateUtils.isToday(eventDate)) {
                     nUnSucceful++;
                 } else if (event.getType().equals("Successful Login") && DateUtils.isToday(eventDate))
@@ -129,7 +124,6 @@ public class DashboardData {
 
             fLogins = new Logins(nSuccessful + nUnSucceful, nUnSucceful, nSuccessful);
         });
-
 
         loginData.start();
         servicesData.start();
@@ -141,7 +135,6 @@ public class DashboardData {
         Dashboard dashboard = new Dashboard(fServices, fLogins, fUsers);
 
         dashboard.setId("Dashboard");
-
 
         mongoTemplate.remove(new Query(Criteria.where("_id").is("id")),
                 Variables.col_extraInfo);

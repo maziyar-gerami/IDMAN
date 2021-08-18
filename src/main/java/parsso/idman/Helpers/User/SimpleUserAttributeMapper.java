@@ -12,11 +12,9 @@ import java.util.List;
 
 @Service
 public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInfo> {
-
     @Override
     public UsersExtraInfo mapFromAttributes(Attributes attributes) throws NamingException {
         UsersExtraInfo user = new UsersExtraInfo();
-
 
         if (attributes == null || attributes.get("uid") == null)
             return null;
@@ -36,7 +34,6 @@ public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInf
                 user.setStatus("lock");
         else
             user.setStatus("enable");
-
 
         user.setMemberOf(ls);
 

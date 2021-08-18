@@ -2,8 +2,6 @@ package parsso.idman.RepoImpls;
 
 
 import net.minidev.json.JSONObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,6 @@ import java.util.*;
 
 @Service
 public class GroupRepoImpl implements GroupRepo {
-
     private final String usersExtraInfoCollection = Variables.col_usersExtraInfo;
     private final String model = "Groups";
     @Autowired
@@ -68,8 +65,6 @@ public class GroupRepoImpl implements GroupRepo {
     @Override
     public HttpStatus remove(String doerID, JSONObject jsonObject) throws IOException, ParseException {
 
-        Logger logger = LogManager.getLogger(doerID);
-
         ArrayList jsonArray = (ArrayList) jsonObject.get("names");
         DirContextOperations context;
         Iterator<String> iterator = jsonArray.iterator();
@@ -79,10 +74,10 @@ public class GroupRepoImpl implements GroupRepo {
             Name dn = buildDn(group.getId());
             try {
                 ldapTemplate.unbind(dn);
-                logger.warn(new ReportMessage(model, group.getId(), "Group", "remove", "success", "").toString());
+                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, group.getId(), "Group", "remove", "success", ""));
 
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model, group.getId(), "Group", "remove", "failed", "writing to ldap").toString());
+                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, group.getId(), "Group", "remove", "failed", "writing to ldap"));
             }
 
             for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(group.getId())) {
@@ -103,11 +98,11 @@ public class GroupRepoImpl implements GroupRepo {
                                 mongoTemplate.save
                                         (simpleUser, usersExtraInfoCollection);
 
-                                logger.warn(new ReportMessage("User", user.getUserId(), "group " + groupN, "remove", "success", "").toString());
+                                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage("User", user.getUserId(), "group " + groupN, "remove", "success", ""));
 
 
                             } catch (Exception e) {
-                                logger.warn(new ReportMessage("User", user.getUserId(), "group " + groupN, "remove", "failed", "writing to LDAP").toString());
+                                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage("User", user.getUserId(), "group " + groupN, "remove", "failed", "writing to LDAP"));
 
                             }
                         }
@@ -118,7 +113,6 @@ public class GroupRepoImpl implements GroupRepo {
 
         return HttpStatus.OK;
     }
-
 
     @Override
     public Group retrieveOu(boolean simple, String uid) throws IOException, ParseException {
@@ -167,7 +161,6 @@ public class GroupRepoImpl implements GroupRepo {
 
         return expirePassword.expire(doer, users);
     }
-
 
     private Attributes buildAttributes(String uid, Group group) {
 
@@ -220,16 +213,12 @@ public class GroupRepoImpl implements GroupRepo {
         if (gt.size() != 0)
             return null;
 
-
         return gt;
 
     }
 
-
     @Override
     public HttpStatus create(String doerID, Group ou) {
-
-        Logger logger = LogManager.getLogger(doerID);
 
         List<Group> groups = retrieve();
 
@@ -241,24 +230,20 @@ public class GroupRepoImpl implements GroupRepo {
         try {
             ldapTemplate.bind(dn, null, buildAttributes(ou.getId(), ou));
 
-            logger.warn(new ReportMessage(model, ou.getId(), "Group", "create", "success", "").toString());
+            uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, ou.getId(), "Group", "create", "success", ""));
 
             return HttpStatus.OK;
 
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn(new ReportMessage(model, ou.getId(), "Group", "create", "failed", "writing to ldap").toString());
+            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, ou.getId(), "Group", "create", "failed", "writing to ldap"));
 
             return HttpStatus.BAD_REQUEST;
         }
     }
 
-
     @Override
     public HttpStatus update(String doerID, String id, Group ou) {
-
-        Logger logger = LogManager.getLogger(doerID);
-
 
         Name dn = buildDn(id);
 
@@ -268,15 +253,13 @@ public class GroupRepoImpl implements GroupRepo {
             if (!(id.equals(ou.getId())) && group.getId().equals(ou.getId()))
                 return HttpStatus.FOUND;
 
-
         if (!(id.equals(ou.getId()))) {
 
             try {
                 ldapTemplate.unbind(dn);
                 create(doerID, ou);
                 DirContextOperations contextUser;
-                logger.warn(new ReportMessage(model, id, "Group", "update", "success", "").toString());
-
+                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, id, "Group", "update", "success", ""));
 
                 for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(id)) {
                     for (String group : user.getMemberOf()) {
@@ -299,7 +282,6 @@ public class GroupRepoImpl implements GroupRepo {
                     }
                 }
 
-
                 List<parsso.idman.Models.Services.Service> services = serviceRepo.listServicesWithGroups(id);
                 if (services != null)
                     for (parsso.idman.Models.Services.Service service : services) {
@@ -319,16 +301,16 @@ public class GroupRepoImpl implements GroupRepo {
 
                     }
 
-                logger.warn(new ReportMessage(model, id, "", "update", "success", "").toString());
+                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, id, "", "update", "success", ""));
 
                 return HttpStatus.OK;
 
             } catch (IOException ioException) {
 
-                logger.warn(new ReportMessage(model, id, "Group", "update", "failed", "ioException").toString());
+                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, id, "Group", "update", "failed", "ioException"));
                 return HttpStatus.BAD_REQUEST;
             } catch (org.json.simple.parser.ParseException e) {
-                logger.warn(new ReportMessage(model, id, "Group", "update", "failed", "parsing").toString());
+                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, id, "Group", "update", "failed", "parsing"));
                 return HttpStatus.BAD_REQUEST;
             }
 
@@ -336,12 +318,12 @@ public class GroupRepoImpl implements GroupRepo {
 
             try {
                 ldapTemplate.rebind(dn, null, buildAttributes(ou.getId(), ou));
-                logger.warn(new ReportMessage(model, doerID, "Group", "update", "success", "").toString());
+                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, doerID, "Group", "update", "success", ""));
 
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model, doerID, ou.getId(), "update", "failed", "writing to ldap").toString());
+                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, doerID, ou.getId(), "update", "failed", "writing to ldap"));
 
                 return HttpStatus.BAD_REQUEST;
             }
@@ -350,9 +332,7 @@ public class GroupRepoImpl implements GroupRepo {
 
     }
 
-
     private class OUAttributeMapper implements AttributesMapper<Group> {
-
         @Override
         public Group mapFromAttributes(Attributes attributes) throws NamingException {
             Group group = new Group();

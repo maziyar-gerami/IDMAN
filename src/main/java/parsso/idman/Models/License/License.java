@@ -10,7 +10,6 @@ import java.util.List;
 @Setter
 @Getter
 public class License {
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     List licensed;
     @JsonInclude(JsonInclude.Include.NON_NULL)
