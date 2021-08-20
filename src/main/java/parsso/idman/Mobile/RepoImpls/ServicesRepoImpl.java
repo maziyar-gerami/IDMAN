@@ -6,6 +6,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -98,7 +99,7 @@ public class ServicesRepoImpl implements ServicesRepo {
 
     }
 
-    public HttpStatus verifySMS(String userId, String token) {
+    public HttpStatus verifySMS(String userId, String token) throws IOException, ParseException {
         // return OK or code 200: token is valid and time is ok
         // return requestTimeOut or error 408: token is valid but time is not ok
         // return forbidden or error code 403: token is not valid

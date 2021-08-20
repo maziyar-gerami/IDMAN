@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.PublicMessage;
@@ -26,6 +27,8 @@ public class PubMessageRepoImpl implements PubMessageRepo {
     private final String collection = Variables.col_publicMessage;
     @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
+    UniformLogger uniformLogger;
 
     @Override
     public List<PublicMessage> showVisiblePubicMessages() {

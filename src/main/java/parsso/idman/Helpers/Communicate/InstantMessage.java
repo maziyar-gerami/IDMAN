@@ -4,6 +4,7 @@ package parsso.idman.Helpers.Communicate;
 import net.minidev.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import parsso.idman.Utils.SMS.KaveNegar.excepctions.ApiException;
 import parsso.idman.Utils.SMS.KaveNegar.excepctions.HttpException;
 import parsso.idman.Utils.SMS.Magfa.Texts;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,7 +58,7 @@ public class InstantMessage {
     @Autowired
     private MagfaSMSSendRepo magfaSMSSendRepo;
 
-    public int sendMessage(String mobile, String cid, String answer) {
+    public int sendMessage(String mobile, String cid, String answer) throws IOException, ParseException {
 
         if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
             return sendMessageKaveNegar(mobile, cid, answer);
@@ -82,7 +84,7 @@ public class InstantMessage {
         return 0;
     }
 
-    public int sendMessage(String mobile, String uid, String cid, String answer) {
+    public int sendMessage(String mobile, String uid, String cid, String answer) throws IOException, ParseException {
         if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
             return sendMessageKaveNegar(mobile, uid, cid, answer);
         else if (SMS_sdk.equalsIgnoreCase("Magfa"))
@@ -91,7 +93,7 @@ public class InstantMessage {
     }
 
 
-    private int sendMessageKaveNegar(String mobile, String cid, String answer) {
+    private int sendMessageKaveNegar(String mobile, String cid, String answer) throws IOException, ParseException {
 
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -226,7 +228,7 @@ public class InstantMessage {
         return 0;
     }
 
-    private int sendMessageMagfa(String mobile, String cid, String answer) {
+    private int sendMessageMagfa(String mobile, String cid, String answer) throws IOException, ParseException {
 
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -348,7 +350,7 @@ public class InstantMessage {
         return jsonArray;
     }
 
-    private int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) {
+    private int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) throws IOException, ParseException {
 
 
         Query query = new Query(Criteria.where("_id").is(cid));
@@ -413,7 +415,7 @@ public class InstantMessage {
     }
 
 
-    private int sendMessageMagfa(String mobile, String uId, String cid, String answer) {
+    private int sendMessageMagfa(String mobile, String uId, String cid, String answer) throws IOException, ParseException {
         Logger logger = LogManager.getLogger("test");
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);

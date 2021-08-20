@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.TimeHelper;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.UsersExtraInfo;
@@ -28,6 +29,8 @@ public class ExpirePassword {
     @Autowired MongoTemplate mongoTemplate;
 
     @Autowired BuildDnUser buildDnUser;
+
+    @Autowired UniformLogger uniformLogger;
 
     public List<String> expire(String doer, List<UsersExtraInfo> users) {
         Logger logger = LogManager.getLogger(doer);

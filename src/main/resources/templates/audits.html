@@ -147,7 +147,7 @@
                 <div id="closeOverlay" class="btn btn-danger" v-on:click="closeOverlay">{{returnText}}</div>
             </div>
         </div>
-        <div v-bind:class="{rtl: isRtl}" class=" h-100">
+        <div v-bind:class="{rtl: isRtl}" class="h-100">
             <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
                 <div class="container">
                     <div class="dropdown">
@@ -336,7 +336,8 @@
                                                                         <td>{{eve.clientIpAddress}}</td>
                                                                         <td>{{eve.date}}</td>
                                                                         <td>{{eve.clock}}</td>
-                                                                        <td><button class="btn btn-primary btn-sm" v-on:click="showMore(eve.resourceOperatedUpon)">{{s19}}</button></td>
+                                                                        <td><button v-on:click="showMore(eve.resourceOperatedUpon)" data-toggle="tooltip" data-placement="top" :title="s19" class="btn btn-sm"
+                                                                        style="padding: 0.2rem; color: rgb(0, 123, 255); font-size: 70%;"><span class="fa-stack"><i class="fa fa-info fa-stack-2x"></i></span></button></td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
@@ -440,7 +441,8 @@
                                                                                 <td>{{event.serverIpAddress}}</td>
                                                                                 <td>{{event.date}}</td>
                                                                                 <td>{{event.clock}}</td>
-                                                                                <td><button class="btn btn-primary btn-sm" v-on:click="showMore(event.resourceOperatedUpon)">{{s19}}</button></td>
+                                                                                <td><button v-on:click="showMore(event.resourceOperatedUpon)" data-toggle="tooltip" data-placement="top" :title="s19" class="btn btn-sm"
+                                                                                style="padding: 0.2rem; color: rgb(0, 123, 255); font-size: 70%;"><span class="fa-stack"><i class="fa fa-info fa-stack-2x"></i></span></button></td>
                                                                             </tr>
                                                                         </tbody>
                                                                     </table>
@@ -510,7 +512,8 @@
                                                                                 <td>{{eve.clientIpAddress}}</td>
                                                                                 <td>{{eve.date}}</td>
                                                                                 <td>{{eve.clock}}</td>
-                                                                                <td><button class="btn btn-primary btn-sm" v-on:click="showMore(eve.resourceOperatedUpon)">{{s19}}</button></td>
+                                                                                <td><button v-on:click="showMore(eve.resourceOperatedUpon)" data-toggle="tooltip" data-placement="top" :title="s19" class="btn btn-sm"
+                                                                                style="padding: 0.2rem; color: rgb(0, 123, 255); font-size: 70%;"><span class="fa-stack"><i class="fa fa-info fa-stack-2x"></i></span></button></td>
                                                                             </tr>
                                                                         </tbody>
                                                                     </table>

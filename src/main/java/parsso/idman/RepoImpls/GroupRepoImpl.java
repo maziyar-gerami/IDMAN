@@ -5,6 +5,7 @@ import net.minidev.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -18,6 +19,7 @@ import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.User.BuildDnUser;
 import parsso.idman.Helpers.User.ExpirePassword;
 import parsso.idman.Helpers.Variables;
@@ -27,6 +29,7 @@ import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.ServiceRepo;
+import parsso.idman.Repos.TranscriptRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
@@ -48,6 +51,8 @@ public class GroupRepoImpl implements GroupRepo {
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
+    UniformLogger uniformLogger;
+    @Autowired
     ExpirePassword expirePassword;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
@@ -57,9 +62,11 @@ public class GroupRepoImpl implements GroupRepo {
     private UserRepo userRepo;
     @Autowired
     private ServiceRepo serviceRepo;
+    @Autowired
+    private TranscriptRepo transcriptRepo;
 
     @Override
-    public HttpStatus remove(String doerID, JSONObject jsonObject) {
+    public HttpStatus remove(String doerID, JSONObject jsonObject) throws IOException, ParseException {
 
         Logger logger = LogManager.getLogger(doerID);
 
@@ -67,7 +74,7 @@ public class GroupRepoImpl implements GroupRepo {
         DirContextOperations context;
         Iterator<String> iterator = jsonArray.iterator();
         while (iterator.hasNext()) {
-            Group group = retrieveOu(iterator.next());
+            Group group = retrieveOu(false,iterator.next());
 
             Name dn = buildDn(group.getId());
             try {
@@ -114,13 +121,17 @@ public class GroupRepoImpl implements GroupRepo {
 
 
     @Override
-    public Group retrieveOu(String uid) {
+    public Group retrieveOu(boolean simple,String uid) throws IOException, ParseException {
 
         List<Group> groups = retrieve();
 
         for (Group group : groups) {
-            if (group.getId().equalsIgnoreCase(uid))
+            if (!simple && group.getId().equalsIgnoreCase(uid)) {
+                group.setService(transcriptRepo.servicesOfGroup(uid));
                 return group;
+            }
+            else if (simple && group.getId().equalsIgnoreCase(uid))
+            return group;
         }
         return null;
     }
@@ -131,10 +142,14 @@ public class GroupRepoImpl implements GroupRepo {
         List<Group> groups = new ArrayList<Group>();
         try {
             for (int i = 0; i < memberOf.size(); ++i) {
-                groups.add(retrieveOu(memberOf.get(i)));
+                groups.add(retrieveOu(false,memberOf.get(i)));
             }
         } catch (NullPointerException e) {
 
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return groups;
     }
@@ -205,6 +220,8 @@ public class GroupRepoImpl implements GroupRepo {
 
         if (gt.size() != 0)
             return null;
+
+
 
 
         return gt;

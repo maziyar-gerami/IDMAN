@@ -1,6 +1,7 @@
 package parsso.idman.Controllers;
 
 
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class SkyroomController {
 
     @Deprecated
     @GetMapping("/api/skyroom")
-    ResponseEntity<SkyRoom> hello(HttpServletRequest request) throws IOException {
+    ResponseEntity<SkyRoom> hello(HttpServletRequest request) throws IOException, ParseException {
         SkyRoom skyRoom = null;
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
         if (skyroomEnable.equalsIgnoreCase("true")) {

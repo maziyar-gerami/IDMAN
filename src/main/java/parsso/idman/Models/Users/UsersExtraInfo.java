@@ -24,7 +24,9 @@ public class UsersExtraInfo {
     private String resetPassToken;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String qrToken;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private long creationTimeStamp;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String photoName;
     private boolean unDeletable;
     private String role;

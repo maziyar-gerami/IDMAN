@@ -4,6 +4,7 @@ package parsso.idman.RepoImpls;
 import net.minidev.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -12,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Tickets.ListTickets;
@@ -21,6 +23,7 @@ import parsso.idman.Models.Time;
 import parsso.idman.Repos.TicketRepo;
 import parsso.idman.Repos.UserRepo;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -33,6 +36,8 @@ public class TicketRepoImpl implements TicketRepo {
     TicketRepo ticketRepo;
     @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
+    UniformLogger uniformLogger;
     Logger logger;
     String model = "Tickets";
 
@@ -77,7 +82,7 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public HttpStatus reply(String ticketID, String userid, Ticket replyTicket) {
+    public HttpStatus reply(String ticketID, String userid, Ticket replyTicket) throws IOException, ParseException {
 
         logger = LogManager.getLogger(userid);
         int st;
@@ -208,7 +213,7 @@ public class TicketRepoImpl implements TicketRepo {
     }
 
     @Override
-    public HttpStatus updateTicketStatus(String doer, int status, @RequestBody JSONObject jsonObject) {
+    public HttpStatus updateTicketStatus(String doer, int status, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
 
         logger = LogManager.getLogger(doer);
 

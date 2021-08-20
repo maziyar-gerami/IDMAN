@@ -4,6 +4,7 @@ package parsso.idman.Helpers.User;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
@@ -27,7 +28,7 @@ public class ExcelAnalyzer {
     @Autowired
     UserRepo userRepo;
 
-    public List excelSheetAnalyze(String doer, Sheet sheet, String ou, boolean hasHeader) {
+    public List excelSheetAnalyze(String doer, Sheet sheet, String ou, boolean hasHeader) throws IOException, ParseException {
 
         Iterator<Row> rowIterator = sheet.iterator();
 
@@ -102,7 +103,7 @@ public class ExcelAnalyzer {
         return notExist;
     }*/
 
-    public List csvSheetAnalyzer(String doer, BufferedReader sheet, String ou, boolean hasHeader) throws IOException {
+    public List csvSheetAnalyzer(String doer, BufferedReader sheet, String ou, boolean hasHeader) throws IOException, ParseException {
 
         String row;
         int i = 0;

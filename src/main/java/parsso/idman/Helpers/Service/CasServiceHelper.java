@@ -7,13 +7,12 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.Service;
@@ -40,7 +39,9 @@ public class CasServiceHelper {
     MongoTemplate mongoTemplate;
     @Autowired
     ServiceRepo serviceRepo;
-    Logger logger = LoggerFactory.getLogger(CasServiceHelper.class);
+
+    @Autowired
+    UniformLogger uniformLogger;
 
     public CasService buildCasService(JSONObject jo) {
 
@@ -258,12 +259,6 @@ public class CasServiceHelper {
 
     }
 
-    boolean isCasService(JSONObject jo) {
-
-        return !jo.get("@class").toString().toLowerCase().contains("saml");
-
-    }
-
     public CasService analyze(String file) throws IOException, ParseException {
 
         FileReader reader = new FileReader(path + file);
@@ -275,7 +270,7 @@ public class CasServiceHelper {
 
     }
 
-    public HttpStatus update(long id, JSONObject jsonObject) throws IOException, ParseException {
+    public HttpStatus update(String doerID, long id, JSONObject jsonObject) throws IOException, ParseException {
         Service oldService = serviceRepo.retrieveService(id);
 
         Service service = buildCasService(jsonObject);
@@ -287,8 +282,8 @@ public class CasServiceHelper {
         try {
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
-            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update",
-                    "failed", "opening file").toString());
+            uniformLogger.record(doerID, new ReportMessage(model, String.valueOf(id), "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Opening file"));
             return HttpStatus.FORBIDDEN;
         }
 
@@ -305,17 +300,18 @@ public class CasServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update", "success", "").toString());
+            uniformLogger.record(doerID,new ReportMessage(model, String.valueOf(id), "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
             return HttpStatus.OK;
         } catch (IOException e) {
-            logger.warn(new ReportMessage(model, String.valueOf(id), "", "update",
-                    "failed", "writing file").toString());
+            uniformLogger.record(doerID, new ReportMessage(model, String.valueOf(id), "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Writing file"));
             return HttpStatus.FORBIDDEN;
         }
 
     }
 
-    public long create(JSONObject jo) {
+    public long create(String doerID, JSONObject jo) {
 
         CasService service = buildCasService(jo);
         service.setId(new Date().getTime());
@@ -342,7 +338,8 @@ public class CasServiceHelper {
                     try {
                         machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
                     } catch (Exception e) {
-                        logger.warn("Unable to get IP from it's serverId with these serviceId: " + service.getServiceId());
+                        uniformLogger.record("System",new ReportMessage(Variables.MODEL_SERVICE,service.getServiceId(),
+                                "IP",Variables.ACTION_GET,Variables.RESULT_FAILED,""));
                         machines = null;
                     }
 
@@ -358,11 +355,14 @@ public class CasServiceHelper {
                 file.close();
 
                 mongoTemplate.save(microService, collection);
-                logger.warn("Service " + "\"" + service.getId() + "\"" + " created successfully");
+                uniformLogger.record(doerID,new ReportMessage(Variables.MODEL_SERVICE,service.getServiceId(),
+                        "",Variables.ACTION_CREATE,Variables.RESULT_SUCCESS,""));
 
                 return service.getId();
             } catch (IOException e) {
-                logger.warn("Creating Service " + "\"" + service.getId() + "\"" + " was unsuccessful");
+
+                uniformLogger.record(doerID,new ReportMessage(Variables.MODEL_SERVICE,service.getServiceId(),
+                        "",Variables.ACTION_CREATE,Variables.RESULT_FAILED,""));
                 return 0;
             }
 

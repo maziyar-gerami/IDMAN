@@ -337,7 +337,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         }
 
         if (system.equalsIgnoreCase("cas")) {
-            id = casServiceHelper.create(jsonObject);
+            id = casServiceHelper.create(doerID,jsonObject);
             if (id > 0) {
                 if (extraInfo != null) {
                     extraInfo.setId(id);
@@ -364,10 +364,8 @@ public class ServiceRepoImpl implements ServiceRepo {
                 extraInfo.setPosition(position.lastPosition() + 1);
             }
 
-
         try {
             mongoTemplate.save(extraInfo, collection);
-            logger.warn(new ReportMessage(model, String.valueOf(extraInfo.getId()), "", "create", "success", "").toString());
             return HttpStatus.OK;
         } catch (Exception e) {
             logger.warn(new ReportMessage(model, String.valueOf(extraInfo.getId()), "", "create", "failed", "writing to mongoDB").toString());
@@ -437,7 +435,7 @@ public class ServiceRepoImpl implements ServiceRepo {
                 logger.warn(new ReportMessage(model, String.valueOf(extraInfo.getId()), "", "update", "failed", "writing to mongoDB").toString());
                 return HttpStatus.FORBIDDEN;
             }
-            return casServiceHelper.update(id, jsonObject);
+            return casServiceHelper.update(doerID, id, jsonObject);
 
         } else if (system.equalsIgnoreCase("saml"))
             try {

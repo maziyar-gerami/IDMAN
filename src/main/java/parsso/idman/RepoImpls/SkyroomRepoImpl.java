@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.SkyRoom;
 import parsso.idman.Models.Users.User;
@@ -33,6 +34,9 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 
     @Autowired
     UserRepo userRepo;
+
+    @Autowired
+    UniformLogger uniformLogger;
 
     Logger logger = LogManager.getLogger("System");
 

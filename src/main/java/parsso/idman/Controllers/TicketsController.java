@@ -2,6 +2,7 @@ package parsso.idman.Controllers;
 
 
 import net.minidev.json.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import parsso.idman.Repos.TicketRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @Controller
 public class TicketsController {
@@ -40,12 +42,12 @@ public class TicketsController {
 
     @PutMapping("/api/user/ticket/reply/{ticketID}")
     public ResponseEntity<HttpStatus> replyTicket(@PathVariable("ticketID") String ticketID,
-                                                  @RequestBody Ticket ticket, HttpServletRequest request) {
+                                                  @RequestBody Ticket ticket, HttpServletRequest request) throws IOException, ParseException {
         return new ResponseEntity<>(ticketRepo.reply(ticketID, request.getUserPrincipal().getName().toLowerCase(), ticket));
     }
 
     @GetMapping("/api/user/ticket/{ticketID}")
-    public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request) {
+    public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request) throws IOException, ParseException {
         Ticket ticket = ticketRepo.retrieveTicket(ticketID);
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName().toLowerCase());
         if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))
@@ -73,7 +75,7 @@ public class TicketsController {
 
     @PutMapping("/api/supporter/ticket/status/{status}")
     public ResponseEntity<HttpStatus> updateTicketStatus(@PathVariable int status, @RequestBody JSONObject jsonObject,
-                                                         HttpServletRequest request) {
+                                                         HttpServletRequest request) throws IOException, ParseException {
         return new ResponseEntity<>(ticketRepo.updateTicketStatus(request.getUserPrincipal().getName().toLowerCase(), status, jsonObject) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
 
     }

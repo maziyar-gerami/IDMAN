@@ -2,6 +2,7 @@ package parsso.idman.Controllers;
 
 
 import net.minidev.json.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +39,7 @@ public class GroupsController {
     //*************************************** APIs ***************************************
 
     @GetMapping("/api/groups/user")
-    public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
+    public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) throws IOException, ParseException {
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
         List<Group> groups = groupRepo.retrieveCurrentUserGroup(user);
         groups.removeAll(Collections.singleton(null));
@@ -63,12 +65,12 @@ public class GroupsController {
     }
 
     @GetMapping("/api/groups/{id}")
-    public ResponseEntity<Group> retrieveOU(@PathVariable("id") String id) {
-        return new ResponseEntity<>(groupRepo.retrieveOu(id), HttpStatus.OK);
+    public ResponseEntity<Group> retrieveOU(@PathVariable("id") String id) throws IOException, ParseException {
+        return new ResponseEntity<>(groupRepo.retrieveOu(false,id), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/groups")
-    public ResponseEntity<HttpStatus> unbindAllLdapOU(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
+    public ResponseEntity<HttpStatus> unbindAllLdapOU(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
         return new ResponseEntity<>(groupRepo.remove(request.getUserPrincipal().getName(), jsonObject));
     }
 

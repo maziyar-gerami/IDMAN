@@ -2,10 +2,13 @@ package parsso.idman.Repos;
 
 
 import net.minidev.json.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Ticket;
+
+import java.io.IOException;
 
 @Service
 public interface TicketRepo {
@@ -14,11 +17,11 @@ public interface TicketRepo {
 
     Ticket retrieveTicket(String ticketID);
 
-    HttpStatus reply(String ticketID, String user, Ticket ticket);
+    HttpStatus reply(String ticketID, String user, Ticket ticket) throws IOException, ParseException;
 
     HttpStatus deleteTicket(String doer, JSONObject jsonObject);
 
-    HttpStatus updateTicketStatus(String doer, int status, JSONObject jsonObject);
+    HttpStatus updateTicketStatus(String doer, int status, JSONObject jsonObject) throws IOException, ParseException;
 
     ListTickets retrieveSentTickets(String userId, String page, String count, String date);
 

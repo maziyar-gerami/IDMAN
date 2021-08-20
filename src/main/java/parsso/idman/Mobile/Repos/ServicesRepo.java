@@ -2,6 +2,7 @@ package parsso.idman.Mobile.Repos;
 
 
 import com.google.zxing.WriterException;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import parsso.idman.Models.Users.User;
 
@@ -15,7 +16,7 @@ public interface ServicesRepo {
 
     String insertMobileToken1(User user);
 
-    HttpStatus verifySMS(String userId, String token);
+    HttpStatus verifySMS(String userId, String token) throws IOException, ParseException;
 
     String randomString(int len);
 }

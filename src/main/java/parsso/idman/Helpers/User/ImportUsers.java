@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,7 +36,7 @@ public class ImportUsers {
     @Autowired
     private UserRepo userRepo;
 
-    public JSONObject excelSheetAnalyze(String doerId, Sheet sheet, int[] sequence, boolean hasHeader) {
+    public JSONObject excelSheetAnalyze(String doerId, Sheet sheet, int[] sequence, boolean hasHeader) throws IOException, ParseException {
         JSONArray jsonArray = new JSONArray();
 
         Iterator<Row> rowIterator = sheet.iterator();
@@ -156,7 +157,7 @@ public class ImportUsers {
         return jsonObject;
     }
 
-    public JSONObject csvSheetAnalyze(String doerId, BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException {
+    public JSONObject csvSheetAnalyze(String doerId, BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException, ParseException {
 
         String row;
         JSONArray jsonArray = new JSONArray();
@@ -221,7 +222,7 @@ public class ImportUsers {
         return ls;
     }
 
-    public JSONObject importFileUsers(String doerId, MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
+    public JSONObject importFileUsers(String doerId, MultipartFile file, int[] sequence, boolean hasHeader) throws IOException, ParseException {
 
         JSONObject lsusers = new JSONObject();
         InputStream insfile = file.getInputStream();
