@@ -1432,7 +1432,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     m += 1;
                   }
                 } else {
-                  for(let j = 0; vm.groups.length; ++j){
+                  for(let j = 0; j < vm.groups.length; ++j){
                     vm.groups[j].recordNumber = j + 1;
                   }
                   vm.bannedGroupsReportList = vm.groups;
