@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
             activeItem: "info",
             eye: "right: 1%;",
             userPicture: "images/PlaceholderUser.png",
+            overlayLoader: false,
             QR: "/api/mobile/qrcode",
             token: "",
             requestSentSuccess: false,
@@ -84,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s30: "برنامه موبایل",
             s31: "لطفا کد QR را جهت فعال سازی برنامه موبایل، اسکن کنید.",
             s32: "کد تایید با موفقیت ارسال شد. لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.",
-            s33: "لطفا جهت تغییر رمز عبور خود، ابتدا درخواست کد تایید را داده و سپس کد ارسال شده را وارد نمایید.",
+            s33: "لطفا جهت تغییر رمز عبور خود، پس از درخواست کد تایید، کد ارسال شده از طریق پیامک را وارد نمایید.",
             s34: "درخواست کد تایید",
             s35: "تایید",
             s36: "کد تایید را وارد نمایید",
@@ -179,10 +180,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.open(this.meetingAdminLink, "_blank").focus();
             },
             openOverlay: function () {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
                 document.getElementById("overlay").style.display = "block";
+                this.overlayLoader = true;
+                axios.get(url + "/api/skyroom") //
+                    .then((res) => {
+                        vm.overlayLoader = false;
+                        document.getElementById("overlayBody").style.display = "block";
+                        vm.meetingAdminLink = res.data.presenter;
+                        vm.meetingGuestLink = res.data.students;
+                    });
             },
             closeOverlay: function () {
                 document.getElementById("overlay").style.display = "none";
+                document.getElementById("overlayBody").style.display = "none";
             },
             copyMeetingLink: function () {
                 let copyText = document.getElementById("copyMeetingLink");
@@ -225,12 +237,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             document.getElementById("editButton").style = "display: none;";
                             vm.U17 = "اطلاعات کاربری";
                         }
-                        if(typeof res.data.skyRoom !== "undefined"){
-                            if(res.data.skyRoom.enable){
-                                vm.showMeeting = true;
-                                vm.meetingAdminLink = res.data.skyRoom.presenter;
-                                vm.meetingGuestLink = res.data.skyRoom.students;
-                            }
+                        if(res.data.skyroomAccess){
+                            vm.showMeeting = true;
                         }
                     });
             },
@@ -560,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s30 = "برنامه موبایل";
                     this.s31 = "لطفا کد QR را جهت فعال سازی برنامه موبایل، اسکن کنید.";
                     this.s32 = "کد تایید با موفقیت ارسال شد. لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.";
-                    this.s33 = "لطفا جهت تغییر رمز عبور خود، ابتدا درخواست کد تایید را داده و سپس کد ارسال شده را وارد نمایید.";
+                    this.s33 = "لطفا جهت تغییر رمز عبور خود، پس از درخواست کد تایید، کد ارسال شده از طریق پیامک را وارد نمایید.";
                     this.s34 = "درخواست کد تایید";
                     this.s35 = "تایید";
                     this.s36 = "کد تایید را وارد نمایید";

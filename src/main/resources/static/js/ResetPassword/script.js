@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
             personnelNumberText: "شماره پرسنلی",
             enterPersonnelNumberText: "لطفا جهت بازنشانی رمز عبور، شماره پرسنلی خود را وارد کنید:",
             emptyPersonnelNumberText: "شماره پرسنلی خود را وارد کنید",
+            codeNot6DigitsText: "کد وارد شده 6 رقم نمی باشد.",
         },
         created: function () {
             this.setDateNav();
@@ -227,45 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert(this.s41);
                 }
             },
-            checkSMS: function (code) {
-                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                let vm = this;
-
-                if(code !== ""){
-                    vm.loader = true;
-                    axios.get(url + "/api/public/validateMessageToken/" + vm.usernameSMSCheck + "/" + code) //
-                    .then((res) => {
-                        vm.loader = false;
-                        vm.sendS = false;
-                        vm.sendUS = false;
-                        vm.checkSMSCode = false;
-                        vm.SuccessS = true;
-                        vm.ErrorS = false;
-                        vm.ErrorSMSCode = false;
-                        window.location.replace(url + "/newpassword?uid=" + vm.usernameSMSCheck + "&token=" + code);
-                    })
-                    .catch((error) => {
-                        if (error.response) {
-                            vm.loader = false;
-                            vm.sendS = false;
-                            vm.sendUS = false;
-                            vm.checkSMSCode = false;
-                            vm.SuccessS = false;
-                            vm.ErrorS = false;
-                            vm.ErrorSMSCode = true;
-                            if(error.response.status === 403){
-                                vm.ErrorSMSCode403 = true;
-                                vm.ErrorSMSCode408 = false;
-                            }else if(error.response.status === 408){
-                                vm.ErrorSMSCode403 = false;
-                                vm.ErrorSMSCode408 = true;
-                            }
-                        }
-                    });
-                }else{
-                    alert(this.s43);
-                }
-            },
             sendSMS: function (mobile) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
@@ -362,6 +324,52 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert(this.s41);
                 }
             },
+            checkSMS: function (code) {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
+
+                code = document.getElementById("digit-1-1").value.trim() + document.getElementById("digit-2-1").value.trim() +
+                    document.getElementById("digit-3-1").value.trim() + document.getElementById("digit-4-1").value.trim() +
+                    document.getElementById("digit-5-1").value.trim() + document.getElementById("digit-6-1").value.trim();
+                if(code !== ""){
+                    if(code.length === 6) {
+                        vm.loader = true;
+                        axios.get(url + "/api/public/validateMessageToken/" + vm.usernameSMSCheck + "/" + code) //
+                            .then((res) => {
+                                vm.loader = false;
+                                vm.sendS = false;
+                                vm.sendUS = false;
+                                vm.checkSMSCode = false;
+                                vm.SuccessS = true;
+                                vm.ErrorS = false;
+                                vm.ErrorSMSCode = false;
+                                window.location.replace(url + "/newpassword?uid=" + vm.usernameSMSCheck + "&token=" + code);
+                            })
+                            .catch((error) => {
+                                if (error.response) {
+                                    vm.loader = false;
+                                    vm.sendS = false;
+                                    vm.sendUS = false;
+                                    vm.checkSMSCode = false;
+                                    vm.SuccessS = false;
+                                    vm.ErrorS = false;
+                                    vm.ErrorSMSCode = true;
+                                    if (error.response.status === 403) {
+                                        vm.ErrorSMSCode403 = true;
+                                        vm.ErrorSMSCode408 = false;
+                                    } else if (error.response.status === 408) {
+                                        vm.ErrorSMSCode403 = false;
+                                        vm.ErrorSMSCode408 = true;
+                                    }
+                                }
+                            });
+                    }else{
+                        alert(this.codeNot6DigitsText);
+                    }
+                }else{
+                    alert(this.s43);
+                }
+            },
             sendUID: function (uid) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
@@ -398,29 +406,36 @@ document.addEventListener('DOMContentLoaded', function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
 
+                code = document.getElementById("digit-1").value.trim() + document.getElementById("digit-2").value.trim() +
+                    document.getElementById("digit-3").value.trim() + document.getElementById("digit-4").value.trim() +
+                    document.getElementById("digit-5").value.trim() + document.getElementById("digit-6").value.trim();
                 if(code !== ""){
-                    vm.loader = true;
-                    axios.get(url + "/api/public/validateMessageToken/" + vm.userId + "/" + code) //
-                        .then((res) => {
-                            vm.loader = false;
-                            window.location.replace(url + "/newpassword?uid=" + vm.userId + "&token=" + code);
-                        })
-                        .catch((error) => {
-                            if (error.response) {
+                    if(code.length === 6) {
+                        vm.loader = true;
+                        axios.get(url + "/api/public/validateMessageToken/" + vm.userId + "/" + code) //
+                            .then((res) => {
                                 vm.loader = false;
-                                vm.sendUserId = false;
-                                vm.SuccessUserId = false;
-                                vm.ErrorUserId = false;
-                                vm.ErrorUserIdSMSCode = true;
-                                if(error.response.status === 403){
-                                    vm.ErrorUserIdSMSCode403 = true;
-                                    vm.ErrorUserIdSMSCode408 = false;
-                                }else if(error.response.status === 408){
-                                    vm.ErrorUserIdSMSCode403 = false;
-                                    vm.ErrorUserIdSMSCode408 = true;
+                                window.location.replace(url + "/newpassword?uid=" + vm.userId + "&token=" + code);
+                            })
+                            .catch((error) => {
+                                if (error.response) {
+                                    vm.loader = false;
+                                    vm.sendUserId = false;
+                                    vm.SuccessUserId = false;
+                                    vm.ErrorUserId = false;
+                                    vm.ErrorUserIdSMSCode = true;
+                                    if (error.response.status === 403) {
+                                        vm.ErrorUserIdSMSCode403 = true;
+                                        vm.ErrorUserIdSMSCode408 = false;
+                                    } else if (error.response.status === 408) {
+                                        vm.ErrorUserIdSMSCode403 = false;
+                                        vm.ErrorUserIdSMSCode408 = true;
+                                    }
                                 }
-                            }
-                        });
+                            });
+                    }else{
+                        alert(this.codeNot6DigitsText);
+                    }
                 }else{
                     alert(this.s43);
                 }
@@ -502,6 +517,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.personnelNumberText = "Personnel Number";
                     this.enterPersonnelNumberText = "Please Enter Your Personnel Number To Reset Your Password:";
                     this.emptyPersonnelNumberText = "Please Enter Your Personnel Number";
+                    this.codeNot6DigitsText = "Entered Code is Not 6 Digits.";
                 } else{
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
@@ -550,6 +566,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.personnelNumberText = "شماره پرسنلی";
                     this.enterPersonnelNumberText = "لطفا جهت بازنشانی رمز عبور، شماره پرسنلی خود را وارد کنید:";
                     this.emptyPersonnelNumberText = "شماره پرسنلی خود را وارد کنید";
+                    this.codeNot6DigitsText = "کد وارد شده 6 رقم نمی باشد.";
                 }
             }
         }

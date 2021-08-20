@@ -27,6 +27,9 @@
     <div id="app">
         <div id="overlay">
             <div id="overlayContent" v-bind:class="{rtl: isRtl}">
+                <div v-if="overlayLoader" style="text-align: center;">
+                    <roller-loader color="#007bff"/>
+                </div>
                 <div id="overlayBody">
                     <div class="form-group">
                         <div class="row mt-3 mb-5 ml-0 mr-0">
@@ -43,7 +46,7 @@
                 <div id="closeOverlay" class="btn btn-danger" v-on:click="closeOverlay">{{returnText}}</div>
             </div>
         </div>
-        <div v-bind:class="{rtl: isRtl}" class=" h-100">
+        <div v-bind:class="{rtl: isRtl}" class="h-100">
                 <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
                     <div class="container">
                         <div class="dropdown">

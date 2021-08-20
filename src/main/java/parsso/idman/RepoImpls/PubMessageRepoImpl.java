@@ -50,12 +50,12 @@ public class PubMessageRepoImpl implements PubMessageRepo {
         try {
             PublicMessage messageToSave = new PublicMessage(message.getTitle(), message.getBody(), message.isVisible(), doer);
             mongoTemplate.save(messageToSave, collection);
-            uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, messageToSave.getMessageId(), "", "create", "success", ""));
+            uniformLogger.info(doer,  new ReportMessage(model, messageToSave.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
 
             return HttpStatus.OK;
 
         } catch (Exception e) {
-            uniformLogger.record(doer, Variables.LEVEL_WARN, new ReportMessage(model, message.getMessageId(), "", "create", "failed", "Writing to mongo"));
+            uniformLogger.warn(doer,  new ReportMessage(model, message.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongo"));
             return HttpStatus.FORBIDDEN;
 
         }
@@ -77,11 +77,11 @@ public class PubMessageRepoImpl implements PubMessageRepo {
         message.set_id(publicMessage.get_id());
         try {
             mongoTemplate.save(message, collection);
-            uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, message.getMessageId(), "", "update", "success", ""));
+            uniformLogger.info(doer,new ReportMessage(model, message.getMessageId(), "", "update", Variables.RESULT_SUCCESS, ""));
 
             return HttpStatus.OK;
         } catch (Exception e) {
-            uniformLogger.record(doer, Variables.LEVEL_WARN, new ReportMessage(model, message.getMessageId(), "", "create", "failed", "Writing to mongo"));
+            uniformLogger.warn(doer, new ReportMessage(model, message.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongo"));
             return HttpStatus.FORBIDDEN;
         }
     }
@@ -96,11 +96,11 @@ public class PubMessageRepoImpl implements PubMessageRepo {
             try {
 
                 mongoTemplate.remove(new Query(), collection);
-                uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, "All", "", "delete", "success", ""));
+                uniformLogger.info(doer, new ReportMessage(model, "All", "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 
             } catch (Exception e) {
 
-                uniformLogger.record(doer, Variables.LEVEL_WARN, new ReportMessage(model, "All", "", "delete", "failed", ""));
+                uniformLogger.warn(doer, new ReportMessage(model, "All", "", Variables.ACTION_DELETE, Variables.RESULT_FAILED, ""));
 
             }
         }
@@ -110,10 +110,10 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 
             try {
                 mongoTemplate.remove(new Query(Criteria.where("messageId").is(next)), collection);
-                uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, next, "", "delete", "success", ""));
+                uniformLogger.info(doer, new ReportMessage(model, next, "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 
             } catch (Exception e) {
-                uniformLogger.record(doer, Variables.LEVEL_WARN, new ReportMessage(model, next, "", "delete", "failed", "Writing to mongo"));
+                uniformLogger.warn(doer, new ReportMessage(model, next, "", Variables.ACTION_DELETE, Variables.RESULT_FAILED, "Writing to mongo"));
             }
 
         }

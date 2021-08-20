@@ -43,17 +43,17 @@ public class RoleRepoImpl implements RolesRepo {
                 String oldRole = usersExtraInfo.getRole();
                 usersExtraInfo.setRole(role);
                 mongoTemplate.save(usersExtraInfo, collection);
-                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, userId, "", "change", "success",
+                uniformLogger.info(doerID, new ReportMessage(model, userId, "", "change", Variables.RESULT_SUCCESS,
                         "from \"" + oldRole + "\" to \"" + role + "\""));
 
             } catch (Exception e) {
                 i++;
-                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, userId, "", "change", "failed", "due to writing to ldap"));
+                uniformLogger.warn(doerID, new ReportMessage(model, userId, "", "change", Variables.RESULT_FAILED, "due to writing to ldap"));
 
             }
 
             if (i > 0) {
-                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, userId, "", "change", "success", "partially done"));
+                uniformLogger.info(doerID,  new ReportMessage(model, userId, "", "change", Variables.RESULT_SUCCESS, "partially done"));
                 return HttpStatus.PARTIAL_CONTENT;
 
             }

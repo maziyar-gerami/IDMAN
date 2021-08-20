@@ -219,6 +219,7 @@ img:hover {
 }
 
 #overlayBody{
+  display: none;
   height: 90%;
   overflow: auto;
 }

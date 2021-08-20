@@ -228,7 +228,7 @@ public class SamlServiceHelper {
                 if (!(service.getServiceId().contains("localhost")))
                     try {
                         machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
-                        uniformLogger.record("System", Variables.LEVEL_WARN, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                        uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                                 "IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
                     } catch (Exception e) {
                         machines = null;
@@ -247,11 +247,11 @@ public class SamlServiceHelper {
                 MicroService microService = new MicroService(service.getServiceId(), IPaddresses);
 
                 mongoTemplate.save(microService, collection);
-                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                uniformLogger.info(doerID,new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                         "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
                 return service.getId();
             } catch (IOException e) {
-                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                uniformLogger.warn(doerID,new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                         "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
                 return 0;
             }
@@ -273,8 +273,8 @@ public class SamlServiceHelper {
         try {
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
-            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, String.valueOf(id), "",
-                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Opening file"));
+            uniformLogger.warn(doerID,  new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Fetching"));
         }
 
         FileWriter file;
@@ -290,11 +290,12 @@ public class SamlServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, String.valueOf(id), "", "update", "success", ""));
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "", Variables.ACTION_UPDATE
+                    ,Variables.RESULT_SUCCESS,service, ""));
             return HttpStatus.OK;
         } catch (IOException e) {
-            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, String.valueOf(id), "", "update",
-                    "failed", "writing file"));
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "", Variables.ACTION_UPDATE,
+                    Variables.RESULT_FAILED, service, "Saving file"));
             return HttpStatus.FORBIDDEN;
         }
 

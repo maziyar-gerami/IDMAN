@@ -53,7 +53,6 @@ import java.util.*;
 @Service
 public class UserRepoImpl implements UserRepo {
     public ZoneId zoneId = ZoneId.of(Variables.ZONE);
-    String model = "User";
     String userExtraInfoCollection = Variables.col_usersExtraInfo;
     @Value("${user.profile.access}")
     String profileAccessiblity;
@@ -107,8 +106,7 @@ public class UserRepoImpl implements UserRepo {
     private SimpleUserAttributeMapper simpleUserAttributeMapper;
     @Autowired
     private BuildDnUser buildDnUser;
-    @Autowired
-    private DashboardData dashboardData;
+
     @Autowired
     private ImportUsers importUsers;
     @Autowired
@@ -136,7 +134,8 @@ public class UserRepoImpl implements UserRepo {
 
                 if (p.getDisplayName() == null || p.getDisplayName() == "" ||
                         p.getMail() == null || p.getMail() == "" || p.getStatus() == null || p.getStatus() == "") {
-                    uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, p.getUserId(), "", "create", "failed", "essential parameter not exist"));
+                    uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE,
+                            Variables.RESULT_FAILED,"essential parameter not exist"));
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("userId", p.getUserId());
                     if (p.getDisplayName() == null || p.getDisplayName() == "")
@@ -161,25 +160,28 @@ public class UserRepoImpl implements UserRepo {
                     usersExtraInfo = new UsersExtraInfo(p, p.getPhoto(), p.isUnDeletable());
                     mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
-                    uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, p.getUserId(), "", "create", "success", ""));
+                    uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE,
+                            Variables.RESULT_SUCCESS, ""));
 
                     return new JSONObject();
                 } else {
-                    uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, p.getUserId(), "", "create", "failed", "group not exist"));
+                    uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE,
+                            Variables.RESULT_FAILED, "Group not exist"));
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("userId", p.getUserId());
                     jsonObject.put("invalidGroups", groupsChecks.invalidGroups(p.getMemberOf()));
                     return jsonObject;
                 }
             } else {
-                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, p.getUserId(), "", "create", "failed", "already exist"));
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE,
+                        Variables.RESULT_FAILED, "already exist"));
                 return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
             if (p.getUserId() != null || !p.getUserId().equals("")) {
-                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, p.getUserId(), "", "create", "failed", "unknown reason"));
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Unknown reason"));
             } else
-                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, "", "", "create", "failed", "UserId is empty"));
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, "", Variables.ATTR_USERID, Variables.ACTION_CREATE, Variables.RESULT_FAILED, "UserId is empty"));
             return null;
         }
     }
@@ -250,11 +252,11 @@ public class UserRepoImpl implements UserRepo {
 
             mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
-            uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, usid, "", "update", "success", ""));
+            uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,p, ""));
 
         } catch (Exception e) {
             e.printStackTrace();
-            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, usid, "", "update", "failed", "Writing to DB"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED,p, "Writing to DB"));
 
         }
 
@@ -299,10 +301,10 @@ public class UserRepoImpl implements UserRepo {
                 try {
                     ldapTemplate.unbind(dn);
                     mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
-                    uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage(model, user.getUserId(), "", "remove", "success", ""));
+                    uniformLogger.info(doer,  new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 
                 } catch (Exception e) {
-                    uniformLogger.record(doer, Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "", "remove", "failed", "unknown reason"));
+                    uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_DELETE, Variables.RESULT_FAILED, "unknown reason"));
 
                 }
 
@@ -364,10 +366,10 @@ public class UserRepoImpl implements UserRepo {
 
                     try {
                         ldapTemplate.modifyAttributes(contextUser);
-                        uniformLogger.record(uId, Variables.LEVEL_INFO, new ReportMessage(model, uId, "password", "change", "success", ""));
+                        uniformLogger.info(uId,  new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
                         return HttpStatus.OK;
                     } catch (Exception e) {
-                        uniformLogger.record(uId, Variables.LEVEL_WARN, new ReportMessage(model, uId, "password", "change", "failed", "writing to LDAP"));
+                        uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to LDAP"));
                         return HttpStatus.BAD_REQUEST;
                     }
 
@@ -441,11 +443,10 @@ public class UserRepoImpl implements UserRepo {
         File oldPic = new File(uploadedFilesPath + user.getPhoto());
 
         user.setPhoto(s);
-        mongoTemplate.save(new ReportMessage(model, name, "profile image", "change", "success", ""), "II_log");
-        uniformLogger.record(name, Variables.LEVEL_INFO, new ReportMessage(model, name, "profile image", "change", "success", ""));
+        uniformLogger.info(name,  new ReportMessage(Variables.MODEL_USER, name, Variables.ATTR_IMAGE,
+                Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,file.getOriginalFilename(), ""));
         if (update(user.getUserId(), user.getUserId(), user) == HttpStatus.OK) {
             oldPic.delete();
-
             return HttpStatus.OK;
 
         }
@@ -626,15 +627,17 @@ public class UserRepoImpl implements UserRepo {
                 try {
                     ldapTemplate.modifyAttributes(context);
                 } catch (Exception e) {
-                    uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, user.getUserId(), "group", "update", "failed", "writing to ldap"));
+                    uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(), Variables.MODEL_GROUP, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to ldap"));
 
                 }
             }
-            uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, doerID, "groups", "update", "success", ""));
+            uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_USER, doerID, Variables.MODEL_GROUP,
+                    Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,new_ou,"\""+old_ou +"\" to \"" +new_ou+" \""));
 
             return HttpStatus.OK;
         } catch (Exception e) {
-            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, doerID, "groups", "update", "failed", "writing to ldap"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, doerID, Variables.MODEL_GROUP,
+                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED,new_ou, "writing to ldap"));
 
             return HttpStatus.FORBIDDEN;
         }
@@ -855,10 +858,12 @@ public class UserRepoImpl implements UserRepo {
                 removeCurrentEndTime(userId);
                 ldapTemplate.modifyAttributes(contextUser);
 
-                uniformLogger.record(userId, Variables.LEVEL_INFO, new ReportMessage(model, userId, "password", "reset", "success", ""));
+                uniformLogger.info(userId,  new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
+                        Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
 
             } catch (Exception e) {
-                uniformLogger.record(userId, Variables.LEVEL_WARN, new ReportMessage(model, userId, "password", "reset", "failed", "writing to ldap"));
+                uniformLogger.warn(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
+                        Variables.ACTION_RESET, Variables.RESULT_FAILED, "writing to ldap"));
             }
             return HttpStatus.OK;
         } else {

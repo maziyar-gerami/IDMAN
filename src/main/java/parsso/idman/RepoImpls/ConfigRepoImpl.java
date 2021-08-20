@@ -45,7 +45,6 @@ public class ConfigRepoImpl implements ConfigRepo {
     InstantMessage instantMessage;
     @Autowired
     UserRepo userRepo;
-    String model = "Config";
     @Autowired
     UniformLogger uniformLogger;
     @Autowired
@@ -208,10 +207,10 @@ public class ConfigRepoImpl implements ConfigRepo {
 
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("application.properties")) {
             Files.copy(is, Paths.get(this.getClass().getClassLoader() + "/backup/" + date + "_application.properties"));
-            uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, "", "", "update", "success", ""));
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE,  Variables.RESULT_SUCCESS,settings, ""));
 
         } catch (IOException e) {
-            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, "", "", "update", "failed", "unknown error"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED,settings, "unknown error"));
 
         }
 
@@ -266,10 +265,10 @@ public class ConfigRepoImpl implements ConfigRepo {
         Path originalPath = Paths.get(file.getAbsolutePath());
         try {
             Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
-            uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, "", "", "resetFactory", "success", ""));
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
 
         } catch (Exception e) {
-            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, "", "", "resetFactory", "failed", ""));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_RESET, Variables.RESULT_FAILED, ""));
 
         }
         return HttpStatus.OK;
@@ -288,10 +287,12 @@ public class ConfigRepoImpl implements ConfigRepo {
                 Path originalPath = Paths.get(s);
                 try {
                     Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
-                    uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, config.getName(), "", "restore", "success", ""));
+                    uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, config.getName(), "",
+                            Variables.ACTION_RESTORE, Variables.RESULT_SUCCESS, config.getName(),""));
 
                 } catch (Exception e) {
-                    uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, config.getName(), "", "restore", "failed", "config " + config.getName()));
+                    uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, config.getName(), "",
+                            Variables.ACTION_RESTORE, Variables.RESULT_FAILED, config.getName(), "Restoring file"));
 
                 }
                 return HttpStatus.OK;

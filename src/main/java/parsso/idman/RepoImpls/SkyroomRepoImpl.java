@@ -46,7 +46,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 
             skyRoom = new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole()
                     , CreateLoginUrl(roomId, String.valueOf(userId), Realname), GetRoomGuestUrl(roomId));
-            uniformLogger.record("System", Variables.LEVEL_INFO, new ReportMessage("Skyroom", "", "", "created", "Success", "for User \"" + user.getUserId() + "\""));
+            uniformLogger.info("System", new ReportMessage("Skyroom", "", "", "created", Variables.RESULT_SUCCESS, "for User \"" + user.getUserId() + "\""));
             return skyRoom;
         }
         int roomId = CreateRoom(Classname);
@@ -65,7 +65,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             try {
                 url = new URL(apiKey);
             } catch (Exception e) {
-                uniformLogger.record("System", Variables.LEVEL_ERROR, new ReportMessage("skyroom", "", "", "retrieve url", "failed", "malformed url"));
+                uniformLogger.info("System",  new ReportMessage("skyroom", "", "", "retrieve url", Variables.RESULT_FAILED, "malformed url"));
             }
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");

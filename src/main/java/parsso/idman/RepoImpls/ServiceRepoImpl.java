@@ -55,7 +55,6 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Autowired
     UniformLogger uniformLogger;
     String collection = Variables.col_servicesExtraInfo;
-    String model = "Service";
     @Value("${services.folder.path}")
     private String path;
     @Value("${base.url}")
@@ -103,7 +102,8 @@ public class ServiceRepoImpl implements ServiceRepo {
                 microService = mongoTemplate.findOne(query, MicroService.class, collection);
             } catch (Exception e) {
                 microService = new MicroService(service.getId(), service.getServiceId());
-                uniformLogger.record("System", Variables.LEVEL_ERROR, new ReportMessage(model, "", "", "retrieve", "failed", "unable read extra info from mongo for " + service.getName()));
+                uniformLogger.error(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(), "",
+                        Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "unable read extra info from mongo"));
 
             } finally {
                 microServices.add(new MicroService(service, microService));
@@ -120,13 +120,16 @@ public class ServiceRepoImpl implements ServiceRepo {
         File folder = new File(path); // ./services/
         String[] files = folder.list();
         List<Service> services = new LinkedList<>();
+        Service service=null;
         for (String file : files) {
             if (file.endsWith(".json"))
                 try {
-                    services.add(analyze(file));
+                    service = analyze(file);
+                    services.add(service);
                     Collections.sort(services);
                 } catch (Exception e) {
-                    uniformLogger.record("System", Variables.LEVEL_WARN, new ReportMessage(model, file, "", "retrieve", "failed", "Unable to read service "));
+                    uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
+                            "", Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to read service"));
                     continue;
                 }
         }
@@ -158,7 +161,6 @@ public class ServiceRepoImpl implements ServiceRepo {
     public List<MicroService> listServicesMain() {
 
         File folder = new File(path); // ./services/
-        String sid;
         String[] files = folder.list();
         List<MicroService> services = new LinkedList<>();
         Service service = null;
@@ -168,7 +170,8 @@ public class ServiceRepoImpl implements ServiceRepo {
                 try {
                     service = analyze(file);
                 } catch (Exception e) {
-                    uniformLogger.record("System", Variables.LEVEL_WARN, new ReportMessage(model, file, "", "retrieve", "failed", "Unable to parse service "));
+                    uniformLogger.warn( Variables.DOER_SYSTEM,new ReportMessage(Variables.MODEL_SERVICE, service.getId(), "",
+                            Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to parse service"));
 
                     continue;
                 }
@@ -198,7 +201,8 @@ public class ServiceRepoImpl implements ServiceRepo {
                     extraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
                 } catch (Exception e) {
                     extraInfo = new ExtraInfo();
-                    uniformLogger.record("System", Variables.LEVEL_WARN, new ReportMessage(model, service.getServiceId(), "", "retrieve", "failed", "Unable to get extra service for service"));
+                    uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                            "", Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to get extraInfo of service"));
 
                 }
 
@@ -225,7 +229,6 @@ public class ServiceRepoImpl implements ServiceRepo {
                     if (aFile.toString().contains(file))
                         selectedFiles.add(aFile);
 
-
         }
 
         LinkedList<String> notDeleted = null;
@@ -244,10 +247,12 @@ public class ServiceRepoImpl implements ServiceRepo {
             position.delete(microService.getPosition());
             try {
                 mongoTemplate.remove(query, MicroService.class, collection);
-                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, file.toString(), "", "delete", "success", ""));
+                uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                        Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 
             } catch (Exception e) {
-                uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, file.toString(), "", "delete", "failed", "contacting mongoDB"));
+                uniformLogger.info(doerID,new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                        Variables.ACTION_DELETE, Variables.RESULT_FAILED, "Writing to mongoDB"));
 
             }
 
@@ -275,9 +280,9 @@ public class ServiceRepoImpl implements ServiceRepo {
             FileWriter file = new FileWriter(path + filePath, false);
             file.write(jsonString);
             file.close();
-            uniformLogger.record(doerID, Variables.LEVEL_INFO, new ReportMessage(model, String.valueOf(sid), "", "update", "success", ""));
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, sid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, service, ""));
         } catch (Exception e) {
-            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, String.valueOf(sid), "", "update", "failed", ""));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, sid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, ""));
 
         }
 
@@ -285,15 +290,6 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     }
 
-    String getSystem(Service service) {
-        if (service.getAtClass().contains("saml"))
-            return "saml";
-        else if (service.getAtClass().contains("cas"))
-            return "cas";
-
-        else
-            return null;
-    }
 
     @Override
     public HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException {
@@ -351,7 +347,7 @@ public class ServiceRepoImpl implements ServiceRepo {
             mongoTemplate.save(extraInfo, collection);
             return HttpStatus.OK;
         } catch (Exception e) {
-            uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, String.valueOf(extraInfo.getId()), "", "create", "failed", "writing to mongoDB"));
+            uniformLogger.warn(doerID,new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongoDB"));
             return HttpStatus.FORBIDDEN;
         }
 
@@ -411,7 +407,8 @@ public class ServiceRepoImpl implements ServiceRepo {
                 mongoTemplate.save(extraInfo, collection);
 
             } catch (Exception e) {
-                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, String.valueOf(extraInfo.getId()), "", "update", "failed", "writing to mongoDB"));
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
+                        Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to mongoDB"));
                 return HttpStatus.FORBIDDEN;
             }
             return casServiceHelper.update(doerID, id, jsonObject);
@@ -421,7 +418,8 @@ public class ServiceRepoImpl implements ServiceRepo {
                 mongoTemplate.save(extraInfo, collection);
 
             } catch (Exception e) {
-                uniformLogger.record(doerID, Variables.LEVEL_WARN, new ReportMessage(model, String.valueOf(extraInfo.getId()), "", "update", "failed", "writing to mongoDB"));
+                uniformLogger.warn(doerID,new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
+                        Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to mongoDB"));
                 return HttpStatus.FORBIDDEN;
             }
         return samlServiceHelper.update(doerID, id, jsonObject);
@@ -458,7 +456,8 @@ public class ServiceRepoImpl implements ServiceRepo {
             extraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
         } catch (Exception e) {
             extraInfo = new ExtraInfo();
-            uniformLogger.record("System", Variables.LEVEL_WARN, new ReportMessage(model, String.valueOf(extraInfo.getId()), "", "parse", "failed", "Unable to get extra service for service"));
+            uniformLogger.warn("System",new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
+                    Variables.ACTION_PARSE, Variables.RESULT_FAILED, "Unable to get extra service for service"));
 
         }
 

@@ -327,6 +327,7 @@ input:checked + .slider:before {
 }
 
 #overlayBody{
+  display: none;
   height: 90%;
   overflow: auto;
 }

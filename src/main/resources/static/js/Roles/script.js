@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
             userPicture: "images/PlaceholderUser.png",
             margin: "margin-right: 30px;",
             loader: false,
+            overlayLoader: false,
             userListSearch: "",
             userList: [],
             editList: [],
@@ -127,10 +128,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.open(this.meetingAdminLink, "_blank").focus();
             },
             openOverlay: function () {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
                 document.getElementById("overlay").style.display = "block";
+                this.overlayLoader = true;
+                axios.get(url + "/api/skyroom") //
+                    .then((res) => {
+                        vm.overlayLoader = false;
+                        document.getElementById("overlayBody").style.display = "block";
+                        vm.meetingAdminLink = res.data.presenter;
+                        vm.meetingGuestLink = res.data.students;
+                    });
             },
             closeOverlay: function () {
                 document.getElementById("overlay").style.display = "none";
+                document.getElementById("overlayBody").style.display = "none";
             },
             copyMeetingLink: function () {
                 let copyText = document.getElementById("copyMeetingLink");
@@ -152,12 +164,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     }else if(window.localStorage.getItem("lang") === "EN") {
                         vm.usernameText = vm.nameEN;
                     }
-                    if(typeof res.data.skyRoom !== "undefined"){
-                        if(res.data.skyRoom.enable){
-                            vm.showMeeting = true;
-                            vm.meetingAdminLink = res.data.skyRoom.presenter;
-                            vm.meetingGuestLink = res.data.skyRoom.students;
-                        }
+                    if(res.data.skyroomAccess){
+                        vm.showMeeting = true;
                     }
                 });
             },
@@ -377,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(this.userListSearch){
                   let buffer = [];
                   buffer = buffer.concat(this.userList.filter((item)=>{
-                    return this.userListSearch.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
+                    return this.userListSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v))
                   }));
                   let uniqueBuffer = [...new Set(buffer)];
                   return uniqueBuffer;

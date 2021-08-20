@@ -13,18 +13,17 @@ import java.util.Date;
 public class ReportMessage {
     final char separator = ':';
     String model;
-    String instance;
+    Object instance;
     String attribute;
     String result;
     String action;
     String description;
-    Object from;
     Object to;
     long millis;
     Time time;
     String level;
 
-    public ReportMessage(String model, String instance, String attribute, String action, String result, String description) {
+    public ReportMessage(String model, Object instance, String attribute, String action, String result, String description) {
         this.model = model;
         this.instance = instance;
         this.attribute = attribute;
@@ -35,13 +34,12 @@ public class ReportMessage {
         time = TimeHelper.longToPersianTime(millis);
     }
 
-    public ReportMessage(String model, String instance, String attribute, String action, String result, Object from, Object to, String description) {
+    public ReportMessage(String model, Object instance, String attribute, String action, String result, Object to, String description) {
         this.model = model;
         this.instance = instance;
         this.attribute = attribute;
         this.result = result;
         this.action = action;
-        this.from = from;
         this.to = to;
         this.description = description;
         this.millis = new Date().getTime();

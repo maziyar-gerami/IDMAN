@@ -48,7 +48,9 @@ public class ExpirePassword {
                     ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
                     mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
                     mongoTemplate.save(user, Variables.col_usersExtraInfo);
-                    uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage("User", user.getUserId(), "expire password", "add", "success", ""));
+
+                    uniformLogger.info(doer,  new ReportMessage(Variables.MODEL_USER, user.getUserId(), Variables.ATTR_PASSWORD,
+                            Variables.ACTION_EXPIREPASSWORD, Variables.RESULT_SUCCESS, ""));
 
                 } catch (Exception e) {
                     try {
@@ -56,14 +58,19 @@ public class ExpirePassword {
                         ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
                         mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
                         mongoTemplate.save(user, Variables.col_usersExtraInfo);
-                        uniformLogger.record(doer, Variables.LEVEL_INFO, new ReportMessage("User", user.getUserId(), "expire password", "replace", "success", ""));
+
+                        uniformLogger.info(doer,  new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                                Variables.ACTION_EXPIREPASSWORD, Variables.ACTION_REPLACE, Variables.RESULT_SUCCESS, ""));
                     } catch (Exception e1) {
-                        uniformLogger.record(doer, Variables.LEVEL_WARN, new ReportMessage("User", user.getUserId(), "expire password", "Add", "failed", "writing to ldap"));
+                        uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                                Variables.ACTION_EXPIREPASSWORD, Variables.ACTION_INSERT, Variables.RESULT_FAILED, "writing to ldap"));
                     }
                 }
             } else {
                 superAdminUsers.add(user.getUserId());
-                uniformLogger.record(doer, Variables.LEVEL_WARN, new ReportMessage("User", user.getUserId(), "expire password", "Add", "failed", "Cant add to SUPERUSER role"));
+
+                uniformLogger.warn(doer,  new ReportMessage(Variables.MODEL_USER, user.getUserId(), Variables.ACTION_EXPIREPASSWORD,
+                        Variables.ACTION_INSERT, Variables.RESULT_FAILED, "Cant add to SUPERUSER role"));
 
             }
         }
