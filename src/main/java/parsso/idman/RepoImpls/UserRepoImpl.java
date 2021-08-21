@@ -126,8 +126,11 @@ public class UserRepoImpl implements UserRepo {
             return jsonObject;
 
         }
+        User user = null;
+        try {
+             user= retrieveUsers(p.getUserId());
 
-        User user = retrieveUsers(p.getUserId());
+        } catch (Exception e){ }
 
         try {
             if (user == null || user.getUserId() == null) {

@@ -36,4 +36,9 @@ public class TranscriptController {
         return new ResponseEntity<>(transcriptRepo.servicesOfUser(id), HttpStatus.OK);
     }
 
+    @GetMapping("/api/transcripts/access/services/{id}")
+    public ResponseEntity<Object> accessManaging(@PathVariable("id") String id) throws IOException, org.json.simple.parser.ParseException {
+        return new ResponseEntity<>(transcriptRepo.accessManaging(Long.valueOf(id)), HttpStatus.OK);
+    }
+
 }

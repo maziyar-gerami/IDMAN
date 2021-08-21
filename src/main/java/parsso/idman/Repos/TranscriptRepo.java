@@ -1,6 +1,7 @@
 package parsso.idman.Repos;
 
 
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import parsso.idman.Models.License.License;
 import parsso.idman.Models.Logs.Transcript;
@@ -14,4 +15,5 @@ public interface TranscriptRepo {
 
     Transcript usersAndGroupsOfService(long serviceId) throws IOException, ParseException;
 
+    JSONObject accessManaging(Long id);
 }

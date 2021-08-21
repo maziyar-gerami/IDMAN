@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import parsso.idman.Helpers.Comparison;
 import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
@@ -351,7 +352,7 @@ public class CasServiceHelper {
 
                 mongoTemplate.save(microService, collection);
                 uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
-                        "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
+                        "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS,new Comparison().compare(null,service.getAccessStrategy()),""));
 
                 return service.getId();
             } catch (IOException e) {

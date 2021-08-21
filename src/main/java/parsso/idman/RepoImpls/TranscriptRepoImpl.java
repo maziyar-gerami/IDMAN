@@ -2,11 +2,14 @@ package parsso.idman.RepoImpls;
 
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+import parsso.idman.Helpers.Service.ExtractLicensedAndUnlicensed;
 import parsso.idman.Helpers.User.UsersLicense;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.License.License;
@@ -37,6 +40,8 @@ public class TranscriptRepoImpl implements TranscriptRepo {
     UsersLicense usersLicense;
     @Autowired
     parsso.idman.Helpers.Group.GroupLicense groupLicense;
+    @Autowired
+    ExtractLicensedAndUnlicensed extract;
 
     @Override
     public License servicesOfGroup(String ouid) throws IOException, ParseException {
@@ -66,40 +71,54 @@ public class TranscriptRepoImpl implements TranscriptRepo {
         List<String> memberOf = user.getMemberOf();
 
         for (Service service : allServices) {
-            if (service.getAccessStrategy().getRequiredAttributes().get("uid") != null)
-                for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("uid"))).get(1))
-                    if (userId.equalsIgnoreCase(name.toString()))
-                        licensed.add(new MicroService(service));
 
-            if (service.getAccessStrategy().getRejectedAttributes().get("uid") != null)
-                for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRejectedAttributes().get("uid"))).get(1))
-                    if (userId.equalsIgnoreCase(name.toString()))
-                        unLicensed.add(new MicroService(service));
+            licensed.addAll(extract.licensedServicesForGroups(licensed, service));
+
+            licensed.addAll(extract.licensedServicesForUserID(userId, licensed, service));
+
+            List<List<MicroService>> temp = extract.unLicensedServicesForUserID(userId, licensed, unLicensed, service);
+
+            licensed = temp.get(0);
+            unLicensed = temp.get(1);
+
+            temp = extract.licensedServiceWithGroupID(licensed, unLicensed, service, memberOf);
+
+            licensed = temp.get(0);
+            unLicensed = temp.get(1);
+
         }
 
-        for (Service service : allServices) {
-            for (String groupStr : memberOf)
-                if (service.getAccessStrategy().getRequiredAttributes() != null && service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
-                    for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
-                        if (groupStr.equalsIgnoreCase(name.toString()))
-                            if (!contains(unLicensed, service.getId()) && !contains(licensed, service.getId()))
-                                licensed.add(new MicroService(service));
-        }
 
         return new License(licensed, unLicensed);
     }
 
-    private boolean contains(List<MicroService> microServices, Long id) {
-        for (MicroService microservice : microServices)
-            if (microservice.get_id() == id)
-                return true;
 
-        return false;
-    }
+
+
 
     @Override
     public Transcript usersAndGroupsOfService(long serviceId) throws IOException, ParseException {
         return new Transcript(usersLicense.users(serviceId), groupLicense.groups(serviceId));
+    }
+
+    @Override
+    public JSONObject accessManaging(Long id) {
+        Query query = new Query(Criteria.where("model").is(Variables.MODEL_SERVICE)
+                .andOperator(Criteria.where("action").is(Variables.ACTION_CREATE).orOperator(Criteria.where("action")).is(Variables.ACTION_UPDATE))
+                .andOperator(Criteria.where("to").exists(true)));
+
+        List<JSONObject> logs = mongoTemplate.find(query, JSONObject.class, Variables.col_idmanlog);
+        JSONArray jsonArray = new JSONArray();
+        JSONObject temp;
+
+        for (JSONObject log : logs) {
+            temp = new JSONObject();
+
+
+        }
+
+        return null;
+
     }
 }
 
