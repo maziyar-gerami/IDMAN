@@ -66,15 +66,15 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 
         List<Service> allServices = serviceRepo.listServicesFull();
 
-        UsersExtraInfo user = mongoTemplate.findOne(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+        UsersExtraInfo user = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userId)), UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
         List<String> memberOf = user.getMemberOf();
 
         for (Service service : allServices) {
 
-            licensed.addAll(extract.licensedServicesForGroups(licensed, service));
+            licensed = extract.licensedServicesForGroups(licensed, service);
 
-            licensed.addAll(extract.licensedServicesForUserID(userId, licensed, service));
+            licensed = extract.licensedServicesForUserID(userId, licensed, service);
 
             List<List<MicroService>> temp = extract.unLicensedServicesForUserID(userId, licensed, unLicensed, service);
 
