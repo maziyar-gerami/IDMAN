@@ -1407,7 +1407,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     doc.setFont("IRANSansWeb");
                     let width = doc.internal.pageSize.getWidth();
                     let finalY;
-                    doc.text(this.accessReport, width - 10, 10, "right");
+                    doc.text(this.accessReport + " - " + this.dateNavText, width - 10, 10, "right");
                     doc.autoTable({
                         startY: 20,
                         body: [[this.reportedUser.userId, this.U2],
