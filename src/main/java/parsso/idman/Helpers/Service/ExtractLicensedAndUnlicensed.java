@@ -25,7 +25,7 @@ public class ExtractLicensedAndUnlicensed {
         } catch (Exception e) {
         }
 
-        if (uid != null && ou != null)
+        if (uid != null && ou != null && user.getMemberOf()!=null)
             for (String group:user.getMemberOf())
                 if(((ArrayList)((ArrayList) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).contains(group))
                     licensed.add(new MicroService(service));
@@ -37,6 +37,7 @@ public class ExtractLicensedAndUnlicensed {
 
     public List<List<MicroService>> licensedServiceWithGroupID(List<MicroService> licensed, List<MicroService> unLicensed, Service service, List<String> memberOf) {
 
+        if(memberOf!=null)
         for (String groupStr : memberOf)
             if (service.getAccessStrategy().getRequiredAttributes() != null && service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
                 for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
