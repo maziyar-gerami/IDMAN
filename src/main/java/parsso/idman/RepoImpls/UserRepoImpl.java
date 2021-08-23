@@ -688,11 +688,13 @@ public class UserRepoImpl implements UserRepo {
         Boolean isEnable = skyroomEnable.equalsIgnoreCase("true");
 
         boolean accessRole = false;
-        if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("superadmin") ||
-                user.getUsersExtraInfo().getRole().equalsIgnoreCase("admin") ||
-                user.getUsersExtraInfo().getRole().equalsIgnoreCase("supporter") ||
-                user.getUsersExtraInfo().getRole().equalsIgnoreCase("presenter"))
-            accessRole = true;
+        try {
+            if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("superadmin") ||
+                    user.getUsersExtraInfo().getRole().equalsIgnoreCase("admin") ||
+                    user.getUsersExtraInfo().getRole().equalsIgnoreCase("supporter") ||
+                    user.getUsersExtraInfo().getRole().equalsIgnoreCase("presenter"))
+                accessRole = true;
+        }catch (Exception e){}
 
         return isEnable & accessRole;
     }
@@ -836,7 +838,13 @@ public class UserRepoImpl implements UserRepo {
 
     public HttpStatus resetPassword(String userId, String pass, String token) throws IOException, ParseException {
 
-        User user = retrieveUsers(userId);
+        User user;
+        try {
+            user = retrieveUsers(userId);
+
+        }catch (NullPointerException e){
+            return HttpStatus.FORBIDDEN;
+        }
 
         user = setRole(user);
 

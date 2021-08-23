@@ -68,7 +68,12 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 
         UsersExtraInfo user = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userId)), UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
-        List<String> memberOf = user.getMemberOf();
+        List<String> memberOf = null;
+        try {
+            memberOf = user.getMemberOf();
+
+        }catch (NullPointerException e){
+        }
 
         for (Service service : allServices) {
 

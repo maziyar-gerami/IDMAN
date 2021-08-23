@@ -25,11 +25,12 @@ public class ExtractLicensedAndUnlicensed {
         } catch (Exception e) {
         }
 
-        if (uid != null && ou != null && user.getMemberOf()!=null)
-            for (String group:user.getMemberOf())
-                if(((ArrayList)((ArrayList) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).contains(group))
-                    licensed.add(new MicroService(service));
-
+        try {
+            if (uid != null && ou != null && user.getMemberOf() != null)
+                for (String group : user.getMemberOf())
+                    if (((ArrayList) ((ArrayList) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).contains(group))
+                        licensed.add(new MicroService(service));
+        }catch (Exception e){}
 
 
         return licensed;
