@@ -5,13 +5,15 @@ import org.json.simple.JSONArray;
 import org.springframework.stereotype.Component;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.Models.Users.UsersExtraInfo;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @Component
 public class ExtractLicensedAndUnlicensed {
-    public List<MicroService> licensedServicesForGroups(List<MicroService> licensed, Service service) {
+    public List<MicroService> licensedServicesForGroups(UsersExtraInfo user, List<MicroService> licensed, Service service) {
         Object ou = null;
         Object uid = null;
         try {
@@ -24,7 +26,11 @@ public class ExtractLicensedAndUnlicensed {
         }
 
         if (uid != null && ou != null)
-            licensed.add(new MicroService(service));
+            for (String group:user.getMemberOf())
+                if(((ArrayList)((ArrayList) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).contains(group))
+                    licensed.add(new MicroService(service));
+
+
 
         return licensed;
     }

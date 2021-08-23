@@ -72,7 +72,7 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 
         for (Service service : allServices) {
 
-            licensed = extract.licensedServicesForGroups(licensed, service);
+            licensed = extract.licensedServicesForGroups(user,licensed, service);
 
             licensed = extract.licensedServicesForUserID(userId, licensed, service);
 
