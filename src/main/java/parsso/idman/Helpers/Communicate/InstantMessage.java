@@ -410,6 +410,9 @@ public class InstantMessage {
         }
         user = userRepo.retrieveUsers(uId);
 
+        if (user == null)
+            return 0;
+
         if (checkMobile(mobile) != null && userRepo.retrieveUsers(uId).getUserId() != null && tokenClass.insertMobileToken(user)) {
 
             List<JSONObject> ids = checkMobile(mobile);
