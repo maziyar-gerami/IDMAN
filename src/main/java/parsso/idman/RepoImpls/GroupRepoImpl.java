@@ -186,7 +186,7 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
     public Name buildDn(String id) {
-        return LdapNameBuilder.newInstance("ou=" + Variables.MODEL_GROUP + "," + BASE_DN).add("ou", id).build();
+        return LdapNameBuilder.newInstance("ou=" + "Groups" + "," + BASE_DN).add("ou", id).build();
     }
 
     @Override
@@ -239,7 +239,6 @@ public class GroupRepoImpl implements GroupRepo {
             return HttpStatus.OK;
 
         } catch (Exception e) {
-            e.printStackTrace();
             uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, ou.getId(), Variables.MODEL_GROUP,
                     Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to ldap"));
 
