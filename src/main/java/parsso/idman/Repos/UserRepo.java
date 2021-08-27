@@ -44,6 +44,8 @@ public interface UserRepo {
 
     User retrieveUsers(String userId) throws IOException, ParseException;
 
+    User retrieveUsersWithLicensed(String userId) throws IOException, ParseException;
+
     List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
 
     String getByMobile(String mobile);

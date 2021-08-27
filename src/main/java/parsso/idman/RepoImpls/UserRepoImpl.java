@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Communicate.Token;
 import parsso.idman.Helpers.Group.GroupsChecks;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.User.*;
 import parsso.idman.Helpers.Variables;
@@ -246,8 +247,14 @@ public class UserRepoImpl implements UserRepo {
         if (p.isUnDeletable())
             usersExtraInfo.setUnDeletable(true);
 
-        if (p.getUserPassword() != null && !p.getUserPassword().equals(""))
+        usersExtraInfo.setTimeStamp(new Date().getTime());
+
+
+        if (p.getUserPassword() != null && !p.getUserPassword().equals("")) {
             context.setAttributeValue("userPassword", p.getUserPassword());
+            p.setPasswordChangedTime(Long.valueOf(TimeHelper.epochToDateLdapFormat(new Date().getTime())));
+        }else
+            p.setPasswordChangedTime(user.getPasswordChangedTime());
 
         try {
 
@@ -255,13 +262,19 @@ public class UserRepoImpl implements UserRepo {
 
             mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
-            uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,p, ""));
+            uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,user,p, ""));
 
         } catch (Exception e) {
             e.printStackTrace();
-            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED,p, "Writing to DB"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED,user, p, "Writing to DB"));
+
+
 
         }
+
+
+
+
 
         return HttpStatus.OK;
     }
@@ -682,6 +695,16 @@ public class UserRepoImpl implements UserRepo {
             return null;
 
         else return user;
+    }
+
+    @Override
+    public User retrieveUsersWithLicensed(String userId) throws IOException, ParseException {
+
+        User user = retrieveUsers(userId);
+
+        user.setServices(transcriptRepo.servicesOfUser(userId));
+
+        return user;
     }
 
     private Boolean skyRoomAccess(User user) {

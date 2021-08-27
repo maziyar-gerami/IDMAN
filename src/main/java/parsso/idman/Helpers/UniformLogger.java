@@ -1,11 +1,15 @@
 package parsso.idman.Helpers;
 
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Logs.ReportMessage;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class UniformLogger {
@@ -15,27 +19,70 @@ public class UniformLogger {
     public void warn(String doerId, ReportMessage reportMessage){
         Logger logger = LogManager.getLogger(doerId);
         reportMessage.setLevel(Variables.LEVEL_WARN);
-        idmanLogger(doerId, reportMessage);
+        reportMessage.setDoerID(doerId);
+        idmanLogger(reportMessage);
         logger.warn(reportMessage.toString());
     }
 
     public void info(String doerId, ReportMessage reportMessage){
         Logger logger = LogManager.getLogger(doerId);
         reportMessage.setLevel(Variables.LEVEL_INFO);
-        idmanLogger(doerId, reportMessage);
+        reportMessage.setDoerID(doerId);
+        idmanLogger(reportMessage);
         logger.info(reportMessage.toString());
     }
 
     public void error(String doerId, ReportMessage reportMessage){
         Logger logger = LogManager.getLogger(doerId);
         reportMessage.setLevel(Variables.LEVEL_ERROR);
-        idmanLogger(doerId, reportMessage);
+        reportMessage.setDoerID(doerId);
+        idmanLogger(reportMessage);
         logger.error(reportMessage.toString());
     }
 
-    private void idmanLogger(String doerId, ReportMessage reportMessage) {
+    public void warn(String doerId, ReportMessage reportMessage,Object from, Object to){
+        Logger logger = LogManager.getLogger(doerId);
+        reportMessage.setLevel(Variables.LEVEL_WARN);
+        reportMessage.setDoerID(doerId);
+        idmanLogger(reportMessage);
+        logger.warn(reportMessage.toString());
+    }
+
+    public void info(String doerId, ReportMessage reportMessage,Object from, Object to){
+        Logger logger = LogManager.getLogger(doerId);
+        reportMessage.setLevel(Variables.LEVEL_INFO);
+        reportMessage.setDoerID(doerId);
+        idmanLogger(reportMessage);
+        logger.info(reportMessage.toString());
+    }
+
+    public void error(String doerId, ReportMessage reportMessage,Object from, Object to){
+        Logger logger = LogManager.getLogger(doerId);
+        reportMessage.setLevel(Variables.LEVEL_ERROR);
+        reportMessage.setDoerID(doerId);
+        idmanLogger(reportMessage);
+        logger.error(reportMessage.toString());
+    }
+
+
+
+    private void idmanLogger(ReportMessage reportMessage) {
+        List<ReportMessage> reportMessageList =new LinkedList<>();
         Runnable runnable =
-                () -> { mongoTemplate.save(reportMessage, Variables.col_idmanlog); };
+                () -> {
+            if (reportMessage.getDifference().size()==1)
+                mongoTemplate.save(reportMessage, Variables.col_idmanlog);
+
+            else {
+                for (ReportMessage.Changes ch : reportMessage.getDifference())
+                    if(!ch.getAttribute().equalsIgnoreCase("timestamp"))
+                        reportMessageList.add(new ReportMessage(ch , reportMessage));
+
+                mongoTemplate.insert(reportMessageList, Variables.col_idmanlog);
+
+            }
+
+        };
         Thread thread = new Thread(runnable);
         thread.start();
     }

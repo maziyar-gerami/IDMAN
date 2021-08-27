@@ -129,6 +129,13 @@ public class UsersController {
         else return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @GetMapping("/api/users/license/u/{uid}")
+    public ResponseEntity<User> retrieveUserLicense(@PathVariable("uid") String userId) throws IOException, ParseException {
+        User user = userRepo.retrieveUsersWithLicensed(userId);
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
     @GetMapping("/api/users")
     public ResponseEntity<List<UsersExtraInfo>> retrieveUsersMain() {
         return new ResponseEntity<>(userRepo.retrieveUsersMain(-1, -1), HttpStatus.OK);

@@ -147,6 +147,13 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.5.1'
 
+	// https://mvnrepository.com/artifact/org.javers/javers-spring
+	implementation group: 'org.javers', name: 'javers-spring', version: '6.2.4'
+
+	// https://mvnrepository.com/artifact/org.javers/javers-core
+	implementation group: 'org.javers', name: 'javers-core', version: '6.2.4'
+
+
 	configurations.all {
 		resolutionStrategy.dependencySubstitution.all { dependency ->
 			if (dependency.requested instanceof ModuleComponentSelector && dependency.requested.module == 'spring-boot-starter-logging') {
