@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import parsso.idman.Models.License.License;
 import parsso.idman.Models.Logs.Transcript;
 import parsso.idman.Repos.TranscriptRepo;
@@ -37,8 +38,10 @@ public class TranscriptController {
     }
 
     @GetMapping("/api/transcripts/access/services/{id}")
-    public ResponseEntity<Object> accessManaging(@PathVariable("id") String id) throws IOException, org.json.simple.parser.ParseException {
-        return new ResponseEntity<>(transcriptRepo.accessManaging(Long.valueOf(id)), HttpStatus.OK);
+    public ResponseEntity<Object> accessManaging(@PathVariable("id") String id,
+                                                 @RequestParam( name = "type", defaultValue = "") String type,
+                                                 @RequestParam( name = "item", defaultValue = "") String item)  {
+        return new ResponseEntity<>(transcriptRepo.accessManaging(Long.valueOf(id), type,item), HttpStatus.OK);
     }
 
 }

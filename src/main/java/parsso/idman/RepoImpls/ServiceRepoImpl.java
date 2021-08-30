@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.Helpers.Comparison;
 import parsso.idman.Helpers.Service.CasServiceHelper;
 import parsso.idman.Helpers.Service.Position;
 import parsso.idman.Helpers.Service.SamlServiceHelper;
@@ -422,6 +423,7 @@ public class ServiceRepoImpl implements ServiceRepo {
                         Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to mongoDB"));
                 return HttpStatus.FORBIDDEN;
             }
+
         return samlServiceHelper.update(doerID, id, jsonObject);
 
     }

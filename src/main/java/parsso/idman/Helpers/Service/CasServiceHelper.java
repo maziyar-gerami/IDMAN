@@ -20,6 +20,7 @@ import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.CasService;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Services.ServicesSubModel.*;
+import parsso.idman.Models.Users.UsersGroups;
 import parsso.idman.Repos.ServiceRepo;
 
 import java.io.File;
@@ -296,8 +297,10 @@ public class CasServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
+            UsersGroups usersGroups = new Comparison().compare(oldService.getAccessStrategy(),service.getAccessStrategy());
+
             uniformLogger.info(doerID,new ReportMessage(Variables.MODEL_SERVICE, id, "",
-                    Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,service, ""));
+                    Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,oldService, service, usersGroups,""));
             return HttpStatus.OK;
         } catch (IOException e) {
             uniformLogger.warn(doerID,new ReportMessage(Variables.MODEL_SERVICE, id, "",

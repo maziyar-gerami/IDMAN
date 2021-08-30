@@ -265,16 +265,9 @@ public class UserRepoImpl implements UserRepo {
             uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,user,p, ""));
 
         } catch (Exception e) {
-            e.printStackTrace();
             uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED,user, p, "Writing to DB"));
 
-
-
         }
-
-
-
-
 
         return HttpStatus.OK;
     }
@@ -455,13 +448,15 @@ public class UserRepoImpl implements UserRepo {
 
         User user = retrieveUsers(name);
 
-        //remove old pic
-        File oldPic = new File(uploadedFilesPath + user.getPhoto());
+        User userUpdate = user;
 
-        user.setPhoto(s);
-        uniformLogger.info(name,  new ReportMessage(Variables.MODEL_USER, name, Variables.ATTR_IMAGE,
-                Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,file.getOriginalFilename(), ""));
-        if (update(user.getUserId(), user.getUserId(), user) == HttpStatus.OK) {
+        //remove old pic
+        File oldPic = new File(uploadedFilesPath + userUpdate.getPhoto());
+
+        userUpdate.setPhoto(s);
+        //uniformLogger.info(name,  new ReportMessage(Variables.MODEL_USER, name, Variables.ATTR_IMAGE,
+                //Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,user,userUpdate, ""));
+        if (update(userUpdate.getUserId(), userUpdate.getUserId(), userUpdate) == HttpStatus.OK) {
             oldPic.delete();
             return HttpStatus.OK;
 
@@ -648,7 +643,7 @@ public class UserRepoImpl implements UserRepo {
                 }
             }
             uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_USER, doerID, Variables.MODEL_GROUP,
-                    Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,new_ou,"\""+old_ou +"\" to \"" +new_ou+" \""));
+                    Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,old_ou,new_ou,""));
 
             return HttpStatus.OK;
         } catch (Exception e) {
@@ -684,7 +679,7 @@ public class UserRepoImpl implements UserRepo {
 
         user.setSkyroomAccess(skyRoomAccess(user));
 
-        user.setServices(transcriptRepo.servicesOfUser(userId));
+        //user.setServices(transcriptRepo.servicesOfUser(userId));
 
         if (user.getRole() == null)
             user = setRole(user);

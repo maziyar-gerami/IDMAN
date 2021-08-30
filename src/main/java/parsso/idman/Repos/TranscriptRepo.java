@@ -7,6 +7,7 @@ import parsso.idman.Models.License.License;
 import parsso.idman.Models.Logs.Transcript;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface TranscriptRepo {
     License servicesOfGroup(String ouid) throws IOException, ParseException;
@@ -15,5 +16,5 @@ public interface TranscriptRepo {
 
     Transcript usersAndGroupsOfService(long serviceId) throws IOException, ParseException;
 
-    JSONObject accessManaging(Long id);
+    List<JSONObject> accessManaging(Long id, String type, String item);
 }

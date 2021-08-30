@@ -107,22 +107,19 @@ public class TranscriptRepoImpl implements TranscriptRepo {
     }
 
     @Override
-    public JSONObject accessManaging(Long id) {
-        Query query = new Query(Criteria.where("model").is(Variables.MODEL_SERVICE)
-                .andOperator(Criteria.where("action").is(Variables.ACTION_CREATE).orOperator(Criteria.where("action")).is(Variables.ACTION_UPDATE))
-                .andOperator(Criteria.where("to").exists(true)));
+    public List<JSONObject> accessManaging(Long id, String type, String item) {
+        String modelService = Variables.MODEL_SERVICE;
+        Query query = new Query();
 
-        List<JSONObject> logs = mongoTemplate.find(query, JSONObject.class, Variables.col_idmanlog);
-        JSONArray jsonArray = new JSONArray();
-        JSONObject temp;
+        query.addCriteria(Criteria.where("model").is(modelService));
+        query.addCriteria(Criteria.where("instance").is(id));
+        query.addCriteria(Criteria.where("attribute").is(Variables.ACCESS_STRATEGY));
+        if(!type.equals(""))
+            query.addCriteria(Criteria.where("type").is(type));
+        if(!item.equals(""))
+            query.addCriteria(Criteria.where("item").is(item));
 
-        for (JSONObject log : logs) {
-            temp = new JSONObject();
-
-
-        }
-
-        return null;
+        return mongoTemplate.find(query, JSONObject.class, Variables.col_idmanlog);
 
     }
 }

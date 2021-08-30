@@ -61,6 +61,9 @@ public class Variables {
     public static final String STATUS_LOCK = "Lock";
     public static final String STATUS_CHANGE = "Change";
     public static final String ACTION_REMOVE = "Remove";
+    public static String ACCESS_ADD = "Access Add";
+    public static String ACCESS_REM = "Access Remove";
+    public static String ACCESS_STRATEGY = "Access Strategy";
     static String email_body = "شما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید." +
             "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +
             "در غیر این صورت با کلیک بر روی  لینک زیر نسبت به بازنشانی و تغییر رمز عبور خود اقدام نمایید.\n";

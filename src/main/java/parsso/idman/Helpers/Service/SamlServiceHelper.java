@@ -291,11 +291,11 @@ public class SamlServiceHelper {
             file.write(json);
             file.close();
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "", Variables.ACTION_UPDATE
-                    ,Variables.RESULT_SUCCESS,service, ""));
+                    ,Variables.RESULT_SUCCESS,oldService,service, ""));
             return HttpStatus.OK;
         } catch (IOException e) {
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "", Variables.ACTION_UPDATE,
-                    Variables.RESULT_FAILED, service, "Saving file"));
+                    Variables.RESULT_FAILED,oldService, service, "Saving file"));
             return HttpStatus.FORBIDDEN;
         }
 

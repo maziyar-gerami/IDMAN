@@ -7,9 +7,12 @@ import lombok.Setter;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
+import org.javers.core.diff.changetype.NewObject;
 import org.javers.core.diff.changetype.ValueChange;
 import parsso.idman.Helpers.TimeHelper;
+import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Time;
+import parsso.idman.Models.Users.UsersGroups;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -26,6 +29,11 @@ public class ReportMessage {
     String result;
     String action;
     String description;
+    String type;
+    String item;
+    String accessChange;
+    @JsonIgnore
+    UsersGroups usersGroups;
     @JsonIgnore
     List<Changes> difference;
     Object from;
@@ -57,12 +65,41 @@ public class ReportMessage {
         time = TimeHelper.longToPersianTime(millis);
     }
 
+    public ReportMessage(String model, Object instance, String attribute, String action, String result,String type, String item, String description) {
+        this.model = model;
+        this.instance = instance;
+        this.attribute = attribute;
+        this.result = result;
+        this.action = action;
+        this.type = type;
+        this.item = item;
+        this.description = description;
+        this.millis = new Date().getTime();
+        time = TimeHelper.longToPersianTime(millis);
+    }
+
+    public ReportMessage(String model, long instance, String attribute, String action, String result,
+                         Service from, Service to, UsersGroups usersGroups, String description) {
+        this.model = model;
+        this.instance = instance;
+        this.attribute = attribute;
+        this.action = action;
+        this.result = result;
+        this.from = from;
+        this.to = to;
+        this.millis = new Date().getTime();
+        this.difference = difference(from,to);
+        this.usersGroups = usersGroups;
+        this.description = description;
+    }
+
     public ReportMessage(String model, Object instance, String attribute, String action, String result, Object from, Object to, String description) {
         this.model = model;
         this.instance = instance;
         this.attribute = attribute;
         this.result = result;
         this.action = action;
+        this.to = to;
         this.setDifference(difference(from,to));
         this.description = description;
         this.millis = new Date().getTime();
@@ -86,18 +123,35 @@ public class ReportMessage {
         this.doerID = reportMessage.getDoerID();
         this.model = reportMessage.model;
         this.instance = reportMessage.getInstance();
-        this.attribute = reportMessage.getAttribute();
-
+        this.attribute = ch.getAttribute();
+        this.difference = difference(reportMessage.getFrom(),reportMessage.getTo());
+        this.millis = new Date().getTime();
         this.result = reportMessage.getResult();
         this.action = reportMessage.getAction();
 
         this.description = reportMessage.description;
-        this.millis = reportMessage.getMillis();
-        time = reportMessage.getTime();
+        time = TimeHelper.longToPersianTime(millis);
 
-        this.attribute=ch.getAttribute();
         this.from = ch.getFrom();
         this.to = ch.getTo();
+    }
+
+    public ReportMessage(String type, String item, String accessChange, ReportMessage reportMessage) {
+        this.doerID = reportMessage.getDoerID();
+        this.model = reportMessage.model;
+        this.instance = reportMessage.getInstance();
+        this.attribute = "Access Strategy";
+        this.type = type;
+        this.item = item;
+
+        this.result = reportMessage.getResult();
+        this.action = reportMessage.getAction();
+        this.accessChange = accessChange;
+
+        this.description = reportMessage.description;
+        this.millis = reportMessage.getMillis();
+        time = TimeHelper.longToPersianTime(millis);
+
     }
 
     @Override
@@ -107,6 +161,9 @@ public class ReportMessage {
                 instance + separator +
                 attribute + separator +
                 action + separator +
+                type + separator +
+                item + separator+
+                accessChange + separator +
                 result + separator +
                 description;
         String last = first.replaceAll(String.valueOf(separator) + separator, String.valueOf(separator));
@@ -123,11 +180,11 @@ public class ReportMessage {
 
         Diff diff = javers.compare(o1, o2);
         List<org.javers.core.diff.changetype.ValueChange> changes = diff.getChangesByType(org.javers.core.diff.changetype.ValueChange.class);
+        List objectsByChangeType = diff.getObjectsByChangeType(NewObject.class);
 
         for (org.javers.core.diff.changetype.ValueChange c: changes )
             if (c.getLeft()!=null &&  c.getRight()!=null)
                 chs.add(new Changes(c));
-
 
         return chs;
     }
