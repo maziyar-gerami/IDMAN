@@ -52,9 +52,7 @@ public class UsersController {
     @Autowired
     private UserRepo userRepo;
 
-
     //************************************* APIs ****************************************
-
 
     @GetMapping("/api/user")
     public ResponseEntity<User> retrieveUser(HttpServletRequest request) throws IOException, ParseException {

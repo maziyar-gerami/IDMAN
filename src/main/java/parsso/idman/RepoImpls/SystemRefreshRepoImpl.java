@@ -71,7 +71,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         if (mongoTemplate.getCollection(userExtraInfoCollection) == null)
             mongoTemplate.createCollection(userExtraInfoCollection);
 
-        uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER,"","",Variables.ACTION_REFRESH, Variables.RESULT_STARTED, "Step 1"));
+        uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, "", "", Variables.ACTION_REFRESH, Variables.RESULT_STARTED, "Step 1"));
 
         UsersExtraInfo userExtraInfo;
 
@@ -141,7 +141,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             try {
 
                 mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
-                uniformLogger.info(doer,  new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, "Step 1: creating documents"));
+                uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, "Step 1: creating documents"));
             } catch (Exception e) {
                 uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, "writing to mongo"));
             }
@@ -155,9 +155,9 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             e.printStackTrace();
         }
 
-        uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER,"","",Variables.ACTION_REFRESH, Variables.RESULT_FINISHED, "Step 1: Started"));
+        uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, "", "", Variables.ACTION_REFRESH, Variables.RESULT_FINISHED, "Step 1: Started"));
 
-        uniformLogger.info(doer,  new ReportMessage(Variables.MODEL_USER,"","",Variables.ACTION_REFRESH, Variables.RESULT_STARTED, "Step 2"));
+        uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, "", "", Variables.ACTION_REFRESH, Variables.RESULT_STARTED, "Step 2"));
 
         //2. cleanUp mongo
         List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, userExtraInfoCollection);
@@ -166,11 +166,11 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 List<UsersExtraInfo> usersExtraInfoList = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", usersExtraInfo.getUserId()).encode(), searchControls, simpleUserAttributeMapper);
                 if (usersExtraInfoList.size() == 0) {
                     mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
-                    uniformLogger.info(doer,new ReportMessage(Variables.MODEL_USER, usersExtraInfo.getUserId(), "MongoDB Document", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, "Step 2: removing extra document"));
+                    uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, usersExtraInfo.getUserId(), "MongoDB Document", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, "Step 2: removing extra document"));
                 }
             }
 
-        uniformLogger.info(doer,new ReportMessage(Variables.ACTION_REFRESH, Variables.RESULT_FINISHED, "Step 2"));
+        uniformLogger.info(doer, new ReportMessage(Variables.ACTION_REFRESH, Variables.RESULT_FINISHED, "Step 2"));
 
         uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, "", "",
                 Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, ""));
@@ -181,14 +181,14 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     @Override
     public HttpStatus captchaRefresh(String doer) {
 
-        uniformLogger.info(doer,  new ReportMessage(Variables.MODEL_CAPTCHA, "", "", Variables.ACTION_REFRESH, Variables.RESULT_STARTED, ""));
+        uniformLogger.info(doer, new ReportMessage(Variables.MODEL_CAPTCHA, "", "", Variables.ACTION_REFRESH, Variables.RESULT_STARTED, ""));
         if (mongoTemplate.getCollection(Variables.col_captchas) != null) {
             mongoTemplate.getCollection(Variables.col_captchas).drop();
 
         }
 
         mongoTemplate.createCollection(Variables.col_captchas);
-        uniformLogger.info(doer,new ReportMessage(Variables.MODEL_CAPTCHA, "", "",
+        uniformLogger.info(doer, new ReportMessage(Variables.MODEL_CAPTCHA, "", "",
                 Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, ""));
 
         return HttpStatus.OK;
@@ -219,7 +219,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
             mongoTemplate.save(serviceExtraInfo, Variables.col_servicesExtraInfo);
 
-            uniformLogger.info(doer,  new ReportMessage(Variables.MODEL_SERVICE, "", "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, ""));
+            uniformLogger.info(doer, new ReportMessage(Variables.MODEL_SERVICE, "", "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, ""));
         }
 
         List<parsso.idman.Models.Services.Service> serviceList = serviceRepo.listServicesFull();

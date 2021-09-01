@@ -207,10 +207,10 @@ public class ConfigRepoImpl implements ConfigRepo {
 
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("application.properties")) {
             Files.copy(is, Paths.get(this.getClass().getClassLoader() + "/backup/" + date + "_application.properties"));
-            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE,  Variables.RESULT_SUCCESS,settings, ""));
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, settings, ""));
 
         } catch (IOException e) {
-            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED,settings, "unknown error"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, settings, "unknown error"));
 
         }
 
@@ -288,7 +288,7 @@ public class ConfigRepoImpl implements ConfigRepo {
                 try {
                     Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
                     uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, config.getName(), "",
-                            Variables.ACTION_RESTORE, Variables.RESULT_SUCCESS, config.getName(),""));
+                            Variables.ACTION_RESTORE, Variables.RESULT_SUCCESS, config.getName(), ""));
 
                 } catch (Exception e) {
                     uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, config.getName(), "",

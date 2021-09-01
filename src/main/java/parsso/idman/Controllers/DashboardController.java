@@ -34,7 +34,6 @@ public class DashboardController {
 
     //************************************* Pages ****************************************
 
-
     @GetMapping("/")
     public String Root() {
         return "redirect:/dashboard";
@@ -74,9 +73,7 @@ public class DashboardController {
         return "redirect:" + casLogout;
     }
 
-
     //************************************* APIs ****************************************
-
 
     @GetMapping("/api/dashboard")
     public ResponseEntity<Dashboard> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException, InterruptedException {
@@ -84,9 +81,7 @@ public class DashboardController {
         return new ResponseEntity<>(dashboardData.retrieveDashboardData(), HttpStatus.OK);
     }
 
-
     //************************************* Pages ****************************************
-
 
     @GetMapping("/users")
     public String Users() {

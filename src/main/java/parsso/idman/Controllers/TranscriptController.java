@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import parsso.idman.Models.License.License;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Logs.Transcript;
 import parsso.idman.Repos.TranscriptRepo;
 
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 public class TranscriptController {
@@ -20,7 +22,6 @@ public class TranscriptController {
     private TranscriptRepo transcriptRepo;
 
     //************************************* APIs ****************************************
-
 
     @GetMapping("/api/transcripts/users/service/{id}")
     public ResponseEntity<Transcript> retrieveUsersOfServices(@PathVariable("id") String id) throws IOException, org.json.simple.parser.ParseException {
@@ -38,10 +39,10 @@ public class TranscriptController {
     }
 
     @GetMapping("/api/transcripts/access/services/{id}")
-    public ResponseEntity<Object> accessManaging(@PathVariable("id") String id,
-                                                 @RequestParam( name = "type", defaultValue = "") String type,
-                                                 @RequestParam( name = "item", defaultValue = "") String item)  {
-        return new ResponseEntity<>(transcriptRepo.accessManaging(Long.valueOf(id), type,item), HttpStatus.OK);
+    public ResponseEntity<List<ReportMessage>> accessManaging(@PathVariable("id") String id,
+                                                              @RequestParam(name = "type", defaultValue = "") String type,
+                                                              @RequestParam(name = "item", defaultValue = "") String item) {
+        return new ResponseEntity<>(transcriptRepo.accessManaging(Long.valueOf(id), type, item), HttpStatus.OK);
     }
 
 }

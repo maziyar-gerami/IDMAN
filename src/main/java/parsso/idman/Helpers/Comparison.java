@@ -14,28 +14,27 @@ import java.util.List;
 @Service
 public class Comparison {
     public UsersGroups compare(AccessStrategy strategy1, AccessStrategy strategy2) {
-        List<String> new_ous =null;
+        List<String> new_ous = null;
         List<String> new_uid = null;
 
-
         try {
-            new_ous= (ArrayList<String>) ((ArrayList) strategy2.getRequiredAttributes().get("ou")).get(1);
-        }catch (Exception e){
+            new_ous = (ArrayList<String>) ((ArrayList) strategy2.getRequiredAttributes().get("ou")).get(1);
+        } catch (Exception e) {
         }
         try {
             new_uid = (ArrayList<String>) ((ArrayList) strategy2.getRequiredAttributes().get("uid")).get(1);
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
 
-
-        List<String> old_ous=null;
+        List<String> old_ous = null;
         List<String> old_uid = null;
 
-        if (strategy1.getRequiredAttributes()!=null && strategy1.getRequiredAttributes().get("ou")!=null)
+        if (strategy1.getRequiredAttributes() != null && strategy1.getRequiredAttributes().get("ou") != null)
             old_ous = (List<String>) ((JSONArray) strategy1.getRequiredAttributes().get("ou")).get(1);
 
         Inconsistency groups = listCompare(old_ous, new_ous);
 
-        if (strategy1.getRequiredAttributes()!=null && strategy1.getRequiredAttributes().get("uid")!=null)
+        if (strategy1.getRequiredAttributes() != null && strategy1.getRequiredAttributes().get("uid") != null)
             old_uid = (List<String>) ((JSONArray) strategy1.getRequiredAttributes().get("uid")).get(1);
         Inconsistency users = listCompare(old_uid, new_uid);
         return new UsersGroups(users, groups);
@@ -45,7 +44,7 @@ public class Comparison {
         List<String> add = new LinkedList<>();
         List<String> remove = new LinkedList<>();
 
-        if (listNew!=null)
+        if (listNew != null)
             for (String s : listNew) {
                 if (listOld == null)
                     add.add(s);
@@ -54,8 +53,7 @@ public class Comparison {
 
             }
 
-
-            if (listOld!=null)
+        if (listOld != null)
             for (String s : listOld) {
                 if (listNew == null)
                     remove.add(s);
@@ -63,7 +61,6 @@ public class Comparison {
                     remove.add(s);
 
             }
-
 
         return new Inconsistency(add, remove);
     }

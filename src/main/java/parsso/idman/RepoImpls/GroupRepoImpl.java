@@ -73,7 +73,7 @@ public class GroupRepoImpl implements GroupRepo {
             try {
                 ldapTemplate.unbind(dn);
 
-                uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_GROUP, group.getId(), Variables.MODEL_GROUP,
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, group.getId(), Variables.MODEL_GROUP,
                         Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS, ""));
 
             } catch (Exception e) {
@@ -99,13 +99,13 @@ public class GroupRepoImpl implements GroupRepo {
                                 mongoTemplate.save
                                         (simpleUser, Variables.col_usersExtraInfo);
 
-                                uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_USER, user.getUserId(),
-                                        Variables.MODEL_GROUP , Variables.ACTION_REMOVE,Variables.RESULT_SUCCESS, groupN+  "Removing 'OU'=+groupN"));
+                                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                                        Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS, groupN + "Removing 'OU'=+groupN"));
 
 
                             } catch (Exception e) {
                                 uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
-                                        Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_FAILED, groupN, "Changing LDAP for removing 'OU'="+groupN));
+                                        Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_FAILED, groupN, "Changing LDAP for removing 'OU'=" + groupN));
 
                             }
                         }
@@ -264,7 +264,7 @@ public class GroupRepoImpl implements GroupRepo {
                 create(doerID, ou);
                 DirContextOperations contextUser;
                 uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, id, Variables.MODEL_GROUP,
-                        Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,ou, ""));
+                        Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ou, ""));
 
                 for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(id)) {
                     for (String group : user.getMemberOf()) {
@@ -306,16 +306,16 @@ public class GroupRepoImpl implements GroupRepo {
 
                     }
 
-                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,ou, ""));
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ou, ""));
 
                 return HttpStatus.OK;
 
             } catch (IOException ioException) {
 
-                uniformLogger.warn(doerID,  new ReportMessage(Variables.MODEL_GROUP, id, "Group", "update", Variables.RESULT_FAILED, "ioException"));
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "Group", "update", Variables.RESULT_FAILED, "ioException"));
                 return HttpStatus.BAD_REQUEST;
             } catch (org.json.simple.parser.ParseException e) {
-                uniformLogger.warn(doerID,  new ReportMessage(Variables.MODEL_GROUP, id, "Group", "update", Variables.RESULT_FAILED, "parsing"));
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "Group", "update", Variables.RESULT_FAILED, "parsing"));
                 return HttpStatus.BAD_REQUEST;
             }
 
@@ -323,13 +323,13 @@ public class GroupRepoImpl implements GroupRepo {
 
             try {
                 ldapTemplate.rebind(dn, null, buildAttributes(ou.getId(), ou));
-                uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_GROUP,ou.getId(), "",
-                        Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,ou, ""));
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, ou.getId(), "",
+                        Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ou, ""));
 
                 return HttpStatus.OK;
 
             } catch (Exception e) {
-                uniformLogger.warn(doerID,  new ReportMessage(Variables.MODEL_GROUP, doerID, ou.getId(), Variables.ACTION_UPDATE,
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, doerID, ou.getId(), Variables.ACTION_UPDATE,
                         Variables.RESULT_FAILED, "Writing to ldap"));
                 return HttpStatus.BAD_REQUEST;
             }

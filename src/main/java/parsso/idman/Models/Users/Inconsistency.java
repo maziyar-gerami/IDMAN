@@ -11,6 +11,7 @@ import java.util.List;
 public class Inconsistency {
     List add;
     List remove;
+
     public Inconsistency(List add, List remove) {
         this.add = add;
         this.remove = remove;

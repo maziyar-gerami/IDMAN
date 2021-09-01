@@ -247,11 +247,11 @@ public class SamlServiceHelper {
                 MicroService microService = new MicroService(service.getServiceId(), IPaddresses);
 
                 mongoTemplate.save(microService, collection);
-                uniformLogger.info(doerID,new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                         "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
                 return service.getId();
             } catch (IOException e) {
-                uniformLogger.warn(doerID,new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                         "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
                 return 0;
             }
@@ -273,7 +273,7 @@ public class SamlServiceHelper {
         try {
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
-            uniformLogger.warn(doerID,  new ReportMessage(Variables.MODEL_SERVICE, id, "",
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
                     Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Fetching"));
         }
 
@@ -291,11 +291,11 @@ public class SamlServiceHelper {
             file.write(json);
             file.close();
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "", Variables.ACTION_UPDATE
-                    ,Variables.RESULT_SUCCESS,oldService,service, ""));
+                    , Variables.RESULT_SUCCESS, oldService, service, ""));
             return HttpStatus.OK;
         } catch (IOException e) {
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "", Variables.ACTION_UPDATE,
-                    Variables.RESULT_FAILED,oldService, service, "Saving file"));
+                    Variables.RESULT_FAILED, oldService, service, "Saving file"));
             return HttpStatus.FORBIDDEN;
         }
 

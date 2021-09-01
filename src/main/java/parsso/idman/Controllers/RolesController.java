@@ -24,9 +24,7 @@ public class RolesController {
     @Autowired
     RolesRepo rolesRepo;
 
-
     //************************************* Pages ****************************************
-
 
     @GetMapping("/roles")
     public String Roles() {
@@ -34,7 +32,6 @@ public class RolesController {
     }
 
     //************************************* APIs ****************************************
-
 
     @GetMapping("/api/roles")
     public ResponseEntity<List<UserRole>> retrieveRoles() {

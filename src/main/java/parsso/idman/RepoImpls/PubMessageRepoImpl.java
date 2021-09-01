@@ -50,12 +50,12 @@ public class PubMessageRepoImpl implements PubMessageRepo {
         try {
             PublicMessage messageToSave = new PublicMessage(message.getTitle(), message.getBody(), message.isVisible(), doer);
             mongoTemplate.save(messageToSave, collection);
-            uniformLogger.info(doer,  new ReportMessage(model, messageToSave.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
+            uniformLogger.info(doer, new ReportMessage(model, messageToSave.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
 
             return HttpStatus.OK;
 
         } catch (Exception e) {
-            uniformLogger.warn(doer,  new ReportMessage(model, message.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongo"));
+            uniformLogger.warn(doer, new ReportMessage(model, message.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongo"));
             return HttpStatus.FORBIDDEN;
 
         }
@@ -77,7 +77,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
         message.set_id(publicMessage.get_id());
         try {
             mongoTemplate.save(message, collection);
-            uniformLogger.info(doer,new ReportMessage(model, message.getMessageId(), "", "update", Variables.RESULT_SUCCESS, ""));
+            uniformLogger.info(doer, new ReportMessage(model, message.getMessageId(), "", "update", Variables.RESULT_SUCCESS, ""));
 
             return HttpStatus.OK;
         } catch (Exception e) {

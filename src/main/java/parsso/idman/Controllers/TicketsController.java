@@ -26,14 +26,12 @@ public class TicketsController {
 
     //************************************* Pages ****************************************
 
-
     @GetMapping("/ticketing")
     public String Reports() {
         return "ticketing";
     }
 
     //************************************* APIs ****************************************
-
 
     @PostMapping("/api/user/ticket")
     public ResponseEntity<HttpStatus> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request) {

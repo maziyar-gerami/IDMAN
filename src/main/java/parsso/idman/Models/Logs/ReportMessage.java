@@ -65,7 +65,7 @@ public class ReportMessage {
         time = TimeHelper.longToPersianTime(millis);
     }
 
-    public ReportMessage(String model, Object instance, String attribute, String action, String result,String type, String item, String description) {
+    public ReportMessage(String model, Object instance, String attribute, String action, String result, String type, String item, String description) {
         this.model = model;
         this.instance = instance;
         this.attribute = attribute;
@@ -88,7 +88,7 @@ public class ReportMessage {
         this.from = from;
         this.to = to;
         this.millis = new Date().getTime();
-        this.difference = difference(from,to);
+        this.difference = difference(from, to);
         this.usersGroups = usersGroups;
         this.description = description;
     }
@@ -100,7 +100,7 @@ public class ReportMessage {
         this.result = result;
         this.action = action;
         this.to = to;
-        this.setDifference(difference(from,to));
+        this.setDifference(difference(from, to));
         this.description = description;
         this.millis = new Date().getTime();
         time = TimeHelper.longToPersianTime(millis);
@@ -124,7 +124,7 @@ public class ReportMessage {
         this.model = reportMessage.model;
         this.instance = reportMessage.getInstance();
         this.attribute = ch.getAttribute();
-        this.difference = difference(reportMessage.getFrom(),reportMessage.getTo());
+        this.difference = difference(reportMessage.getFrom(), reportMessage.getTo());
         this.millis = new Date().getTime();
         this.result = reportMessage.getResult();
         this.action = reportMessage.getAction();
@@ -162,7 +162,7 @@ public class ReportMessage {
                 attribute + separator +
                 action + separator +
                 type + separator +
-                item + separator+
+                item + separator +
                 accessChange + separator +
                 result + separator +
                 description;
@@ -173,7 +173,7 @@ public class ReportMessage {
         return last;
     }
 
-    private List<Changes> difference(Object o1 , Object o2) {
+    private List<Changes> difference(Object o1, Object o2) {
         Javers javers = JaversBuilder.javers().build();
 
         List<Changes> chs = new LinkedList<>();
@@ -182,8 +182,8 @@ public class ReportMessage {
         List<org.javers.core.diff.changetype.ValueChange> changes = diff.getChangesByType(org.javers.core.diff.changetype.ValueChange.class);
         List objectsByChangeType = diff.getObjectsByChangeType(NewObject.class);
 
-        for (org.javers.core.diff.changetype.ValueChange c: changes )
-            if (c.getLeft()!=null &&  c.getRight()!=null)
+        for (org.javers.core.diff.changetype.ValueChange c : changes)
+            if (c.getLeft() != null && c.getRight() != null)
                 chs.add(new Changes(c));
 
         return chs;
@@ -191,7 +191,7 @@ public class ReportMessage {
 
     @Getter
     @Setter
-    public class Changes{
+    public class Changes {
         private String attribute;
         private Object from;
         private Object to;

@@ -125,7 +125,7 @@ public class TicketRepoImpl implements TicketRepo {
         try {
             mongoTemplate.remove(new Query(Criteria.where("ID").is(ticketID)), collection);
             mongoTemplate.save(ticketToSave, collection);
-            uniformLogger.info(userid,  new ReportMessage(model, ticketToSave.getID(), "", "reply", Variables.RESULT_SUCCESS, ""));
+            uniformLogger.info(userid, new ReportMessage(model, ticketToSave.getID(), "", "reply", Variables.RESULT_SUCCESS, ""));
         } catch (Exception e) {
 
             uniformLogger.warn(userid, new ReportMessage(model, ticketToSave.getID(), "", "reply", Variables.RESULT_FAILED, "writing to MongoDB"));
@@ -191,9 +191,9 @@ public class TicketRepoImpl implements TicketRepo {
 
             try {
                 mongoTemplate.save(ticket, collection);
-                uniformLogger.info(doer,  new ReportMessage(Variables.MODEL_TICKETING, ticket.getID(), "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
+                uniformLogger.info(doer, new ReportMessage(Variables.MODEL_TICKETING, ticket.getID(), "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
             } catch (Exception e) {
-                uniformLogger.warn(doer,  new ReportMessage(Variables.MODEL_TICKETING, ticket.getID(), "", Variables.ACTION_DELETE, Variables.RESULT_FAILED, "writing to MongoDB"));
+                uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_TICKETING, ticket.getID(), "", Variables.ACTION_DELETE, Variables.RESULT_FAILED, "writing to MongoDB"));
                 i++;
             }
         }
@@ -232,7 +232,7 @@ public class TicketRepoImpl implements TicketRepo {
             try {
                 mongoTemplate.remove(query, collection);
                 mongoTemplate.save(ticket, collection);
-                uniformLogger.info(doer,  new ReportMessage(model, ticket.getID(), Variables.ATTR_STATUS, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
+                uniformLogger.info(doer, new ReportMessage(model, ticket.getID(), Variables.ATTR_STATUS, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
 
             } catch (Exception e) {
                 uniformLogger.info(doer, new ReportMessage(model, ticket.getID(), Variables.ATTR_STATUS, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Saving to MongoDB"));
@@ -320,10 +320,10 @@ public class TicketRepoImpl implements TicketRepo {
         try {
             mongoTemplate.remove(query, collection);
             mongoTemplate.save(ticketToSave, collection);
-            uniformLogger.info(userId, new ReportMessage(model, ticketId, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,ticketToSave, ""));
+            uniformLogger.info(userId, new ReportMessage(model, ticketId, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ticketToSave, ""));
             return HttpStatus.OK;
         } catch (Exception e) {
-            uniformLogger.warn(userId, new ReportMessage(model, ticketId, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, ticketToSave,"writing to MongoDB"));
+            uniformLogger.warn(userId, new ReportMessage(model, ticketId, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, ticketToSave, "writing to MongoDB"));
             return HttpStatus.FORBIDDEN;
         }
     }

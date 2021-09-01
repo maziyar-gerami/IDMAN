@@ -25,14 +25,12 @@ public class EventsController {
 
     //************************************* Pages ****************************************
 
-
     @GetMapping("/events")
     public String Events() {
         return "events";
     }
 
     //************************************* APIs ****************************************
-
 
     @GetMapping("/api/events/users/{page}/{n}")
     public ResponseEntity<ListEvents> retrieveAllEvents(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {

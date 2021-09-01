@@ -53,7 +53,7 @@ public class RoleRepoImpl implements RolesRepo {
             }
 
             if (i > 0) {
-                uniformLogger.info(doerID,  new ReportMessage(model, userId, "", "change", Variables.RESULT_SUCCESS, "partially done"));
+                uniformLogger.info(doerID, new ReportMessage(model, userId, "", "change", Variables.RESULT_SUCCESS, "partially done"));
                 return HttpStatus.PARTIAL_CONTENT;
 
             }

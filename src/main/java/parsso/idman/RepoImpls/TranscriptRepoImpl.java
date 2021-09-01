@@ -2,7 +2,6 @@ package parsso.idman.RepoImpls;
 
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -13,6 +12,7 @@ import parsso.idman.Helpers.Service.ExtractLicensedAndUnlicensed;
 import parsso.idman.Helpers.User.UsersLicense;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.License.License;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Logs.Transcript;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
@@ -72,12 +72,12 @@ public class TranscriptRepoImpl implements TranscriptRepo {
         try {
             memberOf = user.getMemberOf();
 
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
         }
 
         for (Service service : allServices) {
 
-            licensed = extract.licensedServicesForGroups(user,licensed, service);
+            licensed = extract.licensedServicesForGroups(user, licensed, service);
 
             licensed = extract.licensedServicesForUserID(userId, licensed, service);
 
@@ -93,13 +93,8 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 
         }
 
-
         return new License(licensed, unLicensed);
     }
-
-
-
-
 
     @Override
     public Transcript usersAndGroupsOfService(long serviceId) throws IOException, ParseException {
@@ -107,19 +102,19 @@ public class TranscriptRepoImpl implements TranscriptRepo {
     }
 
     @Override
-    public List<JSONObject> accessManaging(Long id, String type, String item) {
+    public List<ReportMessage> accessManaging(Long id, String type, String item) {
         String modelService = Variables.MODEL_SERVICE;
         Query query = new Query();
 
         query.addCriteria(Criteria.where("model").is(modelService));
         query.addCriteria(Criteria.where("instance").is(id));
         query.addCriteria(Criteria.where("attribute").is(Variables.ACCESS_STRATEGY));
-        if(!type.equals(""))
+        if (!type.equals(""))
             query.addCriteria(Criteria.where("type").is(type));
-        if(!item.equals(""))
+        if (!item.equals(""))
             query.addCriteria(Criteria.where("item").is(item));
 
-        return mongoTemplate.find(query, JSONObject.class, Variables.col_idmanlog);
+        return mongoTemplate.find(query, ReportMessage.class, Variables.col_idmanlog);
 
     }
 }

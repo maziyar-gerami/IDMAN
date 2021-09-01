@@ -34,14 +34,12 @@ public class ConfigsController {
 
     //************************************* Pages ****************************************
 
-
     @GetMapping("/configs")
     public String Configs(HttpServletRequest request) {
         return "configs";
     }
 
     //************************************* APIs ****************************************
-
 
     @GetMapping("/api/configs")
     public ResponseEntity<String> retrieveSettings() throws IOException {

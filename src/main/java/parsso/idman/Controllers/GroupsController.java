@@ -35,7 +35,6 @@ public class GroupsController {
 
     //************************************* APIs ****************************************
 
-
     @GetMapping("/api/groups/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) throws IOException, ParseException {
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());

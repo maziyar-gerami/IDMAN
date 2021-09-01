@@ -30,24 +30,24 @@ public class ExtractLicensedAndUnlicensed {
                 for (String group : user.getMemberOf())
                     if (((ArrayList) ((ArrayList) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).contains(group))
                         licensed.add(new MicroService(service));
-        }catch (Exception e){}
-
+        } catch (Exception e) {
+        }
 
         return licensed;
     }
 
     public List<List<MicroService>> licensedServiceWithGroupID(List<MicroService> licensed, List<MicroService> unLicensed, Service service, List<String> memberOf) {
 
-        if(memberOf!=null)
-        for (String groupStr : memberOf)
-            if (service.getAccessStrategy().getRequiredAttributes() != null && service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
-                for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
-                    if (groupStr.equalsIgnoreCase(name.toString()))
-                        if (!contains(unLicensed, service.getId())) {
-                            if (contains(licensed, service.getId()))
-                                remove(licensed, service.getId());
-                            licensed.add(new MicroService(service));
-                        }
+        if (memberOf != null)
+            for (String groupStr : memberOf)
+                if (service.getAccessStrategy().getRequiredAttributes() != null && service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
+                    for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
+                        if (groupStr.equalsIgnoreCase(name.toString()))
+                            if (!contains(unLicensed, service.getId())) {
+                                if (contains(licensed, service.getId()))
+                                    remove(licensed, service.getId());
+                                licensed.add(new MicroService(service));
+                            }
 
         List list = new LinkedList();
         list.add(licensed);

@@ -20,15 +20,12 @@ public class PubMessageController {
 
     //************************************* Pages ****************************************
 
-
     @GetMapping("/publicmessages")
     public String PublicMessages() {
         return "publicmessages";
     }
 
-
     //************************************* APIs ****************************************
-
 
     @GetMapping("/api/public/publicMessages")
     public ResponseEntity<List<PublicMessage>> getVisiblePublicMessage(String id) {

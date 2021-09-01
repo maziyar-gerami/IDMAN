@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Helpers.Comparison;
 import parsso.idman.Helpers.Service.CasServiceHelper;
 import parsso.idman.Helpers.Service.Position;
 import parsso.idman.Helpers.Service.SamlServiceHelper;
@@ -121,7 +120,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         File folder = new File(path); // ./services/
         String[] files = folder.list();
         List<Service> services = new LinkedList<>();
-        Service service=null;
+        Service service = null;
         for (String file : files) {
             if (file.endsWith(".json"))
                 try {
@@ -171,7 +170,7 @@ public class ServiceRepoImpl implements ServiceRepo {
                 try {
                     service = analyze(file);
                 } catch (Exception e) {
-                    uniformLogger.warn( Variables.DOER_SYSTEM,new ReportMessage(Variables.MODEL_SERVICE, service.getId(), "",
+                    uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(), "",
                             Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to parse service"));
 
                     continue;
@@ -248,11 +247,11 @@ public class ServiceRepoImpl implements ServiceRepo {
             position.delete(microService.getPosition());
             try {
                 mongoTemplate.remove(query, MicroService.class, collection);
-                uniformLogger.info(doerID,  new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
                         Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 
             } catch (Exception e) {
-                uniformLogger.info(doerID,new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
                         Variables.ACTION_DELETE, Variables.RESULT_FAILED, "Writing to mongoDB"));
 
             }
@@ -290,7 +289,6 @@ public class ServiceRepoImpl implements ServiceRepo {
         return HttpStatus.OK;
 
     }
-
 
     @Override
     public HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException {
@@ -348,7 +346,7 @@ public class ServiceRepoImpl implements ServiceRepo {
             mongoTemplate.save(extraInfo, collection);
             return HttpStatus.OK;
         } catch (Exception e) {
-            uniformLogger.warn(doerID,new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongoDB"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongoDB"));
             return HttpStatus.FORBIDDEN;
         }
 
@@ -419,7 +417,7 @@ public class ServiceRepoImpl implements ServiceRepo {
                 mongoTemplate.save(extraInfo, collection);
 
             } catch (Exception e) {
-                uniformLogger.warn(doerID,new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
                         Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to mongoDB"));
                 return HttpStatus.FORBIDDEN;
             }
@@ -458,7 +456,7 @@ public class ServiceRepoImpl implements ServiceRepo {
             extraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
         } catch (Exception e) {
             extraInfo = new ExtraInfo();
-            uniformLogger.warn("System",new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
+            uniformLogger.warn("System", new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
                     Variables.ACTION_PARSE, Variables.RESULT_FAILED, "Unable to get extra service for service"));
 
         }

@@ -280,7 +280,7 @@ public class CasServiceHelper {
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
             uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
-                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service,"Fetching problem"));
+                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, "Fetching problem"));
             return HttpStatus.FORBIDDEN;
         }
 
@@ -297,14 +297,14 @@ public class CasServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            UsersGroups usersGroups = new Comparison().compare(oldService.getAccessStrategy(),service.getAccessStrategy());
+            UsersGroups usersGroups = new Comparison().compare(oldService.getAccessStrategy(), service.getAccessStrategy());
 
-            uniformLogger.info(doerID,new ReportMessage(Variables.MODEL_SERVICE, id, "",
-                    Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,oldService, service, usersGroups,""));
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, oldService, service, usersGroups, ""));
             return HttpStatus.OK;
         } catch (IOException e) {
-            uniformLogger.warn(doerID,new ReportMessage(Variables.MODEL_SERVICE, id, "",
-                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED,service, "Saving problem"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, "Saving problem"));
             return HttpStatus.FORBIDDEN;
         }
 
@@ -355,12 +355,12 @@ public class CasServiceHelper {
 
                 mongoTemplate.save(microService, collection);
                 uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
-                        "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS,new Comparison().compare(null,service.getAccessStrategy()),""));
+                        "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
 
                 return service.getId();
             } catch (IOException e) {
 
-                uniformLogger.warn(doerID,  new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
                         "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
                 return 0;
             }
