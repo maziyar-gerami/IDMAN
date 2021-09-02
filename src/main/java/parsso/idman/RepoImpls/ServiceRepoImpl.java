@@ -293,7 +293,9 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Override
     public HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException {
 
-        ExtraInfo extraInfo = null;
+
+
+        ExtraInfo extraInfo = new ExtraInfo();
         long id = 0;
         JSONObject jsonExtraInfo = new JSONObject();
 
@@ -305,42 +307,24 @@ public class ServiceRepoImpl implements ServiceRepo {
                 jsonExtraInfo = new JSONObject((Map) jsonObject.get("extraInfo"));
         }
 
-        extraInfo = new ExtraInfo();
-
         extraInfo.setUrl(jsonExtraInfo != null && jsonExtraInfo.get("url") != null ?
                 jsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
 
-        if (baseUrl.contains("localhost")) {
+        if (baseUrl.contains("localhost"))
             extraInfo.setUUID(GenerateUUID.getUUID());
-        }
 
-        if (system.equalsIgnoreCase("cas")) {
+        if (system.equalsIgnoreCase("cas"))
             id = casServiceHelper.create(doerID, jsonObject);
-            if (id > 0) {
-                if (extraInfo != null) {
-                    extraInfo.setId(id);
-                    extraInfo.setPosition(position.lastPosition() + 1);
 
-                } else {
-                    extraInfo = new ExtraInfo();
-                    extraInfo.setId(id);
-                    extraInfo.setPosition(position.lastPosition() + 1);
-
-                }
-
-            }
-        } else if (system.equalsIgnoreCase("saml"))
+         else if (system.equalsIgnoreCase("saml"))
             id = samlServiceHelper.create(doerID, jsonObject);
-        if (id > 0)
-            if (extraInfo != null) {
-                extraInfo.setId(id);
-                extraInfo.setPosition(position.lastPosition() + 1);
 
-            } else {
+        if (id > 0)
+            if (extraInfo == null)
                 extraInfo = new ExtraInfo();
-                extraInfo.setId(id);
-                extraInfo.setPosition(position.lastPosition() + 1);
-            }
+
+            extraInfo = setExtraInfo(id,extraInfo, jsonObject,position.lastPosition() + 1);
+
 
         try {
             mongoTemplate.save(extraInfo, collection);
@@ -350,6 +334,23 @@ public class ServiceRepoImpl implements ServiceRepo {
             return HttpStatus.FORBIDDEN;
         }
 
+    }
+
+    private ExtraInfo setExtraInfo(long id, ExtraInfo extraInfo, JSONObject jsonObject, int i) {
+        extraInfo.setId( id);
+        extraInfo.setPosition(i);
+        try {
+
+        extraInfo.setApiAddress(jsonObject.get("apiAddress").toString());
+        }catch (Exception e){}
+
+        try {
+            extraInfo.setUserIdApi(jsonObject.get("userIdApi").toString());
+        }catch (Exception e){}
+        try {
+            extraInfo.setKey(jsonObject.get("key").toString());
+        }catch (Exception e){}
+        return extraInfo;
     }
 
     @Override
@@ -390,15 +391,26 @@ public class ServiceRepoImpl implements ServiceRepo {
                     JsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
 
             extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
+
+            try {
+                extraInfo.setApiAddress(jsonObject.get("apiAddress") != null ? jsonObject.get("apiAddress").toString() : oldExtraInfo.getApiAddress());
+
+            } catch (Exception e){}
+            try {
+                extraInfo.setUserIdApi(jsonObject.get("userIdApi") != null ? jsonObject.get("userIdApi").toString() : oldExtraInfo.getUserIdApi());
+
+            }catch (Exception e){}
+            try {
+                extraInfo.setKey(jsonObject.get("key") != null ? jsonObject.get("key").toString() : oldExtraInfo.getKey());
+            }catch (Exception e){}
+
             try {
                 extraInfo.setPosition(oldExtraInfo.getPosition());
+            } catch (Exception e) {}
 
-            } catch (Exception e) {
 
-            }
+
             extraInfo.setId(id);
-
-
         }
 
         if (system.equalsIgnoreCase("cas")) {
