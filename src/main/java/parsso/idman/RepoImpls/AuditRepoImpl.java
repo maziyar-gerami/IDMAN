@@ -21,15 +21,15 @@ import java.util.List;
 
 @Service
 public class AuditRepoImpl implements AuditRepo {
-    private final String mainCollection = "MongoDbCasAuditRepository";
+
     @Autowired
     MongoTemplate mongoTemplate;
     ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
     @Override
     public ListAudits getListSizeAudits(int p, int n) {
-        List<Audit> allAudits = analyze(mainCollection, (p - 1) * n, n);
-        long size = mongoTemplate.getCollection(mainCollection).countDocuments();
+        List<Audit> allAudits = analyze(Variables.col_audit, (p - 1) * n, n);
+        long size = mongoTemplate.getCollection(Variables.col_audit).countDocuments();
         return new ListAudits(allAudits, size, (int) Math.ceil((double) size / (double) n));
     }
 
@@ -37,19 +37,18 @@ public class AuditRepoImpl implements AuditRepo {
     public ListAudits getListUserAudits(String userId, int p, int n) {
         Query query = new Query(Criteria.where("principal").is(userId))
                 .with(Sort.by(Sort.Direction.DESC, "_id"));
-        long size = mongoTemplate.count(query, Audit.class, mainCollection);
+        long size = mongoTemplate.count(query, Audit.class, Variables.col_audit);
 
         query.skip((p - 1) * (n)).limit(n);
-        List<Audit> auditList = mongoTemplate.find(query, Audit.class, mainCollection);
+        List<Audit> auditList = mongoTemplate.find(query, Audit.class, Variables.col_audit);
         ListAudits listAudits = new ListAudits(auditList, size, (int) Math.ceil(size / n));
         return listAudits;
     }
 
     @Override
-    public ListAudits getListUserAuditByDate(String date, String userId, int p, int n) throws ParseException {
+    public ListAudits getListUserAuditByDate(String date, String userId, int p, int limit) throws ParseException {
 
-        int skip = (p - 1) * n;
-        int limit = n;
+        int skip = (p - 1) * limit;
 
         Time time = new Time(Integer.valueOf(date.substring(4)),
                 Integer.valueOf(date.substring(2, 4)),
@@ -59,19 +58,17 @@ public class AuditRepoImpl implements AuditRepo {
         Query query = new Query(Criteria.where("whenActionWasPerformed")
                 .gte(TimeHelper.convertEpochToDate(range[0])).lte(TimeHelper.convertEpochToDate(range[1])).and("principal").is(userId));
 
-        long size = mongoTemplate.find(query, Report.class, mainCollection).size();
+        long size = mongoTemplate.find(query, Report.class, Variables.col_audit).size();
 
-        List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "whenActionWasPerformed")).skip(skip).limit(limit), Audit.class, mainCollection);
+        List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "whenActionWasPerformed"))
+                .skip(skip).limit(limit), Audit.class, Variables.col_audit);
 
         return new ListAudits(reportList, size, (int) Math.ceil(size / limit));
 
     }
 
     @Override
-    public ListAudits getAuditsByDate(String date, int p, int n) throws ParseException {
-
-        int skip = (p - 1) * n;
-        int limit = n;
+    public ListAudits getAuditsByDate(String date, int p, int limit) throws ParseException {
 
         Time time = new Time(Integer.valueOf(date.substring(4)),
                 Integer.valueOf(date.substring(2, 4)),
@@ -81,9 +78,10 @@ public class AuditRepoImpl implements AuditRepo {
         Query query = new Query(Criteria.where("whenActionWasPerformed")
                 .gte(TimeHelper.convertEpochToDate(range[0])).lte(TimeHelper.convertEpochToDate(range[1])));
 
-        long size = mongoTemplate.find(query, Report.class, mainCollection).size();
+        long size = mongoTemplate.find(query, Report.class, Variables.col_audit).size();
 
-        List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "whenActionWasPerformed")).skip(skip).limit(limit), Audit.class, mainCollection);
+        List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC,
+                "whenActionWasPerformed")).skip((p - 1) * limit).limit(limit), Audit.class, Variables.col_audit);
 
         return new ListAudits(reportList, size, (int) Math.ceil(size / limit));
 

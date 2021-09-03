@@ -43,6 +43,7 @@ public class Variables {
     public static String col_usersExtraInfo = "IDMAN_UsersExtraInfo";
     public static String col_services = "IDMAN_Services";
     public static String col_servicesExtraInfo = "IDMAN_ServicesExtraInfo";
+    public static String col_audit = "MongoDbCasAuditRepository";
     public static String col_tickets = "IDMAN_Tickets";
     public static String RESULT_FAILED = "Failed";
     public static String RESULT_SUCCESS = "Success";
