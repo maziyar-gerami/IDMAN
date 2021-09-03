@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.javers.core.metamodel.annotation.DiffIgnore;
 import parsso.idman.Models.Services.ServicesSubModel.AccessStrategy;
 import parsso.idman.Models.Services.ServicesSubModel.AttributeReleasePolicy;
 import parsso.idman.Models.Services.ServicesSubModel.ExtraInfo;
@@ -21,6 +22,7 @@ public class Service implements Comparable<Service> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private int evaluationOrder;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @DiffIgnore
     private AccessStrategy accessStrategy;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private MultifactorPolicy multifactorPolicy;
