@@ -29,11 +29,9 @@ public class MicroService implements Comparable {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int position;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  String apiAddress;
+    private  String notificationApiURL;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  String userIdApi;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  String key;
+    private  String notificationApiKey;
 
     public MicroService(String serviceId, List<String> machines) {
         this.serviceId = serviceId;
@@ -60,9 +58,8 @@ public class MicroService implements Comparable {
         this.logo = service.getLogo();
         this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
         this.position = (null != microService ? microService.getPosition() : 0);
-        try {this.key = microService.getKey();}catch (Exception e){};
-        try { this.apiAddress = microService.getApiAddress();}catch (Exception e){};
-        try { this.userIdApi = microService.getUserIdApi();}catch (Exception e){};
+        try {this.notificationApiKey = microService.getNotificationApiKey();}catch (Exception e){};
+        try { this.notificationApiURL = microService.getNotificationApiURL();}catch (Exception e){};
 
     }
 

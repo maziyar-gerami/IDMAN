@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Services.Service;
+import parsso.idman.Models.Services.ServiceGist;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.ServiceRepo;
@@ -84,9 +85,14 @@ public class ServicesController {
         return new ResponseEntity<>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
     }
 
+    @GetMapping("/service/{apiKey}")
+    public ResponseEntity<ServiceGist> retrieveGistService(@PathVariable("apiKey") String apikey) throws IOException, ParseException {
+        return new ResponseEntity<>(serviceRepo.gistService(apikey), HttpStatus.OK);
+    }
+
     @DeleteMapping("/api/services")
     public ResponseEntity<LinkedList<String>> deleteServices(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException {
-        LinkedList ls = serviceRepo.deleteServices(request.getUserPrincipal().getName(), jsonObject);
+        LinkedList ls = serviceRepo.deleteServices("request.getUserPrincipal().getName()", jsonObject);
         if (ls == null) return new ResponseEntity<>(ls, HttpStatus.OK);
         else return new ResponseEntity<>(ls, HttpStatus.BAD_REQUEST);
     }

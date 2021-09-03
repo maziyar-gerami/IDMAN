@@ -10,11 +10,9 @@ import lombok.Setter;
 @Getter
 public class ExtraInfo {
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  String apiAddress;
+    private  String notificationApiURL;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  String userIdApi;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  String key;
+    private  String notificationApiKey;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     long id;

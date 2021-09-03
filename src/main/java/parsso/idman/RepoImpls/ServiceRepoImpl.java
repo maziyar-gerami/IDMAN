@@ -22,6 +22,7 @@ import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.Service;
+import parsso.idman.Models.Services.ServiceGist;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Services.ServicesSubModel.ExtraInfo;
 import parsso.idman.Models.Users.User;
@@ -341,14 +342,11 @@ public class ServiceRepoImpl implements ServiceRepo {
         extraInfo.setPosition(i);
         try {
 
-        extraInfo.setApiAddress(jsonObject.get("apiAddress").toString());
+        extraInfo.setNotificationApiURL(jsonObject.get("notificationApiURL").toString());
         }catch (Exception e){}
 
         try {
-            extraInfo.setUserIdApi(jsonObject.get("userIdApi").toString());
-        }catch (Exception e){}
-        try {
-            extraInfo.setKey(jsonObject.get("key").toString());
+            extraInfo.setNotificationApiKey(jsonObject.get("notificationApiKey").toString());
         }catch (Exception e){}
         return extraInfo;
     }
@@ -393,15 +391,11 @@ public class ServiceRepoImpl implements ServiceRepo {
             extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
 
             try {
-                extraInfo.setApiAddress(jsonObject.get("apiAddress") != null ? jsonObject.get("apiAddress").toString() : oldExtraInfo.getApiAddress());
+                extraInfo.setNotificationApiURL(jsonObject.get("notificationApiURL") != null ? jsonObject.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
 
             } catch (Exception e){}
             try {
-                extraInfo.setUserIdApi(jsonObject.get("userIdApi") != null ? jsonObject.get("userIdApi").toString() : oldExtraInfo.getUserIdApi());
-
-            }catch (Exception e){}
-            try {
-                extraInfo.setKey(jsonObject.get("key") != null ? jsonObject.get("key").toString() : oldExtraInfo.getKey());
+                extraInfo.setNotificationApiKey(jsonObject.get("notificationApiKey") != null ? jsonObject.get("notificationApiKey").toString() : oldExtraInfo.getNotificationApiKey());
             }catch (Exception e){}
 
             try {
@@ -446,6 +440,12 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Override
     public HttpStatus decreasePosition(String id) {
         return position.decrease(id);
+    }
+
+    @Override
+    public ServiceGist gistService(String apikey) {
+        return new ServiceGist();
+
     }
 
     private Service analyze(String file) throws IOException, ParseException {

@@ -6,6 +6,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Services.Service;
+import parsso.idman.Models.Services.ServiceGist;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.User;
 
@@ -37,4 +38,6 @@ public interface ServiceRepo {
     HttpStatus increasePosition(String id);
 
     HttpStatus decreasePosition(String id);
+
+    ServiceGist gistService(String apikey);
 }
