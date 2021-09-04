@@ -19,21 +19,19 @@ import java.text.ParseException;
 
 @Controller
 public class ReportsController {
-
     @Autowired
     private ReportRepo reportRepo;
     @Autowired
     private LogsExcelView logsExcelView;
 
-    //*************************************** Pages ***************************************
+    //************************************* Pages ****************************************
 
     @GetMapping("/reports")
     public String Reports() {
         return "reports";
     }
 
-    //*************************************** APIs ***************************************
-
+    //************************************* APIs ****************************************
 
     @GetMapping("/api/reports/users/{page}/{n}")
     public ResponseEntity<ListReports> retrieveAllLogs(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
@@ -67,7 +65,6 @@ public class ReportsController {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(reportRepo.getListUserLogByDate(date, principal.getName(), page, n), HttpStatus.OK);
     }
-
 
     @GetMapping("/api/reports/users/export")
     public ModelAndView downloadExcel() {

@@ -1,17 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package parsso.idman.Utils.SMS.KaveNegar.models;
 
 
 import com.google.gson.JsonObject;
 
-/**
- * @author mohsen
- */
 public class CountInboxResult {
-
     private final Long startDate;
     private final Long endDate;
     private final Long sumCount;

@@ -14,7 +14,6 @@ public class ListAudits {
     int pages;
     List<Audit> auditList;
 
-
     public ListAudits(List<Audit> relativeAudits, long size, int pages) {
         this.size = size;
         this.pages = pages;

@@ -18,7 +18,6 @@ import java.util.Map;
 @Getter
 
 public class AccessStrategy {
-
     @JsonIgnore
     ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @JsonProperty("@class")
@@ -122,10 +121,8 @@ public class AccessStrategy {
 
         AccessStrategy accessStrategy = new AccessStrategy();
 
-
         if (jsonObject.get("unauthorizedRedirectUrl") != (null))
             accessStrategy.setUnauthorizedRedirectUrl(jsonObject.get("unauthorizedRedirectUrl").toString());
-
 
         if (jsonObject.get("startingDateTime") != null) {
             String s = jsonObject.get("startingDateTime").toString();
@@ -161,7 +158,6 @@ public class AccessStrategy {
 
         accessStrategy.setSsoEnabled(jsonObject.get("ssoEnabled") != (null) && (boolean) jsonObject.get("ssoEnabled") != false);
 
-
         JSONObject tempReqiredAttribute = new JSONObject();
         JSONArray obj = null;
         JSONObject t1;
@@ -184,7 +180,6 @@ public class AccessStrategy {
         }
 
         accessStrategy.setRequiredAttributes(tempReqiredAttribute);
-
 
         JSONObject tempRejectedAttribute = new JSONObject();
 

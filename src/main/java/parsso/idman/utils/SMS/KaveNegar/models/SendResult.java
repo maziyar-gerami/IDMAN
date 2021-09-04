@@ -1,17 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package parsso.idman.Utils.SMS.KaveNegar.models;
 
 
 import com.google.gson.JsonObject;
 
-/**
- * @author mohsen
- */
 public class SendResult {
-
     private final Long messageId;
     private final String message;
     private final Integer status;
@@ -20,7 +12,6 @@ public class SendResult {
     private final String receptor;
     private final Long date;
     private final Integer cost;
-
 
     public SendResult(JsonObject json) {
         this.cost = json.get("cost").getAsInt();

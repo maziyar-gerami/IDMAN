@@ -21,7 +21,6 @@ import java.time.ZoneOffset;
 
 @Service
 public class BuildAttributes {
-
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
@@ -78,17 +77,16 @@ public class BuildAttributes {
         if (p.getEndTime() != null) {
 
             try {
-                if(p.getEndTime().length() ==13)
+                if (p.getEndTime().length() == 13)
                     attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
-                if(p.getEndTime().length() ==10)
-                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())*1000));
+                if (p.getEndTime().length() == 10)
+                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime()) * 1000));
                 if (p.getEndTime().contains("."))
                     attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(TimeHelper.convertDateToEpoch(p.getEndTime())));
 
 
-
-            }catch (Exception e){
-                attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime().substring(0, p.getEndTime().indexOf('.')))*1000));
+            } catch (Exception e) {
+                attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime().substring(0, p.getEndTime().indexOf('.'))) * 1000));
             }
 
         }
@@ -109,7 +107,6 @@ public class BuildAttributes {
         if (p.getFirstName() != null)
             if (p.getFirstName() != "")
                 context.setAttributeValue("givenName", p.getFirstName().trim());
-
 
         //Last Name (sn) *
         if (p.getLastName() != null)
@@ -205,13 +202,11 @@ public class BuildAttributes {
         ZoneId systemZone = zoneId; // my timezone
         ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
 
-
         if (p.getUsersExtraInfo() != null && p.getUsersExtraInfo().getResetPassToken() != null)
             mongoTemplate.save(p.getUsersExtraInfo(), Variables.col_usersExtraInfo);
 
-
         //EndTime
-        if (p.getEndTime()!=null&&!p.getEndTime().equals(old.getEndTime()) && p.getEndTime().charAt(0)!=('-')){
+        if (p.getEndTime() != null && !p.getEndTime().equals(old.getEndTime()) && p.getEndTime().charAt(0) != ('-')) {
             if (p.getEndTime() != null && p.getEndTime() != "") {
                 if (p.getEndTime().length() == 10)
                     context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime()) * 1000));
@@ -219,35 +214,34 @@ public class BuildAttributes {
                     try {
                         context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
                     } catch (NumberFormatException e) {
-                        if(p.getEndTime().contains("+"))
+                        if (p.getEndTime().contains("+"))
                             context.setAttributeValue("pwdEndTime", p.getEndTime());
                         else
-                            context.setAttributeValue("pwdEndTime", p.getEndTime()+currentOffsetForMyZone.toString().replaceAll(":",""));
+                            context.setAttributeValue("pwdEndTime", p.getEndTime() + currentOffsetForMyZone.toString().replaceAll(":", ""));
 
                     }
 
             } else if (p.getEndTime() != null && p.getEndTime() == "")
                 context.removeAttributeValue("pwdEndTime", old.getEndTime());
 
+            ModificationItem[] modificationItems;
+            modificationItems = new ModificationItem[1];
 
-        ModificationItem[] modificationItems;
-        modificationItems = new ModificationItem[1];
+            if (p.getEndTime() != null && old.getEndTime() != null) {
 
-        if (p.getEndTime() != null && old.getEndTime() != null) {
+                modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
+                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
 
-            modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
-            ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
+            } else if (p.getEndTime() == null && old.getEndTime() != null) {
+                modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
+                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
 
-        } else if (p.getEndTime() == null && old.getEndTime() != null) {
-            modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
-            ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
+            } else if (p.getEndTime() != null && old.getEndTime() != null) {
+                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
+                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
+            }
 
-        } else if (p.getEndTime() != null && old.getEndTime() != null) {
-            modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
-            ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
         }
-
-    }
         return context;
     }
 

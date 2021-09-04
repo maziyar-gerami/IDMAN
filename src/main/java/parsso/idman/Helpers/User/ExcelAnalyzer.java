@@ -20,7 +20,6 @@ import java.util.List;
 
 @Service
 public class ExcelAnalyzer {
-
     @Autowired
     LdapTemplate ldapTemplate;
     @Autowired
@@ -37,7 +36,6 @@ public class ExcelAnalyzer {
         if (hasHeader == true) rowIterator.next();
 
         DataFormatter formatter = new DataFormatter();
-
 
         while (rowIterator.hasNext()) {
 
@@ -69,40 +67,6 @@ public class ExcelAnalyzer {
         return notExist;
     }
 
-    /*public List csvSheetAnalyze(BufferedReader sheet, String ou, boolean hasHeader) throws IOException {
-
-        String row;
-        int i = 0;
-        List<String> notExist = new LinkedList<>();
-
-        while ((row = sheet.readLine()) != null) {
-            if (i == 0 && hasHeader) {
-                i++;
-                continue;
-            }
-
-            ModificationItem[] items = new ModificationItem[1];
-            Attribute[] attrs = new Attribute[1];
-
-            String[] data = row.split(",");
-
-            attrs[0] = new BasicAttribute("ou", ou);
-            items[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, attrs[0]);
-
-            try {
-                ldapTemplate.modifyAttributes(new BuildDnUser().buildDn(data[0]), items);
-
-            } catch (Exception e) {
-                if (e.getClass().toString().contains("NameNotFoundException"))
-                    notExist.add(data[0]);
-            }
-
-            i++;
-
-        }
-        return notExist;
-    }*/
-
     public List csvSheetAnalyzer(String doer, BufferedReader sheet, String ou, boolean hasHeader) throws IOException, ParseException {
 
         String row;
@@ -116,7 +80,6 @@ public class ExcelAnalyzer {
                 i++;
                 continue;
             }
-
 
             User user = userRepo.retrieveUsers(data[0]);
             user.getMemberOf().add(ou);

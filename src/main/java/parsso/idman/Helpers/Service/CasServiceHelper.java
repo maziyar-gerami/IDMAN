@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import parsso.idman.Helpers.Comparison;
 import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
@@ -19,6 +20,7 @@ import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.CasService;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Services.ServicesSubModel.*;
+import parsso.idman.Models.Users.UsersGroups;
 import parsso.idman.Repos.ServiceRepo;
 
 import java.io.File;
@@ -30,8 +32,6 @@ import java.util.*;
 
 @Component
 public class CasServiceHelper {
-
-    final String model = "Service";
     private final String collection = Variables.col_services;
     @Value("${services.folder.path}")
     String path;
@@ -39,7 +39,6 @@ public class CasServiceHelper {
     MongoTemplate mongoTemplate;
     @Autowired
     ServiceRepo serviceRepo;
-
     @Autowired
     UniformLogger uniformLogger;
 
@@ -58,7 +57,6 @@ public class CasServiceHelper {
         if (jo.get("privacyUrl") != null) service.setPrivacyUrl(jo.get("privacyUrl").toString());
         if (jo.get("logo") != null) service.setLogo(jo.get("logo").toString());
         if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
-
 
         if (jo.get("expirationPolicy") == null)
             service.setExpirationPolicy(new ExpirationPolicy());
@@ -232,7 +230,6 @@ public class CasServiceHelper {
                             jsonObject1 = new JSONObject((Map) temp1.get(i));
                         }
 
-
                         Contact contact = new Contact();
                         if (jsonObject1.get("name") != null) contact.setName(jsonObject1.get("name").toString());
                         if (jsonObject1.get("email") != null) {
@@ -282,8 +279,8 @@ public class CasServiceHelper {
         try {
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
-            uniformLogger.record(doerID, new ReportMessage(model, String.valueOf(id), "",
-                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Opening file"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, "Fetching problem"));
             return HttpStatus.FORBIDDEN;
         }
 
@@ -300,12 +297,14 @@ public class CasServiceHelper {
             file = new FileWriter(path + filePath + ".json");
             file.write(json);
             file.close();
-            uniformLogger.record(doerID,new ReportMessage(model, String.valueOf(id), "",
-                    Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
+            UsersGroups usersGroups = new Comparison().compare(oldService.getAccessStrategy(), service.getAccessStrategy());
+
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, oldService, service, usersGroups, ""));
             return HttpStatus.OK;
         } catch (IOException e) {
-            uniformLogger.record(doerID, new ReportMessage(model, String.valueOf(id), "",
-                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Writing file"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, "Saving problem"));
             return HttpStatus.FORBIDDEN;
         }
 
@@ -338,8 +337,8 @@ public class CasServiceHelper {
                     try {
                         machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
                     } catch (Exception e) {
-                        uniformLogger.record("System",new ReportMessage(Variables.MODEL_SERVICE,service.getServiceId(),
-                                "IP",Variables.ACTION_GET,Variables.RESULT_FAILED,""));
+                        uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                                "IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
                         machines = null;
                     }
 
@@ -355,14 +354,14 @@ public class CasServiceHelper {
                 file.close();
 
                 mongoTemplate.save(microService, collection);
-                uniformLogger.record(doerID,new ReportMessage(Variables.MODEL_SERVICE,service.getServiceId(),
-                        "",Variables.ACTION_CREATE,Variables.RESULT_SUCCESS,""));
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
+                        "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
 
                 return service.getId();
             } catch (IOException e) {
 
-                uniformLogger.record(doerID,new ReportMessage(Variables.MODEL_SERVICE,service.getServiceId(),
-                        "",Variables.ACTION_CREATE,Variables.RESULT_FAILED,""));
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                        "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
                 return 0;
             }
 

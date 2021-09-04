@@ -3,8 +3,6 @@ package parsso.idman.RepoImpls;
 
 import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +37,6 @@ import java.util.List;
 
 @Service
 public class EmailServiceImpl implements EmailService {
-
     private final String collection = Variables.col_captchas;
     @Value("${spring.mail.username}")
     String from;
@@ -86,12 +83,11 @@ public class EmailServiceImpl implements EmailService {
         helper.setText(Variables.template(user, url), true);
         try {
             mailSender.send(message);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-
 
     public HttpStatus sendMail(String email) throws IOException, ParseException {
         if (checkMail(email) != null) {
@@ -100,7 +96,6 @@ public class EmailServiceImpl implements EmailService {
             tokenClass.insertEmailToken(user);
 
             String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
-
 
             Thread thread = new Thread() {
                 @SneakyThrows
@@ -145,14 +140,11 @@ public class EmailServiceImpl implements EmailService {
             }
         }
 
-
         return HttpStatus.OK;
     }
 
     @Override
     public int sendMail(String email, String cid, String answer) throws IOException, ParseException {
-
-
 
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -171,7 +163,7 @@ public class EmailServiceImpl implements EmailService {
         else if (checkMail(email).size() > 1)
             return -2;
 
-        if (checkMail(email).size() ==1) {
+        if (checkMail(email).size() == 1) {
             user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
@@ -209,8 +201,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public int sendMail(String email, String uid, String cid, String answer) throws IOException, ParseException {
-        Logger logger = LogManager.getLogger("test");
-
 
         Query query = new Query(Criteria.where("_id").is(cid));
         CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -221,13 +211,12 @@ public class EmailServiceImpl implements EmailService {
             return -1;
         }
 
-        if (checkMail(email) != null && userRepo.retrieveUsers(uid)!=null && userRepo.retrieveUsers(uid).getUserId() != null) {
+        if (checkMail(email) != null && userRepo.retrieveUsers(uid) != null && userRepo.retrieveUsers(uid).getUserId() != null) {
             List<JSONObject> ids = checkMail(email);
             List<User> people = new LinkedList<>();
             User user = userRepo.retrieveUsers(uid);
             for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
 
-            logger.warn("people : "+ people);
             for (User p : people) {
 
                 if (user.equals(p)) {
@@ -235,7 +224,6 @@ public class EmailServiceImpl implements EmailService {
                     tokenClass.insertEmailToken(user);
 
                     String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
-
 
                     try {
 

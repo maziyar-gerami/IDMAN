@@ -14,13 +14,11 @@ public class ListEvents {
     int pages;
     List<Event> eventList;
 
-
     public ListEvents(long size, int pages, List<Event> relativeEvents) {
         this.size = size;
         this.pages = pages;
         this.eventList = relativeEvents;
     }
-
 
     public ListEvents() {
 

@@ -25,12 +25,10 @@ import java.util.Map;
 
 @Service
 public class EventsExcelView extends AbstractXlsView {
-
     public static String mainCollection = "MongoDbCasEventRepository";
     @Autowired
     EventRepo eventRepo;
     ZoneId zoneId = ZoneId.of(Variables.ZONE);
-
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {

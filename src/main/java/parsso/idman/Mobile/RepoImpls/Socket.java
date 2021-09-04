@@ -12,10 +12,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 @ServerEndpoint(value = "/webSocket")
 public class Socket {
-
     private static final Set<Socket> connections = new CopyOnWriteArraySet<Socket>();
     public Session session;
-
 
     @OnOpen
     public void onOpen(Session session) {
@@ -25,12 +23,10 @@ public class Socket {
 
     }
 
-
     @OnMessage
     public void onMessage(String message) {
         broadcast(message);
     }
-
 
     @OnClose
     public void onClose() {

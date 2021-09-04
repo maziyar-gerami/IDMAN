@@ -34,13 +34,11 @@ public class UsersExtraInfo {
     private String category;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String subCategory;
-
     private String displayName;
     private long timeStamp;
     private List<String> memberOf;
     private String status;
     private long passwordChangedTime;
-
 
     public UsersExtraInfo() {
 

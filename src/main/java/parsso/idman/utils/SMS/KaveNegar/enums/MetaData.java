@@ -1,15 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package parsso.idman.Utils.SMS.KaveNegar.enums;
 
 
-/**
- * @author Mohsen
- */
 public enum MetaData {
-
     NotChecked(99),
     Approved(100),
     InvalidApiKey(101),

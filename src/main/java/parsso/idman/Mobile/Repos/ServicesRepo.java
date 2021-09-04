@@ -9,7 +9,6 @@ import parsso.idman.Models.Users.User;
 import java.io.IOException;
 
 public interface ServicesRepo {
-
     byte[] getQRCodeImage(String text, int width, int height) throws WriterException, IOException;
 
     String ActivationSendMessage(User user);

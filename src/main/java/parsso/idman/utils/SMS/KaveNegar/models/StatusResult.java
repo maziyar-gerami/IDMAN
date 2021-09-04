@@ -1,18 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package parsso.idman.Utils.SMS.KaveNegar.models;
 
 
 import com.google.gson.JsonObject;
 import parsso.idman.Utils.SMS.KaveNegar.enums.MessageStatus;
 
-/**
- * @author mohsen
- */
 public class StatusResult {
-
     int messageId;
     MessageStatus status;
     String statusText;

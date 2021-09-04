@@ -2,8 +2,6 @@ package parsso.idman.RepoImpls;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,9 +18,11 @@ import parsso.idman.Helpers.Service.CasServiceHelper;
 import parsso.idman.Helpers.Service.Position;
 import parsso.idman.Helpers.Service.SamlServiceHelper;
 import parsso.idman.Helpers.Service.Trim;
+import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.Service;
+import parsso.idman.Models.Services.ServiceGist;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Services.ServicesSubModel.ExtraInfo;
 import parsso.idman.Models.Users.User;
@@ -37,10 +37,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-
 @org.springframework.stereotype.Service
 public class ServiceRepoImpl implements ServiceRepo {
-
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
@@ -55,8 +53,9 @@ public class ServiceRepoImpl implements ServiceRepo {
     LdapTemplate ldapTemplate;
     @Autowired
     Position position;
+    @Autowired
+    UniformLogger uniformLogger;
     String collection = Variables.col_servicesExtraInfo;
-    String model = "Service";
     @Value("${services.folder.path}")
     private String path;
     @Value("${base.url}")
@@ -64,8 +63,6 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     @Override
     public List<MicroService> listUserServices(User user) throws IOException {
-
-        Logger logger = LogManager.getLogger("System");
 
         List<Service> services = listServicesFull();
 
@@ -106,7 +103,8 @@ public class ServiceRepoImpl implements ServiceRepo {
                 microService = mongoTemplate.findOne(query, MicroService.class, collection);
             } catch (Exception e) {
                 microService = new MicroService(service.getId(), service.getServiceId());
-                logger.warn(new ReportMessage(model, "", "", "retrieve", "failed", "unable read extra info from mongo for " + service.getName()).toString());
+                uniformLogger.error(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(), "",
+                        Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "unable read extra info from mongo"));
 
             } finally {
                 microServices.add(new MicroService(service, microService));
@@ -118,20 +116,21 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     }
 
-
     @Override
     public List<Service> listServicesFull() throws IOException {
-        Logger logger = LogManager.getLogger("System");
         File folder = new File(path); // ./services/
         String[] files = folder.list();
         List<Service> services = new LinkedList<>();
+        Service service = null;
         for (String file : files) {
             if (file.endsWith(".json"))
                 try {
-                    services.add(analyze(file));
+                    service = analyze(file);
+                    services.add(service);
                     Collections.sort(services);
                 } catch (Exception e) {
-                    logger.warn(new ReportMessage(model, file, "", "retrieve", "failed", "Unable to read service ").toString());
+                    uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
+                            "", Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to read service"));
                     continue;
                 }
         }
@@ -161,10 +160,8 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     @Override
     public List<MicroService> listServicesMain() {
-        Logger logger = LogManager.getLogger("System");
 
         File folder = new File(path); // ./services/
-        String sid;
         String[] files = folder.list();
         List<MicroService> services = new LinkedList<>();
         Service service = null;
@@ -174,7 +171,8 @@ public class ServiceRepoImpl implements ServiceRepo {
                 try {
                     service = analyze(file);
                 } catch (Exception e) {
-                    logger.warn(new ReportMessage(model, file, "", "retrieve", "failed", "Unable to parse service ").toString());
+                    uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(), "",
+                            Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to parse service"));
 
                     continue;
                 }
@@ -191,10 +189,8 @@ public class ServiceRepoImpl implements ServiceRepo {
         return services;
     }
 
-
     @Override
     public Service retrieveService(long serviceId) throws IOException {
-        Logger logger = LogManager.getLogger("System");
 
         ExtraInfo extraInfo;
 
@@ -206,7 +202,8 @@ public class ServiceRepoImpl implements ServiceRepo {
                     extraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
                 } catch (Exception e) {
                     extraInfo = new ExtraInfo();
-                    logger.warn(new ReportMessage(model, service.getServiceId(), "", "retrieve", "failed", "Unable to get extra service for service").toString());
+                    uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                            "", Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to get extraInfo of service"));
 
                 }
 
@@ -218,8 +215,6 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     @Override
     public LinkedList<String> deleteServices(String doerID, JSONObject jsonObject) {
-
-        Logger logger = LogManager.getLogger(doerID);
 
         File folder = new File(path);
         List allFiles = Arrays.asList(folder.list());
@@ -234,7 +229,6 @@ public class ServiceRepoImpl implements ServiceRepo {
                 for (Object aFile : allFiles)
                     if (aFile.toString().contains(file))
                         selectedFiles.add(aFile);
-
 
         }
 
@@ -254,10 +248,12 @@ public class ServiceRepoImpl implements ServiceRepo {
             position.delete(microService.getPosition());
             try {
                 mongoTemplate.remove(query, MicroService.class, collection);
-                logger.warn(new ReportMessage(model, file.toString(), "", "delete", "success", "").toString());
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                        Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model, file.toString(), "", "delete", "failed", "contacting mongoDB").toString());
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                        Variables.ACTION_DELETE, Variables.RESULT_FAILED, "Writing to mongoDB"));
 
             }
 
@@ -268,8 +264,6 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     @Override
     public HttpStatus updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException {
-
-        Logger logger = LogManager.getLogger(doerID);
 
         //Update ou
         userRepo.updateUsersWithSpecificOU(doerID, oldOu, newOu);
@@ -283,14 +277,13 @@ public class ServiceRepoImpl implements ServiceRepo {
         //Converting the Object to JSONString
         String jsonString = mapper.writeValueAsString(service);
 
-
         try {
             FileWriter file = new FileWriter(path + filePath, false);
             file.write(jsonString);
             file.close();
-            logger.warn(new ReportMessage(model, String.valueOf(sid), "", "update", "success", "").toString());
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, sid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, service, ""));
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model, String.valueOf(sid), "", "update", "failed", "").toString());
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, sid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, ""));
 
         }
 
@@ -298,80 +291,57 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     }
 
-    String getSystem(Service service) {
-        if (service.getAtClass().contains("saml"))
-            return "saml";
-        else if (service.getAtClass().contains("cas"))
-            return "cas";
-
-        else
-            return null;
-    }
-
-
     @Override
     public HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException {
 
-        Logger logger = LogManager.getLogger(doerID);
 
-        ExtraInfo extraInfo = null;
+
+        ExtraInfo extraInfo = new ExtraInfo();
         long id = 0;
         JSONObject jsonExtraInfo = new JSONObject();
 
 
-        if (jsonObject.get("extraInfo") != null) {
-            if (jsonObject.get("extraInfo").getClass().toString().equals("class org.json.simple.JSONObject"))
-                jsonExtraInfo = (JSONObject) jsonObject.get("extraInfo");
-
-            else if (jsonObject.get("extraInfo").getClass().toString().equals("class java.util.LinkedHashMap"))
-                jsonExtraInfo = new JSONObject((Map) jsonObject.get("extraInfo"));
-        }
-
-        extraInfo = new ExtraInfo();
-
         extraInfo.setUrl(jsonExtraInfo != null && jsonExtraInfo.get("url") != null ?
                 jsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
 
-        if (baseUrl.contains("localhost")) {
+        if (baseUrl.contains("localhost"))
             extraInfo.setUUID(GenerateUUID.getUUID());
-        }
 
-        if (system.equalsIgnoreCase("cas")) {
-            id = casServiceHelper.create(doerID,jsonObject);
-            if (id > 0) {
-                if (extraInfo != null) {
-                    extraInfo.setId(id);
-                    extraInfo.setPosition(position.lastPosition() + 1);
+        if (system.equalsIgnoreCase("cas"))
+            id = casServiceHelper.create(doerID, jsonObject);
 
-                } else {
-                    extraInfo = new ExtraInfo();
-                    extraInfo.setId(id);
-                    extraInfo.setPosition(position.lastPosition() + 1);
-
-                }
-
-            }
-        } else if (system.equalsIgnoreCase("saml"))
+         else if (system.equalsIgnoreCase("saml"))
             id = samlServiceHelper.create(doerID, jsonObject);
-        if (id > 0)
-            if (extraInfo != null) {
-                extraInfo.setId(id);
-                extraInfo.setPosition(position.lastPosition() + 1);
 
-            } else {
+        if (id > 0)
+            if (extraInfo == null)
                 extraInfo = new ExtraInfo();
-                extraInfo.setId(id);
-                extraInfo.setPosition(position.lastPosition() + 1);
-            }
+
+            extraInfo = setExtraInfo(id,extraInfo, jsonObject,position.lastPosition() + 1);
+
 
         try {
             mongoTemplate.save(extraInfo, collection);
             return HttpStatus.OK;
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model, String.valueOf(extraInfo.getId()), "", "create", "failed", "writing to mongoDB").toString());
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongoDB"));
             return HttpStatus.FORBIDDEN;
         }
 
+    }
+
+    private ExtraInfo setExtraInfo(long id, ExtraInfo extraInfo, JSONObject jsonObject, int i) {
+        extraInfo.setId( id);
+        extraInfo.setPosition(i);
+        try {
+
+        extraInfo.setNotificationApiURL(jsonObject.get("notificationApiURL").toString());
+        }catch (Exception e){}
+
+        try {
+            extraInfo.setNotificationApiKey(jsonObject.get("notificationApiKey").toString());
+        }catch (Exception e){}
+        return extraInfo;
     }
 
     @Override
@@ -389,11 +359,8 @@ public class ServiceRepoImpl implements ServiceRepo {
         }
     }
 
-
     @Override
     public HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) throws IOException, ParseException {
-
-        Logger logger = LogManager.getLogger(doerID);
 
         JSONObject JsonExtraInfo = null;
 
@@ -415,24 +382,31 @@ public class ServiceRepoImpl implements ServiceRepo {
                     JsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
 
             extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
+
+            try {
+                extraInfo.setNotificationApiURL(jsonObject.get("notificationApiURL") != null ? jsonObject.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
+
+            } catch (Exception e){}
+            try {
+                extraInfo.setNotificationApiKey(jsonObject.get("notificationApiKey") != null ? jsonObject.get("notificationApiKey").toString() : oldExtraInfo.getNotificationApiKey());
+            }catch (Exception e){}
+
             try {
                 extraInfo.setPosition(oldExtraInfo.getPosition());
+            } catch (Exception e) {}
 
-            } catch (Exception e) {
 
-            }
+
             extraInfo.setId(id);
-
-
         }
-
 
         if (system.equalsIgnoreCase("cas")) {
             try {
                 mongoTemplate.save(extraInfo, collection);
 
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model, String.valueOf(extraInfo.getId()), "", "update", "failed", "writing to mongoDB").toString());
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
+                        Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to mongoDB"));
                 return HttpStatus.FORBIDDEN;
             }
             return casServiceHelper.update(doerID, id, jsonObject);
@@ -442,9 +416,11 @@ public class ServiceRepoImpl implements ServiceRepo {
                 mongoTemplate.save(extraInfo, collection);
 
             } catch (Exception e) {
-                logger.warn(new ReportMessage(model, String.valueOf(extraInfo.getId()), "", "update", "failed", "writing to mongoDB").toString());
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
+                        Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to mongoDB"));
                 return HttpStatus.FORBIDDEN;
             }
+
         return samlServiceHelper.update(doerID, id, jsonObject);
 
     }
@@ -459,8 +435,13 @@ public class ServiceRepoImpl implements ServiceRepo {
         return position.decrease(id);
     }
 
+    @Override
+    public ServiceGist gistService(String apikey) {
+        return new ServiceGist();
+
+    }
+
     private Service analyze(String file) throws IOException, ParseException {
-        Logger logger = LogManager.getLogger("System");
 
         FileReader reader = new FileReader(path + file);
         JSONParser jsonParser = new JSONParser();
@@ -480,7 +461,8 @@ public class ServiceRepoImpl implements ServiceRepo {
             extraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
         } catch (Exception e) {
             extraInfo = new ExtraInfo();
-            logger.warn(new ReportMessage(model, String.valueOf(extraInfo.getId()), "", "parse", "failed", "Unable to get extra service for service").toString());
+            uniformLogger.warn("System", new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
+                    Variables.ACTION_PARSE, Variables.RESULT_FAILED, "Unable to get extra service for service"));
 
         }
 

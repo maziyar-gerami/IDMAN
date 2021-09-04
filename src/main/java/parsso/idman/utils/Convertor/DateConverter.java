@@ -12,34 +12,12 @@ import java.time.ZoneId;
 @Getter
 
 public class DateConverter {
-
     ZoneId zoneId = ZoneId.of(Variables.ZONE);
     private int day, month, year;
     private int jYear, jMonth, jDay;
     private int gYear, gMonth, gDay;
     private int leap, march;
 
-    /**
-     * Calculates the Julian Day number (JG2JD) from Gregorian or Julian
-     * <p>
-     * calendar dates. This integer number corresponds to the noon of the date
-     * <p>
-     * (i.e. 12 hours of Universal Time). The procedure was tested to be good
-     * <p>
-     * since 1 March, -100100 (of both the calendars) up to a few millions
-     * <p>
-     * (10**6) years into the future. The algorithm is based on D.A. Hatcher,
-     * <p>
-     * Q.Jl.R.Astron.Soc. 25(1984), 53-55 slightly modified by me (K.M.
-     * <p>
-     * Borkowski, Post.Astron. 25(1987), 275-279).
-     *
-     * @param year  int
-     * @param month int
-     * @param day   int
-     * @param J1G0  to be set to 1 for Julian and to 0 for Gregorian calendar
-     * @return Julian Day number
-     */
     private int JG2JD(int year, int month, int day, int J1G0) {
         int jd = (1461 * (year + 4800 + (month - 14) / 12)) / 4
                 + (367 * (month - 2 - 12 * ((month - 14) / 12))) / 12
@@ -51,20 +29,6 @@ public class DateConverter {
         return jd;
     }
 
-    /**
-     * Calculates Gregorian and Julian calendar dates from the Julian Day number
-     * <p>
-     * (JD) for the period since JD=-34839655 (i.e. the year -100100 of both the
-     * <p>
-     * calendars) to some millions (10**6) years ahead of the present. The
-     * <p>
-     * algorithm is based on D.A. Hatcher, Q.Jl.R.Astron.Soc. 25(1984), 53-55
-     * <p>
-     * slightly modified by me (K.M. Borkowski, Post.Astron. 25(1987), 275-279).
-     *
-     * @param JD   Julian day number as int
-     * @param J1G0 to be set to 1 for Julian and to 0 for Gregorian calendar
-     */
     private void JD2JG(int JD, int J1G0) {
         int i, j;
         j = 4 * JD + 139361631;
@@ -77,11 +41,6 @@ public class DateConverter {
         gYear = j / 1461 - 100100 + (8 - gMonth) / 6;
     }
 
-    /**
-     * Converts the Julian Day number to a date in the Jalali calendar
-     *
-     * @param JDN the Julian Day number
-     */
     private void JD2Jal(int JDN) {
         JD2JG(JDN, 0);
         jYear = gYear - 621;
@@ -107,28 +66,11 @@ public class DateConverter {
         jDay = (k % 30) + 1;
     }
 
-    /**
-     * Converts a date of the Jalali calendar to the Julian Day Number
-     *
-     * @param jY Jalali year as int
-     * @param jM Jalali month as int
-     * @param jD Jalali day as int
-     * @return Julian day number
-     */
     private int Jal2JD(int jY, int jM, int jD) {
         JalCal(jY);
         return JG2JD(gYear, 3, march, 1) + (jM - 1) * 31 - jM / 7 * (jM - 7) + jD - 1;
     }
 
-    /**
-     * This procedure determines if the Jalali (Persian) year is leap (366-day
-     * <p>
-     * long) or is the common year (365 days), and finds the day in March
-     * <p>
-     * (Gregorian calendar) of the first day of the Jalali year (jYear)
-     *
-     * @param jY Jalali calendar year (-61 to 3177)
-     */
     private void JalCal(int jY) {
         march = 0;
         leap = 0;
@@ -163,20 +105,6 @@ public class DateConverter {
         }
     }
 
-    /**
-     * Modified toString() method that represents date string
-     *
-     * @return Date as String
-     */
-
-
-    /**
-     * Converts Gregorian date to Persian(Jalali) date
-     *
-     * @param year  int
-     * @param month int
-     * @param day   int
-     */
     public void gregorianToPersian(int year, int month, int day) {
         int jd = JG2JD(year, month, day, 0);
         JD2Jal(jd);
@@ -184,7 +112,6 @@ public class DateConverter {
         this.month = jMonth;
         this.day = jDay;
     }
-
 
     public String[] convertDate(String s) {
         String[] strings = new String[2];
@@ -208,12 +135,10 @@ public class DateConverter {
             stringBuilder.append("0");
         stringBuilder.append(d);
 
-
         strings[0] = String.valueOf(stringBuilder);
         strings[1] = String.valueOf(y);
         return strings;
     }
-
 
     public String MonthToString(int n) {
         switch (n) {
@@ -256,13 +181,6 @@ public class DateConverter {
         }
     }
 
-    /**
-     * Converts Persian(Jalali) date to Gregorian date
-     *
-     * @param year  int
-     * @param month int
-     * @param day   int
-     */
     public void persianToGregorian(int year, int month, int day) {
         int jd = Jal2JD(year, month, day);
         JD2JG(jd, 0);

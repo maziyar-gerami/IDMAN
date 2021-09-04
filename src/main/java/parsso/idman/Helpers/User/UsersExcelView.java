@@ -20,7 +20,6 @@ import java.util.Map;
 
 @Service
 public class UsersExcelView extends AbstractXlsView {
-
     @Autowired
     UserRepo userRepo;
 

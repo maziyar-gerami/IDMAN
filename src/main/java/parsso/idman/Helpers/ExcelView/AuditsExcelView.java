@@ -26,7 +26,6 @@ import java.util.TimeZone;
 
 @Service
 public class AuditsExcelView extends AbstractXlsView {
-
     public static String mainCollection = "MongoDbCasAuditRepository";
     @Autowired
     AuditRepo auditRepo;
@@ -87,7 +86,6 @@ public class AuditsExcelView extends AbstractXlsView {
 
             Calendar cal = Calendar.getInstance(TimeZone.getDefault());
             cal.setTime(audit.getWhenActionWasPerformed());
-
 
             ZonedDateTime eventDate = OffsetDateTime.ofInstant(audit.getWhenActionWasPerformed().toInstant(), zoneId).atZoneSameInstant(zoneId);
             Time time = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),

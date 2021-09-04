@@ -18,7 +18,6 @@ import ua_parser.Parser;
 import java.io.IOException;
 import java.io.Serializable;
 
-
 @Setter
 @Getter
 @JsonDeserialize
@@ -50,7 +49,6 @@ public class Event implements Serializable {
     @JsonIgnore
     String _class;
     Time time;
-
 
     public String getType() {
         ActionInfo actionHelper = new ActionInfo(type);
@@ -98,7 +96,6 @@ public class Event implements Serializable {
         return agentInfo;
     }
 
-
     @Setter
     @Getter
     @JsonDeserialize
@@ -107,7 +104,6 @@ public class Event implements Serializable {
         private String agent;
         @JsonProperty("clientIP")
         private String clientip;
-
         private String serverip;
         @JsonIgnore
         private String timestamp;

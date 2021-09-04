@@ -14,7 +14,6 @@ public class ListUsers {
     int pages;
     List<UsersExtraInfo> userList;
 
-
     public ListUsers(int size, List<UsersExtraInfo> relativeEvents, int pages) {
         this.size = size;
         this.pages = pages;

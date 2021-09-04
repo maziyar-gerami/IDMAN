@@ -18,20 +18,19 @@ import java.text.ParseException;
 
 @Controller
 public class EventsController {
-
     @Autowired
     private EventRepo eventRepo;
     @Autowired
     private EventsExcelView eventsExcelView;
 
-    //*************************************** Pages ***************************************
+    //************************************* Pages ****************************************
 
     @GetMapping("/events")
     public String Events() {
         return "events";
     }
 
-    //*************************************** APIs ***************************************
+    //************************************* APIs ****************************************
 
     @GetMapping("/api/events/users/{page}/{n}")
     public ResponseEntity<ListEvents> retrieveAllEvents(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
@@ -69,7 +68,6 @@ public class EventsController {
 
         return new ResponseEntity<>(listEvents, HttpStatus.OK);
     }
-
 
     @GetMapping("/api/events/users/export")
     public ModelAndView downloadExcel() {

@@ -13,7 +13,6 @@ import java.util.List;
 
 @Service
 public interface EmailService {
-
     HttpStatus sendMail(JSONObject jsonObject) throws IOException, ParseException;
 
     int sendMail(String email, String cid, String answer) throws IOException, ParseException;

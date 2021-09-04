@@ -7,24 +7,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestParam;
 import parsso.idman.Models.License.License;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Logs.Transcript;
 import parsso.idman.Repos.TranscriptRepo;
 
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 public class TranscriptController {
-
-
     @Autowired
     private TranscriptRepo transcriptRepo;
 
-    //*************************************** Pages ***************************************
-
-    //*************************************** APIs ***************************************
-
+    //************************************* APIs ****************************************
 
     @GetMapping("/api/transcripts/users/service/{id}")
     public ResponseEntity<Transcript> retrieveUsersOfServices(@PathVariable("id") String id) throws IOException, org.json.simple.parser.ParseException {
@@ -41,11 +38,11 @@ public class TranscriptController {
         return new ResponseEntity<>(transcriptRepo.servicesOfUser(id), HttpStatus.OK);
     }
 
-    //@GetMapping("/api/audits/users/export")
-    public ModelAndView downloadExcel() {
-        // return a view which will be resolved by an excel view resolver
-        //return new ModelAndView(auditsExcelView, "listAudits", null);
-        return null;
+    @GetMapping("/api/transcripts/access/services/{id}")
+    public ResponseEntity<List<ReportMessage>> accessManaging(@PathVariable("id") String id,
+                                                              @RequestParam(name = "type", defaultValue = "") String type,
+                                                              @RequestParam(name = "item", defaultValue = "") String item) {
+        return new ResponseEntity<>(transcriptRepo.accessManaging(Long.valueOf(id), type, item), HttpStatus.OK);
     }
 
 }

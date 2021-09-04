@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @Getter
 public class MicroService implements Comparable {
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String serviceId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -27,6 +28,10 @@ public class MicroService implements Comparable {
     private String url;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int position;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private  String notificationApiURL;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private  String notificationApiKey;
 
     public MicroService(String serviceId, List<String> machines) {
         this.serviceId = serviceId;
@@ -53,6 +58,8 @@ public class MicroService implements Comparable {
         this.logo = service.getLogo();
         this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
         this.position = (null != microService ? microService.getPosition() : 0);
+        try {this.notificationApiKey = microService.getNotificationApiKey();}catch (Exception e){};
+        try { this.notificationApiURL = microService.getNotificationApiURL();}catch (Exception e){};
 
     }
 

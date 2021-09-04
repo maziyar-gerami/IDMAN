@@ -40,13 +40,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-/**
- * The type Idman application.
- */
 @SpringBootApplication
 @EnableScheduling
 public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
-
     private static final int millis = 3600000;
     @Value("${max.pwd.lifetime.hours}")
     private static final long maxPwdLifetime = 10;
@@ -66,16 +62,10 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Value("${base.url}")
     private String baseurl;
 
-    /**
-     * The entry point of application.
-     *
-     * @param args the input arguments
-     */
     public static void main(String[] args) throws Exception {
 
         ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
         //new SystemRefreshRepoImpl();
-
 
         Runnable runnable = new Runnable() {
             @SneakyThrows
@@ -88,13 +78,9 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
             }
         };
 
-
         logger.warn("Started!");
 
         // in old days, we need to check the log level to increase performance
-        /*if (logger.isDebugEnabled()) {
-            logger.debug("{}", getNumber());
-        }*/
 
         // with Java 8, we can do this, no need to check the log level
 
@@ -103,13 +89,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         thread.start();
 
     }
-
-    /*private static void refresh(ConfigurableApplicationContext context) throws IOException, org.json.simple.parser.ParseException {
-
-        //logger.error("refresh started");
-        HttpServletRequest request;
-        context.getBean(SystemRefresh.class).all(context.);
-    }*/
 
     private static void pulling(ConfigurableApplicationContext context) throws ParseException {
 
@@ -139,13 +118,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
     }
 
-    /**
-     * Cas authentication filter cas authentication filter.
-     *
-     * @param authenticationManager the authentication manager
-     * @param serviceProperties     the service properties
-     * @return the cas authentication filter
-     */
     @Bean
     public CasAuthenticationFilter casAuthenticationFilter(
             AuthenticationManager authenticationManager,
@@ -156,12 +128,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         return filter;
     }
 
-
-    /**
-     * Service properties service properties.
-     *
-     * @return the service properties
-     */
     @Bean
     public ServiceProperties serviceProperties() {
         ServiceProperties serviceProperties = new ServiceProperties();
@@ -170,50 +136,27 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         return serviceProperties;
     }
 
-    /**
-     * Ticket validator ticket validator.
-     *
-     * @return the ticket validator
-     */
     @Bean
     public TicketValidator ticketValidator() {
         return new Cas30ServiceTicketValidator(ticketValidator);
     }
 
-    /**
-     * Cas authentication provider cas authentication provider.
-     *
-     * @return the cas authentication provider
-     */
     @Bean
     public CasAuthenticationProvider casAuthenticationProvider() {
         CasAuthenticationProvider provider = new CasAuthenticationProvider();
         provider.setServiceProperties(serviceProperties());
         provider.setTicketValidator(ticketValidator());
-        /*provider.setUserDetailsService(
-                s -> new User("test@test.com", "Mellon", true, true, true, true,
-                        AuthorityUtils.createAuthorityList("ADMIN")));*/
+
         provider.setAuthenticationUserDetailsService(casUserDetailService);
         provider.setKey("CAS_PROVIDER_LOCALHOST_8900");
         return provider;
     }
 
-
-    /**
-     * Security context logout handler security context logout handler.
-     *
-     * @return the security context logout handler
-     */
     @Bean
     public SecurityContextLogoutHandler securityContextLogoutHandler() {
         return new SecurityContextLogoutHandler();
     }
 
-    /**
-     * Logout filter logout filter.
-     *
-     * @return the logout filter
-     */
     @Bean
     public LogoutFilter logoutFilter() {
         LogoutFilter logoutFilter = new LogoutFilter(casLogout, securityContextLogoutHandler());
@@ -221,11 +164,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         return logoutFilter;
     }
 
-    /**
-     * Single sign out filter single sign out filter.
-     *
-     * @return the single sign out filter
-     */
     @Bean
     public SingleSignOutFilter singleSignOutFilter() {
         SingleSignOutFilter singleSignOutFilter = new SingleSignOutFilter();

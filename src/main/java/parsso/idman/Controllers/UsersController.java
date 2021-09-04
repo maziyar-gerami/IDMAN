@@ -33,12 +33,6 @@ import java.util.List;
 
 @Controller
 public class UsersController {
-
-
-    /**
-     * The Storage service.
-     */
-
     // default sequence of variables which can be changed using frontend
     private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
     @Autowired
@@ -58,39 +52,20 @@ public class UsersController {
     @Autowired
     private UserRepo userRepo;
 
+    //************************************* APIs ****************************************
 
-    //*************************************** APIs ***************************************
-
-    //########### User Section ###########
-
-    /**
-     * Retrieve logged-in user
-     *
-     * @return user object of current user which logged in
-     */
     @GetMapping("/api/user")
     public ResponseEntity<User> retrieveUser(HttpServletRequest request) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(userRepo.retrieveUsers(principal.getName()), HttpStatus.OK);
     }
 
-    /**
-     * Update logged-in user
-     *
-     * @return http error code
-     */
     @PutMapping("/api/user")
     public ResponseEntity<HttpStatus> updateUser(HttpServletRequest request, @RequestBody User user) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(userRepo.update(principal.getName(), principal.getName(), user));
     }
 
-
-    /**
-     * Get logged-in user photo
-     *
-     * @return the photo of logged in user
-     */
     @GetMapping("/api/user/photo")
     public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
@@ -98,23 +73,12 @@ public class UsersController {
         return new ResponseEntity<>(userRepo.showProfilePic(response, user), HttpStatus.OK);
     }
 
-    /**
-     * Post photo for logged-in user
-     *
-     * @return the response entity
-     */
     @PostMapping("/api/user/photo")
     public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException, ParseException {
         userRepo.uploadProfilePic(file, request.getUserPrincipal().getName());
         return new RedirectView("/dashboard");
     }
 
-    /**
-     * change the password of current user
-     *
-     * @param jsonObject
-     * @return the http status code
-     */
     @PutMapping("/api/user/password")
     public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
                                                      @RequestBody JSONObject jsonObject) throws IOException, ParseException {
@@ -130,16 +94,16 @@ public class UsersController {
 
     @PutMapping("/api/users/password/expire")
     public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
-                                                     @RequestBody JSONObject jsonObject) {
+                                                       @RequestBody JSONObject jsonObject) {
         Principal principal = request.getUserPrincipal();
         List<String> preventedUsers = userRepo.expirePassword(principal.getName(), jsonObject);
 
-        if(preventedUsers == null)
+        if (preventedUsers == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         else if (preventedUsers.size() == 0)
             return new ResponseEntity<>(HttpStatus.OK);
         else
-            return new ResponseEntity<>(preventedUsers,HttpStatus.PARTIAL_CONTENT);
+            return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
 
     }
 
@@ -156,12 +120,6 @@ public class UsersController {
     }
     //########### Users Section ###########
 
-    /**
-     * Retrieve user with provided uId
-     *
-     * @param userId the user uId
-     * @return the the user object with provided uId
-     */
     @GetMapping("/api/users/u/{uid}")
     public ResponseEntity<User> retrieveUser(@PathVariable("uid") String userId) throws IOException, ParseException {
         User user = userRepo.retrieveUsers(userId);
@@ -169,11 +127,13 @@ public class UsersController {
         else return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    /**
-     * Retrieve user with main variables
-     *
-     * @return the the user object with provided uId
-     */
+    @GetMapping("/api/users/license/u/{uid}")
+    public ResponseEntity<User> retrieveUserLicense(@PathVariable("uid") String userId) throws IOException, ParseException {
+        User user = userRepo.retrieveUsersWithLicensed(userId);
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
     @GetMapping("/api/users")
     public ResponseEntity<List<UsersExtraInfo>> retrieveUsersMain() {
         return new ResponseEntity<>(userRepo.retrieveUsersMain(-1, -1), HttpStatus.OK);
@@ -195,12 +155,6 @@ public class UsersController {
         return new ResponseEntity<>(userRepo.massUsersGroupUpdate(request.getUserPrincipal().getName(), groupId, gu));
     }
 
-    /**
-     * Retrieve all users user only with main attributes
-     * main attributes are as following: userId, displayName, OU
-     *
-     * @return the list of simpleUser object
-     */
     @GetMapping("/api/users/{page}/{n}")
     public ResponseEntity<ListUsers> retrieveUsersMain(@PathVariable("page") int page, @PathVariable("n") int n,
                                                        @RequestParam(name = "sortType", defaultValue = "") String sortType,
@@ -211,23 +165,12 @@ public class UsersController {
         return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
 
-    /**
-     * Retrieve all users with all attributes
-     *
-     * @return the list of user object
-     */
     @GetMapping("/api/users/full")
     public ResponseEntity<List<User>> retrieveUsers() {
         if (userRepo.retrieveUsersFull().size() == 0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(userRepo.retrieveUsersFull(), HttpStatus.OK);
     }
 
-    /**
-     * Create user
-     *
-     * @param user the user
-     * @return the response entity
-     */
     @PostMapping("/api/users")
     public ResponseEntity<JSONObject> bindLdapUser(HttpServletRequest request, @RequestBody User user) throws IOException, ParseException {
         JSONObject jsonObject = userRepo.create(request.getUserPrincipal().getName(), user);
@@ -238,13 +181,6 @@ public class UsersController {
 
     }
 
-    /**
-     * Update user with provided uId and User object
-     *
-     * @param uid  the uid
-     * @param user the user
-     * @return the response entity
-     */
     @PutMapping("/api/users/u/{uId}")
     public ResponseEntity<String> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) throws IOException, ParseException {
 
@@ -252,11 +188,6 @@ public class UsersController {
 
     }
 
-    /**
-     * Delete users
-     *
-     * @return the response entity
-     */
     @DeleteMapping("/api/users")
     public ResponseEntity<List<String>> unbindAllLdapUser(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
@@ -267,49 +198,24 @@ public class UsersController {
             return new ResponseEntity<>(names, HttpStatus.PARTIAL_CONTENT);
     }
 
-    /**
-     * Enable users
-     *
-     * @return the response entity
-     */
     @PutMapping("/api/users/enable/u/{id}")
     public ResponseEntity<HttpStatus> enable(HttpServletRequest request, @PathVariable("id") String uid) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(operations.enable(principal.getName(), uid));
     }
 
-    /**
-     * Disable users
-     *
-     * @return the response entity
-     */
     @PutMapping("/api/users/disable/u/{id}")
     public ResponseEntity<HttpStatus> disable(HttpServletRequest request, @PathVariable("id") String uid) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(operations.disable(principal.getName(), uid));
     }
 
-
-    /**
-     * lock/unlock users
-     *
-     * @return the response entity
-     */
     @PutMapping("/api/users/unlock/u/{id}")
     public ResponseEntity<HttpStatus> lockUnlock(HttpServletRequest request, @PathVariable("id") String uid) throws IOException, ParseException {
         Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(operations.unlock(principal.getName(), uid));
     }
 
-
-    /**
-     * Upload file for importing users using following formats:
-     * LDIF,xlsx,xls,csv
-     *
-     * @param file the file
-     * @return the response entity
-     * @throws IOException the io exception
-     */
     @PostMapping("/api/users/import")
     public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException, ParseException {
 
@@ -325,17 +231,10 @@ public class UsersController {
         return new ResponseEntity<>(userRepo.massUpdate(request.getUserPrincipal().getName(), users), HttpStatus.OK);
     }
 
-    /**
-     * send Email for reset password
-     *
-     * @param jsonObject
-     * @return the http status code
-     */
     @PostMapping("/api/users/sendMail")
     public ResponseEntity<HttpStatus> sendMultipleMailByAdmin(@RequestBody JSONObject jsonObject) throws IOException, ParseException {
         return new ResponseEntity<>(emailService.sendMail(jsonObject), HttpStatus.OK);
     }
-
 
     @GetMapping("/api/users/export")
     public ModelAndView downloadExcel() {
@@ -363,12 +262,6 @@ public class UsersController {
 
     //########### Public Controllers ###########
 
-    /**
-     * sends email to specified user
-     *
-     * @param email and userId
-     * @return if token is correspond to provided email, returns httpStatus=ok
-     */
     @GetMapping("/api/public/sendMail/{email}/{uid}/{cid}/{answer}")
     public ResponseEntity<Integer> sendMail(@PathVariable("email") String email,
                                             @PathVariable("uid") String uid,
@@ -379,19 +272,12 @@ public class UsersController {
             return new ResponseEntity<>(time, HttpStatus.OK);
         else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if (time ==-2)
+        else if (time == -2)
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-
-    /**
-     * send Email for reset password
-     *
-     * @param email
-     * @return the http status code
-     */
     @GetMapping("/api/public/sendMail/{email}/{cid}/{answer}")
     public ResponseEntity<Integer> sendMail(@PathVariable("email") String email,
                                             @PathVariable("cid") String cid,
@@ -400,66 +286,51 @@ public class UsersController {
         int time = userRepo.sendEmail(email, null, cid, answer);
         if (time > 0) {
             return new ResponseEntity<>(time, HttpStatus.OK);
-        }
-        else if (time == -1)
+        } else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if (time ==-2)
+        else if (time == -2)
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
     }
 
-    /**
-     * send SMS for reset password
-     *
-     * @param mobile
-     * @return the http status code
-     */
     @GetMapping("/api/public/sendSMS/{mobile}/{cid}/{answer}")
     public ResponseEntity<JSONObject> sendMessage(@PathVariable("mobile") String mobile,
-                                               @PathVariable("cid") String cid,
-                                               @PathVariable("answer") String answer) throws IOException, ParseException {
+                                                  @PathVariable("cid") String cid,
+                                                  @PathVariable("answer") String answer) throws IOException, ParseException {
 
         int time = instantMessage.sendMessage(mobile, cid, answer);
 
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("time",time);
+            jsonObject.put("time", time);
             jsonObject.put("userId", userRepo.getByMobile(mobile));
 
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
-        }
-        else if (time == -1)
+        } else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if (time==-2)
+        else if (time == -2)
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    /**
-     * send SMS for reset password
-     *
-     * @param mobile and userId
-     * @return the http status code
-     */
     @GetMapping("/api/public/sendSMS/{mobile}/{uid}/{cid}/{answer}")
     public ResponseEntity<JSONObject> sendMessage(@PathVariable("mobile") String mobile,
-                                               @PathVariable("uid") String uid,
-                                               @PathVariable("cid") String cid,
-                                               @PathVariable("answer") String answer) throws IOException, ParseException {
+                                                  @PathVariable("uid") String uid,
+                                                  @PathVariable("cid") String cid,
+                                                  @PathVariable("answer") String answer) throws IOException, ParseException {
         int time = instantMessage.sendMessage(mobile, uid, cid, answer);
 
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("time",time);
+            jsonObject.put("time", time);
             jsonObject.put("userId", uid);
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
-        }
-        else if (time == -1)
+        } else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if (time ==-2)
+        else if (time == -2)
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -467,9 +338,9 @@ public class UsersController {
 
     @GetMapping("/api/public/sendTokenUser/{uid}/{cid}/{answer}")
     public ResponseEntity<JSONObject> sendMessageUser(
-                                                  @PathVariable("uid") String uid,
-                                                  @PathVariable("cid") String cid,
-                                                  @PathVariable("answer") String answer) throws IOException, ParseException {
+            @PathVariable("uid") String uid,
+            @PathVariable("cid") String cid,
+            @PathVariable("answer") String answer) throws IOException, ParseException {
         User user = userRepo.retrieveUsers(uid);
         if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
@@ -477,61 +348,33 @@ public class UsersController {
 
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("time",time);
+            jsonObject.put("time", time);
             jsonObject.put("userId", uid);
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
-        }
-        else if (time == -1)
+        } else if (time == -1)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if (time ==-2)
+        else if (time == -2)
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
-    /**
-     * Gets the token and corresponds it with provided userID
-     *
-     * @param token and userId
-     * @return the user object if exists, or null if not exists
-     */
     @PutMapping("/api/public/resetPass/{uid}/{token}")
     public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
                                                      @PathVariable("uid") String uid) throws IOException, ParseException {
         return new ResponseEntity<>(userRepo.resetPassword(uid, newPassword, token));
     }
 
-
-    /**
-     * check if an email exists in ldap
-     *
-     * @param email
-     * @return the user object if exists, or null if not exists
-     */
     @GetMapping("/api/public/checkMail/{email}")
     public HttpEntity<List<JSONObject>> checkMail(@PathVariable("email") String email) {
         return new ResponseEntity<List<JSONObject>>(emailService.checkMail(email), HttpStatus.OK);
     }
 
-    /**
-     * check if a mobile exists in ldap
-     *
-     * @param mobile
-     * @return the user object if exists, or null if not exists
-     */
     @GetMapping("/api/public/checkMobile/{mobile}")
     public HttpEntity<List<JSONObject>> checkMobile(@PathVariable("mobile") String mobile) {
         return new ResponseEntity<List<JSONObject>>(instantMessage.checkMobile(mobile), HttpStatus.OK);
     }
 
-
-    /**
-     * Gets the name from userId for showing in the ressetPasseord page
-     *
-     * @param token and userId
-     * @return if token is correspond to provided userID, returns the user; else returns null
-     */
     @GetMapping("/api/public/getName/{uid}/{token}")
     public ResponseEntity<User> getName(@PathVariable("uid") String uid, @PathVariable("token") String token) throws IOException, ParseException {
         User user = userRepo.getName(uid, token);
@@ -540,13 +383,6 @@ public class UsersController {
         return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
     }
 
-
-    /**
-     * validate the token send via email provided for specified userId
-     *
-     * @param uId and email
-     * @return if token is correspond to provided email, redirects to newpassword page
-     */
     @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
     public RedirectView resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token, RedirectAttributes attributes) throws IOException, ParseException {
         HttpStatus httpStatus = tokenClass.checkToken(uId, token);
@@ -559,13 +395,6 @@ public class UsersController {
         return null;
     }
 
-
-    /**
-     * validate the token provided for spcified userId
-     *
-     * @param uId and email
-     * @return if token is correspond to provided userId, returns httpStatus=ok
-     */
     @GetMapping("/api/public/validateMessageToken/{uId}/{token}")
     public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) throws IOException, ParseException {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));

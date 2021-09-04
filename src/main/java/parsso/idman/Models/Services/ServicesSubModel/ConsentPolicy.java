@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ConsentPolicy {
-
     @JsonProperty("@class")
     String atClass;
     boolean enabled;

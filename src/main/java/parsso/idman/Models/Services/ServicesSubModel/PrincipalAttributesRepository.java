@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class PrincipalAttributesRepository {
-
     @JsonProperty("@class")
     private String atClass;
     private String mergingStrategy;

@@ -11,7 +11,6 @@ import java.util.LinkedList;
 @Setter
 @Getter
 public class SamlService extends Service {
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     String metadataLocation;
     @JsonInclude(JsonInclude.Include.NON_NULL)

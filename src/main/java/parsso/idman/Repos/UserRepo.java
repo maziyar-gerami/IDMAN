@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface UserRepo {
-
     List<String> remove(String doerID, JSONObject jsonObject) throws IOException, ParseException;
 
     HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token) throws IOException, ParseException;
@@ -44,6 +43,8 @@ public interface UserRepo {
     HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou);
 
     User retrieveUsers(String userId) throws IOException, ParseException;
+
+    User retrieveUsersWithLicensed(String userId) throws IOException, ParseException;
 
     List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
 

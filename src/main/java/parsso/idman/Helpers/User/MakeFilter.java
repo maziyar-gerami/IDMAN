@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MakeFilter {
-
     public static AndFilter makeUsersFilter(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
         AndFilter andFilter = new AndFilter();
@@ -29,7 +28,6 @@ public class MakeFilter {
             if (userStatus.equals("Enable"))
                 andFilter.and(new NotPresentFilter("pwdAccountLockedTime"));
         }
-
 
         return andFilter;
     }

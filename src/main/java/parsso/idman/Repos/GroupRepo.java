@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface GroupRepo {
-
     List<Group> retrieve();
 
     List<Group> retrieve(String ou);
@@ -22,7 +21,7 @@ public interface GroupRepo {
 
     HttpStatus remove(String doerId, JSONObject jsonObject) throws IOException, ParseException;
 
-    Group retrieveOu(boolean simple,String name) throws IOException, ParseException;
+    Group retrieveOu(boolean simple, String name) throws IOException, ParseException;
 
     List<Group> retrieveCurrentUserGroup(User user);
 

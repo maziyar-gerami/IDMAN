@@ -16,10 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
-
     Path photoPathRoot;
     Path servicesPathRoot;
     @Value("${profile.photo.path}")
@@ -33,7 +31,6 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     public void init() {
         photoPathRoot = Paths.get(photoPath);
         servicesPathRoot = Paths.get(servicesPath);
-
 
         try {
             if (Files.notExists(photoPathRoot))

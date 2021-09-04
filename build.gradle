@@ -21,7 +21,6 @@ configurations {
 	}
 }
 
-
 repositories {
 	mavenCentral()
 	maven {
@@ -96,9 +95,10 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 
+
+
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-mongodb
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: '2.4.5'
-
 
 	// https://mvnrepository.com/artifact/com.github.ua-parser/uap-java
 	compile group: 'com.github.ua-parser', name: 'uap-java', version: '1.4.0'
@@ -118,7 +118,6 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework/spring-websocket
 	compile group: 'org.springframework', name: 'spring-websocket', version: '5.2.9.RELEASE'
 
-
 	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
 	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
@@ -134,18 +133,25 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.3.4.RELEASE'
 
-
 	// https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 
 	// https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
 
-
 	implementation 'org.apache.logging.log4j:log4j-mongodb4:2.14.1'
 
 	// https://mvnrepository.com/artifact/commons-codec/commons-codec
 	implementation group: 'commons-codec', name: 'commons-codec', version: '1.15'
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.5.1'
+
+	// https://mvnrepository.com/artifact/org.javers/javers-spring
+	implementation group: 'org.javers', name: 'javers-spring', version: '6.2.4'
+
+	// https://mvnrepository.com/artifact/org.javers/javers-core
+	implementation group: 'org.javers', name: 'javers-core', version: '6.2.4'
 
 
 	configurations.all {
@@ -155,7 +161,6 @@ dependencies {
 			}
 		}
 	}
-
 }
 
 test {

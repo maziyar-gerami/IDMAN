@@ -1,8 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +37,6 @@ import java.util.*;
 @SuppressWarnings("DuplicatedCode")
 @Service
 public class ConfigRepoImpl implements ConfigRepo {
-
     @Autowired
     PasswordSettings passwordSettings;
     @Autowired
@@ -48,18 +45,16 @@ public class ConfigRepoImpl implements ConfigRepo {
     InstantMessage instantMessage;
     @Autowired
     UserRepo userRepo;
-    String model = "Config";
-    @Autowired
-    private ApplicationContext appContext;
     @Autowired
     UniformLogger uniformLogger;
+    @Autowired
+    private ApplicationContext appContext;
     @Value("${external.config}")
     private String pathToProperties;
     @Value("${external.config.backup}")
     private String backUpOfProperties;
     @Value("${backup.path}")
     private String backUpPath;
-
 
     public static List<Setting> parser(Scanner reader, String system) {
 
@@ -86,11 +81,9 @@ public class ConfigRepoImpl implements ConfigRepo {
                 else return settings;
             }
 
-
             if (line.charAt(0) == '#') {
 
                 if (line.charAt(1) == '#') {
-
 
                     if (line.charAt(2) == '#') {
 
@@ -186,8 +179,6 @@ public class ConfigRepoImpl implements ConfigRepo {
     @Override
     public String updateSettings(String doerID, List<Setting> settings) {
 
-        Logger logger = LogManager.getLogger(doerID);
-
         String file_properties = "";
 
         for (Setting setting : settings) {
@@ -211,16 +202,15 @@ public class ConfigRepoImpl implements ConfigRepo {
 
         }
 
-
         String date = LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("application.properties")) {
             Files.copy(is, Paths.get(this.getClass().getClassLoader() + "/backup/" + date + "_application.properties"));
-            logger.warn(new ReportMessage(model, "", "", "update", "success", "").toString());
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, settings, ""));
 
         } catch (IOException e) {
-            logger.warn(new ReportMessage(model, "", "", "update", "failed", "unknown error").toString());
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, settings, "unknown error"));
 
         }
 
@@ -269,18 +259,16 @@ public class ConfigRepoImpl implements ConfigRepo {
     @Override
     public HttpStatus factoryReset(String doerID) throws IOException {
 
-        Logger logger = LogManager.getLogger(doerID);
-
         Path copied = Paths.get(pathToProperties);
         Resource resource = new ClassPathResource(backUpOfProperties);
         File file = resource.getFile().getAbsoluteFile();
         Path originalPath = Paths.get(file.getAbsolutePath());
         try {
             Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
-            logger.warn(new ReportMessage(model, "", "", "resetFactory", "success", "").toString());
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
 
         } catch (Exception e) {
-            logger.warn(new ReportMessage(model, "", "", "resetFactory", "failed", "").toString());
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_RESET, Variables.RESULT_FAILED, ""));
 
         }
         return HttpStatus.OK;
@@ -288,7 +276,6 @@ public class ConfigRepoImpl implements ConfigRepo {
 
     @Override
     public HttpStatus restore(String doerID, String name) throws IOException, ParseException {
-        Logger logger = LogManager.getLogger(doerID);
 
         List<Config> configs = listBackedUpConfigs();
 
@@ -300,10 +287,12 @@ public class ConfigRepoImpl implements ConfigRepo {
                 Path originalPath = Paths.get(s);
                 try {
                     Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
-                    logger.warn(new ReportMessage(model, config.getName(), "", "restore", "success", ""));
+                    uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, config.getName(), "",
+                            Variables.ACTION_RESTORE, Variables.RESULT_SUCCESS, config.getName(), ""));
 
                 } catch (Exception e) {
-                    logger.warn(new ReportMessage(model, config.getName(), "", "restore", "failed", "config " + config.getName()).toString());
+                    uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, config.getName(), "",
+                            Variables.ACTION_RESTORE, Variables.RESULT_FAILED, config.getName(), "Restoring file"));
 
                 }
                 return HttpStatus.OK;
@@ -327,7 +316,6 @@ public class ConfigRepoImpl implements ConfigRepo {
 
                     config.setName(file);
                     SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-
 
                     Date date = parserSDF.parse(file);
 
@@ -387,7 +375,6 @@ public class ConfigRepoImpl implements ConfigRepo {
         for (Setting setting : settings) {
             if (setting.getGroup() != null) {
                 setting.setChangable(!setting.getGroup().equalsIgnoreCase("Main"));
-
 
                 mongoTemplate.save(setting, Variables.col_properties);
             }

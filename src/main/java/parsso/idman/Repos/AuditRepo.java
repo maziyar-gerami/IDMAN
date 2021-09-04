@@ -11,7 +11,6 @@ import java.util.List;
 
 @Service
 public interface AuditRepo {
-
     ListAudits getListSizeAudits(int page, int n) throws IOException, org.json.simple.parser.ParseException;
 
     ListAudits getListUserAudits(String userId, int page, int n) throws IOException, org.json.simple.parser.ParseException;

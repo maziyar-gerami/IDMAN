@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 
 public class Contact {
-
     @JsonProperty("@class")
     private String atClass;
     @JsonInclude(JsonInclude.Include.NON_NULL)

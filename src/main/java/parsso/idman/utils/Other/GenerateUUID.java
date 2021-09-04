@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.util.UUID;
 
 public class GenerateUUID {
-
     public static String getUUID() throws IOException {
 
         StringBuffer output = new StringBuffer();

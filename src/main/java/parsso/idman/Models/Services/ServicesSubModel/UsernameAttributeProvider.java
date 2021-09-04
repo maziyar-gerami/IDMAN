@@ -10,7 +10,6 @@ import lombok.Setter;
 @Getter
 
 public class UsernameAttributeProvider {
-
     @JsonProperty("@class")
     private String atClass;
     @JsonInclude(JsonInclude.Include.NON_NULL)

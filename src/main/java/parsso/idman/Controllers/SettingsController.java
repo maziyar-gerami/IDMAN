@@ -22,7 +22,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 @RestController
 public class SettingsController {
-
     int millis = 3600000;
     @Autowired
     PasswordSettings passwordSettings;
@@ -109,7 +108,6 @@ public class SettingsController {
             thread.interrupt();
         } else
             thread.start();
-
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

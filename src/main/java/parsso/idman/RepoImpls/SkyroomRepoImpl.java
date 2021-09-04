@@ -1,14 +1,13 @@
 package parsso.idman.RepoImpls;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.UniformLogger;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.SkyRoom;
 import parsso.idman.Models.Users.User;
@@ -25,21 +24,14 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 public class SkyroomRepoImpl implements SkyroomRepo {
-
     @Value("${skyroom.api.key}")
     String apiKey;
-
     @Value("${skyroom.enable}")
     String skyroomEnable;
-
     @Autowired
     UserRepo userRepo;
-
     @Autowired
     UniformLogger uniformLogger;
-
-    Logger logger = LogManager.getLogger("System");
-
 
     public SkyRoom Run(User user) throws IOException {
 
@@ -50,11 +42,10 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         if (userId == 0) {
             int roomId = GetRoomId(Classname);
             Realname = user.getFirstName() + " " + user.getLastName();
-            //System.out.println(CreateLoginUrl(roomId, String.valueOf(userId), Classname)+GetRoomGuestUrl(roomId));
 
             skyRoom = new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole()
                     , CreateLoginUrl(roomId, String.valueOf(userId), Realname), GetRoomGuestUrl(roomId));
-            logger.warn(new ReportMessage("Skyroom", "", "","created","Success","for User \""+ user.getUserId() +"\""));
+            uniformLogger.info("System", new ReportMessage("Skyroom", "", "", "created", Variables.RESULT_SUCCESS, "for User \"" + user.getUserId() + "\""));
             return skyRoom;
         }
         int roomId = CreateRoom(Classname);
@@ -73,7 +64,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             try {
                 url = new URL(apiKey);
             } catch (Exception e) {
-                logger.warn(new ReportMessage("skyroom", "", "", "retrieve url", "failed", "malformed url").toString());
+                uniformLogger.info("System", new ReportMessage("skyroom", "", "", "retrieve url", Variables.RESULT_FAILED, "malformed url"));
             }
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
@@ -83,7 +74,6 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             con.setRequestProperty("Accept", "gzip, deflate");
             con.setRequestProperty("Connection", "close");
             con.setDoOutput(true);
-
 
             try (OutputStream os = con.getOutputStream()) {
                 os.write(json.getBytes());
@@ -125,7 +115,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         try {
             res = Post(root.toString());
 
-        } catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
         try {

@@ -45,7 +45,7 @@ public class UsersLicenseExcelView extends AbstractXlsView {
         licensedHeader.createCell(1).setCellValue("Display Name");
         licensedHeader.getCell(1).setCellStyle(style);
 
-        build("licensed",sheetLicensed);
+        build("licensed", sheetLicensed);
 
         HSSFRow header = sheetUnlicensed.createRow(0);
 
@@ -55,26 +55,12 @@ public class UsersLicenseExcelView extends AbstractXlsView {
         header.createCell(1).setCellValue("Display Name");
         header.getCell(1).setCellStyle(style);
 
-        build("unLicensed",sheetUnlicensed);
+        build("unLicensed", sheetUnlicensed);
 
     }
 
     private void build(String licenseStatus, HSSFSheet sheet) {
 
-            /*if(licenseStatus.equalsIgnoreCase("licensed"))
-            List<License> licenses = transcriptRepo.servicesOfUser();
-
-            // create data rows
-            int rowCount = 1;
-
-            for (User user : Users) {
-                HSSFRow aRow = sheet.createRow(rowCount++);
-                aRow.createCell(0).setCellValue(user.getUserId());
-                aRow.createCell(1).setCellValue(user.getDisplayName());
-
-                if (rowCount == 65536)
-                    break;
-            }*/
-        }
+    }
 
 }

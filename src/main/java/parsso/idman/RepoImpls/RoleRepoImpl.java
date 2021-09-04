@@ -2,8 +2,6 @@ package parsso.idman.RepoImpls;
 
 
 import net.minidev.json.JSONObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -21,10 +19,8 @@ import java.util.List;
 
 @Service
 public class RoleRepoImpl implements RolesRepo {
-
     final String collection = Variables.col_usersExtraInfo;
     String model = "Role";
-
     @Autowired
     UniformLogger uniformLogger;
     @Autowired
@@ -38,7 +34,6 @@ public class RoleRepoImpl implements RolesRepo {
 
     @Override
     public HttpStatus updateRole(String doerID, String role, JSONObject users) {
-        Logger logger = LogManager.getLogger(doerID);
         int i = 0;
         List<String> userIDs = (List<String>) users.get("names");
         for (String userId : userIDs) {
@@ -48,17 +43,17 @@ public class RoleRepoImpl implements RolesRepo {
                 String oldRole = usersExtraInfo.getRole();
                 usersExtraInfo.setRole(role);
                 mongoTemplate.save(usersExtraInfo, collection);
-                logger.warn(new ReportMessage(model, userId, "", "change", "success",
-                        "from \"" + oldRole + "\" to \"" + role + "\"").toString());
+                uniformLogger.info(doerID, new ReportMessage(model, userId, "", "change", Variables.RESULT_SUCCESS,
+                        "from \"" + oldRole + "\" to \"" + role + "\""));
 
             } catch (Exception e) {
                 i++;
-                logger.warn(new ReportMessage(model, userId, "", "change", "failed", "due to writing to ldap").toString());
+                uniformLogger.warn(doerID, new ReportMessage(model, userId, "", "change", Variables.RESULT_FAILED, "due to writing to ldap"));
 
             }
 
             if (i > 0) {
-                logger.warn(new ReportMessage(model, userId, "", "change", "success", "partially done").toString());
+                uniformLogger.info(doerID, new ReportMessage(model, userId, "", "change", Variables.RESULT_SUCCESS, "partially done"));
                 return HttpStatus.PARTIAL_CONTENT;
 
             }

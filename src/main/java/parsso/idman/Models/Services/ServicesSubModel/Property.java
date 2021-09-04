@@ -10,7 +10,6 @@ import lombok.Setter;
 @Getter
 
 public class Property {
-
     @JsonProperty("@class")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String atClass;

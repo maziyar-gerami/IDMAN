@@ -30,13 +30,11 @@ public class GroupLicense {
         JSONArray jsonArray = (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1);
         for (Object name : jsonArray)
             try {
-                groups.add(groupRepo.retrieveOu(true,name.toString()));
+                groups.add(groupRepo.retrieveOu(true, name.toString()));
             } catch (NullPointerException e) {
             }
         return groups;
     }
-
-
 
     public Groups groups(long serviceId) throws IOException, ParseException {
 
@@ -45,7 +43,7 @@ public class GroupLicense {
 
     @Setter
     @Getter
-    private class Groups{
+    private class Groups {
         @JsonInclude(JsonInclude.Include.NON_NULL)
 
         List licensed;
@@ -53,7 +51,7 @@ public class GroupLicense {
 
         List unLicensed;
 
-        Groups(List licensed,List unLicensed){
+        Groups(List licensed, List unLicensed) {
             this.licensed = licensed;
             this.unLicensed = unLicensed;
         }

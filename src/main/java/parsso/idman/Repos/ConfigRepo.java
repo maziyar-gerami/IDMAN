@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ConfigRepo {
-
     List<Setting> retrieveTFSetting() throws IOException;
 
     String retrieveSetting() throws IOException;

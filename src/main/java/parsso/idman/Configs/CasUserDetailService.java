@@ -20,7 +20,6 @@ import parsso.idman.Models.Users.UsersExtraInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
 @Service
 public class CasUserDetailService implements AuthenticationUserDetailsService {
     @Autowired

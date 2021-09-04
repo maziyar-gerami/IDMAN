@@ -1,8 +1,6 @@
 package parsso.idman.Helpers.User;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -23,25 +21,23 @@ import java.util.List;
 
 @Service
 public class ExpirePassword {
-
-    @Autowired LdapTemplate ldapTemplate;
-
-    @Autowired MongoTemplate mongoTemplate;
-
-    @Autowired BuildDnUser buildDnUser;
-
-    @Autowired UniformLogger uniformLogger;
+    @Autowired
+    LdapTemplate ldapTemplate;
+    @Autowired
+    MongoTemplate mongoTemplate;
+    @Autowired
+    BuildDnUser buildDnUser;
+    @Autowired
+    UniformLogger uniformLogger;
 
     public List<String> expire(String doer, List<UsersExtraInfo> users) {
-        Logger logger = LogManager.getLogger(doer);
 
         List<String> superAdminUsers = new LinkedList<>();
 
-
         for (UsersExtraInfo user : users) {
-            if(user==null)
+            if (user == null)
                 continue;
-            if ( !user.getRole().equals("SUPERADMIN")) {
+            if (!user.getRole().equals("SUPERADMIN")) {
 
                 ModificationItem[] modificationItems;
                 modificationItems = new ModificationItem[1];
@@ -52,7 +48,9 @@ public class ExpirePassword {
                     ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
                     mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
                     mongoTemplate.save(user, Variables.col_usersExtraInfo);
-                    logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "add", "success", "").toString());
+
+                    uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), Variables.ATTR_PASSWORD,
+                            Variables.ACTION_EXPIREPASSWORD, Variables.RESULT_SUCCESS, ""));
 
                 } catch (Exception e) {
                     try {
@@ -60,14 +58,19 @@ public class ExpirePassword {
                         ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
                         mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
                         mongoTemplate.save(user, Variables.col_usersExtraInfo);
-                        logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "replace", "success", "").toString());
+
+                        uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                                Variables.ACTION_EXPIREPASSWORD, Variables.ACTION_REPLACE, Variables.RESULT_SUCCESS, ""));
                     } catch (Exception e1) {
-                        logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "Add", "failed", "writing to ldap").toString());
+                        uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                                Variables.ACTION_EXPIREPASSWORD, Variables.ACTION_INSERT, Variables.RESULT_FAILED, "writing to ldap"));
                     }
                 }
             } else {
                 superAdminUsers.add(user.getUserId());
-                logger.warn(new ReportMessage("User", user.getUserId(), "expire password", "Add", "failed", "Cant add to SUPERUSER role").toString());
+
+                uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), Variables.ACTION_EXPIREPASSWORD,
+                        Variables.ACTION_INSERT, Variables.RESULT_FAILED, "Cant add to SUPERUSER role"));
 
             }
         }

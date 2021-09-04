@@ -12,7 +12,6 @@ import java.io.IOException;
 
 @Service
 public interface TicketRepo {
-
     HttpStatus sendTicket(Ticket ticket, String userId);
 
     Ticket retrieveTicket(String ticketID);

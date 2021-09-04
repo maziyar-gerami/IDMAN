@@ -16,10 +16,8 @@ import parsso.idman.Utils.Captcha.RepoImp.CaptchaRepoImp;
 public class Controller {
     @Autowired
     CaptchaRepoImp captchaRepoImp;
-
     @Value("${captcha.lenght}")
     private String captchaLenght;
-
     @Value("${captcha.alphabet.rate}")
     private String captchaAlphabetRate;
 

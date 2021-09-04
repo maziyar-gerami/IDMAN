@@ -15,26 +15,17 @@ import java.util.List;
 
 @Controller
 public class PubMessageController {
-
-
-    /**
-     * The Storage service.
-     */
-
-
     @Autowired
     PubMessageRepo pubMessageRepo;
 
-    //*************************************** Pages ***************************************
-
+    //************************************* Pages ****************************************
 
     @GetMapping("/publicmessages")
     public String PublicMessages() {
         return "publicmessages";
     }
 
-
-    //*************************************** APIs ***************************************
+    //************************************* APIs ****************************************
 
     @GetMapping("/api/public/publicMessages")
     public ResponseEntity<List<PublicMessage>> getVisiblePublicMessage(String id) {
@@ -45,7 +36,6 @@ public class PubMessageController {
     public ResponseEntity<List<PublicMessage>> getAllPublicMessage(@RequestParam(name = "id", defaultValue = "") String id) {
         return new ResponseEntity<>(pubMessageRepo.showAllPubicMessages(id), HttpStatus.OK);
     }
-
 
     @PostMapping("/api/users/publicMessage")
     public ResponseEntity<HttpStatus> postPublicMessage(HttpServletRequest request, @RequestBody PublicMessage message) {

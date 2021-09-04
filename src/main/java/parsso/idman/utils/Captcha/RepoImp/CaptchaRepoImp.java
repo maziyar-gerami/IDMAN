@@ -28,7 +28,6 @@ import java.util.Random;
 @Getter
 @Service
 public class CaptchaRepoImp implements CAPTCHARepo {
-
     @Autowired
     MongoTemplate mongoTemplate;
     private int len;
@@ -48,7 +47,6 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         this.len = 5;
         this.alphabetRate = 0.5;
     }
-
 
     public CaptchaRepoImp(int len, double alphabetRate) {
         this.len = len;
@@ -81,12 +79,6 @@ public class CaptchaRepoImp implements CAPTCHARepo {
 
         String text = phrase + " ";
 
-
-        /*
-           Because font metrics is based on a graphics context, we need to create
-           a small, temporary image so we can ascertain the width and height
-           of the final image
-         */
         BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = img.createGraphics();
         Font font = new Font("Caveat", Font.ITALIC, 48);
@@ -125,7 +117,6 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
 
         return null;
     }

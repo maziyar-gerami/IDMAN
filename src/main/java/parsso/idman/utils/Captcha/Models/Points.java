@@ -5,13 +5,10 @@ import lombok.Getter;
 
 @Getter
 public class Points {
-
     private final int width;
     private final int height;
-
     private int x1 = 0;
     private int y1 = 0;
-
     private int x2 = 0;
     private int y2 = 0;
 

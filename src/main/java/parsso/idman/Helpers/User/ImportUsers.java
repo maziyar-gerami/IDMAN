@@ -32,7 +32,6 @@ import java.util.List;
 
 @Service
 public class ImportUsers {
-
     @Autowired
     private UserRepo userRepo;
 
@@ -76,7 +75,6 @@ public class ImportUsers {
             user.setEmployeeNumber(formatter.formatCellValue(row.getCell(sequence[9])));
             user.setUserPassword(formatter.formatCellValue(row.getCell(sequence[10])));
 
-
             if ((row.getCell(sequence[11]) != null) && !(row.getCell(sequence[11]).equals("")))
                 try {
                     user.setEndTime(TimeHelper.setEndTime(formatter.formatCellValue(row.getCell(sequence[11]))));
@@ -102,7 +100,6 @@ public class ImportUsers {
                     if (temp.getAsString("invalidParameter") != null)
                         invalidParameter.add(temp);
 
-
                     else if (temp.getAsString("invalidGroups") != null)
                         invalidGroups.add(temp);
 
@@ -117,7 +114,6 @@ public class ImportUsers {
             }
         }
 
-
         JSONObject finalJson = new JSONObject();
         finalJson.put("invalidGroups", invalidGroups);
         finalJson.put("repetitiveUsers", repetitiveUsers);
@@ -130,7 +126,6 @@ public class ImportUsers {
         finalJson.put("nUserIdEmpty", nUserIdEmpty);
 
         finalJson.put("list", jsonArray);
-
 
         return finalJson;
     }
@@ -192,7 +187,6 @@ public class ImportUsers {
             i++;
 
             if (user != null || user.getUserId() != null && !user.getUserId().equals("")) {
-
 
                 JSONObject temp = userRepo.createUserImport(doerId, user);
 

@@ -18,22 +18,19 @@ import java.text.ParseException;
 
 @Controller
 public class AuditsController {
-
-
     @Autowired
     private AuditRepo auditRepo;
     @Autowired
     private AuditsExcelView auditsExcelView;
 
-    //*************************************** Pages ***************************************
+    //************************************* Pages ****************************************
 
     @GetMapping("/audits")
     public String Audits() {
         return "audits";
     }
 
-    //*************************************** APIs ***************************************
-
+    //************************************* APIs ****************************************
 
     @GetMapping("/api/audits/users/{page}/{n}")
     public ResponseEntity<ListAudits> retrieveAllAudits(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {

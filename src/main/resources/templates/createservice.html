@@ -294,6 +294,9 @@
                                         <li class="nav-item">
                                             <a class="nav-link" @click.prevent="setActive('mfa')" :class="{ active: isActive('mfa') }" href="#mfa">MFA</a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" @click.prevent="setActive('notifications')" :class="{ active: isActive('notifications') }" href="#notifications">{{serviceNotificationsText}}</a>
+                                        </li>
                                     </ul>
 
                                     <div class="tab-content py-3 p-3" id="myTabContent" style="background-color: white;">
@@ -685,6 +688,22 @@
                                                     <option value="OPEN">OPEN</option>
                                                     <option value="PHANTOM">PHANTOM</option>
                                                 </select>
+                                            </div>
+
+                                            <a v-bind:href="s34" class="btn btn-danger mb-3 mt-3">{{s76}}</a>
+                                            <button v-on:click="addService" class="btn btn-primary mb-3 mt-3">{{s32}}</button>
+                                        </div>
+                                        <div class="tab-pane fade" :class="{ 'active show': isActive('notifications') }" id="notifications">
+                                            <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{serviceNotificationsText}}</span></h4>
+
+                                            <div class="form-group">
+                                                <label>{{apiAddressText}}</label>
+                                                <input name="notificationApiURL" class="form-control enInput" type="text" placeholder="URL">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>{{apiKeyText}}</label>
+                                                <input name="notificationApiKey" class="form-control enInput" type="text" placeholder="Key">
                                             </div>
 
                                             <a v-bind:href="s34" class="btn btn-danger mb-3 mt-3">{{s76}}</a>

@@ -23,7 +23,6 @@ import java.util.List;
 
 @Controller
 public class ConfigsController {
-
     @Autowired
     PasswordSettings passwordSettings;
     @Autowired
@@ -33,15 +32,14 @@ public class ConfigsController {
     @Autowired
     private ConfigRepo configRepo;
 
-    //*************************************** Pages ***************************************
+    //************************************* Pages ****************************************
 
     @GetMapping("/configs")
     public String Configs(HttpServletRequest request) {
         return "configs";
     }
 
-    //*************************************** APIs ***************************************
-
+    //************************************* APIs ****************************************
 
     @GetMapping("/api/configs")
     public ResponseEntity<String> retrieveSettings() throws IOException {

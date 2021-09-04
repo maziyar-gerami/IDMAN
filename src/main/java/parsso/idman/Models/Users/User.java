@@ -23,12 +23,12 @@ import java.util.List;
 @Setter
 @ToString
 public class User implements UserDetails, Comparable {
-
     private static final String PREFIX = "ROLE_";
     @JsonIgnore
     ObjectId _id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     SkyRoom skyRoom;
+    Boolean skyroomAccess;
     private String userId;
     private String firstName;
     private String lastName;
@@ -64,7 +64,6 @@ public class User implements UserDetails, Comparable {
     private UsersExtraInfo usersExtraInfo;
     private boolean unDeletable;
     private boolean profileInaccessibility;
-    Boolean skyroomAccess;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private License services;
 
@@ -103,7 +102,6 @@ public class User implements UserDetails, Comparable {
 
         return null;
     }
-
 
     @JsonIgnore
     @Override
@@ -163,7 +161,6 @@ public class User implements UserDetails, Comparable {
 
         return this.getUserId().equals(other.getUserId());
     }
-
 
     @Override
     public int compareTo(Object second) {

@@ -9,10 +9,8 @@ import parsso.idman.Repos.GroupRepo;
 import java.util.LinkedList;
 import java.util.List;
 
-
 @Service
 public class GroupsChecks {
-
     @Autowired
     GroupRepo groupRepo;
 

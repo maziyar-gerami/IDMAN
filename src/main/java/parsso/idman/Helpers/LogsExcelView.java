@@ -22,12 +22,10 @@ import java.util.Map;
 
 @Service
 public class LogsExcelView extends AbstractXlsView {
-
     public static String mainCollection = Variables.col_log;
     @Autowired
     ReportRepo reportRepo;
     ZoneId zoneId = ZoneId.of(Variables.ZONE);
-
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {

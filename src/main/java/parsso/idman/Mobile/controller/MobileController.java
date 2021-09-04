@@ -25,10 +25,8 @@ import java.util.List;
 
 @RestController
 public class MobileController {
-
     @Value(value = "${base.url}")
     private String url;
-
     @Autowired
     private UserRepo userRepo;
     @Autowired
@@ -39,7 +37,6 @@ public class MobileController {
     private ServiceRepo serviceRepo;
     @Autowired
     private parsso.idman.Helpers.User.Operations operations;
-
 
     @GetMapping(value = "/api/mobile/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody
@@ -72,7 +69,6 @@ public class MobileController {
             return new ResponseEntity<>(HttpStatus.OK);
         } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
 
     @PostMapping("/api/mobile/active")
     public @ResponseBody

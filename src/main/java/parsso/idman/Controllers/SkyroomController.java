@@ -20,13 +20,10 @@ import java.io.IOException;
 public class SkyroomController {
     @Autowired
     SkyroomRepo runSkyroom;
-
     @Autowired
     UserRepo userRepo;
-
     @Value("${skyroom.enable}")
     String skyroomEnable;
-
 
     @Deprecated
     @GetMapping("/api/skyroom")
@@ -48,10 +45,7 @@ public class SkyroomController {
             } catch (Exception e) {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
-        }
-        else
+        } else
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-
-
     }
 }
