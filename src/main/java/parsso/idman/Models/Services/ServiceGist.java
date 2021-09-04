@@ -18,11 +18,7 @@ import java.util.List;
 public class ServiceGist {
     private long count;
     private List<Notification> notifications;
-
-    public long getCount() {
-        return notifications.size();
-    }
-
+    
     public ServiceGist(){
         List<Notification> nl = new LinkedList<>();
 
