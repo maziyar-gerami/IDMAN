@@ -67,8 +67,8 @@ public class UniformLogger {
     private void idmanLogger(ReportMessage reportMessage) {
         List<ReportMessage> reportMessageList = new LinkedList<>();
 
-        Runnable runnable =
-                () -> {
+        //Runnable runnable =
+                //() -> {
                     if (reportMessage.getDifference() != null)
                         for (ReportMessage.Changes ch : reportMessage.getDifference())
                             if (!ch.getAttribute().equalsIgnoreCase("timestamp"))
@@ -89,10 +89,13 @@ public class UniformLogger {
 
                     }
 
+                    if (reportMessageList.size()==0)
+                        reportMessageList.add(reportMessage);
+
                     mongoTemplate.insert(reportMessageList, Variables.col_idmanlog);
-                };
-        Thread thread = new Thread(runnable);
-        thread.start();
+                //};
+        //Thread thread = new Thread(runnable);
+        //thread.start();
     }
 
 }

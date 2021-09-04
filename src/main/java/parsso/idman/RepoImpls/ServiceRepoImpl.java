@@ -2,6 +2,7 @@ package parsso.idman.RepoImpls;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -292,14 +293,11 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
     @Override
-    public HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException {
-
-
+    public HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException {
 
         ExtraInfo extraInfo = new ExtraInfo();
         long id = 0;
         JSONObject jsonExtraInfo = new JSONObject();
-
 
         extraInfo.setUrl(jsonExtraInfo != null && jsonExtraInfo.get("url") != null ?
                 jsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
@@ -310,18 +308,23 @@ public class ServiceRepoImpl implements ServiceRepo {
         if (system.equalsIgnoreCase("cas"))
             id = casServiceHelper.create(doerID, jsonObject);
 
-         else if (system.equalsIgnoreCase("saml"))
+        else if (system.equalsIgnoreCase("saml"))
             id = samlServiceHelper.create(doerID, jsonObject);
 
         if (id > 0)
             if (extraInfo == null)
                 extraInfo = new ExtraInfo();
 
-            extraInfo = setExtraInfo(id,extraInfo, jsonObject,position.lastPosition() + 1);
+        String jsonString = new Gson().toJson(jsonObject.get("extraInfo"), Map.class);
 
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObjectExtraInfo = (JSONObject) parser.parse(jsonString);
+
+        extraInfo = setExtraInfo(id, extraInfo, jsonObjectExtraInfo, position.lastPosition() + 1);
 
         try {
             mongoTemplate.save(extraInfo, collection);
+
             return HttpStatus.OK;
         } catch (Exception e) {
             uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongoDB"));
@@ -331,16 +334,18 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
     private ExtraInfo setExtraInfo(long id, ExtraInfo extraInfo, JSONObject jsonObject, int i) {
-        extraInfo.setId( id);
+        extraInfo.setId(id);
         extraInfo.setPosition(i);
         try {
-
-        extraInfo.setNotificationApiURL(jsonObject.get("notificationApiURL").toString());
-        }catch (Exception e){}
+            extraInfo.setNotificationApiURL(jsonObject.get("notificationApiURL").toString());
+        } catch (Exception e) {
+        }
 
         try {
             extraInfo.setNotificationApiKey(jsonObject.get("notificationApiKey").toString());
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
+
         return extraInfo;
     }
 
@@ -386,16 +391,17 @@ public class ServiceRepoImpl implements ServiceRepo {
             try {
                 extraInfo.setNotificationApiURL(jsonObject.get("notificationApiURL") != null ? jsonObject.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
 
-            } catch (Exception e){}
+            } catch (Exception e) {
+            }
             try {
                 extraInfo.setNotificationApiKey(jsonObject.get("notificationApiKey") != null ? jsonObject.get("notificationApiKey").toString() : oldExtraInfo.getNotificationApiKey());
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
 
             try {
                 extraInfo.setPosition(oldExtraInfo.getPosition());
-            } catch (Exception e) {}
-
-
+            } catch (Exception e) {
+            }
 
             extraInfo.setId(id);
         }

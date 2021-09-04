@@ -353,7 +353,6 @@ public class CasServiceHelper {
                 file.write(json);
                 file.close();
 
-                mongoTemplate.save(microService, collection);
                 uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                         "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
 

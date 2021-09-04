@@ -98,7 +98,7 @@ public class ServicesController {
     }
 
     @PostMapping("/api/services/{system}")
-    public ResponseEntity<String> createService(HttpServletRequest request, @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException {
+    public ResponseEntity<String> createService(HttpServletRequest request, @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
         return new ResponseEntity<>(serviceRepo.createService(request.getUserPrincipal().getName(), jsonObject, system));
     }
 
