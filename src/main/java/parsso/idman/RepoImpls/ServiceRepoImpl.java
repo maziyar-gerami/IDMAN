@@ -300,13 +300,6 @@ public class ServiceRepoImpl implements ServiceRepo {
         long id = 0;
         JSONObject jsonExtraInfo = new JSONObject();
 
-        if (jsonObject.get("extraInfo") != null) {
-            if (jsonObject.get("extraInfo").getClass().toString().equals("class org.json.simple.JSONObject"))
-                jsonExtraInfo = (JSONObject) jsonObject.get("extraInfo");
-
-            else if (jsonObject.get("extraInfo").getClass().toString().equals("class java.util.LinkedHashMap"))
-                jsonExtraInfo = new JSONObject((Map) jsonObject.get("extraInfo"));
-        }
 
         extraInfo.setUrl(jsonExtraInfo != null && jsonExtraInfo.get("url") != null ?
                 jsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());

@@ -28,15 +28,29 @@ public class Comparison {
 
         List<String> old_ous = null;
         List<String> old_uid = null;
+        Inconsistency groups;
+        Inconsistency users;
 
-        if (strategy1.getRequiredAttributes() != null && strategy1.getRequiredAttributes().get("ou") != null)
-            old_ous = (List<String>) ((JSONArray) strategy1.getRequiredAttributes().get("ou")).get(1);
+        try {
 
-        Inconsistency groups = listCompare(old_ous, new_ous);
+            if (strategy1.getRequiredAttributes() != null && strategy1.getRequiredAttributes().get("ou") != null)
+                old_ous = (List<String>) ((JSONArray) strategy1.getRequiredAttributes().get("ou")).get(1);
 
-        if (strategy1.getRequiredAttributes() != null && strategy1.getRequiredAttributes().get("uid") != null)
-            old_uid = (List<String>) ((JSONArray) strategy1.getRequiredAttributes().get("uid")).get(1);
-        Inconsistency users = listCompare(old_uid, new_uid);
+            groups = listCompare(old_ous, new_ous);
+        } catch (Exception e) {
+            groups = listCompare(null, new_ous);
+        }
+
+        try {
+
+            if (strategy1.getRequiredAttributes() != null && strategy1.getRequiredAttributes().get("uid") != null)
+                old_uid = (List<String>) ((JSONArray) strategy1.getRequiredAttributes().get("uid")).get(1);
+            users = listCompare(old_uid, new_uid);
+
+        } catch (NullPointerException e) {
+            users = listCompare(null, new_uid);
+        }
+
         return new UsersGroups(users, groups);
     }
 

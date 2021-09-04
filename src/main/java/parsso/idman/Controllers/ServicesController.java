@@ -57,7 +57,7 @@ public class ServicesController {
 
     @GetMapping("/api/services/user")
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
-        String currentUserId = "maziyar";
+        String currentUserId = request.getUserPrincipal().getName();
         Criteria regex = Criteria.where("userId").regex(currentUserId, "i");
         UsersExtraInfo simpleUser = mongoTemplate.findOne(new Query(regex)
                 , UsersExtraInfo.class, Variables.col_usersExtraInfo);
@@ -99,7 +99,7 @@ public class ServicesController {
 
     @PostMapping("/api/services/{system}")
     public ResponseEntity<String> createService(HttpServletRequest request, @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException {
-        return new ResponseEntity<>(serviceRepo.createService("maziyar", jsonObject, system));
+        return new ResponseEntity<>(serviceRepo.createService(request.getUserPrincipal().getName(), jsonObject, system));
     }
 
     @PutMapping("/api/service/{id}/{system}")

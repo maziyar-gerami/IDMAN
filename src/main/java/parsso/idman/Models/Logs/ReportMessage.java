@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
-import org.javers.core.diff.changetype.NewObject;
 import org.javers.core.diff.changetype.ValueChange;
 import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Models.Services.Service;
@@ -180,7 +179,7 @@ public class ReportMessage {
 
         Diff diff = javers.compare(o1, o2);
         List<org.javers.core.diff.changetype.ValueChange> changes = diff.getChangesByType(org.javers.core.diff.changetype.ValueChange.class);
-        List objectsByChangeType = diff.getObjectsByChangeType(NewObject.class);
+
 
         for (org.javers.core.diff.changetype.ValueChange c : changes)
             if (c.getLeft() != null && c.getRight() != null)
