@@ -273,7 +273,10 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         andFilter.and(new PresentFilter("pwdAccountLockedTime"));
         andFilter.and(new NotFilter(new EqualsFilter("pwdAccountLockedTime", "40400404040404.950Z")));
 
-        List<User> users = ldapTemplate.search(BASE_DN, andFilter.encode(), userAttributeMapper);
+        List<User> users = new LinkedList<>();
+        try {
+            users = ldapTemplate.search(BASE_DN, andFilter.encode(), userAttributeMapper);
+        }catch (Exception e){ }
         for (User user : users) {
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
             UsersExtraInfo simpleUser = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);

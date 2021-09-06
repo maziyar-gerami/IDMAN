@@ -29,7 +29,7 @@ public class UniformLogger {
         reportMessage.setLevel(Variables.LEVEL_INFO);
         reportMessage.setDoerID(doerId);
         idmanLogger(reportMessage);
-        logger.info(reportMessage.toString());
+        logger.warn(reportMessage.toString());
     }
 
     public void error(String doerId, ReportMessage reportMessage) {

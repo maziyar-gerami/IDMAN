@@ -230,6 +230,9 @@ document.addEventListener('DOMContentLoaded', function () {
         faNameText: "نام فارسی",
         reportedService: {},
         returnText: "بازگشت",
+        serviceNotificationsText: "پیام های سرویس",
+        apiAddressText: "آدرس API",
+        apiKeyText: "کلید API",
       },
       created: function () {
         this.setDateNav();
@@ -663,21 +666,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 }else{
                   for(let i = 0; i < res.data.accessStrategy.requiredAttributes.ou[1].length; ++i){
                     document.getElementById("groupNameId" + res.data.accessStrategy.requiredAttributes.ou[1][i]).click();
-                    /* document.getElementById("groupNameId" + res.data.accessStrategy.requiredAttributes.ou[1][i]).checked = true;
-                    if(vm.groupList === ""){
-                      vm.groupList += res.data.accessStrategy.requiredAttributes.ou[1][i];
-                    }else{
-                      vm.groupList += ',' + res.data.accessStrategy.requiredAttributes.ou[1][i];
-                    } */
                   }
                 }
+              }
+
+              if(typeof res.data.extraInfo.notificationApiURL !== "undefined"){
+                document.getElementsByName("notificationApiURL")[0].value = res.data.extraInfo.notificationApiURL;
+              }
+
+              if(typeof res.data.extraInfo.notificationApiKey !== "undefined"){
+                document.getElementsByName("notificationApiKey")[0].value = res.data.extraInfo.notificationApiKey;
               }
             }
           });
         },
         editService: function (id) {
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          var vm = this;
+          let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          let vm = this;
 
           let serviceIdFlag = false;
           for(let i = 0; i < document.getElementsByName('serviceId')[0].value.length; ++i){
@@ -1019,6 +1024,18 @@ document.addEventListener('DOMContentLoaded', function () {
               this.multifactorPolicy.failureMode = null;
             }
 
+            if(document.getElementsByName("notificationApiURL")[0].value != ""){
+              this.extraInfo.notificationApiURL = document.getElementsByName("notificationApiURL")[0].value;
+            }else{
+              this.extraInfo.notificationApiURL = null;
+            }
+
+            if(document.getElementsByName("notificationApiKey")[0].value != ""){
+              this.extraInfo.notificationApiKey = document.getElementsByName("notificationApiKey")[0].value;
+            }else{
+              this.extraInfo.notificationApiKey = null;
+            }
+
             if(this.samls){
               if(this.metaDataAddress || this.metaDataFile){
                 if(this.metaDataFile){
@@ -1054,7 +1071,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             logoutType: vm.service.logoutType,
                             logoutUrl: vm.service.logoutUrl,
                             accessStrategy: vm.accessStrategy,
-                            contacts: vm.contacts
+                            contacts: vm.contacts,
                           }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
@@ -1086,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         logoutType: vm.service.logoutType,
                         logoutUrl: vm.service.logoutUrl,
                         accessStrategy: vm.accessStrategy,
-                        contacts: vm.contacts
+                        contacts: vm.contacts,
                       }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
@@ -1117,7 +1134,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   logoutType: vm.service.logoutType,
                   logoutUrl: vm.service.logoutUrl,
                   accessStrategy: vm.accessStrategy,
-                  contacts: vm.contacts
+                  contacts: vm.contacts,
                 }).replace(/\\\\/g, "\\")
               })
               .then((res) => {
@@ -1172,7 +1189,6 @@ document.addEventListener('DOMContentLoaded', function () {
           });
         },
         addGroup: function (n) {
-          //n = n.split("'").join("");
           if(this.groupList.includes(n)){
             if(this.groupList.includes(n + ',')){
               this.groupList = this.groupList.replace(n + ',', "");
@@ -1188,7 +1204,6 @@ document.addEventListener('DOMContentLoaded', function () {
               this.groupList += ',' + n;
             }
           }
-          console.log(this.groupList);
         },
         allGroups: function () {
           if(this.allGroupsHolderText == this.addAllGroupsText){
@@ -1777,6 +1792,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.enNameText = "English Name";
             this.faNameText = "Farsi Name";
             this.returnText = "Return";
+            this.serviceNotificationsText = "Service Notifications";
+            this.apiAddressText = "API Address";
+            this.apiKeyText = "API Key";
           }else {
               window.localStorage.setItem("lang", "FA");
               this.margin = "margin-right: 30px;";
@@ -1902,6 +1920,9 @@ document.addEventListener('DOMContentLoaded', function () {
               this.enNameText = "نام انگلیسی";
               this.faNameText = "نام فارسی";
               this.returnText = "بازگشت";
+              this.serviceNotificationsText = "پیام های سرویس";
+              this.apiAddressText = "آدرس API";
+              this.apiKeyText = "کلید API";
           }
         },
         div: function (a, b) {

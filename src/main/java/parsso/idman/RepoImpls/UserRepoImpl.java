@@ -261,10 +261,10 @@ public class UserRepoImpl implements UserRepo {
 
             mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
 
-            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, user, p, ""));
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,  ""));
 
         } catch (Exception e) {
-            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, user, p, "Writing to DB"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED,  "Writing to DB"));
 
         }
 
@@ -678,7 +678,7 @@ public class UserRepoImpl implements UserRepo {
 
         user.setSkyroomAccess(skyRoomAccess(user));
 
-        //user.setServices(transcriptRepo.servicesOfUser(userId));
+        user.setServices(transcriptRepo.servicesOfUser(userId));
 
         if (user.getRole() == null)
             user = setRole(user);
