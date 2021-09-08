@@ -17,7 +17,6 @@ import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Services.ServiceType.SamlService;
 import parsso.idman.Models.Services.ServicesSubModel.*;
 import parsso.idman.Repos.ServiceRepo;
@@ -229,9 +228,10 @@ public class SamlServiceHelper {
                 if (!(service.getServiceId().contains("localhost")))
                     try {
                         machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
+
+                    } catch (Exception e) {
                         uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                                 "IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
-                    } catch (Exception e) {
                         machines = null;
                     }
 
@@ -245,9 +245,7 @@ public class SamlServiceHelper {
                 file.write(json);
                 file.close();
 
-                MicroService microService = new MicroService(service.getServiceId(), IPaddresses);
 
-                mongoTemplate.save(microService, collection);
                 uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                         "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
                 return service.getId();

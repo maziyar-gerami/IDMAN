@@ -103,10 +103,9 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 
     @Override
     public List<ReportMessage> accessManaging(Long id, String type, String item) {
-        String modelService = Variables.MODEL_SERVICE;
         Query query = new Query();
 
-        query.addCriteria(Criteria.where("model").is(modelService));
+        query.addCriteria(Criteria.where("model").is(Variables.MODEL_SERVICE));
         query.addCriteria(Criteria.where("instance").is(id));
         query.addCriteria(Criteria.where("attribute").is(Variables.ACCESS_STRATEGY));
         if (!type.equals(""))
