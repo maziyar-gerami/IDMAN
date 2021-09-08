@@ -65,6 +65,10 @@ public class Variables {
     public static String ACCESS_ADD = "Access Add";
     public static String ACCESS_REM = "Access Remove";
     public static String ACCESS_STRATEGY = "Access Strategy";
+    public static String MSG_FA_CODE_200 = "پاسخ ارسال شد.";
+    public static String MSG_FA_CODE_400 = "بدنه JSON ارسال شده به API  فرمتی نادرست دارد.";
+    public static String MSG_FA_CODE_401 = "نام کاربری ارسال شده صحیح نیست.";
+    public static String MSG_FA_CODE_403 = "کلید API وارد شده صحیح نیست.";
     static String email_body = "شما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید." +
             "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +
             "در غیر این صورت با کلیک بر روی  لینک زیر نسبت به بازنشانی و تغییر رمز عبور خود اقدام نمایید.\n";

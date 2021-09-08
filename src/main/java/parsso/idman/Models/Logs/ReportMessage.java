@@ -165,6 +165,8 @@ public class ReportMessage {
                 accessChange + separator +
                 result + separator +
                 description;
+        first = first.replaceAll(String.valueOf(null),"");
+        first =first.replaceAll("null","");
         String last = first.replaceAll(String.valueOf(separator) + separator, String.valueOf(separator));
         last = last.replaceAll(String.valueOf(separator), " " + separator + " ");
         if ((last.charAt(last.length() - 2)) == separator)
