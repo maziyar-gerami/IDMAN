@@ -44,7 +44,6 @@ public class Socket {
                 current.session.getBasicRemote().sendText(message);
 
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 

@@ -165,10 +165,13 @@ public class ReportMessage {
                 accessChange + separator +
                 result + separator +
                 description;
-        first = first.replaceAll(String.valueOf(null),"");
+
         first =first.replaceAll("null","");
+        first =first.replaceAll(separator+"  "+separator,":");
+        first = first.replaceAll(String.valueOf(separator) +"  "+ separator, String.valueOf(separator));
         String last = first.replaceAll(String.valueOf(separator) + separator, String.valueOf(separator));
-        last = last.replaceAll(String.valueOf(separator), " " + separator + " ");
+        last = last.replaceAll(String.valueOf(separator) + separator+separator+separator, String.valueOf(separator));
+        last = last.replaceAll(String.valueOf(separator)," "+ String.valueOf(separator)+" ");
         if ((last.charAt(last.length() - 2)) == separator)
             return last.substring(0, last.length() - 3);
         return last;

@@ -103,6 +103,7 @@ public class ServiceRepoImpl implements ServiceRepo {
             try {
                 microService = mongoTemplate.findOne(query, MicroService.class, collection);
             } catch (Exception e) {
+                e.printStackTrace();
                 microService = new MicroService(service.getId(), service.getServiceId());
                 uniformLogger.error(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(), "",
                         Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "unable read extra info from mongo"));
@@ -130,6 +131,7 @@ public class ServiceRepoImpl implements ServiceRepo {
                     services.add(service);
                     Collections.sort(services);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                             "", Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to read service"));
                     continue;
@@ -172,6 +174,7 @@ public class ServiceRepoImpl implements ServiceRepo {
                 try {
                     service = analyze(file);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(), "",
                             Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to parse service"));
 
