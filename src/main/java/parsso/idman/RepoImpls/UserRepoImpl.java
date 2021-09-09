@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 
+import lombok.val;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
@@ -43,8 +44,10 @@ import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.*;
 
 import javax.naming.Name;
-import javax.naming.NamingException;
-import javax.naming.directory.*;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
+import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -113,13 +116,13 @@ public class UserRepoImpl implements UserRepo {
     private EmailService emailService;
 
     @Override
-    public JSONObject create(String doerID, User p) throws IOException, ParseException {
+    public JSONObject create(String doerID, User p) {
 
         p.setUserId(p.getUserId().toLowerCase());
 
-        UsersExtraInfo usersExtraInfo = null;
+        UsersExtraInfo usersExtraInfo;
 
-        if (p.getUserId() == null || p.getUserId() == "") {
+        if (p.getUserId() == null || p.getUserId().equals("")) {
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("invalidGroups", p.getUserId());
@@ -131,22 +134,23 @@ public class UserRepoImpl implements UserRepo {
             user = retrieveUsers(p.getUserId());
 
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         try {
             if (user == null || user.getUserId() == null) {
 
-                if (p.getDisplayName() == null || p.getDisplayName() == "" ||
-                        p.getMail() == null || p.getMail() == "" || p.getStatus() == null || p.getStatus() == "") {
+                if (p.getDisplayName() == null || p.getDisplayName().equals("") ||
+                        p.getMail() == null || p.getMail().equals("") || p.getStatus() == null || p.getStatus().equals("")) {
                     uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE,
                             Variables.RESULT_FAILED, "essential parameter not exist"));
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("userId", p.getUserId());
-                    if (p.getDisplayName() == null || p.getDisplayName() == "")
+                    if (p.getDisplayName() == null || p.getDisplayName().equals(""))
                         jsonObject.put("invalidParameter", "ِDisplayName");
-                    if (p.getMail() == null || p.getMail() == "")
+                    if (p.getMail() == null || p.getMail().equals(""))
                         jsonObject.put("invalidParameter", "Mail");
-                    if (p.getStatus() == null || p.getStatus() == "")
+                    if (p.getStatus() == null || p.getStatus().equals(""))
                         jsonObject.put("invalidParameter", "Status");
                     return jsonObject;
                 }
@@ -182,7 +186,7 @@ public class UserRepoImpl implements UserRepo {
                 return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
-            if (p.getUserId() != null || !p.getUserId().equals("")) {
+            if (p.getUserId() != null || !Objects.equals(p.getUserId(), "")) {
                 uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Unknown reason"));
             } else
                 uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, "", Variables.ATTR_USERID, Variables.ACTION_CREATE, Variables.RESULT_FAILED, "UserId is empty"));
@@ -197,7 +201,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus update(String doerID, String usid, User p) throws IOException, ParseException {
+    public HttpStatus update(String doerID, String usid, User p) {
 
         p.setUserId(usid.trim());
         Name dn = buildDnUser.buildDn(p.getUserId());
@@ -221,7 +225,7 @@ public class UserRepoImpl implements UserRepo {
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
 
         try {
-            usersExtraInfo.setUnDeletable(p.isUnDeletable());
+            Objects.requireNonNull(usersExtraInfo).setUnDeletable(p.isUnDeletable());
         } catch (Exception e) {
             user.setUnDeletable(p.isUnDeletable());
         }
@@ -233,7 +237,7 @@ public class UserRepoImpl implements UserRepo {
                 p.setStatus("disable");
             usersExtraInfo.setStatus(p.getStatus());
         } else
-            usersExtraInfo.setStatus("enable");
+            Objects.requireNonNull(usersExtraInfo).setStatus("enable");
 
         if (p.getMemberOf() != null)
             usersExtraInfo.setMemberOf(p.getMemberOf());
@@ -251,7 +255,7 @@ public class UserRepoImpl implements UserRepo {
 
         if (p.getUserPassword() != null && !p.getUserPassword().equals("")) {
             context.setAttributeValue("userPassword", p.getUserPassword());
-            p.setPasswordChangedTime(Long.valueOf(TimeHelper.epochToDateLdapFormat(new Date().getTime())));
+            p.setPasswordChangedTime(Long.parseLong(TimeHelper.epochToDateLdapFormat(new Date().getTime())));
         } else
             p.setPasswordChangedTime(user.getPasswordChangedTime());
 
@@ -272,7 +276,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public JSONObject createUserImport(String doerID, User p) throws IOException, ParseException {
+    public JSONObject createUserImport(String doerID, User p){
 
         if (p.getUserPassword() == null)
             p.setUserPassword(defaultPassword);
@@ -281,17 +285,16 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<String> remove(String doer, JSONObject jsonObject) throws IOException, ParseException {
+    public List<String> remove(String doer, JSONObject jsonObject) {
 
         List<User> people = new LinkedList<>();
         List<String> undeletables = new LinkedList<>();
         if (jsonObject.size() == 0)
             people = retrieveUsersFull();
         else {
-            ArrayList jsonArray = (ArrayList) jsonObject.get("names");
-            Iterator<String> iterator = jsonArray.iterator();
-            while (iterator.hasNext()) {
-                User user = retrieveUsers(iterator.next());
+            final ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+            for (String s : (Iterable<String>) jsonArray) {
+                User user = retrieveUsers(s);
                 if (user != null)
                     people.add(user);
             }
@@ -333,12 +336,12 @@ public class UserRepoImpl implements UserRepo {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        List<GrantedAuthority> updatedAuthorities = null;
+        List<GrantedAuthority> updatedAuthorities;
 
         if (auth != null) {
             updatedAuthorities = new ArrayList<>(auth.getAuthorities());
 
-            if (auth != null && auth.getName().equals(p.getUserId())) {
+            if (auth.getName().equals(p.getUserId())) {
                 updatedAuthorities.remove(0);
 
                 updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role));
@@ -445,9 +448,7 @@ public class UserRepoImpl implements UserRepo {
 
         storageService.saveProfilePhoto(file, s);
 
-        User user = retrieveUsers(name);
-
-        User userUpdate = user;
+        User userUpdate = retrieveUsers(name);
 
         //remove old pic
         File oldPic = new File(uploadedFilesPath + userUpdate.getPhoto());
@@ -456,8 +457,9 @@ public class UserRepoImpl implements UserRepo {
         //uniformLogger.info(name,  new ReportMessage(Variables.MODEL_USER, name, Variables.ATTR_IMAGE,
         //Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,user,userUpdate, ""));
         if (update(userUpdate.getUserId(), userUpdate.getUserId(), userUpdate) == HttpStatus.OK) {
-            oldPic.delete();
-            return HttpStatus.OK;
+            if (oldPic.delete())
+                return HttpStatus.OK;
+                return HttpStatus.FORBIDDEN;
 
         }
         return HttpStatus.BAD_REQUEST;
@@ -470,20 +472,19 @@ public class UserRepoImpl implements UserRepo {
         String[] array = {"uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime"};
         searchControls.setReturningAttributes(array);
 
-        int limit = number;
-        int skip = (page - 1) * limit;
+        int skip = (page - 1) * number;
 
-        List<UsersExtraInfo> usersExtraInfos = null;
+        List<UsersExtraInfo> usersExtraInfos;
 
         if (page == -1 && number == -1)
             usersExtraInfos = mongoTemplate.find(new Query(), UsersExtraInfo.class, userExtraInfoCollection);
         else
-            usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(limit), UsersExtraInfo.class, userExtraInfoCollection);
+            usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(number), UsersExtraInfo.class, userExtraInfoCollection);
 
         OrFilter orFilter = new OrFilter();
 
-        for (int i = 0; i < usersExtraInfos.size(); i++)
-            orFilter.or(new EqualsFilter("uid", usersExtraInfos.get(i).getUserId()));
+        for (UsersExtraInfo usersExtraInfo : usersExtraInfos)
+            orFilter.or(new EqualsFilter("uid", usersExtraInfo.getUserId()));
 
         return ldapTemplate.search("ou=People," + BASE_DN, orFilter.encode(), searchControls, new SimpleUserAttributeMapper());
 
@@ -496,14 +497,11 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         String s = null;
         try {
-            s = ldapTemplate.search("ou=People," + BASE_DN, equalsFilter.encode(), searchControls, new AttributesMapper<String>() {
-                public String mapFromAttributes(Attributes attrs)
-                        throws NamingException {
-                    if (attrs.get("uid") != null)
-                        return attrs.get("uid").get().toString();
+            s = ldapTemplate.search("ou=People," + BASE_DN, equalsFilter.encode(), searchControls, (AttributesMapper<String>) attrs -> {
+                if (attrs.get("uid") != null)
+                    return attrs.get("uid").get().toString();
 
-                    return "";
-                }
+                return "";
             }).get(0);
 
         } catch (Exception e) {
@@ -515,36 +513,33 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
-        Thread thread = new Thread() {
-            public void run() {
-                systemRefresh.refreshLockedUsers();
-            }
-        };
-        thread.start();
+        new Thread(() -> systemRefresh.refreshLockedUsers()).start();
 
-        int limit = nCount;
-        int skip = (page - 1) * limit;
+        int skip = (page - 1) * nCount;
 
         Query query = queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus);
 
-        if (sortType.equals(""))
-            query.with(Sort.by(Sort.Direction.ASC, "userId"));
-
-        else if (sortType.equals("uid_m2M"))
-            query.with(Sort.by(Sort.Direction.ASC, "userId"));
-
-        else if (sortType.equals("uid_M2m"))
-            query.with(Sort.by(Sort.Direction.DESC, "userId"));
-
-        else if (sortType.equals("displayName_m2M"))
-            query.with(Sort.by(Sort.Direction.ASC, "displayName"));
-
-        else if (sortType.equals("displayName_M2m"))
-            query.with(Sort.by(Sort.Direction.DESC, "displayName"));
+        switch (sortType) {
+            case "":
+                query.with(Sort.by(Sort.Direction.ASC, "userId"));
+                break;
+            case "uid_m2M":
+                query.with(Sort.by(Sort.Direction.ASC, "userId"));
+                break;
+            case "uid_M2m":
+                query.with(Sort.by(Sort.Direction.DESC, "userId"));
+                break;
+            case "displayName_m2M":
+                query.with(Sort.by(Sort.Direction.ASC, "displayName"));
+                break;
+            case "displayName_M2m":
+                query.with(Sort.by(Sort.Direction.DESC, "displayName"));
+                break;
+        }
 
         query.with(Sort.by(Sort.Direction.DESC, "_id"));
 
-        List<UsersExtraInfo> userList = mongoTemplate.find(query.skip(skip).limit(limit),
+        List<UsersExtraInfo> userList = mongoTemplate.find(query.skip(skip).limit(nCount),
                 UsersExtraInfo.class, userExtraInfoCollection);
 
         int size = retrieveUsersSize(groupFilter, searchUid, searchDisplayName, userStatus);
@@ -654,13 +649,13 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public User retrieveUsers(String userId) throws IOException, ParseException {
+    public User retrieveUsers(String userId) {
 
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         User user = new User();
-        UsersExtraInfo usersExtraInfo = null;
+        UsersExtraInfo usersExtraInfo;
         List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, userAttributeMapper);
 
         if (people.size() != 0) {
@@ -669,7 +664,7 @@ public class UserRepoImpl implements UserRepo {
             usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection);
             user.setUsersExtraInfo(mongoTemplate.findOne(query, UsersExtraInfo.class, Token.collection));
             try {
-                user.setUnDeletable(usersExtraInfo.isUnDeletable());
+                user.setUnDeletable(Objects.requireNonNull(usersExtraInfo).isUnDeletable());
             } catch (Exception e) {
                 user.setUnDeletable(false);
             }
@@ -677,8 +672,6 @@ public class UserRepoImpl implements UserRepo {
         }
 
         user.setSkyroomAccess(skyRoomAccess(user));
-
-        user.setServices(transcriptRepo.servicesOfUser(userId));
 
         if (user.getRole() == null)
             user = setRole(user);
@@ -702,7 +695,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     private Boolean skyRoomAccess(User user) {
-        Boolean isEnable = skyroomEnable.equalsIgnoreCase("true");
+        boolean isEnable = skyroomEnable.equalsIgnoreCase("true");
 
         boolean accessRole = false;
         try {
@@ -712,6 +705,7 @@ public class UserRepoImpl implements UserRepo {
                     user.getUsersExtraInfo().getRole().equalsIgnoreCase("presenter"))
                 accessRole = true;
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return isEnable & accessRole;
@@ -727,7 +721,7 @@ public class UserRepoImpl implements UserRepo {
         return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("ou", groupId).encode(), searchControls, simpleUserAttributeMapper);
     }
 
-    public HttpStatus removeCurrentEndTime(String uid) throws IOException, ParseException {
+    public HttpStatus removeCurrentEndTime(String uid) {
 
         Name dn = buildDnUser.buildDn(uid);
 
@@ -785,7 +779,7 @@ public class UserRepoImpl implements UserRepo {
 
         CollectionUtils.filter(users, PredicateUtils.notNullPredicate());
 
-        int n = (page) * number > users.size() ? users.size() : (page) * number;
+        int n = Math.min((page) * number, users.size());
 
         int size = users.size();
         int start = (page - 1) * number;
@@ -803,7 +797,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) throws IOException, ParseException {
-        List<String> add = (List<String>) gu.get("add");
+        val add = (List<String>) gu.get("add");
         List<String> remove = (List<String>) gu.get("remove");
         List<String> groups = new LinkedList<>();
         for (String uid : add) {
@@ -869,6 +863,7 @@ public class UserRepoImpl implements UserRepo {
         try {
             operations.unlock("SYSTEM", userId);
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         HttpStatus httpStatus;
@@ -901,12 +896,12 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException {
+    public List addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException {
         InputStream insfile = file.getInputStream();
 
-        if (file.getOriginalFilename().endsWith(".xlsx")) {
+        if (Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xlsx")) {
             //Create Workbook instance holding reference to .xlsx file
-            XSSFWorkbook workbookXLSX = null;
+            XSSFWorkbook workbookXLSX;
             workbookXLSX = new XSSFWorkbook(insfile);
 
             //Get first/desired sheet from the workbook
@@ -915,19 +910,21 @@ public class UserRepoImpl implements UserRepo {
             return excelAnalyzer.excelSheetAnalyze(doer, sheet, ou, true);
 
         } else if (file.getOriginalFilename().endsWith(".xls")) {
-            HSSFWorkbook workbookXLS = null;
+            HSSFWorkbook workbookXLS;
 
             workbookXLS = new HSSFWorkbook(insfile);
 
             HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
-            return excelAnalyzer.excelSheetAnalyze(doer, xlssheet, ou, true);
+            List list = excelAnalyzer.excelSheetAnalyze(doer, xlssheet, ou, true);
+            return list;
 
         } else if (file.getOriginalFilename().endsWith(".csv")) {
 
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-            return excelAnalyzer.csvSheetAnalyzer(doer, csvReader, ou, true);
+            List list = excelAnalyzer.csvSheetAnalyzer(doer, csvReader, ou, true);
+            return list;
         }
 
         return null;
@@ -942,7 +939,7 @@ public class UserRepoImpl implements UserRepo {
             users.addAll(mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 
         } else {
-            ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+            val jsonArray = (ArrayList) jsonObject.get("names");
             for (Object temp : jsonArray)
                 users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
         }
