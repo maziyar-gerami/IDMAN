@@ -86,19 +86,23 @@ public class ServicesController {
     }
 
     @GetMapping("/service/{apiKey}")
-    public ResponseEntity<ServiceGist> retrieveGistService(@PathVariable("apiKey") String apikey) throws IOException, ParseException {
+    public ResponseEntity<ServiceGist> retrieveGistService(@PathVariable("apiKey") String apikey) {
         return new ResponseEntity<>(serviceRepo.gistService(apikey), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/services")
     public ResponseEntity<LinkedList<String>> deleteServices(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException {
-        LinkedList ls = serviceRepo.deleteServices("request.getUserPrincipal().getName()", jsonObject);
-        if (ls == null) return new ResponseEntity<>(ls, HttpStatus.OK);
-        else return new ResponseEntity<>(ls, HttpStatus.BAD_REQUEST);
+        LinkedList<String> ls = serviceRepo.deleteServices("request.getUserPrincipal().getName()", jsonObject);
+        if (ls == null) {
+            return new ResponseEntity<>(ls, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(ls, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/api/services/{system}")
     public ResponseEntity<String> createService(HttpServletRequest request, @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
+
         return new ResponseEntity<>(serviceRepo.createService(request.getUserPrincipal().getName(), jsonObject, system));
     }
 

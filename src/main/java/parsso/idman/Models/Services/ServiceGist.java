@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
+import parsso.idman.Models.Return;
 import parsso.idman.Models.Time;
 
 import java.util.Collections;
@@ -17,16 +18,16 @@ import java.util.List;
 @Getter
 
 public class ServiceGist {
-    private long count;
-    private String message;
-    private int status;
+    @JsonProperty("return")
+    private Return aReturn;
     private List<Notification> notifications;
 
     public ServiceGist(){
         List<Notification> nl = new LinkedList<>();
 
-        this.status = 200;
-        this.message = Variables.MSG_FA_CODE_200;
+        Return aReturn = new Return();
+        aReturn.setStatus(200);
+        aReturn.setMessage(Variables.MSG_FA_CODE_200);
 
         Notification n1 = new Notification();
         n1.setTitle("n1_t1");
@@ -46,7 +47,7 @@ public class ServiceGist {
         Notification n3 = new Notification();
         n3.setTitle("n3_t3");
         n3.setUrl("www.n3.com");
-        n3.setTimestamp(new Long(new Date().getTime()));
+        n3.setTimestamp(new Date().getTime());
         n3.setTime(TimeHelper.longToPersianTime(n3.getTimestamp()));
         nl.add(n3);
 
@@ -55,6 +56,7 @@ public class ServiceGist {
         this.setNotifications(nl);
     }
 
+    @SuppressWarnings("rawtypes")
     @Setter
     @Getter
     private class Notification implements Comparable{

@@ -56,8 +56,7 @@ public class UsersController {
 
     @GetMapping("/api/user")
     public ResponseEntity<User> retrieveUser(HttpServletRequest request) throws IOException, ParseException {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.retrieveUsers(principal.getName()), HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.retrieveUsers(request.getUserPrincipal().getName()), HttpStatus.OK);
     }
 
     @PutMapping("/api/user")
@@ -220,7 +219,7 @@ public class UsersController {
     public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException, ParseException {
 
         JSONObject jsonObject = importUsers.importFileUsers(request.getUserPrincipal().getName(), file, defaultSequence, true);
-        if (Integer.valueOf(jsonObject.getAsString("nUnSuccessful")) == 0)
+        if (Integer.parseInt(jsonObject.getAsString("nUnSuccessful")) == 0)
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
     }
@@ -367,12 +366,12 @@ public class UsersController {
 
     @GetMapping("/api/public/checkMail/{email}")
     public HttpEntity<List<JSONObject>> checkMail(@PathVariable("email") String email) {
-        return new ResponseEntity<List<JSONObject>>(emailService.checkMail(email), HttpStatus.OK);
+        return new ResponseEntity<>(emailService.checkMail(email), HttpStatus.OK);
     }
 
     @GetMapping("/api/public/checkMobile/{mobile}")
     public HttpEntity<List<JSONObject>> checkMobile(@PathVariable("mobile") String mobile) {
-        return new ResponseEntity<List<JSONObject>>(instantMessage.checkMobile(mobile), HttpStatus.OK);
+        return new ResponseEntity<>(instantMessage.checkMobile(mobile), HttpStatus.OK);
     }
 
     @GetMapping("/api/public/getName/{uid}/{token}")

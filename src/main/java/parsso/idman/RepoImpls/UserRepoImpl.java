@@ -186,6 +186,7 @@ public class UserRepoImpl implements UserRepo {
                 return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Unknown reason"));
             return null;
         }
@@ -892,6 +893,7 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException {
         InputStream insfile = file.getInputStream();
@@ -913,8 +915,7 @@ public class UserRepoImpl implements UserRepo {
 
             HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
-            List list = excelAnalyzer.excelSheetAnalyze(doer, xlssheet, ou, true);
-            return list;
+            return excelAnalyzer.excelSheetAnalyze(doer, xlssheet, ou, true);
 
         } else if (file.getOriginalFilename().endsWith(".csv")) {
 
