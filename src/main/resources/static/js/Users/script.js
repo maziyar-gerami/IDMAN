@@ -1371,7 +1371,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let vm = this;
 
                 this.reportLoader = true;
-                axios.get(url + "/api/users/u/" + id) //
+                axios.get(url + "/api/users/license/u/" + id) //
                     .then((res) => {
                         vm.reportedUser = res.data;
                         if(typeof res.data.services !== "undefined"){

@@ -183,3 +183,34 @@ img:hover {
     padding: 20px;
   }
 }
+
+.notificationLink {
+  text-decoration: none;
+  color: #000;
+}
+
+.notificationNumber {
+  height: 22px;
+  width: 22px;
+  background-color: #d63031;
+  border-radius: 50%;
+  color: white;
+  text-align: center;
+  border-color: #d63031;
+  position: absolute;
+  right: 5px;
+  z-index: 5;
+}
+
+.notificationNumber:empty {
+  display: none;
+}
+
+.notificationFas {
+  color: #007bff;
+  font-size: 22px;
+  top: 10px;
+  position: absolute;
+  z-index: 4;
+  right: 15px;
+}
