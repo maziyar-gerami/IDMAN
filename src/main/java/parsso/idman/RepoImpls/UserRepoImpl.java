@@ -186,10 +186,7 @@ public class UserRepoImpl implements UserRepo {
                 return importUsers.compareUsers(user, p);
             }
         } catch (Exception e) {
-            if (p.getUserId() != null || !Objects.equals(p.getUserId(), "")) {
-                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Unknown reason"));
-            } else
-                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, "", Variables.ATTR_USERID, Variables.ACTION_CREATE, Variables.RESULT_FAILED, "UserId is empty"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Unknown reason"));
             return null;
         }
     }
@@ -235,7 +232,7 @@ public class UserRepoImpl implements UserRepo {
                 p.setStatus("enable");
             else if (p.getCStatus().equals("disable"))
                 p.setStatus("disable");
-            usersExtraInfo.setStatus(p.getStatus());
+            Objects.requireNonNull(usersExtraInfo).setStatus(p.getStatus());
         } else
             Objects.requireNonNull(usersExtraInfo).setStatus("enable");
 
@@ -292,7 +289,7 @@ public class UserRepoImpl implements UserRepo {
         if (jsonObject.size() == 0)
             people = retrieveUsersFull();
         else {
-            final ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+            val jsonArray = (ArrayList) jsonObject.get("names");
             for (String s : (Iterable<String>) jsonArray) {
                 User user = retrieveUsers(s);
                 if (user != null)
@@ -440,7 +437,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException, ParseException {
+    public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException {
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
 
@@ -796,7 +793,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) throws IOException, ParseException {
+    public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
         val add = (List<String>) gu.get("add");
         List<String> remove = (List<String>) gu.get("remove");
         List<String> groups = new LinkedList<>();

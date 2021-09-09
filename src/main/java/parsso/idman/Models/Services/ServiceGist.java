@@ -46,7 +46,7 @@ public class ServiceGist {
         Notification n3 = new Notification();
         n3.setTitle("n3_t3");
         n3.setUrl("www.n3.com");
-        n3.setTimestamp(new Date().getTime());
+        n3.setTimestamp(new Long(new Date().getTime()));
         n3.setTime(TimeHelper.longToPersianTime(n3.getTimestamp()));
         nl.add(n3);
 
