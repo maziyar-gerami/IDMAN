@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @Setter
 @Getter
-public class MicroService {
+public class MicroService implements Comparable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String serviceId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -75,6 +75,17 @@ public class MicroService {
         this._id = service.getId();
         this.serviceId = service.getServiceId();
         this.description = service.getDescription();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        MicroService second = (MicroService) o;
+        if (this.getPosition() > second.getPosition())
+            return -1;
+        else if (this.getPosition() < second.getPosition())
+            return 1;
+        else
+            return 0;
     }
 
 }
