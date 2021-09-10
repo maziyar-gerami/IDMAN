@@ -594,7 +594,10 @@
                                                                     </div> 
                                                                     <div class="list-group list-group-flush">
                                                                         <div class="list-group-item" v-if="resultQuery.length > 0">
-                                                                            <div class="row align-items-start">
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else class="row align-items-start">
                                                                                 <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in resultQuery" >
                                                                                     <div>
                                                                                         <label>{{user.userId}}</label>
@@ -618,19 +621,29 @@
                                                                             </div>
                                                                         </div>
                                                                         <div v-if="resultQuery.length == 0 && searchQuery.length != 0" class="list-group-item text-center">
-                                                                            <div>
-                                                                                <i class="fa fa-times fa-2x"></i>
-                                                                            </div> 
-                                                                            <div>
-                                                                                <span>{{s74}}</span>
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-times fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s74}}</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                         <div v-if="resultQuery.length == 0 && searchQuery.length == 0" class="list-group-item text-center">
-                                                                            <div>
-                                                                                <i class="fa fa-search fa-2x"></i>
-                                                                            </div> 
-                                                                            <div>
-                                                                                <span>{{s75}}</span>
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-search fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s75}}</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -651,7 +664,10 @@
                                                                     </div> 
                                                                     <div class="list-group list-group-flush">
                                                                         <div class="list-group-item" v-if="allowedResultQuery.length > 0">
-                                                                            <div class="row align-items-start">
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else class="row align-items-start">
                                                                                 <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in allowedResultQuery" >
                                                                                     <div>
                                                                                         <label>{{user.userId}}</label>
@@ -670,19 +686,29 @@
                                                                             </div>
                                                                         </div>
                                                                         <div v-if="allowedResultQuery.length == 0 && searchQueryAllowedList.length != 0" class="list-group-item text-center">
-                                                                            <div>
-                                                                                <i class="fa fa-times fa-2x"></i>
-                                                                            </div> 
-                                                                            <div>
-                                                                                <span>{{s74}}</span>
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-times fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s74}}</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                         <div v-if="allowedResultQuery.length == 0 && searchQueryAllowedList.length == 0" class="list-group-item list-group-item-warning text-center">
-                                                                            <div>
-                                                                                <i class="fa fa-signing fa-2x"></i>
-                                                                            </div> 
-                                                                            <div>
-                                                                                <span>{{s78}}</span>
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-signing fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s78}}</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -703,7 +729,10 @@
                                                                         </div> 
                                                                         <div class="list-group list-group-flush">
                                                                             <div class="list-group-item" v-if="blockedResultQuery.length > 0">
-                                                                                <div class="row align-items-start">
+                                                                                <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                    <roller-loader color="#007bff"/>
+                                                                                </div>
+                                                                                <div v-else class="row align-items-start">
                                                                                     <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in blockedResultQuery" >
                                                                                         <div>
                                                                                             <label>{{user.userId}}</label>
@@ -722,19 +751,29 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div v-if="blockedResultQuery.length == 0 && searchQueryBlockedList.length != 0" class="list-group-item text-center">
-                                                                                <div>
-                                                                                    <i class="fa fa-times fa-2x"></i>
-                                                                                </div> 
-                                                                                <div>
-                                                                                    <span>{{s74}}</span>
+                                                                                <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                    <roller-loader color="#007bff"/>
+                                                                                </div>
+                                                                                <div v-else>
+                                                                                    <div>
+                                                                                        <i class="fa fa-times fa-2x"></i>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span>{{s74}}</span>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                             <div v-if="blockedResultQuery.length == 0 && searchQueryBlockedList.length == 0" class="list-group-item list-group-item-warning text-center">
-                                                                                <div>
-                                                                                    <i class="fa fa-signing fa-2x"></i>
-                                                                                </div> 
-                                                                                <div>
-                                                                                    <span>{{s78}}</span>
+                                                                                <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                    <roller-loader color="#007bff"/>
+                                                                                </div>
+                                                                                <div v-else>
+                                                                                    <div>
+                                                                                        <i class="fa fa-signing fa-2x"></i>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span>{{s78}}</span>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>

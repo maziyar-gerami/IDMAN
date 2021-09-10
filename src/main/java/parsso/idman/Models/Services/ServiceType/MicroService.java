@@ -7,11 +7,11 @@ import lombok.Setter;
 import parsso.idman.Models.Services.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Setter
 @Getter
 public class MicroService implements Comparable {
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String serviceId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -29,9 +29,9 @@ public class MicroService implements Comparable {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int position;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  String notificationApiURL;
+    private String notificationApiURL;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  String notificationApiKey;
+    private String notificationApiKey;
 
     public MicroService(String serviceId, List<String> machines) {
         this.serviceId = serviceId;
@@ -58,8 +58,16 @@ public class MicroService implements Comparable {
         this.logo = service.getLogo();
         this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
         this.position = (null != microService ? microService.getPosition() : 0);
-        try {this.notificationApiKey = microService.getNotificationApiKey();}catch (Exception e){};
-        try { this.notificationApiURL = microService.getNotificationApiURL();}catch (Exception e){};
+        try {
+            this.notificationApiKey = Objects.requireNonNull(microService).getNotificationApiKey();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            this.notificationApiURL = microService.getNotificationApiURL();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -79,4 +87,5 @@ public class MicroService implements Comparable {
         else
             return 0;
     }
+
 }

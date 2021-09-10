@@ -156,16 +156,30 @@ public class ReportMessage {
     @Override
     public String toString() {
         String first = "[" + level + "]" + separator +
-                model + separator +
-                instance + separator +
-                attribute + separator +
-                action + separator +
-                type + separator +
-                item + separator +
-                accessChange + separator +
-                result + separator +
-                description;
+                model + separator;
+        if (instance != null && !instance.equals("null"))
+            first = first + instance + separator;
+        if (attribute != null && !attribute.equals("null"))
+            first = first + attribute + separator;
+        if (action != null && !action.equals("null"))
+            first = first + action + separator;
+        if (type != null && !type.equals("null"))
+            first = first + type + separator;
+        if (item != null && !item.equals("null"))
+            first = first + item + separator;
+        if (accessChange != null && !accessChange.equals("null"))
+            first = first + accessChange + separator;
+        if (result != null && !result.equals("null"))
+            first = first + result + separator;
+        if (description != null && !description.equals("null"))
+
+            first = first + description;
+
+        first = first.replaceAll("null", "");
+        first = first.replaceAll(separator + "  " + separator, ":");
+        first = first.replaceAll(separator + "  " + separator, String.valueOf(separator));
         String last = first.replaceAll(String.valueOf(separator) + separator, String.valueOf(separator));
+        last = last.replaceAll(String.valueOf(separator) + separator + separator + separator, String.valueOf(separator));
         last = last.replaceAll(String.valueOf(separator), " " + separator + " ");
         if ((last.charAt(last.length() - 2)) == separator)
             return last.substring(0, last.length() - 3);
@@ -179,7 +193,6 @@ public class ReportMessage {
 
         Diff diff = javers.compare(o1, o2);
         List<org.javers.core.diff.changetype.ValueChange> changes = diff.getChangesByType(org.javers.core.diff.changetype.ValueChange.class);
-
 
         for (org.javers.core.diff.changetype.ValueChange c : changes)
             if (c.getLeft() != null && c.getRight() != null)

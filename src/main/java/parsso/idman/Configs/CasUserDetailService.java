@@ -2,7 +2,6 @@ package parsso.idman.Configs;
 
 
 import org.jasig.cas.client.authentication.AttributePrincipal;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -20,16 +19,21 @@ import parsso.idman.Models.Users.UsersExtraInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@SuppressWarnings("rawtypes")
 @Service
 public class CasUserDetailService implements AuthenticationUserDetailsService {
-    @Autowired
+    final
     MongoTemplate mongoTemplate;
+
+    public CasUserDetailService(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @Override
     public UserDetails loadUserDetails(Authentication token) throws UsernameNotFoundException {
         CasAssertionAuthenticationToken casAssertionAuthenticationToken = (CasAssertionAuthenticationToken) token;
         AttributePrincipal principal = casAssertionAuthenticationToken.getAssertion().getPrincipal();
-        Collection<SimpleGrantedAuthority> collection = new ArrayList<SimpleGrantedAuthority>();
+        Collection<SimpleGrantedAuthority> collection = new ArrayList<>();
         Query query = new Query(Criteria.where("userId").is(principal.getName().toLowerCase()));
         String collection1 = Variables.col_usersExtraInfo;
 

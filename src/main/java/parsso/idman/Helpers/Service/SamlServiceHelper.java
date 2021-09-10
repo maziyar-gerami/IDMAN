@@ -45,14 +45,14 @@ public class SamlServiceHelper {
 
         SamlService service = new SamlService();
         if (jo.get("id") != null)
-            service.setId(Long.valueOf(jo.get("id").toString()));
+            service.setId(Long.parseLong(jo.get("id").toString()));
 
         if (jo.get("serviceId") != null) service.setServiceId(jo.get("serviceId").toString());
         if (jo.get("@class") != null) service.setAtClass(jo.get("@class").toString());
         if (jo.get("name") != null) service.setName(jo.get("name").toString());
-        if (jo.get("id") != null) service.setId(Long.valueOf(jo.get("id").toString()));
+        if (jo.get("id") != null) service.setId(Long.parseLong(jo.get("id").toString()));
         if (jo.get("evaluationOrder") != null)
-            service.setEvaluationOrder(Integer.valueOf(jo.get("evaluationOrder").toString()));
+            service.setEvaluationOrder(Integer.parseInt(jo.get("evaluationOrder").toString()));
         if (jo.get("metadataLocation") != null) service.setMetadataLocation(jo.get("metadataLocation").toString());
         if (jo.get("logoutType") != null) service.setLogoutType(jo.get("logoutType").toString());
         if (jo.get("logoutUrl") != null) service.setLogoutUrl(jo.get("logoutUrl").toString());
@@ -86,12 +86,6 @@ public class SamlServiceHelper {
                 ConsentPolicy consentPolicy = new ConsentPolicy();
                 attributeReleasePolicy.setConsentPolicy(consentPolicy);
             } else {
-
-                if (jo.get("ConsentPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
-                    jsonObject = (JSONObject) jo.get("ConsentPolicy");
-
-                if (jo.get("ConsentPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
-                    jsonObject = new JSONObject((Map) jo.get("ConsentPolicy"));
 
                 ConsentPolicy consentPolicy = new ConsentPolicy();
                 consentPolicy.setAtClass((String) jsonConcentPolicy.get("@class"));

@@ -11,6 +11,7 @@ import parsso.idman.Helpers.Communicate.Token;
 import java.util.Collection;
 import java.util.Collections;
 
+@SuppressWarnings("unchecked")
 @Configuration
 public class MongoConfig extends AbstractMongoClientConfiguration {
     @Value("${mongo.uri}")
@@ -28,8 +29,9 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
         return MongoClients.create(connectionString);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
-    public Collection getMappingBasePackages() {
+    protected Collection getMappingBasePackages() {
         return Collections.singleton(Token.collection);
     }
 }

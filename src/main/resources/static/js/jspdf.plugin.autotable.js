@@ -2021,7 +2021,7 @@ function default_1(doc, global, document, current) {
                     options.afterPageContent(data);
                 doc.applyStyles(doc.userStyles);
                 if (options.afterPageAdd && data.pageNumber > 1) {
-                    ;
+
                     data.afterPageAdd(data);
                 }
                 doc.applyStyles(doc.userStyles);

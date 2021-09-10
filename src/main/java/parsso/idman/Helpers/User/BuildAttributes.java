@@ -8,13 +8,15 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
-import javax.naming.directory.*;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.BasicAttributes;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -42,7 +44,8 @@ public class BuildAttributes {
         ocattr.add("person");
         ocattr.add("inetOrgPerson");
         ocattr.add("organizationalPerson");
-        ocattr.add("pwdPolicy");
+        //TODO: Enable it after full migration to openldap
+        //ocattr.add("pwdPolicy");
 
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
@@ -70,8 +73,8 @@ public class BuildAttributes {
             attrs.put("description", p.getDescription());
         else
             attrs.put("description", " ");
-
-        if (p.isLocked())
+         //TODO: Enable it after full migration to openldap
+        /*if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
 
         if (p.getEndTime() != null) {
@@ -92,6 +95,8 @@ public class BuildAttributes {
         }
 
         attrs.put("pwdAttribute", "userPassword");
+
+         */
 
         return attrs;
     }
@@ -206,6 +211,8 @@ public class BuildAttributes {
             mongoTemplate.save(p.getUsersExtraInfo(), Variables.col_usersExtraInfo);
 
         //EndTime
+        //TODO: Enable it after full migration to openldap
+        /*
         if (p.getEndTime() != null && !p.getEndTime().equals(old.getEndTime()) && p.getEndTime().charAt(0) != ('-')) {
             if (p.getEndTime() != null && p.getEndTime() != "") {
                 if (p.getEndTime().length() == 10)
@@ -242,6 +249,7 @@ public class BuildAttributes {
             }
 
         }
+         */
         return context;
     }
 
