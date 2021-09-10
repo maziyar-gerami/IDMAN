@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Controller
-public class TicketsController {
+public class Tickets {
     @Autowired
     TicketRepo ticketRepo;
     @Autowired

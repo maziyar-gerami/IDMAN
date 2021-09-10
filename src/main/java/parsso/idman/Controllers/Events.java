@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 @Controller
-public class EventsController {
+public class Events {
     @Autowired
     private EventRepo eventRepo;
     @Autowired
@@ -26,7 +26,7 @@ public class EventsController {
     //************************************* Pages ****************************************
 
     @GetMapping("/events")
-    public String Events() {
+    public String getPageEvents() {
         return "events";
     }
 
@@ -53,7 +53,7 @@ public class EventsController {
     }
 
     @GetMapping("/api/events/user/{page}/{n}")
-    public ResponseEntity<ListEvents> retrieveCurrentUserEvents(HttpServletRequest request, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
+    public ResponseEntity<ListEvents> retrieveCurrentUserEvents(HttpServletRequest request, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException,  org.json.simple.parser.ParseException {
         ListEvents listEvents = eventRepo.getListUserEvents(request.getUserPrincipal().getName(), page, n);
         for (int i = 0; i < listEvents.getEventList().size(); i++)
             listEvents.getEventList().get(i).getProperties().setServerip(null);
@@ -73,6 +73,7 @@ public class EventsController {
     public ModelAndView downloadExcel() {
 
         // return a view which will be resolved by an excel view resolver
+        //noinspection ConstantConditions
         return new ModelAndView(eventsExcelView, "listEvents", null);
     }
 }

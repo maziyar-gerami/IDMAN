@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
-public class RolesController {
+public class Roles {
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -27,7 +27,7 @@ public class RolesController {
     //************************************* Pages ****************************************
 
     @GetMapping("/roles")
-    public String Roles() {
+    public String getPageRoles() {
         return "roles";
     }
 

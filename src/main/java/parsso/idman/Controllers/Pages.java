@@ -1,7 +1,6 @@
 package parsso.idman.Controllers;
 
 
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,10 +19,9 @@ import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @Controller
-public class DashboardController {
+public class Pages {
     @Qualifier("userRepoImpl")
     @Autowired
     private UserRepo userRepo;
@@ -34,6 +32,7 @@ public class DashboardController {
 
     //************************************* Pages ****************************************
 
+    @SuppressWarnings("SameReturnValue")
     @GetMapping("/")
     public String Root() {
         return "redirect:/dashboard";
@@ -56,6 +55,7 @@ public class DashboardController {
 
     @GetMapping("/login")
     public String Login() {
+        //noinspection SpringMVCViewInspection
         return "redirect:/login/cas";
     }
 
@@ -76,7 +76,7 @@ public class DashboardController {
     //************************************* APIs ****************************************
 
     @GetMapping("/api/dashboard")
-    public ResponseEntity<Dashboard> retrieveDashboardData() throws ParseException, java.text.ParseException, IOException, InterruptedException {
+    public ResponseEntity<Dashboard> retrieveDashboardData() throws InterruptedException {
 
         return new ResponseEntity<>(dashboardData.retrieveDashboardData(), HttpStatus.OK);
     }

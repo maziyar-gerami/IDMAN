@@ -14,12 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
-public class PubMessageController {
+public class PubMessages {
     @Autowired
     PubMessageRepo pubMessageRepo;
 
     //************************************* Pages ****************************************
 
+    @SuppressWarnings("SameReturnValue")
     @GetMapping("/publicmessages")
     public String PublicMessages() {
         return "publicmessages";

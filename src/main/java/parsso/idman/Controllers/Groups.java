@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Controller
-public class GroupsController {
+public class Groups {
     @Autowired
     private GroupRepo groupRepo;
     @Autowired
@@ -29,7 +29,7 @@ public class GroupsController {
 
     //************************************* Pages ****************************************
     @GetMapping("/groups")
-    public String Groups() {
+    public String getPageGroups() {
         return "groups";
     }
 
@@ -88,22 +88,14 @@ public class GroupsController {
     @PutMapping("/api/groups/password/expire/{groupId}")
     public ResponseEntity<List<String>> expireUsersSpecGroupPassword(HttpServletRequest request, @PathVariable(name = "groupId") String gid) {
 
-        ArrayList temp = new ArrayList();
+        ArrayList<String> temp = new ArrayList<>();
         JSONObject jsonObject = new JSONObject();
         List<UsersExtraInfo> users = userRepo.retrieveGroupsUsers(gid);
         for (UsersExtraInfo usersExtraInfo : users) {
             temp.add(usersExtraInfo.getUserId());
         }
         jsonObject.put("names", temp);
-        List<String> preventedUsers = userRepo.expirePassword(request.getUserPrincipal().getName(), jsonObject);
-
-        if (preventedUsers == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        else if (preventedUsers.size() == 0)
-            return new ResponseEntity<>(HttpStatus.OK);
-        else
-            return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
-
+        return  expireUsersGroupPassword(request , jsonObject);
     }
 
 }

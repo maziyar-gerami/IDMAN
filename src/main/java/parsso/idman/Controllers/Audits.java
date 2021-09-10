@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 @Controller
-public class AuditsController {
+public class Audits {
     @Autowired
     private AuditRepo auditRepo;
     @Autowired
@@ -26,7 +26,7 @@ public class AuditsController {
     //************************************* Pages ****************************************
 
     @GetMapping("/audits")
-    public String Audits() {
+    public String getPageAudits() {
         return "audits";
     }
 
@@ -65,6 +65,7 @@ public class AuditsController {
     @GetMapping("/api/audits/users/export")
     public ModelAndView downloadExcel() {
         // return a view which will be resolved by an excel view resolver
+        //noinspection ConstantConditions
         return new ModelAndView(auditsExcelView, "listAudits", null);
     }
 

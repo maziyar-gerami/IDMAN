@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
-public class SkyroomController {
+public class Skyroom {
     @Autowired
     SkyroomRepo runSkyroom;
     @Autowired
@@ -28,7 +28,7 @@ public class SkyroomController {
     @Deprecated
     @GetMapping("/api/skyroom")
     ResponseEntity<SkyRoom> hello(HttpServletRequest request) throws IOException, ParseException {
-        SkyRoom skyRoom = null;
+        SkyRoom skyRoom;
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
         if (skyroomEnable.equalsIgnoreCase("true")) {
 

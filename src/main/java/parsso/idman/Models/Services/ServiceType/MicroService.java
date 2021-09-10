@@ -66,7 +66,6 @@ public class MicroService implements Comparable {
         try {
             this.notificationApiURL = microService.getNotificationApiURL();
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
     }

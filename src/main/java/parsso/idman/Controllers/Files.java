@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-public class FileController {
+public class Files {
     @Autowired
     FilesStorageService storageService;
 
@@ -27,7 +27,7 @@ public class FileController {
         List<FileInfo> fileInfos = storageService.loadAll().map(path -> {
             String filename = path.getFileName().toString();
             String url = MvcUriComponentsBuilder
-                    .fromMethodName(FileController.class, "getFile", path.getFileName().toString()).build().toString();
+                    .fromMethodName(Files.class, "getFile", path.getFileName().toString()).build().toString();
 
             return new FileInfo(filename, url);
         }).collect(Collectors.toList());

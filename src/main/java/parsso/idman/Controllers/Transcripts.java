@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
-public class TranscriptController {
+public class Transcripts {
     @Autowired
     private TranscriptRepo transcriptRepo;
 
@@ -25,7 +25,7 @@ public class TranscriptController {
 
     @GetMapping("/api/transcripts/users/service/{id}")
     public ResponseEntity<Transcript> retrieveUsersOfServices(@PathVariable("id") String id) throws IOException, org.json.simple.parser.ParseException {
-        return new ResponseEntity<>(transcriptRepo.usersAndGroupsOfService(Long.valueOf(id)), HttpStatus.OK);
+        return new ResponseEntity<>(transcriptRepo.usersAndGroupsOfService(Long.parseLong(id)), HttpStatus.OK);
     }
 
     @GetMapping("/api/transcripts/services/group/{id}")

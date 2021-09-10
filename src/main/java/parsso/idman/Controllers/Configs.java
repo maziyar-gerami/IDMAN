@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
-public class ConfigsController {
+public class Configs {
     @Autowired
     PasswordSettings passwordSettings;
     @Autowired
@@ -35,7 +35,7 @@ public class ConfigsController {
     //************************************* Pages ****************************************
 
     @GetMapping("/configs")
-    public String Configs(HttpServletRequest request) {
+    public String getPageConfigs() {
         return "configs";
     }
 
@@ -52,7 +52,7 @@ public class ConfigsController {
     }
 
     @GetMapping("/api/configs/save")
-    public ResponseEntity<HttpStatus> saveAllConfigs() throws IOException, ParseException {
+    public ResponseEntity<HttpStatus> saveAllConfigs() throws IOException{
         return new ResponseEntity<>(configRepo.saveToMongo());
     }
 
@@ -64,7 +64,7 @@ public class ConfigsController {
     }
 
     @PutMapping("/api/configs/system/{system}")
-    public ResponseEntity<String> updateSettingsSystem(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException {
+    public ResponseEntity<String> updateSettingsSystem(HttpServletRequest request, @RequestBody List<Setting> settings, @PathVariable String system) throws IOException {
         configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
         passwordSettings.update(settings);
         return new ResponseEntity<>(HttpStatus.OK);

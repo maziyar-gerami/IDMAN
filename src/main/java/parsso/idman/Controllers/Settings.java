@@ -1,7 +1,6 @@
 package parsso.idman.Controllers;
 
 
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -17,12 +16,12 @@ import parsso.idman.Repos.UserRepo;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+
+import static java.lang.Thread.sleep;
 
 @RestController
-public class SettingsController {
-    int millis = 3600000;
+public class Settings {
+    final int millis = 3600000;
     @Autowired
     PasswordSettings passwordSettings;
     @Autowired
@@ -39,19 +38,16 @@ public class SettingsController {
     @GetMapping("/api/settings/notification/email")
     public ResponseEntity<HttpStatus> enableEmailNotification() {
 
-        ScheduledExecutorService executor =
-                Executors.newSingleThreadScheduledExecutor();
+        Runnable runnable = () -> {
+            while (true) {
 
-        Runnable runnable = new Runnable() {
-            @SneakyThrows
-            @Override
-            public void run() {
-                while (true) {
-
-                    settingsRepo.emailNotification();
-                    Thread.sleep(intervalCheckPassTime * millis);
-
+                settingsRepo.emailNotification();
+                try {
+                    sleep(intervalCheckPassTime * millis);
+                } catch (InterruptedException e) {
+                    break;
                 }
+
             }
         };
 
@@ -60,7 +56,7 @@ public class SettingsController {
                 try {
                     t.interrupt();
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
                 return new ResponseEntity<>(HttpStatus.OK);
             }
@@ -79,13 +75,13 @@ public class SettingsController {
     @GetMapping("/api/settings/notification/message")
     public ResponseEntity<String> enableMessageNotification() {
 
-        Runnable runnable = new Runnable() {
-            @SneakyThrows
-            @Override
-            public void run() {
-                while (true) {
-                    settingsRepo.messageNotification();
-                    Thread.sleep(intervalCheckPassTime * millis);
+        Runnable runnable = () -> {
+            while (true) {
+                settingsRepo.messageNotification();
+                try {
+                    sleep(intervalCheckPassTime * millis);
+                } catch (InterruptedException e) {
+                    break;
                 }
             }
         };
@@ -95,7 +91,7 @@ public class SettingsController {
                 try {
                     t.interrupt();
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
                 return new ResponseEntity<>(HttpStatus.OK);
             }

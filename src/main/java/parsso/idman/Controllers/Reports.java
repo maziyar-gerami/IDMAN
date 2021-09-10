@@ -18,7 +18,7 @@ import java.security.Principal;
 import java.text.ParseException;
 
 @Controller
-public class ReportsController {
+public class Reports {
     @Autowired
     private ReportRepo reportRepo;
     @Autowired
@@ -27,7 +27,7 @@ public class ReportsController {
     //************************************* Pages ****************************************
 
     @GetMapping("/reports")
-    public String Reports() {
+    public String getPageReports() {
         return "reports";
     }
 
@@ -54,7 +54,7 @@ public class ReportsController {
     }
 
     @GetMapping("/api/reports/user/{page}/{n}")
-    public ResponseEntity<ListReports> retrieveCurrentUserLogs(HttpServletRequest request, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
+    public ResponseEntity<ListReports> retrieveCurrentUserLogs(HttpServletRequest request, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
         Principal principal = request.getUserPrincipal();
         ListReports listReports = reportRepo.getListUserLogs(principal.getName(), page, n);
         return new ResponseEntity<>(listReports, HttpStatus.OK);
@@ -70,6 +70,7 @@ public class ReportsController {
     public ModelAndView downloadExcel() {
 
         // return a view which will be resolved by an excel view resolver
+        //noinspection ConstantConditions
         return new ModelAndView(logsExcelView, "listLogs", null);
     }
 }

@@ -13,7 +13,7 @@ import java.util.Collections;
 
 @SuppressWarnings("unchecked")
 @Configuration
-public class MongoConfig extends AbstractMongoClientConfiguration {
+public class Mongo extends AbstractMongoClientConfiguration {
     @Value("${mongo.uri}")
     private String connectionString;
     @Value("${mongo.db}")

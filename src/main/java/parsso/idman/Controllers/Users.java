@@ -32,7 +32,7 @@ import java.security.Principal;
 import java.util.List;
 
 @Controller
-public class UsersController {
+public class Users {
     // default sequence of variables which can be changed using frontend
     private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
     @Autowired
@@ -51,12 +51,15 @@ public class UsersController {
     private InstantMessage instantMessage;
     @Autowired
     private UserRepo userRepo;
+    public User GLOBAL_USER;
 
     //************************************* APIs ****************************************
 
     @GetMapping("/api/user")
     public ResponseEntity<User> retrieveUser(HttpServletRequest request) throws IOException, ParseException {
-        return new ResponseEntity<>(userRepo.retrieveUsers(request.getUserPrincipal().getName()), HttpStatus.OK);
+        if(GLOBAL_USER==null)
+            GLOBAL_USER = userRepo.retrieveUsers(request.getUserPrincipal().getName());
+        return new ResponseEntity<>(GLOBAL_USER, HttpStatus.OK);
     }
 
     @PutMapping("/api/user")
@@ -226,7 +229,6 @@ public class UsersController {
 
     @PutMapping("/api/users/import/massUpdate")
     public ResponseEntity<JSONObject> updateConflicts(HttpServletRequest request, @RequestBody List<User> users) {
-        Principal principal = request.getUserPrincipal();
         return new ResponseEntity<>(userRepo.massUpdate(request.getUserPrincipal().getName(), users), HttpStatus.OK);
     }
 
@@ -238,6 +240,7 @@ public class UsersController {
     @GetMapping("/api/users/export")
     public ModelAndView downloadExcel() {
 
+        //noinspection ConstantConditions
         return new ModelAndView(excelView, "listUsers", null);
     }
 
@@ -267,14 +270,7 @@ public class UsersController {
                                             @PathVariable("cid") String cid,
                                             @PathVariable("answer") String answer) throws IOException, ParseException {
         int time = userRepo.sendEmail(email, uid, cid, answer);
-        if (time > 0)
-            return new ResponseEntity<>(time, HttpStatus.OK);
-        else if (time == -1)
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else if (time == -2)
-            return new ResponseEntity<>(HttpStatus.FOUND);
-        else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return getIntegerResponseEntity(time);
     }
 
     @GetMapping("/api/public/sendMail/{email}/{cid}/{answer}")
@@ -283,6 +279,11 @@ public class UsersController {
                                             @PathVariable("answer") String answer) throws IOException, ParseException {
 
         int time = userRepo.sendEmail(email, null, cid, answer);
+        return getIntegerResponseEntity(time);
+
+    }
+
+    private ResponseEntity<Integer> getIntegerResponseEntity(int time) {
         if (time > 0) {
             return new ResponseEntity<>(time, HttpStatus.OK);
         } else if (time == -1)
@@ -291,7 +292,6 @@ public class UsersController {
             return new ResponseEntity<>(HttpStatus.FOUND);
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
     }
 
     @GetMapping("/api/public/sendSMS/{mobile}/{cid}/{answer}")
@@ -377,9 +377,9 @@ public class UsersController {
     @GetMapping("/api/public/getName/{uid}/{token}")
     public ResponseEntity<User> getName(@PathVariable("uid") String uid, @PathVariable("token") String token) throws IOException, ParseException {
         User user = userRepo.getName(uid, token);
-        if (user != null)
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
+        HttpStatus httpStatus = (user!= null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+
+        return new ResponseEntity<>(user, httpStatus);
     }
 
     @GetMapping("/api/public/validateEmailToken/{uId}/{token}")

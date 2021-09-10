@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Controller
-public class ServicesController {
+public class Services {
     @Autowired
     MongoTemplate mongoTemplate;
     @Qualifier("userRepoImpl")
@@ -46,7 +46,7 @@ public class ServicesController {
     private String metadataPath;
 
     @GetMapping("/services")
-    public String Services() {
+    public String getPageServices() {
         return "services";
     }
 
@@ -93,11 +93,9 @@ public class ServicesController {
     @DeleteMapping("/api/services")
     public ResponseEntity<LinkedList<String>> deleteServices(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException {
         LinkedList<String> ls = serviceRepo.deleteServices("request.getUserPrincipal().getName()", jsonObject);
-        if (ls == null) {
-            return new ResponseEntity<>(ls, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(ls, HttpStatus.BAD_REQUEST);
-        }
+        HttpStatus httpStatus = (ls == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+
+        return new ResponseEntity<>(ls, httpStatus);
     }
 
     @PostMapping("/api/services/{system}")

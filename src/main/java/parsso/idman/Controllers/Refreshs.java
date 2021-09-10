@@ -14,32 +14,32 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
-public class SystemRefreshController {
+public class Refreshs {
     @Autowired
-    SystemRefresh systemRefresh;
+    SystemRefresh refreshs;
 
     @GetMapping("/api/refresh/all")
     public HttpEntity<HttpStatus> all(HttpServletRequest request) throws IOException, ParseException {
-        return new ResponseEntity<>(systemRefresh.all(request.getUserPrincipal().getName()));
+        return new ResponseEntity<>(refreshs.all(request.getUserPrincipal().getName()));
     }
 
     @GetMapping("/api/refresh/services")
     public ResponseEntity<HttpStatus> services(HttpServletRequest request) throws IOException, ParseException {
-        return new ResponseEntity<>(systemRefresh.serivceRefresh(request.getUserPrincipal().getName()));
+        return new ResponseEntity<>(refreshs.serivceRefresh(request.getUserPrincipal().getName()));
     }
 
     @GetMapping("/api/refresh/captchas")
     public HttpEntity<HttpStatus> captchas(HttpServletRequest request) {
-        return new ResponseEntity<>(systemRefresh.captchaRefresh(request.getUserPrincipal().getName()));
+        return new ResponseEntity<>(refreshs.captchaRefresh(request.getUserPrincipal().getName()));
     }
 
     @GetMapping("/api/refresh/users")
     public HttpEntity<HttpStatus> users(HttpServletRequest request) throws IOException {
-        return new ResponseEntity<>(systemRefresh.userRefresh(request.getUserPrincipal().getName()));
+        return new ResponseEntity<>(refreshs.userRefresh(request.getUserPrincipal().getName()));
     }
 
     @GetMapping("/api/refresh/lockedUsers")
-    public HttpEntity<HttpStatus> lockedUsers() throws IOException {
-        return new ResponseEntity<>(systemRefresh.refreshLockedUsers());
+    public HttpEntity<HttpStatus> lockedUsers() {
+        return new ResponseEntity<>(refreshs.refreshLockedUsers());
     }
 }
