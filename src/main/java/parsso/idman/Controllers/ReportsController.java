@@ -18,7 +18,7 @@ import java.security.Principal;
 import java.text.ParseException;
 
 @Controller
-public class Reports {
+public class ReportsController {
     @Autowired
     private ReportRepo reportRepo;
     @Autowired

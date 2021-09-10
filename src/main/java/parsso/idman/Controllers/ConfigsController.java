@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
-public class Configs {
+public class ConfigsController {
     @Autowired
     PasswordSettings passwordSettings;
     @Autowired

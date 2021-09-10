@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Controller
-public class Groups {
+public class GroupsController {
     @Autowired
     private GroupRepo groupRepo;
     @Autowired

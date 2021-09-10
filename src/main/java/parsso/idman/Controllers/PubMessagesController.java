@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
-public class PubMessages {
+public class PubMessagesController {
     @Autowired
     PubMessageRepo pubMessageRepo;
 

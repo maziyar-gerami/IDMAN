@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
-public class Refreshs {
+public class RefreshsController {
     @Autowired
     SystemRefresh refreshs;
 

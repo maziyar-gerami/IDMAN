@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 @Controller
-public class Audits {
+public class AuditsController {
     @Autowired
     private AuditRepo auditRepo;
     @Autowired

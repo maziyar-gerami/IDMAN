@@ -20,7 +20,7 @@ import java.util.List;
 import static java.lang.Thread.sleep;
 
 @RestController
-public class Settings {
+public class SettingsController {
     final int millis = 3600000;
     @Autowired
     PasswordSettings passwordSettings;

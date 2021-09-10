@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
-public class Transcripts {
+public class TranscriptsController {
     @Autowired
     private TranscriptRepo transcriptRepo;
 

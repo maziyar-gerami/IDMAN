@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
-public class Pages {
+public class PagesController {
     @Qualifier("userRepoImpl")
     @Autowired
     private UserRepo userRepo;

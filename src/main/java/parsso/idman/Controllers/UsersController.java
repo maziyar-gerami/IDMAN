@@ -32,7 +32,7 @@ import java.security.Principal;
 import java.util.List;
 
 @Controller
-public class Users {
+public class UsersController {
     // default sequence of variables which can be changed using frontend
     private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
     @Autowired
@@ -51,15 +51,14 @@ public class Users {
     private InstantMessage instantMessage;
     @Autowired
     private UserRepo userRepo;
-    public User GLOBAL_USER;
+
 
     //************************************* APIs ****************************************
 
     @GetMapping("/api/user")
     public ResponseEntity<User> retrieveUser(HttpServletRequest request) throws IOException, ParseException {
-        if(GLOBAL_USER==null)
-            GLOBAL_USER = userRepo.retrieveUsers(request.getUserPrincipal().getName());
-        return new ResponseEntity<>(GLOBAL_USER, HttpStatus.OK);
+
+        return new ResponseEntity<>(userRepo.retrieveUsers(request.getUserPrincipal().getName()), HttpStatus.OK);
     }
 
     @PutMapping("/api/user")
@@ -70,8 +69,7 @@ public class Users {
 
     @GetMapping("/api/user/photo")
     public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException, ParseException {
-        Principal principal = request.getUserPrincipal();
-        User user = userRepo.retrieveUsers(principal.getName());
+        User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
         return new ResponseEntity<>(userRepo.showProfilePic(response, user), HttpStatus.OK);
     }
 

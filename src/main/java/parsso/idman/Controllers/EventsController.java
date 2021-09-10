@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 @Controller
-public class Events {
+public class EventsController {
     @Autowired
     private EventRepo eventRepo;
     @Autowired

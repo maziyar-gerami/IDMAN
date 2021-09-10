@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
-public class Roles {
+public class RolesController {
     @Autowired
     UserRepo userRepo;
     @Autowired

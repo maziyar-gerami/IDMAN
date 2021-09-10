@@ -7,7 +7,6 @@ import lombok.Setter;
 import parsso.idman.Models.Services.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Setter
 @Getter
@@ -59,9 +58,8 @@ public class MicroService implements Comparable {
         this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
         this.position = (null != microService ? microService.getPosition() : 0);
         try {
-            this.notificationApiKey = Objects.requireNonNull(microService).getNotificationApiKey();
+            this.notificationApiKey = microService.getNotificationApiKey();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         try {
             this.notificationApiURL = microService.getNotificationApiURL();
