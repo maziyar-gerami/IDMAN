@@ -23,66 +23,66 @@ import java.util.List;
 
 @Controller
 public class ConfigsController {
-    @Autowired
-    PasswordSettings passwordSettings;
-    @Autowired
-    UserRepo userRepo;
-    @Qualifier("configRepoImpl")
+	@Autowired
+	PasswordSettings passwordSettings;
+	@Autowired
+	UserRepo userRepo;
+	@Qualifier("configRepoImpl")
 
-    @Autowired
-    private ConfigRepo configRepo;
+	@Autowired
+	private ConfigRepo configRepo;
 
-    //************************************* Pages ****************************************
+	//************************************* Pages ****************************************
 
-    @GetMapping("/configs")
-    public String getPageConfigs() {
-        return "configs";
-    }
+	@GetMapping("/configs")
+	public String getPageConfigs() {
+		return "configs";
+	}
 
-    //************************************* APIs ****************************************
+	//************************************* APIs ****************************************
 
-    @GetMapping("/api/configs")
-    public ResponseEntity<String> retrieveSettings() throws IOException {
-        return new ResponseEntity<>(configRepo.retrieveSetting(), HttpStatus.OK);
-    }
+	@GetMapping("/api/configs")
+	public ResponseEntity<String> retrieveSettings() throws IOException {
+		return new ResponseEntity<>(configRepo.retrieveSetting(), HttpStatus.OK);
+	}
 
-    @GetMapping("/api/configs/list")
-    public ResponseEntity<List<Config>> listAllConfigs() throws IOException, ParseException {
-        return new ResponseEntity<>(configRepo.listBackedUpConfigs(), HttpStatus.OK);
-    }
+	@GetMapping("/api/configs/list")
+	public ResponseEntity<List<Config>> listAllConfigs() throws IOException, ParseException {
+		return new ResponseEntity<>(configRepo.listBackedUpConfigs(), HttpStatus.OK);
+	}
 
-    @GetMapping("/api/configs/save")
-    public ResponseEntity<HttpStatus> saveAllConfigs() throws IOException{
-        return new ResponseEntity<>(configRepo.saveToMongo());
-    }
+	@GetMapping("/api/configs/save")
+	public ResponseEntity<HttpStatus> saveAllConfigs() throws IOException {
+		return new ResponseEntity<>(configRepo.saveToMongo());
+	}
 
-    @PutMapping("/api/configs")
-    public ResponseEntity<String> updateSettings(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException {
-        configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
-        passwordSettings.update(settings);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+	@PutMapping("/api/configs")
+	public ResponseEntity<String> updateSettings(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException {
+		configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
+		passwordSettings.update(settings);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 
-    @PutMapping("/api/configs/system/{system}")
-    public ResponseEntity<String> updateSettingsSystem(HttpServletRequest request, @RequestBody List<Setting> settings, @PathVariable String system) throws IOException {
-        configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
-        passwordSettings.update(settings);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+	@PutMapping("/api/configs/system/{system}")
+	public ResponseEntity<String> updateSettingsSystem(HttpServletRequest request, @RequestBody List<Setting> settings, @PathVariable String system) throws IOException {
+		configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
+		passwordSettings.update(settings);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 
-    @GetMapping("/api/configs/backup")
-    public ResponseEntity<String> backupSettings() {
-        return new ResponseEntity<>(configRepo.backupConfig());
-    }
+	@GetMapping("/api/configs/backup")
+	public ResponseEntity<String> backupSettings() {
+		return new ResponseEntity<>(configRepo.backupConfig());
+	}
 
-    @GetMapping("/api/configs/restore/{cname}")
-    public ResponseEntity<HttpStatus> restoreSettings(HttpServletRequest request, @PathVariable String cname)
-            throws IOException, ParseException, java.text.ParseException {
-        return new ResponseEntity<>(configRepo.restore(request.getUserPrincipal().getName(), cname));
-    }
+	@GetMapping("/api/configs/restore/{cname}")
+	public ResponseEntity<HttpStatus> restoreSettings(HttpServletRequest request, @PathVariable String cname)
+			throws IOException, ParseException, java.text.ParseException {
+		return new ResponseEntity<>(configRepo.restore(request.getUserPrincipal().getName(), cname));
+	}
 
-    @GetMapping("/api/configs/reset")
-    public ResponseEntity<HttpStatus> resetFactory(HttpServletRequest request) throws IOException {
-        return new ResponseEntity<>(configRepo.factoryReset(request.getUserPrincipal().getName()));
-    }
+	@GetMapping("/api/configs/reset")
+	public ResponseEntity<HttpStatus> resetFactory(HttpServletRequest request) throws IOException {
+		return new ResponseEntity<>(configRepo.factoryReset(request.getUserPrincipal().getName()));
+	}
 }

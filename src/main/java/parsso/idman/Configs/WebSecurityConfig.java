@@ -23,61 +23,52 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 import java.util.Collections;
 
-
 @Configuration
 @Order(99)
 
 @EnableWebSecurity
 @PropertySource(value = "file:${external.config}", ignoreResourceNotFound = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+	private final SingleSignOutFilter singleSignOutFilter;
+	private final LogoutFilter logoutFilter;
+	private final CasAuthenticationProvider casAuthenticationProvider;
+	private final ServiceProperties serviceProperties;
+	@Value("${cas.url.logout.path}")
+	private String casLogout;
+	@Value("${cas.url.login.path}")
+	private String casLogin;
+	@Value("${spring.ldap.urls}")
+	private String ldapUrl;
 
-    private final SingleSignOutFilter singleSignOutFilter;
-    private final LogoutFilter logoutFilter;
-    private final CasAuthenticationProvider casAuthenticationProvider;
-    private final ServiceProperties serviceProperties;
-    @Value("${cas.url.logout.path}")
-    private String casLogout;
-    @Value("${cas.url.login.path}")
-    private String casLogin;
-    @Value("${spring.ldap.urls}")
-    private String ldapUrl;
+	@Autowired
+	public WebSecurityConfig(SingleSignOutFilter singleSignOutFilter, LogoutFilter logoutFilter,
+	                         CasAuthenticationProvider casAuthenticationProvider,
+	                         ServiceProperties serviceProperties) {
+		this.logoutFilter = logoutFilter;
+		this.singleSignOutFilter = singleSignOutFilter;
+		this.serviceProperties = serviceProperties;
+		this.casAuthenticationProvider = casAuthenticationProvider;
+	}
 
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
 
-    @Autowired
-    public WebSecurityConfig(SingleSignOutFilter singleSignOutFilter, LogoutFilter logoutFilter,
-                             CasAuthenticationProvider casAuthenticationProvider,
-                             ServiceProperties serviceProperties) {
-        this.logoutFilter = logoutFilter;
-        this.singleSignOutFilter = singleSignOutFilter;
-        this.serviceProperties = serviceProperties;
-        this.casAuthenticationProvider = casAuthenticationProvider;
-    }
+		http
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+				.authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
+				//.antMatchers("")
+				.and()
+				.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
+				.and()
+				.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
+				.addFilterBefore(logoutFilter, LogoutFilter.class)
 
+				.authorizeRequests().antMatchers("/dashboard", "/login")
+				.authenticated()
+				.and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
+				.and()
 
-        http
-
-                .authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
-                //.antMatchers("")
-                .and()
-                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
-                .and()
-                .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
-                .addFilterBefore(logoutFilter, LogoutFilter.class)
-
-
-                .authorizeRequests().antMatchers("/dashboard", "/login")
-                .authenticated()
-                .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
-                .and()
-
-
-
-
-
-
+/*
 
 
 
@@ -177,50 +168,47 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
 
+*/
+
+				.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
+				.csrf().disable()
+
+				.formLogin()
+				.loginPage("/login")
+
+				.defaultSuccessUrl("/dashboard", true)
+				.permitAll()
+
+				.and()
+				.exceptionHandling().accessDeniedPage("/403")
+
+				.and()
+				.logout()
+				.logoutUrl(casLogout)
+				.logoutSuccessUrl("/dashboard")
+				.invalidateHttpSession(true)
+				.deleteCookies("JSESSIONID");
+	}
+
+	@Override
+	public void configure(AuthenticationManagerBuilder auth) {
+		auth
+				.authenticationProvider(casAuthenticationProvider);
 
 
+	}
 
+	@Bean
+	@Override
+	protected AuthenticationManager authenticationManager() {
+		return new ProviderManager(Collections.singletonList(casAuthenticationProvider));
+	}
 
+	public AuthenticationEntryPoint authenticationEntryPoint() {
+		CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
+		entryPoint.setLoginUrl(casLogin);
+		entryPoint.setServiceProperties(serviceProperties);
 
-                .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
-                .csrf().disable()
-
-                .formLogin()
-                .loginPage("/login")
-
-                .defaultSuccessUrl("/dashboard", true)
-                .permitAll()
-
-                .and()
-                .exceptionHandling().accessDeniedPage("/403")
-
-                .and()
-                .logout()
-                .logoutUrl(casLogout)
-                .logoutSuccessUrl("/dashboard")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID");
-    }
-
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .authenticationProvider(casAuthenticationProvider);
-
-
-    }
-
-    @Bean
-    @Override
-    protected AuthenticationManager authenticationManager() throws Exception {
-        return new ProviderManager(Collections.singletonList(casAuthenticationProvider));
-    }
-
-    public AuthenticationEntryPoint authenticationEntryPoint() {
-        CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
-        entryPoint.setLoginUrl(casLogin);
-        entryPoint.setServiceProperties(serviceProperties);
-
-        return entryPoint;
-    }
+		return entryPoint;
+	}
 }

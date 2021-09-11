@@ -22,85 +22,85 @@ import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class PagesController {
-    @Qualifier("userRepoImpl")
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private DashboardData dashboardData;
-    @Value("${cas.url.logout.path}")
-    private String casLogout;
+	@Qualifier("userRepoImpl")
+	@Autowired
+	private UserRepo userRepo;
+	@Autowired
+	private DashboardData dashboardData;
+	@Value("${cas.url.logout.path}")
+	private String casLogout;
 
-    //************************************* Pages ****************************************
+	//************************************* Pages ****************************************
 
-    @SuppressWarnings("SameReturnValue")
-    @GetMapping("/")
-    public String Root() {
-        return "redirect:/dashboard";
-    }
+	@SuppressWarnings("SameReturnValue")
+	@GetMapping("/")
+	public String Root() {
+		return "redirect:/dashboard";
+	}
 
-    @GetMapping("/dashboard")
-    public String Dashboard() {
-        return "dashboard";
-    }
+	@GetMapping("/dashboard")
+	public String Dashboard() {
+		return "dashboard";
+	}
 
-    @GetMapping("/privacy")
-    public String Privacy() {
-        return "privacy";
-    }
+	@GetMapping("/privacy")
+	public String Privacy() {
+		return "privacy";
+	}
 
-    @GetMapping("/errorpage")
-    public String Error() {
-        return "error";
-    }
+	@GetMapping("/errorpage")
+	public String Error() {
+		return "error";
+	}
 
-    @GetMapping("/login")
-    public String Login() {
-        //noinspection SpringMVCViewInspection
-        return "redirect:/login/cas";
-    }
+	@GetMapping("/login")
+	public String Login() {
+		//noinspection SpringMVCViewInspection
+		return "redirect:/login/cas";
+	}
 
-    @GetMapping("/logout")
-    public String logout(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            SecurityContextLogoutHandler logoutHandler) {
-        Authentication auth = SecurityContextHolder
-                .getContext().getAuthentication();
-        logoutHandler.logout(request, response, auth);
-        new CookieClearingLogoutHandler(
-                AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY)
-                .logout(request, response, auth);
-        return "redirect:" + casLogout;
-    }
+	@GetMapping("/logout")
+	public String logout(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			SecurityContextLogoutHandler logoutHandler) {
+		Authentication auth = SecurityContextHolder
+				.getContext().getAuthentication();
+		logoutHandler.logout(request, response, auth);
+		new CookieClearingLogoutHandler(
+				AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY)
+				.logout(request, response, auth);
+		return "redirect:" + casLogout;
+	}
 
-    //************************************* APIs ****************************************
+	//************************************* APIs ****************************************
 
-    @GetMapping("/api/dashboard")
-    public ResponseEntity<Dashboard> retrieveDashboardData() throws InterruptedException {
+	@GetMapping("/api/dashboard")
+	public ResponseEntity<Dashboard> retrieveDashboardData() throws InterruptedException {
 
-        return new ResponseEntity<>(dashboardData.retrieveDashboardData(), HttpStatus.OK);
-    }
+		return new ResponseEntity<>(dashboardData.retrieveDashboardData(), HttpStatus.OK);
+	}
 
-    //************************************* Pages ****************************************
+	//************************************* Pages ****************************************
 
-    @GetMapping("/users")
-    public String Users() {
-        return "users";
-    }
+	@GetMapping("/users")
+	public String Users() {
+		return "users";
+	}
 
-    @GetMapping("/profile")
-    public String Profile() {
-        return "profile";
-    }
+	@GetMapping("/profile")
+	public String Profile() {
+		return "profile";
+	}
 
-    @GetMapping("/resetpassword")
-    public String resetPass() {
-        return "resetpassword";
-    }
+	@GetMapping("/resetpassword")
+	public String resetPass() {
+		return "resetpassword";
+	}
 
-    @GetMapping("/newpassword")
-    public String resetPassword() {
-        return "newpassword";
-    }
+	@GetMapping("/newpassword")
+	public String resetPassword() {
+		return "newpassword";
+	}
 
 }

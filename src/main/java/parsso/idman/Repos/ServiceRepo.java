@@ -15,29 +15,29 @@ import java.util.LinkedList;
 import java.util.List;
 
 public interface ServiceRepo {
-    List<MicroService> listUserServices(User user) throws IOException, ParseException;
+	List<MicroService> listUserServices(User user) throws IOException, ParseException;
 
-    List<Service> listServicesFull() throws IOException, ParseException;
+	List<Service> listServicesFull() throws IOException, ParseException;
 
-    List<Service> listServicesWithGroups(String ou) throws IOException, ParseException;
+	List<Service> listServicesWithGroups(String ou) throws IOException, ParseException;
 
-    List<MicroService> listServicesMain() throws IOException, ParseException;
+	List<MicroService> listServicesMain() throws IOException, ParseException;
 
-    Service retrieveService(long id) throws IOException, ParseException;
+	Service retrieveService(long id) throws IOException, ParseException;
 
-    LinkedList<String> deleteServices(String doerID, JSONObject files) throws IOException;
+	LinkedList<String> deleteServices(String doerID, JSONObject files) throws IOException;
 
-    String uploadMetadata(MultipartFile file);
+	String uploadMetadata(MultipartFile file);
 
-    HttpStatus updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException;
+	HttpStatus updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException;
 
-    HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
+	HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
 
-    HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) throws IOException, ParseException;
+	HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) throws IOException, ParseException;
 
-    HttpStatus increasePosition(String id);
+	HttpStatus increasePosition(String id);
 
-    HttpStatus decreasePosition(String id);
+	HttpStatus decreasePosition(String id);
 
-    ServiceGist gistService(String apikey);
+	ServiceGist gistService(String apikey);
 }

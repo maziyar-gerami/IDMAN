@@ -13,13 +13,13 @@ import java.util.List;
 
 @Service
 public interface EmailService {
-    HttpStatus sendMail(JSONObject jsonObject) throws IOException, ParseException;
+	HttpStatus sendMail(JSONObject jsonObject) throws IOException, ParseException;
 
-    int sendMail(String email, String cid, String answer) throws IOException, ParseException;
+	int sendMail(String email, String cid, String answer) throws IOException, ParseException;
 
-    void sendMail(User user, String day) throws MessagingException;
+	void sendMail(User user, String day) throws MessagingException;
 
-    int sendMail(String email, String uid, String cid, String answer) throws IOException, ParseException;
+	int sendMail(String email, String uid, String cid, String answer) throws IOException, ParseException;
 
-    List<JSONObject> checkMail(String email);
+	List<JSONObject> checkMail(String email);
 }

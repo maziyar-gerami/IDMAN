@@ -15,31 +15,31 @@ import java.io.IOException;
 
 @RestController
 public class RefreshsController {
-    @Autowired
-    SystemRefresh refreshs;
+	@Autowired
+	SystemRefresh refreshs;
 
-    @GetMapping("/api/refresh/all")
-    public HttpEntity<HttpStatus> all(HttpServletRequest request) throws IOException, ParseException {
-        return new ResponseEntity<>(refreshs.all(request.getUserPrincipal().getName()));
-    }
+	@GetMapping("/api/refresh/all")
+	public HttpEntity<HttpStatus> all(HttpServletRequest request) throws IOException, ParseException {
+		return new ResponseEntity<>(refreshs.all(request.getUserPrincipal().getName()));
+	}
 
-    @GetMapping("/api/refresh/services")
-    public ResponseEntity<HttpStatus> services(HttpServletRequest request) throws IOException, ParseException {
-        return new ResponseEntity<>(refreshs.serivceRefresh(request.getUserPrincipal().getName()));
-    }
+	@GetMapping("/api/refresh/services")
+	public ResponseEntity<HttpStatus> services(HttpServletRequest request) throws IOException, ParseException {
+		return new ResponseEntity<>(refreshs.serivceRefresh(request.getUserPrincipal().getName()));
+	}
 
-    @GetMapping("/api/refresh/captchas")
-    public HttpEntity<HttpStatus> captchas(HttpServletRequest request) {
-        return new ResponseEntity<>(refreshs.captchaRefresh(request.getUserPrincipal().getName()));
-    }
+	@GetMapping("/api/refresh/captchas")
+	public HttpEntity<HttpStatus> captchas(HttpServletRequest request) {
+		return new ResponseEntity<>(refreshs.captchaRefresh(request.getUserPrincipal().getName()));
+	}
 
-    @GetMapping("/api/refresh/users")
-    public HttpEntity<HttpStatus> users(HttpServletRequest request) throws IOException {
-        return new ResponseEntity<>(refreshs.userRefresh(request.getUserPrincipal().getName()));
-    }
+	@GetMapping("/api/refresh/users")
+	public HttpEntity<HttpStatus> users(HttpServletRequest request) throws IOException {
+		return new ResponseEntity<>(refreshs.userRefresh(request.getUserPrincipal().getName()));
+	}
 
-    @GetMapping("/api/refresh/lockedUsers")
-    public HttpEntity<HttpStatus> lockedUsers() {
-        return new ResponseEntity<>(refreshs.refreshLockedUsers());
-    }
+	@GetMapping("/api/refresh/lockedUsers")
+	public HttpEntity<HttpStatus> lockedUsers() {
+		return new ResponseEntity<>(refreshs.refreshLockedUsers());
+	}
 }

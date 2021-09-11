@@ -10,17 +10,17 @@ import java.util.List;
 @Getter
 
 public class ListReports {
-    long size;
-    int pages;
-    List<Report> reportsList;
+	long size;
+	int pages;
+	List<Report> reportsList;
 
-    public ListReports(long size, int pages, List<Report> relativeEvents) {
-        this.size = size;
-        this.pages = pages;
-        this.reportsList = relativeEvents;
-    }
+	public ListReports(long size, int pages, List<Report> relativeEvents) {
+		this.size = size;
+		this.pages = pages;
+		this.reportsList = relativeEvents;
+	}
 
-    public ListReports() {
+	public ListReports() {
 
-    }
+	}
 }

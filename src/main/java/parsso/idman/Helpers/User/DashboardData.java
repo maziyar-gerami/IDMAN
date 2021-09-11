@@ -28,118 +28,118 @@ import java.util.List;
 
 @Service
 public class DashboardData {
-    public static String mainCollection = "MongoDbCasEventRepository";
-    public static String userExtraInfoCollection = Variables.col_usersExtraInfo;
-    @Autowired
-    UserRepo userRepo;
-    @Autowired
-    EventRepo eventRepo;
-    @Autowired
-    ServiceRepo serviceRepo;
-    @Autowired
-    MongoTemplate mongoTemplate;
-    @Autowired
-    UserAttributeMapper userAttributeMapper;
-    @Autowired
-    SimpleUserAttributeMapper simpleUserAttributeMapper;
-    @Autowired
-    LdapTemplate ldapTemplate;
-    ZoneId zoneId = ZoneId.of(Variables.ZONE);
-    Users fUsers;
-    Services fServices;
-    Logins fLogins;
+	public static String mainCollection = "MongoDbCasEventRepository";
+	public static String userExtraInfoCollection = Variables.col_usersExtraInfo;
+	@Autowired
+	UserRepo userRepo;
+	@Autowired
+	EventRepo eventRepo;
+	@Autowired
+	ServiceRepo serviceRepo;
+	@Autowired
+	MongoTemplate mongoTemplate;
+	@Autowired
+	UserAttributeMapper userAttributeMapper;
+	@Autowired
+	SimpleUserAttributeMapper simpleUserAttributeMapper;
+	@Autowired
+	LdapTemplate ldapTemplate;
+	ZoneId zoneId = ZoneId.of(Variables.ZONE);
+	Users fUsers;
+	Services fServices;
+	Logins fLogins;
 
-    public Dashboard retrieveDashboardData() throws IOException, InterruptedException {
+	public Dashboard retrieveDashboardData() throws IOException, InterruptedException {
 
-        Thread thread = new Thread() {
-            @SneakyThrows
-            public void run() {
-                updateDashboardData();
-            }
-        };
+		Thread thread = new Thread() {
+			@SneakyThrows
+			public void run() {
+				updateDashboardData();
+			}
+		};
 
-        thread.start();
+		thread.start();
 
-        return mongoTemplate.findOne(new Query(Criteria.where("_id").is("Dashboard")), Dashboard.class,
-                Variables.col_extraInfo);
+		return mongoTemplate.findOne(new Query(Criteria.where("_id").is("Dashboard")), Dashboard.class,
+				Variables.col_extraInfo);
 
-    }
+	}
 
-    public void updateDashboardData() throws InterruptedException {
+	public void updateDashboardData() throws InterruptedException {
 
-        Thread userData = new Thread(() -> {
-            //________users data____________
-            int nUsers = userRepo.retrieveUsersSize("", "", "", "");
+		Thread userData = new Thread(() -> {
+			//________users data____________
+			int nUsers = userRepo.retrieveUsersSize("", "", "", "");
 
-            int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), UsersExtraInfo.class, userExtraInfoCollection);
-            int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, userExtraInfoCollection);
-            int temp = nUsers - nLocked - nDisabled;
-            int nActive = (temp) > nUsers ? nUsers : temp;
+			int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), UsersExtraInfo.class, userExtraInfoCollection);
+			int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, userExtraInfoCollection);
+			int temp = nUsers - nLocked - nDisabled;
+			int nActive = (temp) > nUsers ? nUsers : temp;
 
-            fUsers = new Users(nUsers, nActive, nDisabled, nLocked);
+			fUsers = new Users(nUsers, nActive, nDisabled, nLocked);
 
-        });
-        userData.start();
+		});
+		userData.start();
 
-        Thread servicesData = new Thread(() -> {
+		Thread servicesData = new Thread(() -> {
 
-            //________services data____________
-            List<parsso.idman.Models.Services.Service> services = null;
-            try {
-                services = serviceRepo.listServicesFull();
-            } catch (java.io.IOException e) {
-                e.printStackTrace();
-            } catch (org.json.simple.parser.ParseException e) {
-                e.printStackTrace();
-            }
-            int nServices = services.size();
-            int nEnabledServices = 0;
+			//________services data____________
+			List<parsso.idman.Models.Services.Service> services = null;
+			try {
+				services = serviceRepo.listServicesFull();
+			} catch (java.io.IOException e) {
+				e.printStackTrace();
+			} catch (org.json.simple.parser.ParseException e) {
+				e.printStackTrace();
+			}
+			int nServices = services.size();
+			int nEnabledServices = 0;
 
-            for (parsso.idman.Models.Services.Service service : services) {
-                if (service.getAccessStrategy() != null && service.getAccessStrategy().isEnabled())
-                    nEnabledServices++;
-            }
+			for (parsso.idman.Models.Services.Service service : services) {
+				if (service.getAccessStrategy() != null && service.getAccessStrategy().isEnabled())
+					nEnabledServices++;
+			}
 
-            int nDisabledServices = nServices - nEnabledServices;
+			int nDisabledServices = nServices - nEnabledServices;
 
-            fServices = new Services(nServices, nDisabledServices, nEnabledServices);
+			fServices = new Services(nServices, nDisabledServices, nEnabledServices);
 
-        });
+		});
 
-        Thread loginData = new Thread(() -> {
-            //__________________login data____________
+		Thread loginData = new Thread(() -> {
+			//__________________login data____________
 
-            List<Event> events = eventRepo.analyze(mainCollection, 0, 0);
-            int nSuccessful = 0;
-            int nUnSucceful = 0;
+			List<Event> events = eventRepo.analyze(mainCollection, 0, 0);
+			int nSuccessful = 0;
+			int nUnSucceful = 0;
 
-            for (Event event : events) {
-                ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
+			for (Event event : events) {
+				ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
 
-                if (event.getType().equals("Unsuccessful Login") && DateUtils.isToday(eventDate)) {
-                    nUnSucceful++;
-                } else if (event.getType().equals("Successful Login") && DateUtils.isToday(eventDate))
-                    nSuccessful++;
-            }
+				if (event.getType().equals("Unsuccessful Login") && DateUtils.isToday(eventDate)) {
+					nUnSucceful++;
+				} else if (event.getType().equals("Successful Login") && DateUtils.isToday(eventDate))
+					nSuccessful++;
+			}
 
-            fLogins = new Logins(nSuccessful + nUnSucceful, nUnSucceful, nSuccessful);
-        });
+			fLogins = new Logins(nSuccessful + nUnSucceful, nUnSucceful, nSuccessful);
+		});
 
-        loginData.start();
-        servicesData.start();
+		loginData.start();
+		servicesData.start();
 
-        loginData.join();
-        userData.join();
-        servicesData.join();
+		loginData.join();
+		userData.join();
+		servicesData.join();
 
-        Dashboard dashboard = new Dashboard(fServices, fLogins, fUsers);
+		Dashboard dashboard = new Dashboard(fServices, fLogins, fUsers);
 
-        dashboard.setId("Dashboard");
+		dashboard.setId("Dashboard");
 
-        mongoTemplate.remove(new Query(Criteria.where("_id").is("id")),
-                Variables.col_extraInfo);
+		mongoTemplate.remove(new Query(Criteria.where("_id").is("id")),
+				Variables.col_extraInfo);
 
-        mongoTemplate.save(dashboard, Variables.col_extraInfo);
+		mongoTemplate.save(dashboard, Variables.col_extraInfo);
 
-    }
+	}
 }

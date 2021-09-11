@@ -19,28 +19,28 @@ import java.util.List;
 
 @Controller
 public class RolesController {
-    @Autowired
-    UserRepo userRepo;
-    @Autowired
-    RolesRepo rolesRepo;
+	@Autowired
+	UserRepo userRepo;
+	@Autowired
+	RolesRepo rolesRepo;
 
-    //************************************* Pages ****************************************
+	//************************************* Pages ****************************************
 
-    @GetMapping("/roles")
-    public String getPageRoles() {
-        return "roles";
-    }
+	@GetMapping("/roles")
+	public String getPageRoles() {
+		return "roles";
+	}
 
-    //************************************* APIs ****************************************
+	//************************************* APIs ****************************************
 
-    @GetMapping("/api/roles")
-    public ResponseEntity<List<UserRole>> retrieveRoles() {
-        return new ResponseEntity<>(rolesRepo.retrieve(), rolesRepo.retrieve() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
-    }
+	@GetMapping("/api/roles")
+	public ResponseEntity<List<UserRole>> retrieveRoles() {
+		return new ResponseEntity<>(rolesRepo.retrieve(), rolesRepo.retrieve() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+	}
 
-    @PutMapping("/api/roles/{role}")
-    public ResponseEntity<HttpStatus> updateTicket(HttpServletRequest request, @RequestBody JSONObject users, @PathVariable("role") String role) {
-        return new ResponseEntity<>(rolesRepo.updateRole(request.getUserPrincipal().getName(), role, users));
-    }
+	@PutMapping("/api/roles/{role}")
+	public ResponseEntity<HttpStatus> updateTicket(HttpServletRequest request, @RequestBody JSONObject users, @PathVariable("role") String role) {
+		return new ResponseEntity<>(rolesRepo.updateRole(request.getUserPrincipal().getName(), role, users));
+	}
 
 }

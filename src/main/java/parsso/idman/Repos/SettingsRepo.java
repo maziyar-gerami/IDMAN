@@ -10,10 +10,10 @@ import java.util.List;
 
 @Service
 public interface SettingsRepo {
-    HttpStatus emailNotification();
+	HttpStatus emailNotification();
 
-    HttpStatus messageNotification();
+	HttpStatus messageNotification();
 
-    List<Setting> retrieveTFSetting() throws IOException;
+	List<Setting> retrieveTFSetting() throws IOException;
 
 }

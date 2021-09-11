@@ -7,27 +7,27 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "messageIdResult", propOrder = {
-        "status",
-        "mid"
+		"status",
+		"mid"
 })
 public class MessageIdResult {
-    protected int status;
-    protected long mid;
+	protected int status;
+	protected long mid;
 
-    public int getStatus() {
-        return status;
-    }
+	public int getStatus() {
+		return status;
+	}
 
-    public void setStatus(int value) {
-        this.status = value;
-    }
+	public void setStatus(int value) {
+		this.status = value;
+	}
 
-    public long getMid() {
-        return mid;
-    }
+	public long getMid() {
+		return mid;
+	}
 
-    public void setMid(long value) {
-        this.mid = value;
-    }
+	public void setMid(long value) {
+		this.mid = value;
+	}
 
 }

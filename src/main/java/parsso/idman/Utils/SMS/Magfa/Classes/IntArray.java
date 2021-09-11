@@ -10,17 +10,17 @@ import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "intArray", namespace = "http://jaxb.dev.java.net/array", propOrder = {
-        "item"
+		"item"
 })
 public class IntArray {
-    @XmlElement(nillable = true)
-    protected List<Integer> item;
+	@XmlElement(nillable = true)
+	protected List<Integer> item;
 
-    public List<Integer> getItem() {
-        if (item == null) {
-            item = new ArrayList<Integer>();
-        }
-        return this.item;
-    }
+	public List<Integer> getItem() {
+		if (item == null) {
+			item = new ArrayList<Integer>();
+		}
+		return this.item;
+	}
 
 }

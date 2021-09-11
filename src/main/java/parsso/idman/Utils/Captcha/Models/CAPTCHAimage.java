@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CAPTCHAimage {
-    String id;
-    String img;
+	String id;
+	String img;
 }

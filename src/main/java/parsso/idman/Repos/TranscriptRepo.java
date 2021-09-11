@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.List;
 
 public interface TranscriptRepo {
-    License servicesOfGroup(String ouid) throws IOException, ParseException;
+	License servicesOfGroup(String ouid) throws IOException, ParseException;
 
-    License servicesOfUser(String userId) throws IOException, ParseException;
+	License servicesOfUser(String userId) throws IOException, ParseException;
 
-    Transcript usersAndGroupsOfService(long serviceId) throws IOException, ParseException;
+	Transcript usersAndGroupsOfService(long serviceId) throws IOException, ParseException;
 
-    List<ReportMessage> accessManaging(Long id, String type, String item);
+	List<ReportMessage> accessManaging(Long id, String type, String item);
 }

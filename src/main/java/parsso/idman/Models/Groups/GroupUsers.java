@@ -9,6 +9,6 @@ import java.util.List;
 @Setter
 @Getter
 public class GroupUsers {
-    List<String> add;
-    List<String> remove;
+	List<String> add;
+	List<String> remove;
 }

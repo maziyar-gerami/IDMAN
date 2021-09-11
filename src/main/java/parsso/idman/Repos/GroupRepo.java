@@ -11,19 +11,19 @@ import java.io.IOException;
 import java.util.List;
 
 public interface GroupRepo {
-    List<Group> retrieve();
+	List<Group> retrieve();
 
-    List<Group> retrieve(String ou);
+	List<Group> retrieve(String ou);
 
-    HttpStatus create(String doerId, Group ou);
+	HttpStatus create(String doerId, Group ou);
 
-    HttpStatus update(String doerID, String name, Group ou);
+	HttpStatus update(String doerID, String name, Group ou);
 
-    HttpStatus remove(String doerId, JSONObject jsonObject) throws IOException, ParseException;
+	HttpStatus remove(String doerId, JSONObject jsonObject) throws IOException, ParseException;
 
-    Group retrieveOu(boolean simple, String name) throws IOException, ParseException;
+	Group retrieveOu(boolean simple, String name) throws IOException, ParseException;
 
-    List<Group> retrieveCurrentUserGroup(User user);
+	List<Group> retrieveCurrentUserGroup(User user);
 
-    List<String> expireUsersGroupPassword(String name, JSONObject jsonObject);
+	List<String> expireUsersGroupPassword(String name, JSONObject jsonObject);
 }

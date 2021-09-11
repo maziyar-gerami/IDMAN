@@ -19,27 +19,27 @@ import java.util.stream.Collectors;
 
 @Controller
 public class FilesController {
-    @Autowired
-    FilesStorageService storageService;
+	@Autowired
+	FilesStorageService storageService;
 
-    @GetMapping("/files")
-    public ResponseEntity<List<FileInfo>> getListFiles() {
-        List<FileInfo> fileInfos = storageService.loadAll().map(path -> {
-            String filename = path.getFileName().toString();
-            String url = MvcUriComponentsBuilder
-                    .fromMethodName(FilesController.class, "getFile", path.getFileName().toString()).build().toString();
+	@GetMapping("/files")
+	public ResponseEntity<List<FileInfo>> getListFiles() {
+		List<FileInfo> fileInfos = storageService.loadAll().map(path -> {
+			String filename = path.getFileName().toString();
+			String url = MvcUriComponentsBuilder
+					.fromMethodName(FilesController.class, "getFile", path.getFileName().toString()).build().toString();
 
-            return new FileInfo(filename, url);
-        }).collect(Collectors.toList());
+			return new FileInfo(filename, url);
+		}).collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
-    }
+		return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
+	}
 
-    @GetMapping("/api/files/{filename:.+}")
-    @ResponseBody
-    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
-        Resource file = storageService.load(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-    }
+	@GetMapping("/api/files/{filename:.+}")
+	@ResponseBody
+	public ResponseEntity<Resource> getFile(@PathVariable String filename) {
+		Resource file = storageService.load(filename);
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+	}
 }
