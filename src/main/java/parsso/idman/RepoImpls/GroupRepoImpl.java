@@ -63,11 +63,10 @@ public class GroupRepoImpl implements GroupRepo {
     @Override
     public HttpStatus remove(String doerID, JSONObject jsonObject) throws IOException, ParseException {
 
-        ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+        ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
         DirContextOperations context;
-        Iterator<String> iterator = jsonArray.iterator();
-        while (iterator.hasNext()) {
-            Group group = retrieveOu(false, iterator.next());
+        for (String s : jsonArray) {
+            Group group = retrieveOu(false, s);
 
             Name dn = buildDn(group.getId());
             try {
@@ -100,7 +99,7 @@ public class GroupRepoImpl implements GroupRepo {
                                         (simpleUser, Variables.col_usersExtraInfo);
 
                                 uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
-                                        Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS, groupN + "Removing 'OU'=+groupN"));
+                                        Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS, groupN + "Removing 'OU'=+" + groupN));
 
 
                             } catch (Exception e) {
@@ -135,16 +134,14 @@ public class GroupRepoImpl implements GroupRepo {
     @Override
     public List<Group> retrieveCurrentUserGroup(User user) {
         List<String> memberOf = user.getMemberOf();
-        List<Group> groups = new ArrayList<Group>();
+        List<Group> groups = new ArrayList<>();
         try {
-            for (int i = 0; i < memberOf.size(); ++i) {
-                groups.add(retrieveOu(false, memberOf.get(i)));
+            for (String s : memberOf) {
+                groups.add(retrieveOu(false, s));
             }
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IOException ignored) {
 
         } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
         return groups;
@@ -177,7 +174,7 @@ public class GroupRepoImpl implements GroupRepo {
         attrs.put(ocattr);
         attrs.put("name", group.getName());
         attrs.put("ou", group.getId());
-        if (group.getDescription() != "")
+        if (!group.getDescription().equals(""))
             attrs.put("description", group.getDescription());
         else
             attrs.put("description", " ");
@@ -275,7 +272,7 @@ public class GroupRepoImpl implements GroupRepo {
                             ldapTemplate.modifyAttributes(contextUser);
                             UsersExtraInfo usersExtraInfo = mongoTemplate.findOne
                                     (new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
-                            usersExtraInfo.getMemberOf().remove(id);
+                            if (usersExtraInfo!=null) usersExtraInfo.getMemberOf().remove(id);
                             usersExtraInfo.getMemberOf().add(ou.getId());
 
                             mongoTemplate.remove

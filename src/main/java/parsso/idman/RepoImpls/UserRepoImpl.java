@@ -13,6 +13,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -199,7 +201,8 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus update(String doerID, String usid, User p) {
+    @CachePut (cacheNames = "currentPic", key = "usid")
+    public User update(String doerID, String usid, User p) {
 
         p.setUserId(usid.trim());
         Name dn = buildDnUser.buildDn(p.getUserId());
@@ -208,7 +211,7 @@ public class UserRepoImpl implements UserRepo {
 
         if (!retrieveUsers(usid).getRole().equals("USER") &&
                 user.getRole().equals("USER") && access.equalsIgnoreCase("false"))
-            return HttpStatus.FORBIDDEN;
+            return null;
 
         DirContextOperations context;
 
@@ -270,7 +273,7 @@ public class UserRepoImpl implements UserRepo {
 
         }
 
-        return HttpStatus.OK;
+        return p;
     }
 
     @Override
@@ -290,8 +293,8 @@ public class UserRepoImpl implements UserRepo {
         if (jsonObject.size() == 0)
             people = retrieveUsersFull();
         else {
-            val jsonArray = (ArrayList) jsonObject.get("names");
-            for (String s : (Iterable<String>) jsonArray) {
+            val jsonArray = (ArrayList<String>) jsonObject.get("names");
+            for (String s :  jsonArray) {
                 User user = retrieveUsers(s);
                 if (user != null)
                     people.add(user);
@@ -392,6 +395,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
+    @Cacheable(value = "currentPic", key = "user.userId")
     public String showProfilePic(HttpServletResponse response, User user) {
         if (user.getPhoto() == null)
             return "NotExist";
@@ -438,6 +442,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
+    @CachePut (cacheNames = "currentPic", key = "#file")
     public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException {
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
@@ -454,7 +459,7 @@ public class UserRepoImpl implements UserRepo {
         userUpdate.setPhoto(s);
         //uniformLogger.info(name,  new ReportMessage(Variables.MODEL_USER, name, Variables.ATTR_IMAGE,
         //Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,user,userUpdate, ""));
-        if (update(userUpdate.getUserId(), userUpdate.getUserId(), userUpdate) == HttpStatus.OK) {
+        if (update(userUpdate.getUserId(), userUpdate.getUserId(), userUpdate) != null) {
             if (oldPic.delete())
                 return HttpStatus.OK;
                 return HttpStatus.FORBIDDEN;
@@ -647,6 +652,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
+    @Cacheable(value = "currentUser", key = "userId")
     public User retrieveUsers(String userId) {
 
         SearchControls searchControls = new SearchControls();
@@ -922,8 +928,8 @@ public class UserRepoImpl implements UserRepo {
 
             BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-            List list = excelAnalyzer.csvSheetAnalyzer(doer, csvReader, ou, true);
-            return list;
+            return excelAnalyzer.csvSheetAnalyzer(doer, csvReader, ou, true);
+
         }
 
         return null;
@@ -934,11 +940,11 @@ public class UserRepoImpl implements UserRepo {
 
         List<UsersExtraInfo> users = new LinkedList<>();
 
-        if (((List) jsonObject.get("names")).size() == 0) {
+        if (((List<String>) jsonObject.get("names")).size() == 0) {
             users.addAll(mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 
         } else {
-            val jsonArray = (ArrayList) jsonObject.get("names");
+            val jsonArray = (ArrayList<String>) jsonObject.get("names");
             for (Object temp : jsonArray)
                 users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
         }

@@ -63,8 +63,11 @@ public class UsersController {
 
     @PutMapping("/api/user")
     public ResponseEntity<HttpStatus> updateUser(HttpServletRequest request, @RequestBody User user) throws IOException, ParseException {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(userRepo.update(principal.getName(), principal.getName(), user));
+        String userId = request.getUserPrincipal().getName();
+        User userResult = userRepo.update(userId, userId, user);
+        HttpStatus code = (userResult==null ? HttpStatus.FORBIDDEN:HttpStatus.OK);
+
+        return new ResponseEntity<>(code);
     }
 
     @GetMapping("/api/user/photo")
@@ -184,7 +187,8 @@ public class UsersController {
     @PutMapping("/api/users/u/{uId}")
     public ResponseEntity<String> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) throws IOException, ParseException {
 
-        return new ResponseEntity<>(userRepo.update(request.getUserPrincipal().getName(), uid, user));
+        User userResult = userRepo.update(request.getUserPrincipal().getName(), uid, user);
+        return new ResponseEntity<>((userResult==null ? HttpStatus.FORBIDDEN:HttpStatus.OK));
 
     }
 
