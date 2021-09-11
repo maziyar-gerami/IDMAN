@@ -36,7 +36,7 @@ public interface UserRepo {
 
     JSONObject createUserImport(String doerId, User p) throws IOException, ParseException;
 
-    HttpStatus update(String doer, String uid, User p) throws IOException, ParseException;
+    User update(String doer, String uid, User p) throws IOException, ParseException;
 
     List<User> getUsersOfOu(String ou);
 
