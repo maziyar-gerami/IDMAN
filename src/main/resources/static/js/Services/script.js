@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
         overlayLoader: false,
         exportReportLoader: false,
         reportLoader: false,
+        accessStrategyUsersLoader: false,
         margin1: "ml-1",
         extraInfo: {},
         accessStrategy: {},
@@ -233,6 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
         serviceNotificationsText: "پیام های سرویس",
         apiAddressText: "آدرس API",
         apiKeyText: "کلید API",
+        tempUserDict: {},
       },
       created: function () {
         this.setDateNav();
@@ -382,11 +384,22 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         },
         getUsersList: function (){
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          var vm = this;
+          let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          let vm = this;
+          this.accessStrategyUsersLoader = true;
           axios.get(url + "/api/users")
           .then((res) => {
             vm.userSearch = res.data;
+            for(let i = 0; i < vm.userSearch.length; ++i){
+              vm.tempUserDict[vm.userSearch[i].userId] = vm.userSearch[i].displayName;
+            }
+            for(let i = 0; i < vm.userAllowed.length; ++i){
+              vm.userAllowed[i].displayName = vm.tempUserDict[vm.userAllowed[i].userId];
+            }
+            for(let i = 0; i < vm.userBlocked.length; ++i){
+              vm.userBlocked[i].displayName = vm.tempUserDict[vm.userBlocked[i].userId];
+            }
+            vm.accessStrategyUsersLoader = false;
           });
         },
         posInc: function(id){
@@ -606,25 +619,28 @@ document.addEventListener('DOMContentLoaded', function () {
               }
             }
 
-            if(typeof res.data.accessStrategy.rejectedAttributes !== 'undefined'){
-              if(typeof res.data.accessStrategy.rejectedAttributes.uid !== 'undefined'){
-                let countA = 0;
-                for(let i = 0; i < this.userSearch.length; ++i){
-                  for(let j = 0; j < res.data.accessStrategy.rejectedAttributes.uid[1].length; ++j){
-                    if(this.userSearch[i].userId == res.data.accessStrategy.rejectedAttributes.uid[1][j]){
-                      this.blockUserAccess(this.userSearch[i]);
-                      countA = countA + 1;
-                      break;
-                    }
+            if(typeof res.data.accessStrategy.rejectedAttributes !== "undefined"){
+              if(typeof res.data.accessStrategy.rejectedAttributes.uid !== "undefined"){
+                let tempUser = {};
+                if(vm.userSearch.length === 0){
+                  for(let i = 0; i < res.data.accessStrategy.rejectedAttributes.uid[1].length; ++i){
+                    tempUser = {};
+                    tempUser.userId = res.data.accessStrategy.rejectedAttributes.uid[1][i];
+                    tempUser.displayName = "";
+                    this.blockUserAccess(tempUser);
                   }
-                  if(countA == res.data.accessStrategy.rejectedAttributes.uid[1].length){
-                    break;
+                }else {
+                  for(let i = 0; i < res.data.accessStrategy.rejectedAttributes.uid[1].length; ++i){
+                    tempUser = {};
+                    tempUser.userId = res.data.accessStrategy.rejectedAttributes.uid[1][i];
+                    tempUser.displayName = vm.tempUserDict[res.data.accessStrategy.rejectedAttributes.uid[1][i]];
+                    this.blockUserAccess(tempUser);
                   }
                 }
               }
             }
 
-            if(typeof res.data.accessStrategy.requiredAttributes !== 'undefined'){
+            if(typeof res.data.accessStrategy.requiredAttributes !== "undefined"){
               let flag = false;
               let index = 0;
               const entries = Object.entries(res.data.accessStrategy.requiredAttributes);
@@ -644,23 +660,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
               }
 
-              if(typeof res.data.accessStrategy.requiredAttributes.uid !== 'undefined'){
-                let countB = 0;
-                for(let i = 0; i < this.userSearch.length; ++i){
-                  for(let j = 0; j < res.data.accessStrategy.requiredAttributes.uid[1].length; ++j){
-                    if(this.userSearch[i].userId == res.data.accessStrategy.requiredAttributes.uid[1][j]){
-                      this.allowUserAccess(this.userSearch[i]);
-                      countB = countB + 1;
-                      break;
-                    }
+              if(typeof res.data.accessStrategy.requiredAttributes.uid !== "undefined"){
+                let tempUser = {};
+                if(vm.userSearch.length === 0){
+                  for(let i = 0; i < res.data.accessStrategy.requiredAttributes.uid[1].length; ++i){
+                    tempUser = {};
+                    tempUser.userId = res.data.accessStrategy.requiredAttributes.uid[1][i];
+                    tempUser.displayName = "";
+                    this.allowUserAccess(tempUser);
                   }
-                  if(countB == res.data.accessStrategy.requiredAttributes.uid[1].length){
-                    break;
+                }else {
+                  for(let i = 0; i < res.data.accessStrategy.requiredAttributes.uid[1].length; ++i){
+                    tempUser = {};
+                    tempUser.userId = res.data.accessStrategy.requiredAttributes.uid[1][i];
+                    tempUser.displayName = vm.tempUserDict[res.data.accessStrategy.requiredAttributes.uid[1][i]];
+                    this.allowUserAccess(tempUser);
                   }
                 }
               }
 
-              if(typeof res.data.accessStrategy.requiredAttributes.ou !== 'undefined'){
+              if(typeof res.data.accessStrategy.requiredAttributes.ou !== "undefined"){
                 if(res.data.accessStrategy.requiredAttributes.ou[1].length == vm.groups.length){
                   document.getElementById("selectAllGroups").click();
                 }else{
@@ -669,14 +688,13 @@ document.addEventListener('DOMContentLoaded', function () {
                   }
                 }
               }
+            }
+            if(typeof res.data.extraInfo.notificationApiURL !== "undefined"){
+              document.getElementsByName("notificationApiURL")[0].value = res.data.extraInfo.notificationApiURL;
+            }
 
-              if(typeof res.data.extraInfo.notificationApiURL !== "undefined"){
-                document.getElementsByName("notificationApiURL")[0].value = res.data.extraInfo.notificationApiURL;
-              }
-
-              if(typeof res.data.extraInfo.notificationApiKey !== "undefined"){
-                document.getElementsByName("notificationApiKey")[0].value = res.data.extraInfo.notificationApiKey;
-              }
+            if(typeof res.data.extraInfo.notificationApiKey !== "undefined"){
+              document.getElementsByName("notificationApiKey")[0].value = res.data.extraInfo.notificationApiKey;
             }
           });
         },

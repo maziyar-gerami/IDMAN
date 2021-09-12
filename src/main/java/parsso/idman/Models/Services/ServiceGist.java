@@ -22,6 +22,7 @@ public class ServiceGist {
 	@JsonIgnore
 	@JsonProperty("return")
 	private Return aReturn;
+	private int count;
 	private List<Notification> notifications;
 
 	public ServiceGist() {
@@ -29,6 +30,7 @@ public class ServiceGist {
 
 		Return aReturn = new Return();
 		aReturn.setStatus(200);
+		count = 3;
 		aReturn.setMessage(Variables.MSG_FA_CODE_200);
 
 		Notification n1 = new Notification();

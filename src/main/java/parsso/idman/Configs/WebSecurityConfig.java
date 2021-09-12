@@ -37,8 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private String casLogout;
 	@Value("${cas.url.login.path}")
 	private String casLogin;
-	@Value("${spring.ldap.urls}")
-	private String ldapUrl;
+
 
 	@Autowired
 	public WebSecurityConfig(SingleSignOutFilter singleSignOutFilter, LogoutFilter logoutFilter,
