@@ -9,28 +9,28 @@ import java.math.BigDecimal;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "creditResult", propOrder = {
-        "status",
-        "balance"
+		"status",
+		"balance"
 })
 public class CreditResult {
-    protected int status;
-    @XmlElement(required = true)
-    protected BigDecimal balance;
+	protected int status;
+	@XmlElement(required = true)
+	protected BigDecimal balance;
 
-    public int getStatus() {
-        return status;
-    }
+	public int getStatus() {
+		return status;
+	}
 
-    public void setStatus(int value) {
-        this.status = value;
-    }
+	public void setStatus(int value) {
+		this.status = value;
+	}
 
-    public BigDecimal getBalance() {
-        return balance;
-    }
+	public BigDecimal getBalance() {
+		return balance;
+	}
 
-    public void setBalance(BigDecimal value) {
-        this.balance = value;
-    }
+	public void setBalance(BigDecimal value) {
+		this.balance = value;
+	}
 
 }

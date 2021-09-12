@@ -17,59 +17,62 @@ import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class ReportsController {
-    @Autowired
-    private ReportRepo reportRepo;
-    @Autowired
-    private LogsExcelView logsExcelView;
+	@Autowired
+	private ReportRepo reportRepo;
+	@Autowired
+	private LogsExcelView logsExcelView;
 
-    //************************************* Pages ****************************************
+	//************************************* Pages ****************************************
 
-    @GetMapping("/reports")
-    public String Reports() {
-        return "reports";
-    }
+	@SuppressWarnings("SameReturnValue")
+	@GetMapping("/reports")
+	public String getPageReports() {
+		return "reports";
+	}
 
-    //************************************* APIs ****************************************
+	//************************************* APIs ****************************************
 
-    @GetMapping("/api/reports/users/{page}/{n}")
-    public ResponseEntity<ListReports> retrieveAllLogs(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
-        return new ResponseEntity<>(reportRepo.getListSizeLogs(page, n), HttpStatus.OK);
-    }
+	@GetMapping("/api/reports/users/{page}/{n}")
+	public ResponseEntity<ListReports> retrieveAllLogs(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
+		return new ResponseEntity<>(reportRepo.getListSizeLogs(page, n), HttpStatus.OK);
+	}
 
-    @GetMapping("/api/reports/users/{userId}/{page}/{n}")
-    public ResponseEntity<ListReports> retrieveByUser(@PathVariable String userId, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
-        return new ResponseEntity<>(reportRepo.getListUserLogs(userId, page, n), HttpStatus.OK);
-    }
+	@GetMapping("/api/reports/users/{userId}/{page}/{n}")
+	public ResponseEntity<ListReports> retrieveByUser(@PathVariable String userId, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
+		return new ResponseEntity<>(reportRepo.getListUserLogs(userId, page, n), HttpStatus.OK);
+	}
 
-    @GetMapping("/api/reports/users/date/{date}/{page}/{n}")
-    public ResponseEntity<ListReports> retrieveByDate(HttpServletRequest request, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-        return new ResponseEntity<>(reportRepo.getLogsByDate(date, page, n), HttpStatus.OK);
-    }
+	@GetMapping("/api/reports/users/date/{date}/{page}/{n}")
+	public ResponseEntity<ListReports> retrieveByDate(@PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
+		return new ResponseEntity<>(reportRepo.getLogsByDate(date, page, n), HttpStatus.OK);
+	}
 
-    @GetMapping("/api/reports/users/{id}/date/{date}/{page}/{n}")
-    public ResponseEntity<ListReports> retrieveByUserDate(@PathVariable String id, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-        return new ResponseEntity<>(reportRepo.getListUserLogByDate(date, id, page, n), HttpStatus.OK);
-    }
+	@GetMapping("/api/reports/users/{id}/date/{date}/{page}/{n}")
+	public ResponseEntity<ListReports> retrieveByUserDate(@PathVariable String id, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
+		return new ResponseEntity<>(reportRepo.getListUserLogByDate(date, id, page, n), HttpStatus.OK);
+	}
 
-    @GetMapping("/api/reports/user/{page}/{n}")
-    public ResponseEntity<ListReports> retrieveCurrentUserLogs(HttpServletRequest request, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-        Principal principal = request.getUserPrincipal();
-        ListReports listReports = reportRepo.getListUserLogs(principal.getName(), page, n);
-        return new ResponseEntity<>(listReports, HttpStatus.OK);
-    }
+	@GetMapping("/api/reports/user/{page}/{n}")
+	public ResponseEntity<ListReports> retrieveCurrentUserLogs(HttpServletRequest request, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
+		Principal principal = request.getUserPrincipal();
+		ListReports listReports = reportRepo.getListUserLogs(principal.getName(), page, n);
+		return new ResponseEntity<>(listReports, HttpStatus.OK);
+	}
 
-    @GetMapping("/api/reports/user/date/{date}/{page}/{n}")
-    public ResponseEntity<ListReports> retrieveCurrentUserLogsByDate(HttpServletRequest request, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-        Principal principal = request.getUserPrincipal();
-        return new ResponseEntity<>(reportRepo.getListUserLogByDate(date, principal.getName(), page, n), HttpStatus.OK);
-    }
+	@GetMapping("/api/reports/user/date/{date}/{page}/{n}")
+	public ResponseEntity<ListReports> retrieveCurrentUserLogsByDate(HttpServletRequest request, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
+		Principal principal = request.getUserPrincipal();
+		return new ResponseEntity<>(reportRepo.getListUserLogByDate(date, principal.getName(), page, n), HttpStatus.OK);
+	}
 
-    @GetMapping("/api/reports/users/export")
-    public ModelAndView downloadExcel() {
+	@GetMapping("/api/reports/users/export")
+	public ModelAndView downloadExcel() {
 
-        // return a view which will be resolved by an excel view resolver
-        return new ModelAndView(logsExcelView, "listLogs", null);
-    }
+		// return a view which will be resolved by an excel view resolver
+		//noinspection ConstantConditions
+		return new ModelAndView(logsExcelView, "listLogs", null);
+	}
 }

@@ -20,74 +20,74 @@ import java.util.List;
 
 @Service
 public class ExcelAnalyzer {
-    @Autowired
-    LdapTemplate ldapTemplate;
-    @Autowired
-    MongoTemplate mongoTemplate;
-    @Autowired
-    UserRepo userRepo;
+	@Autowired
+	LdapTemplate ldapTemplate;
+	@Autowired
+	MongoTemplate mongoTemplate;
+	@Autowired
+	UserRepo userRepo;
 
-    public List excelSheetAnalyze(String doer, Sheet sheet, String ou, boolean hasHeader) throws IOException, ParseException {
+	public List excelSheetAnalyze(String doer, Sheet sheet, String ou, boolean hasHeader) throws IOException, ParseException {
 
-        Iterator<Row> rowIterator = sheet.iterator();
+		Iterator<Row> rowIterator = sheet.iterator();
 
-        List<String> notExist = new LinkedList<>();
+		List<String> notExist = new LinkedList<>();
 
-        if (hasHeader == true) rowIterator.next();
+		if (hasHeader == true) rowIterator.next();
 
-        DataFormatter formatter = new DataFormatter();
+		DataFormatter formatter = new DataFormatter();
 
-        while (rowIterator.hasNext()) {
+		while (rowIterator.hasNext()) {
 
-            Row row = rowIterator.next();
+			Row row = rowIterator.next();
 
-            String tempUID = formatter.formatCellValue(row.getCell(0));
+			String tempUID = formatter.formatCellValue(row.getCell(0));
 
-            User user;
+			User user;
 
-            if (tempUID != null
-                    && !tempUID.equals("")) {
-                user = userRepo.retrieveUsers(tempUID);
+			if (tempUID != null
+					&& !tempUID.equals("")) {
+				user = userRepo.retrieveUsers(tempUID);
 
-                if (user == null) {
-                    continue;
-                }
+				if (user == null) {
+					continue;
+				}
 
-                if (user.getMemberOf() == null) {
-                    List<String> ous = new LinkedList<>();
-                    ous.add(ou);
-                    user.setMemberOf(ous);
-                } else
-                    user.getMemberOf().add(ou);
-                userRepo.update(doer, tempUID, user);
-            }
+				if (user.getMemberOf() == null) {
+					List<String> ous = new LinkedList<>();
+					ous.add(ou);
+					user.setMemberOf(ous);
+				} else
+					user.getMemberOf().add(ou);
+				userRepo.update(doer, tempUID, user);
+			}
 
-        }
+		}
 
-        return notExist;
-    }
+		return notExist;
+	}
 
-    public List csvSheetAnalyzer(String doer, BufferedReader sheet, String ou, boolean hasHeader) throws IOException, ParseException {
+	public List csvSheetAnalyzer(String doer, BufferedReader sheet, String ou, boolean hasHeader) throws IOException, ParseException {
 
-        String row;
-        int i = 0;
-        List<String> notExist = new LinkedList<>();
+		String row;
+		int i = 0;
+		List<String> notExist = new LinkedList<>();
 
-        while ((row = sheet.readLine()) != null) {
-            String[] data = row.split(",");
+		while ((row = sheet.readLine()) != null) {
+			String[] data = row.split(",");
 
-            if (i == 0 && hasHeader || data == null || data.length == 0 || data[0] == null || data[0].equals("")) {
-                i++;
-                continue;
-            }
+			if (i == 0 && hasHeader || data == null || data.length == 0 || data[0] == null || data[0].equals("")) {
+				i++;
+				continue;
+			}
 
-            User user = userRepo.retrieveUsers(data[0]);
-            user.getMemberOf().add(ou);
-            userRepo.update(doer, data[0], user);
+			User user = userRepo.retrieveUsers(data[0]);
+			user.getMemberOf().add(ou);
+			userRepo.update(doer, data[0], user);
 
-            i++;
+			i++;
 
-        }
-        return notExist;
-    }
+		}
+		return notExist;
+	}
 }

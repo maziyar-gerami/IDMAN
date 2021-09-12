@@ -9,15 +9,15 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 public interface FilesStorageService {
-    void init();
+	void init();
 
-    void saveMetadata(MultipartFile file, String name) throws IOException;
+	void saveMetadata(MultipartFile file, String name) throws IOException;
 
-    void saveProfilePhoto(MultipartFile file, String name) throws IOException;
+	void saveProfilePhoto(MultipartFile file, String name) throws IOException;
 
-    Resource load(String filename);
+	Resource load(String filename);
 
-    void deleteAll();
+	void deleteAll();
 
-    Stream<Path> loadAll();
+	Stream<Path> loadAll();
 }

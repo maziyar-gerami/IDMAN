@@ -10,17 +10,17 @@ import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "longArray", namespace = "http://jaxb.dev.java.net/array", propOrder = {
-        "item"
+		"item"
 })
 public class LongArray {
-    @XmlElement(nillable = true)
-    protected List<Long> item;
+	@XmlElement(nillable = true)
+	protected List<Long> item;
 
-    public List<Long> getItem() {
-        if (item == null) {
-            item = new ArrayList<Long>();
-        }
-        return this.item;
-    }
+	public List<Long> getItem() {
+		if (item == null) {
+			item = new ArrayList<Long>();
+		}
+		return this.item;
+	}
 
 }

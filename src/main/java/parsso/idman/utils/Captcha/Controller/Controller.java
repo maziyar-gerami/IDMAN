@@ -14,25 +14,25 @@ import parsso.idman.Utils.Captcha.RepoImp.CaptchaRepoImp;
 
 @RestController
 public class Controller {
-    @Autowired
-    CaptchaRepoImp captchaRepoImp;
-    @Value("${captcha.lenght}")
-    private String captchaLenght;
-    @Value("${captcha.alphabet.rate}")
-    private String captchaAlphabetRate;
+	@Autowired
+	CaptchaRepoImp captchaRepoImp;
+	@Value("${captcha.lenght}")
+	private String captchaLenght;
+	@Value("${captcha.alphabet.rate}")
+	private String captchaAlphabetRate;
 
-    @GetMapping("/api/captcha/request")
-    private ResponseEntity<CAPTCHAimage> requestCaptcha() {
+	@GetMapping("/api/captcha/request")
+	private ResponseEntity<CAPTCHAimage> requestCaptcha() {
 
-        CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.valueOf(captchaLenght), Double.valueOf(captchaAlphabetRate));
-        if (captchaImage != null)
-            return new ResponseEntity<>(captchaImage, HttpStatus.OK);
-        else
-            return new ResponseEntity<>(captchaImage, HttpStatus.FORBIDDEN);
-    }
+		CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.valueOf(captchaLenght), Double.valueOf(captchaAlphabetRate));
+		if (captchaImage != null)
+			return new ResponseEntity<>(captchaImage, HttpStatus.OK);
+		else
+			return new ResponseEntity<>(captchaImage, HttpStatus.FORBIDDEN);
+	}
 
-    @GetMapping("/api/captcha/validate")
-    private ResponseEntity<CAPTCHAimage> validateCaptcha(@RequestBody CAPTCHA captcha) {
-        return new ResponseEntity<>(captchaRepoImp.validateCaptcha(captcha));
-    }
+	@GetMapping("/api/captcha/validate")
+	private ResponseEntity<CAPTCHAimage> validateCaptcha(@RequestBody CAPTCHA captcha) {
+		return new ResponseEntity<>(captchaRepoImp.validateCaptcha(captcha));
+	}
 }

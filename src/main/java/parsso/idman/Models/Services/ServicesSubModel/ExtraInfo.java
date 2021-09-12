@@ -9,19 +9,18 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ExtraInfo {
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  String notificationApiURL;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  String notificationApiKey;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	long id;
+	String url;
+	int position;
+	String UUID;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private String notificationApiURL;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private String notificationApiKey;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    long id;
-    String url;
-    int position;
-    String UUID;
-
-    public ExtraInfo() {
-        position = 0;
-    }
+	public ExtraInfo() {
+		position = 0;
+	}
 
 }

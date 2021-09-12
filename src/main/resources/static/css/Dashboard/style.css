@@ -199,18 +199,108 @@ img:hover {
   border-color: #d63031;
   position: absolute;
   right: 5px;
+  top: 7px;
   z-index: 5;
-}
-
-.notificationNumber:empty {
-  display: none;
 }
 
 .notificationFas {
   color: #007bff;
   font-size: 22px;
-  top: 10px;
   position: absolute;
   z-index: 4;
   right: 15px;
+}
+
+.serviceLink {
+  color: #000000;
+}
+
+.serviceLinkL:hover {
+  color: #007bff;
+}
+
+#notificationBox {
+  position: fixed;
+  bottom: 20px;
+  height: 250px;
+  width: 400px;
+  background-color: #007bff;
+  border-radius: 10px;
+  z-index: 19;
+}
+
+@media only screen and (max-width: 500px) {
+  #notificationBox {
+    width: calc(100% - 55px);
+  }
+}
+
+.notificationBoxHeader {
+  height: 40px;
+  padding: 5px 20px 5px 5px;
+}
+
+.notificationBoxClose {
+  background-color: #fff;
+  height: 30px;
+  border-radius: 50%;
+  position: absolute;
+  width: 30px;
+  top: -15px;
+  right: -15px;
+  border: 1px solid #d62728;
+  cursor: pointer;
+}
+
+.notificationBoxCloseBtn {
+  text-align: center;
+  position: absolute;
+  right: 1%;
+  left: 1%;
+  bottom: 13%;
+  top: 13%;
+}
+
+.notificationBoxService {
+  line-height: 1.3;
+  text-align: center;
+  color: #fff;
+}
+
+.notificationBoxBody {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  left: 5px;
+  top: 40px;
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: auto;
+}
+
+.notificationBoxItem {
+  background-color: #f8f9fa;
+  cursor: pointer;
+  border: 1px solid #007bff;
+  border-radius: 10px;
+  color: #000;
+}
+
+.notificationBoxItem:hover {
+  background-color: #dfe1e3;
+}
+
+.notificationBoxItem:hover h6 {
+  color: #007bff;
+}
+
+.notificationBoxTimer {
+  position: absolute;
+  bottom: 0;
+  right: 15px;
+  left: 15px;
+  height: 5px;
+  background-color: #0028ff;
+  width: 370px;
+  border-radius: 10px;
 }

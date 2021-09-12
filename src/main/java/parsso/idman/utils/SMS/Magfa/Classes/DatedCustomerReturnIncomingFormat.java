@@ -8,19 +8,19 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "datedCustomerReturnIncomingFormat", propOrder = {
-        "date"
+		"date"
 })
 public class DatedCustomerReturnIncomingFormat
-        extends CustomerReturnIncomingFormat {
-    @XmlElement(required = true)
-    protected String date;
+		extends CustomerReturnIncomingFormat {
+	@XmlElement(required = true)
+	protected String date;
 
-    public String getDate() {
-        return date;
-    }
+	public String getDate() {
+		return date;
+	}
 
-    public void setDate(String value) {
-        this.date = value;
-    }
+	public void setDate(String value) {
+		this.date = value;
+	}
 
 }

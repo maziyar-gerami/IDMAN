@@ -1,7 +1,6 @@
 package parsso.idman.Controllers;
 
 
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -17,105 +16,105 @@ import parsso.idman.Repos.UserRepo;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
+import static java.lang.Thread.sleep;
+
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 public class SettingsController {
-    int millis = 3600000;
-    @Autowired
-    PasswordSettings passwordSettings;
-    @Autowired
-    UserRepo userRepo;
-    @Autowired
-    InstantMessage instantMessage;
-    @Autowired
-    ConfigRepo configRepo;
-    @Autowired
-    private SettingsRepo settingsRepo;
-    @Value("${interval.check.pass.hours}")
-    private long intervalCheckPassTime;
+	final int millis = 3600000;
+	@Autowired
+	PasswordSettings passwordSettings;
+	@Autowired
+	UserRepo userRepo;
+	@Autowired
+	InstantMessage instantMessage;
+	@Autowired
+	ConfigRepo configRepo;
+	@Autowired
+	private SettingsRepo settingsRepo;
+	@Value("${interval.check.pass.hours}")
+	private long intervalCheckPassTime;
 
-    @GetMapping("/api/settings/notification/email")
-    public ResponseEntity<HttpStatus> enableEmailNotification() {
+	@GetMapping("/api/settings/notification/email")
+	public ResponseEntity<HttpStatus> enableEmailNotification() {
 
-        ScheduledExecutorService executor =
-                Executors.newSingleThreadScheduledExecutor();
+		Runnable runnable = () -> {
+			while (true) {
 
-        Runnable runnable = new Runnable() {
-            @SneakyThrows
-            @Override
-            public void run() {
-                while (true) {
+				settingsRepo.emailNotification();
+				try {
+					//noinspection BusyWait
+					sleep(intervalCheckPassTime * millis);
+				} catch (InterruptedException e) {
+					break;
+				}
 
-                    settingsRepo.emailNotification();
-                    Thread.sleep(intervalCheckPassTime * millis);
+			}
+		};
 
-                }
-            }
-        };
+		for (Thread t : Thread.getAllStackTraces().keySet()) {
+			if (t.getName().equals("thread-pulling-email-passExpire")) {
+				try {
+					t.interrupt();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return new ResponseEntity<>(HttpStatus.OK);
+			}
+		}
+		Thread thread = new Thread(runnable);
+		thread.setName("thread-pulling-email-passExpire");
 
-        for (Thread t : Thread.getAllStackTraces().keySet()) {
-            if (t.getName().equals("thread-pulling-email-passExpire")) {
-                try {
-                    t.interrupt();
-                } catch (Exception e) {
+		if (thread.isAlive())
+			thread.interrupt();
+		else
+			thread.start();
 
-                }
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-        }
-        Thread thread = new Thread(runnable);
-        thread.setName("thread-pulling-email-passExpire");
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 
-        if (thread.isAlive())
-            thread.interrupt();
-        else
-            thread.start();
+	@SuppressWarnings("BusyWait")
+	@GetMapping("/api/settings/notification/message")
+	public ResponseEntity<String> enableMessageNotification() {
 
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+		Runnable runnable = () -> {
+			while (true) {
+				settingsRepo.messageNotification();
+				try {
+					sleep(intervalCheckPassTime * millis);
+				} catch (InterruptedException e) {
+					break;
+				}
+			}
+		};
 
-    @GetMapping("/api/settings/notification/message")
-    public ResponseEntity<String> enableMessageNotification() {
+		for (Thread t : Thread.getAllStackTraces().keySet()) {
+			if (t.getName().equals("thread-pulling-sms-passExpire")) {
+				try {
+					t.interrupt();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return new ResponseEntity<>(HttpStatus.OK);
+			}
+		}
 
-        Runnable runnable = new Runnable() {
-            @SneakyThrows
-            @Override
-            public void run() {
-                while (true) {
-                    settingsRepo.messageNotification();
-                    Thread.sleep(intervalCheckPassTime * millis);
-                }
-            }
-        };
+		Thread thread = new Thread(runnable);
+		thread.setName("thread-pulling-sms-passExpire");
 
-        for (Thread t : Thread.getAllStackTraces().keySet()) {
-            if (t.getName().equals("thread-pulling-sms-passExpire")) {
-                try {
-                    t.interrupt();
-                } catch (Exception e) {
+		if (thread.isAlive()) {
+			thread.interrupt();
+		} else
+			thread.start();
 
-                }
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-        }
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 
-        Thread thread = new Thread(runnable);
-        thread.setName("thread-pulling-sms-passExpire");
+	@GetMapping("/api/settings/switches")
+	public ResponseEntity<List<Setting>> listSwitches() throws IOException {
 
-        if (thread.isAlive()) {
-            thread.interrupt();
-        } else
-            thread.start();
+		return new ResponseEntity<>(settingsRepo.retrieveTFSetting(), HttpStatus.OK);
 
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("/api/settings/switches")
-    public ResponseEntity<List<Setting>> listSwitches() throws IOException {
-
-        return new ResponseEntity<>(settingsRepo.retrieveTFSetting(), HttpStatus.OK);
-
-    }
+	}
 }

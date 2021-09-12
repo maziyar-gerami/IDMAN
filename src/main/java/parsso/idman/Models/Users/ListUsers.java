@@ -10,13 +10,13 @@ import java.util.List;
 @Getter
 
 public class ListUsers {
-    int size;
-    int pages;
-    List<UsersExtraInfo> userList;
+	int size;
+	int pages;
+	List<UsersExtraInfo> userList;
 
-    public ListUsers(int size, List<UsersExtraInfo> relativeEvents, int pages) {
-        this.size = size;
-        this.pages = pages;
-        this.userList = relativeEvents;
-    }
+	public ListUsers(int size, List<UsersExtraInfo> relativeEvents, int pages) {
+		this.size = size;
+		this.pages = pages;
+		this.userList = relativeEvents;
+	}
 }

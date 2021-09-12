@@ -12,22 +12,22 @@ import java.net.UnknownHostException;
 
 @Service
 public class QueryDomain {
-    @Autowired
-    MongoTemplate mongoTemplate;
-    String collection = "IDMAN_DNS";
+	@Autowired
+	MongoTemplate mongoTemplate;
+	String collection = "IDMAN_DNS";
 
-    private static String ipToDomain(String ip) throws UnknownHostException {
+	private static String ipToDomain(String ip) throws UnknownHostException {
 
-        InetAddress addr = InetAddress.getByName(ip);
-        return addr.getHostName();
+		InetAddress addr = InetAddress.getByName(ip);
+		return addr.getHostName();
 
-    }
+	}
 
-    public String matchIPwithService(String ip) throws UnknownHostException {
-        String host = ipToDomain(ip);
-        Query query = new Query(Criteria.where("host").is(host));
-        String serviceName = mongoTemplate.findOne(query, String.class, collection);
-        return serviceName;
+	public String matchIPwithService(String ip) throws UnknownHostException {
+		String host = ipToDomain(ip);
+		Query query = new Query(Criteria.where("host").is(host));
+		String serviceName = mongoTemplate.findOne(query, String.class, collection);
+		return serviceName;
 
-    }
+	}
 }

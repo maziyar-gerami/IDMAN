@@ -41,313 +41,316 @@ import java.util.*;
 
 @Service
 public class GroupRepoImpl implements GroupRepo {
-    @Autowired
-    BuildDnUser buildDnUser;
-    @Autowired
-    MongoTemplate mongoTemplate;
-    @Autowired
-    UniformLogger uniformLogger;
-    @Autowired
-    ExpirePassword expirePassword;
-    @Value("${spring.ldap.base.dn}")
-    private String BASE_DN;
-    @Autowired
-    private LdapTemplate ldapTemplate;
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private ServiceRepo serviceRepo;
-    @Autowired
-    private TranscriptRepo transcriptRepo;
-
-    @Override
-    public HttpStatus remove(String doerID, JSONObject jsonObject) throws IOException, ParseException {
-
-        ArrayList jsonArray = (ArrayList) jsonObject.get("names");
-        DirContextOperations context;
-        Iterator<String> iterator = jsonArray.iterator();
-        while (iterator.hasNext()) {
-            Group group = retrieveOu(false, iterator.next());
-
-            Name dn = buildDn(group.getId());
-            try {
-                ldapTemplate.unbind(dn);
-
-                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, group.getId(), Variables.MODEL_GROUP,
-                        Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS, ""));
-
-            } catch (Exception e) {
-                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, group.getId(), Variables.MODEL_GROUP,
-                        Variables.ACTION_REMOVE, Variables.RESULT_FAILED, "writing to ldap"));
-            }
-
-            for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(group.getId())) {
-                if (user != null && user.getMemberOf() != null)
-                    for (String groupN : user.getMemberOf()) {
-                        if (groupN.equalsIgnoreCase(group.getId())) {
-                            context = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
-                            context.removeAttributeValue("ou", group.getId());
-                            try {
-                                ldapTemplate.modifyAttributes(context);
-                                UsersExtraInfo simpleUser = mongoTemplate.findOne
-                                        (new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
-                                simpleUser.getMemberOf().remove(group.getId());
-
-                                mongoTemplate.remove
-                                        (new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
-
-                                mongoTemplate.save
-                                        (simpleUser, Variables.col_usersExtraInfo);
-
-                                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
-                                        Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS, groupN + "Removing 'OU'=+groupN"));
-
-
-                            } catch (Exception e) {
-                                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
-                                        Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_FAILED, groupN, "Changing LDAP for removing 'OU'=" + groupN));
-
-                            }
-                        }
-
-                    }
-            }
-        }
-
-        return HttpStatus.OK;
-    }
-
-    @Override
-    public Group retrieveOu(boolean simple, String uid) throws IOException, ParseException {
-
-        List<Group> groups = retrieve();
-
-        for (Group group : groups) {
-            if (!simple && group.getId().equalsIgnoreCase(uid)) {
-                group.setService(transcriptRepo.servicesOfGroup(uid));
-                return group;
-            } else if (simple && group.getId().equalsIgnoreCase(uid))
-                return group;
-        }
-        return null;
-    }
-
-    @Override
-    public List<Group> retrieveCurrentUserGroup(User user) {
-        List<String> memberOf = user.getMemberOf();
-        List<Group> groups = new ArrayList<Group>();
-        try {
-            for (int i = 0; i < memberOf.size(); ++i) {
-                groups.add(retrieveOu(false, memberOf.get(i)));
-            }
-        } catch (NullPointerException e) {
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return groups;
-    }
+	@Autowired
+	BuildDnUser buildDnUser;
+	@Autowired
+	MongoTemplate mongoTemplate;
+	@Autowired
+	UniformLogger uniformLogger;
+	@Autowired
+	ExpirePassword expirePassword;
+	@Value("${spring.ldap.base.dn}")
+	private String BASE_DN;
+	@Autowired
+	private LdapTemplate ldapTemplate;
+	@Autowired
+	private UserRepo userRepo;
+	@Autowired
+	private ServiceRepo serviceRepo;
+	@Autowired
+	private TranscriptRepo transcriptRepo;
+
+	@Override
+	public HttpStatus remove(String doerID, JSONObject jsonObject) throws IOException, ParseException {
+
+		ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
+		DirContextOperations context;
+		for (String s : jsonArray) {
+			Group group = retrieveOu(false, s);
+
+			Name dn = buildDn(group.getId());
+			try {
+				ldapTemplate.unbind(dn);
+
+				uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, group.getId(), Variables.MODEL_GROUP,
+						Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS, ""));
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, group.getId(), Variables.MODEL_GROUP,
+						Variables.ACTION_REMOVE, Variables.RESULT_FAILED, "writing to ldap"));
+			}
+
+			for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(group.getId())) {
+				if (user != null && user.getMemberOf() != null)
+					for (String groupN : user.getMemberOf()) {
+						if (groupN.equalsIgnoreCase(group.getId())) {
+							context = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
+							context.removeAttributeValue("ou", group.getId());
+							try {
+								ldapTemplate.modifyAttributes(context);
+								UsersExtraInfo simpleUser = mongoTemplate.findOne
+										(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+								simpleUser.getMemberOf().remove(group.getId());
+
+								mongoTemplate.remove
+										(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
+
+								mongoTemplate.save
+										(simpleUser, Variables.col_usersExtraInfo);
+
+								uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+										Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS, groupN + "Removing 'OU'=+" + groupN));
+
+
+							} catch (Exception e) {
+								e.printStackTrace();
+								uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+										Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_FAILED, groupN, "Changing LDAP for removing 'OU'=" + groupN));
+
+							}
+						}
+
+					}
+			}
+		}
+
+		return HttpStatus.OK;
+	}
+
+	@Override
+	public Group retrieveOu(boolean simple, String uid) throws IOException, ParseException {
+
+		List<Group> groups = retrieve();
+
+		for (Group group : groups) {
+			if (!simple && group.getId().equalsIgnoreCase(uid)) {
+				group.setService(transcriptRepo.servicesOfGroup(uid));
+				return group;
+			} else if (simple && group.getId().equalsIgnoreCase(uid))
+				return group;
+		}
+		return null;
+	}
+
+	@Override
+	public List<Group> retrieveCurrentUserGroup(User user) {
+		List<String> memberOf = user.getMemberOf();
+		List<Group> groups = new ArrayList<>();
+		try {
+			for (String s : memberOf) {
+				groups.add(retrieveOu(false, s));
+			}
+		} catch (NullPointerException | IOException ignored) {
 
-    @Override
-    public List<String> expireUsersGroupPassword(String doer, JSONObject jsonObject) {
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return groups;
+	}
 
-        List<UsersExtraInfo> users = new LinkedList<>();
-        for (String groupID : (List<String>) jsonObject.get("names"))
-            users.addAll(mongoTemplate.find(new Query(Criteria.where("memberOf").is(groupID))
-                    , UsersExtraInfo.class, Variables.col_usersExtraInfo));
+	@Override
+	public List<String> expireUsersGroupPassword(String doer, JSONObject jsonObject) {
 
-        Set<UsersExtraInfo> set = new HashSet<>(users);
-        users.clear();
-        users.addAll(set);
+		List<UsersExtraInfo> users = new LinkedList<>();
+		for (String groupID : (List<String>) jsonObject.get("names"))
+			users.addAll(mongoTemplate.find(new Query(Criteria.where("memberOf").is(groupID))
+					, UsersExtraInfo.class, Variables.col_usersExtraInfo));
 
-        return expirePassword.expire(doer, users);
-    }
+		Set<UsersExtraInfo> set = new HashSet<>(users);
+		users.clear();
+		users.addAll(set);
 
-    private Attributes buildAttributes(String uid, Group group) {
+		return expirePassword.expire(doer, users);
+	}
 
-        BasicAttribute ocattr = new BasicAttribute("objectclass");
-        ocattr.add("extensibleObject");
-        ocattr.add("organizationalUnit");
-        ocattr.add("top");
-        ocattr.add("top");
+	private Attributes buildAttributes(String uid, Group group) {
 
-        Attributes attrs = new BasicAttributes();
-        attrs.put(ocattr);
-        attrs.put("name", group.getName());
-        attrs.put("ou", group.getId());
-        if (group.getDescription() != "")
-            attrs.put("description", group.getDescription());
-        else
-            attrs.put("description", " ");
+		BasicAttribute ocattr = new BasicAttribute("objectclass");
+		ocattr.add("extensibleObject");
+		ocattr.add("organizationalUnit");
+		ocattr.add("top");
+		ocattr.add("top");
 
-        return attrs;
-    }
+		Attributes attrs = new BasicAttributes();
+		attrs.put(ocattr);
+		attrs.put("name", group.getName());
+		attrs.put("ou", group.getId());
+		if (!group.getDescription().equals(""))
+			attrs.put("description", group.getDescription());
+		else
+			attrs.put("description", " ");
 
-    public Name buildDn(String id) {
-        return LdapNameBuilder.newInstance("ou=" + "Groups" + "," + BASE_DN).add("ou", id).build();
-    }
+		return attrs;
+	}
 
-    @Override
-    public List<Group> retrieve() {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+	public Name buildDn(String id) {
+		return LdapNameBuilder.newInstance("ou=" + "Groups" + "," + BASE_DN).add("ou", id).build();
+	}
 
-        final AndFilter filter = new AndFilter();
-        filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
+	@Override
+	public List<Group> retrieve() {
+		SearchControls searchControls = new SearchControls();
+		searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-        return ldapTemplate.search("ou=Groups," + BASE_DN, filter.encode(),
-                new OUAttributeMapper());
-    }
+		final AndFilter filter = new AndFilter();
+		filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
-    @Override
-    public List<Group> retrieve(String ou) {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
-        final AndFilter filter = new AndFilter();
-        filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
+		return ldapTemplate.search("ou=Groups," + BASE_DN, filter.encode(),
+				new OUAttributeMapper());
+	}
+
+	@Override
+	public List<Group> retrieve(String ou) {
+		SearchControls searchControls = new SearchControls();
+		searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+		final AndFilter filter = new AndFilter();
+		filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
-        List<Group> gt = ldapTemplate.search("ou=Groups," + BASE_DN, filter.encode(),
-                new OUAttributeMapper());
+		List<Group> gt = ldapTemplate.search("ou=Groups," + BASE_DN, filter.encode(),
+				new OUAttributeMapper());
 
-        gt.removeIf(t -> t.getId().equals(Variables.MODEL_GROUP));
+		gt.removeIf(t -> t.getId().equals(Variables.MODEL_GROUP));
 
-        if (gt.size() != 0)
-            return null;
+		if (gt.size() != 0)
+			return null;
 
-        return gt;
+		return gt;
 
-    }
+	}
 
-    @Override
-    public HttpStatus create(String doerID, Group ou) {
+	@Override
+	public HttpStatus create(String doerID, Group ou) {
 
-        List<Group> groups = retrieve();
+		List<Group> groups = retrieve();
 
-        for (Group group : groups)
-            if (group.getId().equals(ou.getId()))
-                return HttpStatus.FOUND;
+		for (Group group : groups)
+			if (group.getId().equals(ou.getId()))
+				return HttpStatus.FOUND;
 
-        Name dn = buildDn(ou.getId());
-        try {
-            ldapTemplate.bind(dn, null, buildAttributes(ou.getId(), ou));
+		Name dn = buildDn(ou.getId());
+		try {
+			ldapTemplate.bind(dn, null, buildAttributes(ou.getId(), ou));
 
-            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, ou.getId(), Variables.MODEL_GROUP,
-                    Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
+			uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, ou.getId(), Variables.MODEL_GROUP,
+					Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
 
-            return HttpStatus.OK;
+			return HttpStatus.OK;
 
-        } catch (Exception e) {
-            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, ou.getId(), Variables.MODEL_GROUP,
-                    Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to ldap"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, ou.getId(), Variables.MODEL_GROUP,
+					Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to ldap"));
 
-            return HttpStatus.BAD_REQUEST;
-        }
-    }
+			return HttpStatus.BAD_REQUEST;
+		}
+	}
 
-    @Override
-    public HttpStatus update(String doerID, String id, Group ou) {
+	@Override
+	public HttpStatus update(String doerID, String id, Group ou) {
 
-        Name dn = buildDn(id);
+		Name dn = buildDn(id);
 
-        List<Group> groups = retrieve();
+		List<Group> groups = retrieve();
 
-        for (Group group : groups)
-            if (!(id.equals(ou.getId())) && group.getId().equals(ou.getId()))
-                return HttpStatus.FOUND;
+		for (Group group : groups)
+			if (!(id.equals(ou.getId())) && group.getId().equals(ou.getId()))
+				return HttpStatus.FOUND;
 
-        if (!(id.equals(ou.getId()))) {
+		if (!(id.equals(ou.getId()))) {
 
-            try {
-                ldapTemplate.unbind(dn);
-                create(doerID, ou);
-                DirContextOperations contextUser;
-                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, id, Variables.MODEL_GROUP,
-                        Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ou, ""));
+			try {
+				ldapTemplate.unbind(dn);
+				create(doerID, ou);
+				DirContextOperations contextUser;
+				uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, id, Variables.MODEL_GROUP,
+						Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ou, ""));
 
-                for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(id)) {
-                    for (String group : user.getMemberOf()) {
-                        if (group.equalsIgnoreCase(id)) {
-                            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
-                            contextUser.removeAttributeValue("ou", id);
-                            contextUser.addAttributeValue("ou", ou.getId());
-                            ldapTemplate.modifyAttributes(contextUser);
-                            UsersExtraInfo usersExtraInfo = mongoTemplate.findOne
-                                    (new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
-                            usersExtraInfo.getMemberOf().remove(id);
-                            usersExtraInfo.getMemberOf().add(ou.getId());
+				for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(id)) {
+					for (String group : user.getMemberOf()) {
+						if (group.equalsIgnoreCase(id)) {
+							contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
+							contextUser.removeAttributeValue("ou", id);
+							contextUser.addAttributeValue("ou", ou.getId());
+							ldapTemplate.modifyAttributes(contextUser);
+							UsersExtraInfo usersExtraInfo = mongoTemplate.findOne
+									(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+							if (usersExtraInfo != null) usersExtraInfo.getMemberOf().remove(id);
+							usersExtraInfo.getMemberOf().add(ou.getId());
 
-                            mongoTemplate.remove
-                                    (new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
+							mongoTemplate.remove
+									(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
 
-                            mongoTemplate.save
-                                    (usersExtraInfo, Variables.col_usersExtraInfo);
-                        }
-                    }
-                }
+							mongoTemplate.save
+									(usersExtraInfo, Variables.col_usersExtraInfo);
+						}
+					}
+				}
 
-                List<parsso.idman.Models.Services.Service> services = serviceRepo.listServicesWithGroups(id);
-                if (services != null)
-                    for (parsso.idman.Models.Services.Service service : services) {
+				List<parsso.idman.Models.Services.Service> services = serviceRepo.listServicesWithGroups(id);
+				if (services != null)
+					for (parsso.idman.Models.Services.Service service : services) {
 
-                        //remove old id and add new id
-                        ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).remove(id);
-                        ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).add(ou.getId());
+						//remove old id and add new id
+						((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).remove(id);
+						((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).add(ou.getId());
 
-                        // delete old service
-                        org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-                        jsonObject.put("names", ((((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1))));
-                        serviceRepo.deleteServices(doerID, jsonObject);
+						// delete old service
+						org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+						jsonObject.put("names", ((((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1))));
+						serviceRepo.deleteServices(doerID, jsonObject);
 
-                        // create new service
+						// create new service
 
-                        serviceRepo.updateOuIdChange(doerID, service, service.getId(), service.getName(), id, ou.getId());
+						serviceRepo.updateOuIdChange(doerID, service, service.getId(), service.getName(), id, ou.getId());
 
-                    }
+					}
 
-                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ou, ""));
+				uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ou, ""));
 
-                return HttpStatus.OK;
+				return HttpStatus.OK;
 
-            } catch (IOException ioException) {
+			} catch (IOException ioException) {
 
-                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "Group", "update", Variables.RESULT_FAILED, "ioException"));
-                return HttpStatus.BAD_REQUEST;
-            } catch (org.json.simple.parser.ParseException e) {
-                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "Group", "update", Variables.RESULT_FAILED, "parsing"));
-                return HttpStatus.BAD_REQUEST;
-            }
+				ioException.printStackTrace();
+				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "Group", "update", Variables.RESULT_FAILED, "ioException"));
+				return HttpStatus.BAD_REQUEST;
+			} catch (org.json.simple.parser.ParseException e) {
+				e.printStackTrace();
+				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "Group", "update", Variables.RESULT_FAILED, "parsing"));
+				return HttpStatus.BAD_REQUEST;
+			}
 
-        } else {
+		} else {
 
-            try {
-                ldapTemplate.rebind(dn, null, buildAttributes(ou.getId(), ou));
-                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, ou.getId(), "",
-                        Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ou, ""));
+			try {
+				ldapTemplate.rebind(dn, null, buildAttributes(ou.getId(), ou));
+				uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, ou.getId(), "",
+						Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ou, ""));
 
-                return HttpStatus.OK;
+				return HttpStatus.OK;
 
-            } catch (Exception e) {
-                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, doerID, ou.getId(), Variables.ACTION_UPDATE,
-                        Variables.RESULT_FAILED, "Writing to ldap"));
-                return HttpStatus.BAD_REQUEST;
-            }
-        }
+			} catch (Exception e) {
+				e.printStackTrace();
+				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, doerID, ou.getId(), Variables.ACTION_UPDATE,
+						Variables.RESULT_FAILED, "Writing to ldap"));
+				return HttpStatus.BAD_REQUEST;
+			}
+		}
 
 
-    }
+	}
 
-    private class OUAttributeMapper implements AttributesMapper<Group> {
-        @Override
-        public Group mapFromAttributes(Attributes attributes) throws NamingException {
-            Group group = new Group();
+	private class OUAttributeMapper implements AttributesMapper<Group> {
+		@Override
+		public Group mapFromAttributes(Attributes attributes) throws NamingException {
+			Group group = new Group();
 
-            group.setId(null != attributes.get("ou") ? attributes.get("ou").get().toString() : null);
-            group.setName(null != attributes.get("name") ? attributes.get("name").get().toString() : null);
-            group.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
-            group.setUsersCount(mongoTemplate.count(new Query(Criteria.where("memberOf").is(group.getId())), Variables.col_usersExtraInfo));
-            return group;
-        }
-    }
+			group.setId(null != attributes.get("ou") ? attributes.get("ou").get().toString() : null);
+			group.setName(null != attributes.get("name") ? attributes.get("name").get().toString() : null);
+			group.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
+			group.setUsersCount(mongoTemplate.count(new Query(Criteria.where("memberOf").is(group.getId())), Variables.col_usersExtraInfo));
+			return group;
+		}
+	}
 }

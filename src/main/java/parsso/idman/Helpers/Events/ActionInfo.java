@@ -8,27 +8,27 @@ import lombok.Setter;
 @Setter
 
 public class ActionInfo {
-    String actionIn;
-    String action;
+	String actionIn;
+	String action;
 
-    public ActionInfo(String action) {
-        this.actionIn = action;
-    }
+	public ActionInfo(String action) {
+		this.actionIn = action;
+	}
 
-    public String getAction() {
-        if (actionIn.contains("CasTicketGrantingTicketCreatedEvent")) {
+	public String getAction() {
+		if (actionIn.contains("CasTicketGrantingTicketCreatedEvent")) {
 
-            action = "Successful Login";
+			action = "Successful Login";
 
-        } else if (actionIn.contains("CasAuthenticationTransactionFailureEvent")) {
+		} else if (actionIn.contains("CasAuthenticationTransactionFailureEvent")) {
 
-            action = "Unsuccessful Login";
+			action = "Unsuccessful Login";
 
-        } else {
-            action = "Other";
-        }
-        return action;
-    }
+		} else {
+			action = "Other";
+		}
+		return action;
+	}
 
 
 }

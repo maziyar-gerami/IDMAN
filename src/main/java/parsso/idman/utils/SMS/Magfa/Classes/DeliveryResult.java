@@ -10,27 +10,27 @@ import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "deliveryResult", propOrder = {
-        "status",
-        "dlrs"
+		"status",
+		"dlrs"
 })
 public class DeliveryResult {
-    protected int status;
-    @XmlElement(required = true)
-    protected List<DeliveryStatus> dlrs;
+	protected int status;
+	@XmlElement(required = true)
+	protected List<DeliveryStatus> dlrs;
 
-    public int getStatus() {
-        return status;
-    }
+	public int getStatus() {
+		return status;
+	}
 
-    public void setStatus(int value) {
-        this.status = value;
-    }
+	public void setStatus(int value) {
+		this.status = value;
+	}
 
-    public List<DeliveryStatus> getDlrs() {
-        if (dlrs == null) {
-            dlrs = new ArrayList<DeliveryStatus>();
-        }
-        return this.dlrs;
-    }
+	public List<DeliveryStatus> getDlrs() {
+		if (dlrs == null) {
+			dlrs = new ArrayList<DeliveryStatus>();
+		}
+		return this.dlrs;
+	}
 
 }

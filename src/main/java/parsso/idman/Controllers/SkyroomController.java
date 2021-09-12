@@ -16,36 +16,37 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 public class SkyroomController {
-    @Autowired
-    SkyroomRepo runSkyroom;
-    @Autowired
-    UserRepo userRepo;
-    @Value("${skyroom.enable}")
-    String skyroomEnable;
+	@Autowired
+	SkyroomRepo runSkyroom;
+	@Autowired
+	UserRepo userRepo;
+	@Value("${skyroom.enable}")
+	String skyroomEnable;
 
-    @Deprecated
-    @GetMapping("/api/skyroom")
-    ResponseEntity<SkyRoom> hello(HttpServletRequest request) throws IOException, ParseException {
-        SkyRoom skyRoom = null;
-        User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
-        if (skyroomEnable.equalsIgnoreCase("true")) {
+	@Deprecated
+	@GetMapping("/api/skyroom")
+	ResponseEntity<SkyRoom> hello(HttpServletRequest request) throws IOException, ParseException {
+		SkyRoom skyRoom;
+		User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
+		if (skyroomEnable.equalsIgnoreCase("true")) {
 
-            try {
-                skyRoom = runSkyroom.Run(user);
-                user.setSkyRoom(skyRoom);
-            } catch (IOException e) {
-                e.printStackTrace();
-                user.setSkyRoom(null);
-            }
+			try {
+				skyRoom = runSkyroom.Run(user);
+				user.setSkyRoom(skyRoom);
+			} catch (IOException e) {
+				e.printStackTrace();
+				user.setSkyRoom(null);
+			}
 
-            try {
-                return new ResponseEntity<>(runSkyroom.Run(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
-        } else
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-    }
+			try {
+				return new ResponseEntity<>(runSkyroom.Run(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			}
+		} else
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
 }
