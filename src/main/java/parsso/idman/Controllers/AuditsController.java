@@ -15,6 +15,7 @@ import parsso.idman.Repos.AuditRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 
 @Controller
 public class AuditsController {
@@ -25,6 +26,7 @@ public class AuditsController {
 
 	//************************************* Pages ****************************************
 
+	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/audits")
 	public String getPageAudits() {
 		return "audits";

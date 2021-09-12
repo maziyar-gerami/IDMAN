@@ -19,6 +19,7 @@ import java.util.List;
 
 import static java.lang.Thread.sleep;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 public class SettingsController {
 	final int millis = 3600000;
@@ -43,6 +44,7 @@ public class SettingsController {
 
 				settingsRepo.emailNotification();
 				try {
+					//noinspection BusyWait
 					sleep(intervalCheckPassTime * millis);
 				} catch (InterruptedException e) {
 					break;
@@ -72,6 +74,7 @@ public class SettingsController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+	@SuppressWarnings("BusyWait")
 	@GetMapping("/api/settings/notification/message")
 	public ResponseEntity<String> enableMessageNotification() {
 

@@ -13,6 +13,7 @@ import parsso.idman.Repos.PubMessageRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class PubMessagesController {
 	@Autowired
@@ -29,7 +30,7 @@ public class PubMessagesController {
 	//************************************* APIs ****************************************
 
 	@GetMapping("/api/public/publicMessages")
-	public ResponseEntity<List<PublicMessage>> getVisiblePublicMessage(String id) {
+	public ResponseEntity<List<PublicMessage>> getVisiblePublicMessage() {
 		return new ResponseEntity<>(pubMessageRepo.showVisiblePubicMessages(), HttpStatus.OK);
 	}
 

@@ -16,6 +16,7 @@ import parsso.idman.Repos.TranscriptRepo;
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class TranscriptsController {
 	@Autowired

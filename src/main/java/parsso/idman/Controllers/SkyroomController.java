@@ -16,6 +16,7 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 public class SkyroomController {
 	@Autowired

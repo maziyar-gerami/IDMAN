@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class ConfigsController {
 	@Autowired
@@ -34,6 +35,7 @@ public class ConfigsController {
 
 	//************************************* Pages ****************************************
 
+	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/configs")
 	public String getPageConfigs() {
 		return "configs";

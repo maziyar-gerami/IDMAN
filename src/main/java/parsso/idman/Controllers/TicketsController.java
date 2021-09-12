@@ -17,6 +17,7 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class TicketsController {
 	@Autowired
@@ -26,6 +27,7 @@ public class TicketsController {
 
 	//************************************* Pages ****************************************
 
+	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/ticketing")
 	public String Reports() {
 		return "ticketing";

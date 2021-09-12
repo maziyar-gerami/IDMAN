@@ -31,14 +31,18 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class UsersController {
 	// default sequence of variables which can be changed using frontend
 	private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+	@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 	@Autowired
 	Token tokenClass;
+	@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 	@Autowired
 	UsersExcelView excelView;
+	@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 	@Autowired
 	SystemRefreshRepoImpl systemRefreshRepoImpl;
 	@Autowired

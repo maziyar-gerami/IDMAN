@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class ServicesController {
 	@Autowired
@@ -40,16 +41,16 @@ public class ServicesController {
 	@Qualifier("serviceRepoImpl")
 	@Autowired
 	private ServiceRepo serviceRepo;
-	@Value("${services.folder.path}")
-	private String path;
 	@Value("${metadata.file.path}")
 	private String metadataPath;
 
+	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/services")
 	public String getPageServices() {
 		return "services";
 	}
 
+	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/createservice")
 	public String CreateService() {
 		return "createservice";
@@ -120,8 +121,7 @@ public class ServicesController {
 	}
 
 	@GetMapping("/api/services/position/{serviceId}")
-	public ResponseEntity<HttpStatus> increasePosition(HttpServletRequest request,
-	                                                   @PathVariable("serviceId") String id, @RequestParam("value") int value) {
+	public ResponseEntity<HttpStatus> increasePosition(@PathVariable("serviceId") String id, @RequestParam("value") int value) {
 		if (value == 1)
 			return new ResponseEntity<>(serviceRepo.increasePosition(id));
 		else if (value == -1)

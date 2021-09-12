@@ -2,7 +2,6 @@ package parsso.idman.Controllers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,16 +14,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Models.DashboardData.Dashboard;
-import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@SuppressWarnings({"SameReturnValue", "SpringJavaAutowiredFieldsWarningInspection"})
+
 @Controller
 public class PagesController {
-	@Qualifier("userRepoImpl")
-	@Autowired
-	private UserRepo userRepo;
+	@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 	@Autowired
 	private DashboardData dashboardData;
 	@Value("${cas.url.logout.path}")

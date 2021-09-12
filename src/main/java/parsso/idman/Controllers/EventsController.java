@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class EventsController {
 	@Autowired
@@ -25,6 +26,7 @@ public class EventsController {
 
 	//************************************* Pages ****************************************
 
+	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/events")
 	public String getPageEvents() {
 		return "events";

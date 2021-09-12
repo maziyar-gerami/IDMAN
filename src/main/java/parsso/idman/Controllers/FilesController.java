@@ -17,6 +17,7 @@ import parsso.idman.Repos.FilesStorageService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class FilesController {
 	@Autowired

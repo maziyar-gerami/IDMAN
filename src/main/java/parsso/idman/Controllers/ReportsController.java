@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class ReportsController {
 	@Autowired
@@ -26,6 +27,7 @@ public class ReportsController {
 
 	//************************************* Pages ****************************************
 
+	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/reports")
 	public String getPageReports() {
 		return "reports";
@@ -44,7 +46,7 @@ public class ReportsController {
 	}
 
 	@GetMapping("/api/reports/users/date/{date}/{page}/{n}")
-	public ResponseEntity<ListReports> retrieveByDate(HttpServletRequest request, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
+	public ResponseEntity<ListReports> retrieveByDate(@PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
 		return new ResponseEntity<>(reportRepo.getLogsByDate(date, page, n), HttpStatus.OK);
 	}
 

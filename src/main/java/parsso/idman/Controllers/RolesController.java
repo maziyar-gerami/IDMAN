@@ -17,6 +17,7 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class RolesController {
 	@Autowired
@@ -26,6 +27,7 @@ public class RolesController {
 
 	//************************************* Pages ****************************************
 
+	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/roles")
 	public String getPageRoles() {
 		return "roles";

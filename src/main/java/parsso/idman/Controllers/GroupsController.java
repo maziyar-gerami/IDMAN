@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class GroupsController {
 	@Autowired
@@ -28,6 +29,7 @@ public class GroupsController {
 	private UserRepo userRepo;
 
 	//************************************* Pages ****************************************
+	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/groups")
 	public String getPageGroups() {
 		return "groups";

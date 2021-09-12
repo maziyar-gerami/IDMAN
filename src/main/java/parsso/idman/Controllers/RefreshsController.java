@@ -13,6 +13,7 @@ import parsso.idman.Repos.SystemRefresh;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 public class RefreshsController {
 	@Autowired
