@@ -136,7 +136,8 @@ public class UserRepoImpl implements UserRepo {
 			user = retrieveUsers(p.getUserId());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+
+
 		}
 
 		try {
@@ -709,13 +710,13 @@ public class UserRepoImpl implements UserRepo {
 
 		boolean accessRole = false;
 		try {
-			if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("superadmin") ||
+			if (user.getUsersExtraInfo()!=null || user.getUsersExtraInfo().getRole()!=null &&
+					user.getUsersExtraInfo().getRole().equalsIgnoreCase("superadmin") ||
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("admin") ||
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("supporter") ||
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("presenter"))
 				accessRole = true;
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 		return isEnable & accessRole;

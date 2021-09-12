@@ -395,12 +395,12 @@ public class ServiceRepoImpl implements ServiceRepo {
 			extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
 
 			try {
-				extraInfo.setNotificationApiURL(jsonObject.get("notificationApiURL") != null ? jsonObject.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
+				extraInfo.setNotificationApiURL(JsonExtraInfo.get("notificationApiURL") != null ? jsonObject.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
 
 			} catch (Exception e) {
 			}
 			try {
-				extraInfo.setNotificationApiKey(jsonObject.get("notificationApiKey") != null ? jsonObject.get("notificationApiKey").toString() : oldExtraInfo.getNotificationApiKey());
+				extraInfo.setNotificationApiKey(JsonExtraInfo.get("notificationApiKey") != null ? jsonObject.get("notificationApiKey").toString() : oldExtraInfo.getNotificationApiKey());
 			} catch (Exception e) {
 			}
 

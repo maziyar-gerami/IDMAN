@@ -350,7 +350,6 @@ public class CasServiceHelper {
 				if (machines != null)
 					for (InetAddress machine : machines)
 						IPaddresses.add(machine.getHostAddress());
-				MicroService microService = new MicroService((service).getServiceId(), IPaddresses);
 
 				file = new FileWriter(path + filePath + ".json");
 				file.write(json);
