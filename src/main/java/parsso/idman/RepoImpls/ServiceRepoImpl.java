@@ -94,9 +94,19 @@ public class ServiceRepoImpl implements ServiceRepo {
 					}
 
 
+			try {
+				if (((List<String>)(((JSONArray)(service.getAccessStrategy().getRequiredAttributes().get("uid"))).get(1))).contains(user.getUserId()))
+					relatedList.add(service);
+			}catch (NullPointerException e){
+
+			}
+
+
+
 		}
 		List<MicroService> microServices = new LinkedList<>();
 		MicroService microService = null;
+		relatedList.stream().distinct();
 
 		for (Service service : relatedList) {
 			Query query = new Query(Criteria.where("_id").is(service.getId()));

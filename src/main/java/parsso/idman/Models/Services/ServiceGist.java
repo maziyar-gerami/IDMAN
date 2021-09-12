@@ -1,6 +1,7 @@
 package parsso.idman.Models.Services;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ import java.util.List;
 @Getter
 
 public class ServiceGist {
+	@JsonIgnore
 	@JsonProperty("return")
 	private Return aReturn;
 	private List<Notification> notifications;
