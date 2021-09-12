@@ -18,7 +18,6 @@ import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.CasService;
-import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Services.ServicesSubModel.*;
 import parsso.idman.Models.Users.UsersGroups;
 import parsso.idman.Repos.ServiceRepo;

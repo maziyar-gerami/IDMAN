@@ -1,10 +1,12 @@
 package parsso.idman.Models.Services.ServiceType;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.Models.Services.Service;
+import parsso.idman.Models.Services.ServiceGist;
 
 import java.util.List;
 
@@ -27,15 +29,17 @@ public class MicroService implements Comparable {
 	private String url;
 	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private int position;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@JsonIgnore
 	private String notificationApiURL;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@JsonIgnore
 	private String notificationApiKey;
+	private ServiceGist notification;
 
 	public MicroService(String serviceId, List<String> machines) {
 		this.serviceId = serviceId;
 		this.IPaddresses = machines;
 		this.url = serviceId;
+
 	}
 
 	public MicroService(Long id, String url) {
@@ -83,6 +87,10 @@ public class MicroService implements Comparable {
 			return 1;
 		else
 			return 0;
+	}
+
+	public ServiceGist getNotification(){
+		return new ServiceGist();
 	}
 
 }
