@@ -686,7 +686,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let fileName = fup.value;
                 if(!re.exec(fileName)){
                     alert("از فرمت فایل انتخابی پشتیبانی نمی شود.");
-
+                    return;
                 }else{
                     var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                     var vm = this;
