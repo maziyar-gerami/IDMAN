@@ -32,10 +32,11 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.Random;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Service
 public class ServicesRepoImpl implements ServicesRepo {
 	static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	static SecureRandom rnd = new SecureRandom();
+	static final SecureRandom rnd = new SecureRandom();
 	@Value("${token.valid.email}")
 	private int EMAIL_VALID_TIME;
 	@Value("${token.valid.SMS}")

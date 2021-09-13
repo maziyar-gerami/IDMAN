@@ -3321,10 +3321,12 @@ var ContainerBlot = /** @class */ (function (_super) {
                 _this.insertBefore(child, _this.children.head);
             }
             catch (err) {
-                if (err instanceof Registry.ParchmentError)
+                if (err instanceof Registry.ParchmentError){
 
-                else
+                }
+                else {
                     throw err;
+                }
             }
         });
     };

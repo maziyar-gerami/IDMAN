@@ -23,7 +23,6 @@ import java.util.List;
 public class AuditRepoImpl implements AuditRepo {
 	@Autowired
 	MongoTemplate mongoTemplate;
-	ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
 	@Override
 	public ListAudits getListSizeAudits(int p, int n) {
@@ -40,8 +39,7 @@ public class AuditRepoImpl implements AuditRepo {
 
 		query.skip((p - 1) * (n)).limit(n);
 		List<Audit> auditList = mongoTemplate.find(query, Audit.class, Variables.col_audit);
-		ListAudits listAudits = new ListAudits(auditList, size, (int) Math.ceil(size / n));
-		return listAudits;
+		return new ListAudits(auditList, size, (int) Math.ceil(size / n));
 	}
 
 	@Override
@@ -52,7 +50,7 @@ public class AuditRepoImpl implements AuditRepo {
 		Time time = new Time(Integer.valueOf(date.substring(4)),
 				Integer.valueOf(date.substring(2, 4)),
 				Integer.valueOf(date.substring(0, 2)));
-		long[] range = TimeHelper.specificDateToEpochRange(time, zoneId);
+		long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
 
 		Query query = new Query(Criteria.where("whenActionWasPerformed")
 				.gte(TimeHelper.convertEpochToDate(range[0])).lte(TimeHelper.convertEpochToDate(range[1])).and("principal").is(userId));
@@ -72,7 +70,7 @@ public class AuditRepoImpl implements AuditRepo {
 		Time time = new Time(Integer.valueOf(date.substring(4)),
 				Integer.valueOf(date.substring(2, 4)),
 				Integer.valueOf(date.substring(0, 2)));
-		long[] range = TimeHelper.specificDateToEpochRange(time, zoneId);
+		long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
 
 		Query query = new Query(Criteria.where("whenActionWasPerformed")
 				.gte(TimeHelper.convertEpochToDate(range[0])).lte(TimeHelper.convertEpochToDate(range[1])));

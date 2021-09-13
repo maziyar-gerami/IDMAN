@@ -15,10 +15,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Helpers.Service.CasServiceHelper;
-import parsso.idman.Helpers.Service.Position;
-import parsso.idman.Helpers.Service.SamlServiceHelper;
-import parsso.idman.Helpers.Service.Trim;
+import parsso.idman.Helpers.Service.*;
 import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
@@ -119,6 +116,9 @@ public class ServiceRepoImpl implements ServiceRepo {
 						Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "unable read extra info from mongo"));
 
 			} finally {
+				//MicroService fMicro = new MicroService(service, microService);
+				//fMicro.setNotification(new Notifs().getNotifications(user.getUserId(),
+						//service.getExtraInfo().getNotificationApiURL(),service.getExtraInfo().getNotificationApiKey()));
 				microServices.add(new MicroService(service, microService));
 			}
 		}

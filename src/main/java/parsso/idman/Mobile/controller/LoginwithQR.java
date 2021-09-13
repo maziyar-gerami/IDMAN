@@ -18,6 +18,7 @@ import parsso.idman.Repos.UserRepo;
 
 import java.io.IOException;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 public class LoginwithQR {
 	private static String random = null;
