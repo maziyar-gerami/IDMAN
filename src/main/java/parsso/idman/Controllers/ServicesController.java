@@ -86,9 +86,9 @@ public class ServicesController {
 		return new ResponseEntity<>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
 	}
 
-	@GetMapping("/service/{apiKey}")
-	public ResponseEntity<ServiceGist> retrieveGistService(@PathVariable("apiKey") String apikey) {
-		return new ResponseEntity<>(serviceRepo.gistService(apikey), HttpStatus.OK);
+	@PostMapping("/service/notifyService")
+	public ResponseEntity<ServiceGist> retrieveGistService(@RequestBody JSONObject jsonObject) {
+		return new ResponseEntity<>(serviceRepo.gistService("jsonObject"), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/api/services")

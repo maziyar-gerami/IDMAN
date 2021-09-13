@@ -61,15 +61,6 @@ public class MicroService implements Comparable {
 		this.logo = service.getLogo();
 		this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
 		this.position = (null != microService ? microService.getPosition() : 0);
-		try {
-			this.notificationApiKey = microService.getNotificationApiKey();
-		} catch (Exception e) {
-		}
-		try {
-			this.notificationApiURL = microService.getNotificationApiURL();
-		} catch (Exception e) {
-		}
-
 	}
 
 	public MicroService(Service service) {
@@ -89,8 +80,5 @@ public class MicroService implements Comparable {
 			return 0;
 	}
 
-	public ServiceGist getNotification(){
-		return new ServiceGist();
-	}
 
 }

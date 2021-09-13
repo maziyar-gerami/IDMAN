@@ -116,10 +116,16 @@ public class ServiceRepoImpl implements ServiceRepo {
 						Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "unable read extra info from mongo"));
 
 			} finally {
-				//MicroService fMicro = new MicroService(service, microService);
-				//fMicro.setNotification(new Notifs().getNotifications(user.getUserId(),
-						//service.getExtraInfo().getNotificationApiURL(),service.getExtraInfo().getNotificationApiKey()));
-				microServices.add(new MicroService(service, microService));
+				MicroService fMicro = new MicroService(service, microService);
+
+				try {
+					fMicro.setNotification(new Notifs().getNotifications(user.getUserId(),
+							service.getExtraInfo().getNotificationApiURL(), service.getExtraInfo().getNotificationApiKey()));
+					microServices.add(new MicroService(service, fMicro));
+				} catch (Exception e){
+					microServices.add(new MicroService(service, microService));
+				}
+
 			}
 		}
 
@@ -405,12 +411,12 @@ public class ServiceRepoImpl implements ServiceRepo {
 			extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
 
 			try {
-				extraInfo.setNotificationApiURL(JsonExtraInfo.get("notificationApiURL") != null ? jsonObject.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
+				extraInfo.setNotificationApiURL(JsonExtraInfo.get("notificationApiURL") != null ? JsonExtraInfo.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
 
 			} catch (Exception e) {
 			}
 			try {
-				extraInfo.setNotificationApiKey(JsonExtraInfo.get("notificationApiKey") != null ? jsonObject.get("notificationApiKey").toString() : oldExtraInfo.getNotificationApiKey());
+				extraInfo.setNotificationApiKey(JsonExtraInfo.get("notificationApiKey") != null ? JsonExtraInfo.get("notificationApiKey").toString() : oldExtraInfo.getNotificationApiKey());
 			} catch (Exception e) {
 			}
 
