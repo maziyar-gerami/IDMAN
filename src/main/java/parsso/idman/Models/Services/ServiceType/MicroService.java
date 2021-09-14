@@ -1,7 +1,6 @@
 package parsso.idman.Models.Services.ServiceType;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,9 +28,7 @@ public class MicroService implements Comparable {
 	private String url;
 	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private int position;
-	@JsonIgnore
 	private String notificationApiURL;
-	@JsonIgnore
 	private String notificationApiKey;
 	private ServiceGist notification;
 
@@ -79,6 +76,5 @@ public class MicroService implements Comparable {
 		else
 			return 0;
 	}
-
 
 }

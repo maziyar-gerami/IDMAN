@@ -11,7 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Notifs {
-	public ServiceGist getNotifications(String userId, String notificationApiURL, String notificationApiKey) throws IOException {
+	public ServiceGist getNotifications(Long sid, String userId, String notificationApiURL, String notificationApiKey) throws IOException {
 		notificationApiURL = notificationApiURL +"/"+ notificationApiKey;
 		URL url = new URL(notificationApiURL);
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -20,6 +20,8 @@ public class Notifs {
 		con.setRequestProperty("Content-Type", "application/json; utf-8");
 
 		con.setRequestProperty("Accept", "application/json");
+
+		con.setRequestProperty("sid", String.valueOf(sid));
 
 		con.setDoOutput(true);
 

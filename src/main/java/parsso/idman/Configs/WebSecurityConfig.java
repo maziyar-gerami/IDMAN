@@ -67,6 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
 				.and()
 
+/*
 
 
 
@@ -166,8 +167,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
 
-
-
+*/
 
 				.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
 				.csrf().disable()
