@@ -1,6 +1,7 @@
 package parsso.idman.Models.Services.ServiceType;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import parsso.idman.Models.Services.ServiceGist;
 
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 @Setter
 @Getter
 public class MicroService implements Comparable {
@@ -28,7 +30,9 @@ public class MicroService implements Comparable {
 	private String url;
 	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private int position;
+	@JsonIgnore
 	private String notificationApiURL;
+	@JsonIgnore
 	private String notificationApiKey;
 	private ServiceGist notification;
 
@@ -56,6 +60,14 @@ public class MicroService implements Comparable {
 		this.serviceId = service.getServiceId();
 		this.description = service.getDescription();
 		this.logo = service.getLogo();
+		try {
+			this.notificationApiURL = microService.getNotificationApiURL();
+		}catch (NullPointerException e){this.notificationApiURL = null;}
+
+		try {
+			this.notificationApiKey = microService.getNotificationApiKey();
+		}catch (NullPointerException e){this.notificationApiKey = null;}
+
 		this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
 		this.position = (null != microService ? microService.getPosition() : 0);
 	}
@@ -69,12 +81,7 @@ public class MicroService implements Comparable {
 	@Override
 	public int compareTo(Object o) {
 		MicroService second = (MicroService) o;
-		if (this.getPosition() > second.getPosition())
-			return -1;
-		else if (this.getPosition() < second.getPosition())
-			return 1;
-		else
-			return 0;
+		return Integer.compare(second.getPosition(), this.getPosition());
 	}
 
 }

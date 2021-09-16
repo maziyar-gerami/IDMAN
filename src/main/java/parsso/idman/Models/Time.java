@@ -19,6 +19,8 @@ public class Time {
 	private int seconds;
 	private int milliSeconds;
 
+	public Time(){}
+
 	public Time(Calendar cal) {
 		year = cal.get(Calendar.YEAR);
 		month = cal.get(Calendar.MONTH);
@@ -60,6 +62,7 @@ public class Time {
 		this.seconds = myCal.get(Calendar.SECOND);
 		this.milliSeconds = myCal.get(Calendar.MILLISECOND);
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
