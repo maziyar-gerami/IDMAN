@@ -15,14 +15,21 @@ import parsso.idman.Repos.AuditRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 
 @Controller
 public class AuditsController {
-	@Autowired
-	private AuditRepo auditRepo;
-	@Autowired
+	private final AuditRepo auditRepo;
 	private AuditsExcelView auditsExcelView;
+
+	public AuditsController(AuditRepo auditRepo) {
+		this.auditRepo = auditRepo;
+	}
+
+	@Autowired
+	public AuditsController(AuditRepo auditRepo, AuditsExcelView auditsExcelView) {
+		this.auditRepo = auditRepo;
+		this.auditsExcelView = auditsExcelView;
+	}
 
 	//************************************* Pages ****************************************
 

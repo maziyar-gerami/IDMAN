@@ -30,19 +30,23 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class ServicesController {
-	@Autowired
 	MongoTemplate mongoTemplate;
-	@Qualifier("userRepoImpl")
-	@Autowired
 	private UserRepo userRepo;
-	@Qualifier("serviceRepoImpl")
-	@Autowired
 	private ServiceRepo serviceRepo;
 	@Value("${metadata.file.path}")
 	private String metadataPath;
+
+	public ServicesController(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+	}
+
+	@Autowired
+	public ServicesController(@Qualifier("userRepoImpl") UserRepo userRepo, @Qualifier("serviceRepoImpl") ServiceRepo serviceRepo) {
+		this.serviceRepo = serviceRepo;
+		this.userRepo = userRepo;
+	}
 
 	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/services")

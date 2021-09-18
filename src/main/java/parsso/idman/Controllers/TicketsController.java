@@ -17,13 +17,21 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class TicketsController {
-	@Autowired
-	TicketRepo ticketRepo;
-	@Autowired
+	final
 	UserRepo userRepo;
+	TicketRepo ticketRepo;
+
+	public TicketsController(UserRepo userRepo) {
+		this.userRepo = userRepo;
+	}
+
+	@Autowired
+	public TicketsController(UserRepo userRepo, TicketRepo ticketRepo) {
+		this.userRepo = userRepo;
+		this.ticketRepo = ticketRepo;
+	}
 
 	//************************************* Pages ****************************************
 

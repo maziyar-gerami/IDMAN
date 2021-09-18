@@ -2,7 +2,6 @@ package parsso.idman.Controllers;
 
 
 import net.minidev.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,11 +12,14 @@ import parsso.idman.Repos.PubMessageRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class PubMessagesController {
-	@Autowired
+	final
 	PubMessageRepo pubMessageRepo;
+
+	public PubMessagesController(PubMessageRepo pubMessageRepo) {
+		this.pubMessageRepo = pubMessageRepo;
+	}
 
 	//************************************* Pages ****************************************
 

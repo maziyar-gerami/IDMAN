@@ -31,11 +31,15 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class UsersController {
+	final ImportUsers importUsers;
+	final Operations operations;
+	final EmailService emailService;
 	// default sequence of variables which can be changed using frontend
 	private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+	private final InstantMessage instantMessage;
+	private final UserRepo userRepo;
 	@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 	@Autowired
 	Token tokenClass;
@@ -45,16 +49,14 @@ public class UsersController {
 	@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 	@Autowired
 	SystemRefreshRepoImpl systemRefreshRepoImpl;
-	@Autowired
-	ImportUsers importUsers;
-	@Autowired
-	Operations operations;
-	@Autowired
-	EmailService emailService;
-	@Autowired
-	private InstantMessage instantMessage;
-	@Autowired
-	private UserRepo userRepo;
+
+	public UsersController(UserRepo userRepo, InstantMessage instantMessage, EmailService emailService, Operations operations, ImportUsers importUsers) {
+		this.userRepo = userRepo;
+		this.instantMessage = instantMessage;
+		this.emailService = emailService;
+		this.operations = operations;
+		this.importUsers = importUsers;
+	}
 
 	//************************************* APIs ****************************************
 

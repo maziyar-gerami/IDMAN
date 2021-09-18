@@ -1,7 +1,6 @@
 package parsso.idman.Controllers;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,11 +15,13 @@ import parsso.idman.Repos.TranscriptRepo;
 import java.io.IOException;
 import java.util.List;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class TranscriptsController {
-	@Autowired
-	private TranscriptRepo transcriptRepo;
+	private final TranscriptRepo transcriptRepo;
+
+	public TranscriptsController(TranscriptRepo transcriptRepo) {
+		this.transcriptRepo = transcriptRepo;
+	}
 
 	//************************************* APIs ****************************************
 

@@ -17,13 +17,20 @@ import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class ReportsController {
-	@Autowired
+	private final LogsExcelView logsExcelView;
 	private ReportRepo reportRepo;
+
+	public ReportsController(LogsExcelView logsExcelView) {
+		this.logsExcelView = logsExcelView;
+	}
+
 	@Autowired
-	private LogsExcelView logsExcelView;
+	public ReportsController(ReportRepo reportRepo, LogsExcelView logsExcelView) {
+		this.reportRepo = reportRepo;
+		this.logsExcelView = logsExcelView;
+	}
 
 	//************************************* Pages ****************************************
 

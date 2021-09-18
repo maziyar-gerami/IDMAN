@@ -17,13 +17,14 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class RolesController {
+	final RolesRepo rolesRepo;
+
 	@Autowired
-	UserRepo userRepo;
-	@Autowired
-	RolesRepo rolesRepo;
+	public RolesController(RolesRepo rolesRepo, UserRepo userRepo) {
+		this.rolesRepo = rolesRepo;
+	}
 
 	//************************************* Pages ****************************************
 

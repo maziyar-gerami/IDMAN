@@ -808,8 +808,8 @@ public class UserRepoImpl implements UserRepo {
 
 	@Override
 	public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
-		val add = (List<String>) gu.get("add");
-		List<String> remove = (List<String>) gu.get("remove");
+		final List<String> add = (List<String>) gu.get("add");
+		final List<String> remove = (List<String>) gu.get("remove");
 		List<String> groups = new LinkedList<>();
 		for (String uid : add) {
 			User user = retrieveUsers(uid);
@@ -907,9 +907,11 @@ public class UserRepoImpl implements UserRepo {
 		}
 	}
 
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public List addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException {
+		List result = null;
 		InputStream insfile = file.getInputStream();
 
 		if (Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xlsx")) {
@@ -920,7 +922,7 @@ public class UserRepoImpl implements UserRepo {
 			//Get first/desired sheet from the workbook
 			XSSFSheet sheet = workbookXLSX.getSheetAt(0);
 
-			return excelAnalyzer.excelSheetAnalyze(doer, sheet, ou, true);
+			result = excelAnalyzer.excelSheetAnalyze(doer, sheet, ou, true);
 
 		} else if (file.getOriginalFilename().endsWith(".xls")) {
 			HSSFWorkbook workbookXLS;
@@ -929,17 +931,17 @@ public class UserRepoImpl implements UserRepo {
 
 			HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
-			return excelAnalyzer.excelSheetAnalyze(doer, xlssheet, ou, true);
+			result = excelAnalyzer.excelSheetAnalyze(doer, xlssheet, ou, true);
 
 		} else if (file.getOriginalFilename().endsWith(".csv")) {
 
 			BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-			return excelAnalyzer.csvSheetAnalyzer(doer, csvReader, ou, true);
+			result = excelAnalyzer.csvSheetAnalyzer(doer, csvReader, ou, true);
 
 		}
 
-		return null;
+		return result;
 	}
 
 	@Override
@@ -947,13 +949,13 @@ public class UserRepoImpl implements UserRepo {
 
 		List<UsersExtraInfo> users = new LinkedList<>();
 
-		if (((List<String>) jsonObject.get("names")).size() == 0) {
-			users.addAll(mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo));
-
-		} else {
+		if (((List<String>) jsonObject.get("names")).size() != 0) {
 			final ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
 			for (Object temp : jsonArray)
 				users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
+		} else {
+			users.addAll(mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo));
+
 		}
 
 		return expirePassword.expire(doer, users);

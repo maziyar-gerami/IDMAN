@@ -24,6 +24,7 @@ public class AuditRepoImpl implements AuditRepo {
 	@Autowired
 	MongoTemplate mongoTemplate;
 
+
 	@Override
 	public ListAudits getListSizeAudits(int p, int n) {
 		List<Audit> allAudits = analyze(Variables.col_audit, (p - 1) * n, n);
@@ -39,7 +40,7 @@ public class AuditRepoImpl implements AuditRepo {
 
 		query.skip((p - 1) * (n)).limit(n);
 		List<Audit> auditList = mongoTemplate.find(query, Audit.class, Variables.col_audit);
-		return new ListAudits(auditList, size, (int) Math.ceil(size / n));
+		return new ListAudits(auditList, size, (int) Math.ceil(size / (double)n));
 	}
 
 	@Override
@@ -47,9 +48,9 @@ public class AuditRepoImpl implements AuditRepo {
 
 		int skip = (p - 1) * limit;
 
-		Time time = new Time(Integer.valueOf(date.substring(4)),
-				Integer.valueOf(date.substring(2, 4)),
-				Integer.valueOf(date.substring(0, 2)));
+		Time time = new Time(Integer.parseInt(date.substring(4)),
+				Integer.parseInt(date.substring(2, 4)),
+				Integer.parseInt(date.substring(0, 2)));
 		long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
 
 		Query query = new Query(Criteria.where("whenActionWasPerformed")
@@ -60,16 +61,16 @@ public class AuditRepoImpl implements AuditRepo {
 		List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "whenActionWasPerformed"))
 				.skip(skip).limit(limit), Audit.class, Variables.col_audit);
 
-		return new ListAudits(reportList, size, (int) Math.ceil(size / limit));
+		return new ListAudits(reportList, size, (int) Math.ceil(size / (double) limit));
 
 	}
 
 	@Override
 	public ListAudits getAuditsByDate(String date, int p, int limit) throws ParseException {
 
-		Time time = new Time(Integer.valueOf(date.substring(4)),
-				Integer.valueOf(date.substring(2, 4)),
-				Integer.valueOf(date.substring(0, 2)));
+		Time time = new Time(Integer.parseInt(date.substring(4)),
+				Integer.parseInt(date.substring(2, 4)),
+				Integer.parseInt(date.substring(0, 2)));
 		long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
 
 		Query query = new Query(Criteria.where("whenActionWasPerformed")
@@ -80,7 +81,7 @@ public class AuditRepoImpl implements AuditRepo {
 		List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC,
 				"whenActionWasPerformed")).skip((p - 1) * limit).limit(limit), Audit.class, Variables.col_audit);
 
-		return new ListAudits(reportList, size, (int) Math.ceil(size / limit));
+		return new ListAudits(reportList, size, (int) Math.ceil(size / (double)  limit));
 
 	}
 
