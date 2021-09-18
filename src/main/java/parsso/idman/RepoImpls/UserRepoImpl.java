@@ -136,8 +136,7 @@ public class UserRepoImpl implements UserRepo {
 			user = retrieveUsers(p.getUserId());
 
 		} catch (Exception e) {
-
-
+			e.printStackTrace();
 		}
 
 		try {
@@ -710,16 +709,17 @@ public class UserRepoImpl implements UserRepo {
 
 		boolean accessRole = false;
 		try {
-			if (user.getUsersExtraInfo()!=null || user.getUsersExtraInfo().getRole()!=null &&
+			if ((user.getUsersExtraInfo()!=null && user.getUsersExtraInfo().getRole()!=null) && (
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("superadmin") ||
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("admin") ||
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("supporter") ||
-					user.getUsersExtraInfo().getRole().equalsIgnoreCase("presenter"))
+					user.getUsersExtraInfo().getRole().equalsIgnoreCase("presenter")))
 				accessRole = true;
 		} catch (Exception e) {
+			e.getCause();
 		}
 
-		return isEnable & accessRole;
+		return isEnable && accessRole;
 	}
 
 	@Override
@@ -951,7 +951,7 @@ public class UserRepoImpl implements UserRepo {
 			users.addAll(mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 
 		} else {
-			val jsonArray = (ArrayList<String>) jsonObject.get("names");
+			final ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
 			for (Object temp : jsonArray)
 				users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 		}
