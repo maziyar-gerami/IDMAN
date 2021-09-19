@@ -121,7 +121,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 				try {
 					fMicro.setNotification(new Notifs().getNotifications(user.getUserId(),
 							service.getExtraInfo().getNotificationApiURL(), service.getExtraInfo().getNotificationApiKey()));
-				}catch (Exception e){}
+				}catch (Exception e){e.printStackTrace();}
 
 				microServices.add(fMicro);
 

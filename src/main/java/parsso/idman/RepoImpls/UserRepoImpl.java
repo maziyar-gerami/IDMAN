@@ -689,6 +689,7 @@ public class UserRepoImpl implements UserRepo {
 		if (user.getRole().equals("USER") && profileAccessiblity.equalsIgnoreCase("FALSE"))
 			user.setProfileInaccessibility(true);
 
+
 		if (user.getUserId() == null)
 			return null;
 

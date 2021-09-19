@@ -38,7 +38,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Value("${cas.url.login.path}")
 	private String casLogin;
 
-
 	@Autowired
 	public WebSecurityConfig(SingleSignOutFilter singleSignOutFilter, LogoutFilter logoutFilter,
 	                         CasAuthenticationProvider casAuthenticationProvider,
@@ -67,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
 				.and()
 
-/*
+
 
 
 
@@ -167,7 +166,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
 
-*/
+
 
 				.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
 				.csrf().disable()
