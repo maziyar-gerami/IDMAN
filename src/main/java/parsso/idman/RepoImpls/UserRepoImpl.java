@@ -136,7 +136,8 @@ public class UserRepoImpl implements UserRepo {
 			user = retrieveUsers(p.getUserId());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+
+
 		}
 
 		try {
@@ -709,17 +710,16 @@ public class UserRepoImpl implements UserRepo {
 
 		boolean accessRole = false;
 		try {
-			if ((user.getUsersExtraInfo()!=null && user.getUsersExtraInfo().getRole()!=null) && (
+			if (user.getUsersExtraInfo()!=null || user.getUsersExtraInfo().getRole()!=null &&
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("superadmin") ||
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("admin") ||
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("supporter") ||
-					user.getUsersExtraInfo().getRole().equalsIgnoreCase("presenter")))
+					user.getUsersExtraInfo().getRole().equalsIgnoreCase("presenter"))
 				accessRole = true;
 		} catch (Exception e) {
-			e.getCause();
 		}
 
-		return isEnable && accessRole;
+		return isEnable & accessRole;
 	}
 
 	@Override
@@ -808,8 +808,8 @@ public class UserRepoImpl implements UserRepo {
 
 	@Override
 	public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
-		final List<String> add = (List<String>) gu.get("add");
-		final List<String> remove = (List<String>) gu.get("remove");
+		val add = (List<String>) gu.get("add");
+		List<String> remove = (List<String>) gu.get("remove");
 		List<String> groups = new LinkedList<>();
 		for (String uid : add) {
 			User user = retrieveUsers(uid);
@@ -907,11 +907,9 @@ public class UserRepoImpl implements UserRepo {
 		}
 	}
 
-
 	@SuppressWarnings("rawtypes")
 	@Override
 	public List addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException {
-		List result = null;
 		InputStream insfile = file.getInputStream();
 
 		if (Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xlsx")) {
@@ -922,7 +920,7 @@ public class UserRepoImpl implements UserRepo {
 			//Get first/desired sheet from the workbook
 			XSSFSheet sheet = workbookXLSX.getSheetAt(0);
 
-			result = excelAnalyzer.excelSheetAnalyze(doer, sheet, ou, true);
+			return excelAnalyzer.excelSheetAnalyze(doer, sheet, ou, true);
 
 		} else if (file.getOriginalFilename().endsWith(".xls")) {
 			HSSFWorkbook workbookXLS;
@@ -931,17 +929,17 @@ public class UserRepoImpl implements UserRepo {
 
 			HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
-			result = excelAnalyzer.excelSheetAnalyze(doer, xlssheet, ou, true);
+			return excelAnalyzer.excelSheetAnalyze(doer, xlssheet, ou, true);
 
 		} else if (file.getOriginalFilename().endsWith(".csv")) {
 
 			BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-			result = excelAnalyzer.csvSheetAnalyzer(doer, csvReader, ou, true);
+			return excelAnalyzer.csvSheetAnalyzer(doer, csvReader, ou, true);
 
 		}
 
-		return result;
+		return null;
 	}
 
 	@Override
@@ -949,13 +947,13 @@ public class UserRepoImpl implements UserRepo {
 
 		List<UsersExtraInfo> users = new LinkedList<>();
 
-		if (((List<String>) jsonObject.get("names")).size() != 0) {
-			final ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
-			for (Object temp : jsonArray)
-				users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
-		} else {
+		if (((List<String>) jsonObject.get("names")).size() == 0) {
 			users.addAll(mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 
+		} else {
+			val jsonArray = (ArrayList<String>) jsonObject.get("names");
+			for (Object temp : jsonArray)
+				users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 		}
 
 		return expirePassword.expire(doer, users);
