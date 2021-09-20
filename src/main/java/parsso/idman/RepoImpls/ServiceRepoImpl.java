@@ -15,10 +15,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Helpers.Service.CasServiceHelper;
-import parsso.idman.Helpers.Service.Position;
-import parsso.idman.Helpers.Service.SamlServiceHelper;
-import parsso.idman.Helpers.Service.Trim;
+import parsso.idman.Helpers.Service.*;
 import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
@@ -119,7 +116,15 @@ public class ServiceRepoImpl implements ServiceRepo {
 						Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "unable read extra info from mongo"));
 
 			} finally {
-				microServices.add(new MicroService(service, microService));
+				MicroService fMicro = new MicroService(service, microService);
+
+				try {
+					fMicro.setNotification(new Notifs().getNotifications(user.getUserId(),
+							service.getExtraInfo().getNotificationApiURL(), service.getExtraInfo().getNotificationApiKey()));
+				}catch (Exception e){}
+
+				microServices.add(fMicro);
+
 			}
 		}
 
@@ -405,12 +410,12 @@ public class ServiceRepoImpl implements ServiceRepo {
 			extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
 
 			try {
-				extraInfo.setNotificationApiURL(JsonExtraInfo.get("notificationApiURL") != null ? jsonObject.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
+				extraInfo.setNotificationApiURL(JsonExtraInfo.get("notificationApiURL") != null ? JsonExtraInfo.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
 
 			} catch (Exception e) {
 			}
 			try {
-				extraInfo.setNotificationApiKey(JsonExtraInfo.get("notificationApiKey") != null ? jsonObject.get("notificationApiKey").toString() : oldExtraInfo.getNotificationApiKey());
+				extraInfo.setNotificationApiKey(JsonExtraInfo.get("notificationApiKey") != null ? JsonExtraInfo.get("notificationApiKey").toString() : oldExtraInfo.getNotificationApiKey());
 			} catch (Exception e) {
 			}
 

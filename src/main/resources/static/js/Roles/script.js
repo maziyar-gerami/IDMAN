@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             userListSearch: "",
             userList: [],
             editList: [],
-            parssoTitleText: "پارسو",
+            parssoTitleText: "احراز هویت متمرکز شرکت فلات قاره",
             usernameText: "",
             exitText: "خروج",
             dashboardText: "داشبورد",
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.isRtl = false;
                     this.margin = "margin-left: 30px;";
                     this.dateNavText = this.dateNavEn;
-                    this.parssoTitleText = "Parsso";
+                    this.parssoTitleText = "IOOC Centralized Authentication";
                     this.usernameText = this.nameEN;
                     this.exitText = "Exit";
                     this.dashboardText = "Dashboard";
@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.isRtl = true;
                     this.margin = "margin-right: 30px;";
                     this.dateNavText = this.dateNav;
-                    this.parssoTitleText = "پارسو";
+                    this.parssoTitleText = "احراز هویت متمرکز شرکت فلات قاره";
                     this.usernameText = this.name;
                     this.exitText = "خروج";
                     this.dashboardText = "داشبورد";

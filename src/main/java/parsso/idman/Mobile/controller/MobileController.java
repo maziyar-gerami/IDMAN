@@ -23,6 +23,7 @@ import java.security.Principal;
 import java.text.ParseException;
 import java.util.List;
 
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 public class MobileController {
 	@Value(value = "${base.url}")
@@ -70,6 +71,7 @@ public class MobileController {
 		} else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 
+	@SuppressWarnings("unchecked")
 	@PostMapping("/api/mobile/active")
 	public @ResponseBody
 	ResponseEntity<JSONObject> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) throws IOException, org.json.simple.parser.ParseException {

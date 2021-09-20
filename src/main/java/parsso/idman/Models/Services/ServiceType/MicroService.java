@@ -10,6 +10,7 @@ import parsso.idman.Models.Services.ServiceGist;
 
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 @Setter
 @Getter
 public class MicroService implements Comparable {
@@ -59,17 +60,16 @@ public class MicroService implements Comparable {
 		this.serviceId = service.getServiceId();
 		this.description = service.getDescription();
 		this.logo = service.getLogo();
-		this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
-		this.position = (null != microService ? microService.getPosition() : 0);
-		try {
-			this.notificationApiKey = microService.getNotificationApiKey();
-		} catch (Exception e) {
-		}
 		try {
 			this.notificationApiURL = microService.getNotificationApiURL();
-		} catch (Exception e) {
-		}
+		}catch (NullPointerException e){this.notificationApiURL = null;}
 
+		try {
+			this.notificationApiKey = microService.getNotificationApiKey();
+		}catch (NullPointerException e){this.notificationApiKey = null;}
+
+		this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
+		this.position = (null != microService ? microService.getPosition() : 0);
 	}
 
 	public MicroService(Service service) {
@@ -81,16 +81,7 @@ public class MicroService implements Comparable {
 	@Override
 	public int compareTo(Object o) {
 		MicroService second = (MicroService) o;
-		if (this.getPosition() > second.getPosition())
-			return -1;
-		else if (this.getPosition() < second.getPosition())
-			return 1;
-		else
-			return 0;
-	}
-
-	public ServiceGist getNotification(){
-		return new ServiceGist();
+		return Integer.compare(second.getPosition(), this.getPosition());
 	}
 
 }
