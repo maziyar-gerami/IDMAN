@@ -46,6 +46,8 @@ public class ServiceRepoImpl implements ServiceRepo {
 	@Autowired
 	SamlServiceHelper samlServiceHelper;
 	@Autowired
+	OAuthServiceHelper oAuthServiceHelper;
+	@Autowired
 	FilesStorageService storageService;
 	@Autowired
 	LdapTemplate ldapTemplate;
@@ -331,6 +333,9 @@ public class ServiceRepoImpl implements ServiceRepo {
 		else if (system.equalsIgnoreCase("saml"))
 			id = samlServiceHelper.create(doerID, jsonObject);
 
+		else if (system.equalsIgnoreCase("OAuth"))
+			id = oAuthServiceHelper.create(doerID, jsonObject);
+
 		if (id > 0)
 			if (extraInfo == null)
 				extraInfo = new ExtraInfo();
@@ -439,7 +444,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 			}
 			return casServiceHelper.update(doerID, id, jsonObject);
 
-		} else if (system.equalsIgnoreCase("saml"))
+		} else if (system.equalsIgnoreCase("saml")){
 			try {
 				mongoTemplate.save(extraInfo, collection);
 
@@ -450,7 +455,20 @@ public class ServiceRepoImpl implements ServiceRepo {
 				return HttpStatus.FORBIDDEN;
 			}
 
-		return samlServiceHelper.update(doerID, id, jsonObject);
+			return samlServiceHelper.update(doerID, id, jsonObject);
+		}
+		else if (system.equalsIgnoreCase("OAuth"))
+			try {
+				mongoTemplate.save(extraInfo, collection);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
+						Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to mongoDB"));
+				return HttpStatus.FORBIDDEN;
+			}
+
+		return oAuthServiceHelper.update(doerID, id, jsonObject);
 
 	}
 

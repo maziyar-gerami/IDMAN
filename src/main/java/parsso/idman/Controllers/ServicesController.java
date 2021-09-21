@@ -92,13 +92,13 @@ public class ServicesController {
 	@PostMapping("/api/services/{system}")
 	public ResponseEntity<String> createService(HttpServletRequest request, @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
 
-		return new ResponseEntity<>(serviceRepo.createService(request.getUserPrincipal().getName(), jsonObject, system));
+		return new ResponseEntity<>(serviceRepo.createService("maziyar", jsonObject, system));
 	}
 
 	@PutMapping("/api/service/{id}/{system}")
 	public ResponseEntity<String> updateService(HttpServletRequest request, @PathVariable("id") long id,
 	                                            @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
-		return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
+		return new ResponseEntity<>(serviceRepo.updateService("maziyar", id, jsonObject, system));
 	}
 
 	@PostMapping("/api/services/metadata")
