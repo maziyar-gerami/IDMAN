@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
             showUnDeletableList: false,
             unDeletableList: "",
             isListEmpty: false,
-            s0: "پارسو",
+            s0: "احراز هویت متمرکز شرکت فلات قاره",
             s1: "",
             s2: "خروج",
             s3: "بازیابی رمز عبور",
@@ -571,14 +571,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 var vm = this;
                 let searchQuery = "?";
                 searchQuery = searchQuery + "searchUid=";
-                if(this.searchUserId != ""){
-                    searchQuery = searchQuery + this.searchUserId + "&";
+                if(this.searchUserId.trim() != ""){
+                    searchQuery = searchQuery + this.searchUserId.trim() + "&";
                 }else{
                     searchQuery = searchQuery + "&";
                 }
                 searchQuery = searchQuery + "searchDisplayName=";
-                if(this.searchDisplayName != ""){
-                    searchQuery = searchQuery + this.searchDisplayName + "&";
+                if(this.searchDisplayName.trim() != ""){
+                    searchQuery = searchQuery + this.searchDisplayName.trim() + "&";
                 }else{
                     searchQuery = searchQuery + "&";
                 }
@@ -1549,7 +1549,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.eye = "left: 1%;";
                     this.font = "font-size: 0.9em; text-align: left;"
                     this.dateNavText = this.dateNavEn;
-                    this.s0 = "Parsso";
+                    this.s0 = "IOOC Centralized Authentication";
                     this.s1 = this.nameEN;
                     this.s2 = "Exit";
                     this.s3 = "Reset Password";
@@ -1698,7 +1698,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.eye = "right: 1%;";
                     this.font = "font-size: 0.74em; text-align: right;"
                     this.dateNavText = this.dateNav;
-                    this.s0 = "پارسو";
+                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
                     this.s1 = this.name;
                     this.s2 = "خروج";
                     this.s3 = "بازیابی رمز عبور";
