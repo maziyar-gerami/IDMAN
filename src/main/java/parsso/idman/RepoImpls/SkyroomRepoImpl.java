@@ -81,7 +81,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 			try (BufferedReader br = new BufferedReader(
 					new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
 				StringBuilder response = new StringBuilder();
-				String responseLine = null;
+				String responseLine;
 				while ((responseLine = br.readLine()) != null) {
 					response.append(responseLine.trim());
 				}
@@ -101,7 +101,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return sb.toString();
 	}
 
-	public int Register(String username, String password, String nickname) throws IOException {
+	public int Register(String username, String password, String nickname) {
 		JSONObject root = new JSONObject();
 		root.put("action", "createUser");
 		JSONObject params = new JSONObject();
@@ -128,25 +128,6 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return 0;
 	}
 
-	public String CreateLoginUrl(int room_id, String user_id, String nickname, int access, int concurrent, String language, int ttl) throws IOException {
-		JSONObject root = new JSONObject();
-		root.put("action", "createLoginUrl");
-		JSONObject params = new JSONObject();
-		params.put("room_id", room_id);
-		params.put("user_id", user_id);
-		params.put("nickname", nickname);
-		params.put("access", access);
-		params.put("concurrent", concurrent);
-		params.put("language", language);
-		params.put("ttl", ttl);
-		root.put("params", params);
-		JSONObject res = Post(root.toString());
-		if (res.getBoolean("ok")) {
-			return res.getString("result");
-		}
-		return "error";
-	}
-
 	public String CreateLoginUrl(int room_id, String user_id, String nickname) throws IOException {
 		JSONObject root = new JSONObject();
 		root.put("action", "createLoginUrl");
@@ -169,24 +150,6 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		}
 
 		return "error";
-	}
-
-	public int CreateRoom(String name, String title, boolean guest_login, boolean op_login_first, int max_users) throws IOException {
-		JSONObject root = new JSONObject();
-		root.put("action", "createRoom");
-		JSONObject params = new JSONObject();
-		params.put("name", name);
-		params.put("title", title);
-		params.put("guest_login", guest_login);
-		params.put("op_login_first", op_login_first);
-		params.put("max_users", max_users);
-		root.put("params", params);
-		JSONObject res = Post(root.toString());
-		if (res.getBoolean("ok")) {
-			return res.getInt("result");
-		}
-		return 0;
-
 	}
 
 	public int CreateRoom(String name) throws IOException {

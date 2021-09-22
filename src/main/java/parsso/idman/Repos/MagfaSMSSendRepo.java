@@ -10,12 +10,4 @@ import java.util.ArrayList;
 public interface MagfaSMSSendRepo {
 	ArrayList<String> SendMessage(String message, String PhoneNumber, Long id) throws MalformedURLException;
 
-	String GetBalanceRepo() throws MalformedURLException;
-
-	ArrayList<String> GetMessagesStatuses() throws MalformedURLException;
-
-	String GetMessage(Long id) throws MalformedURLException;
-
-	ArrayList<String> InputMessage() throws MalformedURLException;
-
 }

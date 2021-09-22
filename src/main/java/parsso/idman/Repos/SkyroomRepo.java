@@ -10,8 +10,6 @@ import java.io.IOException;
 public interface SkyroomRepo {
 	SkyRoom Run(User user) throws IOException;
 
-	int CreateRoom(String name, String title, boolean guest_login, boolean op_login_first, int max_users) throws IOException;
-
 	int CreateRoom(String name) throws IOException;
 
 	int GetRoomId(String name) throws IOException;
@@ -25,8 +23,6 @@ public interface SkyroomRepo {
 	int Register(String username, String password, String nickname) throws IOException;
 
 	boolean AddUserRooms(int user_id, int rooms) throws IOException;
-
-	String CreateLoginUrl(int room_id, String user_id, String nickname, int access, int concurrent, String language, int ttl) throws IOException;
 
 	String CreateLoginUrl(int room_id, String user_id, String nickname) throws IOException;
 }
