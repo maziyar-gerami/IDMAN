@@ -157,17 +157,17 @@ public class SamlServiceHelper {
 
 				if (arrayList != null && arrayList != null) {
 					ArrayList temp1 = (ArrayList) arrayList.get(1);
-					for (int i = 0; i < temp1.size(); i++) {
+					for (Object o : temp1) {
 
 						JSONObject jsonObject1 = null;
 
-						if (temp1.get(i) != null &&
-								temp1.get(i).getClass().toString().equals("class org.json.simple.JSONObject"))
-							jsonObject1 = (JSONObject) temp1.get(i);
+						if (o != null &&
+								o.getClass().toString().equals("class org.json.simple.JSONObject"))
+							jsonObject1 = (JSONObject) o;
 
-						if (temp1.get(i) != null &&
-								temp1.get(i).getClass().toString().equals("class java.util.LinkedHashMap"))
-							jsonObject1 = new JSONObject((Map) temp1.get(i));
+						if (o != null &&
+								o.getClass().toString().equals("class java.util.LinkedHashMap"))
+							jsonObject1 = new JSONObject((Map) o);
 
 						Contact contact = new Contact();
 						if (jsonObject1.get("name") != null) contact.setName(jsonObject1.get("name").toString());

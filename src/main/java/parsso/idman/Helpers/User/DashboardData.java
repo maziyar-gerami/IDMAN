@@ -3,6 +3,7 @@ package parsso.idman.Helpers.User;
 
 import io.jsonwebtoken.io.IOException;
 import lombok.SneakyThrows;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -49,14 +50,15 @@ public class DashboardData {
 	Services fServices;
 	Logins fLogins;
 
-	public Dashboard retrieveDashboardData() throws IOException, InterruptedException {
+	public Dashboard retrieveDashboardData() throws IOException {
 
-		Thread thread = new Thread() {
-			@SneakyThrows
-			public void run() {
+		Thread thread = new Thread(() -> {
+			try {
 				updateDashboardData();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		};
+		});
 
 		thread.start();
 
@@ -87,9 +89,7 @@ public class DashboardData {
 			List<parsso.idman.Models.Services.Service> services = null;
 			try {
 				services = serviceRepo.listServicesFull();
-			} catch (java.io.IOException e) {
-				e.printStackTrace();
-			} catch (org.json.simple.parser.ParseException e) {
+			} catch (java.io.IOException | ParseException e) {
 				e.printStackTrace();
 			}
 			int nServices = services.size();

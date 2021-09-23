@@ -83,7 +83,7 @@ public class TicketRepoImpl implements TicketRepo {
 		int st;
 
 		try {
-			st = Integer.valueOf(replyTicket.getStatus());
+			st = replyTicket.getStatus();
 		} catch (Exception e) {
 			st = 1;
 		}
@@ -153,7 +153,7 @@ public class TicketRepoImpl implements TicketRepo {
 			query.addCriteria(Criteria.where("deleteFor").exists(true));
 
 		if (!date.equals("")) {
-			String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+			String time = new Time(Integer.parseInt(date.substring(4)), Integer.parseInt(date.substring(2, 4)), Integer.parseInt(date.substring(0, 2))).toStringDate();
 			String timeStart = time + "T00:00:00.000Z";
 			String timeEnd = time + "T23:59:59.000Z";
 
@@ -252,16 +252,16 @@ public class TicketRepoImpl implements TicketRepo {
 
 	@Override
 	public ListTickets retrieveSentTickets(String userId, String page, String count, String date) {
-		int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
+		int skip = (Integer.parseInt(page) - 1) * Integer.parseInt(count);
 
-		int limit = Integer.valueOf(count);
+		int limit = Integer.parseInt(count);
 
 		Query query = new Query(Criteria.where("from").is(userId).and("deleteFor").ne(userId))
 				.with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
 		List<Ticket> ticketList = mongoTemplate.find(query, Ticket.class, collection);
 
 		if (!date.equals("")) {
-			String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+			String time = new Time(Integer.parseInt(date.substring(4)), Integer.parseInt(date.substring(2, 4)), Integer.parseInt(date.substring(0, 2))).toStringDate();
 			String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
 			String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
 
@@ -280,9 +280,9 @@ public class TicketRepoImpl implements TicketRepo {
 	@Override
 	public ListTickets retrieveTicketsReceived(String userId, String page, String count, String from, String ticketId, String date) {
 
-		int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
+		int skip = (Integer.parseInt(page) - 1) * Integer.parseInt(count);
 
-		int limit = Integer.valueOf(count);
+		int limit = Integer.parseInt(count);
 
 		Query query = new Query(Criteria.where("to").is(userId).and("status").is(1)).with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(limit);
 
@@ -295,7 +295,7 @@ public class TicketRepoImpl implements TicketRepo {
 			query.addCriteria(Criteria.where("ID").regex(ticketId));
 
 		if (!date.equals("")) {
-			String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+			String time = new Time(Integer.parseInt(date.substring(4)), Integer.parseInt(date.substring(2, 4)), Integer.parseInt(date.substring(0, 2))).toStringDate();
 			String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
 			String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
 
@@ -334,11 +334,11 @@ public class TicketRepoImpl implements TicketRepo {
 	@Override
 	public ListTickets retrieve(String doer, String cat, String subCat, String status, String page, String count, String from, String ticketId, String date) {
 
-		int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
-		int limit = Integer.valueOf(count);
+		int skip = (Integer.parseInt(page) - 1) * Integer.parseInt(count);
+		int limit = Integer.parseInt(count);
 		int st;
 		try {
-			st = Integer.valueOf(status);
+			st = Integer.parseInt(status);
 		} catch (Exception e) {
 			st = -1;
 		}
@@ -365,7 +365,7 @@ public class TicketRepoImpl implements TicketRepo {
 			query.addCriteria(Criteria.where("ID").regex(ticketId));
 
 		if (!date.equals("")) {
-			String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+			String time = new Time(Integer.parseInt(date.substring(4)), Integer.parseInt(date.substring(2, 4)), Integer.parseInt(date.substring(0, 2))).toStringDate();
 			String timeStart = time + "T00:00:00.000Z";
 			String timeEnd = time + "T23:59:59.000Z";
 
@@ -385,8 +385,8 @@ public class TicketRepoImpl implements TicketRepo {
 	@Override
 	public ListTickets retrieveArchivedTickets(String doer, String cat, String subCat, String status, String page, String count, String from, String ticketId, String date) {
 
-		int skip = (Integer.valueOf(page) - 1) * Integer.valueOf(count);
-		int limit = Integer.valueOf(count);
+		int skip = (Integer.parseInt(page) - 1) * Integer.parseInt(count);
+		int limit = Integer.parseInt(count);
 
 		Query query = new Query();
 
@@ -407,7 +407,7 @@ public class TicketRepoImpl implements TicketRepo {
 			query.addCriteria(Criteria.where("ID").regex(ticketId));
 
 		if (!date.equals("")) {
-			String time = new Time(Integer.valueOf(date.substring(4)), Integer.valueOf(date.substring(2, 4)), Integer.valueOf(date.substring(0, 2))).toStringDate();
+			String time = new Time(Integer.parseInt(date.substring(4)), Integer.parseInt(date.substring(2, 4)), Integer.parseInt(date.substring(0, 2))).toStringDate();
 			String timeStart = time + "T00:00:00.000Z";
 			String timeEnd = time + "T23:59:59.000Z";
 

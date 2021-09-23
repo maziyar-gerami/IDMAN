@@ -91,14 +91,11 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
 					String photoName = ldapTemplate.search(
 							"ou=People," + BASE_DN, new EqualsFilter("uid", user.getUserId()).encode(), searchControls,
-							new AttributesMapper<String>() {
-								public String mapFromAttributes(Attributes attrs)
-										throws NamingException {
-									if (attrs.get("photoName") != null)
-										return attrs.get("photoName").get().toString();
+							(AttributesMapper<String>) attrs -> {
+								if (attrs.get("photoName") != null)
+									return attrs.get("photoName").get().toString();
 
-									return "";
-								}
+								return "";
 							}).get(0);
 
 					if (photoName != null)

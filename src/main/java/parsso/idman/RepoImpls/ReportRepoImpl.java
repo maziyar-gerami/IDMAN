@@ -68,9 +68,9 @@ public class ReportRepoImpl implements ReportRepo {
 		int skip = (p - 1) * n;
 		int limit = n;
 
-		Time time = new Time(Integer.valueOf(date.substring(4)),
-				Integer.valueOf(date.substring(2, 4)),
-				Integer.valueOf(date.substring(0, 2)));
+		Time time = new Time(Integer.parseInt(date.substring(4)),
+				Integer.parseInt(date.substring(2, 4)),
+				Integer.parseInt(date.substring(0, 2)));
 		long[] range = TimeHelper.specificDateToEpochRange(time, zoneId);
 
 		Query query = new Query(Criteria.where("millis").gte(range[0]).lte(range[1]));
@@ -89,9 +89,9 @@ public class ReportRepoImpl implements ReportRepo {
 		int skip = (p - 1) * n;
 		int limit = n;
 
-		Time time = new Time(Integer.valueOf(date.substring(4)),
-				Integer.valueOf(date.substring(2, 4)),
-				Integer.valueOf(date.substring(0, 2)));
+		Time time = new Time(Integer.parseInt(date.substring(4)),
+				Integer.parseInt(date.substring(2, 4)),
+				Integer.parseInt(date.substring(0, 2)));
 		long[] range = TimeHelper.specificDateToEpochRange(time, zoneId);
 
 		Query query = new Query(Criteria.where("millis").gte(range[0]).lte(range[1]).and("loggerName").is(userId));

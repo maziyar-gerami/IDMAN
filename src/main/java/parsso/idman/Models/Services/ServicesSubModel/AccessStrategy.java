@@ -104,7 +104,7 @@ public class AccessStrategy {
 
 		String tf = seTime.substring(23);
 
-		return (convertDate(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day))) +
+		return (convertDate(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day))) +
 				'T' + hours + ':' + minutes + ':' + seconds + '.' + milliSeconds + tf;
 
 	}
@@ -127,9 +127,9 @@ public class AccessStrategy {
 		if (jsonObject.get("startingDateTime") != null) {
 			String s = jsonObject.get("startingDateTime").toString();
 
-			if (Integer.valueOf(s.substring(0, 4)) > 2000)
+			if (Integer.parseInt(s.substring(0, 4)) > 2000)
 				accessStrategy.setStartingDateTimeForGet(jsonObject.get("startingDateTime").toString());
-			if (Integer.valueOf(s.substring(0, 4)) < 2000)
+			if (Integer.parseInt(s.substring(0, 4)) < 2000)
 				accessStrategy.setStartingDateTimeForPost(jsonObject.get("startingDateTime").toString());
 		}
 
@@ -138,9 +138,9 @@ public class AccessStrategy {
 
 			accessStrategy.setEndingDateTimeForGet(jsonObject.get("endingDateTime").toString());
 
-			if (Integer.valueOf(s.substring(0, 4)) > 2000)
+			if (Integer.parseInt(s.substring(0, 4)) > 2000)
 				accessStrategy.setEndingDateTimeForGet(jsonObject.get("endingDateTime").toString());
-			if (Integer.valueOf(s.substring(0, 4)) < 2000)
+			if (Integer.parseInt(s.substring(0, 4)) < 2000)
 				accessStrategy.setEndingDateTimeForPost(jsonObject.get("endingDateTime").toString());
 
 		}

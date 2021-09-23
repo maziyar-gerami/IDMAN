@@ -18,7 +18,7 @@ public class LongArray {
 
 	public List<Long> getItem() {
 		if (item == null) {
-			item = new ArrayList<Long>();
+			item = new ArrayList<>();
 		}
 		return this.item;
 	}

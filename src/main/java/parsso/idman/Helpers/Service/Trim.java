@@ -27,7 +27,7 @@ public class Trim {
 	}
 
 	public static long extractIdFromFile(String file) {
-		return Long.valueOf(file.substring(file.length() - 18, file.length() - 5));
+		return Long.parseLong(file.substring(file.length() - 18, file.length() - 5));
 	}
 
 }

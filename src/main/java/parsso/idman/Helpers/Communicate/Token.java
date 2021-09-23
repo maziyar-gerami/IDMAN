@@ -69,14 +69,14 @@ public class Token {
 
 				String timeStamp = user.getUsersExtraInfo().getResetPassToken().substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
 
-				if ((cTimeStamp - Long.valueOf(timeStamp)) < (60000 * EMAIL_VALID_TIME))
+				if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000 * EMAIL_VALID_TIME))
 					return HttpStatus.OK;
 
 				else
 					return HttpStatus.REQUEST_TIMEOUT;
 			} else {
 				String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
-				if ((cTimeStamp - Long.valueOf(timeStamp)) < (60000 * SMS_VALID_TIME)) {
+				if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000 * SMS_VALID_TIME)) {
 					return HttpStatus.OK;
 				} else
 					return HttpStatus.REQUEST_TIMEOUT;

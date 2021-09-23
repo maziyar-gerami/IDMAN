@@ -28,7 +28,7 @@ public class MessagesResult {
 
 	public List<DatedCustomerReturnIncomingFormat> getMessages() {
 		if (messages == null) {
-			messages = new ArrayList<DatedCustomerReturnIncomingFormat>();
+			messages = new ArrayList<>();
 		}
 		return this.messages;
 	}

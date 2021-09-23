@@ -38,8 +38,8 @@ public class UserAttributeMapper implements AttributesMapper<User> {
 		user.setDisplayName((null != attributes.get("displayName") && !attributes.get("displayName").equals("")) ? attributes.get("displayName").get().toString() : null);
 		user.setMobile(null != attributes.get("mobile") ? attributes.get("mobile").get().toString() : null);
 		user.setMail(null != attributes.get("mail") ? attributes.get("mail").get().toString() : null);
-		user.setTimeStamp(null != attributes.get("createtimestamp") ? Long.valueOf(attributes.get("createtimestamp").get().toString().substring(0, 14)) : 0);
-		user.setPasswordChangedTime(null != attributes.get("pwdChangedTime") ? Long.valueOf(attributes.get("pwdChangedTime").get().toString().substring(0, 14)) : user.getTimeStamp());
+		user.setTimeStamp(null != attributes.get("createtimestamp") ? Long.parseLong(attributes.get("createtimestamp").get().toString().substring(0, 14)) : 0);
+		user.setPasswordChangedTime(null != attributes.get("pwdChangedTime") ? Long.parseLong(attributes.get("pwdChangedTime").get().toString().substring(0, 14)) : user.getTimeStamp());
 		user.setEmployeeNumber((null != attributes.get("employeeNumber") && !attributes.get("employeeNumber").equals("")) ? attributes.get("employeeNumber").get().toString() : null);
 		int nGroups = (null == attributes.get("ou") && !attributes.get("displayName").equals("")) ? 0 : attributes.get("ou").size();
 		user.setDescription(attributes.get("description") != null ? attributes.get("description").get().toString() : " ");

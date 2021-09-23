@@ -187,7 +187,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 				file_properties += "###" + setting.getGroup();
 			else {
 
-				if (file_properties.indexOf(setting.getGroup()) == -1)
+				if (!file_properties.contains(setting.getGroup()))
 					file_properties += "\n\n\n###" + setting.getGroup();
 
 			}

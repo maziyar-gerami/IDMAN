@@ -115,11 +115,11 @@ public class InstantMessage {
 			try {
 
 				String receptor = mobile;
-				String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+				String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS));
 				KavenegarApi api = new KavenegarApi(SMS_API_KEY);
 				api.verifyLookup(receptor, message, "", "", "mfa");
 				mongoTemplate.remove(query, collection);
-				return Integer.valueOf(SMS_VALID_TIME);
+				return Integer.parseInt(SMS_VALID_TIME);
 
 			} catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
@@ -154,11 +154,11 @@ public class InstantMessage {
 			try {
 
 				String receptor = user.getMobile();
-				String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+				String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS));
 				KavenegarApi api = new KavenegarApi(SMS_API_KEY);
 				api.verifyLookup(receptor, message, "", "", "mfa");
 				mongoTemplate.remove(query, collection);
-				return Integer.valueOf(SMS_VALID_TIME);
+				return Integer.parseInt(SMS_VALID_TIME);
 
 			} catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
@@ -195,11 +195,11 @@ public class InstantMessage {
 			try {
 
 				Texts texts = new Texts();
-				texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS)));
+				texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS)));
 				magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
 
 				mongoTemplate.remove(query, collection);
-				return Integer.valueOf(SMS_VALID_TIME);
+				return Integer.parseInt(SMS_VALID_TIME);
 
 			} catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 				System.out.print("HttpException  : " + ex.getMessage());
@@ -244,11 +244,11 @@ public class InstantMessage {
 			try {
 
 				Texts texts = new Texts();
-				texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS)));
+				texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS)));
 				magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
 
 				mongoTemplate.remove(query, collection);
-				return Integer.valueOf(SMS_VALID_TIME);
+				return Integer.parseInt(SMS_VALID_TIME);
 
 			} catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 				System.out.print("HttpException  : " + ex.getMessage());
@@ -271,10 +271,10 @@ public class InstantMessage {
 			if (tokenClass.insertMobileToken(user)) {
 				try {
 					String receptor = user.getMobile();
-					String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+					String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS));
 					KavenegarApi api = new KavenegarApi(SMS_API_KEY);
 					api.verifyLookup(receptor, message, "", "", "mfa");
-					return Integer.valueOf(SMS_VALID_TIME);
+					return Integer.parseInt(SMS_VALID_TIME);
 
 				} catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 					System.out.print("HttpException  : " + ex.getMessage());
@@ -296,10 +296,10 @@ public class InstantMessage {
 			if (tokenClass.insertMobileToken(user)) {
 				try {
 					Texts texts = new Texts();
-					texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS)));
+					texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS)));
 					magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
 
-					return Integer.valueOf(SMS_VALID_TIME);
+					return Integer.parseInt(SMS_VALID_TIME);
 
 				} catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 					System.out.print("HttpException  : " + ex.getMessage());
@@ -362,11 +362,11 @@ public class InstantMessage {
 
 						try {
 							String receptor = mobile;
-							String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS));
+							String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS));
 							KavenegarApi api = new KavenegarApi(SMS_API_KEY);
 							api.verifyLookup(receptor, message, "", "", "mfa");
 							mongoTemplate.remove(query, collection);
-							return Integer.valueOf(SMS_VALID_TIME);
+							return Integer.parseInt(SMS_VALID_TIME);
 						} catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
 							System.out.print("HttpException  : " + ex.getMessage());
@@ -427,10 +427,10 @@ public class InstantMessage {
 
 						try {
 							Texts texts = new Texts();
-							texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.valueOf(SMS_VALIDATION_DIGITS)));
+							texts.setMainMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS)));
 							magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
 							mongoTemplate.remove(query, collection);
-							return Integer.valueOf(SMS_VALID_TIME);
+							return Integer.parseInt(SMS_VALID_TIME);
 						} catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
 							System.out.print("HttpException  : " + ex.getMessage());
@@ -464,7 +464,7 @@ public class InstantMessage {
 		try {
 			String receptor = user.getMobile();
 			KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-			if (Integer.valueOf(day) >= 0)
+			if (Integer.parseInt(day) >= 0)
 				api.verifyLookup(receptor, user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')), day, baseurl + "/resetPass", "expirePassReminder");
 			else
 				api.verifyLookup(receptor, user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')), baseurl + "/resetPass", "", "expirePassNotify");

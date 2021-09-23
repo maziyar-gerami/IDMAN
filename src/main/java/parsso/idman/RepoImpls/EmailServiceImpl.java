@@ -97,13 +97,13 @@ public class EmailServiceImpl implements EmailService {
 
 			String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
-			Thread thread = new Thread() {
-				@SneakyThrows
-				public void run() {
+			Thread thread = new Thread(() -> {
+				try {
 					sendHtmlMessage(user, Variables.email_recoverySubject, "\n" + fullUrl);
-
+				} catch (MessagingException e) {
+					e.printStackTrace();
 				}
-			};
+			});
 
 			thread.start();
 
@@ -127,13 +127,15 @@ public class EmailServiceImpl implements EmailService {
 
 				User user = userRepo.retrieveUsers(temp.toString());
 				{
-					Thread thread = new Thread() {
-						@SneakyThrows
-						public void run() {
+					Thread thread = new Thread(() -> {
+						try {
 							sendMail(user.getMail());
-
+						} catch (IOException e) {
+							e.printStackTrace();
+						} catch (ParseException e) {
+							e.printStackTrace();
 						}
-					};
+					});
 					if (checkMail(user.getMail()) != null)
 						thread.start();
 				}
@@ -179,7 +181,7 @@ public class EmailServiceImpl implements EmailService {
 			}
 
 			mongoTemplate.remove(query, collection);
-			return Integer.valueOf(EMAIL_VALID_TIME);
+			return Integer.parseInt(EMAIL_VALID_TIME);
 		} else
 			return 0;
 	}
@@ -234,7 +236,7 @@ public class EmailServiceImpl implements EmailService {
 					}
 
 					mongoTemplate.remove(query, collection);
-					return Integer.valueOf(EMAIL_VALID_TIME);
+					return Integer.parseInt(EMAIL_VALID_TIME);
 
 				}
 			}

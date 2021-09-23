@@ -126,8 +126,8 @@ public class CaptchaRepoImp implements CAPTCHARepo {
 		String phrase = "";
 		Random rand = new Random();
 
-		for (int i = 0; i < organization.length; i++) {
-			if (organization[i] == 0) {
+		for (int value : organization) {
+			if (value == 0) {
 				if (rand.nextInt(2) == 1)
 					phrase += (char) (rand.nextInt(123 - 97) + 97);
 				else
@@ -150,12 +150,7 @@ public class CaptchaRepoImp implements CAPTCHARepo {
 		CAPTCHA actualCaptcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
 
 		if (actualCaptcha != null) {
-			Thread thread = new Thread() {
-				public void run() {
-					mongoTemplate.remove(query, collection);
-				}
-
-			};
+			Thread thread = new Thread(() -> mongoTemplate.remove(query, collection));
 			thread.start();
 
 			if (captcha.getPhrase().equalsIgnoreCase(actualCaptcha.getPhrase())) {

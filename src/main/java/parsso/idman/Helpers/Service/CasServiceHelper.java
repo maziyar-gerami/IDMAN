@@ -45,7 +45,7 @@ public class CasServiceHelper {
 
 		CasService service = new parsso.idman.Models.Services.ServiceType.CasService();
 		if (jo.get("id") != null)
-			service.setId(Long.valueOf(jo.get("id").toString()));
+			service.setId(Long.parseLong(jo.get("id").toString()));
 
 		if (jo.get("serviceId") != null) service.setServiceId(jo.get("serviceId").toString());
 		if (jo.get("description") != null) service.setDescription(jo.get("description").toString());
@@ -216,17 +216,17 @@ public class CasServiceHelper {
 
 				if (arrayList != null && arrayList != null) {
 					ArrayList temp1 = (ArrayList) arrayList.get(1);
-					for (int i = 0; i < temp1.size(); i++) {
+					for (Object o : temp1) {
 
 						JSONObject jsonObject1 = null;
 
-						if (temp1.get(i) != null &&
-								temp1.get(i).getClass().toString().equals("class org.json.simple.JSONObject")) {
-							jsonObject1 = (JSONObject) temp1.get(i);
+						if (o != null &&
+								o.getClass().toString().equals("class org.json.simple.JSONObject")) {
+							jsonObject1 = (JSONObject) o;
 						}
-						if (temp1.get(i) != null &&
-								temp1.get(i).getClass().toString().equals("class java.util.LinkedHashMap")) {
-							jsonObject1 = new JSONObject((Map) temp1.get(i));
+						if (o != null &&
+								o.getClass().toString().equals("class java.util.LinkedHashMap")) {
+							jsonObject1 = new JSONObject((Map) o);
 						}
 
 						Contact contact = new Contact();

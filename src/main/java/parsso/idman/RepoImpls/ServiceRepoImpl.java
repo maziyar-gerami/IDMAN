@@ -68,7 +68,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 		List<Service> services = listServicesFull();
 
-		LinkedList<Service> relatedList = new LinkedList<Service>();
+		LinkedList<Service> relatedList = new LinkedList<>();
 
 		for (Service service : services) {
 
@@ -196,7 +196,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 					continue;
 				}
-			Query query = new Query(Criteria.where("_id").is(Long.valueOf(Trim.extractIdFromFile(file))));
+			Query query = new Query(Criteria.where("_id").is(Trim.extractIdFromFile(file)));
 			try {
 				microService = mongoTemplate.findOne(query, MicroService.class, collection);
 			} catch (Exception e) {

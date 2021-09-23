@@ -18,7 +18,7 @@ public class IntArray {
 
 	public List<Integer> getItem() {
 		if (item == null) {
-			item = new ArrayList<Integer>();
+			item = new ArrayList<>();
 		}
 		return this.item;
 	}
