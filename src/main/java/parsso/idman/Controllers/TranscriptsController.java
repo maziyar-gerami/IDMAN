@@ -23,6 +23,14 @@ public class TranscriptsController {
 		this.transcriptRepo = transcriptRepo;
 	}
 
+	//************************************* Pages ****************************************
+
+	@SuppressWarnings("SameReturnValue")
+	@GetMapping("/transcripts")
+	public String getPageTranscripts() {
+		return "transcripts";
+	}
+
 	//************************************* APIs ****************************************
 
 	@GetMapping("/api/transcripts/users/service/{id}")

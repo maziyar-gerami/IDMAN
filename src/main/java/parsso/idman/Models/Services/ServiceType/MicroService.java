@@ -75,9 +75,16 @@ public class MicroService implements Comparable {
 			this.notificationApiKey = microService.getNotificationApiKey();
 		}catch (NullPointerException e){this.notificationApiKey = null;}
 
-		this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
+		try {
+			this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
+		}catch (NullPointerException e){}
+		try{
 		this.position = (null != microService ? microService.getPosition() : 0);
+		}catch (NullPointerException e){}
+
+		try {
 		this.dailyAccess = microService.getDailyAccess();
+		}catch (NullPointerException e){}
 
 	}
 
