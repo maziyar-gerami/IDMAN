@@ -1,6 +1,7 @@
 package parsso.idman.Helpers;
 
 
+import parsso.idman.Models.Services.Schedule;
 import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.text.ParseException;
@@ -246,5 +247,6 @@ public class TimeHelper {
 				Integer.valueOf(seTime.substring(14, 16)),
 				Integer.valueOf(seTime.substring(17, 19)));
 	}
+
 
 }
