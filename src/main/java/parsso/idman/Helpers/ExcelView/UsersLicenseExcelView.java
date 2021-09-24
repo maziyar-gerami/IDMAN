@@ -9,7 +9,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Helpers.Variables;
-import parsso.idman.Repos.TranscriptRepo;
+import parsso.idman.Repos.transcripts.TranscriptRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,12 +17,15 @@ import java.time.ZoneId;
 import java.util.Map;
 
 public class UsersLicenseExcelView extends AbstractXlsView {
-	@Autowired
 	TranscriptRepo transcriptRepo;
-	ZoneId zoneId = ZoneId.of(Variables.ZONE);
+
+	@Autowired
+	public UsersLicenseExcelView (TranscriptRepo transcriptRepo){
+		this.transcriptRepo = transcriptRepo;
+	}
 
 	@Override
-	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
 		// create a new Excel sheet
 		HSSFSheet sheetLicensed = (HSSFSheet) workbook.createSheet("Licensed");

@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.RepoImpls.reports;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ListReports;
 import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Time;
-import parsso.idman.Repos.ReportRepo;
+import parsso.idman.Repos.reports.ReportRepo;
 
 import java.text.ParseException;
 import java.time.Instant;

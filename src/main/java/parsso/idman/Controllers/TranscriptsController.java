@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import parsso.idman.Models.License.License;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Logs.Transcript;
-import parsso.idman.Repos.TranscriptRepo;
+import parsso.idman.Repos.transcripts.TranscriptRepo;
 
 import java.io.IOException;
 import java.util.List;

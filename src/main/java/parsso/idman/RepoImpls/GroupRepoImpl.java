@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import lombok.val;
 import net.minidev.json.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
@@ -28,7 +27,7 @@ import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.TranscriptRepo;
+import parsso.idman.Repos.transcripts.TranscriptRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;

@@ -12,7 +12,7 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Time;
-import parsso.idman.Repos.EventRepo;
+import parsso.idman.Repos.events.EventRepo;
 import parsso.idman.Utils.Convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +31,7 @@ public class EventsExcelView extends AbstractXlsView {
 	ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
 	@Override
-	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
 		// get data model which is passed by the Spring container
 		List<Event> events = eventRepo.analyze(mainCollection, 0, 0);

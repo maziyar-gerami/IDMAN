@@ -1,7 +1,5 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.RepoImpls.audits;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -13,20 +11,23 @@ import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Logs.ListAudits;
 import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Time;
-import parsso.idman.Repos.AuditRepo;
+import parsso.idman.Repos.audits.AuditRepo;
 
 import java.text.ParseException;
 import java.time.ZoneId;
 import java.util.List;
 
 @Service
-public class AuditRepoImpl implements AuditRepo {
-	@Autowired
+public class Retrieves implements AuditRepo {
+	final
 	MongoTemplate mongoTemplate;
 
+	public Retrieves(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+	}
 
 	@Override
-	public ListAudits getListSizeAudits(int p, int n) {
+	public ListAudits retrieveListSizeAudits(int p, int n) {
 		List<Audit> allAudits = analyze(Variables.col_audit, (p - 1) * n, n);
 		long size = mongoTemplate.getCollection(Variables.col_audit).countDocuments();
 		return new ListAudits(allAudits, size, (int) Math.ceil((double) size / (double) n));
@@ -85,7 +86,7 @@ public class AuditRepoImpl implements AuditRepo {
 
 	}
 
-	public List<Audit> analyze(String collection, int skip, int limit) {
+	public List<Audit>  analyze(String collection, int skip, int limit) {
 		Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
 		return mongoTemplate.find(query, Audit.class, collection);
 	}

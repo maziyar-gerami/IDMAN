@@ -13,7 +13,7 @@ import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
 import parsso.idman.Models.Logs.ListEvents;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.EventRepo;
+import parsso.idman.Repos.events.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 

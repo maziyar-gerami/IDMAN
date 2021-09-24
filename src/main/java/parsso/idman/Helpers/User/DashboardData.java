@@ -2,7 +2,6 @@ package parsso.idman.Helpers.User;
 
 
 import io.jsonwebtoken.io.IOException;
-import lombok.SneakyThrows;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -17,7 +16,7 @@ import parsso.idman.Models.DashboardData.Services;
 import parsso.idman.Models.DashboardData.Users;
 import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Repos.EventRepo;
+import parsso.idman.Repos.events.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Convertor.DateUtils;

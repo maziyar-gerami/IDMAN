@@ -44,6 +44,8 @@ import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.*;
+import parsso.idman.Repos.systemRefresh.SystemRefresh;
+import parsso.idman.Repos.transcripts.TranscriptRepo;
 
 import javax.naming.Name;
 import javax.naming.directory.BasicAttribute;
@@ -136,8 +138,7 @@ public class UserRepoImpl implements UserRepo {
 			user = retrieveUsers(p.getUserId());
 
 		} catch (Exception e) {
-
-
+			
 		}
 
 		try {

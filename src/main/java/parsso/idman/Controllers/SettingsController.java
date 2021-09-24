@@ -77,7 +77,7 @@ public class SettingsController {
 
 		Runnable runnable = () -> {
 			while (true) {
-				settingsRepo.messageNotification();
+				settingsRepo.instantMessageNotification();
 				try {
 					sleep(intervalCheckPassTime * millis);
 				} catch (InterruptedException e) {

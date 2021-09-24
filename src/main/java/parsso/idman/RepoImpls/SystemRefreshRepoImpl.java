@@ -25,11 +25,9 @@ import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.SystemRefresh;
+import parsso.idman.Repos.systemRefresh.SystemRefresh;
 import parsso.idman.Repos.UserRepo;
 
-import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import java.io.IOException;
 import java.util.LinkedList;

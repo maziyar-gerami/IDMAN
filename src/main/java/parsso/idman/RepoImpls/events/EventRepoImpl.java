@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.RepoImpls.events;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Logs.ListEvents;
 import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Time;
-import parsso.idman.Repos.EventRepo;
+import parsso.idman.Repos.events.EventRepo;
 
 import java.text.ParseException;
 import java.time.OffsetDateTime;
