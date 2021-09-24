@@ -57,7 +57,7 @@ public class OAuthServiceHelper {
 		if (jo.get("logo") != null) service.setLogo(jo.get("logo").toString());
 		if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
 		if (jo.get("clientSecret") != null) service.setClientSecret(jo.get("clientSecret").toString());
-		if (jo.get("clientId") != null) service.setClientSecret(jo.get("clientId").toString());
+		if (jo.get("clientId") != null) service.setClientId(jo.get("clientId").toString());
 
 		if (jo.get("expirationPolicy") == null)
 			service.setExpirationPolicy(new ExpirationPolicy());

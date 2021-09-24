@@ -527,13 +527,16 @@ public class ServiceRepoImpl implements ServiceRepo {
 		Object obj = jsonParser.parse(reader);
 		reader.close();
 
-		Service service;
+		Service service = null;
 		ExtraInfo extraInfo;
 
 		if (isCasService((JSONObject) obj))
 			service = casServiceHelper.analyze(file);
-		else
+		else if (isOAuthService((JSONObject) obj))
+			service = oAuthServiceHelper.analyze(file);
+		else if (isSamlService((JSONObject) obj))
 			service = samlServiceHelper.analyze(file);
+		
 
 		Query query = new Query(Criteria.where("_id").is(service.getId()));
 		try {
@@ -551,9 +554,17 @@ public class ServiceRepoImpl implements ServiceRepo {
 		return service;
 	}
 
+	private boolean isSamlService(JSONObject jo) {
+		return jo.get("@class").toString().equals("org.apereo.cas.support.saml.services.SamlRegisteredService");
+	}
+
+	private boolean isOAuthService(JSONObject jo) {
+		return jo.get("@class").toString().equals("org.apereo.cas.support.oauth.services.OAuthRegisteredService");
+	}
+
 	boolean isCasService(JSONObject jo) {
 
-		return !jo.get("@class").toString().contains("saml");
+		return jo.get("@class").toString().equals("org.apereo.cas.services.RegexRegisteredService");
 
 	}
 
