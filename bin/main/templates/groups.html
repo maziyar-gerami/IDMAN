@@ -19,10 +19,15 @@
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/persian-date.min.js"></script>
+    <script src="js/jspdf.umd.min.js"></script>
+    <script src="js/jspdf.plugin.autotable.js"></script>
+    <script src="js/xlsx.full.min.js"></script>
     <script src="js/Groups/script.js"></script>
+    <script src="js/jquery.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
     <script src="js/vue-spinners-css.min.js"></script>
     <script src="js/persian-rex.min.js"></script>
+    <script src="js/Bootstrap/bootstrap.bundle.min.js"></script>
 
 </head>
 <body class="h-100">
@@ -300,6 +305,13 @@
                                                                                             </span>
                                                                                         </button>
                                                                                     </td>
+                                                                                    <td>
+                                                                                        <button style="padding: 0.2rem; color: rgb(0, 123, 255); font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="accessReport" class="btn btn-sm" v-on:click="showReport(group.id)">
+                                                                                            <span class="fa-stack">
+                                                                                                <i class="fa fa-info fa-stack-2x"></i>
+                                                                                            </span>
+                                                                                        </button>
+                                                                                    </td>
                                                                                 </tr>
                                                                         </tbody>
                                                                     </table>
@@ -413,7 +425,7 @@
                                     </div>
 
                                     <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
-                                        <div class="p-3" v-bind:style="editS">
+                                        <div v-bind:style="editS">
                                             <h3 class="mb-3 pb-2 border-bottom">{{s30}}</h3>
                                             <div class="form-group">
                                                 <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
@@ -584,7 +596,7 @@
                                             <button v-on:click="showGroups()" class="btn btn-danger">{{s17}}</button>
                                             <button v-on:click="editGroup(group.id)" class="btn btn-primary">{{U13}}</button>
                                         </div>
-                                        <div class="p-3" v-bind:style="addS">
+                                        <div v-bind:style="addS">
                                             <h3 class="mb-3 pb-2 border-bottom">{{s29}}</h3>
                                             <div class="form-group">
                                                 <label>{{U2}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>
@@ -751,6 +763,204 @@
 
                                             <button v-on:click="showGroups()" class="btn btn-danger">{{s17}}</button>
                                             <button v-on:click="addGroup()" class="btn btn-primary">{{s18}}</button>
+                                        </div>
+                                        <div v-bind:style="reportS">
+                                            <div class="row border-bottom ml-0 mr-0 w-100 py-2 mb-3">
+                                                <div class="col-6">
+                                                    <h3>{{accessReport}}</h3>
+                                                </div>
+                                                <div class="col-3">
+                                                    <button type="button" class="btn btn-primary w-100" v-on:click="editGroupS(reportedGroup.id)">{{U13}}</button>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="dropdown w-100">
+                                                        <button class="btn btn-primary dropdown-toggle w-100" type="button" id="dropdownMenuButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            Export
+                                                        </button>
+                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton3">
+                                                            <a class="dropdown-item" href="#" v-on:click="exportReports('xlsx')">XLSX</a>
+                                                            <a class="dropdown-item" href="#" v-on:click="exportReports('pdf')">PDF</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row my-2">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>{{U2}}</label>
+                                                        <input type="text" readonly="readonly" class="form-control" v-bind:value="reportedGroup.id">
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>{{U3}}</label>
+                                                        <input type="text" readonly="readonly" class="form-control" v-bind:value="reportedGroup.name">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3 mt-3 ml-0 mr-0">
+                                                <div class="col-6 pr-2 pl-2">
+                                                    <div class="card mb-2">
+                                                        <h6 class="card-header py-2 text-center" style="background: #28a745;color: white;border-radius: calc(.25rem - 1px);">{{allowedServicesText}}</h6>
+                                                    </div>
+                                                    <div class="card">
+                                                        <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                            <div class="row ml-0 mr-0 w-100">
+                                                                <div class="col-1"></div>
+                                                                <div class="col-10 pl-1 pr-1">
+                                                                    <div class="input-group input-group-sm h-100">
+                                                                        <input type="text" :placeholder="searchText" class="form-control h-100" v-model="allowedServicesReportSearch">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-1"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div v-if="allowedServicesReportSearch.length == 0" style="height: 455px;">
+                                                        <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                            <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                <div v-if="reportLoader" class="text-center">
+                                                                    <br><br>
+                                                                    <roller-loader color="#007bff"/>
+                                                                </div>
+                                                                <div v-else>
+                                                                    <table class="tableList table table-responsive p-2 text-center">
+                                                                        <tr>
+                                                                            <th style="border: none;">#</th>
+                                                                            <th style="border: none;">{{idText}}</th>
+                                                                            <th style="border: none;">{{nameText}}</th>
+                                                                        </tr>
+                                                                        <tbody>
+                                                                        <tr v-for="service in allowedServicesReportList" v-bind:key="service._id">
+                                                                            <td class="align-middle">{{service.recordNumber}}</td>
+                                                                            <td class="align-middle">{{service._id}}</td>
+                                                                            <td class="align-middle">{{service.description}}</td>
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                    <div v-if="allowedServicesReportList.length == 0" class="emptyList">
+                                                                        <div>
+                                                                            <i class="fa fa-signing fa-2x"></i>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span>{{serviceNotFoundText}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div v-if="allowedServicesReportSearch.length > 0" style="height: 455px;">
+                                                        <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                            <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                <table class="tableList table table-responsive p-2 text-center">
+                                                                    <tr>
+                                                                        <th style="border: none;">#</th>
+                                                                        <th style="border: none;">{{idText}}</th>
+                                                                        <th style="border: none;">{{nameText}}</th>
+                                                                    </tr>
+                                                                    <tbody>
+                                                                    <tr v-for="service in allowedServicesReportListResult" v-bind:key="service._id">
+                                                                        <td class="align-middle">{{service.recordNumber}}</td>
+                                                                        <td class="align-middle">{{service._id}}</td>
+                                                                        <td class="align-middle">{{service.description}}</td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                                <div v-if="allowedServicesReportListResult.length == 0" class="emptyList">
+                                                                    <div>
+                                                                        <i class="fa fa-signing fa-2x"></i>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span>{{serviceNotFoundText}}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 pr-2 pl-2">
+                                                    <div class="card mb-2">
+                                                        <h6 class="card-header py-2 text-center" style="background: #dc3545;color: white;border-radius: calc(.25rem - 1px);">{{bannedServicesText}}</h6>
+                                                    </div>
+                                                    <div class="card">
+                                                        <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                            <div class="row ml-0 mr-0 w-100">
+                                                                <div class="col-1"></div>
+                                                                <div class="col-10 pl-1 pr-1">
+                                                                    <div class="input-group input-group-sm h-100">
+                                                                        <input type="text" :placeholder="searchText" class="form-control h-100" v-model="bannedServicesReportSearch">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-1"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div v-if="bannedServicesReportSearch.length == 0" style="height: 455px;">
+                                                        <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                            <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                <div v-if="reportLoader" class="text-center">
+                                                                    <br><br>
+                                                                    <roller-loader color="#007bff"/>
+                                                                </div>
+                                                                <div v-else>
+                                                                    <table class="tableList table table-responsive p-2 text-center">
+                                                                        <tr>
+                                                                            <th style="border: none;">#</th>
+                                                                            <th style="border: none;">{{idText}}</th>
+                                                                            <th style="border: none;">{{nameText}}</th>
+                                                                        </tr>
+                                                                        <tbody>
+                                                                        <tr v-for="service in bannedServicesReportList" v-bind:key="service._id">
+                                                                            <td class="align-middle">{{service.recordNumber}}</td>
+                                                                            <td class="align-middle">{{service._id}}</td>
+                                                                            <td class="align-middle">{{service.description}}</td>
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                    <div v-if="bannedServicesReportList.length == 0" class="emptyList">
+                                                                        <div>
+                                                                            <i class="fa fa-signing fa-2x"></i>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span>{{serviceNotFoundText}}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div v-if="bannedServicesReportSearch.length > 0" style="height: 455px;">
+                                                        <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                            <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                <table class="tableList table table-responsive p-2 text-center">
+                                                                    <tr>
+                                                                        <th style="border: none;">#</th>
+                                                                        <th style="border: none;">{{idText}}</th>
+                                                                        <th style="border: none;">{{nameText}}</th>
+                                                                    </tr>
+                                                                    <tbody>
+                                                                    <tr v-for="service in bannedServicesReportListResult" v-bind:key="service._id">
+                                                                        <td class="align-middle">{{service.recordNumber}}</td>
+                                                                        <td class="align-middle">{{service._id}}</td>
+                                                                        <td class="align-middle">{{service.description}}</td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                                <div v-if="bannedServicesReportListResult.length == 0" class="emptyList">
+                                                                    <div>
+                                                                        <i class="fa fa-signing fa-2x"></i>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span>{{serviceNotFoundText}}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button class="btn btn-danger mt-3" v-on:click="showGroups()">{{returnText}}</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

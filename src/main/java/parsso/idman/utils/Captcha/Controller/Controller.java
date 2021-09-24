@@ -24,7 +24,7 @@ public class Controller {
 	@GetMapping("/api/captcha/request")
 	private ResponseEntity<CAPTCHAimage> requestCaptcha() {
 
-		CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.valueOf(captchaLenght), Double.valueOf(captchaAlphabetRate));
+		CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.parseInt(captchaLenght), Double.parseDouble(captchaAlphabetRate));
 		if (captchaImage != null)
 			return new ResponseEntity<>(captchaImage, HttpStatus.OK);
 		else

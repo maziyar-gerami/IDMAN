@@ -10,7 +10,7 @@ import java.util.UUID;
 public class GenerateUUID {
 	public static String getUUID() throws IOException {
 
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 
 		BufferedReader sNumReader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(UUID.randomUUID().toString().getBytes())));
 

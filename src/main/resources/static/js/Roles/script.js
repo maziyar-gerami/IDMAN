@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesText: "نقش ها",
             publicmessagesText: "اعلان های عمومی",
             ticketingText: "پشتیبانی",
+            transcriptsText: "گزارش های جزئی",
             eventsText: "رویداد ها",
             auditsText: "ممیزی ها",
             reportsText: "گزارش ها",
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesURLText: "./roles",
             publicmessagesURLText: "./publicmessages",
             ticketingURLText: "./ticketing",
+            transcriptsURLText: "./transcripts",
             eventsURLText: "./events",
             auditsURLText: "./audits",
             reportsURLText: "./reports",
@@ -293,6 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesText = "Roles";
                     this.publicmessagesText = "Public Messages";
                     this.ticketingText = "Ticketing";
+                    this.transcriptsText = "Detailed Reports";
                     this.eventsText = "Events";
                     this.auditsText = "Audits";
                     this.reportsText = "Reports";
@@ -343,6 +346,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesText = "نقش ها";
                     this.publicmessagesText = "اعلان های عمومی";
                     this.ticketingText = "پشتیبانی";
+                    this.transcriptsText = "گزارش های جزئی";
                     this.eventsText = "رویداد ها";
                     this.auditsText = "ممیزی ها";
                     this.reportsText = "گزارش ها";

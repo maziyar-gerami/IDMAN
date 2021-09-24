@@ -47,11 +47,6 @@ public class Service implements Comparable<Service> {
 
 	@Override
 	public int compareTo(Service second) {
-		if (this.getId() > second.getId())
-			return -1;
-		else if (this.getId() < second.getId())
-			return 1;
-		else
-			return 0;
+		return Long.compare(second.getId(), this.getId());
 	}
 }

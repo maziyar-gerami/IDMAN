@@ -28,7 +28,7 @@ public class DeliveryResult {
 
 	public List<DeliveryStatus> getDlrs() {
 		if (dlrs == null) {
-			dlrs = new ArrayList<DeliveryStatus>();
+			dlrs = new ArrayList<>();
 		}
 		return this.dlrs;
 	}

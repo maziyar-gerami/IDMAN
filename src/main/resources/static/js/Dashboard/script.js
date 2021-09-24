@@ -99,6 +99,8 @@ document.addEventListener('DOMContentLoaded', function () {
       publicmessagesURLText: "./publicmessages",
       ticketingText: "پشتیبانی",
       ticketingURLText: "./ticketing",
+      transcriptsText: "گزارش های جزئی",
+      transcriptsURLText: "./transcripts",
       showMeeting: false,
       meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
       meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
@@ -329,6 +331,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.reportsText = "Reports";
           this.publicmessagesText = "Public Messages";
           this.ticketingText = "Ticketing";
+          this.transcriptsText = "Detailed Reports";
           this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
           this.meetingInviteLinkCopyStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
           this.meetingText = "Meeting";
@@ -375,6 +378,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.reportsText = "گزارش ها";
             this.publicmessagesText = "اعلان های عمومی";
             this.ticketingText = "پشتیبانی";
+            this.transcriptsText = "گزارش های جزئی";
             this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
             this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
             this.meetingText = "جلسه مجازی";

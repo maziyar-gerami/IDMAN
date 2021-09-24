@@ -7,10 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Models.Logs.Setting;
-import parsso.idman.Repos.ConfigRepo;
 import parsso.idman.Repos.SettingsRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -19,22 +17,21 @@ import java.util.List;
 
 import static java.lang.Thread.sleep;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 public class SettingsController {
 	final int millis = 3600000;
-	@Autowired
-	PasswordSettings passwordSettings;
-	@Autowired
-	UserRepo userRepo;
-	@Autowired
-	InstantMessage instantMessage;
-	@Autowired
-	ConfigRepo configRepo;
-	@Autowired
-	private SettingsRepo settingsRepo;
+	private final SettingsRepo settingsRepo;
 	@Value("${interval.check.pass.hours}")
 	private long intervalCheckPassTime;
+
+	public SettingsController(SettingsRepo settingsRepo) {
+		this.settingsRepo = settingsRepo;
+	}
+
+	@Autowired
+	public SettingsController(UserRepo userRepo, PasswordSettings passwordSettings, SettingsRepo settingsRepo) {
+		this.settingsRepo = settingsRepo;
+	}
 
 	@GetMapping("/api/settings/notification/email")
 	public ResponseEntity<HttpStatus> enableEmailNotification() {
@@ -80,7 +77,7 @@ public class SettingsController {
 
 		Runnable runnable = () -> {
 			while (true) {
-				settingsRepo.messageNotification();
+				settingsRepo.instantMessageNotification();
 				try {
 					sleep(intervalCheckPassTime * millis);
 				} catch (InterruptedException e) {

@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
       deleteInputIcon1: "left: 10%;",
       isListEmpty: false,
       isListEmpty1: false,
-      s0: "پارسو",
+      s0: "احراز هویت متمرکز شرکت فلات قاره",
       s1: "",
       s2: "خروج",
       s3: "داشبورد",
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
       ticketingText: "پشتیبانی",
       ticketingURLText: "./ticketing",
       messageText: "پیام",
-      userIdText: "شناسه کاربری",
+      userIdText: "شناسه",
       showMeeting: false,
       meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
       meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.deleteInputIcon = "right: 7%;";
           this.deleteInputIcon1 = "right: 10%;";
           this.dateNavText = this.dateNavEn;
-          this.s0 = "Parsso";
+          this.s0 = "IOOC Centralized Authentication";
           this.s1 = this.nameEN;
           this.s2 = "Exit";
           this.s3 = "Dashboard";
@@ -632,7 +632,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.deleteInputIcon = "left: 7%;";
             this.deleteInputIcon1 = "left: 10%;";
             this.dateNavText = this.dateNav;
-            this.s0 = "پارسو";
+            this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
             this.s1 = this.name;
             this.s2 = "خروج";
             this.s3 = "داشبورد";
@@ -677,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.publicmessagesText = "اعلان های عمومی";
             this.ticketingText = "پشتیبانی";
             this.messageText = "پیام";
-            this.userIdText = "شناسه کاربری";
+            this.userIdText = "شناسه";
             this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
             this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
             this.meetingText = "جلسه مجازی";

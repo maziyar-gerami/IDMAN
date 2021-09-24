@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Repos.FilesStorageService;
 
@@ -49,7 +48,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 	}
 
 	@Override
-	public void saveMetadata(MultipartFile file, String name) throws IOException {
+	public void saveMetadata(MultipartFile file, String name) {
 
 		try {
 			Path pathServices = Paths.get(metadataPath);
@@ -60,7 +59,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 	}
 
 	@Override
-	public void saveProfilePhoto(MultipartFile file, String name) throws IOException {
+	public void saveProfilePhoto(MultipartFile file, String name) {
 
 		try {
 
@@ -85,11 +84,6 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 		} catch (MalformedURLException e) {
 			throw new RuntimeException("Error: " + e.getMessage());
 		}
-	}
-
-	@Override
-	public void deleteAll() {
-		FileSystemUtils.deleteRecursively(photoPathRoot.toFile());
 	}
 
 	@Override

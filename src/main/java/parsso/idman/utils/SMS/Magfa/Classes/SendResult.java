@@ -28,7 +28,7 @@ public class SendResult {
 
 	public List<SendMessage> getMessages() {
 		if (messages == null) {
-			messages = new ArrayList<SendMessage>();
+			messages = new ArrayList<>();
 		}
 		return this.messages;
 	}

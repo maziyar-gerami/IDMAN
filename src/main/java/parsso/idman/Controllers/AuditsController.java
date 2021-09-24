@@ -10,19 +10,26 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 import parsso.idman.Helpers.ExcelView.AuditsExcelView;
 import parsso.idman.Models.Logs.ListAudits;
-import parsso.idman.Repos.AuditRepo;
+import parsso.idman.Repos.audits.AuditRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 
 @Controller
 public class AuditsController {
-	@Autowired
-	private AuditRepo auditRepo;
-	@Autowired
+	private final AuditRepo auditRepo;
 	private AuditsExcelView auditsExcelView;
+
+	public AuditsController(AuditRepo auditRepo) {
+		this.auditRepo = auditRepo;
+	}
+
+	@Autowired
+	public AuditsController(AuditRepo auditRepo, AuditsExcelView auditsExcelView) {
+		this.auditRepo = auditRepo;
+		this.auditsExcelView = auditsExcelView;
+	}
 
 	//************************************* Pages ****************************************
 
@@ -36,7 +43,7 @@ public class AuditsController {
 
 	@GetMapping("/api/audits/users/{page}/{n}")
 	public ResponseEntity<ListAudits> retrieveAllAudits(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
-		return new ResponseEntity<>(auditRepo.getListSizeAudits(page, n), HttpStatus.OK);
+		return new ResponseEntity<>(auditRepo.retrieveListSizeAudits(page, n), HttpStatus.OK);
 	}
 
 	@GetMapping("/api/audits/users/{userId}/{page}/{n}")

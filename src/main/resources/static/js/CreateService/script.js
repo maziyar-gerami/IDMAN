@@ -147,6 +147,8 @@ document.addEventListener('DOMContentLoaded', function () {
       publicmessagesURLText: "./publicmessages",
       ticketingText: "پشتیبانی",
       ticketingURLText: "./ticketing",
+      transcriptsText: "گزارش های جزئی",
+      transcriptsURLText: "./transcripts",
       inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
       inputPersianFilterText: " (تنها حروف فارسی و اعداد مجاز می باشند)",
       showMeeting: false,
@@ -690,7 +692,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.extraInfo.notificationApiKey = null;
           }
 
-          if(this.samls){
+          if(this.serviceType === "SAML"){
             if(this.metaDataAddress || this.metaDataFile){
               if(this.metaDataFile){
                 let file = document.querySelector("#file");
@@ -771,12 +773,44 @@ document.addEventListener('DOMContentLoaded', function () {
             }else{
               alert("لطفا قسمت های الزامی را پر کنید.");
             }
-          }else{
+          }else if(this.serviceType === "Oauth2"){
+            this.service.clientId = document.getElementsByName("clientId")[0].value;
+            this.service.clientSecret = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            //this.extraInfo.supportedGrantTypes = [ "java.util.HashSet", [ "authorization_code" ] ];
+            //this.extraInfo.supportedResponseTypes = [ "java.util.HashSet", [ "code" ] ];
 
+            if(this.service.clientId !== "" || this.service.clientSecret !== ""){
+              axios({
+                method: "post",
+                url: url + "/api/services/oauth", //
+                headers: {"Content-Type": "application/json"},
+                data: JSON.stringify({
+                  name: vm.service.name,
+                  serviceId: vm.service.serviceId,
+                  clientId: vm.service.clientId,
+                  clientSecret: vm.service.clientSecret,
+                  extraInfo: vm.extraInfo,
+                  multifactorPolicy: vm.multifactorPolicy,
+                  description: vm.service.description,
+                  logo: vm.service.logo,
+                  informationUrl: vm.service.informationUrl,
+                  privacyUrl: vm.service.privacyUrl,
+                  logoutType: vm.service.logoutType,
+                  logoutUrl: vm.service.logoutUrl,
+                  accessStrategy: vm.accessStrategy,
+                  contacts: vm.contacts,
+                }).replace(/\\\\/g, "\\")
+              }).then((res) => {
+                window.location.replace(vm.s34);
+              });
+            }else{
+              alert("لطفا قسمت های الزامی را پر کنید.");
+            }
+          }else if(this.serviceType === "CAS"){
             axios({
-                method: 'post',
+                method: "post",
                 url: url + "/api/services/cas", //
-                headers: {'Content-Type': 'application/json'},
+                headers: {"Content-Type": "application/json"},
                 data: JSON.stringify({
                   name: vm.service.name,
                   serviceId: vm.service.serviceId,
@@ -791,8 +825,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   accessStrategy: vm.accessStrategy,
                   contacts: vm.contacts,
                 }).replace(/\\\\/g, "\\")
-            })
-            .then((res) => {
+            }).then((res) => {
               window.location.replace(vm.s34);
             });
           }
@@ -1018,6 +1051,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.reportsText = "Reports";
           this.publicmessagesText = "Public Messages";
           this.ticketingText = "Ticketing";
+          this.transcriptsText = "Detailed Reports";
           if(this.allGroupsHolderText == this.addAllGroupsText){
             this.allGroupsHolderText = "Select All";
           }else{
@@ -1123,6 +1157,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.reportsText = "گزارش ها";
             this.publicmessagesText = "اعلان های عمومی";
             this.ticketingText = "پشتیبانی";
+            this.transcriptsText = "گزارش های جزئی";
             if(this.allGroupsHolderText == this.addAllGroupsText){
               this.allGroupsHolderText = "انتخاب همه";
             }else{
@@ -1148,6 +1183,8 @@ document.addEventListener('DOMContentLoaded', function () {
       setServiceType: function () {
         if(this.serviceType == "CAS"){
           this.samls = false;
+        }else if(this.serviceType == "Oauth2"){
+          this.samls = true;
         }else{
           this.samls = true;
         }

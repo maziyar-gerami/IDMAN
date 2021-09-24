@@ -25,11 +25,9 @@ import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.SystemRefresh;
+import parsso.idman.Repos.systemRefresh.SystemRefresh;
 import parsso.idman.Repos.UserRepo;
 
-import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -91,14 +89,11 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
 					String photoName = ldapTemplate.search(
 							"ou=People," + BASE_DN, new EqualsFilter("uid", user.getUserId()).encode(), searchControls,
-							new AttributesMapper<String>() {
-								public String mapFromAttributes(Attributes attrs)
-										throws NamingException {
-									if (attrs.get("photoName") != null)
-										return attrs.get("photoName").get().toString();
+							(AttributesMapper<String>) attrs -> {
+								if (attrs.get("photoName") != null)
+									return attrs.get("photoName").get().toString();
 
-									return "";
-								}
+								return "";
 							}).get(0);
 
 					if (photoName != null)

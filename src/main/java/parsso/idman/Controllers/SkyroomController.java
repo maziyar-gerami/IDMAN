@@ -16,15 +16,22 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 public class SkyroomController {
-	@Autowired
+	final UserRepo userRepo;
 	SkyroomRepo runSkyroom;
-	@Autowired
-	UserRepo userRepo;
 	@Value("${skyroom.enable}")
 	String skyroomEnable;
+
+	public SkyroomController(UserRepo userRepo) {
+		this.userRepo = userRepo;
+	}
+
+	@Autowired
+	public SkyroomController(UserRepo userRepo, SkyroomRepo runSkyroom) {
+		this.userRepo = userRepo;
+		this.runSkyroom = runSkyroom;
+	}
 
 	@Deprecated
 	@GetMapping("/api/skyroom")

@@ -13,8 +13,6 @@ import java.util.List;
 public interface GroupRepo {
 	List<Group> retrieve();
 
-	List<Group> retrieve(String ou);
-
 	HttpStatus create(String doerId, Group ou);
 
 	HttpStatus update(String doerID, String name, Group ou);
@@ -25,5 +23,4 @@ public interface GroupRepo {
 
 	List<Group> retrieveCurrentUserGroup(User user);
 
-	List<String> expireUsersGroupPassword(String name, JSONObject jsonObject);
 }

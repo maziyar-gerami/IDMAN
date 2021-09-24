@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
             captchaId: "",
             capAnswer: "",
             loader: false,
-            s0: "پارسو",
+            s0: "احراز هویت متمرکز شرکت فلات قاره",
             s1: "",
             s2: "خروج",
             s3: "بازنشانی رمز عبور",
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.lang = "فارسی";
                     this.isRtl = false;
                     this.dateNavText = this.dateNavEn;
-                    this.s0 = "Parsso";
+                    this.s0 = "IOOC Centralized Authentication";
                     this.s1 = this.nameEN;
                     this.s2 = "Exit";
                     this.s3 = "Reset Password";
@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.lang = "EN";
                     this.isRtl = true;
                     this.dateNavText = this.dateNav;
-                    this.s0 = "پارسو";
+                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
                     this.s1 = this.name;
                     this.s2 = "خروج";
                     this.s3 = "بازنشانی رمز عبور";

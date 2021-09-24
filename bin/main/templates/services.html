@@ -12,7 +12,6 @@
     <link href="fonts/IranSans/font.css" rel="stylesheet">
     <link href="css/persian-datepicker.min.css" rel="stylesheet"/>
 
-
     <script src="js/es6-promise.min.js"></script>
     <script src="js/es6-promise.auto.min.js"></script>
     <script src="js/polyfill.min.js"></script>
@@ -20,12 +19,16 @@
     <script src="js/vue-router.js"></script>
     <script src="js/axios.min.js"></script>
     <script src="js/persian-date.min.js"></script>
+    <script src="js/jspdf.umd.min.js"></script>
+    <script src="js/jspdf.plugin.autotable.js"></script>
+    <script src="js/xlsx.full.min.js"></script>
     <script src="js/Services/script.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
     <script src="js/jquery.js"></script>
     <script src="js/persian-datepicker.min.js"></script>
     <script src="js/persian-rex.min.js"></script>
     <script src="js/vue-spinners-css.min.js"></script>
+    <script src="js/Bootstrap/bootstrap.bundle.min.js"></script>
 
 </head>
 <script type="text/javascript">
@@ -286,41 +289,41 @@
                                             <h3 class="border-bottom pb-2">{{s9}}</h3>
                                         </div>
                                         <div class="desktopView row mt-3 mb-3 ml-0 mr-0">
-                                                <div class="col-2 pl-1 pr-1">
-                                                    <a v-bind:href="s18" class="w-100 btn btn-success btn-sm">
-                                                        <span class="fa-stack">
-                                                            <i class="fa fa-plus fa-stack-1x"></i>
-                                                        </span>
-                                                        {{s14}}
-                                                    </a>
-                                                </div>
-                                                <div class="col-2 pl-1 pr-1">
-                                                    <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
-                                                        <span class="fa-stack">
-                                                            <i class="fa fa-trash fa-stack-1x"></i>
-                                                        </span>
-                                                        {{s47}}
-                                                    </button>
-                                                </div>
-                                                <div class="col-8"></div>
+                                            <div class="col-2 pl-1 pr-1">
+                                                <a v-bind:href="s18" class="w-100 btn btn-success btn-sm">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-plus fa-stack-1x"></i>
+                                                    </span>
+                                                    {{s14}}
+                                                </a>
+                                            </div>
+                                            <div class="col-2 pl-1 pr-1">
+                                                <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-trash fa-stack-1x"></i>
+                                                    </span>
+                                                    {{s47}}
+                                                </button>
+                                            </div>
+                                            <div class="col-8"></div>
                                         </div>
                                         <div class="mobileView">
-                                                <div class="row mb-1 mt-1 pl-1 pr-1">
-                                                    <a v-bind:href="s18" class="w-100 btn btn-success btn-sm">
-                                                        <span class="fa-stack">
-                                                            <i class="fa fa-plus fa-stack-1x"></i>
-                                                        </span>
-                                                        {{s14}}
-                                                    </a>
-                                                </div>
-                                                <div class="row mb-1 mt-1 pl-1 pr-1">
-                                                    <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
-                                                        <span class="fa-stack">
-                                                            <i class="fa fa-trash fa-stack-1x"></i>
-                                                        </span>
-                                                        {{s47}}
-                                                    </button>
-                                                </div>
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <a v-bind:href="s18" class="w-100 btn btn-success btn-sm">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-plus fa-stack-1x"></i>
+                                                    </span>
+                                                    {{s14}}
+                                                </a>
+                                            </div>
+                                            <div class="row mb-1 mt-1 pl-1 pr-1">
+                                                <button class="w-100 btn btn-danger btn-sm" v-on:click="changeSelected('delete')">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-trash fa-stack-1x"></i>
+                                                    </span>
+                                                    {{s47}}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
@@ -381,6 +384,13 @@
                                                                         </button>
                                                                     </td>
                                                                     <td>
+                                                                        <button style="padding: 0.2rem; color: rgb(0, 123, 255); font-size: 70%;" data-toggle="tooltip" data-placement="top" :title="accessReport" class="btn btn-sm" v-on:click="showReport(service._id)">
+                                                                            <span class="fa-stack">
+                                                                                <i class="fa fa-info fa-stack-2x"></i>
+                                                                            </span>
+                                                                        </button>
+                                                                    </td>
+                                                                    <td>
                                                                         <div class="mt-1 mb-1 mr-2 ml-2">
                                                                             <div class="up-arrow" v-on:click="posInc(service._id)"></div>
                                                                             <div class="down-arrow" v-on:click="posDec(service._id)"></div>
@@ -412,9 +422,10 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="p-3" v-bind:style="editS">
-                                            <h3 class="mb-3 pb-2 border-bottom">{{s98}}</h3>
+                                        <div v-bind:style="editS">
+                                            <div class="ml-0 mr-0">
+                                                <h3 class="mb-3 pb-2 border-bottom">{{s98}}</h3>
+                                            </div>
                                             <ul class="nav nav-tabs nav-justified">
                                                 <li class="nav-item">
                                                     <a class="nav-link" @click.prevent="setActive('main')" :class="{ active: isActive('main') }" href="#main">{{s58}}</a>
@@ -425,8 +436,11 @@
                                                 <li class="nav-item">
                                                     <a class="nav-link" @click.prevent="setActive('mfa')" :class="{ active: isActive('mfa') }" href="#mfa">MFA</a>
                                                 </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" @click.prevent="setActive('notifications')" :class="{ active: isActive('notifications') }" href="#notifications">{{serviceNotificationsText}}</a>
+                                                </li>
                                             </ul>
-                                            <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
+                                            <div class="tab-content py-3" style="background-color: white;">
                                                 <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('main') }" id="main">
                                                             <div class="form-group">
                                                                 <label>{{s20}}</label>
@@ -580,7 +594,10 @@
                                                                     </div> 
                                                                     <div class="list-group list-group-flush">
                                                                         <div class="list-group-item" v-if="resultQuery.length > 0">
-                                                                            <div class="row align-items-start">
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else class="row align-items-start">
                                                                                 <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in resultQuery" >
                                                                                     <div>
                                                                                         <label>{{user.userId}}</label>
@@ -604,19 +621,29 @@
                                                                             </div>
                                                                         </div>
                                                                         <div v-if="resultQuery.length == 0 && searchQuery.length != 0" class="list-group-item text-center">
-                                                                            <div>
-                                                                                <i class="fa fa-times fa-2x"></i>
-                                                                            </div> 
-                                                                            <div>
-                                                                                <span>{{s74}}</span>
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-times fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s74}}</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                         <div v-if="resultQuery.length == 0 && searchQuery.length == 0" class="list-group-item text-center">
-                                                                            <div>
-                                                                                <i class="fa fa-search fa-2x"></i>
-                                                                            </div> 
-                                                                            <div>
-                                                                                <span>{{s75}}</span>
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-search fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s75}}</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -637,7 +664,10 @@
                                                                     </div> 
                                                                     <div class="list-group list-group-flush">
                                                                         <div class="list-group-item" v-if="allowedResultQuery.length > 0">
-                                                                            <div class="row align-items-start">
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else class="row align-items-start">
                                                                                 <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in allowedResultQuery" >
                                                                                     <div>
                                                                                         <label>{{user.userId}}</label>
@@ -656,19 +686,29 @@
                                                                             </div>
                                                                         </div>
                                                                         <div v-if="allowedResultQuery.length == 0 && searchQueryAllowedList.length != 0" class="list-group-item text-center">
-                                                                            <div>
-                                                                                <i class="fa fa-times fa-2x"></i>
-                                                                            </div> 
-                                                                            <div>
-                                                                                <span>{{s74}}</span>
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-times fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s74}}</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                         <div v-if="allowedResultQuery.length == 0 && searchQueryAllowedList.length == 0" class="list-group-item list-group-item-warning text-center">
-                                                                            <div>
-                                                                                <i class="fa fa-signing fa-2x"></i>
-                                                                            </div> 
-                                                                            <div>
-                                                                                <span>{{s78}}</span>
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-signing fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s78}}</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -689,7 +729,10 @@
                                                                         </div> 
                                                                         <div class="list-group list-group-flush">
                                                                             <div class="list-group-item" v-if="blockedResultQuery.length > 0">
-                                                                                <div class="row align-items-start">
+                                                                                <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                    <roller-loader color="#007bff"/>
+                                                                                </div>
+                                                                                <div v-else class="row align-items-start">
                                                                                     <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in blockedResultQuery" >
                                                                                         <div>
                                                                                             <label>{{user.userId}}</label>
@@ -708,19 +751,29 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div v-if="blockedResultQuery.length == 0 && searchQueryBlockedList.length != 0" class="list-group-item text-center">
-                                                                                <div>
-                                                                                    <i class="fa fa-times fa-2x"></i>
-                                                                                </div> 
-                                                                                <div>
-                                                                                    <span>{{s74}}</span>
+                                                                                <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                    <roller-loader color="#007bff"/>
+                                                                                </div>
+                                                                                <div v-else>
+                                                                                    <div>
+                                                                                        <i class="fa fa-times fa-2x"></i>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span>{{s74}}</span>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                             <div v-if="blockedResultQuery.length == 0 && searchQueryBlockedList.length == 0" class="list-group-item list-group-item-warning text-center">
-                                                                                <div>
-                                                                                    <i class="fa fa-signing fa-2x"></i>
-                                                                                </div> 
-                                                                                <div>
-                                                                                    <span>{{s78}}</span>
+                                                                                <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                    <roller-loader color="#007bff"/>
+                                                                                </div>
+                                                                                <div v-else>
+                                                                                    <div>
+                                                                                        <i class="fa fa-signing fa-2x"></i>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span>{{s78}}</span>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -816,6 +869,417 @@
                         
                                                             <button v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
                                                             <button v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
+                                                </div>
+
+                                                <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('notifications') }" id="notifications">
+                                                    <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{serviceNotificationsText}}</span></h4>
+
+                                                    <div class="form-group">
+                                                        <label>{{apiAddressText}}</label>
+                                                        <input name="notificationApiURL" class="form-control enInput" type="text" placeholder="URL">
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>{{apiKeyText}}</label>
+                                                        <input name="notificationApiKey" class="form-control enInput" type="text" placeholder="Key">
+                                                    </div>
+
+                                                    <button v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
+                                                    <button v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div v-bind:style="reportS">
+                                            <div class="row border-bottom ml-0 mr-0 w-100 py-2 mb-3">
+                                                <div class="col-6">
+                                                    <h3>{{accessReport}}</h3>
+                                                </div>
+                                                <div class="col-3">
+                                                    <button type="button" class="btn btn-primary w-100" v-on:click="editServiceS(reportedService.id)">{{s23}}</button>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div v-if="exportReportLoader" class="text-center">
+                                                        <roller-loader color="#007bff"/>
+                                                    </div>
+                                                    <div v-else>
+                                                        <div class="dropdown w-100">
+                                                            <button :disabled="usersReportLoader" class="btn btn-primary dropdown-toggle w-100" type="button" id="dropdownMenuButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                Export
+                                                            </button>
+                                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton3">
+                                                                <a class="dropdown-item" href="#" v-on:click="exportReports('xlsx')">XLSX</a>
+                                                                <a class="dropdown-item" href="#" v-on:click="exportReports('pdf')">PDF</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>{{s20}}</label>
+                                                        <input type="text" readonly="readonly" class="form-control" v-bind:value="reportedService.id">
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>{{s28}}</label>
+                                                        <input type="text" readonly="readonly" class="form-control" v-bind:value="reportedService.name">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row my-2">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>{{s30}}</label>
+                                                        <input type="text" readonly="readonly" class="form-control" v-bind:value="reportedService.serviceId">
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>{{s31}}</label>
+                                                        <input type="text" readonly="readonly" class="form-control" v-bind:value="reportedService.description">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <ul class="nav nav-tabs nav-justified">
+                                                <li class="nav-item">
+                                                    <a class="nav-link" @click.prevent="setActiveReport('usersReport')" :class="{ active: isActiveReport('usersReport') }" href="#usersReport">{{s15}}</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" @click.prevent="setActiveReport('groupsReport')" :class="{ active: isActiveReport('groupsReport') }" href="#groupsReport">{{s5}}</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content pb-1" style="background-color: white;">
+                                                <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActiveReport('usersReport') }" id="usersReport">
+                                                    <div class="row mb-3 mt-3 ml-0 mr-0">
+                                                        <div class="col-6 pr-2 pl-2">
+                                                            <div class="card mb-2">
+                                                                <h6 class="card-header py-2 text-center" style="background: #28a745;color: white;border-radius: calc(.25rem - 1px);">{{s76}}</h6>
+                                                            </div>
+                                                            <div class="card">
+                                                                <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                                    <div class="row ml-0 mr-0 w-100">
+                                                                        <div class="col-1"></div>
+                                                                        <div class="col-10 pl-1 pr-1">
+                                                                            <div class="input-group input-group-sm h-100">
+                                                                                <input type="text" :placeholder="searchText" class="form-control h-100" v-model="allowedUsersReportSearch">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-1"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div v-if="allowedUsersReportSearch.length == 0" style="height: 455px;">
+                                                                <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                                    <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                        <div v-if="usersReportLoader" class="text-center">
+                                                                            <br><br>
+                                                                            <roller-loader color="#007bff"/>
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <table class="tableList table table-responsive p-2 text-center">
+                                                                                <tr>
+                                                                                    <th style="border: none;">#</th>
+                                                                                    <th style="border: none;">{{s20}}</th>
+                                                                                    <th style="border: none;">{{displayNameFaText}}</th>
+                                                                                </tr>
+                                                                                <tbody>
+                                                                                <tr v-for="user in allowedUsersReportList" v-bind:key="user.userId">
+                                                                                    <td class="align-middle">{{user.recordNumber}}</td>
+                                                                                    <td class="align-middle">{{user.userId}}</td>
+                                                                                    <td class="align-middle">{{user.displayName}}</td>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                            <div v-if="allowedUsersReportList.length == 0" class="emptyList">
+                                                                                <div>
+                                                                                    <i class="fa fa-signing fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{userNotFoundText}}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div v-if="allowedUsersReportSearch.length > 0" style="height: 455px;">
+                                                                <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                                    <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                        <table class="tableList table table-responsive p-2 text-center">
+                                                                            <tr>
+                                                                                <th style="border: none;">#</th>
+                                                                                <th style="border: none;">{{s20}}</th>
+                                                                                <th style="border: none;">{{displayNameFaText}}</th>
+                                                                            </tr>
+                                                                            <tbody>
+                                                                            <tr v-for="user in allowedUsersReportListResult" v-bind:key="user.userId">
+                                                                                <td class="align-middle">{{user.recordNumber}}</td>
+                                                                                <td class="align-middle">{{user.userId}}</td>
+                                                                                <td class="align-middle">{{user.displayName}}</td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                        <div v-if="allowedUsersReportListResult.length == 0" class="emptyList">
+                                                                            <div>
+                                                                                <i class="fa fa-signing fa-2x"></i>
+                                                                            </div>
+                                                                            <div>
+                                                                                <span>{{userNotFoundText}}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6 pr-2 pl-2">
+                                                            <div class="card mb-2">
+                                                                <h6 class="card-header py-2 text-center" style="background: #dc3545;color: white;border-radius: calc(.25rem - 1px);">{{s79}}</h6>
+                                                            </div>
+                                                            <div class="card">
+                                                                <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                                    <div class="row ml-0 mr-0 w-100">
+                                                                        <div class="col-1"></div>
+                                                                        <div class="col-10 pl-1 pr-1">
+                                                                            <div class="input-group input-group-sm h-100">
+                                                                                <input type="text" :placeholder="searchText" class="form-control h-100" v-model="bannedUsersReportSearch">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-1"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div v-if="bannedUsersReportSearch.length == 0" style="height: 455px;">
+                                                                <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                                    <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                        <div v-if="usersReportLoader" class="text-center">
+                                                                            <br><br>
+                                                                            <roller-loader color="#007bff"/>
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <table class="tableList table table-responsive p-2 text-center">
+                                                                                <tr>
+                                                                                    <th style="border: none;">#</th>
+                                                                                    <th style="border: none;">{{s20}}</th>
+                                                                                    <th style="border: none;">{{displayNameFaText}}</th>
+                                                                                </tr>
+                                                                                <tbody>
+                                                                                <tr v-for="user in bannedUsersReportList" v-bind:key="user.userId">
+                                                                                    <td class="align-middle">{{user.recordNumber}}</td>
+                                                                                    <td class="align-middle">{{user.userId}}</td>
+                                                                                    <td class="align-middle">{{user.displayName}}</td>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                            <div v-if="bannedUsersReportList.length == 0" class="emptyList">
+                                                                                <div>
+                                                                                    <i class="fa fa-signing fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{userNotFoundText}}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div v-if="bannedUsersReportSearch.length > 0" style="height: 455px;">
+                                                                <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                                    <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                        <table class="tableList table table-responsive p-2 text-center">
+                                                                            <tr>
+                                                                                <th style="border: none;">#</th>
+                                                                                <th style="border: none;">{{s20}}</th>
+                                                                                <th style="border: none;">{{displayNameFaText}}</th>
+                                                                            </tr>
+                                                                            <tbody>
+                                                                            <tr v-for="user in bannedUsersReportListResult" v-bind:key="user.userId">
+                                                                                <td class="align-middle">{{user.recordNumber}}</td>
+                                                                                <td class="align-middle">{{user.userId}}</td>
+                                                                                <td class="align-middle">{{user.displayName}}</td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                        <div v-if="bannedUsersReportListResult.length == 0" class="emptyList">
+                                                                            <div>
+                                                                                <i class="fa fa-signing fa-2x"></i>
+                                                                            </div>
+                                                                            <div>
+                                                                                <span>{{userNotFoundText}}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <button class="btn btn-danger mt-3" v-on:click="showServices()">{{returnText}}</button>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActiveReport('groupsReport') }" id="groupsReport">
+                                                    <div class="row mb-3 mt-3 ml-0 mr-0">
+                                                        <div class="col-6 pr-2 pl-2">
+                                                            <div class="card mb-2">
+                                                                <h6 class="card-header py-2 text-center" style="background: #28a745;color: white;border-radius: calc(.25rem - 1px);">{{allowedGroupsText}}</h6>
+                                                            </div>
+                                                            <div class="card">
+                                                                <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                                    <div class="row ml-0 mr-0 w-100">
+                                                                        <div class="col-1"></div>
+                                                                        <div class="col-10 pl-1 pr-1">
+                                                                            <div class="input-group input-group-sm h-100">
+                                                                                <input type="text" :placeholder="searchText" class="form-control h-100" v-model="allowedGroupsReportSearch">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-1"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div v-if="allowedGroupsReportSearch.length == 0" style="height: 455px;">
+                                                                <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                                    <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                        <div v-if="groupsReportLoader" class="text-center">
+                                                                            <br><br>
+                                                                            <roller-loader color="#007bff"/>
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <table class="tableList table table-responsive p-2 text-center">
+                                                                                <tr>
+                                                                                    <th style="border: none;">#</th>
+                                                                                    <th style="border: none;">{{enNameText}}</th>
+                                                                                    <th style="border: none;">{{faNameText}}</th>
+                                                                                </tr>
+                                                                                <tbody>
+                                                                                <tr v-for="group in allowedGroupsReportList" v-bind:key="group.id">
+                                                                                    <td class="align-middle">{{group.recordNumber}}</td>
+                                                                                    <td class="align-middle">{{group.id}}</td>
+                                                                                    <td class="align-middle">{{group.name}}</td>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                            <div v-if="allowedGroupsReportList.length == 0" class="emptyList">
+                                                                                <div>
+                                                                                    <i class="fa fa-signing fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{groupNotFoundText}}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div v-if="allowedGroupsReportSearch.length > 0" style="height: 455px;">
+                                                                <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                                    <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                        <table class="tableList table table-responsive p-2 text-center">
+                                                                            <tr>
+                                                                                <th style="border: none;">#</th>
+                                                                                <th style="border: none;">{{enNameText}}</th>
+                                                                                <th style="border: none;">{{faNameText}}</th>
+                                                                            </tr>
+                                                                            <tbody>
+                                                                            <tr v-for="group in allowedGroupsReportListResult" v-bind:key="group.id">
+                                                                                <td class="align-middle">{{group.recordNumber}}</td>
+                                                                                <td class="align-middle">{{group.id}}</td>
+                                                                                <td class="align-middle">{{group.name}}</td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                        <div v-if="allowedGroupsReportListResult.length == 0" class="emptyList">
+                                                                            <div>
+                                                                                <i class="fa fa-signing fa-2x"></i>
+                                                                            </div>
+                                                                            <div>
+                                                                                <span>{{groupNotFoundText}}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6 pr-2 pl-2">
+                                                            <div class="card mb-2">
+                                                                <h6 class="card-header py-2 text-center" style="background: #dc3545;color: white;border-radius: calc(.25rem - 1px);">{{bannedGroupsText}}</h6>
+                                                            </div>
+                                                            <div class="card">
+                                                                <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                                    <div class="row ml-0 mr-0 w-100">
+                                                                        <div class="col-1"></div>
+                                                                        <div class="col-10 pl-1 pr-1">
+                                                                            <div class="input-group input-group-sm h-100">
+                                                                                <input type="text" :placeholder="searchText" class="form-control h-100" v-model="bannedGroupsReportSearch">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-1"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div v-if="bannedGroupsReportSearch.length == 0" style="height: 455px;">
+                                                                <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                                    <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                        <div v-if="groupsReportLoader" class="text-center">
+                                                                            <br><br>
+                                                                            <roller-loader color="#007bff"/>
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <table class="tableList table table-responsive p-2 text-center">
+                                                                                <tr>
+                                                                                    <th style="border: none;">#</th>
+                                                                                    <th style="border: none;">{{enNameText}}</th>
+                                                                                    <th style="border: none;">{{faNameText}}</th>
+                                                                                </tr>
+                                                                                <tbody>
+                                                                                <tr v-for="group in bannedGroupsReportList" v-bind:key="group.id">
+                                                                                    <td class="align-middle">{{group.recordNumber}}</td>
+                                                                                    <td class="align-middle">{{group.id}}</td>
+                                                                                    <td class="align-middle">{{group.name}}</td>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                            <div v-if="bannedGroupsReportList.length == 0" class="emptyList">
+                                                                                <div>
+                                                                                    <i class="fa fa-signing fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{groupNotFoundText}}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div v-if="bannedGroupsReportSearch.length > 0" style="height: 455px;">
+                                                                <div class="list-group list-group-flush" style="overflow: auto; height: 100%;">
+                                                                    <div class="table-wrapper list-group-item" style="height: 100%;">
+                                                                        <table class="tableList table table-responsive p-2 text-center">
+                                                                            <tr>
+                                                                                <th style="border: none;">#</th>
+                                                                                <th style="border: none;">{{enNameText}}</th>
+                                                                                <th style="border: none;">{{faNameText}}</th>
+                                                                            </tr>
+                                                                            <tbody>
+                                                                            <tr v-for="group in bannedGroupsReportListResult" v-bind:key="group.id">
+                                                                                <td class="align-middle">{{group.recordNumber}}</td>
+                                                                                <td class="align-middle">{{group.id}}</td>
+                                                                                <td class="align-middle">{{group.name}}</td>
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                        <div v-if="bannedGroupsReportListResult.length == 0" class="emptyList">
+                                                                            <div>
+                                                                                <i class="fa fa-signing fa-2x"></i>
+                                                                            </div>
+                                                                            <div>
+                                                                                <span>{{groupNotFoundText}}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <button class="btn btn-danger mt-3" v-on:click="showServices()">{{returnText}}</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

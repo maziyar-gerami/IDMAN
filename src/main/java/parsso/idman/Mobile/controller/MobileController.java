@@ -13,7 +13,7 @@ import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
 import parsso.idman.Models.Logs.ListEvents;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.EventRepo;
+import parsso.idman.Repos.events.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -108,7 +108,7 @@ public class MobileController {
 
 		User user = userRepo.retrieveUsers(uid);
 		if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
-			return new ResponseEntity<>(eventRepo.getListSizeEvents(Integer.valueOf(page), Integer.valueOf(n)), HttpStatus.OK);
+			return new ResponseEntity<>(eventRepo.getListSizeEvents(Integer.parseInt(page), Integer.parseInt(n)), HttpStatus.OK);
 		else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
 	}

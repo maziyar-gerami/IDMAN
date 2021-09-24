@@ -15,7 +15,10 @@ import java.net.URL;
 
 public class Notifs {
 	public ServiceGist getNotifications(String userId, String notificationApiURL, String notificationApiKey) throws IOException {
-		URL url = new URL(notificationApiURL);
+		URL url=null;
+		try {
+			url = new URL(notificationApiURL);
+		}catch (Exception e){return null;}
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		con.setRequestMethod("POST");
 
@@ -25,11 +28,16 @@ public class Notifs {
 
 		con.setDoOutput(true);
 
-		String jsonInputString = "{\"api-key\" " + ":" + notificationApiKey+","+ "\n" +
-				"\"user-id\""+":"+"\""+userId+"\""+"}";
+
+
+
+
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("api-key" , notificationApiKey);
+		jsonObject.put("user-id" , userId);
 
 		try(OutputStream os = con.getOutputStream()) {
-			byte[] input = "utf-8".getBytes(jsonInputString);
+			byte[] input = jsonObject.toJSONString().getBytes("utf-8");
 			os.write(input, 0, input.length);
 		}
 
@@ -51,7 +59,6 @@ public class Notifs {
 
 			sg = objectMapper.readValue (json.toJSONString(),ServiceGist.class) ;
 		}catch (Exception e){
-			e.printStackTrace();
 		}
 
 		return sg;

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Time;
-import parsso.idman.Repos.ReportRepo;
+import parsso.idman.Repos.reports.ReportRepo;
 import parsso.idman.Utils.Convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +28,7 @@ public class LogsExcelView extends AbstractXlsView {
 	ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
 	@Override
-	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
 		// get data model which is passed by the Spring container
 		List<Report> reports = reportRepo.analyze(mainCollection, 0, 0);

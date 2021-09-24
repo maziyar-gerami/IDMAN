@@ -211,8 +211,7 @@ public class ImportUsers {
 	List<String> extractGroups(String strMain) {
 		String[] arrSplit = (strMain.split(","));
 		List<String> ls = new LinkedList<>();
-		for (int i = 0; i < arrSplit.length; i++)
-			ls.add(arrSplit[i].trim());
+		for (String s : arrSplit) ls.add(s.trim());
 		return ls;
 	}
 

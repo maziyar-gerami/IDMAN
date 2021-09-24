@@ -7,12 +7,14 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Time;
-import parsso.idman.Repos.AuditRepo;
+import parsso.idman.RepoImpls.audits.Retrieves;
+import parsso.idman.Repos.audits.AuditRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,15 +29,21 @@ import java.util.TimeZone;
 @Service
 public class AuditsExcelView extends AbstractXlsView {
 	public static String mainCollection = "MongoDbCasAuditRepository";
-	@Autowired
 	AuditRepo auditRepo;
 	ZoneId zoneId = ZoneId.of(Variables.ZONE);
+	MongoTemplate mongoTemplate;
+
+	@Autowired
+	public AuditsExcelView(MongoTemplate mongoTemplate, AuditRepo auditRepo){
+		this.auditRepo = auditRepo;
+		this.mongoTemplate = mongoTemplate;
+	}
 
 	@Override
-	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
 		// get data model which is passed by the Spring container
-		List<Audit> audits = auditRepo.analyze(mainCollection, 0, 0);
+		List<Audit> audits = new Retrieves(mongoTemplate).analyze(mainCollection, 0, 0);
 
 		// create a new Excel sheet
 		HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Audits");

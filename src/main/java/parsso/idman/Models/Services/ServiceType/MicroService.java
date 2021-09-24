@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import parsso.idman.Models.Services.Schedule;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceGist;
+import parsso.idman.Models.Time;
 
 import java.util.List;
 
@@ -34,7 +36,10 @@ public class MicroService implements Comparable {
 	private String notificationApiURL;
 	@JsonIgnore
 	private String notificationApiKey;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private ServiceGist notification;
+	private List<Schedule> dailyAccess;
+
 
 	public MicroService(String serviceId, List<String> machines) {
 		this.serviceId = serviceId;
@@ -42,6 +47,8 @@ public class MicroService implements Comparable {
 		this.url = serviceId;
 
 	}
+
+
 
 	public MicroService(Long id, String url) {
 		this._id = id;
@@ -68,14 +75,25 @@ public class MicroService implements Comparable {
 			this.notificationApiKey = microService.getNotificationApiKey();
 		}catch (NullPointerException e){this.notificationApiKey = null;}
 
-		this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
+		try {
+			this.url = (null != microService && null != microService.getUrl() ? microService.getUrl() : service.getServiceId());
+		}catch (NullPointerException e){}
+		try{
 		this.position = (null != microService ? microService.getPosition() : 0);
+		}catch (NullPointerException e){}
+
+		try {
+		this.dailyAccess = microService.getDailyAccess();
+		}catch (NullPointerException e){}
+
 	}
 
 	public MicroService(Service service) {
 		this._id = service.getId();
 		this.serviceId = service.getServiceId();
 		this.description = service.getDescription();
+
+
 	}
 
 	@Override
@@ -83,5 +101,7 @@ public class MicroService implements Comparable {
 		MicroService second = (MicroService) o;
 		return Integer.compare(second.getPosition(), this.getPosition());
 	}
+
+
 
 }

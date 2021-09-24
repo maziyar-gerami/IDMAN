@@ -104,7 +104,7 @@ public class User implements UserDetails, Comparable {
 	@JsonIgnore
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
+		List<GrantedAuthority> list = new ArrayList<>();
 
 		if (this.getUserId().equalsIgnoreCase("su"))
 			list.add(new SimpleGrantedAuthority(PREFIX + "SUPERADMIN"));
@@ -162,12 +162,7 @@ public class User implements UserDetails, Comparable {
 
 	@Override
 	public int compareTo(Object second) {
-		if (this.timeStamp > ((User) second).timeStamp)
-			return -1;
-		else if (this.timeStamp < ((User) second).timeStamp)
-			return 1;
-		else
-			return 0;
+		return Long.compare(((User) second).timeStamp, this.timeStamp);
 	}
 }
 

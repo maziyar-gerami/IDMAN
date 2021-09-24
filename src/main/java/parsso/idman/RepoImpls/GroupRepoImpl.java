@@ -27,7 +27,7 @@ import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.TranscriptRepo;
+import parsso.idman.Repos.transcripts.TranscriptRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
@@ -91,7 +91,11 @@ public class GroupRepoImpl implements GroupRepo {
 								ldapTemplate.modifyAttributes(context);
 								UsersExtraInfo simpleUser = mongoTemplate.findOne
 										(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
-								simpleUser.getMemberOf().remove(group.getId());
+								try {
+									simpleUser.getMemberOf().remove(group.getId());
+								}catch (Exception e) {
+								e.printStackTrace();
+								}
 
 								mongoTemplate.remove
 										(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
@@ -149,21 +153,6 @@ public class GroupRepoImpl implements GroupRepo {
 		return groups;
 	}
 
-	@Override
-	public List<String> expireUsersGroupPassword(String doer, JSONObject jsonObject) {
-
-		List<UsersExtraInfo> users = new LinkedList<>();
-		for (String groupID : (List<String>) jsonObject.get("names"))
-			users.addAll(mongoTemplate.find(new Query(Criteria.where("memberOf").is(groupID))
-					, UsersExtraInfo.class, Variables.col_usersExtraInfo));
-
-		Set<UsersExtraInfo> set = new HashSet<>(users);
-		users.clear();
-		users.addAll(set);
-
-		return expirePassword.expire(doer, users);
-	}
-
 	private Attributes buildAttributes(String uid, Group group) {
 
 		BasicAttribute ocattr = new BasicAttribute("objectclass");
@@ -198,25 +187,6 @@ public class GroupRepoImpl implements GroupRepo {
 
 		return ldapTemplate.search("ou=Groups," + BASE_DN, filter.encode(),
 				new OUAttributeMapper());
-	}
-
-	@Override
-	public List<Group> retrieve(String ou) {
-		SearchControls searchControls = new SearchControls();
-		searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
-		final AndFilter filter = new AndFilter();
-		filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
-
-		List<Group> gt = ldapTemplate.search("ou=Groups," + BASE_DN, filter.encode(),
-				new OUAttributeMapper());
-
-		gt.removeIf(t -> t.getId().equals(Variables.MODEL_GROUP));
-
-		if (gt.size() != 0)
-			return null;
-
-		return gt;
-
 	}
 
 	@Override
@@ -292,7 +262,7 @@ public class GroupRepoImpl implements GroupRepo {
 					for (parsso.idman.Models.Services.Service service : services) {
 
 						//remove old id and add new id
-						((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).remove(id);
+						boolean ou1 = ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).remove(id);
 						((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).add(ou.getId());
 
 						// delete old service

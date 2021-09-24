@@ -51,6 +51,27 @@
                 <div id="closeOverlay" class="btn btn-danger" v-on:click="closeOverlay">{{returnText}}</div>
             </div>
         </div>
+        <div id="notificationBox" :class="{rtl: isRtl}" :style="isRtl ? 'left: -420px;transition: left .7s ease-in;' : 'right: -420px;transition: right .7s ease-in;'">
+            <div class="notificationBoxHeader">
+                <h5 class="notificationBoxService h-100 mb-0">{{notificationListName}}</h5>
+            </div>
+            <div class="notificationBoxBody">
+                <a v-for="n in notificationList" :href="n.url" target="_blank" style="text-decoration: none;">
+                    <li class="notificationBoxItem m-2 p-1">
+                        <h6>{{n.title}}</h6>
+                        <div :style="isRtl ? 'text-align: left;' : 'text-align: right;'">
+                            <p style="font-size: 0.75rem;color: #666666;" class="m-0">{{n.time.hours}}:{{n.time.minutes}} | {{n.time.year}}/{{n.time.month}}/{{n.time.day}}</p>
+                        </div>
+                    </li>
+                </a>
+            </div>
+            <div class="notificationBoxClose" v-on:click="closeNotification">
+                <a class="notificationBoxCloseBtn" style="color: #d62728;">
+                    <i class="fa fa-times" style="font-size: 20px;"></i>
+                </a>
+            </div>
+            <!--<div class="notificationBoxTimer"></div>-->
+        </div>
         <div v-bind:class="{rtl: isRtl}" class=" h-100">
             <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
                     <div class="container">
@@ -222,16 +243,37 @@
                                                     <div class="card-body bg-light pb-0">
                                                         <div class="media">
                                                             <div :class="marginServiceBox">
-                                                                <img v-bind:src="service.logo" style="width: 60px; height: 60px; max-width: 60px; max-height: 60px;" class="img-responsive img-rounded">
+                                                                <a :href="service.url" target="_blank" class="serviceLink" style="text-decoration: none;">
+                                                                    <img v-bind:src="service.logo" style="width: 60px; height: 60px; max-width: 60px; max-height: 60px;" class="img-responsive img-rounded">
+                                                                </a>
                                                             </div>
                                                             <div class="media-body overflow-hidden">
-                                                                <h4 class="text-ellipsis mb-3">{{service.description}}</h4>
-                                                                <p class="text-muted mb-3">{{service.name}}</p>
-                                                                <div class="px-1">
-                                                                    <div class="mb-3">
-                                                                        <div class="btn-group btn-group-sm">                                                                            
-                                                                            <a class="btn btn-primary" :href="service.url" target="_blank">{{s20}}</a>
-                                                                        </div>
+                                                                <a :href="service.url" target="_blank" class="serviceLink" style="text-decoration: none;">
+                                                                    <h4 class="text-ellipsis mb-3">{{service.description}}</h4>
+                                                                </a>
+                                                                <div class="d-flex justify-content-between">
+                                                                    <div class="btn-group btn-group-sm px-0">
+                                                                        <p class="text-muted">{{service.name}}</p>
+                                                                    </div>
+                                                                    <div v-if="service.notification">
+                                                                        <a v-if="service.notification.count == 0" class="notificationLink px-0" style="position: relative;" :style="isRtl ? 'right: -36px;' : 'right: 0'">
+                                                                            <i class="notificationFas fa fa-bell" style="font-size: 21px; color: #6c757d;"></i>
+                                                                        </a>
+                                                                        <a v-if="service.notification.count <= 99 && service.notification.count > 0" v-on:click="showNotification(service.notification.notifications, service.description)"
+                                                                           class="notificationLink px-0" style="position: relative;cursor: pointer;" :style="isRtl ? 'right: -36px;' : 'right: 0'">
+                                                                            <div class="notificationNumber">{{service.notification.count}}</div>
+                                                                            <i class="notificationFas fa fa-bell" style="font-size: 21px;"></i>
+                                                                        </a>
+                                                                        <a v-if="service.notification.count > 99" v-on:click="showNotification(service.notification.notifications, service.description)"
+                                                                           class="notificationLink px-0" style="position: relative;cursor: pointer;" :style="isRtl ? 'right: -36px;' : 'right: 0'">
+                                                                            <div class="notificationNumber" style="font-size: 12px; line-height: 1.8;">+99</div>
+                                                                            <i class="notificationFas fa fa-bell" style="font-size: 21px;"></i>
+                                                                        </a>
+                                                                    </div>
+                                                                    <div v-else>
+                                                                        <a class="notificationLink px-0" style="position: relative;" :style="isRtl ? 'right: -36px;' : 'right: 0'">
+                                                                            <i class="notificationFas fa fa-bell" style="font-size: 21px; color: #6c757d;"></i>
+                                                                        </a>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -240,7 +282,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
                                     <div class="tab-pane fade" :class="{ 'active show': isActive('groups') }" id="groups">
                                         <table class="table table-responsive">

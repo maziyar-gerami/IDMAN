@@ -12,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 @ServerEndpoint(value = "/webSocket")
 public class Socket {
-	private static final Set<Socket> connections = new CopyOnWriteArraySet<Socket>();
+	private static final Set<Socket> connections = new CopyOnWriteArraySet<>();
 	public Session session;
 
 	@OnOpen

@@ -40,4 +40,6 @@ public interface ServiceRepo {
 	HttpStatus decreasePosition(String id);
 
 	ServiceGist gistService(String apikey);
+
+	boolean serviceAccess(long id);
 }

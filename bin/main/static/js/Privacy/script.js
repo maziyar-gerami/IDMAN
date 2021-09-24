@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
             lang: "EN",
             rtl: "direction: rtl;",
             eye: "right: 3%;",
-            s0: "پارسو",
+            s0: "احراز هویت متمرکز شرکت فلات قاره",
             s1: "نام کاربری و رمز عبور خود را وارد کنید",
             s2: "نام کاربری",
             s3: "رمز عبور",
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rtl = "direction: ltr;";
                     this.eye = "left: 3%;";
                     this.dateNavText = this.dateNavEn;
-                    this.s0 = "Parsso";
+                    this.s0 = "IOOC Centralized Authentication";
                     this.s1 = "Enter Your Username and Password";
                     this.s2 = "Username";
                     this.s3 = "Password";
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rtl = "direction: rtl;";
                     this.eye = "right: 3%;";
                     this.dateNavText = this.dateNav;
-                    this.s0 = "پارسو";
+                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
                     this.s1 = "نام کاربری و رمز عبور خود را وارد کنید";
                     this.s2 = "نام کاربری";
                     this.s3 = "رمز عبور";

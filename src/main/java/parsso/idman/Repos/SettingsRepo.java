@@ -12,7 +12,7 @@ import java.util.List;
 public interface SettingsRepo {
 	HttpStatus emailNotification();
 
-	HttpStatus messageNotification();
+	HttpStatus instantMessageNotification();
 
 	List<Setting> retrieveTFSetting() throws IOException;
 

@@ -3,7 +3,6 @@ package parsso.idman.Controllers;
 
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,13 +19,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class GroupsController {
-	@Autowired
-	private GroupRepo groupRepo;
-	@Autowired
-	private UserRepo userRepo;
+	private final GroupRepo groupRepo;
+	private final UserRepo userRepo;
+
+	public GroupsController(UserRepo userRepo, GroupRepo groupRepo) {
+		this.userRepo = userRepo;
+		this.groupRepo = groupRepo;
+
+	}
 
 	//************************************* Pages ****************************************
 	@SuppressWarnings("SameReturnValue")

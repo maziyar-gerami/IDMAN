@@ -1,7 +1,6 @@
 package parsso.idman.Controllers;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,16 +10,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 import parsso.idman.Models.License.License;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Logs.Transcript;
-import parsso.idman.Repos.TranscriptRepo;
+import parsso.idman.Repos.transcripts.TranscriptRepo;
 
 import java.io.IOException;
 import java.util.List;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class TranscriptsController {
-	@Autowired
-	private TranscriptRepo transcriptRepo;
+	private final TranscriptRepo transcriptRepo;
+
+	public TranscriptsController(TranscriptRepo transcriptRepo) {
+		this.transcriptRepo = transcriptRepo;
+	}
+
+	//************************************* Pages ****************************************
+
+	@SuppressWarnings("SameReturnValue")
+	@GetMapping("/transcripts")
+	public String getPageTranscripts() {
+		return "transcripts";
+	}
 
 	//************************************* APIs ****************************************
 

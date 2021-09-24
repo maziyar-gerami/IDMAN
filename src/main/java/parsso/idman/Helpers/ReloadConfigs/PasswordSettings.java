@@ -50,46 +50,47 @@ public class PasswordSettings {
 		Attribute[] attrs = new Attribute[9];
 
 		for (Setting setting : settings) {
-			if (setting.getName().equals("pwd.check.quality")) {
-				attrs[0] = new BasicAttribute("ads-pwdcheckquality", setting.getValue());
-				items[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[0]);
-				continue;
+			switch (setting.getName()) {
+				case "pwd.check.quality":
+					attrs[0] = new BasicAttribute("ads-pwdcheckquality", setting.getValue());
+					items[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[0]);
+					continue;
 
-			} else if (setting.getName().equals("pwd.expire.warning")) {
+				case "pwd.expire.warning":
 
-				attrs[1] = new BasicAttribute("ads-pwdexpirewarning", setting.getValue());
-				items[1] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[1]);
-				continue;
-			} else if (setting.getName().equals("pwd.failure.count.interval")) {
+					attrs[1] = new BasicAttribute("ads-pwdexpirewarning", setting.getValue());
+					items[1] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[1]);
+					continue;
+				case "pwd.failure.count.interval":
 
-				attrs[2] = new BasicAttribute("ads-pwdfailurecountinterval", setting.getValue());
-				items[2] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[2]);
-				continue;
-			} else if ((setting.getName().equals("pwd.grace.auth.n.limit"))) {
+					attrs[2] = new BasicAttribute("ads-pwdfailurecountinterval", setting.getValue());
+					items[2] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[2]);
+					continue;
+				case "pwd.grace.auth.n.limit":
 
-				attrs[3] = new BasicAttribute("ads-pwdgraceauthnlimit", setting.getValue());
-				items[3] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[3]);
-				continue;
-			} else if ((setting.getName().equals("pwd.in.history"))) {
-				attrs[4] = new BasicAttribute("ads-pwdinhistory", setting.getValue());
-				items[4] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[4]);
-				continue;
-			} else if ((setting.getName().equals("pwd.lockout"))) {
-				attrs[5] = new BasicAttribute("ads-pwdlockout", setting.getValue());
-				items[5] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[5]);
-				continue;
-			} else if ((setting.getName().equals("pwd.lockout.duration"))) {
-				attrs[6] = new BasicAttribute("ads-pwdlockoutduration", setting.getValue());
-				items[6] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[6]);
-				continue;
-			} else if ((setting.getName().equals("pwd.max.failure"))) {
-				attrs[7] = new BasicAttribute("ads-pwdmaxfailure", setting.getValue());
-				items[7] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[7]);
-				continue;
-			} else if ((setting.getName().equals("pwd.min.lentgh"))) {
-				attrs[8] = new BasicAttribute("ads-pwdminlength", setting.getValue());
-				items[8] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[8]);
-				continue;
+					attrs[3] = new BasicAttribute("ads-pwdgraceauthnlimit", setting.getValue());
+					items[3] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[3]);
+					continue;
+				case "pwd.in.history":
+					attrs[4] = new BasicAttribute("ads-pwdinhistory", setting.getValue());
+					items[4] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[4]);
+					continue;
+				case "pwd.lockout":
+					attrs[5] = new BasicAttribute("ads-pwdlockout", setting.getValue());
+					items[5] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[5]);
+					continue;
+				case "pwd.lockout.duration":
+					attrs[6] = new BasicAttribute("ads-pwdlockoutduration", setting.getValue());
+					items[6] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[6]);
+					continue;
+				case "pwd.max.failure":
+					attrs[7] = new BasicAttribute("ads-pwdmaxfailure", setting.getValue());
+					items[7] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[7]);
+					continue;
+				case "pwd.min.lentgh":
+					attrs[8] = new BasicAttribute("ads-pwdminlength", setting.getValue());
+					items[8] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[8]);
+					continue;
 			}
 
 		}

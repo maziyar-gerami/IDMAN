@@ -157,9 +157,9 @@ public class Operations {
 
 				boolean existed = false;
 
-				for (Iterator iterator = jsonObject.keySet().iterator(); iterator.hasNext(); ) {
+				for (Object o : jsonObject.keySet()) {
 
-					String key = (String) iterator.next();
+					String key = (String) o;
 					String value = (String) jsonObject.get(key);
 					if (value.equalsIgnoreCase(user.getUserId())) {
 						jsonObject.remove(key, value);

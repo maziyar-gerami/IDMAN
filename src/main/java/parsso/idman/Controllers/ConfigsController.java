@@ -2,7 +2,6 @@ package parsso.idman.Controllers;
 
 
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +20,16 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class ConfigsController {
-	@Autowired
+	final
 	PasswordSettings passwordSettings;
-	@Autowired
-	UserRepo userRepo;
-	@Qualifier("configRepoImpl")
+	private final ConfigRepo configRepo;
 
-	@Autowired
-	private ConfigRepo configRepo;
+	public ConfigsController(PasswordSettings passwordSettings, @Qualifier("configRepoImpl") ConfigRepo configRepo, UserRepo userRepo) {
+		this.passwordSettings = passwordSettings;
+		this.configRepo = configRepo;
+	}
 
 	//************************************* Pages ****************************************
 

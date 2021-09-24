@@ -18,7 +18,7 @@ public class StringArray {
 
 	public List<String> getItem() {
 		if (item == null) {
-			item = new ArrayList<String>();
+			item = new ArrayList<>();
 		}
 		return this.item;
 	}

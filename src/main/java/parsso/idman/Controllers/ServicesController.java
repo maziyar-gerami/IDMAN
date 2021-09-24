@@ -8,17 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceGist;
 import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -30,19 +26,23 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class ServicesController {
-	@Autowired
 	MongoTemplate mongoTemplate;
-	@Qualifier("userRepoImpl")
-	@Autowired
 	private UserRepo userRepo;
-	@Qualifier("serviceRepoImpl")
-	@Autowired
 	private ServiceRepo serviceRepo;
 	@Value("${metadata.file.path}")
 	private String metadataPath;
+
+	public ServicesController(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+	}
+
+	@Autowired
+	public ServicesController(@Qualifier("userRepoImpl") UserRepo userRepo, @Qualifier("serviceRepoImpl") ServiceRepo serviceRepo) {
+		this.serviceRepo = serviceRepo;
+		this.userRepo = userRepo;
+	}
 
 	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/services")
@@ -58,18 +58,7 @@ public class ServicesController {
 
 	@GetMapping("/api/services/user")
 	public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
-		//String currentUserId = request.getUserPrincipal().getName();
-		String currentUserId = "maziyar";
-		Criteria regex = Criteria.where("userId").regex(currentUserId, "i");
-		UsersExtraInfo simpleUser = mongoTemplate.findOne(new Query(regex)
-				, UsersExtraInfo.class, Variables.col_usersExtraInfo);
-
-		if (simpleUser == null) {
-			simpleUser = new UsersExtraInfo(userRepo.retrieveUsers(currentUserId));
-			mongoTemplate.save(simpleUser, Variables.col_usersExtraInfo);
-		}
-
-		return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(currentUserId)), HttpStatus.OK);
+		return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
 	}
 
 	@GetMapping("/api/services/full")
@@ -110,6 +99,11 @@ public class ServicesController {
 	public ResponseEntity<String> updateService(HttpServletRequest request, @PathVariable("id") long id,
 	                                            @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
 		return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
+	}
+
+	@GetMapping("/api/serviceAccess/{id}")
+	public ResponseEntity<HttpStatus> serviceAccess(@PathVariable("id") long id) {
+		return new ResponseEntity<>(serviceRepo.serviceAccess(id) ? HttpStatus.OK :HttpStatus.BAD_REQUEST);
 	}
 
 	@PostMapping("/api/services/metadata")

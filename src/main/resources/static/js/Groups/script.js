@@ -145,6 +145,8 @@ document.addEventListener('DOMContentLoaded', function () {
             publicmessagesURLText: "./publicmessages",
             ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
+            transcriptsText: "گزارش های جزئی",
+            transcriptsURLText: "./transcripts",
             groupIdDuplicate: false,
             groupIdDuplicateText: "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.",
             fileUploadGroupNotSelectedText: "لطفا گروه مورد نظر خود را انتخاب کنید",
@@ -1013,6 +1015,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "Reports";
                     this.publicmessagesText = "Public Messages";
                     this.ticketingText = "Ticketing";
+                    this.transcriptsText = "Detailed Reports";
                     this.groupIdDuplicateText = "A Group With This Name Already Exists, Please Choose Another.";
                     this.fileUploadGroupNotSelectedText = "Please Select The Intended Group";
                     this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
@@ -1038,7 +1041,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
-                    this.U3= "Name";
+                    this.U3= "Persian Name";
                     this.U4= "Last Name (In English)";
                     this.U5= "FullName (In Persian)";
                     this.U6= "Phone";
@@ -1109,6 +1112,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "گزارش ها";
                     this.publicmessagesText = "اعلان های عمومی";
                     this.ticketingText = "پشتیبانی";
+                    this.transcriptsText = "گزارش های جزئی";
                     this.groupIdDuplicateText = "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.";
                     this.fileUploadGroupNotSelectedText = "لطفا گروه مورد نظر خود را انتخاب کنید";
                     this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
@@ -1134,7 +1138,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";
-                    this.U3 = "نام";
+                    this.U3 = "نام فارسی";
                     this.U4 = "نام خانوادگی (به انگلیسی)";
                     this.U5 = "نام کامل (به فارسی)";
                     this.U6 = "شماره تماس";

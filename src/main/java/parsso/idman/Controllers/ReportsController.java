@@ -10,20 +10,27 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 import parsso.idman.Helpers.LogsExcelView;
 import parsso.idman.Models.Logs.ListReports;
-import parsso.idman.Repos.ReportRepo;
+import parsso.idman.Repos.reports.ReportRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class ReportsController {
-	@Autowired
+	private final LogsExcelView logsExcelView;
 	private ReportRepo reportRepo;
+
+	public ReportsController(LogsExcelView logsExcelView) {
+		this.logsExcelView = logsExcelView;
+	}
+
 	@Autowired
-	private LogsExcelView logsExcelView;
+	public ReportsController(ReportRepo reportRepo, LogsExcelView logsExcelView) {
+		this.reportRepo = reportRepo;
+		this.logsExcelView = logsExcelView;
+	}
 
 	//************************************* Pages ****************************************
 

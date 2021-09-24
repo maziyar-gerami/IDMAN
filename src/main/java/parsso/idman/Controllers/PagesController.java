@@ -18,8 +18,7 @@ import parsso.idman.Models.DashboardData.Dashboard;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@SuppressWarnings({"SameReturnValue", "SpringJavaAutowiredFieldsWarningInspection"})
-
+@SuppressWarnings("SameReturnValue")
 @Controller
 public class PagesController {
 	@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")

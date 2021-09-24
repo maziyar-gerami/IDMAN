@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
       activeItem: "main",
       metaDataAddress: true,
       metaDataFile: false,
-      s0: "پارسو",
+      s0: "احراز هویت متمرکز شرکت فلات قاره",
       s1: "",
       s2: "خروج",
       s3: "داشبورد",
@@ -160,6 +160,9 @@ document.addEventListener('DOMContentLoaded', function () {
       copyText: "کپی",
       returnText: "بازگشت",
       dynamicOTPPassword: "رمز پویا (یکبار مصرف)",
+      serviceNotificationsText: "پیام های سرویس",
+      apiAddressText: "آدرس API",
+      apiKeyText: "کلید API",
     },
     created: function () {
       this.setDateNav();
@@ -330,8 +333,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       },
       addService: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
 
         let serviceIdFlag = false;
         for(let i = 0; i < document.getElementsByName('serviceId')[0].value.length; ++i){
@@ -675,10 +678,22 @@ document.addEventListener('DOMContentLoaded', function () {
             this.multifactorPolicy.failureMode = null;
           }
 
+          if(document.getElementsByName("notificationApiURL")[0].value != ""){
+            this.extraInfo.notificationApiURL = document.getElementsByName("notificationApiURL")[0].value;
+          }else{
+            this.extraInfo.notificationApiURL = null;
+          }
+
+          if(document.getElementsByName("notificationApiKey")[0].value != ""){
+            this.extraInfo.notificationApiKey = document.getElementsByName("notificationApiKey")[0].value;
+          }else{
+            this.extraInfo.notificationApiKey = null;
+          }
+
           if(this.samls){
             if(this.metaDataAddress || this.metaDataFile){
               if(this.metaDataFile){
-                let file = document.querySelector('#file');
+                let file = document.querySelector("#file");
                 if(!file.files[0]){
                   alert("لطفا قسمت های الزامی را پر کنید.");
                 }else{
@@ -710,7 +725,7 @@ document.addEventListener('DOMContentLoaded', function () {
                           logoutType: vm.service.logoutType,
                           logoutUrl: vm.service.logoutUrl,
                           accessStrategy: vm.accessStrategy,
-                          contacts: vm.contacts
+                          contacts: vm.contacts,
                         }).replace(/\\\\/g, "\\")
                       })
                       .then((res) => {
@@ -742,7 +757,7 @@ document.addEventListener('DOMContentLoaded', function () {
                       logoutType: vm.service.logoutType,
                       logoutUrl: vm.service.logoutUrl,
                       accessStrategy: vm.accessStrategy,
-                      contacts: vm.contacts
+                      contacts: vm.contacts,
                     }).replace(/\\\\/g, "\\")
                   })
                   .then((res) => {
@@ -774,7 +789,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   logoutType: vm.service.logoutType,
                   logoutUrl: vm.service.logoutUrl,
                   accessStrategy: vm.accessStrategy,
-                  contacts: vm.contacts
+                  contacts: vm.contacts,
                 }).replace(/\\\\/g, "\\")
             })
             .then((res) => {
@@ -924,7 +939,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.lang = "فارسی";
           this.isRtl = false;
           this.dateNavText = this.dateNavEn;
-          this.s0 = "Parsso";
+          this.s0 = "IOOC Centralized Authentication";
           this.s1 = this.nameEN;
           this.s2 = "Exit";
           this.s3 = "Dashboard";
@@ -1020,13 +1035,16 @@ document.addEventListener('DOMContentLoaded', function () {
           this.copyText = "Copy";
           this.returnText = "Return";
           this.dynamicOTPPassword = "Dynamic Password (OTP)";
+          this.serviceNotificationsText = "Service Notifications";
+          this.apiAddressText = "API Address";
+          this.apiKeyText = "API Key";
         }else {
             window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
             this.lang = "EN";
             this.isRtl = true;
             this.dateNavText = this.dateNav;
-            this.s0 = "پارسو";
+            this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
             this.s1 = this.name;
             this.s2 = "خروج";
             this.s3 = "داشبورد";
@@ -1122,6 +1140,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.copyText = "کپی";
             this.returnText = "بازگشت";
             this.dynamicOTPPassword = "رمز پویا (یکبار مصرف)";
+            this.serviceNotificationsText = "پیام های سرویس";
+            this.apiAddressText = "آدرس API";
+            this.apiKeyText = "کلید API";
         }
       },
       setServiceType: function () {

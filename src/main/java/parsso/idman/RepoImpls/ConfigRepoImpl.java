@@ -39,7 +39,6 @@ import java.util.*;
 public class ConfigRepoImpl implements ConfigRepo {
 	@Autowired
 	PasswordSettings passwordSettings;
-	@Autowired
 	MongoTemplate mongoTemplate;
 	@Autowired
 	InstantMessage instantMessage;
@@ -62,8 +61,8 @@ public class ConfigRepoImpl implements ConfigRepo {
 		List<Setting> settings = new LinkedList<>();
 		String groupName = null;
 		String description = null;
-		String name = null;
-		String value = null;
+		String name;
+		String value;
 
 		String line;
 
@@ -72,10 +71,8 @@ public class ConfigRepoImpl implements ConfigRepo {
 			line = reader.nextLine();
 
 			while (line.equals("")) {
-				if (!(setting.equals(null))) {
 					settings.add(setting);
 					setting = new Setting();
-				}
 
 				if (reader.hasNextLine()) line = reader.nextLine();
 				else return settings;
@@ -183,11 +180,11 @@ public class ConfigRepoImpl implements ConfigRepo {
 
 		for (Setting setting : settings) {
 
-			if (file_properties == "")
+			if (file_properties.equals(""))
 				file_properties += "###" + setting.getGroup();
 			else {
 
-				if (file_properties.indexOf(setting.getGroup()) == -1)
+				if (!file_properties.contains(setting.getGroup()))
 					file_properties += "\n\n\n###" + setting.getGroup();
 
 			}
@@ -305,7 +302,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 	}
 
 	@Override
-	public List<Config> listBackedUpConfigs() throws IOException, ParseException {
+	public List<Config> listBackedUpConfigs() {
 		File folder = new File(backUpPath); // ./services/
 		String[] files = folder.list();
 		List<Config> configs = new LinkedList<>();

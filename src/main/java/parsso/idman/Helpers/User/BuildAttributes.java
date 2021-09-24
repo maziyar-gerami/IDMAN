@@ -78,15 +78,15 @@ public class BuildAttributes {
 
             try {
                 if (p.getEndTime().length() == 13)
-                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getEndTime())));
                 if (p.getEndTime().length() == 10)
-                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime()) * 1000));
+                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getEndTime()) * 1000));
                 if (p.getEndTime().contains("."))
                     attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(TimeHelper.convertDateToEpoch(p.getEndTime())));
 
 
             } catch (Exception e) {
-                attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime().substring(0, p.getEndTime().indexOf('.'))) * 1000));
+                attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getEndTime().substring(0, p.getEndTime().indexOf('.'))) * 1000));
             }
 
         }
@@ -160,9 +160,17 @@ public class BuildAttributes {
 
 		//cStatus for changing status
 		if (p.getCStatus() != null) {
-			if (p.getCStatus().equals("enable")) operations.enable(doerID, uid);
-			else if (p.getCStatus().equals("disable")) operations.disable(doerID, uid);
-			else if (p.getCStatus().equals("unlock")) operations.unlock(doerID, uid);
+			switch (p.getCStatus()) {
+				case "enable":
+					operations.enable(doerID, uid);
+					break;
+				case "disable":
+					operations.disable(doerID, uid);
+					break;
+				case "unlock":
+					operations.unlock(doerID, uid);
+					break;
+			}
 		} else {
 			if (p.getStatus() != null) {
 				String oldStatus = old.getStatus();
@@ -212,10 +220,10 @@ public class BuildAttributes {
         if (p.getEndTime() != null && !p.getEndTime().equals(old.getEndTime()) && p.getEndTime().charAt(0) != ('-')) {
             if (p.getEndTime() != null && p.getEndTime() != "") {
                 if (p.getEndTime().length() == 10)
-                    context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime()) * 1000));
+                    context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getEndTime()) * 1000));
                 else
                     try {
-                        context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.valueOf(p.getEndTime())));
+                        context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getEndTime())));
                     } catch (NumberFormatException e) {
                         if (p.getEndTime().contains("+"))
                             context.setAttributeValue("pwdEndTime", p.getEndTime());

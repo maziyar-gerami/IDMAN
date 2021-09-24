@@ -3,6 +3,7 @@ package parsso.idman.RepoImpls;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import lombok.val;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,13 +17,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.Service.*;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServiceGist;
+import parsso.idman.Models.Services.*;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Services.ServicesSubModel.ExtraInfo;
+import parsso.idman.Models.Time;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.ServiceRepo;
@@ -46,6 +48,8 @@ public class ServiceRepoImpl implements ServiceRepo {
 	@Autowired
 	SamlServiceHelper samlServiceHelper;
 	@Autowired
+	OAuthServiceHelper oAuthServiceHelper;
+	@Autowired
 	FilesStorageService storageService;
 	@Autowired
 	LdapTemplate ldapTemplate;
@@ -64,7 +68,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 		List<Service> services = listServicesFull();
 
-		List<Service> relatedList = new LinkedList();
+		LinkedList<Service> relatedList = new LinkedList<>();
 
 		for (Service service : services) {
 
@@ -76,7 +80,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 						if (member != null) {
 							JSONArray s = (JSONArray) member;
 
-							if (user.getMemberOf() != null && s != null)
+							if (s != null)
 								for (int i = 0; i < user.getMemberOf().size(); i++)
 									for (int j = 0; j < ((JSONArray) s.get(1)).size(); j++) {
 										if (user.getMemberOf().get(i).equals(((JSONArray) s.get(1)).get(j)) && !relatedList.contains(service)) {
@@ -103,7 +107,6 @@ public class ServiceRepoImpl implements ServiceRepo {
 		}
 		List<MicroService> microServices = new LinkedList<>();
 		MicroService microService = null;
-		relatedList.stream().distinct();
 
 		for (Service service : relatedList) {
 			Query query = new Query(Criteria.where("_id").is(service.getId()));
@@ -134,7 +137,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public List<Service> listServicesFull() throws IOException {
+	public List<Service> listServicesFull() {
 		File folder = new File(path); // ./services/
 		String[] files = folder.list();
 		List<Service> services = new LinkedList<>();
@@ -149,7 +152,6 @@ public class ServiceRepoImpl implements ServiceRepo {
 					e.printStackTrace();
 					uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
 							"", Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to read service"));
-					continue;
 				}
 		}
 		return services;
@@ -166,11 +168,10 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 			if (o == null || o.size() == 0)
 				return null;
-			List<String> attributes = (List<String>) o.get(1);
+			val attributes = (List<String>) o.get(1);
 
 			if (attributes.contains(ou)) {
 				relatedList.add(service);
-				continue;
 			}
 		}
 		return relatedList;
@@ -195,7 +196,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 					continue;
 				}
-			Query query = new Query(Criteria.where("_id").is(Long.valueOf(Trim.extractIdFromFile(file))));
+			Query query = new Query(Criteria.where("_id").is(Trim.extractIdFromFile(file)));
 			try {
 				microService = mongoTemplate.findOne(query, MicroService.class, collection);
 			} catch (Exception e) {
@@ -237,7 +238,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	public LinkedList<String> deleteServices(String doerID, JSONObject jsonObject) {
 
 		File folder = new File(path);
-		List allFiles = Arrays.asList(folder.list());
+		List<String> allFiles = Arrays.asList(folder.list());
 		List selectedFiles = new LinkedList();
 
 		if (jsonObject.size() == 0)
@@ -331,6 +332,9 @@ public class ServiceRepoImpl implements ServiceRepo {
 		else if (system.equalsIgnoreCase("saml"))
 			id = samlServiceHelper.create(doerID, jsonObject);
 
+		else if (system.equalsIgnoreCase("OAuth"))
+			id = oAuthServiceHelper.create(doerID, jsonObject);
+
 		if (id > 0)
 			if (extraInfo == null)
 				extraInfo = new ExtraInfo();
@@ -367,6 +371,10 @@ public class ServiceRepoImpl implements ServiceRepo {
 		} catch (Exception e) {
 		}
 
+		try {
+			extraInfo.setDailyAccess((List<Schedule>) jsonObject.get("dailyAccess"));
+		} catch (Exception e) {
+		}
 		return extraInfo;
 	}
 
@@ -410,14 +418,16 @@ public class ServiceRepoImpl implements ServiceRepo {
 			extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
 
 			try {
-				extraInfo.setNotificationApiURL(JsonExtraInfo.get("notificationApiURL") != null ? JsonExtraInfo.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
+				extraInfo.setNotificationApiURL((String) JsonExtraInfo.get("notificationApiURL") != null ? JsonExtraInfo.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
 
 			} catch (Exception e) {
+				extraInfo.setNotificationApiURL(null);
 			}
-			try {
-				extraInfo.setNotificationApiKey(JsonExtraInfo.get("notificationApiKey") != null ? JsonExtraInfo.get("notificationApiKey").toString() : oldExtraInfo.getNotificationApiKey());
-			} catch (Exception e) {
-			}
+				extraInfo.setNotificationApiKey((String) JsonExtraInfo.get("notificationApiKey"));
+
+				extraInfo.setDailyAccess((List<Schedule>)JsonExtraInfo.get("dailyAccess") );
+
+
 
 			try {
 				extraInfo.setPosition(oldExtraInfo.getPosition());
@@ -439,7 +449,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 			}
 			return casServiceHelper.update(doerID, id, jsonObject);
 
-		} else if (system.equalsIgnoreCase("saml"))
+		} else if (system.equalsIgnoreCase("saml")){
 			try {
 				mongoTemplate.save(extraInfo, collection);
 
@@ -450,7 +460,20 @@ public class ServiceRepoImpl implements ServiceRepo {
 				return HttpStatus.FORBIDDEN;
 			}
 
-		return samlServiceHelper.update(doerID, id, jsonObject);
+			return samlServiceHelper.update(doerID, id, jsonObject);
+		}
+		else if (system.equalsIgnoreCase("OAuth"))
+			try {
+				mongoTemplate.save(extraInfo, collection);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "",
+						Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to mongoDB"));
+				return HttpStatus.FORBIDDEN;
+			}
+
+		return oAuthServiceHelper.update(doerID, id, jsonObject);
 
 	}
 
@@ -470,6 +493,33 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 	}
 
+	@Override
+	public boolean serviceAccess(long id) {
+
+		Calendar c1 = Calendar.getInstance();
+		int currentDay = c1.get(Calendar.DAY_OF_WEEK);
+
+		ExtraInfo extraInfo = mongoTemplate.findOne
+				(new Query(Criteria.where("_id").is(id)),ExtraInfo.class, Variables.col_servicesExtraInfo);
+
+		Time time = TimeHelper.longToPersianTime(new Date().getTime());
+		SimpleTime simpleTime = new SimpleTime(time);
+		List<Schedule> dailyAccess;
+		try {
+			dailyAccess = extraInfo.getDailyAccess();
+		}catch (NullPointerException e){
+			return false;
+		}
+		for (Schedule schedule:dailyAccess)
+			if (schedule.getWeekDay() == currentDay){
+				Period period = schedule.getPeriod();
+				if (simpleTime.compareTo(period.getFrom())==1 && simpleTime.compareTo(period.getTo())==-1)
+					return true;
+			}
+		return false;
+	}
+
+
 	private Service analyze(String file) throws IOException, ParseException {
 
 		FileReader reader = new FileReader(path + file);
@@ -477,13 +527,16 @@ public class ServiceRepoImpl implements ServiceRepo {
 		Object obj = jsonParser.parse(reader);
 		reader.close();
 
-		Service service;
+		Service service = null;
 		ExtraInfo extraInfo;
 
 		if (isCasService((JSONObject) obj))
 			service = casServiceHelper.analyze(file);
-		else
+		else if (isOAuthService((JSONObject) obj))
+			service = oAuthServiceHelper.analyze(file);
+		else if (isSamlService((JSONObject) obj))
 			service = samlServiceHelper.analyze(file);
+		
 
 		Query query = new Query(Criteria.where("_id").is(service.getId()));
 		try {
@@ -501,9 +554,17 @@ public class ServiceRepoImpl implements ServiceRepo {
 		return service;
 	}
 
+	private boolean isSamlService(JSONObject jo) {
+		return jo.get("@class").toString().equals("org.apereo.cas.support.saml.services.SamlRegisteredService");
+	}
+
+	private boolean isOAuthService(JSONObject jo) {
+		return jo.get("@class").toString().equals("org.apereo.cas.support.oauth.services.OAuthRegisteredService");
+	}
+
 	boolean isCasService(JSONObject jo) {
 
-		return !jo.get("@class").toString().contains("saml");
+		return jo.get("@class").toString().equals("org.apereo.cas.services.RegexRegisteredService");
 
 	}
 

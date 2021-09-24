@@ -15,7 +15,7 @@ public class SkyRoom {
 	String students;
 
 	public SkyRoom(String skyroomEnable, String role, String presenter, String students) {
-		if (!(role.equalsIgnoreCase("USER")) && Boolean.valueOf(skyroomEnable)) {
+		if (!(role.equalsIgnoreCase("USER")) && Boolean.parseBoolean(skyroomEnable)) {
 			this.enable = true;
 			this.presenter = presenter;
 			this.students = students;

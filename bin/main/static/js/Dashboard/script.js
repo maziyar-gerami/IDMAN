@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
         hasLegend: true,
         legendPlacement: "bottom"
       },
-      s0: "پارسو",
+      s0: "احراز هویت متمرکز شرکت فلات قاره",
       s1: "",
       s2: "خروج",
       s3: "داشبورد",
@@ -109,6 +109,8 @@ document.addEventListener('DOMContentLoaded', function () {
       inviteToMeetingText: "دعوت به جلسه",
       copyText: "کپی",
       returnText: "بازگشت",
+      notificationList: [],
+      notificationListName: "",
     },
     created: function () {
       this.setDateNav();
@@ -248,14 +250,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       },
       getServices: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        const regex = new RegExp('^', 'g');
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         axios.get(url + "/api/services/user") //
         .then((res) => {
           vm.services = res.data;
-          for(i = 0; i < vm.services.length; ++i){
-            if(typeof vm.services[i].logo !== 'undefined'){
+          for(let i = 0; i < vm.services.length; ++i){
+            if(typeof vm.services[i].logo !== "undefined"){
               if(vm.services[i].logo == ""){
                 vm.services[i].logo = "images/PlaceholderService.jpg";
               }
@@ -263,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
               vm.services[i].logo = "images/PlaceholderService.jpg";
             }
 
-            if(typeof vm.services[i].description !== 'undefined'){
+            if(typeof vm.services[i].description !== "undefined"){
               if(vm.services[i].description.length > 50){
                 vm.services[i].description = vm.services[i].description.substr(0, 50) + "...";
               }
@@ -273,10 +274,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
             vm.services[i].serviceId = vm.services[i].serviceId.replace(/\((.*?)\)/g, "");
             vm.services[i].serviceId = vm.services[i].serviceId.replace(/\^/g, "");
-
-            vm.services[i].serviceId = vm.services[i].serviceId.replace(/\\/g, "\\\\")
+            vm.services[i].serviceId = vm.services[i].serviceId.replace(/\\/g, "\\\\");
           }
         });
+      },
+      showNotification: function (notifications, name) {
+        if(typeof notifications !== "undefined"){
+          this.notificationList = notifications;
+          this.notificationListName = name;
+          if(this.isRtl){
+              document.getElementById("notificationBox").style.left = "20px";
+          }else {
+              document.getElementById("notificationBox").style.right = "20px";
+          }
+        }
+      },
+      closeNotification: function () {
+        if(this.isRtl){
+          document.getElementById("notificationBox").style.left = "-420px";
+        }else {
+          document.getElementById("notificationBox").style.right = "-420px";
+        }
       },
       changeLang: function () {
         if(this.lang == "EN"){
@@ -286,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.lang = "فارسی";
           this.isRtl = false;
           this.dateNavText = this.dateNavEn;
-          this.s0 = "Parsso";
+          this.s0 = "IOOC Centralized Authentication";
           this.s1 = this.nameEN;
           this.s2 = "Exit";
           this.s3 = "Dashboard";
@@ -332,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.lang = "EN";
             this.isRtl = true;
             this.dateNavText = this.dateNav;
-            this.s0 = "پارسو";
+            this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
             this.s1 = this.name;
             this.s2 = "خروج";
             this.s3 = "داشبورد";

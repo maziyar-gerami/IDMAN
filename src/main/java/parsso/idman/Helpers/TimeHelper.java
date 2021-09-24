@@ -1,6 +1,7 @@
 package parsso.idman.Helpers;
 
 
+import parsso.idman.Models.Services.Schedule;
 import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.text.ParseException;
@@ -77,7 +78,7 @@ public class TimeHelper {
 
 	public static String setEndTime(String input) {
 		//if is jalali
-		if (Integer.valueOf(input.substring(0, 4)) < 2000) {
+		if (Integer.parseInt(input.substring(0, 4)) < 2000) {
 
 			if (!(input.contains("-")) && !(input.contains("/"))) {
 				String Y = input.substring(0, 4);
@@ -122,7 +123,7 @@ public class TimeHelper {
 
 				}
 
-				String date = convertDateJalaliToGeorgian(Integer.valueOf(Y), Integer.valueOf(M), Integer.valueOf(D));
+				String date = convertDateJalaliToGeorgian(Integer.parseInt(Y), Integer.parseInt(M), Integer.parseInt(D));
 
 				Instant instant = Instant.now(); //can be LocalDateTime
 				ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
@@ -165,12 +166,12 @@ public class TimeHelper {
 
 		parsso.idman.Models.Time timeObject = stringToTime(seTime);
 
-		String date = convertDateJalaliToGeorgian(Integer.valueOf(timeObject.getYear()), Integer.valueOf(timeObject.getMonth()), Integer.valueOf(timeObject.getDay()));
+		String date = convertDateJalaliToGeorgian(timeObject.getYear(), timeObject.getMonth(), timeObject.getDay());
 
-		String time = String.format("%02d", Integer.valueOf(timeObject.getHours())) +
-				String.format("%02d", Integer.valueOf(timeObject.getMinutes())) +
-				String.format("%02d", Integer.valueOf(timeObject.getSeconds())) + "." +
-				String.format("%03d", Integer.valueOf(timeObject.getMilliSeconds()));
+		String time = String.format("%02d", timeObject.getHours()) +
+				String.format("%02d", timeObject.getMinutes()) +
+				String.format("%02d", timeObject.getSeconds()) + "." +
+				String.format("%03d", timeObject.getMilliSeconds());
 
 		return date + time;
 
@@ -191,10 +192,10 @@ public class TimeHelper {
 		ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
 		ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
 
-		String time = String.format("%02d", Integer.valueOf(timeObject.getHours())) +
-				String.format("%02d", Integer.valueOf(timeObject.getMinutes())) +
-				String.format("%02d", Integer.valueOf(timeObject.getSeconds())) + "." +
-				String.format("%03d", Integer.valueOf(timeObject.getMilliSeconds())) +
+		String time = String.format("%02d", timeObject.getHours()) +
+				String.format("%02d", timeObject.getMinutes()) +
+				String.format("%02d", timeObject.getSeconds()) + "." +
+				String.format("%03d", timeObject.getMilliSeconds()) +
 				currentOffsetForMyZone.toString().replaceAll(":", "");
 
 		return timeObject.getYear() + timeObject.getMonth() + timeObject.getDay() + time;
@@ -239,12 +240,13 @@ public class TimeHelper {
 	}
 
 	private static parsso.idman.Models.Time stringToTime(String seTime) {
-		return new parsso.idman.Models.Time(Integer.valueOf(seTime.substring(0, 4)),
-				Integer.valueOf(seTime.substring(5, 7)),
-				Integer.valueOf(seTime.substring(8, 10)),
-				Integer.valueOf(seTime.substring(11, 13)),
-				Integer.valueOf(seTime.substring(14, 16)),
-				Integer.valueOf(seTime.substring(17, 19)));
+		return new parsso.idman.Models.Time(Integer.parseInt(seTime.substring(0, 4)),
+				Integer.parseInt(seTime.substring(5, 7)),
+				Integer.parseInt(seTime.substring(8, 10)),
+				Integer.parseInt(seTime.substring(11, 13)),
+				Integer.parseInt(seTime.substring(14, 16)),
+				Integer.parseInt(seTime.substring(17, 19)));
 	}
+
 
 }

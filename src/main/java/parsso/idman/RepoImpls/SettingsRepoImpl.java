@@ -51,7 +51,7 @@ public class SettingsRepoImpl implements SettingsRepo {
 	}
 
 	@Override
-	public HttpStatus messageNotification() {
+	public HttpStatus instantMessageNotification() {
 		try {
 			startNotification("instantMessage");
 			return HttpStatus.OK;
@@ -73,7 +73,7 @@ public class SettingsRepoImpl implements SettingsRepo {
 
 		for (User user : users) {
 
-			Date pwdChangedTime = null;
+			Date pwdChangedTime;
 			try {
 				pwdChangedTime = new SimpleDateFormat("yyyyMMddHHmmss").parse(String.valueOf(user.getPasswordChangedTime()));
 				if ((deadline / millis - ((new Date().getTime() - pwdChangedTime.getTime()) / millis)) <= (messageTime / millis)) {
