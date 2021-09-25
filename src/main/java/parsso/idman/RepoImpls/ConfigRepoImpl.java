@@ -18,7 +18,7 @@ import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Config;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Logs.Setting;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 import parsso.idman.Repos.ConfigRepo;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Convertor.DateConverter;

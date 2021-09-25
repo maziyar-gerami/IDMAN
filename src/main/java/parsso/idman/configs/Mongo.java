@@ -1,4 +1,4 @@
-package parsso.idman.Configs;
+package parsso.idman.configs;
 
 
 import com.mongodb.client.MongoClient;

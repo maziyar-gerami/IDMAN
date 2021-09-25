@@ -19,7 +19,7 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Message;
 import parsso.idman.Models.Tickets.Ticket;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 import parsso.idman.Repos.TicketRepo;
 import parsso.idman.Repos.UserRepo;
 

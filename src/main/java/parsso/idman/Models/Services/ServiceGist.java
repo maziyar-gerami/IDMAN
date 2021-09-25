@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Models.Notification;
-import parsso.idman.Models.Return;
+import parsso.idman.Models.other.Notification;
+import parsso.idman.Models.other.Return;
 
 import java.util.List;
 

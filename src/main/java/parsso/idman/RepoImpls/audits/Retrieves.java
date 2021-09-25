@@ -10,7 +10,7 @@ import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Logs.ListAudits;
 import parsso.idman.Models.Logs.Report;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 import parsso.idman.Repos.audits.AuditRepo;
 
 import java.text.ParseException;

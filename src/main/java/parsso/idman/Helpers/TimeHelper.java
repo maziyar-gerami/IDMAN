@@ -1,7 +1,7 @@
 package parsso.idman.Helpers;
 
 
-import parsso.idman.Models.Services.Schedule;
+import parsso.idman.Models.other.Time;
 import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.text.ParseException;
@@ -25,7 +25,7 @@ public class TimeHelper {
 
 		ZonedDateTime eventDate = OffsetDateTime.parse(Y + "-" + M + "-" + D + 'T' + H + ":" + m + ":00" + ".000Z").toZonedDateTime();
 
-		parsso.idman.Models.Time time = longToPersianTime(eventDate.toInstant().toEpochMilli());
+		Time time = longToPersianTime(eventDate.toInstant().toEpochMilli());
 
 		return time.getYear() + "-"
 				+ String.format("%02d", time.getMonth()) + "-"
@@ -63,7 +63,7 @@ public class TimeHelper {
 		return strDate + currentOffsetForMyZone.toString().replaceAll(":", "");
 	}
 
-	public static long[] specificDateToEpochRange(parsso.idman.Models.Time time, ZoneId zoneId) throws ParseException {
+	public static long[] specificDateToEpochRange(Time time, ZoneId zoneId) throws ParseException {
 
 		long[] result = new long[2];
 
@@ -164,7 +164,7 @@ public class TimeHelper {
 
 	public static String convertDateTimeJalali(String seTime) {
 
-		parsso.idman.Models.Time timeObject = stringToTime(seTime);
+		Time timeObject = stringToTime(seTime);
 
 		String date = convertDateJalaliToGeorgian(timeObject.getYear(), timeObject.getMonth(), timeObject.getDay());
 
@@ -186,7 +186,7 @@ public class TimeHelper {
 	}
 
 	public static String convertDateToNumber(String seTime) {
-		parsso.idman.Models.Time timeObject = stringToTime(seTime);
+		Time timeObject = stringToTime(seTime);
 
 		Instant instant = Instant.now(); //can be LocalDateTime
 		ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
@@ -224,7 +224,7 @@ public class TimeHelper {
 		return new Date(epoch);
 	}
 
-	public static parsso.idman.Models.Time longToPersianTime(Long in) {
+	public static Time longToPersianTime(Long in) {
 		Instant instant = Instant.ofEpochMilli(in);
 		OffsetDateTime offsetDateTime = OffsetDateTime.ofInstant(instant, zoneId);
 
@@ -236,11 +236,11 @@ public class TimeHelper {
 		int month = dc.getMonth();
 		int day = dc.getDay();
 
-		return new parsso.idman.Models.Time(year, month, day, offsetDateTime.getHour(), offsetDateTime.getMinute(), offsetDateTime.getSecond());
+		return new Time(year, month, day, offsetDateTime.getHour(), offsetDateTime.getMinute(), offsetDateTime.getSecond());
 	}
 
-	private static parsso.idman.Models.Time stringToTime(String seTime) {
-		return new parsso.idman.Models.Time(Integer.parseInt(seTime.substring(0, 4)),
+	private static Time stringToTime(String seTime) {
+		return new Time(Integer.parseInt(seTime.substring(0, 4)),
 				Integer.parseInt(seTime.substring(5, 7)),
 				Integer.parseInt(seTime.substring(8, 10)),
 				Integer.parseInt(seTime.substring(11, 13)),

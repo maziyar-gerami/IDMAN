@@ -129,6 +129,8 @@ document.addEventListener('DOMContentLoaded', function () {
             publicmessagesURLText: "./publicmessages",
             ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
+            transcriptsText: "گزارش های جزئی",
+            transcriptsURLText: "./transcripts",
             meetingText: "جلسه مجازی",
             enterMeetingText: "ورود به جلسه",
             inviteToMeetingText: "دعوت به جلسه",
@@ -919,6 +921,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.copyText = "Copy";
                     this.returnText = "Return";
                     this.ticketingText = "Ticketing";
+                    this.transcriptsText = "Detailed Reports";
                     this.replyText = "Reply";
                     this.subjectText = "Subject";
                     this.fromText = "From";
@@ -1002,6 +1005,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.copyText = "کپی";
                     this.returnText = "بازگشت";
                     this.ticketingText = "پشتیبانی";
+                    this.transcriptsText = "گزارش های جزئی";
                     this.replyText = "پاسخ";
                     this.subjectText = "موضوع";
                     this.fromText = "ارسال کننده";

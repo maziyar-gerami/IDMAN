@@ -24,7 +24,7 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.*;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Services.ServicesSubModel.ExtraInfo;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.ServiceRepo;

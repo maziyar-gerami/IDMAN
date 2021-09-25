@@ -4,7 +4,7 @@ package parsso.idman.Utils.Convertor;
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 
 import java.time.ZoneId;
 

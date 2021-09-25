@@ -41,7 +41,8 @@ document.addEventListener('DOMContentLoaded', function () {
         isRtl: true,
         groups: [],
         groupList: "",
-        samls: true,
+        samls: false,
+        oauths: false,
         editS: "display: none;",
         reportS: "display: none;",
         showS: "",
@@ -196,6 +197,8 @@ document.addEventListener('DOMContentLoaded', function () {
         publicmessagesURLText: "./publicmessages",
         ticketingText: "پشتیبانی",
         ticketingURLText: "./ticketing",
+        transcriptsText: "گزارش های جزئی",
+        transcriptsURLText: "./transcripts",
         addAllGroupsText: "انتخاب همه",
         removeAllGroupsText: "لغو انتخاب همه",
         allGroupsHolderText: "انتخاب همه",
@@ -464,11 +467,19 @@ document.addEventListener('DOMContentLoaded', function () {
             res.data.serviceId = res.data.serviceId.replace(/\\/g, "\\\\")
             document.getElementsByName("serviceId")[0].value = res.data.serviceId;
 
-            if(typeof res.data.metadataLocation !== 'undefined'){
+            if(typeof res.data.metadataLocation !== "undefined"){
               vm.samls = true;
               document.getElementsByName("metadataLocation")[0].value = res.data.metadataLocation;
             }else{
               vm.samls = false;
+            }
+
+            if(typeof res.data.clientId !== "undefined" && typeof res.data.clientSecret !== "undefined"){
+              vm.oauths = true;
+              document.getElementsByName("clientId")[0].value = res.data.clientId;
+              document.getElementsByName("clientSecret")[0].value = res.data.clientSecret;
+            }else{
+              vm.oauths = false;
             }
 
             if(typeof res.data.description !== 'undefined'){
@@ -1067,18 +1078,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     let bodyFormData = new FormData();
                     bodyFormData.append("file", file.files[0]);
                     axios({
-                      method: 'post',
+                      method: "post",
                       url: url + "/api/services/metadata",  //
-                      headers: {'Content-Type': 'multipart/form-data'},
+                      headers: {"Content-Type": "multipart/form-data"},
                       data: bodyFormData,
                     }).then((res) => {
                       if(res.data != ""){
                         this.service.metadataLocation = res.data;
 
                         axios({
-                          method: 'put',
-                          url: url + `/api/service/${id}/saml`, //
-                          headers: {'Content-Type': 'application/json'},
+                          method: "put",
+                          url: url + "/api/service/" + id + "/saml", //
+                          headers: {"Content-Type": "application/json"},
                           data: JSON.stringify({
                             name: vm.service.name,
                             serviceId: vm.service.serviceId,
@@ -1108,9 +1119,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.service.metadataLocation = document.getElementsByName('metadataLocation')[0].value;
 
                     axios({
-                      method: 'put',
-                      url: url + `/api/service/${id}/saml`, //
-                      headers: {'Content-Type': 'application/json'},
+                      method: "put",
+                      url: url + "/api/service/" + id + "/saml", //
+                      headers: {"Content-Type": "application/json"},
                       data: JSON.stringify({
                         name: vm.service.name,
                         serviceId: vm.service.serviceId,
@@ -1137,12 +1148,44 @@ document.addEventListener('DOMContentLoaded', function () {
               }else{
                 alert("لطفا قسمت های الزامی را پر کنید.");
               }
-            }else{
+            }else if(this.oauths){
+              this.service.clientId = document.getElementsByName("clientId")[0].value;
+              this.service.clientSecret = document.getElementsByName("clientSecret")[0].value;
+              //this.extraInfo.supportedGrantTypes = [ "java.util.HashSet", [ "authorization_code" ] ];
+              //this.extraInfo.supportedResponseTypes = [ "java.util.HashSet", [ "code" ] ];
 
+              if(this.service.clientId !== "" || this.service.clientSecret !== ""){
+                axios({
+                  method: "put",
+                  url: url + "/api/service/" + id + "/oauth", //
+                  headers: {"Content-Type": "application/json"},
+                  data: JSON.stringify({
+                    name: vm.service.name,
+                    serviceId: vm.service.serviceId,
+                    clientId: vm.service.clientId,
+                    clientSecret: vm.service.clientSecret,
+                    extraInfo: vm.extraInfo,
+                    multifactorPolicy: vm.multifactorPolicy,
+                    description: vm.service.description,
+                    logo: vm.service.logo,
+                    informationUrl: vm.service.informationUrl,
+                    privacyUrl: vm.service.privacyUrl,
+                    logoutType: vm.service.logoutType,
+                    logoutUrl: vm.service.logoutUrl,
+                    accessStrategy: vm.accessStrategy,
+                    contacts: vm.contacts,
+                  }).replace(/\\\\/g, "\\")
+                }).then((res) => {
+                  location.reload();
+                });
+              }else{
+                alert("لطفا قسمت های الزامی را پر کنید.");
+              }
+            }else{
               axios({
-                method: 'put',
-                url: url + `/api/service/${id}/cas`, //
-                headers: {'Content-Type': 'application/json'},
+                method: "put",
+                url: url + "/api/service/" + id + "/cas", //
+                headers: {"Content-Type": "application/json"},
                 data: JSON.stringify({
                   name: vm.service.name,
                   serviceId: vm.service.serviceId,
@@ -1840,6 +1883,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.reportsText = "Reports";
             this.publicmessagesText = "Public Messages";
             this.ticketingText = "Ticketing";
+            this.transcriptsText = "Detailed Reports";
             this.addAllGroupsText = "Select All";
             this.removeAllGroupsText = "Unselect All";
             this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
@@ -1970,6 +2014,7 @@ document.addEventListener('DOMContentLoaded', function () {
               this.reportsText = "گزارش ها";
               this.publicmessagesText = "اعلان های عمومی";
               this.ticketingText = "پشتیبانی";
+              this.transcriptsText = "گزارش های جزئی";
               this.addAllGroupsText = "انتخاب همه";
               this.removeAllGroupsText = "لغو انتخاب همه";
               this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";

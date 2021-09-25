@@ -3,7 +3,7 @@ package parsso.idman.Models.Services;
 
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 
 @SuppressWarnings("rawtypes")
 @Getter

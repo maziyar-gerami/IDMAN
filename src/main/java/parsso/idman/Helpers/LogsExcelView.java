@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Models.Logs.Report;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 import parsso.idman.Repos.reports.ReportRepo;
 import parsso.idman.Utils.Convertor.DateConverter;
 

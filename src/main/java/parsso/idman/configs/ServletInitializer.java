@@ -1,4 +1,4 @@
-package parsso.idman.Configs;
+package parsso.idman.configs;
 
 
 import org.springframework.boot.builder.SpringApplicationBuilder;

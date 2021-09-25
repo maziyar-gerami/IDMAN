@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Audit;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 import parsso.idman.RepoImpls.audits.Retrieves;
 import parsso.idman.Repos.audits.AuditRepo;
 

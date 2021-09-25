@@ -1,4 +1,4 @@
-package parsso.idman.Controllers;
+package parsso.idman.controllers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,7 @@ public class PagesController {
 	//************************************* APIs ****************************************
 
 	@GetMapping("/api/dashboard")
-	public ResponseEntity<Dashboard> retrieveDashboardData() throws InterruptedException {
+	public ResponseEntity<Dashboard> retrieveDashboardData() {
 
 		return new ResponseEntity<>(dashboardData.retrieveDashboardData(), HttpStatus.OK);
 	}
