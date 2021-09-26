@@ -24,14 +24,16 @@ public class TranscriptsController {
 	}
 
 	//************************************* Pages ****************************************
-
+/*
 	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/transcripts")
 	public String getPageTranscripts() {
 		return "transcripts";
 	}
+ */
 
 	//************************************* APIs ****************************************
+
 
 	@GetMapping("/api/transcripts/users/service/{id}")
 	public ResponseEntity<Transcript> retrieveUsersOfServices(@PathVariable("id") String id) throws IOException, org.json.simple.parser.ParseException {

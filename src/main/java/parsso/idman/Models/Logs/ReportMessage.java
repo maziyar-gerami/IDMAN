@@ -20,7 +20,7 @@ import java.util.List;
 @Setter
 @Getter
 public class ReportMessage {
-	final char separator = ':';
+	char separator = ':';
 	String doerID;
 	String model;
 	Object instance;

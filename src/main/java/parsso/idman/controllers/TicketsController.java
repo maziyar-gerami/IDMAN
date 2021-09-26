@@ -94,7 +94,7 @@ public class TicketsController {
 	                                            @RequestParam(name = "id", defaultValue = "") String id,
 	                                            @RequestParam(name = "date", defaultValue = "") String date,
 	                                            @PathVariable(name = "count") String count) {
-		ListTickets tickets = ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName().toLowerCase(), page, count, from, id, date);
+		ListTickets tickets = ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName(), page, count, from, id, date);
 		return new ResponseEntity<>(tickets, HttpStatus.OK);
 	}
 

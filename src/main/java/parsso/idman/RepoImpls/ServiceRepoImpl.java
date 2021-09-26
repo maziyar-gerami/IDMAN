@@ -80,7 +80,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 						if (member != null) {
 							JSONArray s = (JSONArray) member;
 
-							if (s != null)
+							if (user.getMemberOf()!=null && s != null)
 								for (int i = 0; i < user.getMemberOf().size(); i++)
 									for (int j = 0; j < ((JSONArray) s.get(1)).size(); j++) {
 										if (user.getMemberOf().get(i).equals(((JSONArray) s.get(1)).get(j)) && !relatedList.contains(service)) {
