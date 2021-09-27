@@ -1,4 +1,4 @@
-package parsso.idman.Configs;
+package parsso.idman.configs;
 
 
 import org.jasig.cas.client.authentication.AttributePrincipal;

@@ -448,8 +448,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.showS = "display: none;";
           this.editS = "";
           this.reportS = "display: none;";
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          var vm = this;
+          let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          let vm = this;
           axios.get(url + `/api/services/${id}`) //
           .then((res) => {
             vm.service.id = res.data.id;
@@ -760,12 +760,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             this.extraInfo.url = document.getElementsByName('url')[0].value;
 
-            if(document.getElementsByName('logo')[0].value != ""){
-              this.service.logo = document.getElementsByName('logo')[0].value;
-            }else{
-              this.service.logo = null;
-            }
-
             if(document.getElementsByName('informationUrl')[0].value != ""){
               this.service.informationUrl = document.getElementsByName('informationUrl')[0].value;
             }else{
@@ -1068,24 +1062,67 @@ document.addEventListener('DOMContentLoaded', function () {
               this.extraInfo.notificationApiKey = null;
             }
 
-            if(this.samls){
-              if(this.metaDataAddress || this.metaDataFile){
-                if(this.metaDataFile){
-                  let file = document.querySelector('#file');
-                  if(!file.files[0]){
-                    alert("لطفا قسمت های الزامی را پر کنید.");
-                  }else{
-                    let bodyFormData = new FormData();
-                    bodyFormData.append("file", file.files[0]);
-                    axios({
-                      method: "post",
-                      url: url + "/api/services/metadata",  //
-                      headers: {"Content-Type": "multipart/form-data"},
-                      data: bodyFormData,
-                    }).then((res) => {
-                      if(res.data != ""){
-                        this.service.metadataLocation = res.data;
 
+            let logoFile = document.querySelector("#logoFile");
+            if(logoFile.files[0]) {
+              let logoFileBodyFormData = new FormData();
+              logoFileBodyFormData.append("file", logoFile.files[0]);
+              axios({
+                method: "post",
+                url: url + "/api/services/icon",  //
+                headers: {"Content-Type": "multipart/form-data"},
+                data: logoFileBodyFormData,
+              }).then((logoRes) => {
+                if (logoRes.data !== "") {
+                  vm.service.logo = logoRes.data;
+                } else {
+                  vm.service.logo = null;
+                }
+                if(vm.samls){
+                  if(vm.metaDataAddress || vm.metaDataFile){
+                    if(vm.metaDataFile){
+                      let metadataFile = document.querySelector("#metadataFile");
+                      if(!metadataFile.files[0]){
+                        alert("لطفا قسمت های الزامی را پر کنید.");
+                      }else{
+                        let metadataFileBodyFormData = new FormData();
+                        metadataFileBodyFormData.append("file", metadataFile.files[0]);
+                        axios({
+                          method: "post",
+                          url: url + "/api/services/metadata",  //
+                          headers: {"Content-Type": "multipart/form-data"},
+                          data: metadataFileBodyFormData,
+                        }).then((res) => {
+                          if(res.data !== ""){
+                            vm.service.metadataLocation = res.data;
+                            axios({
+                              method: "put",
+                              url: url + "/api/service/" + id + "/saml", //
+                              headers: {"Content-Type": "application/json"},
+                              data: JSON.stringify({
+                                name: vm.service.name,
+                                serviceId: vm.service.serviceId,
+                                extraInfo: vm.extraInfo,
+                                metadataLocation: vm.service.metadataLocation,
+                                multifactorPolicy: vm.multifactorPolicy,
+                                description: vm.service.description,
+                                logo: vm.service.logo,
+                                informationUrl: vm.service.informationUrl,
+                                privacyUrl: vm.service.privacyUrl,
+                                logoutType: vm.service.logoutType,
+                                logoutUrl: vm.service.logoutUrl,
+                                accessStrategy: vm.accessStrategy,
+                                contacts: vm.contacts,
+                              }).replace(/\\\\/g, "\\")
+                            }).then((res) => {
+                              location.reload();
+                            });
+                          }
+                        });
+                      }
+                    }else if(vm.metaDataAddress){
+                      if(document.getElementsByName("metadataLocation")[0].value !== ""){
+                        vm.service.metadataLocation = document.getElementsByName("metadataLocation")[0].value;
                         axios({
                           method: "put",
                           url: url + "/api/service/" + id + "/saml", //
@@ -1105,28 +1142,32 @@ document.addEventListener('DOMContentLoaded', function () {
                             accessStrategy: vm.accessStrategy,
                             contacts: vm.contacts,
                           }).replace(/\\\\/g, "\\")
-                        })
-                        .then((res) => {
+                        }).then((res) => {
                           location.reload();
                         });
+                      }else{
+                        alert("لطفا قسمت های الزامی را پر کنید.");
                       }
-                    });
+                    }
+                  }else{
+                    alert("لطفا قسمت های الزامی را پر کنید.");
                   }
-                }
-  
-                if(this.metaDataAddress){
-                  if(document.getElementsByName('metadataLocation')[0].value != ""){
-                    this.service.metadataLocation = document.getElementsByName('metadataLocation')[0].value;
-
+                }else if(vm.oauths){
+                  vm.service.clientId = document.getElementsByName("clientId")[0].value;
+                  vm.service.clientSecret = document.getElementsByName("clientSecret")[0].value;
+                  //vm.extraInfo.supportedGrantTypes = [ "java.util.HashSet", [ "authorization_code" ] ];
+                  //vm.extraInfo.supportedResponseTypes = [ "java.util.HashSet", [ "code" ] ];
+                  if(vm.service.clientId !== "" || vm.service.clientSecret !== ""){
                     axios({
                       method: "put",
-                      url: url + "/api/service/" + id + "/saml", //
+                      url: url + "/api/service/" + id + "/oauth", //
                       headers: {"Content-Type": "application/json"},
                       data: JSON.stringify({
                         name: vm.service.name,
                         serviceId: vm.service.serviceId,
+                        clientId: vm.service.clientId,
+                        clientSecret: vm.service.clientSecret,
                         extraInfo: vm.extraInfo,
-                        metadataLocation: vm.service.metadataLocation,
                         multifactorPolicy: vm.multifactorPolicy,
                         description: vm.service.description,
                         logo: vm.service.logo,
@@ -1137,33 +1178,156 @@ document.addEventListener('DOMContentLoaded', function () {
                         accessStrategy: vm.accessStrategy,
                         contacts: vm.contacts,
                       }).replace(/\\\\/g, "\\")
-                    })
-                    .then((res) => {
+                    }).then((res) => {
                       location.reload();
                     });
                   }else{
                     alert("لطفا قسمت های الزامی را پر کنید.");
                   }
-                }                
+                }else{
+                  axios({
+                    method: "put",
+                    url: url + "/api/service/" + id + "/cas", //
+                    headers: {"Content-Type": "application/json"},
+                    data: JSON.stringify({
+                      name: vm.service.name,
+                      serviceId: vm.service.serviceId,
+                      extraInfo: vm.extraInfo,
+                      multifactorPolicy: vm.multifactorPolicy,
+                      description: vm.service.description,
+                      logo: vm.service.logo,
+                      informationUrl: vm.service.informationUrl,
+                      privacyUrl: vm.service.privacyUrl,
+                      logoutType: vm.service.logoutType,
+                      logoutUrl: vm.service.logoutUrl,
+                      accessStrategy: vm.accessStrategy,
+                      contacts: vm.contacts,
+                    }).replace(/\\\\/g, "\\")
+                  }).then((res) => {
+                    location.reload();
+                  });
+                }
+              });
+            }else {
+              if(document.getElementsByName("logo")[0].value !== ""){
+                vm.service.logo = document.getElementsByName("logo")[0].value;
               }else{
-                alert("لطفا قسمت های الزامی را پر کنید.");
+                vm.service.logo = null;
               }
-            }else if(this.oauths){
-              this.service.clientId = document.getElementsByName("clientId")[0].value;
-              this.service.clientSecret = document.getElementsByName("clientSecret")[0].value;
-              //this.extraInfo.supportedGrantTypes = [ "java.util.HashSet", [ "authorization_code" ] ];
-              //this.extraInfo.supportedResponseTypes = [ "java.util.HashSet", [ "code" ] ];
-
-              if(this.service.clientId !== "" || this.service.clientSecret !== ""){
+              if(vm.samls){
+                if(vm.metaDataAddress || vm.metaDataFile){
+                  if(vm.metaDataFile){
+                    let metadataFile = document.querySelector("#metadataFile");
+                    if(!metadataFile.files[0]){
+                      alert("لطفا قسمت های الزامی را پر کنید.");
+                    }else{
+                      let metadataFileBodyFormData = new FormData();
+                      metadataFileBodyFormData.append("file", metadataFile.files[0]);
+                      axios({
+                        method: "post",
+                        url: url + "/api/services/metadata",  //
+                        headers: {"Content-Type": "multipart/form-data"},
+                        data: metadataFileBodyFormData,
+                      }).then((res) => {
+                        if(res.data !== ""){
+                          vm.service.metadataLocation = res.data;
+                          axios({
+                            method: "put",
+                            url: url + "/api/service/" + id + "/saml", //
+                            headers: {"Content-Type": "application/json"},
+                            data: JSON.stringify({
+                              name: vm.service.name,
+                              serviceId: vm.service.serviceId,
+                              extraInfo: vm.extraInfo,
+                              metadataLocation: vm.service.metadataLocation,
+                              multifactorPolicy: vm.multifactorPolicy,
+                              description: vm.service.description,
+                              logo: vm.service.logo,
+                              informationUrl: vm.service.informationUrl,
+                              privacyUrl: vm.service.privacyUrl,
+                              logoutType: vm.service.logoutType,
+                              logoutUrl: vm.service.logoutUrl,
+                              accessStrategy: vm.accessStrategy,
+                              contacts: vm.contacts,
+                            }).replace(/\\\\/g, "\\")
+                          }).then((res) => {
+                            location.reload();
+                          });
+                        }
+                      });
+                    }
+                  }else if(vm.metaDataAddress){
+                    if(document.getElementsByName("metadataLocation")[0].value !== ""){
+                      vm.service.metadataLocation = document.getElementsByName("metadataLocation")[0].value;
+                      axios({
+                        method: "put",
+                        url: url + "/api/service/" + id + "/saml", //
+                        headers: {"Content-Type": "application/json"},
+                        data: JSON.stringify({
+                          name: vm.service.name,
+                          serviceId: vm.service.serviceId,
+                          extraInfo: vm.extraInfo,
+                          metadataLocation: vm.service.metadataLocation,
+                          multifactorPolicy: vm.multifactorPolicy,
+                          description: vm.service.description,
+                          logo: vm.service.logo,
+                          informationUrl: vm.service.informationUrl,
+                          privacyUrl: vm.service.privacyUrl,
+                          logoutType: vm.service.logoutType,
+                          logoutUrl: vm.service.logoutUrl,
+                          accessStrategy: vm.accessStrategy,
+                          contacts: vm.contacts,
+                        }).replace(/\\\\/g, "\\")
+                      }).then((res) => {
+                        location.reload();
+                      });
+                    }else{
+                      alert("لطفا قسمت های الزامی را پر کنید.");
+                    }
+                  }
+                }else{
+                  alert("لطفا قسمت های الزامی را پر کنید.");
+                }
+              }else if(vm.oauths){
+                vm.service.clientId = document.getElementsByName("clientId")[0].value;
+                vm.service.clientSecret = document.getElementsByName("clientSecret")[0].value;
+                //vm.extraInfo.supportedGrantTypes = [ "java.util.HashSet", [ "authorization_code" ] ];
+                //vm.extraInfo.supportedResponseTypes = [ "java.util.HashSet", [ "code" ] ];
+                if(vm.service.clientId !== "" || vm.service.clientSecret !== ""){
+                  axios({
+                    method: "put",
+                    url: url + "/api/service/" + id + "/oauth", //
+                    headers: {"Content-Type": "application/json"},
+                    data: JSON.stringify({
+                      name: vm.service.name,
+                      serviceId: vm.service.serviceId,
+                      clientId: vm.service.clientId,
+                      clientSecret: vm.service.clientSecret,
+                      extraInfo: vm.extraInfo,
+                      multifactorPolicy: vm.multifactorPolicy,
+                      description: vm.service.description,
+                      logo: vm.service.logo,
+                      informationUrl: vm.service.informationUrl,
+                      privacyUrl: vm.service.privacyUrl,
+                      logoutType: vm.service.logoutType,
+                      logoutUrl: vm.service.logoutUrl,
+                      accessStrategy: vm.accessStrategy,
+                      contacts: vm.contacts,
+                    }).replace(/\\\\/g, "\\")
+                  }).then((res) => {
+                    location.reload();
+                  });
+                }else{
+                  alert("لطفا قسمت های الزامی را پر کنید.");
+                }
+              }else{
                 axios({
                   method: "put",
-                  url: url + "/api/service/" + id + "/oauth", //
+                  url: url + "/api/service/" + id + "/cas", //
                   headers: {"Content-Type": "application/json"},
                   data: JSON.stringify({
                     name: vm.service.name,
                     serviceId: vm.service.serviceId,
-                    clientId: vm.service.clientId,
-                    clientSecret: vm.service.clientSecret,
                     extraInfo: vm.extraInfo,
                     multifactorPolicy: vm.multifactorPolicy,
                     description: vm.service.description,
@@ -1178,32 +1342,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }).then((res) => {
                   location.reload();
                 });
-              }else{
-                alert("لطفا قسمت های الزامی را پر کنید.");
               }
-            }else{
-              axios({
-                method: "put",
-                url: url + "/api/service/" + id + "/cas", //
-                headers: {"Content-Type": "application/json"},
-                data: JSON.stringify({
-                  name: vm.service.name,
-                  serviceId: vm.service.serviceId,
-                  extraInfo: vm.extraInfo,
-                  multifactorPolicy: vm.multifactorPolicy,
-                  description: vm.service.description,
-                  logo: vm.service.logo,
-                  informationUrl: vm.service.informationUrl,
-                  privacyUrl: vm.service.privacyUrl,
-                  logoutType: vm.service.logoutType,
-                  logoutUrl: vm.service.logoutUrl,
-                  accessStrategy: vm.accessStrategy,
-                  contacts: vm.contacts,
-                }).replace(/\\\\/g, "\\")
-              })
-              .then((res) => {
-                location.reload();
-              });
             }
           }
         },

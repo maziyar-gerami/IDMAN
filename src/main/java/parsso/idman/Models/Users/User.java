@@ -12,7 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Models.License.License;
-import parsso.idman.Models.SkyRoom;
+import parsso.idman.Models.other.SkyRoom;
 
 import java.util.ArrayList;
 import java.util.Collection;

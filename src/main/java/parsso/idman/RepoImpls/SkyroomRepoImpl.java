@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.SkyRoom;
+import parsso.idman.Models.other.SkyRoom;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.SkyroomRepo;
 import parsso.idman.Repos.UserRepo;

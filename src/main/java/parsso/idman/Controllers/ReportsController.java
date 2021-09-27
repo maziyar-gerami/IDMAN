@@ -1,4 +1,4 @@
-package parsso.idman.Controllers;
+package parsso.idman.controllers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 import parsso.idman.Helpers.LogsExcelView;
 import parsso.idman.Models.Logs.ListReports;
-import parsso.idman.Repos.reports.ReportRepo;
+import parsso.idman.Repos.logs.reports.ReportRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package parsso.idman.Controllers;
+package parsso.idman.controllers;
 
 
 import org.apache.commons.io.IOUtils;
@@ -15,10 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceGist;
 import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.annotation.XmlElement;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,6 +35,8 @@ public class ServicesController {
 	private ServiceRepo serviceRepo;
 	@Value("${metadata.file.path}")
 	private String metadataPath;
+	@Value("${service.icon.path}")
+	private String serviceIcon;
 
 	public ServicesController(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
@@ -115,6 +119,15 @@ public class ServicesController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 
+	@PostMapping("/api/services/icon")
+	public ResponseEntity<String> uploadIcon(@RequestParam("file") MultipartFile file) {
+		String result = serviceRepo.uploadIcon(file);
+		if (result != null)
+			return new ResponseEntity<>(result, HttpStatus.OK);
+		else
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	}
+
 	@GetMapping("/api/services/position/{serviceId}")
 	public ResponseEntity<HttpStatus> increasePosition(@PathVariable("serviceId") String id, @RequestParam("value") int value) {
 		if (value == 1)
@@ -129,7 +142,7 @@ public class ServicesController {
 	@GetMapping(value = "/api/public/metadata/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
 	)
 	public @ResponseBody
-	Object getFile(@PathVariable("file") String file) throws IOException {
+	Object getMetaDataFile(@PathVariable("file") String file) throws IOException {
 
 		FileInputStream in = new FileInputStream(new File(metadataPath + file));
 
@@ -137,6 +150,12 @@ public class ServicesController {
 		header.setContentType(new MediaType("application", "xml"));
 
 		return new HttpEntity<>(IOUtils.toByteArray(in), header);
+
+	}
+
+	@GetMapping(value = "/api/public/icon/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	ResponseEntity<String> getIconFile(HttpServletResponse response, @PathVariable("file") String file) throws IOException {
+		return new ResponseEntity<>(serviceRepo.showServicePic(response,file), HttpStatus.OK);
 
 	}
 }

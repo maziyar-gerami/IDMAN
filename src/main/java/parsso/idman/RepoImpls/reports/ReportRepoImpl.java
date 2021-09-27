@@ -11,8 +11,8 @@ import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ListReports;
 import parsso.idman.Models.Logs.Report;
-import parsso.idman.Models.Time;
-import parsso.idman.Repos.reports.ReportRepo;
+import parsso.idman.Models.other.Time;
+import parsso.idman.Repos.logs.reports.ReportRepo;
 
 import java.text.ParseException;
 import java.time.Instant;

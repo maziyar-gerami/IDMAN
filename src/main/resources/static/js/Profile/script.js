@@ -308,16 +308,16 @@ document.addEventListener('DOMContentLoaded', function () {
             editPass: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 if(document.getElementById('token').value != ""){
-                    var check = confirm(this.s24);
+                    let check = confirm(this.s24);
                     if (check == true) {
                         axios({
-                            method: 'put',
-                            url: url + '/api/user/password',   //
-                            headers: {'Content-Type': 'application/json'},
+                            method: "put",
+                            url: url + "/api/user/password",   //
+                            headers: {"Content-Type": "application/json"},
                             data: JSON.stringify({
-                                newPassword: document.getElementById('newPassword').value,
-                                currentPassword: document.getElementById('currentPassword').value,
-                                token: document.getElementById('token').value
+                                newPassword: document.getElementById("newPassword").value,
+                                currentPassword: "dummyPassword",
+                                token: document.getElementById("token").value
                             }).replace(/\\\\/g, "\\")
                         }).then((res) => {
                             location.replace(url + "/profile"); //

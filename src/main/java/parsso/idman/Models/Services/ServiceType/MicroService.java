@@ -8,7 +8,6 @@ import lombok.Setter;
 import parsso.idman.Models.Services.Schedule;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceGist;
-import parsso.idman.Models.Time;
 
 import java.util.List;
 

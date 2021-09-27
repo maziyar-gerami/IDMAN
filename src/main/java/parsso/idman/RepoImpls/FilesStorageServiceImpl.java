@@ -25,6 +25,8 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 	private String servicesPath;
 	@Value("${metadata.file.path}")
 	private String metadataPath;
+	@Value("${service.icon.path}")
+	private String serviceIcon;
 
 	@Override
 	public void init() {
@@ -92,6 +94,16 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 			return Files.walk(this.photoPathRoot, 1).filter(path -> !path.equals(this.photoPathRoot)).map(this.photoPathRoot::relativize);
 		} catch (IOException e) {
 			throw new RuntimeException("Could not load the files!");
+		}
+	}
+
+	@Override
+	public void saveIcon(MultipartFile file, String fileName) {
+		try {
+			Path pathServices = Paths.get(serviceIcon);
+			Files.copy(file.getInputStream(), pathServices.resolve(fileName));
+		} catch (Exception e) {
+			throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
 		}
 	}
 }

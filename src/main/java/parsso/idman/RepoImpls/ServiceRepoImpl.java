@@ -4,6 +4,7 @@ package parsso.idman.RepoImpls;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import lombok.val;
+import org.apache.commons.compress.utils.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,17 +25,15 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.*;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Services.ServicesSubModel.ExtraInfo;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.FilesStorageService;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Other.GenerateUUID;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.*;
 
 @org.springframework.stereotype.Service
@@ -62,6 +61,8 @@ public class ServiceRepoImpl implements ServiceRepo {
 	private String path;
 	@Value("${base.url}")
 	private String baseUrl;
+	@Value("${service.icon.path}")
+	private String iconPath;
 
 	@Override
 	public List<MicroService> listUserServices(User user) throws IOException {
@@ -80,7 +81,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 						if (member != null) {
 							JSONArray s = (JSONArray) member;
 
-							if (s != null)
+							if (user.getMemberOf()!=null && s != null)
 								for (int i = 0; i < user.getMemberOf().size(); i++)
 									for (int j = 0; j < ((JSONArray) s.get(1)).size(); j++) {
 										if (user.getMemberOf().get(i).equals(((JSONArray) s.get(1)).get(j)) && !relatedList.contains(service)) {
@@ -519,6 +520,43 @@ public class ServiceRepoImpl implements ServiceRepo {
 		return false;
 	}
 
+	@Override
+	public String uploadIcon(MultipartFile file) {
+		Date date = new Date();
+		String fileName = date.getTime() + "_" + file.getOriginalFilename();
+
+		try {
+			storageService.saveIcon(file, fileName);
+			return baseUrl + "/api/public/icon/" + fileName;
+			//return uploadedFilesPath+userId+timeStamp+file.getOriginalFilename();
+
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	@Override
+	public String showServicePic(HttpServletResponse response,  String fileName) {
+
+		File file = new File(iconPath + fileName);
+		if (file.exists()) {
+			try {
+				String contentType = "image/png";
+				response.setContentType(contentType);
+				OutputStream out = response.getOutputStream();
+				FileInputStream in = new FileInputStream(file);
+				// copy from in to out
+				IOUtils.copy(in, out);
+				out.close();
+				in.close();
+				return "OK";
+			} catch (Exception e) {
+				return "Problem";
+
+			}
+		}
+		return "NotExist";
+	}
 
 	private Service analyze(String file) throws IOException, ParseException {
 

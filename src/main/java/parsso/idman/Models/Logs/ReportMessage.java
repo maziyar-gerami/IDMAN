@@ -10,7 +10,7 @@ import org.javers.core.diff.Diff;
 import org.javers.core.diff.changetype.ValueChange;
 import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 import parsso.idman.Models.Users.UsersGroups;
 
 import java.util.Date;
@@ -20,7 +20,7 @@ import java.util.List;
 @Setter
 @Getter
 public class ReportMessage {
-	final char separator = ':';
+	char separator = ':';
 	String doerID;
 	String model;
 	Object instance;

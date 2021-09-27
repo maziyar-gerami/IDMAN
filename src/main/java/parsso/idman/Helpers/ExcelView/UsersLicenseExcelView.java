@@ -8,12 +8,10 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Repos.transcripts.TranscriptRepo;
+import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.ZoneId;
 import java.util.Map;
 
 public class UsersLicenseExcelView extends AbstractXlsView {

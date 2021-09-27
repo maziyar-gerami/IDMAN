@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.PublicMessage;
+import parsso.idman.Models.other.PublicMessage;
 import parsso.idman.Repos.PubMessageRepo;
 
 import java.util.ArrayList;

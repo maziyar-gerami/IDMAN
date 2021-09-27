@@ -19,7 +19,7 @@ import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.transcripts.TranscriptRepo;
+import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
 import parsso.idman.Repos.UserRepo;
 
 import java.io.IOException;

@@ -1,13 +1,11 @@
-package parsso.idman.Repos.audits;
+package parsso.idman.Repos.logs.audits;
 
 
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Logs.ListAudits;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.List;
 
 @Service
 public interface AuditRepo {

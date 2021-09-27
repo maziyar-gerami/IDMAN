@@ -1,4 +1,4 @@
-package parsso.idman.Repos.events;
+package parsso.idman.Repos.logs.events;
 
 
 import parsso.idman.Models.Logs.Event;

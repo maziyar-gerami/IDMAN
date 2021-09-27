@@ -11,7 +11,7 @@ import lombok.Setter;
 import parsso.idman.Helpers.Events.ActionInfo;
 import parsso.idman.Helpers.Events.AgentInfo;
 import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 import ua_parser.Client;
 import ua_parser.Parser;
 

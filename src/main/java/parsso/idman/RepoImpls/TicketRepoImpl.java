@@ -13,13 +13,14 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Message;
 import parsso.idman.Models.Tickets.Ticket;
-import parsso.idman.Models.Time;
+import parsso.idman.Models.other.Time;
 import parsso.idman.Repos.TicketRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -295,14 +296,19 @@ public class TicketRepoImpl implements TicketRepo {
 			query.addCriteria(Criteria.where("ID").regex(ticketId));
 
 		if (!date.equals("")) {
-			String time = new Time(Integer.parseInt(date.substring(4)), Integer.parseInt(date.substring(2, 4)), Integer.parseInt(date.substring(0, 2))).toStringDate();
-			String timeStart = time + "T00:00:00.000000" + zoneId.toString().substring(3);
-			String timeEnd = time + "T23:59:59.000000" + zoneId.toString().substring(3);
 
-			long eventStartDate = OffsetDateTime.parse(timeStart).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
-			long eventEndDate = OffsetDateTime.parse(timeEnd).atZoneSameInstant(zoneId).toEpochSecond() * 1000;
 
-			query.addCriteria(Criteria.where("creationTime").gte(eventStartDate).lte(eventEndDate));
+			Time time = new Time(Integer.parseInt(date.substring(4)),
+					Integer.parseInt(date.substring(2, 4)),
+					Integer.parseInt(date.substring(0, 2)));
+			long[] range = new long[0];
+			try {
+				range = TimeHelper.specificDateToEpochRange(time, zoneId);
+			} catch (java.text.ParseException e) {
+				e.printStackTrace();
+			}
+
+			query = new Query(Criteria.where("creationTime").gte(range[0]).lte(range[1]));
 
 		}
 

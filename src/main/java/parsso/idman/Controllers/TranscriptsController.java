@@ -1,4 +1,4 @@
-package parsso.idman.Controllers;
+package parsso.idman.controllers;
 
 
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import parsso.idman.Models.License.License;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Logs.Transcript;
-import parsso.idman.Repos.transcripts.TranscriptRepo;
+import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,14 +24,16 @@ public class TranscriptsController {
 	}
 
 	//************************************* Pages ****************************************
-
+/*
 	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/transcripts")
 	public String getPageTranscripts() {
 		return "transcripts";
 	}
+ */
 
 	//************************************* APIs ****************************************
+
 
 	@GetMapping("/api/transcripts/users/service/{id}")
 	public ResponseEntity<Transcript> retrieveUsersOfServices(@PathVariable("id") String id) throws IOException, org.json.simple.parser.ParseException {

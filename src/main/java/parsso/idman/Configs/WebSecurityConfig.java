@@ -1,4 +1,4 @@
-package parsso.idman.Configs;
+package parsso.idman.configs;
 
 
 import org.jasig.cas.client.session.SingleSignOutFilter;
@@ -69,7 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-/*
+
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources
@@ -166,7 +166,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
 
-*/
+
 
 				.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
 				.csrf().disable()
