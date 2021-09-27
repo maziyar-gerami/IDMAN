@@ -33,6 +33,8 @@ public class ServicesController {
 	private ServiceRepo serviceRepo;
 	@Value("${metadata.file.path}")
 	private String metadataPath;
+	@Value("${service.icon.path}")
+	private String serviceIcon;
 
 	public ServicesController(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
@@ -138,9 +140,24 @@ public class ServicesController {
 	@GetMapping(value = "/api/public/metadata/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
 	)
 	public @ResponseBody
-	Object getFile(@PathVariable("file") String file) throws IOException {
+	Object getMetaDataFile(@PathVariable("file") String file) throws IOException {
 
 		FileInputStream in = new FileInputStream(new File(metadataPath + file));
+
+		HttpHeaders header = new HttpHeaders();
+		header.setContentType(new MediaType("application", "xml"));
+
+		return new HttpEntity<>(IOUtils.toByteArray(in), header);
+
+	}
+
+	@XmlElement
+	@GetMapping(value = "/api/public/icon/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
+	)
+	public @ResponseBody
+	Object getIconFile(@PathVariable("file") String file) throws IOException {
+
+		FileInputStream in = new FileInputStream(new File(serviceIcon + file));
 
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(new MediaType("application", "xml"));

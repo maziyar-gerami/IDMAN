@@ -526,7 +526,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 		try {
 			storageService.saveIcon(file, fileName);
-			return baseUrl + "/api/public/photo/" + fileName;
+			return baseUrl + "/api/public/icon/" + fileName;
 			//return uploadedFilesPath+userId+timeStamp+file.getOriginalFilename();
 
 		} catch (Exception e) {
