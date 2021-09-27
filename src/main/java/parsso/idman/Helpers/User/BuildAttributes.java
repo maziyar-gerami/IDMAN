@@ -60,7 +60,7 @@ public class BuildAttributes {
 		String mobile = new String(p.getMobile().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 		attrs.put("mobile", mobile);
 		String employeeNumber = new String(p.getEmployeeNumber().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-		attrs.put("employeeNumber", employeeNumber == null || p.getEmployeeNumber().equals("") ? "" : employeeNumber);
+		attrs.put("employeeNumber", employeeNumber == null || p.getEmployeeNumber().equals("") ? "0" : employeeNumber);
 		String mail = new String(p.getMail().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 		attrs.put("mail", mail);
 		attrs.put("cn", givenName + ' ' + sn);

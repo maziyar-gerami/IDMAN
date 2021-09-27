@@ -115,6 +115,15 @@ public class ServicesController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 
+	@PostMapping("/api/services/icon")
+	public ResponseEntity<String> uploadIcon(@RequestParam("file") MultipartFile file) {
+		String result = serviceRepo.uploadIcon(file);
+		if (result != null)
+			return new ResponseEntity<>(result, HttpStatus.OK);
+		else
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	}
+
 	@GetMapping("/api/services/position/{serviceId}")
 	public ResponseEntity<HttpStatus> increasePosition(@PathVariable("serviceId") String id, @RequestParam("value") int value) {
 		if (value == 1)

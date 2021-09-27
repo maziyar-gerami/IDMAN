@@ -17,4 +17,6 @@ public interface FilesStorageService {
 	Resource load(String filename);
 
 	Stream<Path> loadAll();
+
+	void saveIcon(MultipartFile file, String fileName);
 }

@@ -94,4 +94,9 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 			throw new RuntimeException("Could not load the files!");
 		}
 	}
+
+	@Override
+	public void saveIcon(MultipartFile file, String fileName) {
+		
+	}
 }

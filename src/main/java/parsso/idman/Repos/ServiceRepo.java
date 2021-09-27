@@ -42,4 +42,6 @@ public interface ServiceRepo {
 	ServiceGist gistService(String apikey);
 
 	boolean serviceAccess(long id);
+
+	String uploadIcon(MultipartFile file);
 }

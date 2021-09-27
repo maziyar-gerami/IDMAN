@@ -519,6 +519,20 @@ public class ServiceRepoImpl implements ServiceRepo {
 		return false;
 	}
 
+	@Override
+	public String uploadIcon(MultipartFile file) {
+		Date date = new Date();
+		String fileName = date.getTime() + "_" + file.getOriginalFilename();
+
+		try {
+			storageService.saveIcon(file, fileName);
+			return baseUrl + "/api/public/photo/" + fileName;
+			//return uploadedFilesPath+userId+timeStamp+file.getOriginalFilename();
+
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	private Service analyze(String file) throws IOException, ParseException {
 
