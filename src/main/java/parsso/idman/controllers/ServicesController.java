@@ -15,10 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceGist;
 import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.annotation.XmlElement;
 import java.io.File;
 import java.io.FileInputStream;
@@ -151,18 +153,9 @@ public class ServicesController {
 
 	}
 
-	@XmlElement
-	@GetMapping(value = "/api/public/icon/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
-	)
-	public @ResponseBody
-	Object getIconFile(@PathVariable("file") String file) throws IOException {
-
-		FileInputStream in = new FileInputStream(new File(serviceIcon + file));
-
-		HttpHeaders header = new HttpHeaders();
-		header.setContentType(new MediaType("application", "xml"));
-
-		return new HttpEntity<>(IOUtils.toByteArray(in), header);
+	@GetMapping(value = "/api/public/icon/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	ResponseEntity<String> getIconFile(HttpServletResponse response, @PathVariable("file") String file) throws IOException {
+		return new ResponseEntity<>(serviceRepo.showServicePic(response,file), HttpStatus.OK);
 
 	}
 }

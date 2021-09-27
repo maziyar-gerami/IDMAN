@@ -10,6 +10,7 @@ import parsso.idman.Models.Services.ServiceGist;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.User;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,4 +45,6 @@ public interface ServiceRepo {
 	boolean serviceAccess(long id);
 
 	String uploadIcon(MultipartFile file);
+
+	String showServicePic(HttpServletResponse response, String file);
 }
