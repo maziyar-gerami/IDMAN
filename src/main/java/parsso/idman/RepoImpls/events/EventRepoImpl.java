@@ -13,7 +13,7 @@ import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Logs.ListEvents;
 import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.other.Time;
-import parsso.idman.Repos.events.EventRepo;
+import parsso.idman.Repos.logs.events.EventRepo;
 
 import java.text.ParseException;
 import java.time.OffsetDateTime;

@@ -1,4 +1,4 @@
-package parsso.idman.Repos.transcripts;
+package parsso.idman.Repos.logs.transcripts;
 
 
 import org.json.simple.parser.ParseException;

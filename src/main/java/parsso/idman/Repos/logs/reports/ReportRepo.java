@@ -1,4 +1,4 @@
-package parsso.idman.Repos.reports;
+package parsso.idman.Repos.logs.reports;
 
 
 import parsso.idman.Models.Logs.ListReports;

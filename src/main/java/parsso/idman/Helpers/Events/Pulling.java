@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Service.Trim;
 import parsso.idman.Models.Logs.Event;
-import parsso.idman.Repos.events.EventRepo;
+import parsso.idman.Repos.logs.events.EventRepo;
 import parsso.idman.Repos.ServiceRepo;
 
 import java.io.IOException;

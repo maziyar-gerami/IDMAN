@@ -45,7 +45,7 @@ import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.*;
 import parsso.idman.Repos.systemRefresh.SystemRefresh;
-import parsso.idman.Repos.transcripts.TranscriptRepo;
+import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
 
 import javax.naming.Name;
 import javax.naming.directory.BasicAttribute;
@@ -371,7 +371,8 @@ public class UserRepoImpl implements UserRepo {
 		andFilter.and(new EqualsFilter("objectclass", "person"));
 		andFilter.and(new EqualsFilter("uid", uId));
 
-		if (ldapTemplate.authenticate("ou=People," + BASE_DN, andFilter.toString(), oldPassword)) {
+		//Checking previous password, disabled
+		//if (ldapTemplate.authenticate("ou=People," + BASE_DN, andFilter.toString(), oldPassword)) {
 			if (token != null) {
 				if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
 
@@ -395,8 +396,8 @@ public class UserRepoImpl implements UserRepo {
 			} else {
 				return HttpStatus.BAD_REQUEST;
 			}
-		} else
-			return HttpStatus.FORBIDDEN;
+		//} else
+			//return HttpStatus.FORBIDDEN;
 	}
 
 	@Override

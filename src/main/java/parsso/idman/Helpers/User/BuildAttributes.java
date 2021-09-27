@@ -15,6 +15,7 @@ import parsso.idman.Repos.UserRepo;
 
 import javax.naming.Name;
 import javax.naming.directory.*;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -46,18 +47,24 @@ public class BuildAttributes {
 
 		Attributes attrs = new BasicAttributes();
 		attrs.put(ocattr);
+		String uid = new String(p.getUserId().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+		attrs.put("uid", uid);
+		String givenName = new String(p.getFirstName().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+		attrs.put("givenName", givenName.equals("") ? " " : givenName.trim());
+		String sn = new String(p.getLastName().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+		attrs.put("sn", sn.equals("") ? " " : sn.trim());
+		String userPassword = new String(p.getUserPassword().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+		attrs.put("userPassword", userPassword != null ? userPassword : defaultPassword);
+		String displayName = new String(p.getDisplayName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+		attrs.put("displayName", displayName.trim());
+		String mobile = new String(p.getMobile().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+		attrs.put("mobile", mobile);
+		String employeeNumber = new String(p.getEmployeeNumber().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+		attrs.put("employeeNumber", employeeNumber == null || p.getEmployeeNumber().equals("") ? "" : employeeNumber);
+		String mail = new String(p.getMail().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+		attrs.put("mail", mail);
+		attrs.put("cn", givenName + ' ' + sn);
 
-		attrs.put("uid", p.getUserId().trim());
-		attrs.put("givenName", p.getFirstName().equals("") ? " " : p.getFirstName().trim());
-		attrs.put("sn", p.getLastName().equals("") ? " " : p.getLastName().trim());
-		attrs.put("userPassword", p.getUserPassword() != null ? p.getUserPassword() : defaultPassword);
-		attrs.put("displayName", p.getDisplayName().trim());
-		attrs.put("mobile", p.getMobile());
-		attrs.put("employeeNumber", p.getEmployeeNumber() == null || p.getEmployeeNumber().equals("") ? "0" : p.getEmployeeNumber());
-		attrs.put("mail", p.getMail().trim());
-		attrs.put("cn", p.getFirstName().trim() + ' ' + p.getLastName().trim());
-		if (p.getUsersExtraInfo() != null && p.getUsersExtraInfo().getResetPassToken() != null)
-			attrs.put("resetPassToken", p.getUsersExtraInfo().getResetPassToken());
 		if (p.getMemberOf() != null && p.getMemberOf().size() != 0) {
 			if (!(p.getMemberOf().size() == 1 && p.getMemberOf().get(0).equals(""))) {
 				Attribute attr = new BasicAttribute("ou");
@@ -66,10 +73,12 @@ public class BuildAttributes {
 				attrs.put(attr);
 			}
 		}
-		if (p.getDescription() != null && !(p.getDescription().equals("")))
-			attrs.put("description", p.getDescription());
+
+		String description = new String(p.getDescription().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+		if (description != null && !(description.equals("")))
+			attrs.put("description", description);
 		else
-			attrs.put("description", " ");
+			attrs.put("description", "");
 
         if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
@@ -107,23 +116,31 @@ public class BuildAttributes {
 
 		//First name (givenName) *
 		if (p.getFirstName() != null)
-			if (p.getFirstName() != "")
-				context.setAttributeValue("givenName", p.getFirstName().trim());
+			if (p.getFirstName() != "") {
+				String givenName = new String(p.getFirstName().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+				context.setAttributeValue("givenName", givenName);
+			}
 
 		//Last Name (sn) *
 		if (p.getLastName() != null)
-			if (p.getLastName() != "")
-				context.setAttributeValue("sn", p.getLastName().trim());
+			if (p.getLastName() != "") {
+				String sn = new String(p.getLastName().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+				context.setAttributeValue("sn", sn);
+			}
 
 		//Persian name (displayName) *
 		if (p.getDisplayName() != null)
-			if (p.getDisplayName() != "")
-				context.setAttributeValue("displayName", p.getDisplayName().trim());
+			if (p.getDisplayName() != "") {
+				String displayName = new String(p.getDisplayName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+				context.setAttributeValue("displayName", displayName);
+			}
 
 		//attribute (Mobile) *
 		if (p.getMobile() != null)
-			if (p.getMobile() != "")
-				context.setAttributeValue("mobile", p.getMobile());
+			if (p.getMobile() != "") {
+				String mobile = new String(p.getMobile().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+				context.setAttributeValue("mobile", mobile);
+			}
 
 		//Employee Number attribute (employeeNumber)
 		if (p.getEmployeeNumber() != null) {
@@ -135,8 +152,9 @@ public class BuildAttributes {
 
 		//Mail Address attribute (Mail) *
 		if (p.getMail() != null)
-			if (p.getMail() != "")
+			if (p.getMail() != "") {
 				context.setAttributeValue("mail", p.getMail().trim());
+			}
 
 		//Description attribute
 		if (p.getDescription() != null) {
