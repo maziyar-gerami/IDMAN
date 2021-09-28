@@ -34,7 +34,6 @@ public class TranscriptsController {
 
 	//************************************* APIs ****************************************
 
-
 	@GetMapping("/api/transcripts/users/service/{id}")
 	public ResponseEntity<Transcript> retrieveUsersOfServices(@PathVariable("id") String id) throws IOException, org.json.simple.parser.ParseException {
 		return new ResponseEntity<>(transcriptRepo.usersAndGroupsOfService(Long.parseLong(id)), HttpStatus.OK);

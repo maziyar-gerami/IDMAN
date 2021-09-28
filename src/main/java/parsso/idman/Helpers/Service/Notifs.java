@@ -12,10 +12,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class Notifs {
 	public ServiceGist getNotifications(String userId, String notificationApiURL, String notificationApiKey) throws IOException {
-		URL url=null;
+		URL url;
 		try {
 			url = new URL(notificationApiURL);
 		}catch (Exception e){return null;}
@@ -37,7 +38,7 @@ public class Notifs {
 		jsonObject.put("user-id" , userId);
 
 		try(OutputStream os = con.getOutputStream()) {
-			byte[] input = jsonObject.toJSONString().getBytes("utf-8");
+			byte[] input = jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8);
 			os.write(input, 0, input.length);
 		}
 
@@ -46,7 +47,7 @@ public class Notifs {
 		
 		try(BufferedReader br = new BufferedReader(
 				new InputStreamReader(con.getInputStream(),
-						"utf-8"))) {
+						StandardCharsets.UTF_8))) {
 			StringBuilder response = new StringBuilder();
 			String responseLine;
 			while ((responseLine = br.readLine()) != null) {
@@ -59,6 +60,7 @@ public class Notifs {
 
 			sg = objectMapper.readValue (json.toJSONString(),ServiceGist.class) ;
 		}catch (Exception e){
+			e.getMessage();
 		}
 
 		return sg;
