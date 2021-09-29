@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
       publicmessagesURLText: "./publicmessages",
       ticketingText: "پشتیبانی",
       ticketingURLText: "./ticketing",
-      transcriptsText: "گزارش های جزئی",
+      transcriptsText: "گزارش های دسترسی",
       transcriptsURLText: "./transcripts",
       inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
       inputPersianFilterText: " (تنها حروف فارسی و اعداد مجاز می باشند)",
@@ -1063,7 +1063,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.reportsText = "Reports";
           this.publicmessagesText = "Public Messages";
           this.ticketingText = "Ticketing";
-          this.transcriptsText = "Detailed Reports";
+          this.transcriptsText = "Access Reports";
           if(this.allGroupsHolderText == this.addAllGroupsText){
             this.allGroupsHolderText = "Select All";
           }else{
@@ -1169,7 +1169,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.reportsText = "گزارش ها";
             this.publicmessagesText = "اعلان های عمومی";
             this.ticketingText = "پشتیبانی";
-            this.transcriptsText = "گزارش های جزئی";
+            this.transcriptsText = "گزارش های دسترسی";
             if(this.allGroupsHolderText == this.addAllGroupsText){
               this.allGroupsHolderText = "انتخاب همه";
             }else{

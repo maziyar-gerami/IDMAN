@@ -130,9 +130,7 @@ public class EmailServiceImpl implements EmailService {
 					Thread thread = new Thread(() -> {
 						try {
 							sendMail(user.getMail());
-						} catch (IOException e) {
-							e.printStackTrace();
-						} catch (ParseException e) {
+						} catch (IOException | ParseException e) {
 							e.printStackTrace();
 						}
 					});

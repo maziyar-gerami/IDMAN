@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function () {
             publicmessagesURLText: "./publicmessages",
             ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
-            transcriptsText: "گزارش های جزئی",
+            transcriptsText: "گزارش های دسترسی",
             transcriptsURLText: "./transcripts",
             importUserListGroupError: false,
             importUserListGroupErrorList: "",
@@ -1629,7 +1629,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "Reports";
                     this.publicmessagesText = "Public Messages";
                     this.ticketingText = "Ticketing";
-                    this.transcriptsText = "Detailed Reports";
+                    this.transcriptsText = "Access Reports";
                     this.importUserListGroupErrorText = "The Groups Specified For The Following Users Are Not Defined.";
                     this.importUserListRepetitiveErrorText = "The Following Users Are Duplicates.";
                     this.importUserListOverride1Text = "From Total Users, Information Of ";
@@ -1779,7 +1779,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "گزارش ها";
                     this.publicmessagesText = "اعلان های عمومی";
                     this.ticketingText = "پشتیبانی";
-                    this.transcriptsText = "گزارش های جزئی";
+                    this.transcriptsText = "گزارش های دسترسی";
                     this.importUserListGroupErrorText = "گروه های مشخص شده برای کاربران زیر، تعریف نشده اند.";
                     this.importUserListRepetitiveErrorText = "کاربران زیر، تکراری می باشند.";
                     this.importUserListOverride1Text = "از مجموع کاربران، اطلاعات ";

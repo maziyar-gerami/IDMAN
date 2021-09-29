@@ -24,13 +24,13 @@ public class TranscriptsController {
 	}
 
 	//************************************* Pages ****************************************
-/*
+
 	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/transcripts")
 	public String getPageTranscripts() {
 		return "transcripts";
 	}
- */
+
 
 	//************************************* APIs ****************************************
 
