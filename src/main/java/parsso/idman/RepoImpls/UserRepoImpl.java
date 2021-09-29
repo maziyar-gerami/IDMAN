@@ -133,12 +133,12 @@ public class UserRepoImpl implements UserRepo {
 			return jsonObject;
 
 		}
-		User user = null;
+		User user;
 		try {
 			user = retrieveUsers(p.getUserId());
 
 		} catch (Exception e) {
-			
+			user = null;
 		}
 
 		try {
@@ -258,7 +258,7 @@ public class UserRepoImpl implements UserRepo {
 
 		if (p.getUserPassword() != null && !p.getUserPassword().equals("")) {
 			context.setAttributeValue("userPassword", p.getUserPassword());
-			p.setPasswordChangedTime(Long.parseLong(TimeHelper.epochToDateLdapFormat(new Date().getTime())));
+			p.setPasswordChangedTime(Long.parseLong(TimeHelper.epochToDateLdapFormat(new Date().getTime()).substring(0,14)));
 		} else
 			p.setPasswordChangedTime(user.getPasswordChangedTime());
 
@@ -449,7 +449,7 @@ public class UserRepoImpl implements UserRepo {
 
 	@Override
 	@CachePut(cacheNames = "currentPic", key = "#file")
-	public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException {
+	public HttpStatus uploadProfilePic(MultipartFile file, String name) {
 
 		String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
 
@@ -713,13 +713,14 @@ public class UserRepoImpl implements UserRepo {
 
 		boolean accessRole = false;
 		try {
-			if (user.getUsersExtraInfo()!=null || user.getUsersExtraInfo().getRole()!=null &&
+			if (user.getUsersExtraInfo()!=null || Objects.requireNonNull(user.getUsersExtraInfo()).getRole()!=null &&
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("superadmin") ||
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("admin") ||
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("supporter") ||
 					user.getUsersExtraInfo().getRole().equalsIgnoreCase("presenter"))
 				accessRole = true;
 		} catch (Exception e) {
+			accessRole = false;
 		}
 
 		return isEnable & accessRole;
@@ -812,7 +813,8 @@ public class UserRepoImpl implements UserRepo {
 	@Override
 	public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
 		val add = (List<String>) gu.get("add");
-		List<String> remove = (List<String>) gu.get("remove");
+		List<String> remove;
+		remove = (List<String>) gu.get("remove");
 		List<String> groups = new LinkedList<>();
 		for (String uid : add) {
 			User user = retrieveUsers(uid);
@@ -912,7 +914,8 @@ public class UserRepoImpl implements UserRepo {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public List addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException {
+	public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException {
+		List<String> result = null;
 		InputStream insfile = file.getInputStream();
 
 		if (Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xlsx")) {
@@ -923,7 +926,7 @@ public class UserRepoImpl implements UserRepo {
 			//Get first/desired sheet from the workbook
 			XSSFSheet sheet = workbookXLSX.getSheetAt(0);
 
-			return excelAnalyzer.excelSheetAnalyze(doer, sheet, ou, true);
+			result = excelAnalyzer.excelSheetAnalyze(doer, sheet, ou, true);
 
 		} else if (file.getOriginalFilename().endsWith(".xls")) {
 			HSSFWorkbook workbookXLS;
@@ -932,17 +935,17 @@ public class UserRepoImpl implements UserRepo {
 
 			HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
-			return excelAnalyzer.excelSheetAnalyze(doer, xlssheet, ou, true);
+			result = excelAnalyzer.excelSheetAnalyze(doer, xlssheet, ou, true);
 
 		} else if (file.getOriginalFilename().endsWith(".csv")) {
 
 			BufferedReader csvReader = new BufferedReader(new InputStreamReader(insfile));
 
-			return excelAnalyzer.csvSheetAnalyzer(doer, csvReader, ou, true);
+			result = excelAnalyzer.csvSheetAnalyzer(doer, csvReader, ou, true);
 
 		}
 
-		return null;
+		return result;
 	}
 
 	@Override
@@ -954,8 +957,8 @@ public class UserRepoImpl implements UserRepo {
 			users.addAll(mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 
 		} else {
-			val jsonArray = (ArrayList<String>) jsonObject.get("names");
-			for (Object temp : jsonArray)
+			final ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
+			for (String temp : jsonArray)
 				users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 		}
 
