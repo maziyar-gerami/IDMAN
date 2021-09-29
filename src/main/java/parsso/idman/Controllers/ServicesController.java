@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceGist;
 import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 
@@ -107,7 +106,7 @@ public class ServicesController {
 
 	@GetMapping("/api/serviceAccess/{id}")
 	public ResponseEntity<HttpStatus> serviceAccess(@PathVariable("id") long id) {
-		return new ResponseEntity<>(serviceRepo.serviceAccess(id) ? HttpStatus.OK :HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(serviceRepo.serviceAccess(id) ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
 	}
 
 	@PostMapping("/api/services/metadata")
@@ -154,8 +153,8 @@ public class ServicesController {
 	}
 
 	@GetMapping(value = "/api/public/icon/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	ResponseEntity<String> getIconFile(HttpServletResponse response, @PathVariable("file") String file) throws IOException {
-		return new ResponseEntity<>(serviceRepo.showServicePic(response,file), HttpStatus.OK);
+	ResponseEntity<String> getIconFile(HttpServletResponse response, @PathVariable("file") String file) {
+		return new ResponseEntity<>(serviceRepo.showServicePic(response, file), HttpStatus.OK);
 
 	}
 }

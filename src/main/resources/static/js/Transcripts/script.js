@@ -24,19 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
       margin: "margin-right: 30px;",
       lang: "EN",
       isRtl: true,
-      activeItem: "userTranscripts",
-      activeItemReport: "serviceTranscriptsUsersReport",
-      report: [],
-      reports: [],
-      reportPage: [],
-      reportsPage: [],
-      changePageReport: false,
-      changePageReports: false,
+      activeItem: "serviceTranscripts",
       userPicture: "images/PlaceholderUser.png",
-      reportDate: "",
-      reportsDate: "",
-      reportsUserId: "",
-      reportMore: "",
       bootstrapPaginationClasses: {
         ul: 'pagination',
         li: 'page-item',
@@ -52,9 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       loader: false,
       overlayLoader: false,
-      transcriptsUsersReportLoader: false,
-      transcriptsGroupsReportLoader: false,
-      transcriptsServicesReportLoader: false,
+      serviceTranscriptsLoader: false,
       deleteInputIcon: "left: 7%;",
       deleteInputIcon1: "left: 10%;",
       isListEmpty: false,
@@ -113,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
       publicmessagesURLText: "./publicmessages",
       ticketingText: "پشتیبانی",
       ticketingURLText: "./ticketing",
-      transcriptsText: "گزارش های جزئی",
+      transcriptsText: "گزارش های دسترسی",
       transcriptsURLText: "./transcripts",
       messageText: "پیام",
       userIdText: "شناسه کاربری",
@@ -128,52 +115,16 @@ document.addEventListener("DOMContentLoaded", function () {
       copyText: "کپی",
       returnText: "بازگشت",
       searchText: "جستجو...",
-      allowedUsersReportSearch: "",
-      bannedUsersReportSearch: "",
-      allowedGroupsReportSearch: "",
-      bannedGroupsReportSearch: "",
-      allowedUsersReportList: [],
-      bannedUsersReportList: [],
-      allowedGroupsReportList: [],
-      bannedGroupsReportList: [],
-      displayNameFaText: "نام کامل",
-      userNotFoundText: "کاربری یافت نشد",
-      groupNotFoundText: "گروهی یافت نشد",
-      allowedGroupsText: "گروه های دارای دسترسی",
-      bannedGroupsText: "گروه های منع شده",
-      enNameText: "نام انگلیسی",
-      faNameText: "نام فارسی",
       reportedService: {},
-      userTranscriptsAllowedServicesReportSearch: "",
-      userTranscriptsBannedServicesReportSearch: "",
-      userTranscriptsAllowedServicesReportList: [],
-      userTranscriptsBannedServicesReportList: [],
-      reportedUser: {},
-      groupTranscriptsAllowedServicesReportSearch: "",
-      groupTranscriptsBannedServicesReportSearch: "",
-      groupTranscriptsAllowedServicesReportList: [],
-      groupTranscriptsBannedServicesReportList: [],
-      reportedGroup: {},
-      idText: "شناسه",
-      nameText: "نام",
-      serviceNotFoundText: "سرویسی یافت نشد",
-      allowedServicesText: "سرویس های دارای دسترسی",
-      bannedServicesText: "سرویس های منع شده",
-      transcriptsUserIdSearch: "",
-      transcriptsGroupIdSearch: "",
-      transcriptsServiceIdSearch: "",
-      userReportText: "گزارش کاربر",
-      groupReportText: "گزارش گروه",
+      recordNotFoundText: "موردی یافت نشد",
+      serviceIdSearch: "",
       serviceReportText: "گزارش سرویس",
-      faFullNameText: "نام کامل (به فارسی)",
       showText: "نمایش",
-      mobileText: "شماره تلفن",
-      emailText: "ایمیل",
+      idText: "شناسه",
       serviceNameText: "نام سرویس",
       serviceIdText: "شناسه سرویس",
       serviceFaNameText: "نام فارسی سرویس",
-      allowedUsersText: "کاربران دارای دسترسی",
-      bannedUsersText: "کاربران منع شده",
+      serviceTranscriptsList: [],
     },
     created: function () {
       this.setDateNav();
@@ -243,12 +194,6 @@ document.addEventListener("DOMContentLoaded", function () {
       setActive (menuItem) {
         this.activeItem = menuItem
       },
-      isActiveReport (menuItem) {
-        return this.activeItemReport === menuItem
-      },
-      setActiveReport (menuItem) {
-        this.activeItemReport = menuItem
-      },
       getUserInfo: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
@@ -291,126 +236,24 @@ document.addEventListener("DOMContentLoaded", function () {
       getServiceTranscripts: function () {
         let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         let vm = this;
-        let n = 1, m = 1;
-        let tempArray = [];
+        let recordNumber = 1;
 
-        this.transcriptsServicesReportLoader = true;
-        this.allowedUsersReportList = [];
-        this.bannedUsersReportList = [];
-        this.allowedGroupsReportList = [];
-        this.bannedGroupsReportList = [];
+        this.serviceTranscriptsLoader = true;
+        this.serviceTranscriptsList = [];
 
-        axios.get(url + "/api/services/" + vm.transcriptsServiceIdSearch) //
+        axios.get(url + "/api/services/" + vm.serviceIdSearch) //
           .then((res1) => {
             vm.reportedService = res1.data;
-              axios.get(url + "/api/transcripts/users/service/" + vm.transcriptsServiceIdSearch) //
+              axios.get(url + "/api/transcripts/access/services/" + vm.serviceIdSearch) //
                 .then((res2) => {
-                  if(typeof res2.data.users.licensed !== "undefined"){
-                    for(let i = 0; i < res2.data.users.licensed.length; ++i){
-                      res2.data.users.licensed[i].recordNumber = n;
-                      vm.allowedUsersReportList.push(res2.data.users.licensed[i]);
-                      n += 1;
-                    }
+                  for(let i = 0; i < res2.data.length; ++i){
+                    res2.data[i].recordNumber = recordNumber;
+                    recordNumber += 1;
                   }
-                  n = 1;
-                  if(typeof res2.data.users.unLicensed !== "undefined"){
-                    for(let i = 0; i < res2.data.users.unLicensed.length; ++i){
-                      res2.data.users.unLicensed[i].recordNumber = n;
-                      vm.bannedUsersReportList.push(res2.data.users.unLicensed[i]);
-                      n += 1;
-                    }
-                  }
-                  n = 1;
-                  axios.get(url + "/api/groups")
-                    .then((res3) => {
-                      if(typeof res2.data.groups.licensed !== "undefined"){
-                        for(let i = 0; i < res2.data.groups.licensed.length; ++i){
-                          tempArray.push(res2.data.groups.licensed[i].id);
-                        }
-                        for(let i = 0; i < res3.data.length; ++i){
-                          if(tempArray.includes(res3.data[i].id)){
-                            res3.data[i].recordNumber = n;
-                            vm.allowedGroupsReportList.push(res3.data[i]);
-                            n += 1;
-                          }else{
-                            res3.data[i].recordNumber = m;
-                            vm.bannedGroupsReportList.push(res3.data[i]);
-                            m += 1;
-                          }
-                        }
-                      }else{
-                        vm.allowedGroupsReportList = res3.data;
-                      }
-                      vm.transcriptsServicesReportLoader = false;
-                    });
+                  vm.serviceTranscriptsList = res2.data;
+                  vm.serviceTranscriptsLoader = false;
                 });
           });
-      },
-      getUserTranscripts: function () {
-        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        let vm = this;
-        let n = 1;
-
-        this.transcriptsUsersReportLoader = true;
-        this.userTranscriptsAllowedServicesReportList = [];
-        this.userTranscriptsBannedServicesReportList = [];
-
-        axios.get(url + "/api/users/u/" + vm.transcriptsUserIdSearch) //
-          .then((res1) => {
-          vm.reportedUser = res1.data;
-          axios.get(url + "/api/transcripts/services/user/" + vm.transcriptsUserIdSearch) //
-            .then((res2) => {
-              if(typeof res2.data.licensed !== "undefined"){
-                for(let i = 0; i < res2.data.licensed.length; ++i){
-                  res2.data.licensed[i].recordNumber = n;
-                  vm.userTranscriptsAllowedServicesReportList.push(res2.data.licensed[i]);
-                  n += 1;
-                }
-              }
-              n = 1;
-              if(typeof res2.data.unLicensed !== "undefined"){
-                for(let i = 0; i < res2.data.unLicensed.length; ++i){
-                  res2.data.unLicensed[i].recordNumber = n;
-                  vm.userTranscriptsBannedServicesReportList.push(res2.data.unLicensed[i]);
-                  n += 1;
-                }
-              }
-              vm.transcriptsUsersReportLoader = false;
-            });
-          });
-      },
-      getGroupTranscripts: function () {
-        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        let vm = this;
-        let n = 1;
-
-        this.transcriptsGroupsReportLoader = true;
-        this.groupTranscriptsAllowedServicesReportList = [];
-        this.groupTranscriptsBannedServicesReportList = [];
-
-        axios.get(url + "/api/groups/" + vm.transcriptsGroupIdSearch) //
-          .then((res1) => {
-            vm.reportedGroup = res1.data;
-            axios.get(url + "/api/transcripts/services/group/" + vm.transcriptsGroupIdSearch) //
-              .then((res2) => {
-                if(typeof res2.data.licensed !== "undefined"){
-                  for(let i = 0; i < res2.data.licensed.length; ++i){
-                    res2.data.licensed[i].recordNumber = n;
-                    vm.groupTranscriptsAllowedServicesReportList.push(res2.data.licensed[i]);
-                    n += 1;
-                  }
-                }
-                n = 1;
-                if(typeof res2.data.unLicensed !== "undefined"){
-                  for(let i = 0; i < res2.data.unLicensed.length; ++i){
-                    res2.data.unLicensed[i].recordNumber = n;
-                    vm.groupTranscriptsBannedServicesReportList.push(res2.data.unLicensed[i]);
-                    n += 1;
-                  }
-                }
-                vm.transcriptsGroupsReportLoader = false;
-              });
-            });
       },
       changeLang: function () {
         if(this.lang == "EN"){
@@ -462,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
           this.reportsText = "Reports";
           this.publicmessagesText = "Public Messages";
           this.ticketingText = "Ticketing";
-          this.transcriptsText = "Detailed Reports";
+          this.transcriptsText = "Access Reports";
           this.messageText = "Message";
           this.userIdText = "UserId";
           this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
@@ -482,7 +325,7 @@ document.addEventListener("DOMContentLoaded", function () {
           this.faNameText = "Persian Name";
           this.idText = "ID";
           this.nameText = "Name";
-          this.serviceNotFoundText = "Service Not Found";
+          this.recordNotFoundText = "Record Not Found";
           this.allowedServicesText = "Allowed Services";
           this.bannedServicesText = "Banned Services";
           this.userReportText = "User Report";
@@ -546,7 +389,7 @@ document.addEventListener("DOMContentLoaded", function () {
             this.reportsText = "گزارش ها";
             this.publicmessagesText = "اعلان های عمومی";
             this.ticketingText = "پشتیبانی";
-            this.transcriptsText = "گزارش های جزئی";
+            this.transcriptsText = "گزارش های دسترسی";
             this.messageText = "پیام";
             this.userIdText = "شناسه کاربری";
             this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
@@ -566,7 +409,7 @@ document.addEventListener("DOMContentLoaded", function () {
             this.faNameText = "نام فارسی";
             this.idText = "شناسه";
             this.nameText = "نام";
-            this.serviceNotFoundText = "سرویسی یافت نشد";
+            this.recordNotFoundText = "موردی یافت نشد";
             this.allowedServicesText = "سرویس های دارای دسترسی";
             this.bannedServicesText = "سرویس های منع شده";
             this.userReportText = "گزارش کاربر";
@@ -586,126 +429,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
 
     computed:{
-      allowedUsersReportListResult(){
-        if(this.allowedUsersReportSearch){
-          let buffer = [];
-          buffer = buffer.concat(this.allowedUsersReportList.filter((item)=>{
-            return this.allowedUsersReportSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v))
-          }));
-          buffer = buffer.concat(this.allowedUsersReportList.filter((item)=>{
-            return this.allowedUsersReportSearch.toLowerCase().split(" ").every(v => item.displayName.toLowerCase().includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
-        }else{
-          return [];
-        }
-      },
-      bannedUsersReportListResult(){
-        if(this.bannedUsersReportSearch){
-          let buffer = [];
-          buffer = buffer.concat(this.bannedUsersReportList.filter((item)=>{
-            return this.bannedUsersReportSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v))
-          }));
-          buffer = buffer.concat(this.bannedUsersReportList.filter((item)=>{
-            return this.bannedUsersReportSearch.toLowerCase().split(" ").every(v => item.displayName.toLowerCase().includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
-        }else{
-          return [];
-        }
-      },
-      allowedGroupsReportListResult(){
-        if(this.allowedGroupsReportSearch){
-          let buffer = [];
-          buffer = buffer.concat(this.allowedGroupsReportList.filter((item)=>{
-            return this.allowedGroupsReportSearch.toLowerCase().split(" ").every(v => item.id.toLowerCase().includes(v))
-          }));
-          buffer = buffer.concat(this.allowedGroupsReportList.filter((item)=>{
-            return this.allowedGroupsReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
-        }else{
-          return [];
-        }
-      },
-      bannedGroupsReportListResult(){
-        if(this.bannedGroupsReportSearch){
-          let buffer = [];
-          buffer = buffer.concat(this.bannedGroupsReportList.filter((item)=>{
-            return this.bannedGroupsReportSearch.toLowerCase().split(" ").every(v => item.id.toLowerCase().includes(v))
-          }));
-          buffer = buffer.concat(this.bannedGroupsReportList.filter((item)=>{
-            return this.bannedGroupsReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
-        }else{
-          return [];
-        }
-      },
-      userTranscriptsAllowedServicesReportListResult(){
-        if(this.userTranscriptsAllowedServicesReportSearch){
-          let buffer = [];
-          /*buffer = buffer.concat(this.allowedServicesReportList.filter((item)=>{
-              return this.allowedServicesReportSearch.toLowerCase().split(" ").every(v => item._id.toLowerCase().includes(v))
-          }));*/
-          buffer = buffer.concat(this.userTranscriptsAllowedServicesReportList.filter((item)=>{
-            return this.userTranscriptsAllowedServicesReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
-        }else{
-          return [];
-        }
-      },
-      userTranscriptsBannedServicesReportListResult(){
-        if(this.userTranscriptsBannedServicesReportSearch){
-          let buffer = [];
-          /*buffer = buffer.concat(this.bannedServicesReportList.filter((item)=>{
-              return this.bannedServicesReportSearch.toLowerCase().split(" ").every(v => item._id.toLowerCase().includes(v))
-          }));*/
-          buffer = buffer.concat(this.userTranscriptsBannedServicesReportList.filter((item)=>{
-            return this.userTranscriptsBannedServicesReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
-        }else{
-          return [];
-        }
-      },
-      groupTranscriptsAllowedServicesReportListResult(){
-        if(this.groupTranscriptsAllowedServicesReportSearch){
-          let buffer = [];
-          /*buffer = buffer.concat(this.allowedServicesReportList.filter((item)=>{
-              return this.allowedServicesReportSearch.toLowerCase().split(" ").every(v => item._id.toLowerCase().includes(v))
-          }));*/
-          buffer = buffer.concat(this.groupTranscriptsAllowedServicesReportList.filter((item)=>{
-            return this.groupTranscriptsAllowedServicesReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
-        }else{
-          return [];
-        }
-      },
-      groupTranscriptsBannedServicesReportListResult(){
-        if(this.groupTranscriptsBannedServicesReportSearch){
-          let buffer = [];
-          /*buffer = buffer.concat(this.bannedServicesReportList.filter((item)=>{
-              return this.bannedServicesReportSearch.toLowerCase().split(" ").every(v => item._id.toLowerCase().includes(v))
-          }));*/
-          buffer = buffer.concat(this.groupTranscriptsBannedServicesReportList.filter((item)=>{
-            return this.groupTranscriptsBannedServicesReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
-        }else{
-          return [];
-        }
-      },
+
     }
   })
 })

@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
             publicmessagesURLText: "./publicmessages",
             ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
-            transcriptsText: "گزارش های جزئی",
+            transcriptsText: "گزارش های دسترسی",
             transcriptsURLText: "./transcripts",
             emailFormatErrorText: "فرمت آدرس ایمیل را به درستی وارد کنید",
             mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "Reports";
                     this.publicmessagesText = "Public Messages";
                     this.ticketingText = "Ticketing";
-                    this.transcriptsText = "Detailed Reports";
+                    this.transcriptsText = "Access Reports";
                     this.emailFormatErrorText = "Enter Email Address Format Correctly";
                     this.mobileFormatErrorText = "Enter Phone Number Format Correctly";
                     this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
@@ -586,7 +586,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "گزارش ها";
                     this.publicmessagesText = "اعلان های عمومی";
                     this.ticketingText = "پشتیبانی";
-                    this.transcriptsText = "گزارش های جزئی";
+                    this.transcriptsText = "گزارش های دسترسی";
                     this.emailFormatErrorText = "فرمت آدرس ایمیل را به درستی وارد کنید";
                     this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
                     this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
