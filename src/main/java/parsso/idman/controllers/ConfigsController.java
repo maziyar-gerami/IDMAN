@@ -14,7 +14,6 @@ import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Models.Logs.Config;
 import parsso.idman.Models.Logs.Setting;
 import parsso.idman.Repos.ConfigRepo;
-import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -22,11 +21,10 @@ import java.util.List;
 
 @Controller
 public class ConfigsController {
-	final
 	PasswordSettings passwordSettings;
 	private final ConfigRepo configRepo;
 
-	public ConfigsController(PasswordSettings passwordSettings, @Qualifier("configRepoImpl") ConfigRepo configRepo, UserRepo userRepo) {
+	public ConfigsController(PasswordSettings passwordSettings, @Qualifier("configRepoImpl") ConfigRepo configRepo) {
 		this.passwordSettings = passwordSettings;
 		this.configRepo = configRepo;
 	}
@@ -63,8 +61,8 @@ public class ConfigsController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@PutMapping("/api/configs/system/{system}")
-	public ResponseEntity<String> updateSettingsSystem(HttpServletRequest request, @RequestBody List<Setting> settings, @PathVariable String system) throws IOException {
+	@PutMapping("/api/configs/system")
+	public ResponseEntity<String> updateSettingsSystem(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException {
 		configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
 		passwordSettings.update(settings);
 		return new ResponseEntity<>(HttpStatus.OK);

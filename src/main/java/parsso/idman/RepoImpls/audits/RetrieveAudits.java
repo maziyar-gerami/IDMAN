@@ -18,11 +18,9 @@ import java.time.ZoneId;
 import java.util.List;
 
 @Service
-public class Retrieves implements AuditRepo {
-	final
+public class RetrieveAudits implements AuditRepo {
 	MongoTemplate mongoTemplate;
-
-	public Retrieves(MongoTemplate mongoTemplate) {
+	public RetrieveAudits(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 

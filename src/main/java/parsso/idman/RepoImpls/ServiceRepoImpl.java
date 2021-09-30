@@ -488,11 +488,6 @@ public class ServiceRepoImpl implements ServiceRepo {
 		return position.decrease(id);
 	}
 
-	@Override
-	public ServiceGist gistService(String apikey) {
-		return new ServiceGist();
-
-	}
 
 	@Override
 	public boolean serviceAccess(long id) {

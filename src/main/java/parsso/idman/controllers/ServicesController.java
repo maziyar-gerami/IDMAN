@@ -7,13 +7,11 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServiceGist;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
@@ -29,17 +27,11 @@ import java.util.List;
 
 @Controller
 public class ServicesController {
-	MongoTemplate mongoTemplate;
-	private UserRepo userRepo;
-	private ServiceRepo serviceRepo;
+	private final UserRepo userRepo;
+	private final ServiceRepo serviceRepo;
 	@Value("${metadata.file.path}")
 	private String metadataPath;
-	@Value("${service.icon.path}")
-	private String serviceIcon;
 
-	public ServicesController(MongoTemplate mongoTemplate) {
-		this.mongoTemplate = mongoTemplate;
-	}
 
 	@Autowired
 	public ServicesController(@Qualifier("userRepoImpl") UserRepo userRepo, @Qualifier("serviceRepoImpl") ServiceRepo serviceRepo) {
@@ -77,11 +69,6 @@ public class ServicesController {
 	@GetMapping("/api/services/{id}")
 	public ResponseEntity<Service> retrieveService(@PathVariable("id") long serviceId) throws IOException, ParseException {
 		return new ResponseEntity<>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
-	}
-
-	@PostMapping("/service/notifyService")
-	public ResponseEntity<ServiceGist> retrieveGistService(@RequestBody JSONObject jsonObject) {
-		return new ResponseEntity<>(serviceRepo.gistService("jsonObject"), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/api/services")
