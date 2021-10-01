@@ -13,6 +13,7 @@ import parsso.idman.Models.Logs.Transcript;
 import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 @Controller
@@ -49,11 +50,18 @@ public class TranscriptsController {
 		return new ResponseEntity<>(transcriptRepo.servicesOfUser(id), HttpStatus.OK);
 	}
 
-	@GetMapping("/api/transcripts/access/services/{id}")
-	public ResponseEntity<List<ReportMessage>> accessManaging(@PathVariable("id") String id,
-	                                                          @RequestParam(name = "type", defaultValue = "") String type,
-	                                                          @RequestParam(name = "item", defaultValue = "") String item) {
-		return new ResponseEntity<>(transcriptRepo.accessManaging(Long.valueOf(id), type, item), HttpStatus.OK);
+	@GetMapping("/api/transcripts/access/services")
+	public ResponseEntity<List<ReportMessage>> accessManaging(@RequestParam(value = "page",defaultValue = "") String p ,
+	                                                          @RequestParam(value = "n",defaultValue = "") String n,
+	                                                          @RequestParam(value = "sName" ,defaultValue = "") String instanceName,
+	                                                          @RequestParam(value = "sId",defaultValue = "") String id,
+	                                                          @RequestParam(value = "date",defaultValue = "") String date,
+	                                                          @RequestParam(value = "doerId",defaultValue = "") String doerId) throws ParseException {
+		long _id = !id.equals("")? Long.parseLong(id):0;
+		int page = !p.equals("")?Integer.parseInt(p):0;
+		int nRows = !n.equals("")? Integer.parseInt(n): 0 ;
+
+		return new ResponseEntity<>(transcriptRepo.accessManaging(page,nRows,_id,date,doerId, instanceName), HttpStatus.OK);
 	}
 
 }

@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import parsso.idman.Helpers.Service.ExtractLicensedAndUnlicensed;
+import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.User.UsersLicense;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.License.License;
@@ -17,12 +18,14 @@ import parsso.idman.Models.Logs.Transcript;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.Models.other.Time;
 import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.ServiceRepo;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -102,19 +105,29 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 	}
 
 	@Override
-	public List<ReportMessage> accessManaging(Long id, String type, String item) {
-		Query query = new Query();
+	public List<ReportMessage> accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName) throws java.text.ParseException {
+		int skip;
 
-		query.addCriteria(Criteria.where("model").is(Variables.MODEL_SERVICE));
-		query.addCriteria(Criteria.where("instance").is(id));
-		query.addCriteria(Criteria.where("attribute").is(Variables.ACCESS_STRATEGY));
-		if (!type.equals(""))
-			query.addCriteria(Criteria.where("type").is(type));
-		if (!item.equals(""))
-			query.addCriteria(Criteria.where("item").is(item));
+		Query query = new Query();
+		if(id !=0)
+			query.addCriteria(Criteria.where("instance").is(id));
+		if(!doerId.equals(""))
+			query.addCriteria(Criteria.where("doerID").is(doerId));
+		if (!instanceName.equals(""))
+			query.addCriteria(Criteria.where("instanceName").is(instanceName));
+		if (!date.equals("")){
+			Time time = new Time(Integer.parseInt(date.substring(4)),
+					Integer.parseInt(date.substring(2, 4)),
+					Integer.parseInt(date.substring(0, 2)));
+			long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
+			query.addCriteria(Criteria.where("_id").gte(range[0]).lte(range[1]));
+		}
+		if (page!=0 && nRows !=0) {
+			skip = (page - 1) * nRows;
+			query.skip(skip).limit(nRows);
+		}
 
 		return mongoTemplate.find(query, ReportMessage.class, Variables.col_idmanlog);
-
 	}
 }
 

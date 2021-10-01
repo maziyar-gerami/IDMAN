@@ -16,5 +16,6 @@ public interface TranscriptRepo {
 
 	Transcript usersAndGroupsOfService(long serviceId) throws IOException, ParseException;
 
-	List<ReportMessage> accessManaging(Long id, String type, String item);
+	List<ReportMessage> accessManaging(int page, int nRows,long id,
+	                                   String date, String doerId, String instanceName) throws java.text.ParseException;
 }

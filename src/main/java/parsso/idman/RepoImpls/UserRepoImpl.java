@@ -120,7 +120,7 @@ public class UserRepoImpl implements UserRepo {
 	private EmailService emailService;
 
 	@Override
-	public JSONObject create(String doerID, User p) {
+	public JSONObject create(String doerID, User p) throws IOException, ParseException {
 
 		p.setUserId(p.getUserId().toLowerCase());
 
@@ -204,7 +204,7 @@ public class UserRepoImpl implements UserRepo {
 
 	@Override
 	@CachePut(cacheNames = "currentPic", key = "usid")
-	public User update(String doerID, String usid, User p) {
+	public User update(String doerID, String usid, User p) throws IOException, ParseException {
 
 		p.setUserId(usid.trim());
 		Name dn = buildDnUser.buildDn(p.getUserId());
@@ -280,7 +280,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public JSONObject createUserImport(String doerID, User p) {
+	public JSONObject createUserImport(String doerID, User p) throws IOException, ParseException {
 
 		if (p.getUserPassword() == null)
 			p.setUserPassword(defaultPassword);
@@ -289,7 +289,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public List<String> remove(String doer, JSONObject jsonObject) {
+	public List<String> remove(String doer, JSONObject jsonObject) throws IOException, ParseException {
 
 		List<User> people = new LinkedList<>();
 		List<String> undeletables = new LinkedList<>();
@@ -449,7 +449,7 @@ public class UserRepoImpl implements UserRepo {
 
 	@Override
 	@CachePut(cacheNames = "currentPic", key = "#file")
-	public HttpStatus uploadProfilePic(MultipartFile file, String name) {
+	public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException, ParseException {
 
 		String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
 
@@ -522,7 +522,15 @@ public class UserRepoImpl implements UserRepo {
 	@Override
 	public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
-		new Thread(() -> systemRefresh.refreshLockedUsers()).start();
+		new Thread(() -> {
+			try {
+				systemRefresh.refreshLockedUsers();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}).start();
 
 		int skip = (page - 1) * nCount;
 
@@ -627,7 +635,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) {
+	public HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) throws IOException, ParseException {
 
 		try {
 
@@ -811,7 +819,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
+	public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) throws IOException, ParseException {
 		val add = (List<String>) gu.get("add");
 		List<String> remove;
 		remove = (List<String>) gu.get("remove");
@@ -949,7 +957,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public List<String> expirePassword(String doer, JSONObject jsonObject) {
+	public List<String> expirePassword(String doer, JSONObject jsonObject) throws IOException, ParseException {
 
 		List<UsersExtraInfo> users = new LinkedList<>();
 

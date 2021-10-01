@@ -40,7 +40,7 @@ public interface UserRepo {
 
 	List<User> getUsersOfOu(String ou);
 
-	HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou);
+	HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) throws IOException, ParseException;
 
 	User retrieveUsers(String userId) throws IOException, ParseException;
 
@@ -70,6 +70,6 @@ public interface UserRepo {
 
 	List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException;
 
-	List<String> expirePassword(String name, JSONObject jsonObject);
+	List<String> expirePassword(String name, JSONObject jsonObject) throws IOException, ParseException;
 
 }

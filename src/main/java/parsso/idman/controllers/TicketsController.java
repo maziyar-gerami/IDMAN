@@ -44,7 +44,7 @@ public class TicketsController {
 	//************************************* APIs ****************************************
 
 	@PostMapping("/api/user/ticket")
-	public ResponseEntity<HttpStatus> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request) {
+	public ResponseEntity<HttpStatus> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request) throws IOException, ParseException {
 		return new ResponseEntity<>(ticketRepo.sendTicket(ticket, request.getUserPrincipal().getName().toLowerCase()));
 	}
 
@@ -68,7 +68,7 @@ public class TicketsController {
 	}
 
 	@DeleteMapping("/api/user/ticket")
-	public ResponseEntity<HttpStatus> deleteTicket(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
+	public ResponseEntity<HttpStatus> deleteTicket(@RequestBody JSONObject jsonObject, HttpServletRequest request) throws IOException, ParseException {
 		return new ResponseEntity<>(ticketRepo.deleteTicket(request.getUserPrincipal().getName().toLowerCase(),
 				jsonObject) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
 	}
@@ -100,7 +100,7 @@ public class TicketsController {
 
 	@PutMapping("/api/user/ticket/{ticketID}")
 	public ResponseEntity<HttpStatus> updateTicket(@RequestBody Ticket ticket, @PathVariable("ticketID") String ticketID,
-	                                               HttpServletRequest request) {
+	                                               HttpServletRequest request) throws IOException, ParseException {
 
 		return new ResponseEntity<>(ticketRepo.updateTicket(request.getUserPrincipal().getName().toLowerCase(), ticketID, ticket) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
 	}

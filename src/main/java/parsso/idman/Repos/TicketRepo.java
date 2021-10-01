@@ -12,13 +12,13 @@ import java.io.IOException;
 
 @Service
 public interface TicketRepo {
-	HttpStatus sendTicket(Ticket ticket, String userId);
+	HttpStatus sendTicket(Ticket ticket, String userId) throws IOException, ParseException;
 
 	Ticket retrieveTicket(String ticketID);
 
 	HttpStatus reply(String ticketID, String user, Ticket ticket) throws IOException, ParseException;
 
-	HttpStatus deleteTicket(String doer, JSONObject jsonObject);
+	HttpStatus deleteTicket(String doer, JSONObject jsonObject) throws IOException, ParseException;
 
 	HttpStatus updateTicketStatus(String doer, int status, JSONObject jsonObject) throws IOException, ParseException;
 
@@ -26,7 +26,7 @@ public interface TicketRepo {
 
 	ListTickets retrieveTicketsReceived(String userId, String page, String count, String from, String ticketId, String date);
 
-	HttpStatus updateTicket(String userId, String ticketId, Ticket ticket);
+	HttpStatus updateTicket(String userId, String ticketId, Ticket ticket) throws IOException, ParseException;
 
 	ListTickets retrieve(String doer, String cat, String subCat, String status, String page, String count, String from, String ticketId, String date);
 

@@ -45,7 +45,7 @@ public class TicketRepoImpl implements TicketRepo {
 	ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
 	@Override
-	public HttpStatus sendTicket(Ticket ticket, String userid) {
+	public HttpStatus sendTicket(Ticket ticket, String userid) throws IOException, ParseException {
 		try {
 			logger = LogManager.getLogger(userid);
 
@@ -168,7 +168,7 @@ public class TicketRepoImpl implements TicketRepo {
 	}
 
 	@Override
-	public HttpStatus deleteTicket(String doer, @RequestBody JSONObject jsonObject) {
+	public HttpStatus deleteTicket(String doer, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
 
 		logger = LogManager.getLogger(doer);
 
@@ -320,7 +320,7 @@ public class TicketRepoImpl implements TicketRepo {
 	}
 
 	@Override
-	public HttpStatus updateTicket(String userId, String ticketId, Ticket newTicket) {
+	public HttpStatus updateTicket(String userId, String ticketId, Ticket newTicket) throws IOException, ParseException {
 		logger = LogManager.getLogger(userId);
 		Query query = new Query(Criteria.where("ID").is(ticketId));
 		Ticket oldTicket = mongoTemplate.findOne(query, Ticket.class, collection);

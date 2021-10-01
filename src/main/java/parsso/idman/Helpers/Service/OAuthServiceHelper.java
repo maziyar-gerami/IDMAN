@@ -313,7 +313,7 @@ public class OAuthServiceHelper {
 
 	}
 
-	public long create(String doerID, JSONObject jo) {
+	public long create(String doerID, JSONObject jo) throws IOException, ParseException {
 
 		OAuthService service = buildOAuthService(jo);
 		service.setId(new Date().getTime());
@@ -360,7 +360,7 @@ public class OAuthServiceHelper {
 						"", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
 
 				return service.getId();
-			} catch (IOException e) {
+			} catch (IOException | ParseException e) {
 				e.printStackTrace();
 				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
 						"", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));

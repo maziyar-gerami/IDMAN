@@ -55,14 +55,14 @@ public class ConfigsController {
 	}
 
 	@PutMapping("/api/configs")
-	public ResponseEntity<String> updateSettings(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException {
+	public ResponseEntity<String> updateSettings(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException, ParseException {
 		configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
 		passwordSettings.update(settings);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@PutMapping("/api/configs/system")
-	public ResponseEntity<String> updateSettingsSystem(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException {
+	public ResponseEntity<String> updateSettingsSystem(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException, ParseException {
 		configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
 		passwordSettings.update(settings);
 		return new ResponseEntity<>(HttpStatus.OK);
@@ -80,7 +80,7 @@ public class ConfigsController {
 	}
 
 	@GetMapping("/api/configs/reset")
-	public ResponseEntity<HttpStatus> resetFactory(HttpServletRequest request) throws IOException {
+	public ResponseEntity<HttpStatus> resetFactory(HttpServletRequest request) throws IOException, ParseException {
 		return new ResponseEntity<>(configRepo.factoryReset(request.getUserPrincipal().getName()));
 	}
 }

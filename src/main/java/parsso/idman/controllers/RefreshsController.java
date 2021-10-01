@@ -32,17 +32,17 @@ public class RefreshsController {
 	}
 
 	@GetMapping("/api/refresh/captchas")
-	public HttpEntity<HttpStatus> captchas(HttpServletRequest request) {
+	public HttpEntity<HttpStatus> captchas(HttpServletRequest request) throws IOException, ParseException {
 		return new ResponseEntity<>(refreshs.captchaRefresh(request.getUserPrincipal().getName()));
 	}
 
 	@GetMapping("/api/refresh/users")
-	public HttpEntity<HttpStatus> users(HttpServletRequest request) throws IOException {
+	public HttpEntity<HttpStatus> users(HttpServletRequest request) throws IOException, ParseException {
 		return new ResponseEntity<>(refreshs.userRefresh(request.getUserPrincipal().getName()));
 	}
 
 	@GetMapping("/api/refresh/lockedUsers")
-	public HttpEntity<HttpStatus> lockedUsers() {
+	public HttpEntity<HttpStatus> lockedUsers() throws IOException, ParseException {
 		return new ResponseEntity<>(refreshs.refreshLockedUsers());
 	}
 }

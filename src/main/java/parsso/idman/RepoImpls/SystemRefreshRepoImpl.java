@@ -58,7 +58,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 	private String BASE_DN;
 
 	@Override
-	public HttpStatus userRefresh(String doer) {
+	public HttpStatus userRefresh(String doer) throws IOException, ParseException {
 
 		SearchControls searchControls = new SearchControls();
 		searchControls.setReturningAttributes(new String[]{"*", "+"});
@@ -175,7 +175,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 	}
 
 	@Override
-	public HttpStatus captchaRefresh(String doer) {
+	public HttpStatus captchaRefresh(String doer) throws IOException, ParseException {
 
 		uniformLogger.info(doer, new ReportMessage(Variables.MODEL_CAPTCHA, "", "", Variables.ACTION_REFRESH, Variables.RESULT_STARTED, ""));
 		if (mongoTemplate.getCollection(Variables.col_captchas) != null) {
@@ -258,7 +258,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 	}
 
 	@Override
-	public HttpStatus refreshLockedUsers() {
+	public HttpStatus refreshLockedUsers() throws IOException, ParseException {
 
 		SearchControls searchControls = new SearchControls();
 		searchControls.setReturningAttributes(new String[]{"*", "+"});

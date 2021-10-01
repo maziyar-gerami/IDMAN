@@ -102,7 +102,7 @@ public class UsersController {
 
 	@PutMapping("/api/users/password/expire")
 	public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
-	                                                   @RequestBody JSONObject jsonObject) {
+	                                                   @RequestBody JSONObject jsonObject) throws IOException, ParseException {
 		Principal principal = request.getUserPrincipal();
 		List<String> preventedUsers = userRepo.expirePassword(principal.getName(), jsonObject);
 

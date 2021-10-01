@@ -2,13 +2,16 @@ package parsso.idman.Models.Logs;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
 import org.javers.core.diff.changetype.ValueChange;
+import org.springframework.data.annotation.PersistenceConstructor;
 import parsso.idman.Helpers.TimeHelper;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.other.Time;
 import parsso.idman.Models.Users.UsersGroups;
@@ -24,6 +27,8 @@ public class ReportMessage {
 	String doerID;
 	String model;
 	Object instance;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	String instanceName;
 	String attribute;
 	String result;
 	String action;
@@ -35,11 +40,17 @@ public class ReportMessage {
 	UsersGroups usersGroups;
 	@JsonIgnore
 	List<Changes> difference;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	Object from;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	Object to;
 	long millis;
 	Time time;
 	String level;
+
+	public ReportMessage() {
+	}
+
 
 	public ReportMessage(String model, Object instance, String attribute, String action, String result, String description) {
 		this.model = model;
@@ -114,14 +125,11 @@ public class ReportMessage {
 		time = TimeHelper.longToPersianTime(millis);
 	}
 
-	public ReportMessage() {
-
-	}
-
 	public ReportMessage(Changes ch, ReportMessage reportMessage) {
 		this.doerID = reportMessage.getDoerID();
 		this.model = reportMessage.model;
 		this.instance = reportMessage.getInstance();
+		this.instanceName = reportMessage.getInstanceName();
 		this.attribute = ch.getAttribute();
 		this.difference = difference(reportMessage.getFrom(), reportMessage.getTo());
 		this.millis = new Date().getTime();
@@ -139,6 +147,7 @@ public class ReportMessage {
 		this.doerID = reportMessage.getDoerID();
 		this.model = reportMessage.model;
 		this.instance = reportMessage.getInstance();
+		this.instanceName = reportMessage.getInstanceName();
 		this.attribute = "Access Strategy";
 		this.type = type;
 		this.item = item;
@@ -153,6 +162,7 @@ public class ReportMessage {
 
 	}
 
+	@SuppressWarnings("DuplicatedCode")
 	@Override
 	public String toString() {
 		String first = "[" + level + "]" + separator +
@@ -201,23 +211,5 @@ public class ReportMessage {
 		return chs;
 	}
 
-	@Getter
-	@Setter
-	public class Changes {
-		private String attribute;
-		private Object from;
-		private Object to;
 
-		public Changes(Object from, Object to) {
-			this.from = from;
-			this.to = to;
-		}
-
-		public Changes(ValueChange c) {
-			this.attribute = c.getPropertyName();
-			this.from = c.getLeft();
-			this.to = c.getRight();
-
-		}
-	}
 }

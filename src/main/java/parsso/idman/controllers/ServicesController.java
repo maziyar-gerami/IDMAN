@@ -72,7 +72,7 @@ public class ServicesController {
 	}
 
 	@DeleteMapping("/api/services")
-	public ResponseEntity<LinkedList<String>> deleteServices(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException {
+	public ResponseEntity<LinkedList<String>> deleteServices(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
 		LinkedList<String> ls = serviceRepo.deleteServices(request.getUserPrincipal().getName(), jsonObject);
 		HttpStatus httpStatus = (ls == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 

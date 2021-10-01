@@ -14,11 +14,11 @@ public interface ConfigRepo {
 
 	String retrieveSetting() throws IOException;
 
-	String updateSettings(String doerID, List<Setting> settings) throws IOException;
+	String updateSettings(String doerID, List<Setting> settings) throws IOException, ParseException;
 
 	HttpStatus backupConfig();
 
-	HttpStatus factoryReset(String doerID) throws IOException;
+	HttpStatus factoryReset(String doerID) throws IOException, ParseException;
 
 	HttpStatus restore(String doerID, String name) throws IOException, ParseException, java.text.ParseException;
 

@@ -311,7 +311,7 @@ public class CasServiceHelper {
 
 	}
 
-	public long create(String doerID, JSONObject jo) {
+	public long create(String doerID, JSONObject jo) throws IOException, ParseException {
 
 		CasService service = buildCasService(jo);
 		service.setId(new Date().getTime());
@@ -358,7 +358,7 @@ public class CasServiceHelper {
 						"", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
 
 				return service.getId();
-			} catch (IOException e) {
+			} catch (IOException | ParseException e) {
 				e.printStackTrace();
 				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
 						"", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));

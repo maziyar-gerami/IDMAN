@@ -1,6 +1,7 @@
 package parsso.idman.Helpers.User;
 
 
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -16,6 +17,7 @@ import parsso.idman.Models.Users.UsersExtraInfo;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class ExpirePassword {
 	@Autowired
 	UniformLogger uniformLogger;
 
-	public List<String> expire(String doer, List<UsersExtraInfo> users) {
+	public List<String> expire(String doer, List<UsersExtraInfo> users) throws IOException, ParseException {
 
 		List<String> superAdminUsers = new LinkedList<>();
 
