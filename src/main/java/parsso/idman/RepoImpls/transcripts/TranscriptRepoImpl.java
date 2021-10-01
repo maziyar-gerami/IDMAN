@@ -71,11 +71,12 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 
 		UsersExtraInfo user = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userId)), UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
-		List<String> memberOf = null;
+		List<String> memberOf;
 		try {
 			memberOf = user.getMemberOf();
 
 		} catch (NullPointerException e) {
+			memberOf = null;
 		}
 
 		for (Service service : allServices) {
@@ -120,7 +121,7 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 					Integer.parseInt(date.substring(2, 4)),
 					Integer.parseInt(date.substring(0, 2)));
 			long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
-			query.addCriteria(Criteria.where("_id").gte(range[0]).lte(range[1]));
+			query.addCriteria(Criteria.where("millis").gte(range[0]).lte(range[1]));
 		}
 		if (page!=0 && nRows !=0) {
 			skip = (page - 1) * nRows;
