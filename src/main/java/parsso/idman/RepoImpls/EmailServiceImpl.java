@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.EmailService;
+import parsso.idman.Repos.email.EmailService;
 import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Captcha.Models.CAPTCHA;
 

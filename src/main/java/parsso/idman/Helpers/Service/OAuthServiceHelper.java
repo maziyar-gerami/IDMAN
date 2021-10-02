@@ -58,6 +58,8 @@ public class OAuthServiceHelper {
 		if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
 		if (jo.get("clientSecret") != null) service.setClientSecret(jo.get("clientSecret").toString());
 		if (jo.get("clientId") != null) service.setClientId(jo.get("clientId").toString());
+		if (jo.get("supportedGrantTypes") != null) service.setSupportedGrantTypes( jo.get("supportedGrantTypes"));
+		if (jo.get("supportedResponseTypes") != null) service.setSupportedResponseTypes( jo.get("supportedResponseTypes"));
 
 		if (jo.get("expirationPolicy") == null)
 			service.setExpirationPolicy(new ExpirationPolicy());
@@ -340,7 +342,6 @@ public class OAuthServiceHelper {
 					try {
 						machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
 					} catch (Exception e) {
-						e.printStackTrace();
 						uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
 								"IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
 						machines = null;

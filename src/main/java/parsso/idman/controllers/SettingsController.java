@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Models.Logs.Setting;
-import parsso.idman.Repos.SettingsRepo;
+import parsso.idman.Repos.settings.SettingsRepo;
 import parsso.idman.Repos.UserRepo;
 
 import java.io.IOException;

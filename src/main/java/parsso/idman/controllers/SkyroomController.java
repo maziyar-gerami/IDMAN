@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.other.SkyRoom;
-import parsso.idman.Repos.SkyroomRepo;
+import parsso.idman.Repos.skyRoom.SkyroomRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
