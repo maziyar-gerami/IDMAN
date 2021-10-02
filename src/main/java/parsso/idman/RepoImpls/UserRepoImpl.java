@@ -974,5 +974,15 @@ public class UserRepoImpl implements UserRepo {
 
 		return expirePassword.expire(doer, users);
 	}
+
+	@Override
+	public int retrieveUsersLDAPSize() {
+		SearchControls searchControls = new SearchControls();
+		searchControls.setReturningAttributes(new String[]{"*", "+"});
+		searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+
+		return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("objectClass", "person").encode(), searchControls, simpleUserAttributeMapper).size();
+
+	}
 }
 

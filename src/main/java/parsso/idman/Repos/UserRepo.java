@@ -72,4 +72,5 @@ public interface UserRepo {
 
 	List<String> expirePassword(String name, JSONObject jsonObject) throws IOException, ParseException;
 
+	int retrieveUsersLDAPSize();
 }

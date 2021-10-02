@@ -70,7 +70,7 @@ public class DashboardData {
 
 		Thread userData = new Thread(() -> {
 			//________users data____________
-			int nUsers = userRepo.retrieveUsersSize("", "", "", "");
+			int nUsers = userRepo.retrieveUsersLDAPSize();
 
 			int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), UsersExtraInfo.class, userExtraInfoCollection);
 			int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, userExtraInfoCollection);

@@ -61,13 +61,6 @@ public class ConfigsController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@PutMapping("/api/configs/system")
-	public ResponseEntity<String> updateSettingsSystem(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException, ParseException {
-		configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
-		passwordSettings.update(settings);
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
-
 	@GetMapping("/api/configs/backup")
 	public ResponseEntity<String> backupSettings() {
 		return new ResponseEntity<>(configRepo.backupConfig());
