@@ -30,14 +30,14 @@ public class Pulling {
 	}
 
 	public String insert() throws  org.json.simple.parser.ParseException, IOException {
-		List<Event> mainEvents = eventRepo.analyze(mainCollection, 0, 0);
+		List<Event> mainEvents = eventRepo.analyze(0, 0);
 		List<parsso.idman.Models.Services.Service> services = serviceRepo.listServicesFull();
 		run(mainEvents, services);
 		return null;
 	}
 
 	public void update() throws org.json.simple.parser.ParseException, IOException {
-		List<Event> secondaryEvents = eventRepo.analyze(mainCollection, 0, 0);
+		List<Event> secondaryEvents = eventRepo.analyze(0, 0);
 		List<parsso.idman.Models.Services.Service> services = serviceRepo.listServicesFull();
 		run(secondaryEvents, services);
 	}

@@ -25,11 +25,10 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DashboardData {
-	public static String mainCollection = "MongoDbCasEventRepository";
-	public static String userExtraInfoCollection = Variables.col_usersExtraInfo;
 	@Autowired
 	UserRepo userRepo;
 	@Autowired
@@ -72,10 +71,10 @@ public class DashboardData {
 			//________users data____________
 			int nUsers = userRepo.retrieveUsersLDAPSize();
 
-			int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), UsersExtraInfo.class, userExtraInfoCollection);
-			int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, userExtraInfoCollection);
+			int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+			int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
 			int temp = nUsers - nLocked - nDisabled;
-			int nActive = (temp) > nUsers ? nUsers : temp;
+			int nActive = Math.min((temp), nUsers);
 
 			fUsers = new Users(nUsers, nActive, nDisabled, nLocked);
 
@@ -91,10 +90,13 @@ public class DashboardData {
 			} catch (java.io.IOException | ParseException e) {
 				e.printStackTrace();
 			}
-			int nServices = services.size();
+			int nServices = 0;
+			if (services != null) {
+				nServices = services.size();
+			}
 			int nEnabledServices = 0;
 
-			for (parsso.idman.Models.Services.Service service : services) {
+			for (parsso.idman.Models.Services.Service service : Objects.requireNonNull(services)) {
 				if (service.getAccessStrategy() != null && service.getAccessStrategy().isEnabled())
 					nEnabledServices++;
 			}
@@ -108,7 +110,7 @@ public class DashboardData {
 		Thread loginData = new Thread(() -> {
 			//__________________login data____________
 
-			List<Event> events = eventRepo.analyze(mainCollection, 0, 0);
+			List<Event> events = eventRepo.analyze(0, 0);
 			int nSuccessful = 0;
 			int nUnSucceful = 0;
 

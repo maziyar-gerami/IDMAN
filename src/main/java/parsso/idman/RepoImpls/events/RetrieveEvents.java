@@ -31,7 +31,7 @@ public class RetrieveEvents implements EventRepo {
 
 	@Override
 	public ListEvents getListSizeEvents(int p, int n) {
-		List<Event> allEvents = analyze(Variables.col_events, (p - 1) * n, n);
+		List<Event> allEvents = analyze((p - 1) * n, n);
 		long size = mongoTemplate.getCollection(Variables.col_casEvent).countDocuments();
 
 		return new ListEvents(size, (int) Math.ceil((double) size / (double) n), eventsSetTime(allEvents));
@@ -44,7 +44,7 @@ public class RetrieveEvents implements EventRepo {
 		long size = mongoTemplate.count(query, Event.class, Variables.col_casEvent);
 
 		query.skip((p - 1) * (n)).limit(n);
-		List<Event> le = mongoTemplate.find(query, Event.class);
+		List<Event> le = mongoTemplate.find(query, Event.class,Variables.col_casEvent);
 
 		return new ListEvents(size, (int) Math.ceil( size / (float) n), eventsSetTime(le));
 	}
@@ -92,11 +92,9 @@ public class RetrieveEvents implements EventRepo {
 	}
 
 	@Override
-	public List<Event> analyze(String collection, int skip, int limit) {
+	public List<Event> analyze(int skip, int limit) {
 		Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
-		List<Event> le = mongoTemplate.find(query, Event.class);
-
-
+		List<Event> le = mongoTemplate.find(query, Event.class, Variables.col_casEvent);
 		return eventsSetTime(le);
 	}
 

@@ -34,7 +34,7 @@ public class EventsExcelView extends AbstractXlsView {
 	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
 		// get data model which is passed by the Spring container
-		List<Event> events = eventRepo.analyze(mainCollection, 0, 0);
+		List<Event> events = eventRepo.analyze(0, 0);
 
 		// create a new Excel sheet
 		HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Events");

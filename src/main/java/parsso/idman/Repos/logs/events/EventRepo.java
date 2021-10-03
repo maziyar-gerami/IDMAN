@@ -17,5 +17,5 @@ public interface EventRepo {
 
 	ListEvents getListUserEventByDate(String date, String userId, int page, int n) throws ParseException, IOException, org.json.simple.parser.ParseException;
 
-	List<Event> analyze(String collection, int skip, int limit);
+	List<Event> analyze(int skip, int limit);
 }
