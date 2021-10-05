@@ -1,6 +1,7 @@
 package parsso.idman.Helpers;
 
 
+import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.other.Time;
 import parsso.idman.Utils.Convertor.DateConverter;
 
@@ -8,9 +9,27 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.Date;
+import java.util.List;
 
 public class TimeHelper {
 	static ZoneId zoneId = ZoneId.of(Variables.ZONE);
+
+	public static List<Report> reportSetDate(List<Report> allReports) {
+		for (Report report : allReports) {
+			OffsetDateTime logDate = report.getDate().toInstant()
+					.atOffset(ZoneId.of(Variables.ZONE).getRules().getOffset(Instant.now()));
+			Time time1 = new Time(logDate.getYear(), logDate.getMonthValue(), logDate.getDayOfMonth(),
+					logDate.getHour(), logDate.getMinute(), logDate.getSecond());
+			report.setDateTime(time1);
+		}
+		return allReports;
+	}
+
+	public static Time stringInputToTime(String date){
+		return new Time(Integer.parseInt(date.substring(4)),
+				Integer.parseInt(date.substring(2, 4)),
+				Integer.parseInt(date.substring(0, 2)));
+	}
 
 	public static String getExportEndTime(String input) {
 
@@ -63,7 +82,7 @@ public class TimeHelper {
 		return strDate + currentOffsetForMyZone.toString().replaceAll(":", "");
 	}
 
-	public static long[] specificDateToEpochRange(Time time, ZoneId zoneId) throws ParseException {
+	public static long[] specificDateToEpochRange(Time time, ZoneId zoneId) {
 
 		long[] result = new long[2];
 

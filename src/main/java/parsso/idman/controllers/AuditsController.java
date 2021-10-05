@@ -15,7 +15,6 @@ import parsso.idman.Repos.logs.audits.AuditRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
-
 @Controller
 public class AuditsController {
 	private final AuditRepo auditRepo;
@@ -48,27 +47,27 @@ public class AuditsController {
 
 	@GetMapping("/api/audits/users/{userId}/{page}/{n}")
 	public ResponseEntity<ListAudits> retrieveByUser(@PathVariable String userId, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
-		return new ResponseEntity<>(auditRepo.getListUserAudits(userId, page, n), HttpStatus.OK);
+		return new ResponseEntity<>(auditRepo.retrieveUserAudits(userId, page, n), HttpStatus.OK);
 	}
 
 	@GetMapping("/api/audits/users/date/{date}/{page}/{n}")
 	public ResponseEntity<ListAudits> retrieveByDate(@PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-		return new ResponseEntity<>(auditRepo.getAuditsByDate(date, page, n), HttpStatus.OK);
+		return new ResponseEntity<>(auditRepo.retrieveAuditsByDate(date, page, n), HttpStatus.OK);
 	}
 
 	@GetMapping("/api/audits/users/{id}/date/{date}/{page}/{n}")
 	public ResponseEntity<ListAudits> retrieveByUserDate(@PathVariable String id, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-		return new ResponseEntity<>(auditRepo.getListUserAuditByDate(date, id, page, n), HttpStatus.OK);
+		return new ResponseEntity<>(auditRepo.retrieveUserAuditsByDate(date, id, page, n), HttpStatus.OK);
 	}
 
 	@GetMapping("/api/audits/user/{page}/{n}")
 	public ResponseEntity<ListAudits> retrieveCurrentUserAudits(HttpServletRequest request, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
-		return new ResponseEntity<>(auditRepo.getListUserAudits(request.getUserPrincipal().getName(), page, n), HttpStatus.OK);
+		return new ResponseEntity<>(auditRepo.retrieveUserAudits(request.getUserPrincipal().getName(), page, n), HttpStatus.OK);
 	}
 
 	@GetMapping("/api/audits/user/date/{date}/{page}/{n}")
 	public ResponseEntity<ListAudits> retrieveCurrentUserAuditsByDate(HttpServletRequest request, @PathVariable String date, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, ParseException, org.json.simple.parser.ParseException {
-		return new ResponseEntity<>(auditRepo.getListUserAuditByDate(date, request.getUserPrincipal().getName(), page, n), HttpStatus.OK);
+		return new ResponseEntity<>(auditRepo.retrieveUserAuditsByDate(date, request.getUserPrincipal().getName(), page, n), HttpStatus.OK);
 	}
 
 	@GetMapping("/api/audits/users/export")

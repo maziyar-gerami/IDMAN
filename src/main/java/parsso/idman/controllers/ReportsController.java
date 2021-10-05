@@ -37,7 +37,7 @@ public class ReportsController {
 	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/reports")
 	public String getPageReports() {
-		return "reports";
+		return "reportsController";
 	}
 
 	//************************************* APIs ****************************************

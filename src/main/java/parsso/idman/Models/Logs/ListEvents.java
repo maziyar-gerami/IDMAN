@@ -23,4 +23,11 @@ public class ListEvents {
 	public ListEvents() {
 
 	}
+
+	public ListEvents(List<Event> events, long size, int pages) {
+		this.size = size;
+		this.pages = pages;
+		this.eventList = events;
+
+	}
 }

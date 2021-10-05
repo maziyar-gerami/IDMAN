@@ -9,9 +9,12 @@ import java.text.ParseException;
 import java.util.List;
 
 public interface EventRepo {
-	ListEvents getListSizeEvents(int page, int n) throws IOException, org.json.simple.parser.ParseException;
 
-	ListEvents getListUserEvents(String userId, int page, int n) throws IOException, org.json.simple.parser.ParseException;
+	ListEvents retrieve(String userId, String date, int p, int n) throws ParseException;
+
+	ListEvents retrieveListSizeEvents(int page, int n) throws IOException, org.json.simple.parser.ParseException;
+
+	ListEvents retrieveListUserEvents(String userId, int page, int n) throws IOException, org.json.simple.parser.ParseException;
 
 	ListEvents getEventsByDate(String date, int page, int n) throws ParseException, IOException, org.json.simple.parser.ParseException;
 

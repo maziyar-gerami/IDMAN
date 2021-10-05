@@ -4,10 +4,15 @@ package parsso.idman.Models.Logs;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import parsso.idman.Helpers.TimeHelper;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.other.Time;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -42,8 +47,16 @@ public class Report {
 		return TimeHelper.longToPersianTime(date.getTime());
 	}
 
+
+
 	public String getDetails() {
 		return source.toString();
+	}
+
+	public static List<Report> analyze(MongoTemplate mongoTemplate, int skip, int limit) {
+		Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "millis"));
+		List<Report> le = mongoTemplate.find(query, Report.class,  Variables.col_idmanLog);
+		return TimeHelper.reportSetDate(le);
 	}
 
 	@Setter

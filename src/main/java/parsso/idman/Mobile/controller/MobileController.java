@@ -104,11 +104,11 @@ public class MobileController {
 	public @ResponseBody
 	ResponseEntity<ListEvents> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken,
 	                                               @PathVariable("page") String page, @PathVariable("n") String n,
-	                                               @RequestParam("uid") String uid) throws IOException, ParseException, org.json.simple.parser.ParseException {
+	                                               @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
 
 		User user = userRepo.retrieveUsers(uid);
 		if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
-			return new ResponseEntity<>(eventRepo.getListSizeEvents(Integer.parseInt(page), Integer.parseInt(n)), HttpStatus.OK);
+			return new ResponseEntity<>(eventRepo.retrieveListSizeEvents(Integer.parseInt(page), Integer.parseInt(n)), HttpStatus.OK);
 		else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
 	}

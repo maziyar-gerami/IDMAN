@@ -35,20 +35,6 @@ public class TranscriptsController {
 
 	//************************************* APIs ****************************************
 
-	@GetMapping("/api/transcripts/users/service/{id}")
-	public ResponseEntity<Transcript> retrieveUsersOfServices(@PathVariable("id") String id) throws IOException, org.json.simple.parser.ParseException {
-		return new ResponseEntity<>(transcriptRepo.usersAndGroupsOfService(Long.parseLong(id)), HttpStatus.OK);
-	}
-
-	@GetMapping("/api/transcripts/services/group/{id}")
-	public ResponseEntity<License> retrieveGroupsService(@PathVariable("id") String id) throws IOException, org.json.simple.parser.ParseException {
-		return new ResponseEntity<>(transcriptRepo.servicesOfGroup(id), HttpStatus.OK);
-	}
-
-	@GetMapping("/api/transcripts/services/user/{id}")
-	public ResponseEntity<License> retrieveUsersServices(@PathVariable("id") String id) throws IOException, org.json.simple.parser.ParseException {
-		return new ResponseEntity<>(transcriptRepo.servicesOfUser(id), HttpStatus.OK);
-	}
 
 	@GetMapping("/api/transcripts/access/services")
 	public ResponseEntity<List<ReportMessage>> accessManaging(@RequestParam(value = "page",defaultValue = "") String p ,

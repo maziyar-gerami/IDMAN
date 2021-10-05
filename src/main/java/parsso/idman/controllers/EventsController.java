@@ -36,12 +36,12 @@ public class EventsController {
 
 	@GetMapping("/api/events/users/{page}/{n}")
 	public ResponseEntity<ListEvents> retrieveAllEvents(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
-		return new ResponseEntity<>(eventRepo.getListSizeEvents(page, n), HttpStatus.OK);
+		return new ResponseEntity<>(eventRepo.retrieveListSizeEvents(page, n), HttpStatus.OK);
 	}
 
 	@GetMapping("/api/events/users/{userId}/{page}/{n}")
 	public ResponseEntity<ListEvents> retrieveByUser(@PathVariable String userId, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
-		return new ResponseEntity<>(eventRepo.getListUserEvents(userId, page, n), HttpStatus.OK);
+		return new ResponseEntity<>(eventRepo.retrieveListUserEvents(userId, page, n), HttpStatus.OK);
 	}
 
 	@GetMapping("/api/events/users/date/{date}/{page}/{n}")
@@ -56,7 +56,7 @@ public class EventsController {
 
 	@GetMapping("/api/events/user/{page}/{n}")
 	public ResponseEntity<ListEvents> retrieveCurrentUserEvents(HttpServletRequest request, @PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {
-		ListEvents listEvents = eventRepo.getListUserEvents(request.getUserPrincipal().getName(), page, n);
+		ListEvents listEvents = eventRepo.retrieveListUserEvents(request.getUserPrincipal().getName(), page, n);
 		for (int i = 0; i < listEvents.getEventList().size(); i++)
 			listEvents.getEventList().get(i).getProperties().setServerip(null);
 		return new ResponseEntity<>(listEvents, HttpStatus.OK);

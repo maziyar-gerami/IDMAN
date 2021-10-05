@@ -111,6 +111,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/reports/user/**").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/services/user").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/user/**").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERADMIN")
+				.antMatchers("/api/logs/reports/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
+				.antMatchers("/api/logs/audits/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
+				.antMatchers("/api/logs/events/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
 
 
                 //****************** SUPERADMIN & ADMIN & SUPPORTER Objects************************
@@ -132,6 +135,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/audits/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/events/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
                 .antMatchers("/api/transcripts/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
+				.antMatchers("/api/logs/reports/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
+				.antMatchers("/api/logs/audits/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
+				.antMatchers("/api/logs/events/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERADMIN")
 
 
                 //******************SUPERADMIN Objects ONLY *******************
@@ -164,6 +170,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .anyRequest().authenticated()
                 .and()
+
 
 
 

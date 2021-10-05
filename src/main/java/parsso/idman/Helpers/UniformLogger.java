@@ -6,12 +6,9 @@ import org.apache.logging.log4j.Logger;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Logs.Changes;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Repos.ServiceRepo;
 
 import java.io.IOException;
@@ -103,7 +100,7 @@ public class UniformLogger {
 		if (reportMessageList.size() == 0)
 			reportMessageList.add(reportMessage);
 
-		mongoTemplate.insert(reportMessageList, Variables.col_idmanlog);
+		mongoTemplate.insert(reportMessageList, Variables.col_idmanLog);
 		//};
 		//Thread thread = new Thread(runnable);
 		//thread.start();

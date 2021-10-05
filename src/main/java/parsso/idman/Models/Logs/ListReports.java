@@ -23,4 +23,10 @@ public class ListReports {
 	public ListReports() {
 
 	}
+
+	public ListReports(List<Report> reports, long size, int pages) {
+		this.size = size;
+		this.pages = pages;
+		this.reportsList = reports;
+	}
 }

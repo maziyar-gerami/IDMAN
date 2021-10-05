@@ -13,7 +13,6 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.other.Time;
-import parsso.idman.RepoImpls.audits.RetrieveAudits;
 import parsso.idman.Repos.logs.audits.AuditRepo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,9 +27,7 @@ import java.util.TimeZone;
 
 @Service
 public class AuditsExcelView extends AbstractXlsView {
-	public static String mainCollection = "MongoDbCasAuditRepository";
-	AuditRepo auditRepo;
-	ZoneId zoneId = ZoneId.of(Variables.ZONE);
+	final AuditRepo auditRepo;
 	MongoTemplate mongoTemplate;
 
 	@Autowired
@@ -43,7 +40,7 @@ public class AuditsExcelView extends AbstractXlsView {
 	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
 		// get data model which is passed by the Spring container
-		List<Audit> audits = new RetrieveAudits(mongoTemplate).analyze(mainCollection, 0, 0);
+		List<Audit> audits = Audit.analyze(mongoTemplate, 0, 0);
 
 		// create a new Excel sheet
 		HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Audits");
@@ -95,7 +92,7 @@ public class AuditsExcelView extends AbstractXlsView {
 			Calendar cal = Calendar.getInstance(TimeZone.getDefault());
 			cal.setTime(audit.getWhenActionWasPerformed());
 
-			ZonedDateTime eventDate = OffsetDateTime.ofInstant(audit.getWhenActionWasPerformed().toInstant(), zoneId).atZoneSameInstant(zoneId);
+			ZonedDateTime eventDate = OffsetDateTime.ofInstant(audit.getWhenActionWasPerformed().toInstant(), ZoneId.of(Variables.ZONE)).atZoneSameInstant(ZoneId.of(Variables.ZONE));
 			Time time = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
 					eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
 

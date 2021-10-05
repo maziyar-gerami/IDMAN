@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls.transcripts;
+package parsso.idman.RepoImpls.logs;
 
 
 import org.json.simple.JSONArray;
@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+import parsso.idman.Helpers.Group.GroupLicense;
 import parsso.idman.Helpers.Service.ExtractLicensedAndUnlicensed;
 import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.User.UsersLicense;
@@ -19,35 +20,39 @@ import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Models.other.Time;
-import parsso.idman.Repos.GroupRepo;
 import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.UserRepo;
 import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
 
 import java.io.IOException;
 import java.time.ZoneId;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
-public class TranscriptRepoImpl implements TranscriptRepo {
+public class RetrieveTranscripts implements TranscriptRepo {
+
+	final ServiceRepo serviceRepo;
+
+	final MongoTemplate mongoTemplate;
+	final UsersLicense usersLicense;
+	final parsso.idman.Helpers.Group.GroupLicense groupLicense;
+	final ExtractLicensedAndUnlicensed extract;
+
 	@Autowired
-	ServiceRepo serviceRepo;
-	@Autowired
-	GroupRepo groupRepo;
-	@Autowired
-	UserRepo userRepo;
-	@Autowired
-	MongoTemplate mongoTemplate;
-	@Autowired
-	UsersLicense usersLicense;
-	@Autowired
-	parsso.idman.Helpers.Group.GroupLicense groupLicense;
-	@Autowired
-	ExtractLicensedAndUnlicensed extract;
+	public RetrieveTranscripts(ServiceRepo serviceRepo,
+	                           MongoTemplate mongoTemplate, UsersLicense usersLicense,
+	                           GroupLicense groupLicense, ExtractLicensedAndUnlicensed extract){
+		this.serviceRepo = serviceRepo;
+		this.mongoTemplate = mongoTemplate;
+		this.usersLicense = usersLicense;
+		this.groupLicense = groupLicense;
+		this.extract = extract;
+
+	}
 
 	@Override
-	public License servicesOfGroup(String ouid) throws IOException, ParseException {
+	public License servicesOfGroup(String ouID) throws IOException, ParseException {
 		List<MicroService> licensed = new LinkedList<>();
 
 		List<Service> allServices = serviceRepo.listServicesFull();
@@ -55,7 +60,7 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 		for (Service service : allServices)
 			if (service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
 				for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
-					if (ouid.equalsIgnoreCase(name.toString()))
+					if (ouID.equalsIgnoreCase(name.toString()))
 						licensed.add(new MicroService(service));
 
 		return new License(licensed, null);
@@ -73,7 +78,7 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 
 		List<String> memberOf;
 		try {
-			memberOf = user.getMemberOf();
+			memberOf = Objects.requireNonNull(user).getMemberOf();
 
 		} catch (NullPointerException e) {
 			memberOf = null;
@@ -128,7 +133,7 @@ public class TranscriptRepoImpl implements TranscriptRepo {
 			query.skip(skip).limit(nRows);
 		}
 
-		return mongoTemplate.find(query, ReportMessage.class, Variables.col_idmanlog);
+		return mongoTemplate.find(query, ReportMessage.class, Variables.col_idmanLog);
 	}
 }
 
