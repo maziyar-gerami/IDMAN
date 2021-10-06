@@ -22,8 +22,7 @@ import java.util.Collection;
 @SuppressWarnings("rawtypes")
 @Service
 public class CasUserDetailService implements AuthenticationUserDetailsService {
-	final
-	MongoTemplate mongoTemplate;
+	final MongoTemplate mongoTemplate;
 
 	public CasUserDetailService(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;

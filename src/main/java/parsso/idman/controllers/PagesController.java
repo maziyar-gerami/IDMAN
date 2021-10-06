@@ -3,6 +3,7 @@ package parsso.idman.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import parsso.idman.Helpers.User.DashboardData;
 import parsso.idman.Models.DashboardData.Dashboard;
 
@@ -20,19 +22,61 @@ import javax.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("SameReturnValue")
 @Controller
-public class PagesController {
-	@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
-	@Autowired
+public class PagesController implements ErrorController {
+
+
 	private DashboardData dashboardData;
+
+	@Autowired
+	public PagesController(DashboardData dashboardData){
+		this.dashboardData = dashboardData;
+	}
 	@Value("${cas.url.logout.path}")
 	private String casLogout;
 
 	//************************************* Pages ****************************************
 
-	@SuppressWarnings("SameReturnValue")
+	@GetMapping("/publicmessages")
+	public String PublicMessages() {
+		return "publicmessages";
+	}
+
+	@GetMapping("/groups")
+	public String getPageGroups() {
+		return "groups";
+	}
+
 	@GetMapping("/")
 	public String Root() {
 		return "redirect:/dashboard";
+	}
+
+	@SuppressWarnings("SameReturnValue")
+	@GetMapping("/roles")
+	public String getPageRoles() {
+		return "roles";
+	}
+
+	@GetMapping("/reports")
+	public String getPageReports() {
+		return "reportsController";
+	}
+
+	@SuppressWarnings("SameReturnValue")
+	@RequestMapping("/error")
+	public String handleError() {
+		return "redirect:/errorpage";
+	}
+
+	@SuppressWarnings("SameReturnValue")
+	@GetMapping("/403")
+	public String AccessDenied() {
+		return "403";
+	}
+
+	@Override
+	public String getErrorPath() {
+		return null;
 	}
 
 	@GetMapping("/dashboard")

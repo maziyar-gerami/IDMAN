@@ -32,15 +32,7 @@ public class ReportsController {
 		this.logsExcelView = logsExcelView;
 	}
 
-	//************************************* Pages ****************************************
 
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/reports")
-	public String getPageReports() {
-		return "reportsController";
-	}
-
-	//************************************* APIs ****************************************
 
 	@GetMapping("/api/reports/users/{page}/{n}")
 	public ResponseEntity<ListReports> retrieveAllLogs(@PathVariable("page") int page, @PathVariable("n") int n) throws IOException, org.json.simple.parser.ParseException {

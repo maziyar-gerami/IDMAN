@@ -23,16 +23,6 @@ public class PubMessagesController {
 		this.pubMessageRepo = pubMessageRepo;
 	}
 
-	//************************************* Pages ****************************************
-
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/publicmessages")
-	public String PublicMessages() {
-		return "publicmessages";
-	}
-
-	//************************************* APIs ****************************************
-
 	@GetMapping("/api/public/publicMessages")
 	public ResponseEntity<List<PublicMessage>> getVisiblePublicMessage() {
 		return new ResponseEntity<>(pubMessageRepo.showVisiblePubicMessages(), HttpStatus.OK);

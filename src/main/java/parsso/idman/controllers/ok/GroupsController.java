@@ -1,4 +1,4 @@
-package parsso.idman.controllers;
+package parsso.idman.controllers.ok;
 
 
 import net.minidev.json.JSONObject;
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@RequestMapping("/api/groups")
 @Controller
 public class GroupsController {
 	private final GroupRepo groupRepo;
@@ -30,16 +31,7 @@ public class GroupsController {
 
 	}
 
-	//************************************* Pages ****************************************
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/groups")
-	public String getPageGroups() {
-		return "groups";
-	}
-
-	//************************************* APIs ****************************************
-
-	@GetMapping("/api/groups/user")
+	@GetMapping("/user")
 	public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) throws IOException, ParseException {
 		User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
 		List<Group> groups = groupRepo.retrieveCurrentUserGroup(user);
@@ -47,49 +39,71 @@ public class GroupsController {
 		return new ResponseEntity<>(groups, HttpStatus.OK);
 	}
 
-	@PostMapping("/api/groups")
+	@PostMapping
 	public ResponseEntity<HttpStatus> bindLdapGroup(HttpServletRequest request, @RequestBody Group ou) throws IOException, ParseException {
 		return new ResponseEntity<>(groupRepo.create(request.getUserPrincipal().getName(), ou));
 	}
 
-	@PutMapping("/api/groups/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request, @RequestBody Group ou, @PathVariable("id") String id) throws IOException, ParseException {
 
 		return new ResponseEntity<>(groupRepo.update(request.getUserPrincipal().getName(), id, ou));
 	}
 
-	@GetMapping("/api/groups")
-	public ResponseEntity<List<Group>> retrieve() {
-		List<Group> groups = groupRepo.retrieve();
-		groups.removeIf(t -> t.getName() == null);
-		return new ResponseEntity<>(groups, HttpStatus.OK);
-	}
-
-	@GetMapping("/api/groups/{id}")
+	@Deprecated
+	@GetMapping("/{id}")
 	public ResponseEntity<Group> retrieveOU(@PathVariable("id") String id) throws IOException, ParseException {
 		return new ResponseEntity<>(groupRepo.retrieveOu(false, id), HttpStatus.OK);
 	}
 
-	@DeleteMapping("/api/groups")
+	@GetMapping
+	public ResponseEntity<?> retrieveGroups(@RequestParam(value = "id", defaultValue = "") String id) throws IOException, ParseException {
+		if (!id.equals(""))
+			return new ResponseEntity<>(groupRepo.retrieveOu(false, id), HttpStatus.OK);
+		else{
+			List<Group> groups = groupRepo.retrieve();
+			groups.removeIf(t -> t.getName() == null);
+			return new ResponseEntity<>(groups, HttpStatus.OK);
+		}
+	}
+
+	@DeleteMapping
 	public ResponseEntity<HttpStatus> unbindAllLdapOU(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
 		return new ResponseEntity<>(groupRepo.remove(request.getUserPrincipal().getName(), jsonObject));
 	}
 
-	@PutMapping("/api/groups/password/expire")
-	public ResponseEntity<List<String>> expireUsersGroupPassword(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+	@PutMapping("/password/expire")
+	public ResponseEntity<List<String>> expireUsersGroupPassword(HttpServletRequest request,
+	                                                             @RequestBody JSONObject jsonObject,
+	                                                             @RequestParam(value = "groupId", defaultValue = "")String id) throws IOException, ParseException {
 
-		List<String> preventedUsers = userRepo.expirePassword(request.getUserPrincipal().getName(), jsonObject);
+		String userId = request.getUserPrincipal().getName();
+		List<String> preventedUsers = userRepo.expirePassword(userId, jsonObject);
 
-		if (preventedUsers == null)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		else if (preventedUsers.size() == 0)
-			return new ResponseEntity<>(HttpStatus.OK);
-		else
-			return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
+		if("id".equals("")) {
+			if (preventedUsers == null)
+				return expirePassword(userId, jsonObject);
+			else
+				return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
+		} else {
+			return expireUsersSpecGroupPassword(request, id);
+		}
 
 	}
+	private ResponseEntity expirePassword(String name, JSONObject jsonObject) throws IOException, ParseException {
 
-	@PutMapping("/api/groups/password/expire/{groupId}")
+		List<String> preventedUsers = userRepo.expirePassword(name, jsonObject);
+
+			if (preventedUsers == null)
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			else if (preventedUsers.size() == 0)
+				return new ResponseEntity<>(HttpStatus.OK);
+			else
+				return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
+	}
+
+	@Deprecated
+	@PutMapping("/password/expire/{groupId}")
 	public ResponseEntity<List<String>> expireUsersSpecGroupPassword(HttpServletRequest request, @PathVariable(name = "groupId") String gid) throws IOException, ParseException {
 
 		ArrayList<String> temp = new ArrayList<>();
@@ -99,7 +113,7 @@ public class GroupsController {
 			temp.add(usersExtraInfo.getUserId());
 		}
 		jsonObject.put("names", temp);
-		return expireUsersGroupPassword(request, jsonObject);
+		return expirePassword(request.getUserPrincipal().getName(), jsonObject);
 	}
 
 }

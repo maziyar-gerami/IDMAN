@@ -1,4 +1,4 @@
-package parsso.idman.controllers.logs;
+package parsso.idman.controllers.ok.logs;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

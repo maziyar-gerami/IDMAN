@@ -301,12 +301,8 @@ public class TicketRepoImpl implements TicketRepo {
 			Time time = new Time(Integer.parseInt(date.substring(4)),
 					Integer.parseInt(date.substring(2, 4)),
 					Integer.parseInt(date.substring(0, 2)));
-			long[] range = new long[0];
-			try {
-				range = TimeHelper.specificDateToEpochRange(time, zoneId);
-			} catch (java.text.ParseException e) {
-				e.printStackTrace();
-			}
+			long[] range;
+			range = TimeHelper.specificDateToEpochRange(time, zoneId);
 
 			query = new Query(Criteria.where("creationTime").gte(range[0]).lte(range[1]));
 

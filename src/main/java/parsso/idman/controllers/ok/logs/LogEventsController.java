@@ -1,4 +1,4 @@
-package parsso.idman.controllers.logs;
+package parsso.idman.controllers.ok.logs;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,37 +8,39 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import parsso.idman.Models.Logs.ListAudits;
-import parsso.idman.RepoImpls.logs.AuditsRepoImpl;
+import parsso.idman.Models.Logs.ListEvents;
+import parsso.idman.RepoImpls.logs.EventsRepoImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 
-
 @RestController
-@RequestMapping("/api/logs/audits")
-public class LogAuditsController {
-	AuditsRepoImpl auditRepo;
+@RequestMapping("/api/logs/events")
+public class LogEventsController {
+	EventsRepoImpl eventRepo;
 
 	@Autowired
-	public LogAuditsController(AuditsRepoImpl auditRepo) {
-		this.auditRepo = auditRepo;
+	public LogEventsController(EventsRepoImpl eventRepo) {
+		this.eventRepo = eventRepo;
 	}
 
 	@GetMapping("/users")
-	public ResponseEntity<ListAudits> getUsersAudits(@RequestParam(name = "userID", defaultValue = "") String userID,
+	public ResponseEntity<ListEvents> getUsersEvents(@RequestParam(name = "userID", defaultValue = "") String userID,
 	                                                @RequestParam(name = "date", defaultValue = "") String date,
 	                                                @RequestParam(name = "page") String page,
 	                                                @RequestParam(name = "count") String count) throws ParseException {
-		return new ResponseEntity<>(auditRepo.retrieve(userID, date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
+		return new ResponseEntity<>(eventRepo.retrieve(userID, date, !page.equals("") ? Integer.parseInt(page) : 0,
+				!count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);
 	}
 
 	@GetMapping("/user")
-	public ResponseEntity<ListAudits> getUserAudits(HttpServletRequest request,
+	public ResponseEntity<ListEvents> getUserEvents(HttpServletRequest request,
 	                                               @RequestParam(name = "date", defaultValue = "") String date,
 	                                               @RequestParam(name = "page") String page,
 	                                               @RequestParam(name = "count") String count) throws ParseException {
-		return new ResponseEntity<>(auditRepo.retrieve(request.getUserPrincipal().getName(), date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
+		return new ResponseEntity<>(eventRepo.retrieve(request.getUserPrincipal().getName(), date, !page.equals("") ? Integer.parseInt(page) : 0,
+				!count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);
+
 	}
 }
 
