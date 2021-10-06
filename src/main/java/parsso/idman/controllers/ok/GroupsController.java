@@ -75,7 +75,7 @@ public class GroupsController {
 	@PutMapping("/password/expire")
 	public ResponseEntity<List<String>> expireUsersGroupPassword(HttpServletRequest request,
 	                                                             @RequestBody JSONObject jsonObject,
-	                                                             @RequestParam(value = "groupId", defaultValue = "")String id) throws IOException, ParseException {
+	                                                             @RequestParam(value = "id", defaultValue = "")String id) throws IOException, ParseException {
 
 		String userId = request.getUserPrincipal().getName();
 		List<String> preventedUsers = userRepo.expirePassword(userId, jsonObject);
