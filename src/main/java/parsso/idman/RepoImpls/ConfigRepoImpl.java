@@ -372,13 +372,11 @@ public class ConfigRepoImpl implements ConfigRepo {
 
 		List<Setting> settings = parser(myReader, system);
 
-		for (Setting setting : settings) {
-			if (setting.getGroup() != null) {
-				setting.setChangable(!setting.getGroup().equalsIgnoreCase("Main"));
-
+		for (Setting setting : settings)
+			if (setting.getGroup() != null)
 				mongoTemplate.save(setting, Variables.col_properties);
-			}
-		}
+
+
 
 		return HttpStatus.OK;
 	}

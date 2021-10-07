@@ -7,7 +7,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Logs.Changes;
+import parsso.idman.Models.Logs.Change;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Repos.ServiceRepo;
 
@@ -76,7 +76,7 @@ public class UniformLogger {
 		//Runnable runnable =
 		//() -> {
 		if (reportMessage.getDifference() != null)
-			for (Changes ch : reportMessage.getDifference())
+			for (Change ch : reportMessage.getDifference())
 				if (!ch.getAttribute().equalsIgnoreCase("timestamp"))
 							reportMessageList.add(new ReportMessage(ch, reportMessage));
 

@@ -66,6 +66,7 @@ public class Time {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (!(obj instanceof Time)) return false;
 		return this.year == ((Time) obj).getYear() &&
 				this.month == ((Time) obj).getMonth() &&
 				this.day == ((Time) obj).getDay();

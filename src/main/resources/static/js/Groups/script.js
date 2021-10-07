@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
             duplicateUsersList: "",
             usersAddedSuccess: false,
             usersAddedError: false,
-            s0: "احراز هویت متمرکز شرکت فلات قاره",
+            s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
             s1: "",
             s2: "خروج",
             s3: "بازنشانی رمز عبور",
@@ -1061,7 +1061,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.isRtl = true;
                     this.margin1 = "ml-1";
                     this.dateNavText = this.dateNav;
-                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
+                    this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
                     this.s1 = this.name;
                     this.s2 = "خروج";
                     this.s3 = "بازنشانی رمز عبور";

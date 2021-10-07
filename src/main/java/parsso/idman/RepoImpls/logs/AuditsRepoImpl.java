@@ -11,7 +11,6 @@ import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Logs.Event;
-import parsso.idman.Models.Logs.ListAudits;
 import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.other.Time;
 import parsso.idman.Repos.logs.audits.AuditRepo;
@@ -30,7 +29,7 @@ public class AuditsRepoImpl implements AuditRepo {
 	}
 
 	@Override
-	public ListAudits retrieve(String userId, String date, int p, int n) throws ParseException {
+	public Audit.ListAudits retrieve(String userId, String date, int p, int n) throws ParseException {
 		Query query = new Query();
 		if (!userId.equals(""))
 			query.addCriteria(Criteria.where("principal").is(userId));
@@ -46,29 +45,29 @@ public class AuditsRepoImpl implements AuditRepo {
 
 		query.skip((p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "_id"));
 		List<Audit> audits =  mongoTemplate.find(query, Audit.class, Variables.col_audit);
-		return new ListAudits(audits, size, (int) Math.ceil((double) size / (double) n));
+		return new Audit.ListAudits(audits, size, (int) Math.ceil((double) size / (double) n));
 	}
 
 	@Override
-	public ListAudits retrieveListSizeAudits(int p, int n) {
+	public Audit.ListAudits retrieveListSizeAudits(int p, int n) {
 		List<Audit> allAudits = Audit.analyze( mongoTemplate,(p - 1) * n, n);
 		long size = mongoTemplate.getCollection(Variables.col_audit).countDocuments();
-		return new ListAudits(allAudits, size, (int) Math.ceil((double) size / (double) n));
+		return new Audit.ListAudits(allAudits, size, (int) Math.ceil((double) size / (double) n));
 	}
 
 	@Override
-	public ListAudits retrieveUserAudits(String userId, int p, int n) {
+	public Audit.ListAudits retrieveUserAudits(String userId, int p, int n) {
 		Query query = new Query(Criteria.where("principal").is(userId))
 				.with(Sort.by(Sort.Direction.DESC, "_id"));
 		long size = mongoTemplate.count(query, Audit.class, Variables.col_audit);
 
 		query.skip((p - 1) * (n)).limit(n);
 		List<Audit> auditList = mongoTemplate.find(query, Audit.class, Variables.col_audit);
-		return new ListAudits(auditList, size, (int) Math.ceil(size / (double) n));
+		return new Audit.ListAudits(auditList, size, (int) Math.ceil(size / (double) n));
 	}
 
 	@Override
-	public ListAudits retrieveUserAuditsByDate(String date, String userId, int p, int limit) throws ParseException {
+	public Audit.ListAudits retrieveUserAuditsByDate(String date, String userId, int p, int limit) throws ParseException {
 
 		int skip = (p - 1) * limit;
 
@@ -85,12 +84,12 @@ public class AuditsRepoImpl implements AuditRepo {
 		List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "whenActionWasPerformed"))
 				.skip(skip).limit(limit), Audit.class, Variables.col_audit);
 
-		return new ListAudits(reportList, size, (int) Math.ceil(size / (double) limit));
+		return new Audit.ListAudits(reportList, size, (int) Math.ceil(size / (double) limit));
 
 	}
 
 	@Override
-	public ListAudits retrieveAuditsByDate(String date, int p, int limit) throws ParseException {
+	public Audit.ListAudits retrieveAuditsByDate(String date, int p, int limit) throws ParseException {
 
 		Time time = new Time(Integer.parseInt(date.substring(4)),
 				Integer.parseInt(date.substring(2, 4)),
@@ -105,7 +104,7 @@ public class AuditsRepoImpl implements AuditRepo {
 		List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC,
 				"whenActionWasPerformed")).skip((p - 1) * limit).limit(limit), Audit.class, Variables.col_audit);
 
-		return new ListAudits(reportList, size, (int) Math.ceil(size / (double) limit));
+		return new Audit.ListAudits(reportList, size, (int) Math.ceil(size / (double) limit));
 
 	}
 

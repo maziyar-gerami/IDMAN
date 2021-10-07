@@ -8,10 +8,7 @@ import lombok.Setter;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
-import org.javers.core.diff.changetype.ValueChange;
-import org.springframework.data.annotation.PersistenceConstructor;
 import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.other.Time;
 import parsso.idman.Models.Users.UsersGroups;
@@ -39,7 +36,7 @@ public class ReportMessage {
 	@JsonIgnore
 	UsersGroups usersGroups;
 	@JsonIgnore
-	List<Changes> difference;
+	List<Change> difference;
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	Object from;
 	@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -125,7 +122,7 @@ public class ReportMessage {
 		time = TimeHelper.longToPersianTime(millis);
 	}
 
-	public ReportMessage(Changes ch, ReportMessage reportMessage) {
+	public ReportMessage(Change ch, ReportMessage reportMessage) {
 		this.doerID = reportMessage.getDoerID();
 		this.model = reportMessage.model;
 		this.instance = reportMessage.getInstance();
@@ -196,17 +193,17 @@ public class ReportMessage {
 		return last;
 	}
 
-	private List<Changes> difference(Object o1, Object o2) {
+	private List<Change> difference(Object o1, Object o2) {
 		Javers javers = JaversBuilder.javers().build();
 
-		List<Changes> chs = new LinkedList<>();
+		List<Change> chs = new LinkedList<>();
 
 		Diff diff = javers.compare(o1, o2);
 		List<org.javers.core.diff.changetype.ValueChange> changes = diff.getChangesByType(org.javers.core.diff.changetype.ValueChange.class);
 
 		for (org.javers.core.diff.changetype.ValueChange c : changes)
 			if (c.getLeft() != null && c.getRight() != null)
-				chs.add(new Changes(c));
+				chs.add(new Change(c));
 
 		return chs;
 	}

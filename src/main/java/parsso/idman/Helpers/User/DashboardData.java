@@ -11,9 +11,6 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.DashboardData.Dashboard;
-import parsso.idman.Models.DashboardData.Logins;
-import parsso.idman.Models.DashboardData.Services;
-import parsso.idman.Models.DashboardData.Users;
 import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.logs.events.EventRepo;
@@ -44,9 +41,9 @@ public class DashboardData {
 	@Autowired
 	LdapTemplate ldapTemplate;
 	ZoneId zoneId = ZoneId.of(Variables.ZONE);
-	Users fUsers;
-	Services fServices;
-	Logins fLogins;
+	Dashboard.Users fUsers;
+	Dashboard.Services fServices;
+	Dashboard.Logins fLogins;
 
 	public Dashboard retrieveDashboardData() throws IOException {
 
@@ -76,7 +73,7 @@ public class DashboardData {
 			int temp = nUsers - nLocked - nDisabled;
 			int nActive = Math.min((temp), nUsers);
 
-			fUsers = new Users(nUsers, nActive, nDisabled, nLocked);
+			fUsers = new Dashboard.Users(nUsers, nActive, nDisabled, nLocked);
 
 		});
 		userData.start();
@@ -103,7 +100,7 @@ public class DashboardData {
 
 			int nDisabledServices = nServices - nEnabledServices;
 
-			fServices = new Services(nServices, nDisabledServices, nEnabledServices);
+			fServices = new Dashboard.Services(nServices, nDisabledServices, nEnabledServices);
 
 		});
 
@@ -123,7 +120,7 @@ public class DashboardData {
 					nSuccessful++;
 			}
 
-			fLogins = new Logins(nSuccessful + nUnSucceful, nUnSucceful, nSuccessful);
+			fLogins = new Dashboard.Logins(nSuccessful + nUnSucceful, nUnSucceful, nSuccessful);
 		});
 
 		loginData.start();

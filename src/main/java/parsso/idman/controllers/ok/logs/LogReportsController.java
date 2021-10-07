@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import parsso.idman.Models.Logs.ListReports;
+import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.RepoImpls.logs.ReportsRepoImpl;
 
@@ -27,16 +27,16 @@ public class LogReportsController {
 	}
 
 	@GetMapping("/users")
-	public ResponseEntity<ListReports> getUsersReports(@RequestParam(name = "userID", defaultValue = "") String userID,
-	                                                  @RequestParam(name = "date", defaultValue = "") String date,
-	                                                  @RequestParam(name = "page") String page,
-	                                                  @RequestParam(name = "count") String count) throws ParseException {
+	public ResponseEntity<Report.ListReports> getUsersReports(@RequestParam(name = "userID", defaultValue = "") String userID,
+	                                                          @RequestParam(name = "date", defaultValue = "") String date,
+	                                                          @RequestParam(name = "page") String page,
+	                                                          @RequestParam(name = "count") String count) throws ParseException {
 		return new ResponseEntity<>(reportsRepo.retrieve(userID, date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
 
 	}
 
 	@GetMapping("/user")
-	public ResponseEntity<ListReports> getUserReports(HttpServletRequest request,
+	public ResponseEntity<Report.ListReports> getUserReports(HttpServletRequest request,
 	                                               @RequestParam(name = "date", defaultValue = "") String date,
 	                                               @RequestParam(name = "page") String page,
 	                                               @RequestParam(name = "count") String count) throws ParseException {

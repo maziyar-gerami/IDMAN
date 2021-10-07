@@ -17,7 +17,6 @@ import java.util.List;
 
 @Service
 public class Pulling {
-	public static String mainCollection = "MongoDbCasEventRepository";
 	EventRepo eventRepo;
 	ServiceRepo serviceRepo;
 	MongoTemplate mongoTemplate;

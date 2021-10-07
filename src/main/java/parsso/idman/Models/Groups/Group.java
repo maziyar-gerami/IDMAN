@@ -8,6 +8,8 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import parsso.idman.Models.License.License;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -28,6 +30,13 @@ public class Group {
 	}
 
 	public Group() {
+	}
+
+	@Setter
+	@Getter
+	public static class GroupUsers {
+		List<String> add;
+		List<String> remove;
 	}
 
 

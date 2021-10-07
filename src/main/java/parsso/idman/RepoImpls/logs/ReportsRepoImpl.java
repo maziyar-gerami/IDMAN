@@ -23,7 +23,7 @@ public class ReportsRepoImpl implements ReportRepo {
 	final MongoTemplate mongoTemplate;
 
 	@Override
-	public ListReports retrieve(String userId, String date, int p, int n) throws ParseException {
+	public Report.ListReports retrieve(String userId, String date, int p, int n) throws ParseException {
 		Query query = new Query();
 		if (!userId.equals(""))
 			query.addCriteria(Criteria.where("doerID").is(userId));
@@ -40,7 +40,7 @@ public class ReportsRepoImpl implements ReportRepo {
 
 		List<Report> reports = mongoTemplate.find(query, Report.class,  Variables.col_idmanLog);
 
-		return new ListReports(reports, size, (int) Math.ceil( size / (float) n));
+		return new Report.ListReports(reports, size, (int) Math.ceil( size / (float) n));
 	}
 
 
@@ -50,26 +50,26 @@ public class ReportsRepoImpl implements ReportRepo {
 	}
 
 	@Override
-	public ListReports getListSizeLogs(int p, int n) {
+	public Report.ListReports getListSizeLogs(int p, int n) {
 
 		List<Report> allReports = Report.analyze(mongoTemplate, (p - 1) * n, n);
 		long size = mongoTemplate.getCollection(Variables.col_idmanLog).countDocuments();
-		return new ListReports(size, (int) Math.ceil((double) size / (double) n), TimeHelper.reportSetDate(allReports));
+		return new Report.ListReports(size, (int) Math.ceil((double) size / (double) n), TimeHelper.reportSetDate(allReports));
 	}
 
 	@Override
-	public ListReports getListUserLogs(String userId, int p, int n) {
+	public Report.ListReports getListUserLogs(String userId, int p, int n) {
 		Query query = new Query(Criteria.where("loggerName").is(userId))
 				.with(Sort.by(Sort.Direction.DESC, "millis"));
 		long size = mongoTemplate.count(query, Report.class, Variables.col_idmanLog);
 
 		query.skip((p - 1) * (n)).limit(n);
 		List<Report> reportList = mongoTemplate.find(query, Report.class, Variables.col_idmanLog);
-		return new ListReports(size, (int) Math.ceil(size / (float) n), TimeHelper.reportSetDate(reportList));
+		return new Report.ListReports(size, (int) Math.ceil(size / (float) n), TimeHelper.reportSetDate(reportList));
 	}
 
 	@Override
-	public ListReports getLogsByDate(String date, int p, int n) throws ParseException {
+	public Report.ListReports getLogsByDate(String date, int p, int n) throws ParseException {
 
 		int skip = getSkip(p, n);
 
@@ -81,7 +81,7 @@ public class ReportsRepoImpl implements ReportRepo {
 	}
 
 	@Override
-	public ListReports getListUserLogByDate(String date, String userId, int p, int n) throws ParseException {
+	public Report.ListReports getListUserLogByDate(String date, String userId, int p, int n) throws ParseException {
 
 		long[] range = TimeHelper.specificDateToEpochRange(TimeHelper.stringInputToTime(date), ZoneId.of(Variables.ZONE));
 
@@ -94,12 +94,12 @@ public class ReportsRepoImpl implements ReportRepo {
 		return (p - 1) * n;
 	}
 
-	private ListReports getListReports(int n, int skip, Query query) {
+	private Report.ListReports getListReports(int n, int skip, Query query) {
 		long size = mongoTemplate.find(query, Report.class, Variables.col_idmanLog).size();
 
 		List<Report> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "millis")).skip(skip).limit(n), Report.class, Variables.col_idmanLog);
 
-		return new ListReports(size, (int) Math.ceil(size / (float) n), reportList);
+		return new Report.ListReports(size, (int) Math.ceil(size / (float) n), reportList);
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class ReportsRepoImpl implements ReportRepo {
 		int skip;
 
 		Query query = new Query(Criteria.where("attribute").is("Access Strategy"));
-		if(id !=0)
+		if(id != 0)
 			query.addCriteria(Criteria.where("instance").is(id));
 		if(!doerId.equals(""))
 			query.addCriteria(Criteria.where("doerID").is(doerId));

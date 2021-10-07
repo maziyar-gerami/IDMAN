@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
-import parsso.idman.Models.Logs.ListEvents;
+import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.logs.events.EventRepo;
@@ -20,7 +20,6 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
-import java.text.ParseException;
 import java.util.List;
 
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
@@ -102,9 +101,9 @@ public class MobileController {
 
 	@PostMapping("/api/mobile/events/{page}/{n}")
 	public @ResponseBody
-	ResponseEntity<ListEvents> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken,
-	                                               @PathVariable("page") String page, @PathVariable("n") String n,
-	                                               @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
+	ResponseEntity<Event.ListEvents> M_retrieveAllEvents(@RequestParam("mobileToken") String MobileToken,
+	                                                     @PathVariable("page") String page, @PathVariable("n") String n,
+	                                                     @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
 
 		User user = userRepo.retrieveUsers(uid);
 		if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))

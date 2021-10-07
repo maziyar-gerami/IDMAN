@@ -19,5 +19,50 @@ public class Dashboard {
 		this.logins = logins;
 		this.users = users;
 	}
+
+
+	@Setter
+	@Getter
+	public static class Logins {
+		int total;
+		int unsuccessful;
+		int successful;
+
+		public Logins(int total, int unsuccessful, int successful) {
+			this.total = total;
+			this.unsuccessful = unsuccessful;
+			this.successful = successful;
+		}
+	}
+
+	@Setter
+	@Getter
+	public static class Services {
+		int total;
+		int disabled;
+		int enabled;
+
+		public Services(int total, int disabled, int enabled) {
+			this.total = total;
+			this.disabled = disabled;
+			this.enabled = enabled;
+		}
+	}
+
+	@Setter
+	@Getter
+	public static class Users {
+		int total;
+		int active;
+		int disabled;
+		int locked;
+
+		public Users(int total, int active, int disabled, int locked) {
+			this.total = total;
+			this.active = active;
+			this.disabled = disabled;
+			this.locked = locked;
+		}
+	}
 }
 

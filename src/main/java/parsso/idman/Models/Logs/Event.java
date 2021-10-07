@@ -17,6 +17,7 @@ import ua_parser.Parser;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 
 @Setter
 @Getter
@@ -26,10 +27,10 @@ public class Event implements Serializable {
 	@JsonIgnore
 	public Properties properties = new Properties();
 	@JsonProperty("clientIP")
-	public String clientip;
+	public String clientIP;
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@JsonProperty("serverIP")
-	public String serverip;
+	public String serverIP;
 	public String eventId;
 	@JsonIgnoreProperties
 	@JsonIgnore
@@ -62,7 +63,7 @@ public class Event implements Serializable {
 			return null;
 	}
 
-	public String getClientip() {
+	public String getClientIP() {
 		return this.properties.getClientip();
 	}
 
@@ -107,6 +108,32 @@ public class Event implements Serializable {
 		private String serverip;
 		@JsonIgnore
 		private String timestamp;
+	}
+
+	@Setter
+	@Getter
+
+	public static class ListEvents {
+		long size;
+		int pages;
+		List<Event> eventList;
+
+		public ListEvents(long size, int pages, List<Event> relativeEvents) {
+			this.size = size;
+			this.pages = pages;
+			this.eventList = relativeEvents;
+		}
+
+		public ListEvents() {
+
+		}
+
+		public ListEvents(List<Event> events, long size, int pages) {
+			this.size = size;
+			this.pages = pages;
+			this.eventList = events;
+
+		}
 	}
 
 }

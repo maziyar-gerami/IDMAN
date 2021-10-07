@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import parsso.idman.Models.Logs.ListEvents;
+import parsso.idman.Models.Logs.Event;
 import parsso.idman.RepoImpls.logs.EventsRepoImpl;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,16 +25,16 @@ public class LogEventsController {
 	}
 
 	@GetMapping("/users")
-	public ResponseEntity<ListEvents> getUsersEvents(@RequestParam(name = "userID", defaultValue = "") String userID,
-	                                                @RequestParam(name = "date", defaultValue = "") String date,
-	                                                @RequestParam(name = "page") String page,
-	                                                @RequestParam(name = "count") String count) throws ParseException {
+	public ResponseEntity<Event.ListEvents> getUsersEvents(@RequestParam(name = "userID", defaultValue = "") String userID,
+	                                                       @RequestParam(name = "date", defaultValue = "") String date,
+	                                                       @RequestParam(name = "page") String page,
+	                                                       @RequestParam(name = "count") String count) throws ParseException {
 		return new ResponseEntity<>(eventRepo.retrieve(userID, date, !page.equals("") ? Integer.parseInt(page) : 0,
 				!count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);
 	}
 
 	@GetMapping("/user")
-	public ResponseEntity<ListEvents> getUserEvents(HttpServletRequest request,
+	public ResponseEntity<Event.ListEvents> getUserEvents(HttpServletRequest request,
 	                                               @RequestParam(name = "date", defaultValue = "") String date,
 	                                               @RequestParam(name = "page") String page,
 	                                               @RequestParam(name = "count") String count) throws ParseException {

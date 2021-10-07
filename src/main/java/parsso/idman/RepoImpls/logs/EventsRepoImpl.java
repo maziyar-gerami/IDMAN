@@ -24,7 +24,7 @@ public class EventsRepoImpl implements EventRepo {
 	final MongoTemplate mongoTemplate;
 
 	@Override
-	public ListEvents retrieve(String userId, String date, int p, int n) throws ParseException {
+	public Event.ListEvents retrieve(String userId, String date, int p, int n) throws ParseException {
 		Query query = new Query();
 		if (!userId.equals(""))
 			query.addCriteria(Criteria.where("principalId").is(userId));
@@ -43,7 +43,7 @@ public class EventsRepoImpl implements EventRepo {
 
 		List<Event> events =  mongoTemplate.find(query, Event.class, Variables.col_casEvent);
 
-		return new ListEvents(events, size, (int) Math.ceil( size / (float) n));
+		return new Event.ListEvents(events, size, (int) Math.ceil( size / (float) n));
 	}
 
 
@@ -53,15 +53,15 @@ public class EventsRepoImpl implements EventRepo {
 	}
 
 	@Override
-	public ListEvents retrieveListSizeEvents(int p, int n) {
+	public Event.ListEvents retrieveListSizeEvents(int p, int n) {
 		List<Event> allEvents = analyze((p - 1) * n, n);
 		long size = mongoTemplate.getCollection(Variables.col_casEvent).countDocuments();
 
-		return new ListEvents(size, (int) Math.ceil((double) size / (double) n), eventsSetTime(allEvents));
+		return new Event.ListEvents(size, (int) Math.ceil((double) size / (double) n), eventsSetTime(allEvents));
 	}
 
 	@Override
-	public ListEvents retrieveListUserEvents(String userId, int p, int n) {
+	public Event.ListEvents retrieveListUserEvents(String userId, int p, int n) {
 		Query query = new Query(Criteria.where("principalId").is(userId))
 				.with(Sort.by(Sort.Direction.DESC, "_id"));
 		long size = mongoTemplate.count(query, Event.class, Variables.col_casEvent);
@@ -69,11 +69,11 @@ public class EventsRepoImpl implements EventRepo {
 		query.skip((p - 1) * (n)).limit(n);
 		List<Event> le = mongoTemplate.find(query, Event.class, Variables.col_casEvent);
 
-		return new ListEvents(size, (int) Math.ceil(size / (float) n), eventsSetTime(le));
+		return new Event.ListEvents(size, (int) Math.ceil(size / (float) n), eventsSetTime(le));
 	}
 
 	@Override
-	public ListEvents getEventsByDate(String date, int p, int n) throws ParseException {
+	public Event.ListEvents getEventsByDate(String date, int p, int n) throws ParseException {
 
 		int skip = calculateSkip(p, n);
 
@@ -88,7 +88,7 @@ public class EventsRepoImpl implements EventRepo {
 
 		List<Event> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(n), Event.class, Variables.col_casEvent);
 
-		return new ListEvents(size, (int) Math.ceil(size / (float) n), reportList);
+		return new Event.ListEvents(size, (int) Math.ceil(size / (float) n), reportList);
 	}
 
 	private int calculateSkip(int p, int n) {
@@ -96,7 +96,7 @@ public class EventsRepoImpl implements EventRepo {
 	}
 
 	@Override
-	public ListEvents getListUserEventByDate(String date, String userId, int p, int n) throws ParseException {
+	public Event.ListEvents getListUserEventByDate(String date, String userId, int p, int n) throws ParseException {
 
 		int skip = calculateSkip(p, n);
 
@@ -111,7 +111,7 @@ public class EventsRepoImpl implements EventRepo {
 
 		List<Event> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(n), Event.class, Variables.col_casEvent);
 
-		return new ListEvents(size, (int) Math.ceil(size / (float) n), reportList);
+		return new Event.ListEvents(size, (int) Math.ceil(size / (float) n), reportList);
 	}
 
 	@Override

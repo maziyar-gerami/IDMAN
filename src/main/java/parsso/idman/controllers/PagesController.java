@@ -59,7 +59,7 @@ public class PagesController implements ErrorController {
 
 	@GetMapping("/reports")
 	public String getPageReports() {
-		return "reportsController";
+		return "reports";
 	}
 
 	@SuppressWarnings("SameReturnValue")

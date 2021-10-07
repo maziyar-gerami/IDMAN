@@ -36,4 +36,22 @@ public class Audit {
 		return mongoTemplate.find(query, Audit.class, Variables.col_audit);
 	}
 
+	@Setter
+	@Getter
+	public static class ListAudits {
+		long size;
+		int pages;
+		List<Audit> auditList;
+
+		public ListAudits(List<Audit> relativeAudits, long size, int pages) {
+			this.size = size;
+			this.pages = pages;
+			this.auditList = relativeAudits;
+		}
+
+		public ListAudits() {
+
+		}
+	}
+
 }

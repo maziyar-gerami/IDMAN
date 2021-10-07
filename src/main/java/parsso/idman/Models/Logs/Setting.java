@@ -13,5 +13,4 @@ public class Setting {
 	private String group;
 	private String sub_group;
 	private String system;
-	private boolean changable;
 }

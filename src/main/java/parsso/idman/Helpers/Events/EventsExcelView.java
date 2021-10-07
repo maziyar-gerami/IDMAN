@@ -81,7 +81,7 @@ public class EventsExcelView extends AbstractXlsView {
 			aRow.createCell(0).setCellValue(event.getType());
 			aRow.createCell(1).setCellValue(event.getPrincipalId());
 			aRow.createCell(2).setCellValue(event.getApplication());
-			aRow.createCell(3).setCellValue(event.getClientip());
+			aRow.createCell(3).setCellValue(event.getClientIP());
 
 			ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
 			Time time = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),

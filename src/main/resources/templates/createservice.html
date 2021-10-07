@@ -6,30 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>پارسو</title>
 
-    <link href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="css/CreateService/style.css" rel="stylesheet">
-    <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
-    <link href="fonts/IranSans/font.css" rel="stylesheet">
-    <link href="css/persian-datepicker.min.css" rel="stylesheet"/>
+    <link type="text/css" href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="css/CreateService/style.css" rel="stylesheet">
+    <link type="text/css" href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
+    <link type="text/css" href="fonts/IranSans/font.css" rel="stylesheet">
+    <link type="text/css" href="css/persian-datepicker.min.css" rel="stylesheet"/>
+    <link type="text/css" href="css/bootstrap-multiselect.min.css" rel="stylesheet"/>
 
 
-    <script src="js/es6-promise.min.js"></script>
-    <script src="js/es6-promise.auto.min.js"></script>
-    <script src="js/polyfill.min.js"></script>
-    <script src="js/vue.min.js"></script>
-    <script src="js/vue-router.js"></script>
-    <script src="js/axios.min.js"></script>
-    <script src="js/persian-date.min.js"></script>
-    <script src="js/CreateService/script.js"></script>
-    <script src="js/jquery.js"></script>
-    <script src="js/persian-datepicker.min.js"></script>
-    <script src="js/persian-rex.min.js"></script>
-    <script src="js/vue-spinners-css.min.js"></script>
+    <script type="text/javascript" src="js/es6-promise.min.js"></script>
+    <script type="text/javascript" src="js/es6-promise.auto.min.js"></script>
+    <script type="text/javascript" src="js/polyfill.min.js"></script>
+    <script type="text/javascript" src="js/vue.min.js"></script>
+    <script type="text/javascript" src="js/vue-router.js"></script>
+    <script type="text/javascript" src="js/axios.min.js"></script>
+    <script type="text/javascript" src="js/persian-date.min.js"></script>
+    <script type="text/javascript" src="js/CreateService/script.js"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/persian-datepicker.min.js"></script>
+    <script type="text/javascript" src="js/persian-rex.min.js"></script>
+    <script type="text/javascript" src="js/vue-spinners-css.min.js"></script>
+    <script type="text/javascript" src="js/Bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-multiselect.min.js"></script>
 
 </head>
 <script type="text/javascript">
     $(document).ready(function() {
-      $(".datePickerFa").pDatepicker({
+        $(".datePickerFa").pDatepicker({
         inline: false,
         format: "LLLL",
         viewMode: "day",
@@ -79,7 +82,7 @@
             }
             },
             submitButton: {
-            enabled: true,
+            enabled: false,
             text: {
                 fa: "تایید",
                 en: "Submit"
@@ -121,6 +124,98 @@
             titleFormat: "YYYY"
         },
         responsive: true
+        });
+        $(".timePickerFa").pDatepicker({
+            inline: false,
+            format: "H:m",
+            viewMode: "day",
+            initialValue: false,
+            autoClose: false,
+            position: "auto",
+            altFormat: "H:m",
+            altField: "#altfieldExample",
+            onlyTimePicker: true,
+            onlySelectOnDate: false,
+            calendarType: "persian",
+            inputDelay: 800,
+            observer: false,
+            calendar: {
+                persian: {
+                    locale: "fa",
+                    showHint: false,
+                    leapYearMode: "algorithmic"
+                },
+                gregorian: {
+                    locale: "en",
+                    showHint: false
+                }
+            },
+            navigator: {
+                enabled: true,
+                scroll: {
+                    enabled: true
+                },
+                text: {
+                    btnNextText: "<",
+                    btnPrevText: ">"
+                }
+            },
+            toolbox: {
+                enabled: false,
+                calendarSwitch: {
+                    enabled: false,
+                    format: "MMMM"
+                },
+                todayButton: {
+                    enabled: false,
+                    text: {
+                        fa: "امروز",
+                        en: "Today"
+                    }
+                },
+                submitButton: {
+                    enabled: false,
+                    text: {
+                        fa: "تایید",
+                        en: "Submit"
+                    }
+                },
+                text: {
+                    btnToday: "امروز"
+                }
+            },
+            timePicker: {
+                enabled: true,
+                step: 1,
+                hour: {
+                    enabled: true,
+                    step: null
+                },
+                minute: {
+                    enabled: true,
+                    step: null
+                },
+                second: {
+                    enabled: false,
+                    step: null
+                },
+                meridian: {
+                    enabled: false
+                }
+            },
+            dayPicker: {
+                enabled: false,
+                titleFormat: "YYYY MMMM"
+            },
+            monthPicker: {
+                enabled: false,
+                titleFormat: "YYYY"
+            },
+            yearPicker: {
+                enabled: false,
+                titleFormat: "YYYY"
+            },
+            responsive: true
         });
     });
 </script>
@@ -324,7 +419,7 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>{{s16}}</label>
-                                                    <select name="type" class="form-control" @change="setServiceType()" v-model="serviceType">
+                                                    <select name="type" class="form-control" @change="setServiceType" v-model="serviceType">
                                                         <option value="CAS" selected>CAS</option>
                                                         <option value="SAML">SAML</option>
                                                         <option value="Oauth2">Oauth2</option>
@@ -360,10 +455,91 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div v-if="serviceType === 'Oauth2'" class="form-group">
+                                                <div v-bind:style="serviceType === 'Oauth2' ? 'display: block;' : 'display: none;' " class="form-group"><!--v-if="serviceType === 'Oauth2'"-->
                                                     <div class="form-group">
                                                         <label>Client Id<span style="color: red;"> *</span></label>
                                                         <input name="clientId" class="form-control enInput" type="text" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Client Secret<span style="color: red;"> *</span></label>
+                                                        <div class="row">
+                                                            <div class="col-8">
+                                                                <input name="clientSecret" class="form-control enInput" type="text">
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <button v-on:click="generateClientSecret" class="w-100 h-100 btn btn-success btn-sm">{{generateSecretText}}</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Supported Grant Types<span style="color: red;"> *</span></label>
+                                                        <div id="supportedGrantTypesContainer" class="dropdown-checkbox form-control" data-control="dropdown-checkbox">
+                                                            <label class="dropdown-checkbox-label">
+                                                                <div name="supportedGrantTypes" class="dropdown-checkbox-label-container" value="" text="Select"></div>
+                                                            </label>
+                                                            <div class="dropdown-checkbox-list">
+                                                                <a href="#" data-toggle="check-all" class="dropdown-checkbox-option" :checkText="selectAllText" :uncheckText="removeText"></a>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="none" text="none" />
+                                                                    none
+                                                                </label>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="authorization_code" text="authorization_code" />
+                                                                    authorization_code
+                                                                </label>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="password" text="password" />
+                                                                    password
+                                                                </label>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="client_credentials" text="client_credentials" />
+                                                                    client_credentials
+                                                                </label>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="refresh_token" text="refresh_token" />
+                                                                    refresh_token
+                                                                </label>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="uma_ticket" text="uma_ticket" />
+                                                                    uma_ticket
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Supported Response Types<span style="color: red;"> *</span></label>
+                                                        <div id="supportedResponseTypesContainer" class="dropdown-checkbox form-control" data-control="dropdown-checkbox">
+                                                            <label class="dropdown-checkbox-label">
+                                                                <div name="supportedResponseTypes" class="dropdown-checkbox-label-container" value="" text="Select"></div>
+                                                            </label>
+                                                            <div class="dropdown-checkbox-list">
+                                                                <a href="#" data-toggle="check-all" class="dropdown-checkbox-option" :checkText="selectAllText" :uncheckText="removeText"></a>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="code" text="code" />
+                                                                    code
+                                                                </label>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="none" text="none" />
+                                                                    none
+                                                                </label>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="token" text="token" />
+                                                                    token
+                                                                </label>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="device_code" text="device_code" />
+                                                                    device_code
+                                                                </label>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="idtoken_token" text="idtoken_token" />
+                                                                    idtoken_token
+                                                                </label>
+                                                                <label class="dropdown-checkbox-option bg">
+                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="id_token" text="id_token" />
+                                                                    id_token
+                                                                </label>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="form-group mb-3">
@@ -624,6 +800,110 @@
                                                 <input name="endpointUrl" class="form-control enInput mb-3" type="text" placeholder="URL">
                                                 <label>{{s81}}</label>
                                                 <input name="acceptableResponseCodes" class="form-control enInput" type="text" placeholder="200,202">
+                                            </div>
+
+                                            <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{accessByHoursAndDaysOfTheWeekText}}</span></h5>
+                                            <div class="form-group">
+                                                <label>{{daysText}}</label>
+                                                <div id="dailyAccessContainer" class="dropdown-checkbox form-control" data-control="dropdown-checkbox">
+                                                    <label class="dropdown-checkbox-label">
+                                                        <div name="dailyAccess" class="dropdown-checkbox-label-container" value="" text="Select"></div>
+                                                    </label>
+                                                    <div class="dropdown-checkbox-list">
+                                                        <a href="#" data-toggle="check-all" class="dropdown-checkbox-option" :checkText="selectAllText" :uncheckText="removeText"></a>
+                                                        <label class="d-flex justify-content-between dropdown-checkbox-option bg">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input type="checkbox" setVisible="dailyAccessContainer0"
+                                                                       name="dropdown-checkbox-group" value="0" :text="saturdayText" />
+                                                                {{saturdayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer0" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart0" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd0" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between dropdown-checkbox-option bg">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input type="checkbox" setVisible="dailyAccessContainer1"
+                                                                       name="dropdown-checkbox-group" value="1" :text="sundayText" />
+                                                                {{sundayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer1" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart1" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd1" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between dropdown-checkbox-option bg">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input type="checkbox" setVisible="dailyAccessContainer2"
+                                                                       name="dropdown-checkbox-group" value="2" :text="mondayText" />
+                                                                {{mondayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer2" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart2" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd2" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between dropdown-checkbox-option bg">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input type="checkbox" setVisible="dailyAccessContainer3"
+                                                                       name="dropdown-checkbox-group" value="3" :text="tuesdayText" />
+                                                                {{tuesdayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer3" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart3" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd3" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between dropdown-checkbox-option bg">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input type="checkbox" setVisible="dailyAccessContainer4"
+                                                                       name="dropdown-checkbox-group" value="4" :text="wednesdayText" />
+                                                                {{wednesdayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer4" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart4" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd4" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between dropdown-checkbox-option bg">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input type="checkbox" setVisible="dailyAccessContainer5"
+                                                                       name="dropdown-checkbox-group" value="5" :text="thursdayText" />
+                                                                {{thursdayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer5" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart5" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd5" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between dropdown-checkbox-option bg">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input type="checkbox" setVisible="dailyAccessContainer6"
+                                                                       name="dropdown-checkbox-group" value="6" :text="fridayText" />
+                                                                {{fridayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer6" style="visibility: hidden;" class="d-flex justify-content-center align-items-center mx-1" >
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart6" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd6" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s50}}</span></h5>
