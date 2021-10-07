@@ -36,6 +36,8 @@ public class OAuthService extends Service {
 	private String clientId;
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String clientSecret;
+	private Object supportedGrantTypes;
+	private Object supportedResponseTypes;
 
 	public OAuthService() {
 

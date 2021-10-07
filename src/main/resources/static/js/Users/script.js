@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
             showUnDeletableList: false,
             unDeletableList: "",
             isListEmpty: false,
-            s0: "احراز هویت متمرکز شرکت فلات قاره",
+            s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
             s1: "",
             s2: "خروج",
             s3: "بازیابی رمز عبور",
@@ -1701,7 +1701,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.eye = "right: 1%;";
                     this.font = "font-size: 0.74em; text-align: right;"
                     this.dateNavText = this.dateNav;
-                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
+                    this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
                     this.s1 = this.name;
                     this.s2 = "خروج";
                     this.s3 = "بازیابی رمز عبور";

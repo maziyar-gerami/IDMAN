@@ -58,6 +58,8 @@ public class OAuthServiceHelper {
 		if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
 		if (jo.get("clientSecret") != null) service.setClientSecret(jo.get("clientSecret").toString());
 		if (jo.get("clientId") != null) service.setClientId(jo.get("clientId").toString());
+		if (jo.get("supportedGrantTypes") != null) service.setSupportedGrantTypes( jo.get("supportedGrantTypes"));
+		if (jo.get("supportedResponseTypes") != null) service.setSupportedResponseTypes( jo.get("supportedResponseTypes"));
 
 		if (jo.get("expirationPolicy") == null)
 			service.setExpirationPolicy(new ExpirationPolicy());
@@ -313,7 +315,7 @@ public class OAuthServiceHelper {
 
 	}
 
-	public long create(String doerID, JSONObject jo) {
+	public long create(String doerID, JSONObject jo) throws IOException, ParseException {
 
 		OAuthService service = buildOAuthService(jo);
 		service.setId(new Date().getTime());
@@ -340,7 +342,6 @@ public class OAuthServiceHelper {
 					try {
 						machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
 					} catch (Exception e) {
-						e.printStackTrace();
 						uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
 								"IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
 						machines = null;
@@ -360,7 +361,7 @@ public class OAuthServiceHelper {
 						"", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
 
 				return service.getId();
-			} catch (IOException e) {
+			} catch (IOException | ParseException e) {
 				e.printStackTrace();
 				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
 						"", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));

@@ -2,6 +2,7 @@ package parsso.idman.RepoImpls;
 
 
 import net.minidev.json.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -14,6 +15,7 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.other.PublicMessage;
 import parsso.idman.Repos.PubMessageRepo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +44,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 	}
 
 	@Override
-	public HttpStatus postPubicMessage(String doer, PublicMessage message) {
+	public HttpStatus postPubicMessage(String doer, PublicMessage message) throws IOException, ParseException {
 
 		if (!mongoTemplate.collectionExists(collection))
 			mongoTemplate.createCollection(collection);
@@ -64,7 +66,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 	}
 
 	@Override
-	public HttpStatus editPubicMessage(String doer, PublicMessage message) {
+	public HttpStatus editPubicMessage(String doer, PublicMessage message) throws IOException, ParseException {
 
 		PublicMessage oldMessage = showAllPubicMessages(message.getMessageId()).get(0);
 
@@ -89,7 +91,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 	}
 
 	@Override
-	public HttpStatus deletePubicMessage(String doer, JSONObject jsonObject) {
+	public HttpStatus deletePubicMessage(String doer, JSONObject jsonObject) throws IOException, ParseException {
 
 		ArrayList jsonArray = (ArrayList) jsonObject.get("names");
 		Iterator<String> iterator = jsonArray.iterator();

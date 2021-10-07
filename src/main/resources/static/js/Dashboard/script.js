@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
         hasLegend: true,
         legendPlacement: "bottom"
       },
-      s0: "احراز هویت متمرکز شرکت فلات قاره",
+      s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
       s1: "",
       s2: "خروج",
       s3: "داشبورد",
@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.lang = "EN";
             this.isRtl = true;
             this.dateNavText = this.dateNav;
-            this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
+            this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
             this.s1 = this.name;
             this.s2 = "خروج";
             this.s3 = "داشبورد";

@@ -1,3 +1,83 @@
+let CheckboxDropdown = function (el) {
+  let _this = this;
+  this.isOpen = false;
+  this.areAllChecked = false;
+  this.$el = $(el);
+  this.$label = this.$el.find(".dropdown-checkbox-label");
+  this.$labelContainer = this.$el.find(".dropdown-checkbox-label-container");
+  this.$checkAll = this.$el.find("[data-toggle='check-all']").first();
+  this.$inputs = this.$el.find("[type='checkbox']");
+  this.onCheckBox();
+  this.$label.on("click", function(e) {
+    e.preventDefault();
+    _this.toggleOpen();
+  });
+  this.$checkAll.on("click", function(e) {
+    e.preventDefault();
+    _this.onCheckAll();
+  });
+  this.$inputs.on("change", function(e) {
+    _this.onCheckBox();
+  });
+};
+CheckboxDropdown.prototype.onCheckBox = function() {
+  this.updateStatus();
+};
+CheckboxDropdown.prototype.updateStatus = function() {
+  let checked = this.$el.find(":checked");
+  let value = "";
+  let text = "";
+  this.areAllChecked = false;
+  this.$checkAll.html(this.$checkAll.attr("checkText"));
+  if(checked.length === this.$inputs.length) {
+    this.areAllChecked = true;
+    this.$checkAll.html(this.$checkAll.attr("uncheckText"));
+  }
+  for(let i = 0; i < this.$inputs.length; ++i){
+    if(typeof $(this.$inputs[i]).attr("setVisible") !== typeof undefined && $(this.$inputs[i]).attr("setVisible") !== false){
+      if($(this.$inputs[i]).is(":checked")){
+        $("#" + $(this.$inputs[i]).attr("setVisible")).css("visibility", "visible");
+      }else {
+        $("#" + $(this.$inputs[i]).attr("setVisible")).css("visibility", "hidden");
+      }
+    }
+  }
+  if(checked.length > 0){
+    for(let i = 0; i < checked.length - 1; ++i){
+      value = value + $(checked[i]).attr("value") + ", ";
+      text = text + $(checked[i]).attr("text") + ", ";
+    }
+    value = value + $(checked[checked.length - 1]).attr("value");
+    text = text + $(checked[checked.length - 1]).attr("text");
+    this.$labelContainer.html(text);
+    this.$labelContainer.attr("value", value);
+  }else {
+    this.$labelContainer.html(this.$labelContainer.attr("text"));
+    this.$labelContainer.attr("value", "");
+  }
+};
+CheckboxDropdown.prototype.onCheckAll = function(checkAll) {
+  if(!this.areAllChecked || checkAll) {
+    this.areAllChecked = true;
+    this.$checkAll.html(this.$checkAll.attr("uncheckText"));
+    this.$inputs.prop("checked", true);
+  }else {
+    this.areAllChecked = false;
+    this.$checkAll.html(this.$checkAll.attr("checkText"));
+    this.$inputs.prop("checked", false);
+  }
+  this.updateStatus();
+};
+CheckboxDropdown.prototype.toggleOpen = function(forceOpen) {
+  if(!this.isOpen || forceOpen) {
+    this.isOpen = true;
+    this.$el.addClass("on");
+  }else {
+    this.isOpen = false;
+    this.$el.removeClass("on");
+  }
+};
+
 document.addEventListener('DOMContentLoaded', function () {
     var router = new VueRouter({
       mode: 'history',
@@ -87,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
         metaDataFile: false,
         allIsSelected: false,
         isListEmpty: false,
-        s0: "احراز هویت متمرکز شرکت فلات قاره",
+        s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
         s1: "",
         s2: "خروج",
         s3: "داشبورد",
@@ -241,6 +321,22 @@ document.addEventListener('DOMContentLoaded', function () {
         tempUserDict: {},
         userFaNameInGroupText: "نام فارسی کاربر عضو",
         userIdInGroupText: "شناسه کاربر عضو",
+        selectText: "انتخاب کنید",
+        selectAllText: "انتخاب همه",
+        removeText: "لغو انتخاب همه",
+        generateSecretText: "ایجاد رمز",
+        accessByHoursAndDaysOfTheWeekText: "دسترسی بر اساس ساعات و روزهای هفته",
+        saturdayText: "شنبه",
+        sundayText: "یکشنبه",
+        mondayText: "دوشنبه",
+        tuesdayText: "سه‌شنبه",
+        wednesdayText: "چهارشنبه",
+        thursdayText: "پنجشنبه",
+        fridayText: "جمعه",
+        daysText: "روز ها",
+        fromText: "از: ",
+        toText: "تا: ",
+        dailyAccessObj: {},
       },
       created: function () {
         this.setDateNav();
@@ -478,6 +574,22 @@ document.addEventListener('DOMContentLoaded', function () {
               vm.oauths = true;
               document.getElementsByName("clientId")[0].value = res.data.clientId;
               document.getElementsByName("clientSecret")[0].value = res.data.clientSecret;
+              let supportedGrantTypesContainer = document.getElementById("supportedGrantTypesContainer");
+              let supportedGrantTypesObj =  new CheckboxDropdown(supportedGrantTypesContainer);
+              let supportedResponseTypesContainer = document.getElementById("supportedResponseTypesContainer");
+              let supportedResponseTypesObj =  new CheckboxDropdown(supportedResponseTypesContainer);
+              if(typeof res.data.supportedGrantTypes !== "undefined"){
+                for(let i = 0; i < res.data.supportedGrantTypes[1].length; ++i){
+                  $(supportedGrantTypesContainer).find("[value='" + res.data.supportedGrantTypes[1][i] + "']").attr("checked","true");
+                }
+                supportedGrantTypesObj.updateStatus();
+              }
+              if(typeof res.data.supportedResponseTypes !== "undefined"){
+                for(let i = 0; i < res.data.supportedResponseTypes[1].length; ++i){
+                  $(supportedResponseTypesContainer).find("[value='" + res.data.supportedResponseTypes[1][i] + "']").attr("checked","true");
+                }
+                supportedResponseTypesObj.updateStatus();
+              }
             }else{
               vm.oauths = false;
             }
@@ -525,8 +637,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 seTime.substring(11,13), seTime.substring(14,16), seTime.substring(17,19), seTime.substring(20,23)]);
               document.getElementsByName("dateEnd")[0].value = dayWrapper.toCalendar('persian').format("dddd DD MMMM YYYY  HH:mm  a");
             }
-
-
 
             if(typeof res.data.logo !== 'undefined'){
               document.getElementsByName("logo")[0].value = res.data.logo;
@@ -703,12 +813,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
               }
             }
+
             if(typeof res.data.extraInfo.notificationApiURL !== "undefined"){
               document.getElementsByName("notificationApiURL")[0].value = res.data.extraInfo.notificationApiURL;
             }
 
             if(typeof res.data.extraInfo.notificationApiKey !== "undefined"){
               document.getElementsByName("notificationApiKey")[0].value = res.data.extraInfo.notificationApiKey;
+            }
+
+            if(typeof res.data.extraInfo.dailyAccess !== "undefined"){
+              let dailyAccessContainer = document.getElementById("dailyAccessContainer");
+              let tempDailyAccessFrom = "";
+              let tempDailyAccessTo = "";
+              if(res.data.extraInfo.dailyAccess.length > 0){
+                for(let i = 0; i < res.data.extraInfo.dailyAccess.length; ++i){
+                  $(dailyAccessContainer).find("[value='" + res.data.extraInfo.dailyAccess[i].weekDay + "']").attr("checked","true");
+                  tempDailyAccessFrom = this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.minute));
+                  tempDailyAccessTo = this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.minute));
+                  document.getElementById("dailyAccessStart" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("value", tempDailyAccessFrom);
+                  document.getElementById("dailyAccessEnd" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("value", tempDailyAccessTo);
+                }
+                this.dailyAccessObj.updateStatus();
+              }
             }
           });
         },
@@ -1062,6 +1189,52 @@ document.addEventListener('DOMContentLoaded', function () {
               this.extraInfo.notificationApiKey = null;
             }
 
+            let dailyAccessArray = document.getElementsByName("dailyAccess")[0].getAttribute("value").split(", ");
+            if(dailyAccessArray[0] !== ""){
+              this.extraInfo.dailyAccess = [];
+              let tempDailyAccessDay = {};
+              let tempDailyAccessStart = "";
+              let tempDailyAccessEnd = "";
+              for(let i = 0; i < dailyAccessArray.length; ++i){
+                if(typeof document.getElementById("dailyAccessStart" + dailyAccessArray[i]) !== "undefined" &&
+                    typeof document.getElementById("dailyAccessEnd" + dailyAccessArray[i]) !== "undefined"){
+                  tempDailyAccessStart = document.getElementById("dailyAccessStart" + dailyAccessArray[i]).value.split(":");
+                  tempDailyAccessEnd =  document.getElementById("dailyAccessEnd" + dailyAccessArray[i]).value.split(":");
+                  if(tempDailyAccessStart[0] === ""){
+                    tempDailyAccessStart[0] = "0";
+                    tempDailyAccessStart.push("00");
+                  }else if(tempDailyAccessEnd[0] === ""){
+                    tempDailyAccessEnd[0] = "23";
+                    tempDailyAccessEnd.push("59");
+                  }else if(typeof tempDailyAccessStart[1] === "undefined"){
+                    tempDailyAccessStart.push("00");
+                  }else if(typeof tempDailyAccessEnd[1] === "undefined"){
+                    tempDailyAccessEnd.push("00");
+                  }
+                  tempDailyAccessStart[0] = this.FaNumToEnNum(tempDailyAccessStart[0]);
+                  tempDailyAccessStart[1] = this.FaNumToEnNum(tempDailyAccessStart[1]);
+                  tempDailyAccessEnd[0] = this.FaNumToEnNum(tempDailyAccessEnd[0]);
+                  tempDailyAccessEnd[1] = this.FaNumToEnNum(tempDailyAccessEnd[1]);
+                  tempDailyAccessDay = {
+                    "weekDay": dailyAccessArray[i],
+                    "period": {
+                      "from": {
+                        "hour": tempDailyAccessStart[0],
+                        "minute": tempDailyAccessStart[1]
+                      },
+                      "to": {
+                        "hour": tempDailyAccessEnd[0],
+                        "minute": tempDailyAccessEnd[1]
+                      }
+                    }
+                  }
+                  this.extraInfo.dailyAccess.push(tempDailyAccessDay);
+                }
+              }
+            }else {
+              this.extraInfo.dailyAccess = null;
+            }
+
 
             let logoFile = document.querySelector("#logoFile");
             if(logoFile.files[0]) {
@@ -1153,11 +1326,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert("لطفا قسمت های الزامی را پر کنید.");
                   }
                 }else if(vm.oauths){
+                  let supportedGrantTypesArray = document.getElementsByName("supportedGrantTypes")[0].getAttribute("value").split(", ");
+                  let supportedResponseTypesArray = document.getElementsByName("supportedResponseTypes")[0].getAttribute("value").split(", ");
                   vm.service.clientId = document.getElementsByName("clientId")[0].value;
                   vm.service.clientSecret = document.getElementsByName("clientSecret")[0].value;
-                  //vm.extraInfo.supportedGrantTypes = [ "java.util.HashSet", [ "authorization_code" ] ];
-                  //vm.extraInfo.supportedResponseTypes = [ "java.util.HashSet", [ "code" ] ];
-                  if(vm.service.clientId !== "" || vm.service.clientSecret !== ""){
+                  vm.service.supportedGrantTypes = [ "java.util.HashSet", supportedGrantTypesArray ];
+                  vm.service.supportedResponseTypes = [ "java.util.HashSet", supportedResponseTypesArray ];
+
+                  if(vm.service.clientId !== "" && vm.service.clientSecret !== "" &&
+                      supportedGrantTypesArray[0] !== "" && supportedResponseTypesArray[0] !== ""){
                     axios({
                       method: "put",
                       url: url + "/api/service/" + id + "/oauth", //
@@ -1167,6 +1344,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         serviceId: vm.service.serviceId,
                         clientId: vm.service.clientId,
                         clientSecret: vm.service.clientSecret,
+                        supportedGrantTypes: vm.service.supportedGrantTypes,
+                        supportedResponseTypes: vm.service.supportedResponseTypes,
                         extraInfo: vm.extraInfo,
                         multifactorPolicy: vm.multifactorPolicy,
                         description: vm.service.description,
@@ -1289,11 +1468,15 @@ document.addEventListener('DOMContentLoaded', function () {
                   alert("لطفا قسمت های الزامی را پر کنید.");
                 }
               }else if(vm.oauths){
+                let supportedGrantTypesArray = document.getElementsByName("supportedGrantTypes")[0].getAttribute("value").split(", ");
+                let supportedResponseTypesArray = document.getElementsByName("supportedResponseTypes")[0].getAttribute("value").split(", ");
                 vm.service.clientId = document.getElementsByName("clientId")[0].value;
                 vm.service.clientSecret = document.getElementsByName("clientSecret")[0].value;
-                //vm.extraInfo.supportedGrantTypes = [ "java.util.HashSet", [ "authorization_code" ] ];
-                //vm.extraInfo.supportedResponseTypes = [ "java.util.HashSet", [ "code" ] ];
-                if(vm.service.clientId !== "" || vm.service.clientSecret !== ""){
+                vm.service.supportedGrantTypes = [ "java.util.HashSet", supportedGrantTypesArray ];
+                vm.service.supportedResponseTypes = [ "java.util.HashSet", supportedResponseTypesArray ];
+
+                if(vm.service.clientId !== "" && vm.service.clientSecret !== "" &&
+                    supportedGrantTypesArray[0] !== "" && supportedResponseTypesArray[0] !== ""){
                   axios({
                     method: "put",
                     url: url + "/api/service/" + id + "/oauth", //
@@ -1303,6 +1486,8 @@ document.addEventListener('DOMContentLoaded', function () {
                       serviceId: vm.service.serviceId,
                       clientId: vm.service.clientId,
                       clientSecret: vm.service.clientSecret,
+                      supportedGrantTypes: vm.service.supportedGrantTypes,
+                      supportedResponseTypes: vm.service.supportedResponseTypes,
                       extraInfo: vm.extraInfo,
                       multifactorPolicy: vm.multifactorPolicy,
                       description: vm.service.description,
@@ -1428,30 +1613,58 @@ document.addEventListener('DOMContentLoaded', function () {
         FaNumToEnNum: function (str) {
           let s = str.split("");
           let sEn = "";
-          for(i = 0; i < s.length; ++i){
-            if(s[i] == '۰'){
-              sEn = sEn + '0';
-            }else if(s[i] == '۱'){
-              sEn = sEn + '1';
-            }else if(s[i] == '۲'){
-              sEn = sEn + '2';
-            }else if(s[i] == '۳'){
-              sEn = sEn + '3';
-            }else if(s[i] == '۴'){
-              sEn = sEn + '4';
-            }else if(s[i] == '۵'){
-              sEn = sEn + '5';
-            }else if(s[i] == '۶'){
-              sEn = sEn + '6';
-            }else if(s[i] == '۷'){
-              sEn = sEn + '7';
-            }else if(s[i] == '۸'){
-              sEn = sEn + '8';
-            }else if(s[i] == '۹'){
-              sEn = sEn + '9';
+          for(let i = 0; i < s.length; ++i){
+            if(s[i] === "۰" || s[i] === "0"){
+              sEn = sEn + "0";
+            }else if(s[i] === "۱" || s[i] === "1"){
+              sEn = sEn + "1";
+            }else if(s[i] === "۲" || s[i] === "2"){
+              sEn = sEn + "2";
+            }else if(s[i] === "۳" || s[i] === "3"){
+              sEn = sEn + "3";
+            }else if(s[i] === "۴" || s[i] === "4"){
+              sEn = sEn + "4";
+            }else if(s[i] === "۵" || s[i] === "5"){
+              sEn = sEn + "5";
+            }else if(s[i] === "۶" || s[i] === "6"){
+              sEn = sEn + "6";
+            }else if(s[i] === "۷" || s[i] === "7"){
+              sEn = sEn + "7";
+            }else if(s[i] === "۸" || s[i] === "8"){
+              sEn = sEn + "8";
+            }else if(s[i] === "۹" || s[i] === "9"){
+              sEn = sEn + "9";
             }
           }
           return sEn;
+        },
+        EnNumToFaNum: function (str) {
+          let s = str.split("");
+          let sFa = "";
+          for(let i = 0; i < s.length; ++i){
+            if(s[i] === "۰" || s[i] === "0"){
+              sFa = sFa + "۰";
+            }else if(s[i] === "۱" || s[i] === "1"){
+              sFa = sFa + "۱";
+            }else if(s[i] === "۲" || s[i] === "2"){
+              sFa = sFa + "۲";
+            }else if(s[i] === "۳" || s[i] === "3"){
+              sFa = sFa + "۳";
+            }else if(s[i] === "۴" || s[i] === "4"){
+              sFa = sFa + "۴";
+            }else if(s[i] === "۵" || s[i] === "5"){
+              sFa = sFa + "۵";
+            }else if(s[i] === "۶" || s[i] === "6"){
+              sFa = sFa + "۶";
+            }else if(s[i] === "۷" || s[i] === "7"){
+              sFa = sFa + "۷";
+            }else if(s[i] === "۸" || s[i] === "8"){
+              sFa = sFa + "۸";
+            }else if(s[i] === "۹" || s[i] === "9"){
+              sFa = sFa + "۹";
+            }
+          }
+          return sFa;
         },
         allowUserAccess: function (user) {
           if(this.userAllowedId.indexOf(user.userId) == -1){
@@ -2050,137 +2263,167 @@ document.addEventListener('DOMContentLoaded', function () {
             this.apiKeyText = "API Key";
             this.userFaNameInGroupText = "Member's Name";
             this.userIdInGroupText = "Member's UserId";
+            this.selectText = "Select";
+            this.selectAllText = "Select All";
+            this.removeText = "Unselect All";
+            this.generateSecretText = "Generate Secret";
+            this.accessByHoursAndDaysOfTheWeekText = "Daily Based Access";
+            this.saturdayText = "Saturday";
+            this.sundayText = "Sunday";
+            this.mondayText = "Monday";
+            this.tuesdayText = "Tuesday";
+            this.wednesdayText = "Wednesday";
+            this.thursdayText = "Thursday";
+            this.fridayText = "Friday";
+            this.daysText = "Days";
+            this.fromText = "From: ";
+            this.toText = "To: ";
           }else {
-              window.localStorage.setItem("lang", "FA");
-              this.margin = "margin-right: 30px;";
-              this.margin1 = "ml-1";
-              this.lang = "EN";
-              this.isRtl = true;
-              this.dateNavText = this.dateNav;
-              this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
-              this.s1 = this.name;
-              this.s2 = "خروج";
-              this.s3 = "داشبورد";
-              this.s4 = "سرویس ها";
-              this.s5 = "گروه ها";
-              this.s6 = "رویداد ها";
-              this.s7 = "پروفایل";
-              this.s8 = "سرویس های متصل";
-              this.s9 = "سرویس ها";
-              this.s10 = "قوانین";
-              this.s11 = "حریم خصوصی";
-              this.s12 = "راهنما";
-              this.s13 = "ایجاد سرویس جدید";
-              this.s14 = "جدید";
-              this.s15 = "کاربران";
-              this.s20 = "شناسه";
-              this.s21 = "نام";
-              this.s22 = "آدرس";
-              this.s23 = "ویرایش";
-              this.s24 = "حذف";
-              this.s25 = "تنظیمات پایه";
-              this.s26 = "فعال سازی سرویس";
-              this.s27 = "نوع سرویس";
-              this.s28 = "نام سرویس";
-              this.s29 = "آدرس سرویس";
-              this.s30 = "شناسه سرویس";
-              this.s31 = "نام فارسی سرویس";
-              this.s32 = "دسترسی گروه ها";
-              this.s33 = "پیوندهای مرجع";
-              this.s34 = "آدرس لوگو";
-              this.s35 = "آدرس راهنما";
-              this.s36 = "آدرس قوانین";
-              this.s37 = "اطلاعات تماس";
-              this.s38 = "نام";
-              this.s39 = "ایمیل";
-              this.s40 = "شماره تماس";
-              this.s41 = "دپارتمان";
-              this.s42 = "تنظیمات خروج";
-              this.s43 = "آدرس خروج";
-              this.s44 = "نوع خروج";
-              this.s45 = "تایید";
-              this.s46 = "بازگشت";
-              this.s47 = "حذف";
-              this.s51 = "پیکربندی";
-              this.s54 = "استراتژی دسترسی";
-              this.s55 = "فعال سازی SSO";
-              this.s56 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
-              this.s57 = " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
-              this.s58 = "تنظیمات پایه";
-              this.s59 = "استراتژی دسترسی";
-              this.s60 = "دسترسی بر اساس زمان";
-              this.s61 = "تاریخ شروع";
-              this.s62 = "زمان شروع";
-              this.s63 = "تاریخ پایان";
-              this.s64 = "زمان پایان";
-              this.s65 = "احراز هویت چند مرحله ای";
-              this.s66 = "فعال سازی MFA";
-              this.s67 = " مثال: 1399/05/01 ";
-              this.s68 = " مثال: 20:30 ";
-              this.s69 = "دسترسی کاربران";
-              this.s70 = "لیست کاربران";
-              this.s71 = "جستجو...";
-              this.s72 = "اعطا دسترسی";
-              this.s73 = "منع دسترسی";
-              this.s74 = "کاربری یافت نشد";
-              this.s75 = "جستجو کنید";
-              this.s76 = "کاربران دارای دسترسی";
-              this.s77 = "حذف";
-              this.s78 = "لیست خالی است";
-              this.s79 = "کاربران منع شده";
-              this.s80 = "دسترسی بر اساس پارامتر";
-              this.s81 = "نام پارامتر";
-              this.s82 = "مقدار پارامتر";
-              this.s83 = "حذف سرویس";
-              this.s84 = "اعمال";
-              this.s85 = "آیا از حذف سرویس های انتخاب شده اطمینان دارید؟";
-              this.s86 = "هیچ سرویسی انتخاب نشده است.";
-              this.s87 = "آیا از حذف این سرویس اطمینان دارید؟";
-              this.s88 = "آیا از حذف تمامی سرویس ها اطمینان دارید؟";
-              this.s89 = " (در صورت وارد کردن آدرس، http یا https ذکر شود)";
-              this.s90 = "آدرس";
-              this.s91 = "فایل";
-              this.s92 = "تعداد رکورد ها: ";
-              this.s93 = "موقعیت";
-              this.s94 = "ممیزی ها";
-              this.s96 = "دسترسی از راه دور";
-              this.s97 = "کد پاسخ های قابل قبول";
-              this.s98 = "ویرایش سرویس";
-              this.s99 = "توکن سخت افزاری";
-              this.s100 = "غیرفعال";
-              this.s101 = "سرویسی یافت نشد";
-              this.rolesText = "نقش ها";
-              this.reportsText = "گزارش ها";
-              this.publicmessagesText = "اعلان های عمومی";
-              this.ticketingText = "پشتیبانی";
-              this.transcriptsText = "گزارش های دسترسی";
-              this.addAllGroupsText = "انتخاب همه";
-              this.removeAllGroupsText = "لغو انتخاب همه";
-              this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
-              this.inputPersianFilterText = " (تنها حروف فارسی و اعداد مجاز می باشند)";
-              this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
-              this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
-              this.meetingText = "جلسه مجازی";
-              this.enterMeetingText = "ورود به جلسه";
-              this.inviteToMeetingText = "دعوت به جلسه";
-              this.copyText = "کپی";
-              this.returnText = "بازگشت";
-              this.dynamicOTPPassword = "رمز پویا (یکبار مصرف)";
-              this.accessReport = "گزارش های دسترسی سرویس";
-              this.searchText = "جستجو...";
-              this.displayNameFaText = "نام کامل";
-              this.userNotFoundText = "کاربری یافت نشد";
-              this.groupNotFoundText = "گروهی یافت نشد";
-              this.allowedGroupsText = "گروه های دارای دسترسی";
-              this.bannedGroupsText = "گروه های منع شده";
-              this.enNameText = "نام انگلیسی";
-              this.faNameText = "نام فارسی";
-              this.returnText = "بازگشت";
-              this.serviceNotificationsText = "پیام های سرویس";
-              this.apiAddressText = "آدرس API";
-              this.apiKeyText = "کلید API";
-              this.userFaNameInGroupText = "نام فارسی کاربر عضو";
-              this.userIdInGroupText = "شناسه کاربر عضو";
+            window.localStorage.setItem("lang", "FA");
+            this.margin = "margin-right: 30px;";
+            this.margin1 = "ml-1";
+            this.lang = "EN";
+            this.isRtl = true;
+            this.dateNavText = this.dateNav;
+            this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
+            this.s1 = this.name;
+            this.s2 = "خروج";
+            this.s3 = "داشبورد";
+            this.s4 = "سرویس ها";
+            this.s5 = "گروه ها";
+            this.s6 = "رویداد ها";
+            this.s7 = "پروفایل";
+            this.s8 = "سرویس های متصل";
+            this.s9 = "سرویس ها";
+            this.s10 = "قوانین";
+            this.s11 = "حریم خصوصی";
+            this.s12 = "راهنما";
+            this.s13 = "ایجاد سرویس جدید";
+            this.s14 = "جدید";
+            this.s15 = "کاربران";
+            this.s20 = "شناسه";
+            this.s21 = "نام";
+            this.s22 = "آدرس";
+            this.s23 = "ویرایش";
+            this.s24 = "حذف";
+            this.s25 = "تنظیمات پایه";
+            this.s26 = "فعال سازی سرویس";
+            this.s27 = "نوع سرویس";
+            this.s28 = "نام سرویس";
+            this.s29 = "آدرس سرویس";
+            this.s30 = "شناسه سرویس";
+            this.s31 = "نام فارسی سرویس";
+            this.s32 = "دسترسی گروه ها";
+            this.s33 = "پیوندهای مرجع";
+            this.s34 = "آدرس لوگو";
+            this.s35 = "آدرس راهنما";
+            this.s36 = "آدرس قوانین";
+            this.s37 = "اطلاعات تماس";
+            this.s38 = "نام";
+            this.s39 = "ایمیل";
+            this.s40 = "شماره تماس";
+            this.s41 = "دپارتمان";
+            this.s42 = "تنظیمات خروج";
+            this.s43 = "آدرس خروج";
+            this.s44 = "نوع خروج";
+            this.s45 = "تایید";
+            this.s46 = "بازگشت";
+            this.s47 = "حذف";
+            this.s51 = "پیکربندی";
+            this.s54 = "استراتژی دسترسی";
+            this.s55 = "فعال سازی SSO";
+            this.s56 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
+            this.s57 = " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
+            this.s58 = "تنظیمات پایه";
+            this.s59 = "استراتژی دسترسی";
+            this.s60 = "دسترسی بر اساس زمان";
+            this.s61 = "تاریخ شروع";
+            this.s62 = "زمان شروع";
+            this.s63 = "تاریخ پایان";
+            this.s64 = "زمان پایان";
+            this.s65 = "احراز هویت چند مرحله ای";
+            this.s66 = "فعال سازی MFA";
+            this.s67 = " مثال: 1399/05/01 ";
+            this.s68 = " مثال: 20:30 ";
+            this.s69 = "دسترسی کاربران";
+            this.s70 = "لیست کاربران";
+            this.s71 = "جستجو...";
+            this.s72 = "اعطا دسترسی";
+            this.s73 = "منع دسترسی";
+            this.s74 = "کاربری یافت نشد";
+            this.s75 = "جستجو کنید";
+            this.s76 = "کاربران دارای دسترسی";
+            this.s77 = "حذف";
+            this.s78 = "لیست خالی است";
+            this.s79 = "کاربران منع شده";
+            this.s80 = "دسترسی بر اساس پارامتر";
+            this.s81 = "نام پارامتر";
+            this.s82 = "مقدار پارامتر";
+            this.s83 = "حذف سرویس";
+            this.s84 = "اعمال";
+            this.s85 = "آیا از حذف سرویس های انتخاب شده اطمینان دارید؟";
+            this.s86 = "هیچ سرویسی انتخاب نشده است.";
+            this.s87 = "آیا از حذف این سرویس اطمینان دارید؟";
+            this.s88 = "آیا از حذف تمامی سرویس ها اطمینان دارید؟";
+            this.s89 = " (در صورت وارد کردن آدرس، http یا https ذکر شود)";
+            this.s90 = "آدرس";
+            this.s91 = "فایل";
+            this.s92 = "تعداد رکورد ها: ";
+            this.s93 = "موقعیت";
+            this.s94 = "ممیزی ها";
+            this.s96 = "دسترسی از راه دور";
+            this.s97 = "کد پاسخ های قابل قبول";
+            this.s98 = "ویرایش سرویس";
+            this.s99 = "توکن سخت افزاری";
+            this.s100 = "غیرفعال";
+            this.s101 = "سرویسی یافت نشد";
+            this.rolesText = "نقش ها";
+            this.reportsText = "گزارش ها";
+            this.publicmessagesText = "اعلان های عمومی";
+            this.ticketingText = "پشتیبانی";
+            this.transcriptsText = "گزارش های دسترسی";
+            this.addAllGroupsText = "انتخاب همه";
+            this.removeAllGroupsText = "لغو انتخاب همه";
+            this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
+            this.inputPersianFilterText = " (تنها حروف فارسی و اعداد مجاز می باشند)";
+            this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+            this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+            this.meetingText = "جلسه مجازی";
+            this.enterMeetingText = "ورود به جلسه";
+            this.inviteToMeetingText = "دعوت به جلسه";
+            this.copyText = "کپی";
+            this.returnText = "بازگشت";
+            this.dynamicOTPPassword = "رمز پویا (یکبار مصرف)";
+            this.accessReport = "گزارش های دسترسی سرویس";
+            this.searchText = "جستجو...";
+            this.displayNameFaText = "نام کامل";
+            this.userNotFoundText = "کاربری یافت نشد";
+            this.groupNotFoundText = "گروهی یافت نشد";
+            this.allowedGroupsText = "گروه های دارای دسترسی";
+            this.bannedGroupsText = "گروه های منع شده";
+            this.enNameText = "نام انگلیسی";
+            this.faNameText = "نام فارسی";
+            this.returnText = "بازگشت";
+            this.serviceNotificationsText = "پیام های سرویس";
+            this.apiAddressText = "آدرس API";
+            this.apiKeyText = "کلید API";
+            this.userFaNameInGroupText = "نام فارسی کاربر عضو";
+            this.userIdInGroupText = "شناسه کاربر عضو";
+            this.selectText = "انتخاب کنید";
+            this.selectAllText = "انتخاب همه";
+            this.removeText = "لغو انتخاب همه";
+            this.generateSecretText = "ایجاد رمز";
+            this.accessByHoursAndDaysOfTheWeekText = "دسترسی بر اساس ساعات و روزهای هفته";
+            this.saturdayText = "شنبه";
+            this.sundayText = "یکشنبه";
+            this.mondayText = "دوشنبه";
+            this.tuesdayText = "سه‌شنبه";
+            this.wednesdayText = "چهارشنبه";
+            this.thursdayText = "پنجشنبه";
+            this.fridayText = "جمعه";
+            this.daysText = "روز ها";
+            this.fromText = "از: ";
+            this.toText = "تا: ";
           }
         },
         div: function (a, b) {
@@ -2332,6 +2575,9 @@ document.addEventListener('DOMContentLoaded', function () {
             return [];
           }
         },
-      }
+      },
+      mounted: function () {
+        this.dailyAccessObj = new CheckboxDropdown(document.getElementById("dailyAccessContainer"));
+      },
     });
   })

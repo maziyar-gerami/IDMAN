@@ -195,7 +195,7 @@ public class SamlServiceHelper {
 		return service;
 	}
 
-	public long create(String doerID, JSONObject jo) {
+	public long create(String doerID, JSONObject jo) throws IOException, ParseException {
 		SamlService service = buildSamlService(jo);
 		service.setId(new Date().getTime());
 		String json = null;
@@ -243,7 +243,7 @@ public class SamlServiceHelper {
 				uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
 						"", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
 				return service.getId();
-			} catch (IOException e) {
+			} catch (IOException | ParseException e) {
 				e.printStackTrace();
 				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
 						"", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));

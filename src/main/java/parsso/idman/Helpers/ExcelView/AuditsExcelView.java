@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.other.Time;
-import parsso.idman.RepoImpls.audits.Retrieves;
+import parsso.idman.RepoImpls.audits.RetrieveAudits;
 import parsso.idman.Repos.logs.audits.AuditRepo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +43,7 @@ public class AuditsExcelView extends AbstractXlsView {
 	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
 		// get data model which is passed by the Spring container
-		List<Audit> audits = new Retrieves(mongoTemplate).analyze(mainCollection, 0, 0);
+		List<Audit> audits = new RetrieveAudits(mongoTemplate).analyze(mainCollection, 0, 0);
 
 		// create a new Excel sheet
 		HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Audits");

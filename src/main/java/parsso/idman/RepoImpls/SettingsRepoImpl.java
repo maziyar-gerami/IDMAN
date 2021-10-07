@@ -10,8 +10,8 @@ import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
 import parsso.idman.Models.Logs.Setting;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Repos.ConfigRepo;
-import parsso.idman.Repos.EmailService;
-import parsso.idman.Repos.SettingsRepo;
+import parsso.idman.Repos.email.EmailService;
+import parsso.idman.Repos.settings.SettingsRepo;
 import parsso.idman.Repos.UserRepo;
 
 import java.io.IOException;

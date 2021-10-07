@@ -4,6 +4,7 @@ package parsso.idman.Helpers;
 import parsso.idman.Models.Users.User;
 
 public class Variables {
+	public static final String col_casEvent = "MongoDbCasEventRepository";
 	public static final String ACTION_EXPIREPASSWORD = "Expire Password";
 	public static final String ACTION_REPLACE = "Replace";
 	public static final String DOER_SYSTEM = "SYSTEM";

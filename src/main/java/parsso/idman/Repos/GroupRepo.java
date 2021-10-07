@@ -13,9 +13,9 @@ import java.util.List;
 public interface GroupRepo {
 	List<Group> retrieve();
 
-	HttpStatus create(String doerId, Group ou);
+	HttpStatus create(String doerId, Group ou) throws IOException, ParseException;
 
-	HttpStatus update(String doerID, String name, Group ou);
+	HttpStatus update(String doerID, String name, Group ou) throws IOException, ParseException;
 
 	HttpStatus remove(String doerId, JSONObject jsonObject) throws IOException, ParseException;
 

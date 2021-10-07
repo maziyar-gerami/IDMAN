@@ -65,7 +65,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	private String iconPath;
 
 	@Override
-	public List<MicroService> listUserServices(User user) throws IOException {
+	public List<MicroService> listUserServices(User user) throws IOException, ParseException {
 
 		List<Service> services = listServicesFull();
 
@@ -138,7 +138,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public List<Service> listServicesFull() {
+	public List<Service> listServicesFull() throws IOException, ParseException {
 		File folder = new File(path); // ./services/
 		String[] files = folder.list();
 		List<Service> services = new LinkedList<>();
@@ -159,7 +159,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public List<Service> listServicesWithGroups(String ou) throws IOException {
+	public List<Service> listServicesWithGroups(String ou) throws IOException, ParseException {
 		List<Service> allServices = listServicesFull();
 
 		List<Service> relatedList = new LinkedList<>();
@@ -179,7 +179,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public List<MicroService> listServicesMain() {
+	public List<MicroService> listServicesMain() throws IOException, ParseException {
 
 		File folder = new File(path); // ./services/
 		String[] files = folder.list();
@@ -211,7 +211,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public Service retrieveService(long serviceId) throws IOException {
+	public Service retrieveService(long serviceId) throws IOException, ParseException {
 
 		ExtraInfo extraInfo;
 
@@ -236,7 +236,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public LinkedList<String> deleteServices(String doerID, JSONObject jsonObject) {
+	public LinkedList<String> deleteServices(String doerID, JSONObject jsonObject) throws IOException, ParseException {
 
 		File folder = new File(path);
 		List<String> allFiles = Arrays.asList(folder.list());
@@ -285,7 +285,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public HttpStatus updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException {
+	public HttpStatus updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException, ParseException {
 
 		//Update ou
 		userRepo.updateUsersWithSpecificOU(doerID, oldOu, newOu);
@@ -488,11 +488,6 @@ public class ServiceRepoImpl implements ServiceRepo {
 		return position.decrease(id);
 	}
 
-	@Override
-	public ServiceGist gistService(String apikey) {
-		return new ServiceGist();
-
-	}
 
 	@Override
 	public boolean serviceAccess(long id) {

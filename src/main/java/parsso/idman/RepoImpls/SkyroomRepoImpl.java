@@ -3,6 +3,7 @@ package parsso.idman.RepoImpls;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.other.SkyRoom;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.SkyroomRepo;
+import parsso.idman.Repos.skyRoom.SkyroomRepo;
 import parsso.idman.Repos.UserRepo;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -33,7 +34,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 	@Autowired
 	UniformLogger uniformLogger;
 
-	public SkyRoom Run(User user) throws IOException {
+	public SkyRoom Run(User user) throws IOException, ParseException {
 
 		String Realname = user.getFirstName() + user.getLastName();
 		String Classname = user.getFirstName().split("")[0] + user.getLastName().split("")[0] + (int) (Long.parseLong(user.getMobile()) % 937);
@@ -58,7 +59,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		}
 	}
 
-	public JSONObject Post(String json) throws IOException {
+	public JSONObject Post(String json) throws IOException, ParseException {
 		if (skyroomEnable.equalsIgnoreCase("true")) {
 			URL url = null;
 			try {
@@ -128,7 +129,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return 0;
 	}
 
-	public String CreateLoginUrl(int room_id, String user_id, String nickname) throws IOException {
+	public String CreateLoginUrl(int room_id, String user_id, String nickname) throws IOException, ParseException {
 		JSONObject root = new JSONObject();
 		root.put("action", "createLoginUrl");
 		JSONObject params = new JSONObject();
@@ -152,7 +153,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return "error";
 	}
 
-	public int CreateRoom(String name) throws IOException {
+	public int CreateRoom(String name) throws IOException, ParseException {
 		JSONObject root = new JSONObject();
 		root.put("action", "createRoom");
 		JSONObject params = new JSONObject();
@@ -169,7 +170,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return 0;
 	}
 
-	public int GetRoomId(String name) throws IOException {
+	public int GetRoomId(String name) throws IOException, ParseException {
 		JSONObject root = new JSONObject();
 		root.put("action", "getRoom");
 		JSONObject params = new JSONObject();
@@ -186,7 +187,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return 0;
 	}
 
-	public String GetRoomGuestUrl(int room_id) throws IOException {
+	public String GetRoomGuestUrl(int room_id) throws IOException, ParseException {
 		if (skyroomEnable.equalsIgnoreCase("true")) {
 			JSONObject root = new JSONObject();
 			root.put("action", "getRoomUrl");
@@ -208,7 +209,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return "error";
 	}
 
-	public boolean AddUserRooms(int user_id, int rooms) throws IOException {
+	public boolean AddUserRooms(int user_id, int rooms) throws IOException, ParseException {
 		JSONObject root = new JSONObject();
 		root.put("action", "addUserRooms");
 		JSONObject params = new JSONObject();

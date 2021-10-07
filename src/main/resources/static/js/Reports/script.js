@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
       deleteInputIcon1: "left: 10%;",
       isListEmpty: false,
       isListEmpty1: false,
-      s0: "احراز هویت متمرکز شرکت فلات قاره",
+      s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
       s1: "",
       s2: "خروج",
       s3: "داشبورد",
@@ -635,7 +635,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.deleteInputIcon = "left: 7%;";
             this.deleteInputIcon1 = "left: 10%;";
             this.dateNavText = this.dateNav;
-            this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
+            this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
             this.s1 = this.name;
             this.s2 = "خروج";
             this.s3 = "داشبورد";

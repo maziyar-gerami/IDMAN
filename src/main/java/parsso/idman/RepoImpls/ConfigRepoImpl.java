@@ -174,7 +174,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 	}
 
 	@Override
-	public String updateSettings(String doerID, List<Setting> settings) {
+	public String updateSettings(String doerID, List<Setting> settings) throws IOException, ParseException {
 
 		String file_properties = "";
 
@@ -206,7 +206,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 			Files.copy(is, Paths.get(this.getClass().getClassLoader() + "/backup/" + date + "_application.properties"));
 			uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, settings, ""));
 
-		} catch (IOException e) {
+		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 			uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, settings, "unknown error"));
 
@@ -255,7 +255,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 	}
 
 	@Override
-	public HttpStatus factoryReset(String doerID) throws IOException {
+	public HttpStatus factoryReset(String doerID) throws IOException, ParseException {
 
 		Path copied = Paths.get(pathToProperties);
 		Resource resource = new ClassPathResource(backUpOfProperties);

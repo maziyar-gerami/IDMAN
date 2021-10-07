@@ -190,7 +190,7 @@ public class GroupRepoImpl implements GroupRepo {
 	}
 
 	@Override
-	public HttpStatus create(String doerID, Group ou) {
+	public HttpStatus create(String doerID, Group ou) throws IOException, ParseException {
 
 		List<Group> groups = retrieve();
 
@@ -217,7 +217,7 @@ public class GroupRepoImpl implements GroupRepo {
 	}
 
 	@Override
-	public HttpStatus update(String doerID, String id, Group ou) {
+	public HttpStatus update(String doerID, String id, Group ou) throws IOException, ParseException {
 
 		Name dn = buildDn(id);
 

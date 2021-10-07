@@ -1,4 +1,4 @@
-package parsso.idman.Repos;
+package parsso.idman.Repos.settings;
 
 
 import org.springframework.http.HttpStatus;

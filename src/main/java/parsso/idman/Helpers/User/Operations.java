@@ -142,7 +142,7 @@ public class Operations {
 
 	}
 
-	public String activeMobile(User user) {
+	public String activeMobile(User user) throws IOException, ParseException {
 
 		String uuid = UUID.randomUUID().toString();
 

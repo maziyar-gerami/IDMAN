@@ -2,6 +2,7 @@ package parsso.idman.RepoImpls;
 
 
 import net.minidev.json.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -15,6 +16,7 @@ import parsso.idman.Models.Users.UserRole;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Repos.RolesRepo;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -33,7 +35,7 @@ public class RoleRepoImpl implements RolesRepo {
 	}
 
 	@Override
-	public HttpStatus updateRole(String doerID, String role, JSONObject users) {
+	public HttpStatus updateRole(String doerID, String role, JSONObject users) throws IOException, ParseException {
 		int i = 0;
 		List<String> userIDs = (List<String>) users.get("names");
 		for (String userId : userIDs) {

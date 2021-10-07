@@ -1,4 +1,4 @@
-package parsso.idman.Repos;
+package parsso.idman.Repos.email;
 
 
 import net.minidev.json.JSONObject;
