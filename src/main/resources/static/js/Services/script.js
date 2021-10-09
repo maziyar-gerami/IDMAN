@@ -163,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
         contactsObj: {},
         activeItem: "main",
         reportActiveItem: "usersReport",
+        dailyAccessType: "DAY",
         metaDataAddress: true,
         metaDataFile: false,
         allIsSelected: false,
@@ -314,7 +315,6 @@ document.addEventListener('DOMContentLoaded', function () {
         enNameText: "نام انگلیسی",
         faNameText: "نام فارسی",
         reportedService: {},
-        returnText: "بازگشت",
         serviceNotificationsText: "پیام های سرویس",
         apiAddressText: "آدرس API",
         apiKeyText: "کلید API",
@@ -336,7 +336,8 @@ document.addEventListener('DOMContentLoaded', function () {
         daysText: "روز ها",
         fromText: "از: ",
         toText: "تا: ",
-        dailyAccessObj: {},
+        dayBasedText: "بر اساس روز",
+        urlBasedText: "بر اساس آدرس",
       },
       created: function () {
         this.setDateNav();
@@ -614,14 +615,6 @@ document.addEventListener('DOMContentLoaded', function () {
               document.getElementsByName("unauthorizedRedirectUrl")[0].value = res.data.accessStrategy.unauthorizedRedirectUrl;
             }
 
-            if(typeof res.data.accessStrategy.endpointUrl !== 'undefined'){
-              document.getElementsByName("endpointUrl")[0].value = res.data.accessStrategy.endpointUrl;
-            }
-
-            if(typeof res.data.accessStrategy.acceptableResponseCodes !== 'undefined'){
-              document.getElementsByName("acceptableResponseCodes")[0].value = res.data.accessStrategy.acceptableResponseCodes;
-            }
-
             if(typeof res.data.accessStrategy.startingDateTime !== 'undefined'){
               let seTime = res.data.accessStrategy.startingDateTime;
               persianDate.toCalendar('gregorian');
@@ -823,18 +816,22 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             if(typeof res.data.extraInfo.dailyAccess !== "undefined"){
-              let dailyAccessContainer = document.getElementById("dailyAccessContainer");
               let tempDailyAccessFrom = "";
               let tempDailyAccessTo = "";
               if(res.data.extraInfo.dailyAccess.length > 0){
                 for(let i = 0; i < res.data.extraInfo.dailyAccess.length; ++i){
-                  $(dailyAccessContainer).find("[value='" + res.data.extraInfo.dailyAccess[i].weekDay + "']").attr("checked","true");
+                  document.getElementById("dailyAccessCheckbox" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("checked", "true");
                   tempDailyAccessFrom = this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.minute));
                   tempDailyAccessTo = this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.minute));
                   document.getElementById("dailyAccessStart" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("value", tempDailyAccessFrom);
                   document.getElementById("dailyAccessEnd" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("value", tempDailyAccessTo);
+                  this.dailyAccessController(res.data.extraInfo.dailyAccess[i].weekDay);
                 }
-                this.dailyAccessObj.updateStatus();
+              }
+            }else if(typeof res.data.accessStrategy.endpointUrl !== "undefined"){
+              document.getElementsByName("endpointUrl")[0].value = res.data.accessStrategy.endpointUrl;
+              if(typeof res.data.accessStrategy.acceptableResponseCodes !== "undefined"){
+                document.getElementsByName("acceptableResponseCodes")[0].value = res.data.accessStrategy.acceptableResponseCodes;
               }
             }
           });
@@ -927,22 +924,6 @@ document.addEventListener('DOMContentLoaded', function () {
               this.accessStrategy.unauthorizedRedirectUrl = document.getElementsByName('unauthorizedRedirectUrl')[0].value;
             }else{
               this.accessStrategy.unauthorizedRedirectUrl = null;
-            }
-
-            if(document.getElementsByName('endpointUrl')[0].value != ""){
-              this.accessStrategy.endpointUrl = document.getElementsByName('endpointUrl')[0].value;
-            }else{
-              this.accessStrategy.endpointUrl = null;
-            }
-  
-            if(document.getElementsByName('acceptableResponseCodes')[0].value != ""){
-              this.accessStrategy.acceptableResponseCodes = document.getElementsByName('acceptableResponseCodes')[0].value;
-            }else{
-              if(document.getElementsByName('endpointUrl')[0].value != ""){
-                this.accessStrategy.acceptableResponseCodes = "200";
-              }else{
-                this.accessStrategy.acceptableResponseCodes = null;
-              }
             }
 
             if(document.getElementsByName('dateStart')[0].value != "" && 
@@ -1189,50 +1170,71 @@ document.addEventListener('DOMContentLoaded', function () {
               this.extraInfo.notificationApiKey = null;
             }
 
-            let dailyAccessArray = document.getElementsByName("dailyAccess")[0].getAttribute("value").split(", ");
-            if(dailyAccessArray[0] !== ""){
-              this.extraInfo.dailyAccess = [];
-              let tempDailyAccessDay = {};
-              let tempDailyAccessStart = "";
-              let tempDailyAccessEnd = "";
-              for(let i = 0; i < dailyAccessArray.length; ++i){
-                if(typeof document.getElementById("dailyAccessStart" + dailyAccessArray[i]) !== "undefined" &&
-                    typeof document.getElementById("dailyAccessEnd" + dailyAccessArray[i]) !== "undefined"){
-                  tempDailyAccessStart = document.getElementById("dailyAccessStart" + dailyAccessArray[i]).value.split(":");
-                  tempDailyAccessEnd =  document.getElementById("dailyAccessEnd" + dailyAccessArray[i]).value.split(":");
-                  if(tempDailyAccessStart[0] === ""){
-                    tempDailyAccessStart[0] = "0";
-                    tempDailyAccessStart.push("00");
-                  }else if(tempDailyAccessEnd[0] === ""){
-                    tempDailyAccessEnd[0] = "23";
-                    tempDailyAccessEnd.push("59");
-                  }else if(typeof tempDailyAccessStart[1] === "undefined"){
-                    tempDailyAccessStart.push("00");
-                  }else if(typeof tempDailyAccessEnd[1] === "undefined"){
-                    tempDailyAccessEnd.push("00");
-                  }
-                  tempDailyAccessStart[0] = this.FaNumToEnNum(tempDailyAccessStart[0]);
-                  tempDailyAccessStart[1] = this.FaNumToEnNum(tempDailyAccessStart[1]);
-                  tempDailyAccessEnd[0] = this.FaNumToEnNum(tempDailyAccessEnd[0]);
-                  tempDailyAccessEnd[1] = this.FaNumToEnNum(tempDailyAccessEnd[1]);
-                  tempDailyAccessDay = {
-                    "weekDay": dailyAccessArray[i],
-                    "period": {
-                      "from": {
-                        "hour": tempDailyAccessStart[0],
-                        "minute": tempDailyAccessStart[1]
-                      },
-                      "to": {
-                        "hour": tempDailyAccessEnd[0],
-                        "minute": tempDailyAccessEnd[1]
+            if(this.dailyAccessType === "DAY"){
+              let dailyAccessArray = document.getElementsByName("dailyAccess")[0].getAttribute("value").split("");
+              if(dailyAccessArray.length !== 0){
+                this.extraInfo.dailyAccess = [];
+                let tempDailyAccessDay = {};
+                let tempDailyAccessStart = "";
+                let tempDailyAccessEnd = "";
+                for(let i = 0; i < dailyAccessArray.length; ++i){
+                  if(typeof document.getElementById("dailyAccessStart" + dailyAccessArray[i]) !== "undefined" &&
+                      typeof document.getElementById("dailyAccessEnd" + dailyAccessArray[i]) !== "undefined"){
+                    tempDailyAccessStart = document.getElementById("dailyAccessStart" + dailyAccessArray[i]).value.split(":");
+                    tempDailyAccessEnd =  document.getElementById("dailyAccessEnd" + dailyAccessArray[i]).value.split(":");
+                    if(tempDailyAccessStart[0] === ""){
+                      tempDailyAccessStart[0] = "0";
+                      tempDailyAccessStart.push("00");
+                    }else if(typeof tempDailyAccessStart[1] === "undefined"){
+                      tempDailyAccessStart.push("00");
+                    }
+                    if(tempDailyAccessEnd[0] === ""){
+                      tempDailyAccessEnd[0] = "23";
+                      tempDailyAccessEnd.push("59");
+                    }else if(typeof tempDailyAccessEnd[1] === "undefined"){
+                      tempDailyAccessEnd.push("00");
+                    }
+                    tempDailyAccessStart[0] = this.FaNumToEnNum(tempDailyAccessStart[0]);
+                    tempDailyAccessStart[1] = this.FaNumToEnNum(tempDailyAccessStart[1]);
+                    tempDailyAccessEnd[0] = this.FaNumToEnNum(tempDailyAccessEnd[0]);
+                    tempDailyAccessEnd[1] = this.FaNumToEnNum(tempDailyAccessEnd[1]);
+                    tempDailyAccessDay = {
+                      "weekDay": dailyAccessArray[i],
+                      "period": {
+                        "from": {
+                          "hour": tempDailyAccessStart[0],
+                          "minute": tempDailyAccessStart[1]
+                        },
+                        "to": {
+                          "hour": tempDailyAccessEnd[0],
+                          "minute": tempDailyAccessEnd[1]
+                        }
                       }
                     }
+                    this.extraInfo.dailyAccess.push(tempDailyAccessDay);
+                  }else {
+                    this.extraInfo.dailyAccess = null;
                   }
-                  this.extraInfo.dailyAccess.push(tempDailyAccessDay);
+                }
+              }else {
+                this.extraInfo.dailyAccess = null;
+              }
+            }else if(this.dailyAccessType === "URL"){
+              if(document.getElementsByName("endpointUrl")[0].value !== ""){
+                this.accessStrategy.endpointUrl = document.getElementsByName("endpointUrl")[0].value;
+              }else{
+                this.accessStrategy.endpointUrl = null;
+              }
+
+              if(document.getElementsByName("acceptableResponseCodes")[0].value !== ""){
+                this.accessStrategy.acceptableResponseCodes = document.getElementsByName("acceptableResponseCodes")[0].value;
+              }else{
+                if(document.getElementsByName("endpointUrl")[0].value !== ""){
+                  this.accessStrategy.acceptableResponseCodes = "200";
+                }else{
+                  this.accessStrategy.acceptableResponseCodes = null;
                 }
               }
-            }else {
-              this.extraInfo.dailyAccess = null;
             }
 
 
@@ -2131,6 +2133,41 @@ document.addEventListener('DOMContentLoaded', function () {
             this.exportReportLoader = false;
           }
         },
+        dailyAccessController: function (input) {
+          if(input === "selectAll"){
+            for(let i = 0; i < 7; ++i){
+              document.getElementById("dailyAccessCheckbox" + i).checked = true;
+              document.getElementById("dailyAccessContainer" + i).style.visibility = "visible";
+            }
+            document.getElementsByName("dailyAccess")[0].setAttribute("value", "0123456");
+            document.getElementById("dailyAccessSelectAll").classList.add("d-none");
+            document.getElementById("dailyAccessRemoveAll").classList.remove("d-none");
+          }else if(input === "removeAll"){
+            for(let i = 0; i < 7; ++i){
+              document.getElementById("dailyAccessCheckbox" + i).checked = false;
+              document.getElementById("dailyAccessContainer" + i).style.visibility = "hidden";
+            }
+            document.getElementsByName("dailyAccess")[0].setAttribute("value", "");
+            document.getElementById("dailyAccessSelectAll").classList.remove("d-none");
+            document.getElementById("dailyAccessRemoveAll").classList.add("d-none");
+          }else{
+            if(document.getElementById("dailyAccessCheckbox" + input).checked){
+              document.getElementById("dailyAccessContainer" + input).style.visibility = "visible";
+              document.getElementsByName("dailyAccess")[0].setAttribute("value",
+                  document.getElementsByName("dailyAccess")[0].getAttribute("value") + input);
+              if(document.getElementsByName("dailyAccess")[0].getAttribute("value").length === 7){
+                document.getElementById("dailyAccessSelectAll").classList.add("d-none");
+                document.getElementById("dailyAccessRemoveAll").classList.remove("d-none");
+              }
+            }else {
+              document.getElementById("dailyAccessContainer" + input).style.visibility = "hidden";
+              document.getElementsByName("dailyAccess")[0].setAttribute("value",
+                  document.getElementsByName("dailyAccess")[0].getAttribute("value").replace(input, ""));
+              document.getElementById("dailyAccessSelectAll").classList.remove("d-none");
+              document.getElementById("dailyAccessRemoveAll").classList.add("d-none");
+            }
+          }
+        },
         changeLang: function () {
           if(this.lang == "EN"){
             window.localStorage.setItem("lang", "EN");
@@ -2278,6 +2315,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.daysText = "Days";
             this.fromText = "From: ";
             this.toText = "To: ";
+            this.dayBasedText = "Day Based";
+            this.urlBasedText = "URL Based";
           }else {
             window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
@@ -2424,6 +2463,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.daysText = "روز ها";
             this.fromText = "از: ";
             this.toText = "تا: ";
+            this.dayBasedText = "بر اساس روز";
+            this.urlBasedText = "بر اساس آدرس";
           }
         },
         div: function (a, b) {
@@ -2575,9 +2616,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return [];
           }
         },
-      },
-      mounted: function () {
-        this.dailyAccessObj = new CheckboxDropdown(document.getElementById("dailyAccessContainer"));
       },
     });
   })
