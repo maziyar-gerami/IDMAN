@@ -34,11 +34,11 @@ public class ReportsRepoImpl implements ReportRepo {
 					.gte(range[0]).lte(range[1]));
 		}
 
-		long size = mongoTemplate.count(query, Report.class, Variables.col_idmanLog);
+		long size = mongoTemplate.count(query, Report.class, Variables.col_Log);
 
 		query.skip((p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "millis"));
 
-		List<Report> reports = mongoTemplate.find(query, Report.class,  Variables.col_idmanLog);
+		List<Report> reports = mongoTemplate.find(query, Report.class,  Variables.col_Log);
 
 		return new Report.ListReports(reports, size, (int) Math.ceil( size / (float) n));
 	}
@@ -53,7 +53,7 @@ public class ReportsRepoImpl implements ReportRepo {
 	public Report.ListReports getListSizeLogs(int p, int n) {
 
 		List<Report> allReports = Report.analyze(mongoTemplate, (p - 1) * n, n);
-		long size = mongoTemplate.getCollection(Variables.col_idmanLog).countDocuments();
+		long size = mongoTemplate.getCollection(Variables.col_Log).countDocuments();
 		return new Report.ListReports(size, (int) Math.ceil((double) size / (double) n), TimeHelper.reportSetDate(allReports));
 	}
 
@@ -61,10 +61,10 @@ public class ReportsRepoImpl implements ReportRepo {
 	public Report.ListReports getListUserLogs(String userId, int p, int n) {
 		Query query = new Query(Criteria.where("loggerName").is(userId))
 				.with(Sort.by(Sort.Direction.DESC, "millis"));
-		long size = mongoTemplate.count(query, Report.class, Variables.col_idmanLog);
+		long size = mongoTemplate.count(query, Report.class, Variables.col_Log);
 
 		query.skip((p - 1) * (n)).limit(n);
-		List<Report> reportList = mongoTemplate.find(query, Report.class, Variables.col_idmanLog);
+		List<Report> reportList = mongoTemplate.find(query, Report.class, Variables.col_Log);
 		return new Report.ListReports(size, (int) Math.ceil(size / (float) n), TimeHelper.reportSetDate(reportList));
 	}
 
@@ -95,9 +95,9 @@ public class ReportsRepoImpl implements ReportRepo {
 	}
 
 	private Report.ListReports getListReports(int n, int skip, Query query) {
-		long size = mongoTemplate.find(query, Report.class, Variables.col_idmanLog).size();
+		long size = mongoTemplate.find(query, Report.class, Variables.col_Log).size();
 
-		List<Report> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "millis")).skip(skip).limit(n), Report.class, Variables.col_idmanLog);
+		List<Report> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "millis")).skip(skip).limit(n), Report.class, Variables.col_Log);
 
 		return new Report.ListReports(size, (int) Math.ceil(size / (float) n), reportList);
 	}
@@ -125,7 +125,7 @@ public class ReportsRepoImpl implements ReportRepo {
 			query.skip(skip).limit(nRows);
 		}
 
-		return mongoTemplate.find(query, ReportMessage.class, Variables.col_idmanLog);
+		return mongoTemplate.find(query, ReportMessage.class, Variables.col_Log);
 	}
 }
 

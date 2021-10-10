@@ -61,7 +61,8 @@ public class Variables {
 	public static String MODEL_ROLE = "Role";
 	public static String email_recoverySubject = "بازنشانی رمز عبور";
 	public static String ZONE = "Asia/Tehran";
-	public static String col_idmanLog = "IDMAN_IdmanLog";
+	public static String col_idmanLog = "IDMAN_idmanLog";
+	public static String col_Log = "IDMAN_Log";
 	public static String ACCESS_ADD = "Access Add";
 	public static String ACCESS_REM = "Access Remove";
 	public static String ACCESS_STRATEGY = "Access Strategy";

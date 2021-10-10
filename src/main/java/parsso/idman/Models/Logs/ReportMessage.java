@@ -9,6 +9,7 @@ import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
 import parsso.idman.Helpers.TimeHelper;
+import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.other.Time;
 import parsso.idman.Models.Users.UsersGroups;
@@ -145,7 +146,7 @@ public class ReportMessage {
 		this.model = reportMessage.model;
 		this.instance = reportMessage.getInstance();
 		this.instanceName = reportMessage.getInstanceName();
-		this.attribute = "Access Strategy";
+		this.attribute = Variables.ACCESS_STRATEGY;
 		this.type = type;
 		this.item = item;
 

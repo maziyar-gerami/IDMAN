@@ -73,8 +73,8 @@ public class UniformLogger {
 	private void idmanLogger(ReportMessage reportMessage) throws IOException, ParseException {
 		List<ReportMessage> reportMessageList = new LinkedList<>();
 
-		//Runnable runnable =
-		//() -> {
+		Runnable runnable =
+		() -> {
 		if (reportMessage.getDifference() != null)
 			for (Change ch : reportMessage.getDifference())
 				if (!ch.getAttribute().equalsIgnoreCase("timestamp"))
@@ -82,7 +82,13 @@ public class UniformLogger {
 
 
 		if (reportMessage.getUsersGroups() != null) {
-			reportMessage.setInstanceName(serviceRepo.retrieveService(Long.parseLong(reportMessage.getInstance().toString())).getName());
+			try {
+				reportMessage.setInstanceName(serviceRepo.retrieveService(Long.parseLong(reportMessage.getInstance().toString())).getName());
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 			for (String s : (List<String>) reportMessage.getUsersGroups().getUsers().getAdd())
 				reportMessageList.add(new ReportMessage(Variables.MODEL_USER, s, Variables.ACCESS_ADD, reportMessage));
 
@@ -101,9 +107,9 @@ public class UniformLogger {
 			reportMessageList.add(reportMessage);
 
 		mongoTemplate.insert(reportMessageList, Variables.col_idmanLog);
-		//};
-		//Thread thread = new Thread(runnable);
-		//thread.start();
+		};
+		Thread thread = new Thread(runnable);
+		thread.start();
 	}
 
 }

@@ -55,7 +55,7 @@ public class Report {
 
 	public static List<Report> analyze(MongoTemplate mongoTemplate, int skip, int limit) {
 		Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "millis"));
-		List<Report> le = mongoTemplate.find(query, Report.class,  Variables.col_idmanLog);
+		List<Report> le = mongoTemplate.find(query, Report.class,  Variables.col_Log);
 		return TimeHelper.reportSetDate(le);
 	}
 

@@ -253,13 +253,10 @@
                                                                 </a>
                                                             </div>
                                                             <div class="media-body overflow-hidden">
-                                                                <a :href="service.url" target="_blank" class="serviceLink" style="text-decoration: none;">
-                                                                    <h4 class="text-ellipsis mb-3">{{service.description}}</h4>
-                                                                </a>
                                                                 <div class="d-flex justify-content-between">
-                                                                    <div class="btn-group btn-group-sm px-0">
-                                                                        <p class="text-muted">{{service.name}}</p>
-                                                                    </div>
+                                                                    <a :href="service.url" target="_blank" class="serviceLink" style="text-decoration: none;">
+                                                                        <h4 class="text-ellipsis mb-3">{{service.nameContainer}}</h4>
+                                                                    </a>
                                                                     <div v-if="service.notification">
                                                                         <a v-if="service.notification.count == 0" class="notificationLink px-0" style="position: relative;" :style="isRtl ? 'right: -36px;' : 'right: 0'">
                                                                             <i class="notificationFas fa fa-bell" style="font-size: 21px; color: #6c757d;"></i>

@@ -377,7 +377,6 @@ public class ConfigRepoImpl implements ConfigRepo {
 				mongoTemplate.save(setting, Variables.col_properties);
 
 
-
 		return HttpStatus.OK;
 	}
 

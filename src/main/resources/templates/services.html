@@ -874,116 +874,105 @@
                                                         </div>
                                                     </div>
 
-                                                    <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s96}}</span></h5>
-                                                    <div class="form-group">
+                                                    <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{accessByHoursAndDaysOfTheWeekText}}</span></h5>
+                                                    <select name="type" class="form-control mb-3" v-model="dailyAccessType">
+                                                        <option value="DAY" selected>{{dayBasedText}}</option>
+                                                        <option value="URL">{{urlBasedText}}</option>
+                                                    </select>
+                                                    <div v-bind:class="dailyAccessType === 'DAY' ? '' : 'd-none'" class="form-group">
+                                                        <div name="dailyAccess" class="d-none" value=""></div>
+                                                        <a id="dailyAccessSelectAll" href="#" v-on:click.prevent="dailyAccessController('selectAll')">{{selectAllText}}</a>
+                                                        <a id="dailyAccessRemoveAll" href="#" class="d-none" v-on:click.prevent="dailyAccessController('removeAll')">{{removeText}}</a>
+                                                        <label class="d-flex justify-content-between">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input id="dailyAccessCheckbox0" type="checkbox" value="0" class="form-control mx-2" v-on:click="dailyAccessController('0')"/>
+                                                                {{saturdayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer0" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart0" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd0" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input id="dailyAccessCheckbox1" type="checkbox" value="1" class="form-control mx-2" v-on:click="dailyAccessController('1')"/>
+                                                                {{sundayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer1" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart1" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd1" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input id="dailyAccessCheckbox2" type="checkbox" value="2" class="form-control mx-2" v-on:click="dailyAccessController('2')"/>
+                                                                {{mondayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer2" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart2" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd2" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input id="dailyAccessCheckbox3" type="checkbox" value="3" class="form-control mx-2" v-on:click="dailyAccessController('3')"/>
+                                                                {{tuesdayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer3" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart3" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd3" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input id="dailyAccessCheckbox4" type="checkbox" value="4" class="form-control mx-2" v-on:click="dailyAccessController('4')"/>
+                                                                {{wednesdayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer4" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart4" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd4" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input id="dailyAccessCheckbox5" type="checkbox" value="5" class="form-control mx-2" v-on:click="dailyAccessController('5')"/>
+                                                                {{thursdayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer5" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart5" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd5" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                        <label class="d-flex justify-content-between">
+                                                            <div class="d-flex justify-content-center align-items-center mx-1">
+                                                                <input id="dailyAccessCheckbox6" type="checkbox" value="6" class="form-control mx-2" v-on:click="dailyAccessController('6')"/>
+                                                                {{fridayText}}
+                                                            </div>
+                                                            <div id="dailyAccessContainer6" style="visibility: hidden;" class="d-flex justify-content-center align-items-center mx-1" >
+                                                                <label class="mx-2">{{fromText}}</label>
+                                                                <input id="dailyAccessStart6" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
+                                                                <label class="mx-2">{{toText}}</label>
+                                                                <input id="dailyAccessEnd6" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                    <div v-bind:class="dailyAccessType === 'URL' ? '' : 'd-none'" class="form-group">
                                                         <label>{{s90}}</label>
                                                         <input name="endpointUrl" class="form-control enInput mb-3" type="text" placeholder="URL">
                                                         <label>{{s97}}</label>
                                                         <input name="acceptableResponseCodes" class="form-control enInput" type="text" placeholder="200,202">
-                                                    </div>
-
-                                                    <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{accessByHoursAndDaysOfTheWeekText}}</span></h5>
-                                                    <div class="form-group">
-                                                        <label>{{daysText}}</label>
-                                                        <div id="dailyAccessContainer" class="dropdown-checkbox form-control" data-control="dropdown-checkbox">
-                                                            <label class="dropdown-checkbox-label">
-                                                                <div name="dailyAccess" class="dropdown-checkbox-label-container" value="" text="Select"></div>
-                                                            </label>
-                                                            <div class="dropdown-checkbox-list">
-                                                                <a href="#" data-toggle="check-all" class="dropdown-checkbox-option" :checkText="selectAllText" :uncheckText="removeText"></a>
-                                                                <label class="d-flex justify-content-between dropdown-checkbox-option bg">
-                                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                        <input type="checkbox" setVisible="dailyAccessContainer0"
-                                                                               name="dropdown-checkbox-group" value="0" :text="saturdayText" />
-                                                                        {{saturdayText}}
-                                                                    </div>
-                                                                    <div id="dailyAccessContainer0" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                        <label class="mx-2">{{fromText}}</label>
-                                                                        <input id="dailyAccessStart0" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                        <label class="mx-2">{{toText}}</label>
-                                                                        <input id="dailyAccessEnd0" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                                    </div>
-                                                                </label>
-                                                                <label class="d-flex justify-content-between dropdown-checkbox-option bg">
-                                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                        <input type="checkbox" setVisible="dailyAccessContainer1"
-                                                                               name="dropdown-checkbox-group" value="1" :text="sundayText" />
-                                                                        {{sundayText}}
-                                                                    </div>
-                                                                    <div id="dailyAccessContainer1" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                        <label class="mx-2">{{fromText}}</label>
-                                                                        <input id="dailyAccessStart1" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                        <label class="mx-2">{{toText}}</label>
-                                                                        <input id="dailyAccessEnd1" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                                    </div>
-                                                                </label>
-                                                                <label class="d-flex justify-content-between dropdown-checkbox-option bg">
-                                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                        <input type="checkbox" setVisible="dailyAccessContainer2"
-                                                                               name="dropdown-checkbox-group" value="2" :text="mondayText" />
-                                                                        {{mondayText}}
-                                                                    </div>
-                                                                    <div id="dailyAccessContainer2" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                        <label class="mx-2">{{fromText}}</label>
-                                                                        <input id="dailyAccessStart2" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                        <label class="mx-2">{{toText}}</label>
-                                                                        <input id="dailyAccessEnd2" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                                    </div>
-                                                                </label>
-                                                                <label class="d-flex justify-content-between dropdown-checkbox-option bg">
-                                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                        <input type="checkbox" setVisible="dailyAccessContainer3"
-                                                                               name="dropdown-checkbox-group" value="3" :text="tuesdayText" />
-                                                                        {{tuesdayText}}
-                                                                    </div>
-                                                                    <div id="dailyAccessContainer3" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                        <label class="mx-2">{{fromText}}</label>
-                                                                        <input id="dailyAccessStart3" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                        <label class="mx-2">{{toText}}</label>
-                                                                        <input id="dailyAccessEnd3" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                                    </div>
-                                                                </label>
-                                                                <label class="d-flex justify-content-between dropdown-checkbox-option bg">
-                                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                        <input type="checkbox" setVisible="dailyAccessContainer4"
-                                                                               name="dropdown-checkbox-group" value="4" :text="wednesdayText" />
-                                                                        {{wednesdayText}}
-                                                                    </div>
-                                                                    <div id="dailyAccessContainer4" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                        <label class="mx-2">{{fromText}}</label>
-                                                                        <input id="dailyAccessStart4" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                        <label class="mx-2">{{toText}}</label>
-                                                                        <input id="dailyAccessEnd4" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                                    </div>
-                                                                </label>
-                                                                <label class="d-flex justify-content-between dropdown-checkbox-option bg">
-                                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                        <input type="checkbox" setVisible="dailyAccessContainer5"
-                                                                               name="dropdown-checkbox-group" value="5" :text="thursdayText" />
-                                                                        {{thursdayText}}
-                                                                    </div>
-                                                                    <div id="dailyAccessContainer5" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                        <label class="mx-2">{{fromText}}</label>
-                                                                        <input id="dailyAccessStart5" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                        <label class="mx-2">{{toText}}</label>
-                                                                        <input id="dailyAccessEnd5" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                                    </div>
-                                                                </label>
-                                                                <label class="d-flex justify-content-between dropdown-checkbox-option bg">
-                                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                        <input type="checkbox" setVisible="dailyAccessContainer6"
-                                                                               name="dropdown-checkbox-group" value="6" :text="fridayText" />
-                                                                        {{fridayText}}
-                                                                    </div>
-                                                                    <div id="dailyAccessContainer6" style="visibility: hidden;" class="d-flex justify-content-center align-items-center mx-1" >
-                                                                        <label class="mx-2">{{fromText}}</label>
-                                                                        <input id="dailyAccessStart6" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                        <label class="mx-2">{{toText}}</label>
-                                                                        <input id="dailyAccessEnd6" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                                    </div>
-                                                                </label>
-                                                            </div>
-                                                        </div>
                                                     </div>
 
                                                     <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s60}}</span></h5>
