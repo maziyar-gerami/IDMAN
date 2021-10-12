@@ -42,25 +42,4 @@ public class RefreshController {
 
 	}
 
-
-	@GetMapping("/all")
-	public HttpEntity<HttpStatus> all(HttpServletRequest request) throws IOException, ParseException {
-		return new ResponseEntity<>(refresh.all(request.getUserPrincipal().getName()));
-	}
-
-	@GetMapping("/services")
-	public ResponseEntity<HttpStatus> services(HttpServletRequest request) throws IOException, ParseException {
-		return new ResponseEntity<>(refresh.serivceRefresh(request.getUserPrincipal().getName()));
-	}
-
-	@GetMapping("/captchas")
-	public HttpEntity<HttpStatus> captchas(HttpServletRequest request) throws IOException, ParseException {
-		return new ResponseEntity<>(refresh.captchaRefresh(request.getUserPrincipal().getName()));
-	}
-
-	@GetMapping("/users")
-	public HttpEntity<HttpStatus> users(HttpServletRequest request) throws IOException, ParseException {
-		return new ResponseEntity<>(refresh.userRefresh(request.getUserPrincipal().getName()));
-	}
-
 }

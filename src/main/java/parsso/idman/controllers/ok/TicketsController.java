@@ -1,4 +1,4 @@
-package parsso.idman.controllers;
+package parsso.idman.controllers.ok;
 
 
 import net.minidev.json.JSONObject;
@@ -31,14 +31,6 @@ public class TicketsController {
 	public TicketsController(UserRepo userRepo, TicketRepo ticketRepo) {
 		this.userRepo = userRepo;
 		this.ticketRepo = ticketRepo;
-	}
-
-	//************************************* Pages ****************************************
-
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/ticketing")
-	public String Reports() {
-		return "ticketing";
 	}
 
 	//************************************* APIs ****************************************

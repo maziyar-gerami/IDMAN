@@ -1,4 +1,4 @@
-package parsso.idman.controllers;
+package parsso.idman.controllers.ok;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,11 +62,37 @@ public class PagesController implements ErrorController {
 		return "reports";
 	}
 
+
+	@SuppressWarnings("SameReturnValue")
+	@GetMapping("/configs")
+	public String getPageConfigs() {
+		return "configs";
+	}
+
+	@SuppressWarnings("SameReturnValue")
+	@GetMapping("/ticketing")
+	public String Reports() {
+		return "ticketing";
+	}
+
 	@SuppressWarnings("SameReturnValue")
 	@RequestMapping("/error")
 	public String handleError() {
 		return "redirect:/errorpage";
 	}
+
+	@SuppressWarnings("SameReturnValue")
+	@GetMapping("/services")
+	public String getPageServices() {
+		return "services";
+	}
+
+	@SuppressWarnings("SameReturnValue")
+	@GetMapping("/createservice")
+	public String CreateService() {
+		return "createservice";
+	}
+
 
 	@SuppressWarnings("SameReturnValue")
 	@GetMapping("/403")
@@ -96,7 +122,6 @@ public class PagesController implements ErrorController {
 
 	@GetMapping("/login")
 	public String Login() {
-		//noinspection SpringMVCViewInspection
 		return "redirect:/login/cas";
 	}
 

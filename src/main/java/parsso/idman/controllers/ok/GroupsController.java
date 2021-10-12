@@ -50,12 +50,6 @@ public class GroupsController {
 		return new ResponseEntity<>(groupRepo.update(request.getUserPrincipal().getName(), id, ou));
 	}
 
-	@Deprecated
-	@GetMapping("/{id}")
-	public ResponseEntity<Group> retrieveOU(@PathVariable("id") String id) throws IOException, ParseException {
-		return new ResponseEntity<>(groupRepo.retrieveOu(false, id), HttpStatus.OK);
-	}
-
 	@GetMapping
 	public ResponseEntity<?> retrieveGroups(@RequestParam(value = "id", defaultValue = "") String id) throws IOException, ParseException {
 		if (!id.equals(""))
@@ -73,20 +67,21 @@ public class GroupsController {
 	}
 
 	@PutMapping("/password/expire")
-	public ResponseEntity<List<String>> expireUsersGroupPassword(HttpServletRequest request,
-	                                                             @RequestBody JSONObject jsonObject,
-	                                                             @RequestParam(value = "id", defaultValue = "")String id) throws IOException, ParseException {
+	public ResponseEntity expireUsersGroupPassword(HttpServletRequest request,
+												   @RequestBody JSONObject jsonObject,
+												   @RequestParam(value = "id", defaultValue = "")String id) throws IOException, ParseException {
 
 		String userId = request.getUserPrincipal().getName();
 		List<String> preventedUsers = userRepo.expirePassword(userId, jsonObject);
 
-		if("id".equals("")) {
-			if (preventedUsers == null)
-				return expirePassword(userId, jsonObject);
-			else
-				return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
-		} else {
-			return expireUsersSpecGroupPassword(request, id);
+		switch ("") {
+			case "id":
+				if (preventedUsers == null)
+					return expirePassword(userId, jsonObject);
+				else
+					return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
+			default:
+				return expireUsersSpecGroupPassword(request, id);
 		}
 
 	}
@@ -102,9 +97,7 @@ public class GroupsController {
 				return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
 	}
 
-	@Deprecated
-	@PutMapping("/password/expire/{groupId}")
-	public ResponseEntity<List<String>> expireUsersSpecGroupPassword(HttpServletRequest request, @PathVariable(name = "groupId") String gid) throws IOException, ParseException {
+	public ResponseEntity expireUsersSpecGroupPassword(HttpServletRequest request, String gid) throws IOException, ParseException {
 
 		ArrayList<String> temp = new ArrayList<>();
 		JSONObject jsonObject = new JSONObject();

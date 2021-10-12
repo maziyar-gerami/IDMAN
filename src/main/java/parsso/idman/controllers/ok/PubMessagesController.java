@@ -1,4 +1,4 @@
-package parsso.idman.controllers;
+package parsso.idman.controllers.ok;
 
 
 import net.minidev.json.JSONObject;

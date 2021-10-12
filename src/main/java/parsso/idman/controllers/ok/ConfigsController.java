@@ -29,41 +29,15 @@ public class ConfigsController {
 		this.configRepo = configRepo;
 	}
 
-	//************************************* Pages ****************************************
-
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/configs")
-	public String getPageConfigs() {
-		return "configs";
-	}
-
-	//************************************* APIs ****************************************
-
-	@Deprecated
-	@GetMapping("/api/configs")
-	public ResponseEntity<String> retrieveSettingsD() throws IOException {
-		return new ResponseEntity<>(configRepo.retrieveSetting(), HttpStatus.OK);
-	}
-
-	@Deprecated
-	@GetMapping("/api/configs/list")
-	public ResponseEntity<List<Config>> listAllConfigsD() throws IOException, ParseException {
-		return new ResponseEntity<>(configRepo.listBackedUpConfigs(), HttpStatus.OK);
-	}
-
 	@GetMapping("/api/config")
 	public ResponseEntity<String> retrieveSettings() throws IOException {
 		return new ResponseEntity<>(configRepo.retrieveSetting(), HttpStatus.OK);
 	}
 
-	//TODO: remove comment
-	/*
 	@GetMapping("/api/configs")
 	public ResponseEntity<List<Config>> listAllConfigs() throws IOException, ParseException {
 		return new ResponseEntity<>(configRepo.listBackedUpConfigs(), HttpStatus.OK);
 	}
-
-	 */
 
 	@GetMapping("/api/configs/save")
 	public ResponseEntity<HttpStatus> saveAllConfigs() throws IOException {

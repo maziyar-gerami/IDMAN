@@ -39,17 +39,7 @@ public class ServicesController {
 		this.userRepo = userRepo;
 	}
 
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/services")
-	public String getPageServices() {
-		return "services";
-	}
 
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/createservice")
-	public String CreateService() {
-		return "createservice";
-	}
 
 	@GetMapping("/api/services/user")
 	public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
