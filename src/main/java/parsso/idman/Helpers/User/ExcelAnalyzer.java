@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.UserRepo;
 
 import java.io.BufferedReader;
 import java.io.IOException;

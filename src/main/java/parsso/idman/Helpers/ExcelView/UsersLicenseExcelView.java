@@ -8,17 +8,17 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
-import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
+import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public class UsersLicenseExcelView extends AbstractXlsView {
-	TranscriptRepo transcriptRepo;
+	LogsRepo.TranscriptRepo transcriptRepo;
 
 	@Autowired
-	public UsersLicenseExcelView (TranscriptRepo transcriptRepo){
+	public UsersLicenseExcelView (LogsRepo.TranscriptRepo transcriptRepo){
 		this.transcriptRepo = transcriptRepo;
 	}
 

@@ -13,9 +13,9 @@ import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.DashboardData.Dashboard;
 import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Repos.logs.events.EventRepo;
-import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.LogsRepo;
+import parsso.idman.repos.ServiceRepo;
+import parsso.idman.repos.UserRepo;
 import parsso.idman.Utils.Convertor.DateUtils;
 
 import java.time.OffsetDateTime;
@@ -29,7 +29,7 @@ public class DashboardData {
 	@Autowired
 	UserRepo userRepo;
 	@Autowired
-	EventRepo eventRepo;
+	LogsRepo.EventRepo eventRepo;
 	@Autowired
 	ServiceRepo serviceRepo;
 	@Autowired

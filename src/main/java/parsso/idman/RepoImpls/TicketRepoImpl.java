@@ -21,8 +21,8 @@ import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Message;
 import parsso.idman.Models.Tickets.Ticket;
 import parsso.idman.Models.other.Time;
-import parsso.idman.Repos.TicketRepo;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.TicketRepo;
+import parsso.idman.repos.UserRepo;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;

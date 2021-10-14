@@ -31,8 +31,8 @@ import parsso.idman.configs.CasUserDetailService;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Models.Users.User;
 import parsso.idman.RepoImpls.UserRepoImpl;
-import parsso.idman.Repos.FilesStorageService;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.FilesStorageService;
+import parsso.idman.repos.UserRepo;
 
 import javax.annotation.Resource;
 import java.text.ParseException;

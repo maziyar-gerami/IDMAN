@@ -13,7 +13,7 @@ import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;
 import javax.naming.directory.BasicAttribute;

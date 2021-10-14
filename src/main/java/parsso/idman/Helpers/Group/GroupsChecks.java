@@ -4,7 +4,7 @@ package parsso.idman.Helpers.Group;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Groups.Group;
-import parsso.idman.Repos.GroupRepo;
+import parsso.idman.repos.GroupRepo;
 
 import java.util.LinkedList;
 import java.util.List;

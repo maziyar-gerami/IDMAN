@@ -43,11 +43,10 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Repos.*;
-import parsso.idman.Repos.email.EmailService;
-import parsso.idman.Repos.skyRoom.SkyroomRepo;
-import parsso.idman.Repos.systemRefresh.SystemRefresh;
-import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
+import parsso.idman.repos.*;
+import parsso.idman.repos.EmailService;
+import parsso.idman.repos.SkyroomRepo;
+import parsso.idman.repos.SystemRefresh;
 
 import javax.naming.Name;
 import javax.naming.directory.BasicAttribute;
@@ -87,7 +86,7 @@ public class UserRepoImpl implements UserRepo {
 	@Autowired
 	ExpirePassword expirePassword;
 	@Autowired
-	TranscriptRepo transcriptRepo;
+	LogsRepo.TranscriptRepo transcriptRepo;
 	@Value("${base.url}")
 	private String BASE_URL;
 	@Value("${spring.ldap.base.dn}")
@@ -844,20 +843,7 @@ public class UserRepoImpl implements UserRepo {
 		return HttpStatus.OK;
 	}
 
-	@Override
-	public HttpStatus syncUsersDBs() {
-		List<UsersExtraInfo> simpleUsers = retrieveUsersMain(-1, -1);
 
-		if (!mongoTemplate.collectionExists(userExtraInfoCollection))
-			mongoTemplate.createCollection(userExtraInfoCollection);
-
-		for (UsersExtraInfo simpleUser : simpleUsers) {
-			mongoTemplate.remove(new Query(Criteria.where("userId").is(simpleUser.getUserId())), userExtraInfoCollection);
-			mongoTemplate.save(simpleUser, userExtraInfoCollection);
-		}
-
-		return HttpStatus.OK;
-	}
 
 	@Override
 	public int sendEmail(String email, String uid, String cid, String answer) throws IOException, ParseException {

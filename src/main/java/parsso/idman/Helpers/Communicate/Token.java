@@ -15,7 +15,7 @@ import parsso.idman.Helpers.User.BuildDnUser;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.UserRepo;
 
 import java.io.IOException;
 import java.sql.Timestamp;

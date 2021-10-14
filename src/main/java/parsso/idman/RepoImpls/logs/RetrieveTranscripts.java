@@ -20,8 +20,8 @@ import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Models.other.Time;
-import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
+import parsso.idman.repos.LogsRepo;
+import parsso.idman.repos.ServiceRepo;
 
 import java.io.IOException;
 import java.time.ZoneId;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
-public class RetrieveTranscripts implements TranscriptRepo {
+public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 
 	final ServiceRepo serviceRepo;
 

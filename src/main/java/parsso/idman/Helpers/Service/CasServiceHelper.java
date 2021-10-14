@@ -20,7 +20,7 @@ import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.CasService;
 import parsso.idman.Models.Services.ServicesSubModel.*;
 import parsso.idman.Models.Users.UsersGroups;
-import parsso.idman.Repos.ServiceRepo;
+import parsso.idman.repos.ServiceRepo;
 
 import java.io.File;
 import java.io.FileReader;

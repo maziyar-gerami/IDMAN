@@ -11,14 +11,14 @@ import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.*;
 import parsso.idman.Models.other.Time;
-import parsso.idman.Repos.logs.reports.ReportRepo;
+import parsso.idman.repos.LogsRepo;
 
 import java.text.ParseException;
 import java.time.ZoneId;
 import java.util.List;
 
 @Service
-public class ReportsRepoImpl implements ReportRepo {
+public class ReportsRepoImpl implements LogsRepo.ReportRepo {
 	//can be LocalDateTime
 	final MongoTemplate mongoTemplate;
 

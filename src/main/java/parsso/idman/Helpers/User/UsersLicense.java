@@ -9,8 +9,8 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.ServiceRepo;
+import parsso.idman.repos.UserRepo;
 
 import java.io.IOException;
 import java.util.LinkedList;

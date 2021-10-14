@@ -13,9 +13,9 @@ import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
 import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Services.ServiceType.MicroService;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.logs.events.EventRepo;
-import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.LogsRepo;
+import parsso.idman.repos.ServiceRepo;
+import parsso.idman.repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class MobileController {
 	@Autowired
 	private ServicesRepoImpl servicesRepo;
 	@Autowired
-	private EventRepo eventRepo;
+	private LogsRepo.EventRepo eventRepo;
 	@Autowired
 	private ServiceRepo serviceRepo;
 	@Autowired

@@ -19,7 +19,7 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.SamlService;
 import parsso.idman.Models.Services.ServicesSubModel.*;
-import parsso.idman.Repos.ServiceRepo;
+import parsso.idman.repos.ServiceRepo;
 
 import java.io.File;
 import java.io.FileReader;

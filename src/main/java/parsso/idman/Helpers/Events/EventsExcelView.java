@@ -12,7 +12,7 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.other.Time;
-import parsso.idman.Repos.logs.events.EventRepo;
+import parsso.idman.repos.LogsRepo;
 import parsso.idman.Utils.Convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ import java.util.Map;
 public class EventsExcelView extends AbstractXlsView {
 	public static String mainCollection = "MongoDbCasEventRepository";
 	@Autowired
-	EventRepo eventRepo;
+	LogsRepo.EventRepo eventRepo;
 	ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
 	@Override

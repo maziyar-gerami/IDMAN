@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.other.Time;
-import parsso.idman.Repos.logs.audits.AuditRepo;
+import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,11 +27,11 @@ import java.util.TimeZone;
 
 @Service
 public class AuditsExcelView extends AbstractXlsView {
-	final AuditRepo auditRepo;
+	final LogsRepo.AuditRepo auditRepo;
 	MongoTemplate mongoTemplate;
 
 	@Autowired
-	public AuditsExcelView(MongoTemplate mongoTemplate, AuditRepo auditRepo){
+	public AuditsExcelView(MongoTemplate mongoTemplate, LogsRepo.AuditRepo auditRepo){
 		this.auditRepo = auditRepo;
 		this.mongoTemplate = mongoTemplate;
 	}

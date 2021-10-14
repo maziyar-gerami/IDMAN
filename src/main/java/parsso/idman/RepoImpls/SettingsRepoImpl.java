@@ -7,14 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
-import parsso.idman.Models.Logs.Setting;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.ConfigRepo;
-import parsso.idman.Repos.email.EmailService;
-import parsso.idman.Repos.settings.SettingsRepo;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.ConfigRepo;
+import parsso.idman.repos.EmailService;
+import parsso.idman.repos.SettingsRepo;
+import parsso.idman.repos.UserRepo;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -60,10 +58,6 @@ public class SettingsRepoImpl implements SettingsRepo {
 		}
 	}
 
-	@Override
-	public List<Setting> retrieveTFSetting() throws IOException {
-		return configRepo.retrieveTFSetting();
-	}
 
 	private HttpStatus startNotification(String method) {
 		long deadline = maxPwdLifetime * millis;

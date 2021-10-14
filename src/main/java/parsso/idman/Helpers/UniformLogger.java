@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Logs.Change;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Repos.ServiceRepo;
+import parsso.idman.repos.ServiceRepo;
 
 import java.io.IOException;
 import java.util.LinkedList;

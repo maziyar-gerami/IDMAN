@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.UserRepo;
 
 import java.io.BufferedReader;
 import java.io.IOException;

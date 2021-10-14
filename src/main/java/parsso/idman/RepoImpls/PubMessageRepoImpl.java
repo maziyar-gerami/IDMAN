@@ -13,7 +13,7 @@ import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.other.PublicMessage;
-import parsso.idman.Repos.PubMessageRepo;
+import parsso.idman.repos.PubMessageRepo;
 
 import java.io.IOException;
 import java.util.ArrayList;

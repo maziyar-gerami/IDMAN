@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;
 import javax.naming.directory.*;

@@ -14,7 +14,7 @@ import parsso.idman.configs.WebSecurityConfig;
 import parsso.idman.Mobile.RepoImpls.JwtUtil;
 import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.UserRepo;
 
 import java.io.IOException;
 

@@ -11,7 +11,7 @@ import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.*;
 import parsso.idman.Models.other.Time;
-import parsso.idman.Repos.logs.events.EventRepo;
+import parsso.idman.repos.LogsRepo;
 
 import java.text.ParseException;
 import java.time.OffsetDateTime;
@@ -20,7 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
-public class EventsRepoImpl implements EventRepo {
+public class EventsRepoImpl implements LogsRepo.EventRepo {
 	final MongoTemplate mongoTemplate;
 
 	@Override

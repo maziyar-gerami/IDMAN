@@ -12,8 +12,8 @@ import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.other.SkyRoom;
 import parsso.idman.Models.Users.User;
-import parsso.idman.Repos.skyRoom.SkyroomRepo;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.SkyroomRepo;
+import parsso.idman.repos.UserRepo;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;

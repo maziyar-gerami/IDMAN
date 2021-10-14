@@ -25,10 +25,10 @@ import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Repos.GroupRepo;
-import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.GroupRepo;
+import parsso.idman.repos.LogsRepo;
+import parsso.idman.repos.ServiceRepo;
+import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -58,7 +58,7 @@ public class GroupRepoImpl implements GroupRepo {
 	@Autowired
 	private ServiceRepo serviceRepo;
 	@Autowired
-	private TranscriptRepo transcriptRepo;
+	private LogsRepo.TranscriptRepo transcriptRepo;
 
 	@Override
 	public HttpStatus remove(String doerID, JSONObject jsonObject) throws IOException, ParseException {
