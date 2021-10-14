@@ -89,15 +89,6 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 	}
 
 	@Override
-	public Stream<Path> loadAll() {
-		try {
-			return Files.walk(this.photoPathRoot, 1).filter(path -> !path.equals(this.photoPathRoot)).map(this.photoPathRoot::relativize);
-		} catch (IOException e) {
-			throw new RuntimeException("Could not load the files!");
-		}
-	}
-
-	@Override
 	public void saveIcon(MultipartFile file, String fileName) {
 		try {
 			Path pathServices = Paths.get(serviceIcon);

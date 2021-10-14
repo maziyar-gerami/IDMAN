@@ -37,7 +37,9 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.SearchControls;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class GroupRepoImpl implements GroupRepo {
@@ -92,7 +94,7 @@ public class GroupRepoImpl implements GroupRepo {
 								UsersExtraInfo simpleUser = mongoTemplate.findOne
 										(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
 								try {
-									simpleUser.getMemberOf().remove(group.getId());
+									Objects.requireNonNull(simpleUser).getMemberOf().remove(group.getId());
 								}catch (Exception e) {
 								e.printStackTrace();
 								}
@@ -246,7 +248,7 @@ public class GroupRepoImpl implements GroupRepo {
 							UsersExtraInfo usersExtraInfo = mongoTemplate.findOne
 									(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
 							if (usersExtraInfo != null) usersExtraInfo.getMemberOf().remove(id);
-							usersExtraInfo.getMemberOf().add(ou.getId());
+							Objects.requireNonNull(usersExtraInfo).getMemberOf().add(ou.getId());
 
 							mongoTemplate.remove
 									(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);

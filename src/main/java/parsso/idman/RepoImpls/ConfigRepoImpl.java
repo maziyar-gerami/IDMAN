@@ -19,10 +19,10 @@ import parsso.idman.Models.Logs.Config;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Logs.Setting;
 import parsso.idman.Models.other.Time;
-import parsso.idman.repos.ConfigRepo;
-import parsso.idman.repos.UserRepo;
 import parsso.idman.Utils.Convertor.DateConverter;
 import parsso.idman.Utils.JSON.JSONencoder;
+import parsso.idman.repos.ConfigRepo;
+import parsso.idman.repos.UserRepo;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -128,28 +128,6 @@ public class ConfigRepoImpl implements ConfigRepo {
 		return settings;
 	}
 
-	@Override
-	public List<Setting> retrieveTFSetting() throws IOException {
-
-		Resource resource = appContext.getResource("file:" + pathToProperties);
-		File file = resource.getFile();
-		String fullFileName = file.getName();
-		int equalIndex = fullFileName.indexOf('.');
-		String system = fullFileName.substring(0, equalIndex);
-
-		Scanner myReader = new Scanner(file);
-
-		List<Setting> allSettings = parser(myReader, system);
-
-		List<Setting> relatedSettings = new LinkedList<>();
-
-		for (Setting setting : allSettings) {
-			if (setting.getValue() != null && (setting.getValue().equalsIgnoreCase("true") || setting.getValue().equalsIgnoreCase("false")))
-				relatedSettings.add(setting);
-		}
-
-		return relatedSettings;
-	}
 
 	@Override
 	public String retrieveSetting() throws IOException {

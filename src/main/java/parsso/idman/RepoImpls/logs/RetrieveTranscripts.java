@@ -105,36 +105,6 @@ public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 		return new License(licensed, unLicensed);
 	}
 
-	@Override
-	public Transcript usersAndGroupsOfService(long serviceId) throws IOException, ParseException {
-		return new Transcript(usersLicense.users(serviceId), groupLicense.groups(serviceId));
-	}
-
-	@Override
-	public List<ReportMessage> accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName) throws java.text.ParseException {
-		int skip;
-
-		Query query = new Query();
-		if(id !=0)
-			query.addCriteria(Criteria.where("instance").is(id));
-		if(!doerId.equals(""))
-			query.addCriteria(Criteria.where("doerID").is(doerId));
-		if (!instanceName.equals(""))
-			query.addCriteria(Criteria.where("instanceName").is(instanceName));
-		if (!date.equals("")){
-			Time time = new Time(Integer.parseInt(date.substring(4)),
-					Integer.parseInt(date.substring(2, 4)),
-					Integer.parseInt(date.substring(0, 2)));
-			long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
-			query.addCriteria(Criteria.where("millis").gte(range[0]).lte(range[1]));
-		}
-		if (page!=0 && nRows !=0) {
-			skip = (page - 1) * nRows;
-			query.skip(skip).limit(nRows);
-		}
-
-		return mongoTemplate.find(query, ReportMessage.class, Variables.col_idmanLog);
-	}
 }
 
 

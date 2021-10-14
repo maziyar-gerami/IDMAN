@@ -5,17 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.repos.MagfaSMSSendRepo;
 import parsso.idman.Utils.SMS.Magfa.Classes.*;
+import parsso.idman.repos.MagfaSMSSendRepo;
 
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
@@ -37,7 +34,7 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
 		}
 		String domain = "magfa";
 		BindingProvider prov = (BindingProvider) service;
-		prov.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, username + "/" + domain);
+		Objects.requireNonNull(prov).getRequestContext().put(BindingProvider.USERNAME_PROPERTY, username + "/" + domain);
 		prov.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
 		HashMap<Object, Object> httpHeaders = new HashMap<>();
 		httpHeaders.put("Content-Encoding", Collections.singletonList("gzip"));//this indicates you're sending a compressed request

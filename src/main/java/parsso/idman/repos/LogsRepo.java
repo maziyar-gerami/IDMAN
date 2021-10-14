@@ -3,7 +3,10 @@ package parsso.idman.repos;
 
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.License.License;
-import parsso.idman.Models.Logs.*;
+import parsso.idman.Models.Logs.Audit;
+import parsso.idman.Models.Logs.Event;
+import parsso.idman.Models.Logs.Report;
+import parsso.idman.Models.Logs.ReportMessage;
 
 import java.io.IOException;
 import java.text.ParseException;

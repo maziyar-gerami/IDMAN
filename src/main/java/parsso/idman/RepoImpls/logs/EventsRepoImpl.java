@@ -9,7 +9,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.*;
+import parsso.idman.Models.Logs.Event;
+import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.other.Time;
 import parsso.idman.repos.LogsRepo;
 
@@ -39,7 +40,7 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
 
 		long size = mongoTemplate.count(query, Event.class, Variables.col_casEvent);
 
-		query.skip((p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "_id"));
+		query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "_id"));
 
 		List<Event> events =  mongoTemplate.find(query, Event.class, Variables.col_casEvent);
 
@@ -58,60 +59,6 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
 		long size = mongoTemplate.getCollection(Variables.col_casEvent).countDocuments();
 
 		return new Event.ListEvents(size, (int) Math.ceil((double) size / (double) n), eventsSetTime(allEvents));
-	}
-
-	@Override
-	public Event.ListEvents retrieveListUserEvents(String userId, int p, int n) {
-		Query query = new Query(Criteria.where("principalId").is(userId))
-				.with(Sort.by(Sort.Direction.DESC, "_id"));
-		long size = mongoTemplate.count(query, Event.class, Variables.col_casEvent);
-
-		query.skip((p - 1) * (n)).limit(n);
-		List<Event> le = mongoTemplate.find(query, Event.class, Variables.col_casEvent);
-
-		return new Event.ListEvents(size, (int) Math.ceil(size / (float) n), eventsSetTime(le));
-	}
-
-	@Override
-	public Event.ListEvents getEventsByDate(String date, int p, int n) throws ParseException {
-
-		int skip = calculateSkip(p, n);
-
-		Time time = new Time(Integer.parseInt(date.substring(4)),
-				Integer.parseInt(date.substring(2, 4)),
-				Integer.parseInt(date.substring(0, 2)));
-		long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
-
-		Query query = new Query(Criteria.where("_id").gte(range[0]).lte(range[1]));
-
-		long size = mongoTemplate.find(query, Event.class, Variables.col_casEvent).size();
-
-		List<Event> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(n), Event.class, Variables.col_casEvent);
-
-		return new Event.ListEvents(size, (int) Math.ceil(size / (float) n), reportList);
-	}
-
-	private int calculateSkip(int p, int n) {
-		return (p - 1) * n;
-	}
-
-	@Override
-	public Event.ListEvents getListUserEventByDate(String date, String userId, int p, int n) throws ParseException {
-
-		int skip = calculateSkip(p, n);
-
-		Time time = new Time(Integer.parseInt(date.substring(4)),
-				Integer.parseInt(date.substring(2, 4)),
-				Integer.parseInt(date.substring(0, 2)));
-		long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
-
-		Query query = new Query(Criteria.where("_id").gte(range[0]).lte(range[1]).and("principalId").is(userId));
-
-		long size = mongoTemplate.find(query, Report.class, Variables.col_casEvent).size();
-
-		List<Event> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "_id")).skip(skip).limit(n), Event.class, Variables.col_casEvent);
-
-		return new Event.ListEvents(size, (int) Math.ceil(size / (float) n), reportList);
 	}
 
 	@Override

@@ -48,66 +48,6 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
 		return new Audit.ListAudits(audits, size, (int) Math.ceil((double) size / (double) n));
 	}
 
-	@Override
-	public Audit.ListAudits retrieveListSizeAudits(int p, int n) {
-		List<Audit> allAudits = Audit.analyze( mongoTemplate,(p - 1) * n, n);
-		long size = mongoTemplate.getCollection(Variables.col_audit).countDocuments();
-		return new Audit.ListAudits(allAudits, size, (int) Math.ceil((double) size / (double) n));
-	}
-
-	@Override
-	public Audit.ListAudits retrieveUserAudits(String userId, int p, int n) {
-		Query query = new Query(Criteria.where("principal").is(userId))
-				.with(Sort.by(Sort.Direction.DESC, "_id"));
-		long size = mongoTemplate.count(query, Audit.class, Variables.col_audit);
-
-		query.skip((long) (p - 1) * (n)).limit(n);
-		List<Audit> auditList = mongoTemplate.find(query, Audit.class, Variables.col_audit);
-		return new Audit.ListAudits(auditList, size, (int) Math.ceil(size / (double) n));
-	}
-
-	@Override
-	public Audit.ListAudits retrieveUserAuditsByDate(String date, String userId, int p, int limit) {
-
-		int skip = (p - 1) * limit;
-
-		Time time = new Time(Integer.parseInt(date.substring(4)),
-				Integer.parseInt(date.substring(2, 4)),
-				Integer.parseInt(date.substring(0, 2)));
-		long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
-
-		Query query = new Query(Criteria.where("whenActionWasPerformed")
-				.gte(TimeHelper.convertEpochToDate(range[0])).lte(TimeHelper.convertEpochToDate(range[1])).and("principal").is(userId));
-
-		long size = mongoTemplate.find(query, Report.class, Variables.col_audit).size();
-
-		List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "whenActionWasPerformed"))
-				.skip(skip).limit(limit), Audit.class, Variables.col_audit);
-
-		return new Audit.ListAudits(reportList, size, (int) Math.ceil(size / (double) limit));
-
-	}
-
-	@Override
-	public Audit.ListAudits retrieveAuditsByDate(String date, int p, int limit) {
-
-		Time time = new Time(Integer.parseInt(date.substring(4)),
-				Integer.parseInt(date.substring(2, 4)),
-				Integer.parseInt(date.substring(0, 2)));
-		long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
-
-		Query query = new Query(Criteria.where("whenActionWasPerformed")
-				.gte(TimeHelper.convertEpochToDate(range[0])).lte(TimeHelper.convertEpochToDate(range[1])));
-
-		long size = mongoTemplate.find(query, Report.class, Variables.col_audit).size();
-
-		List<Audit> reportList = mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC,
-				"whenActionWasPerformed")).skip((long) (p - 1) * limit).limit(limit), Audit.class, Variables.col_audit);
-
-		return new Audit.ListAudits(reportList, size, (int) Math.ceil(size / (double) limit));
-
-	}
-
 }
 
 

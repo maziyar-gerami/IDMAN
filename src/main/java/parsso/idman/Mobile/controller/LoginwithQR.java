@@ -10,10 +10,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.configs.WebSecurityConfig;
 import parsso.idman.Mobile.RepoImpls.JwtUtil;
 import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
 import parsso.idman.Models.Users.User;
+import parsso.idman.configs.WebSecurityConfig;
 import parsso.idman.repos.UserRepo;
 
 import java.io.IOException;

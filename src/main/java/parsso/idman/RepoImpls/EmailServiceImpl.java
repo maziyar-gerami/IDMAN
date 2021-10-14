@@ -22,9 +22,9 @@ import parsso.idman.Helpers.UniformLogger;
 import parsso.idman.Helpers.User.UserAttributeMapper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Users.User;
+import parsso.idman.Utils.Captcha.Models.CAPTCHA;
 import parsso.idman.repos.EmailService;
 import parsso.idman.repos.UserRepo;
-import parsso.idman.Utils.Captcha.Models.CAPTCHA;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;

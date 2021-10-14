@@ -27,10 +27,10 @@ import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
-import parsso.idman.configs.CasUserDetailService;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Models.Users.User;
 import parsso.idman.RepoImpls.UserRepoImpl;
+import parsso.idman.configs.CasUserDetailService;
 import parsso.idman.repos.FilesStorageService;
 import parsso.idman.repos.UserRepo;
 

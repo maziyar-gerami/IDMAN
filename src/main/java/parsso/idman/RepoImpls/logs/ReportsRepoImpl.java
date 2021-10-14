@@ -9,7 +9,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.*;
+import parsso.idman.Models.Logs.Report;
+import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.other.Time;
 import parsso.idman.repos.LogsRepo;
 
@@ -36,7 +37,7 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
 
 		long size = mongoTemplate.count(query, Report.class, Variables.col_Log);
 
-		query.skip((p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "millis"));
+		query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "millis"));
 
 		List<Report> reports = mongoTemplate.find(query, Report.class,  Variables.col_Log);
 
@@ -47,47 +48,6 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
 	@Autowired
 	public ReportsRepoImpl(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
-	}
-
-	@Override
-	public Report.ListReports getListSizeLogs(int p, int n) {
-
-		List<Report> allReports = Report.analyze(mongoTemplate, (p - 1) * n, n);
-		long size = mongoTemplate.getCollection(Variables.col_Log).countDocuments();
-		return new Report.ListReports(size, (int) Math.ceil((double) size / (double) n), TimeHelper.reportSetDate(allReports));
-	}
-
-	@Override
-	public Report.ListReports getListUserLogs(String userId, int p, int n) {
-		Query query = new Query(Criteria.where("loggerName").is(userId))
-				.with(Sort.by(Sort.Direction.DESC, "millis"));
-		long size = mongoTemplate.count(query, Report.class, Variables.col_Log);
-
-		query.skip((p - 1) * (n)).limit(n);
-		List<Report> reportList = mongoTemplate.find(query, Report.class, Variables.col_Log);
-		return new Report.ListReports(size, (int) Math.ceil(size / (float) n), TimeHelper.reportSetDate(reportList));
-	}
-
-	@Override
-	public Report.ListReports getLogsByDate(String date, int p, int n) throws ParseException {
-
-		int skip = getSkip(p, n);
-
-		long[] range = TimeHelper.specificDateToEpochRange(TimeHelper.stringInputToTime(date), ZoneId.of(Variables.ZONE));
-
-		Query query = new Query(Criteria.where("millis").gte(range[0]).lte(range[1]));
-
-		return getListReports(n, skip, query);
-	}
-
-	@Override
-	public Report.ListReports getListUserLogByDate(String date, String userId, int p, int n) throws ParseException {
-
-		long[] range = TimeHelper.specificDateToEpochRange(TimeHelper.stringInputToTime(date), ZoneId.of(Variables.ZONE));
-
-		Query query = new Query(Criteria.where("millis").gte(range[0]).lte(range[1]).and("loggerName").is(userId));
-
-		return getListReports(n, getSkip(p, n), query);
 	}
 
 	private int getSkip(int p, int n) {
@@ -103,7 +63,7 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
 	}
 
 	@Override
-	public List<ReportMessage> accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName) throws java.text.ParseException {
+	public List<ReportMessage> accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName) {
 		int skip;
 
 		Query query = new Query(Criteria.where("attribute").is("Access Strategy"));
