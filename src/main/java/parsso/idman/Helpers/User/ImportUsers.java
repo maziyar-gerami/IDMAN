@@ -29,7 +29,9 @@ import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
+@SuppressWarnings("SameReturnValue")
 @Service
 public class ImportUsers {
 	@Autowired
@@ -217,7 +219,7 @@ public class ImportUsers {
 		JSONObject lsusers = new JSONObject();
 		InputStream insfile = file.getInputStream();
 
-		if (file.getOriginalFilename().endsWith(".xlsx")) {
+		if (Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xlsx")) {
 			//Create Workbook instance holding reference to .xlsx file
 			XSSFWorkbook workbookXLSX;
 			workbookXLSX = new XSSFWorkbook(insfile);
@@ -273,7 +275,7 @@ public class ImportUsers {
 		return null;
 	}
 
-	private List<User> extractAttrEntry(Entry entry) {
+	private void extractAttrEntry(Entry entry) {
 
 		List<User> lsUserConflicts = new LinkedList();
 
@@ -292,6 +294,5 @@ public class ImportUsers {
 		user.setDescription(entry.getAttributeValue("description"));
 		user.setStatus(entry.getAttributeValue("employeeNumber"));
 
-		return lsUserConflicts;
 	}
 }

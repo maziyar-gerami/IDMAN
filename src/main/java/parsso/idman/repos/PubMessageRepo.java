@@ -9,14 +9,15 @@ import parsso.idman.Models.other.PublicMessage;
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings("SameReturnValue")
 public interface PubMessageRepo {
 	List<PublicMessage> showVisiblePubicMessages();
 
 	List<PublicMessage> showAllPubicMessages(String id);
 
-	HttpStatus postPubicMessage(String doer, PublicMessage message) throws IOException, ParseException;
+	HttpStatus postPubicMessage(String doer, PublicMessage message);
 
-	HttpStatus editPubicMessage(String doer, PublicMessage message) throws IOException, ParseException;
+	HttpStatus editPubicMessage(String doer, PublicMessage message);
 
-	HttpStatus deletePubicMessage(String doer, JSONObject jsonObject) throws IOException, ParseException;
+	HttpStatus deletePubicMessage(String doer, JSONObject jsonObject);
 }

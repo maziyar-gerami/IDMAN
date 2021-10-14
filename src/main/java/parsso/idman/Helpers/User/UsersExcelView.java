@@ -24,7 +24,7 @@ public class UsersExcelView extends AbstractXlsView {
 	UserRepo userRepo;
 
 	@Override
-	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
 		// get data model which is passed by the Spring container
 		List<User> users = userRepo.retrieveUsersFull();

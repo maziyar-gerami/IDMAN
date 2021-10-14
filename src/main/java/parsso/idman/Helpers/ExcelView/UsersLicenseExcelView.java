@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public class UsersLicenseExcelView extends AbstractXlsView {
-	LogsRepo.TranscriptRepo transcriptRepo;
+	final LogsRepo.TranscriptRepo transcriptRepo;
 
 	@Autowired
 	public UsersLicenseExcelView (LogsRepo.TranscriptRepo transcriptRepo){

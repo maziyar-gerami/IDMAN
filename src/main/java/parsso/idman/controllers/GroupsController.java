@@ -33,7 +33,7 @@ public class GroupsController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) throws IOException, ParseException {
+    public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
         List<Group> groups = groupRepo.retrieveCurrentUserGroup(user);
         groups.removeAll(Collections.singleton(null));

@@ -29,20 +29,18 @@ public class DateConverter {
 		return jd;
 	}
 
-	private void JD2JG(int JD, int J1G0) {
+	private void JD2JG(int JD) {
 		int i, j;
 		j = 4 * JD + 139361631;
-		if (J1G0 == 0) {
-			j = j + (4 * JD + 183187720) / 146097 * 3 / 4 * 4 - 3908;
-		}
-		i = (j % 1461) / 4 * 5 + 308;
+        j = j + (4 * JD + 183187720) / 146097 * 3 / 4 * 4 - 3908;
+        i = (j % 1461) / 4 * 5 + 308;
 		gDay = (i % 153) / 5 + 1;
 		gMonth = ((i / 153) % 12) + 1;
 		gYear = j / 1461 - 100100 + (8 - gMonth) / 6;
 	}
 
 	private void JD2Jal(int JDN) {
-		JD2JG(JDN, 0);
+		JD2JG(JDN);
 		jYear = gYear - 621;
 		JalCal(jYear);
 		int JDN1F = JG2JD(gYear, 3, march, 0);
@@ -183,7 +181,7 @@ public class DateConverter {
 
 	public void persianToGregorian(int year, int month, int day) {
 		int jd = Jal2JD(year, month, day);
-		JD2JG(jd, 0);
+		JD2JG(jd);
 		this.year = gYear;
 		this.month = gMonth;
 		this.day = gDay;
@@ -191,7 +189,7 @@ public class DateConverter {
 
 	public Time persianToGregorianTime(int year, int month, int day) {
 		int jd = Jal2JD(year, month, day);
-		JD2JG(jd, 0);
+		JD2JG(jd);
 		return new Time(gYear, gMonth, gDay);
 
 	}

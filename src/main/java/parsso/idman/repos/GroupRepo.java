@@ -10,12 +10,13 @@ import parsso.idman.Models.Users.User;
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings("SameReturnValue")
 public interface GroupRepo {
 	List<Group> retrieve();
 
-	HttpStatus create(String doerId, Group ou) throws IOException, ParseException;
+	HttpStatus create(String doerId, Group ou);
 
-	HttpStatus update(String doerID, String name, Group ou) throws IOException, ParseException;
+	HttpStatus update(String doerID, String name, Group ou);
 
 	HttpStatus remove(String doerId, JSONObject jsonObject) throws IOException, ParseException;
 

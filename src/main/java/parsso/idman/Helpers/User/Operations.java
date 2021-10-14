@@ -39,7 +39,7 @@ public class Operations {
 	@Value("${qr.devices.path}")
 	private String qrDevicesPath;
 
-	public HttpStatus enable(String doer, String uid) throws IOException, ParseException {
+	public HttpStatus enable(String doer, String uid) {
 
 		Name dn = buildDnUser.buildDn(uid);
 
@@ -70,7 +70,7 @@ public class Operations {
 		}
 	}
 
-	public HttpStatus disable(String doerID, String uid) throws IOException, ParseException {
+	public HttpStatus disable(String doerID, String uid) {
 
 		Name dn = buildDnUser.buildDn(uid);
 
@@ -99,7 +99,7 @@ public class Operations {
 		}
 	}
 
-	public HttpStatus unlock(String doerID, String uid) throws IOException, ParseException {
+	public HttpStatus unlock(String doerID, String uid) {
 
 		Name dn = buildDnUser.buildDn(uid);
 
@@ -141,7 +141,7 @@ public class Operations {
 
 	}
 
-	public String activeMobile(User user) throws IOException, ParseException {
+	public String activeMobile(User user) {
 
 		String uuid = UUID.randomUUID().toString();
 

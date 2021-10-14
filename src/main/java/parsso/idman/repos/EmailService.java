@@ -11,15 +11,16 @@ import javax.mail.MessagingException;
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings("SameReturnValue")
 @Service
 public interface EmailService {
-	HttpStatus sendMail(JSONObject jsonObject) throws IOException, ParseException;
+	HttpStatus sendMail(JSONObject jsonObject);
 
-	int sendMail(String email, String cid, String answer) throws IOException, ParseException;
+	int sendMail(String email, String cid, String answer);
 
 	void sendMail(User user, String day) throws MessagingException;
 
-	int sendMail(String email, String uid, String cid, String answer) throws IOException, ParseException;
+	int sendMail(String email, String uid, String cid, String answer);
 
 	List<JSONObject> checkMail(String email);
 }

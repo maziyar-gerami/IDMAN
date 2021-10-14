@@ -9,19 +9,20 @@ import parsso.idman.Models.Logs.Setting;
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings("SameReturnValue")
 public interface ConfigRepo {
 
 	String retrieveSetting() throws IOException;
 
-	String updateSettings(String doerID, List<Setting> settings) throws IOException, ParseException;
+	void updateSettings(String doerID, List<Setting> settings);
 
 	HttpStatus backupConfig();
 
-	HttpStatus factoryReset(String doerID) throws IOException, ParseException;
+	HttpStatus factoryReset(String doerID) throws IOException;
 
-	HttpStatus restore(String doerID, String name) throws IOException, ParseException, java.text.ParseException;
+	HttpStatus restore(String doerID, String name);
 
-	List<Config> listBackedUpConfigs() throws IOException, ParseException;
+	List<Config> listBackedUpConfigs();
 
 	HttpStatus saveToMongo() throws IOException;
 }

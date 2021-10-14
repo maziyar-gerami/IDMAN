@@ -36,7 +36,7 @@ public class LogsController {
     public ResponseEntity<Audit.ListAudits> getUsersAudits(@RequestParam(name = "userID", defaultValue = "") String userID,
                                                            @RequestParam(name = "date", defaultValue = "") String date,
                                                            @RequestParam(name = "page") String page,
-                                                           @RequestParam(name = "count") String count) throws ParseException {
+                                                           @RequestParam(name = "count") String count) {
         return new ResponseEntity<>(auditRepo.retrieve(userID, date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
     }
 
@@ -44,7 +44,7 @@ public class LogsController {
     public ResponseEntity<Audit.ListAudits> getUserAudits(HttpServletRequest request,
                                                           @RequestParam(name = "date", defaultValue = "") String date,
                                                           @RequestParam(name = "page") String page,
-                                                          @RequestParam(name = "count") String count) throws ParseException {
+                                                          @RequestParam(name = "count") String count) {
         return new ResponseEntity<>(auditRepo.retrieve(request.getUserPrincipal().getName(), date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
     }
 
@@ -53,7 +53,7 @@ public class LogsController {
     public ResponseEntity<Event.ListEvents> getUsersEvents(@RequestParam(name = "userID", defaultValue = "") String userID,
                                                            @RequestParam(name = "date", defaultValue = "") String date,
                                                            @RequestParam(name = "page") String page,
-                                                           @RequestParam(name = "count") String count) throws ParseException {
+                                                           @RequestParam(name = "count") String count) {
         return new ResponseEntity<>(eventRepo.retrieve(userID, date, !page.equals("") ? Integer.parseInt(page) : 0,
                 !count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);
     }
@@ -62,7 +62,7 @@ public class LogsController {
     public ResponseEntity<Event.ListEvents> getUserEvents(HttpServletRequest request,
                                                           @RequestParam(name = "date", defaultValue = "") String date,
                                                           @RequestParam(name = "page") String page,
-                                                          @RequestParam(name = "count") String count) throws ParseException {
+                                                          @RequestParam(name = "count") String count) {
         return new ResponseEntity<>(eventRepo.retrieve(request.getUserPrincipal().getName(), date, !page.equals("") ? Integer.parseInt(page) : 0,
                 !count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);
 
@@ -73,7 +73,7 @@ public class LogsController {
     public ResponseEntity<Report.ListReports> getUsersReports(@RequestParam(name = "userID", defaultValue = "") String userID,
                                                               @RequestParam(name = "date", defaultValue = "") String date,
                                                               @RequestParam(name = "page") String page,
-                                                              @RequestParam(name = "count") String count) throws ParseException {
+                                                              @RequestParam(name = "count") String count) {
         return new ResponseEntity<>(reportsRepo.retrieve(userID, date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
 
     }
@@ -82,7 +82,7 @@ public class LogsController {
     public ResponseEntity<Report.ListReports> getUserReports(HttpServletRequest request,
                                                              @RequestParam(name = "date", defaultValue = "") String date,
                                                              @RequestParam(name = "page") String page,
-                                                             @RequestParam(name = "count") String count) throws ParseException {
+                                                             @RequestParam(name = "count") String count) {
         return new ResponseEntity<>(reportsRepo.retrieve(request.getUserPrincipal().getName(), date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
     }
 

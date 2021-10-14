@@ -28,7 +28,7 @@ import java.util.TimeZone;
 @Service
 public class AuditsExcelView extends AbstractXlsView {
 	final LogsRepo.AuditRepo auditRepo;
-	MongoTemplate mongoTemplate;
+	final MongoTemplate mongoTemplate;
 
 	@Autowired
 	public AuditsExcelView(MongoTemplate mongoTemplate, LogsRepo.AuditRepo auditRepo){

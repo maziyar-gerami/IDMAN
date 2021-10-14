@@ -24,7 +24,7 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
 	String password;
 
 	@Override
-	public ArrayList<String> SendMessage(String message, String PhoneNumber, Long id)  {
+	public void SendMessage(String message, String PhoneNumber, Long id)  {
 		MagfaSoapServer service = null;
 		try {
 			URL url = new URL("https://sms.magfa.com/api/soap/sms/v2/server?wsdl");
@@ -58,7 +58,6 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
 		for (SendMessage sendMessage : result.getMessages()) {
 			res.add(sendMessage.toString());
 		}
-		return res;
 	}
 
 }

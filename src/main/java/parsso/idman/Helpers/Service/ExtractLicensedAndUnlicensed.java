@@ -90,10 +90,9 @@ public class ExtractLicensedAndUnlicensed {
 		return false;
 	}
 
-	private List<MicroService> remove(List<MicroService> licensed, Long id) {
+	private void remove(List<MicroService> licensed, Long id) {
 
 		licensed.removeIf(n -> (n.get_id() == id));
 
-		return licensed;
 	}
 }

@@ -22,7 +22,6 @@ import parsso.idman.repos.MagfaSMSSendRepo;
 import parsso.idman.repos.UserRepo;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,7 +53,7 @@ public class InstantMessage {
 	@Autowired
 	private MagfaSMSSendRepo magfaSMSSendRepo;
 
-	public int sendMessage(String mobile, String cid, String answer) throws IOException, ParseException {
+	public int sendMessage(String mobile, String cid, String answer) {
 
 		if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
 			return sendMessageKaveNegar(mobile, cid, answer);
@@ -80,7 +79,7 @@ public class InstantMessage {
 		return 0;
 	}
 
-	public int sendMessage(String mobile, String uid, String cid, String answer) throws IOException, ParseException {
+	public int sendMessage(String mobile, String uid, String cid, String answer) {
 		if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
 			return sendMessageKaveNegar(mobile, uid, cid, answer);
 		else if (SMS_sdk.equalsIgnoreCase("Magfa"))
@@ -88,7 +87,7 @@ public class InstantMessage {
 		return 0;
 	}
 
-	private int sendMessageKaveNegar(String mobile, String cid, String answer) throws IOException, ParseException {
+	private int sendMessageKaveNegar(String mobile, String cid, String answer) {
 
 		Query query = new Query(Criteria.where("_id").is(cid));
 		CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -206,16 +205,13 @@ public class InstantMessage {
 			} catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 				System.out.print("ApiException : " + ex.getMessage());
 				return 0;
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
 			}
-		} else
+        } else
 			return 0;
 
-		return 0;
 	}
 
-	private int sendMessageMagfa(String mobile, String cid, String answer) throws IOException, ParseException {
+	private int sendMessageMagfa(String mobile, String cid, String answer) {
 
 		Query query = new Query(Criteria.where("_id").is(cid));
 		CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -255,13 +251,10 @@ public class InstantMessage {
 			} catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 				System.out.print("ApiException : " + ex.getMessage());
 				return 0;
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
 			}
-		} else
+        } else
 			return 0;
 
-		return 0;
 	}
 
 	private int sendMessageKaveNegar(User user) {
@@ -306,10 +299,8 @@ public class InstantMessage {
 				} catch (ApiException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 					System.out.print("ApiException : " + ex.getMessage());
 					return 0;
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
 				}
-			} else
+            } else
 				return 0;
 
 		}
@@ -329,7 +320,7 @@ public class InstantMessage {
 		return jsonArray;
 	}
 
-	private int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) throws IOException, ParseException {
+	private int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) {
 
 		Query query = new Query(Criteria.where("_id").is(cid));
 		CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -391,7 +382,7 @@ public class InstantMessage {
 		return 0;
 	}
 
-	private int sendMessageMagfa(String mobile, String uId, String cid, String answer) throws IOException, ParseException {
+	private int sendMessageMagfa(String mobile, String uId, String cid, String answer) {
 		Query query = new Query(Criteria.where("_id").is(cid));
 		CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
 		if (captcha == null)
@@ -440,11 +431,9 @@ public class InstantMessage {
 							System.out.print("ApiException : " + ex.getMessage());
 							return 0;
 
-						} catch (MalformedURLException e) {
-							e.printStackTrace();
 						}
 
-					}
+                    }
 
 
 				}

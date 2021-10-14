@@ -6,14 +6,15 @@ import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 
+@SuppressWarnings("SameReturnValue")
 public interface SystemRefresh {
-	HttpStatus userRefresh(String doer) throws IOException, ParseException;
+	HttpStatus userRefresh(String doer);
 
-	HttpStatus captchaRefresh(String doer) throws IOException, ParseException;
+	HttpStatus captchaRefresh(String doer);
 
 	HttpStatus serivceRefresh(String doer) throws IOException, ParseException;
 
 	HttpStatus all(String doer) throws IOException, ParseException;
 
-	HttpStatus refreshLockedUsers() throws IOException, ParseException;
+	void refreshLockedUsers();
 }

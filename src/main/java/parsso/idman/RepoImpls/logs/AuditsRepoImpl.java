@@ -11,11 +11,8 @@ import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Logs.Event;
-import parsso.idman.Models.Logs.Report;
-import parsso.idman.Models.other.Time;
 import parsso.idman.repos.LogsRepo;
 
-import java.text.ParseException;
 import java.time.ZoneId;
 import java.util.List;
 
@@ -29,7 +26,7 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
 	}
 
 	@Override
-	public Audit.ListAudits retrieve(String userId, String date, int p, int n) throws ParseException {
+	public Audit.ListAudits retrieve(String userId, String date, int p, int n) {
 		Query query = new Query();
 		if (!userId.equals(""))
 			query.addCriteria(Criteria.where("principal").is(userId));

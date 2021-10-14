@@ -22,7 +22,7 @@ import java.util.List;
 @Controller
 public class ConfigsController {
     private final ConfigRepo configRepo;
-    PasswordSettings passwordSettings;
+    final PasswordSettings passwordSettings;
 
     public ConfigsController(PasswordSettings passwordSettings, @Qualifier("configRepoImpl") ConfigRepo configRepo) {
         this.passwordSettings = passwordSettings;
@@ -35,7 +35,7 @@ public class ConfigsController {
     }
 
     @GetMapping("/api/configs")
-    public ResponseEntity<List<Config>> listAllConfigs() throws IOException, ParseException {
+    public ResponseEntity<List<Config>> listAllConfigs() {
         return new ResponseEntity<>(configRepo.listBackedUpConfigs(), HttpStatus.OK);
     }
 
@@ -58,7 +58,7 @@ public class ConfigsController {
 
     @GetMapping("/api/configs/restore/{cname}")
     public ResponseEntity<HttpStatus> restoreSettings(HttpServletRequest request, @PathVariable String cname)
-            throws IOException, ParseException, java.text.ParseException {
+            throws IOException, ParseException {
         return new ResponseEntity<>(configRepo.restore(request.getUserPrincipal().getName(), cname));
     }
 

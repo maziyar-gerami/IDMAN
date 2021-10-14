@@ -113,7 +113,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 
 				setting.setDescription(description);
 
-				setting.setGroup(groupName.trim());
+				setting.setGroup(Objects.requireNonNull(groupName).trim());
 
 				setting.setSystem(system.trim());
 
@@ -152,7 +152,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 	}
 
 	@Override
-	public String updateSettings(String doerID, List<Setting> settings) throws IOException, ParseException {
+	public void updateSettings(String doerID, List<Setting> settings) {
 
 		StringBuilder file_properties = new StringBuilder();
 
@@ -181,10 +181,10 @@ public class ConfigRepoImpl implements ConfigRepo {
 				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 
 		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("application.properties")) {
-			Files.copy(is, Paths.get(this.getClass().getClassLoader() + "/backup/" + date + "_application.properties"));
+			Files.copy(Objects.requireNonNull(is), Paths.get(this.getClass().getClassLoader() + "/backup/" + date + "_application.properties"));
 			uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, settings, ""));
 
-		} catch (IOException | ParseException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, settings, "unknown error"));
 
@@ -207,7 +207,6 @@ public class ConfigRepoImpl implements ConfigRepo {
 			ex.printStackTrace();
 		}
 
-		return file_properties.toString();
 	}
 
 	@Override
@@ -233,7 +232,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 	}
 
 	@Override
-	public HttpStatus factoryReset(String doerID) throws IOException, ParseException {
+	public HttpStatus factoryReset(String doerID) throws IOException {
 
 		Path copied = Paths.get(pathToProperties);
 		Resource resource = new ClassPathResource(backUpOfProperties);
@@ -252,7 +251,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 	}
 
 	@Override
-	public HttpStatus restore(String doerID, String name) throws IOException, ParseException {
+	public HttpStatus restore(String doerID, String name) {
 
 		List<Config> configs = listBackedUpConfigs();
 
@@ -292,7 +291,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 
 				try {
 
-					config.setName(file);
+					Objects.requireNonNull(config).setName(file);
 					SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
 					Date date = parserSDF.parse(file);

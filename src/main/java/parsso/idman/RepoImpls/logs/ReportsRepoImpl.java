@@ -14,7 +14,6 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.other.Time;
 import parsso.idman.repos.LogsRepo;
 
-import java.text.ParseException;
 import java.time.ZoneId;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
 	final MongoTemplate mongoTemplate;
 
 	@Override
-	public Report.ListReports retrieve(String userId, String date, int p, int n) throws ParseException {
+	public Report.ListReports retrieve(String userId, String date, int p, int n) {
 		Query query = new Query();
 		if (!userId.equals(""))
 			query.addCriteria(Criteria.where("doerID").is(userId));

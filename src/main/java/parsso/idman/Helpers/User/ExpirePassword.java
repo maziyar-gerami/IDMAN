@@ -32,7 +32,7 @@ public class ExpirePassword {
 	@Autowired
 	UniformLogger uniformLogger;
 
-	public List<String> expire(String doer, List<UsersExtraInfo> users) throws IOException, ParseException {
+	public List<String> expire(String doer, List<UsersExtraInfo> users) {
 
 		List<String> superAdminUsers = new LinkedList<>();
 

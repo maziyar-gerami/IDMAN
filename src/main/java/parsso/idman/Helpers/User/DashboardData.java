@@ -40,7 +40,7 @@ public class DashboardData {
 	SimpleUserAttributeMapper simpleUserAttributeMapper;
 	@Autowired
 	LdapTemplate ldapTemplate;
-	ZoneId zoneId = ZoneId.of(Variables.ZONE);
+	final ZoneId zoneId = ZoneId.of(Variables.ZONE);
 	Dashboard.Users fUsers;
 	Dashboard.Services fServices;
 	Dashboard.Logins fLogins;
@@ -82,11 +82,7 @@ public class DashboardData {
 
 			//________services data____________
 			List<parsso.idman.Models.Services.Service> services = null;
-			try {
-				services = serviceRepo.listServicesFull();
-			} catch (java.io.IOException | ParseException e) {
-				e.printStackTrace();
-			}
+			services = serviceRepo.listServicesFull();
 			int nServices = 0;
 			if (services != null) {
 				nServices = services.size();

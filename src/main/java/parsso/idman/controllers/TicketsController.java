@@ -45,7 +45,7 @@ public class TicketsController {
     }
 
     @GetMapping("/api/user/ticket/{ticketID}")
-    public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request) throws IOException, ParseException {
+    public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request) {
         Ticket ticket = ticketRepo.retrieveTicket(ticketID);
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName().toLowerCase());
         if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))

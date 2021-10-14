@@ -22,7 +22,7 @@ public class UniformLogger {
 	@Autowired
 	ServiceRepo serviceRepo;
 
-	public void warn(String doerId, ReportMessage reportMessage) throws IOException, ParseException {
+	public void warn(String doerId, ReportMessage reportMessage) {
 		Logger logger = LogManager.getLogger(doerId);
 		reportMessage.setLevel(Variables.LEVEL_WARN);
 		reportMessage.setDoerID(doerId);
@@ -30,7 +30,7 @@ public class UniformLogger {
 		logger.warn(reportMessage.toString());
 	}
 
-	public void info(String doerId, ReportMessage reportMessage) throws IOException, ParseException {
+	public void info(String doerId, ReportMessage reportMessage) {
 		Logger logger = LogManager.getLogger(doerId);
 		reportMessage.setLevel(Variables.LEVEL_INFO);
 		reportMessage.setDoerID(doerId);
@@ -38,7 +38,7 @@ public class UniformLogger {
 		logger.warn(reportMessage.toString());
 	}
 
-	public void error(String doerId, ReportMessage reportMessage) throws IOException, ParseException {
+	public void error(String doerId, ReportMessage reportMessage) {
 		Logger logger = LogManager.getLogger(doerId);
 		reportMessage.setLevel(Variables.LEVEL_ERROR);
 		reportMessage.setDoerID(doerId);
@@ -46,7 +46,7 @@ public class UniformLogger {
 		logger.error(reportMessage.toString());
 	}
 
-	public void warn(String doerId, ReportMessage reportMessage, Object from, Object to) throws IOException, ParseException {
+	public void warn(String doerId, ReportMessage reportMessage, Object from, Object to) {
 		Logger logger = LogManager.getLogger(doerId);
 		reportMessage.setLevel(Variables.LEVEL_WARN);
 		reportMessage.setDoerID(doerId);
@@ -54,7 +54,7 @@ public class UniformLogger {
 		logger.warn(reportMessage.toString());
 	}
 
-	public void info(String doerId, ReportMessage reportMessage, Object from, Object to) throws IOException, ParseException {
+	public void info(String doerId, ReportMessage reportMessage, Object from, Object to) {
 		Logger logger = LogManager.getLogger(doerId);
 		reportMessage.setLevel(Variables.LEVEL_INFO);
 		reportMessage.setDoerID(doerId);
@@ -62,7 +62,7 @@ public class UniformLogger {
 		logger.info(reportMessage.toString());
 	}
 
-	public void error(String doerId, ReportMessage reportMessage, Object from, Object to) throws IOException, ParseException {
+	public void error(String doerId, ReportMessage reportMessage, Object from, Object to) {
 		Logger logger = LogManager.getLogger(doerId);
 		reportMessage.setLevel(Variables.LEVEL_ERROR);
 		reportMessage.setDoerID(doerId);
@@ -70,7 +70,7 @@ public class UniformLogger {
 		logger.error(reportMessage.toString());
 	}
 
-	private void idmanLogger(ReportMessage reportMessage) throws IOException, ParseException {
+	private void idmanLogger(ReportMessage reportMessage) {
 		List<ReportMessage> reportMessageList = new LinkedList<>();
 
 		Runnable runnable =

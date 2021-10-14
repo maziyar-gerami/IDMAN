@@ -59,7 +59,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	Position position;
 	@Autowired
 	UniformLogger uniformLogger;
-	String collection = Variables.col_servicesExtraInfo;
+	final String collection = Variables.col_servicesExtraInfo;
 	@Value("${services.folder.path}")
 	private String path;
 	@Value("${base.url}")
@@ -100,7 +100,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 
 			try {
-				if (((List<String>)(((JSONArray)(service.getAccessStrategy().getRequiredAttributes().get("uid"))).get(1))).contains(user.getUserId()))
+				if (((List<String>)(((JSONArray)(Objects.requireNonNull(service.getAccessStrategy()).getRequiredAttributes().get("uid"))).get(1))).contains(user.getUserId()))
 					relatedList.add(service);
 			}catch (NullPointerException e){
 
@@ -141,12 +141,12 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public List<Service> listServicesFull() throws IOException, ParseException {
+	public List<Service> listServicesFull() {
 		File folder = new File(path); // ./services/
 		String[] files = folder.list();
 		List<Service> services = new LinkedList<>();
 		Service service = null;
-		for (String file : files) {
+		for (String file : Objects.requireNonNull(files)) {
 			if (file.endsWith(".json"))
 				try {
 					service = analyze(file);
@@ -154,7 +154,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 					Collections.sort(services);
 				} catch (Exception e) {
 					e.printStackTrace();
-					uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
+					uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, Objects.requireNonNull(service).getId(),
 							"", Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to read service"));
 				}
 		}
@@ -182,20 +182,20 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public List<MicroService> listServicesMain() throws IOException, ParseException {
+	public List<MicroService> listServicesMain() {
 
 		File folder = new File(path); // ./services/
 		String[] files = folder.list();
 		List<MicroService> services = new LinkedList<>();
 		Service service = null;
 		MicroService microService = null;
-		for (String file : files) {
+		for (String file : Objects.requireNonNull(files)) {
 			if (file.endsWith(".json"))
 				try {
 					service = analyze(file);
 				} catch (Exception e) {
 					e.printStackTrace();
-					uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(), "",
+					uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, Objects.requireNonNull(service).getId(), "",
 							Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to parse service"));
 
 					continue;
@@ -204,9 +204,9 @@ public class ServiceRepoImpl implements ServiceRepo {
 			try {
 				microService = mongoTemplate.findOne(query, MicroService.class, collection);
 			} catch (Exception e) {
-				microService = new MicroService(service.getId(), service.getServiceId());
+				microService = new MicroService(Objects.requireNonNull(service).getId(), service.getServiceId());
 			} finally {
-				services.add(new MicroService(service, microService));
+				services.add(new MicroService(Objects.requireNonNull(service), microService));
 			}
 		}
 		Collections.sort(services);
@@ -239,10 +239,10 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public LinkedList<String> deleteServices(String doerID, JSONObject jsonObject) throws IOException, ParseException {
+	public LinkedList<String> deleteServices(String doerID, JSONObject jsonObject) {
 
 		File folder = new File(path);
-		List<String> allFiles = Arrays.asList(folder.list());
+		List<String> allFiles = Arrays.asList(Objects.requireNonNull(folder.list()));
 		List selectedFiles = new LinkedList();
 
 		if (jsonObject.size() == 0)
@@ -262,7 +262,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 		for (Object file : selectedFiles) {
 			File serv = new File(path + file.toString());
 			if (!(serv.delete()))
-				notDeleted.add((String) file);
+				Objects.requireNonNull(notDeleted).add((String) file);
 
 		}
 
@@ -270,7 +270,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 			long id = Trim.extractIdFromFile(file.toString());
 			Query query = new Query(Criteria.where("_id").is(id));
 			MicroService microService = mongoTemplate.findOne(query, MicroService.class, collection);
-			position.delete(microService.getPosition());
+			position.delete(Objects.requireNonNull(microService).getPosition());
 			try {
 				mongoTemplate.remove(query, MicroService.class, collection);
 				uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
@@ -288,7 +288,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public HttpStatus updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException, ParseException {
+	public void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException, ParseException {
 
 		//Update ou
 		userRepo.updateUsersWithSpecificOU(doerID, oldOu, newOu);
@@ -312,8 +312,6 @@ public class ServiceRepoImpl implements ServiceRepo {
 			uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, sid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, ""));
 
 		}
-
-		return HttpStatus.OK;
 
 	}
 
@@ -418,10 +416,10 @@ public class ServiceRepoImpl implements ServiceRepo {
 			extraInfo.setUrl(JsonExtraInfo != null && JsonExtraInfo.get("url") != null ?
 					JsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
 
-			extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
+			extraInfo.setUrl(Objects.requireNonNull(JsonExtraInfo).get("url") != null ? JsonExtraInfo.get("url").toString() : Objects.requireNonNull(oldExtraInfo).getUrl());
 
 			try {
-				extraInfo.setNotificationApiURL(JsonExtraInfo.get("notificationApiURL") != null ? JsonExtraInfo.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
+				extraInfo.setNotificationApiURL(JsonExtraInfo.get("notificationApiURL") != null ? JsonExtraInfo.get("notificationApiURL").toString() : Objects.requireNonNull(oldExtraInfo).getNotificationApiURL());
 
 			} catch (Exception e) {
 				extraInfo.setNotificationApiURL(null);
@@ -433,7 +431,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 
 			try {
-				extraInfo.setPosition(oldExtraInfo.getPosition());
+				extraInfo.setPosition(Objects.requireNonNull(oldExtraInfo).getPosition());
 			} catch (Exception e) {
 			}
 
@@ -504,7 +502,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 		SimpleTime simpleTime = new SimpleTime(time);
 		List<Schedule> dailyAccess;
 		try {
-			dailyAccess = extraInfo.getDailyAccess();
+			dailyAccess = Objects.requireNonNull(extraInfo).getDailyAccess();
 		}catch (NullPointerException e){
 			return false;
 		}
@@ -573,7 +571,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 			service = samlServiceHelper.analyze(file);
 		
 
-		Query query = new Query(Criteria.where("_id").is(service.getId()));
+		Query query = new Query(Criteria.where("_id").is(Objects.requireNonNull(service).getId()));
 		try {
 			extraInfo = mongoTemplate.findOne(query, ExtraInfo.class, collection);
 		} catch (Exception e) {

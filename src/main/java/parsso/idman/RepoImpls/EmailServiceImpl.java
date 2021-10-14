@@ -88,7 +88,7 @@ public class EmailServiceImpl implements EmailService {
 
 	}
 
-	public HttpStatus sendMail(String email) throws IOException, ParseException {
+	public void sendMail(String email) {
 		if (checkMail(email) != null) {
 			User user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
@@ -106,13 +106,11 @@ public class EmailServiceImpl implements EmailService {
 
 			thread.start();
 
-			return HttpStatus.OK;
-		} else
-			return HttpStatus.FORBIDDEN;
+		}
 	}
 
 	@Override
-	public HttpStatus sendMail(JSONObject jsonObject) throws IOException, ParseException {
+	public HttpStatus sendMail(JSONObject jsonObject) {
 		if (jsonObject.size() == 0) {
 			List<User> users = userRepo.retrieveUsersFull();
 
@@ -127,11 +125,7 @@ public class EmailServiceImpl implements EmailService {
 				User user = userRepo.retrieveUsers(temp.toString());
 				{
 					Thread thread = new Thread(() -> {
-						try {
-							sendMail(user.getMail());
-						} catch (IOException | ParseException e) {
-							e.printStackTrace();
-						}
+						sendMail(user.getMail());
 					});
 					if (checkMail(user.getMail()) != null)
 						thread.start();
@@ -143,7 +137,7 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public int sendMail(String email, String cid, String answer) throws IOException, ParseException {
+	public int sendMail(String email, String cid, String answer) {
 
 		Query query = new Query(Criteria.where("_id").is(cid));
 		CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
@@ -199,7 +193,7 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public int sendMail(String email, String uid, String cid, String answer) throws IOException, ParseException {
+	public int sendMail(String email, String uid, String cid, String answer) {
 
 		Query query = new Query(Criteria.where("_id").is(cid));
 		CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);

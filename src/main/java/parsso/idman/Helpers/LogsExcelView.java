@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Service
 public class LogsExcelView extends AbstractXlsView {
-	MongoTemplate mongoTemplate;
+	final MongoTemplate mongoTemplate;
 
 	@Autowired
 			public LogsExcelView(MongoTemplate mongoTemplate){

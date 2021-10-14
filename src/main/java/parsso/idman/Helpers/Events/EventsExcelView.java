@@ -28,7 +28,7 @@ public class EventsExcelView extends AbstractXlsView {
 	public static String mainCollection = "MongoDbCasEventRepository";
 	@Autowired
 	LogsRepo.EventRepo eventRepo;
-	ZoneId zoneId = ZoneId.of(Variables.ZONE);
+	final ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
 	@Override
 	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {

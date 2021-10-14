@@ -72,7 +72,7 @@ public class OAuthServiceHelper {
 				jsonObject = new JSONObject((Map) jo.get("expirationPolicy"));
 
 			ExpirationPolicy expirationPolicy = new ExpirationPolicy();
-			expirationPolicy.setAtClass((String) jsonObject.get("@class"));
+			expirationPolicy.setAtClass((String) Objects.requireNonNull(jsonObject).get("@class"));
 			expirationPolicy.setDeleteWhenExpired((boolean) jsonObject.get("deleteWhenExpired"));
 			expirationPolicy.setNotifyWhenDeleted((boolean) jsonObject.get("notifyWhenDeleted"));
 			service.setExpirationPolicy(expirationPolicy);
@@ -90,7 +90,7 @@ public class OAuthServiceHelper {
 				jsonObject = new JSONObject((Map) jo.get("proxyPolicy"));
 
 			ProxyPolicy proxyPolicy = new ProxyPolicy();
-			proxyPolicy.setAtClass((String) jsonObject.get("@class"));
+			proxyPolicy.setAtClass((String) Objects.requireNonNull(jsonObject).get("@class"));
 			proxyPolicy.setPattern((String) jsonObject.get("pattern"));
 			service.setProxyPolicy(proxyPolicy);
 		}
@@ -107,7 +107,7 @@ public class OAuthServiceHelper {
 				jsonObject = new JSONObject((Map) jo.get("usernameAttributeProvider"));
 
 			UsernameAttributeProvider usernameAttributeProvider = new UsernameAttributeProvider();
-			usernameAttributeProvider.setAtClass((String) jsonObject.get("@class"));
+			usernameAttributeProvider.setAtClass((String) Objects.requireNonNull(jsonObject).get("@class"));
 			usernameAttributeProvider.setCanonicalizationMode((String) jsonObject.get("canonicalizationMode"));
 			usernameAttributeProvider.setEncryptUsername((Boolean) jsonObject.get("encryptUsername"));
 			service.setUsernameAttributeProvider(usernameAttributeProvider);
@@ -126,7 +126,7 @@ public class OAuthServiceHelper {
 				jsonObject = new JSONObject((Map) jo.get("attributeReleasePolicy"));
 
 			AttributeReleasePolicy attributeReleasePolicy = new AttributeReleasePolicy();
-			attributeReleasePolicy.setAtClass((String) jsonObject.get("@class"));
+			attributeReleasePolicy.setAtClass((String) Objects.requireNonNull(jsonObject).get("@class"));
 			attributeReleasePolicy.setAuthorizedToReleaseAuthenticationAttributes((boolean) jsonObject.get("authorizedToReleaseAuthenticationAttributes"));
 			attributeReleasePolicy.setAuthorizedToReleaseCredentialPassword((Boolean) jsonObject.get("authorizedToReleaseCredentialPassword"));
 			try {
@@ -181,7 +181,7 @@ public class OAuthServiceHelper {
 			else if (jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
 				jsonObject = new JSONObject((Map) jo.get("multifactorPolicy"));
 
-			if (jsonObject.get("multifactorAuthenticationProviders") != null) {
+			if (Objects.requireNonNull(jsonObject).get("multifactorAuthenticationProviders") != null) {
 
 				MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
 
@@ -216,7 +216,7 @@ public class OAuthServiceHelper {
 
 				String temp0 = (String) arrayList.get(0);
 
-				List contacts = new LinkedList<Contact>();
+				List<Contact> contacts = new LinkedList<>();
 
                 ArrayList temp1 = (ArrayList) arrayList.get(1);
                 for (Object o : temp1) {
@@ -233,7 +233,7 @@ public class OAuthServiceHelper {
                     }
 
                     Contact contact = new Contact();
-                    if (jsonObject1.get("name") != null) contact.setName(jsonObject1.get("name").toString());
+                    if (Objects.requireNonNull(jsonObject1).get("name") != null) contact.setName(jsonObject1.get("name").toString());
                     if (jsonObject1.get("email") != null) {
                         contact.setEmail((String) jsonObject1.get("email"));
 
@@ -313,7 +313,7 @@ public class OAuthServiceHelper {
 
 	}
 
-	public long create(String doerID, JSONObject jo) throws IOException, ParseException {
+	public long create(String doerID, JSONObject jo) {
 
 		OAuthService service = buildOAuthService(jo);
 		service.setId(new Date().getTime());
@@ -351,14 +351,14 @@ public class OAuthServiceHelper {
                     IPaddresses.add(machine.getHostAddress());
 
             file = new FileWriter(path + filePath + ".json");
-            file.write(json);
+            file.write(Objects.requireNonNull(json));
             file.close();
 
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                     "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
 
             return service.getId();
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
                     "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));

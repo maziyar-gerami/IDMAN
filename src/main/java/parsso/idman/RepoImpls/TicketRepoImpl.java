@@ -39,13 +39,13 @@ public class TicketRepoImpl implements TicketRepo {
 	@Autowired
 	UniformLogger uniformLogger;
 	Logger logger;
-	String model = "Tickets";
+	final String model = "Tickets";
 	@Autowired
 	UserRepo userRepo;
-	ZoneId zoneId = ZoneId.of(Variables.ZONE);
+	final ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
 	@Override
-	public HttpStatus sendTicket(Ticket ticket, String userid) throws IOException, ParseException {
+	public HttpStatus sendTicket(Ticket ticket, String userid) {
 		try {
 			logger = LogManager.getLogger(userid);
 
@@ -78,7 +78,7 @@ public class TicketRepoImpl implements TicketRepo {
 	}
 
 	@Override
-	public HttpStatus reply(String ticketID, String userid, Ticket replyTicket) throws IOException, ParseException {
+	public HttpStatus reply(String ticketID, String userid, Ticket replyTicket) {
 
 		logger = LogManager.getLogger(userid);
 		int st;
@@ -168,7 +168,7 @@ public class TicketRepoImpl implements TicketRepo {
 	}
 
 	@Override
-	public HttpStatus deleteTicket(String doer, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+	public HttpStatus deleteTicket(String doer, @RequestBody JSONObject jsonObject) {
 
 		logger = LogManager.getLogger(doer);
 
@@ -208,7 +208,7 @@ public class TicketRepoImpl implements TicketRepo {
 	}
 
 	@Override
-	public HttpStatus updateTicketStatus(String doer, int status, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+	public HttpStatus updateTicketStatus(String doer, int status, @RequestBody JSONObject jsonObject) {
 
 		logger = LogManager.getLogger(doer);
 
@@ -221,7 +221,7 @@ public class TicketRepoImpl implements TicketRepo {
 			Query query = new Query(Criteria.where("ID").is(ticketID));
 			Ticket ticket = mongoTemplate.findOne(query, Ticket.class, collection);
 
-			List<Message> messages = ticket.getMessages();
+			List<Message> messages = Objects.requireNonNull(ticket).getMessages();
 
 			//check if closed or reopen, add new message
 			if (ticket.getStatus() < status && status == 2)
@@ -316,7 +316,7 @@ public class TicketRepoImpl implements TicketRepo {
 	}
 
 	@Override
-	public HttpStatus updateTicket(String userId, String ticketId, Ticket newTicket) throws IOException, ParseException {
+	public HttpStatus updateTicket(String userId, String ticketId, Ticket newTicket) {
 		logger = LogManager.getLogger(userId);
 		Query query = new Query(Criteria.where("ID").is(ticketId));
 		Ticket oldTicket = mongoTemplate.findOne(query, Ticket.class, collection);

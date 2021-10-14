@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 @Service
 public class SkyroomRepoImpl implements SkyroomRepo {
@@ -59,7 +60,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		}
 	}
 
-	public JSONObject Post(String json) throws IOException, ParseException {
+	public JSONObject Post(String json) throws IOException {
 		if (skyroomEnable.equalsIgnoreCase("true")) {
 			URL url = null;
 			try {
@@ -67,7 +68,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 			} catch (Exception e) {
 				uniformLogger.info("System", new ReportMessage("skyroom", "", "", "retrieve url", Variables.RESULT_FAILED, "malformed url"));
 			}
-			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+			HttpsURLConnection con = (HttpsURLConnection) Objects.requireNonNull(url).openConnection();
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("User-Agent", "PostmanRuntime/7.26.10");

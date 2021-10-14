@@ -103,7 +103,7 @@ public class GroupRepoImpl implements GroupRepo {
 										(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
 
 								mongoTemplate.save
-										(simpleUser, Variables.col_usersExtraInfo);
+										(Objects.requireNonNull(simpleUser), Variables.col_usersExtraInfo);
 
 								uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
 										Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS, groupN + "Removing 'OU'=+" + groupN));
@@ -192,7 +192,7 @@ public class GroupRepoImpl implements GroupRepo {
 	}
 
 	@Override
-	public HttpStatus create(String doerID, Group ou) throws IOException, ParseException {
+	public HttpStatus create(String doerID, Group ou) {
 
 		List<Group> groups = retrieve();
 
@@ -219,7 +219,7 @@ public class GroupRepoImpl implements GroupRepo {
 	}
 
 	@Override
-	public HttpStatus update(String doerID, String id, Group ou) throws IOException, ParseException {
+	public HttpStatus update(String doerID, String id, Group ou) {
 
 		Name dn = buildDn(id);
 

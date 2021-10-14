@@ -14,22 +14,23 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("SameReturnValue")
 public interface ServiceRepo {
 	List<MicroService> listUserServices(User user) throws IOException, ParseException;
 
-	List<Service> listServicesFull() throws IOException, ParseException;
+	List<Service> listServicesFull();
 
 	List<Service> listServicesWithGroups(String ou) throws IOException, ParseException;
 
-	List<MicroService> listServicesMain() throws IOException, ParseException;
+	List<MicroService> listServicesMain();
 
 	Service retrieveService(long id) throws IOException, ParseException;
 
-	LinkedList<String> deleteServices(String doerID, JSONObject files) throws IOException, ParseException;
+	LinkedList<String> deleteServices(String doerID, JSONObject files);
 
 	String uploadMetadata(MultipartFile file);
 
-	HttpStatus updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException, ParseException;
+	void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException, ParseException;
 
 	HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
 

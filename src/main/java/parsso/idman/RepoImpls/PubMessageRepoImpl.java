@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PubMessageRepoImpl implements PubMessageRepo {
@@ -44,7 +45,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 	}
 
 	@Override
-	public HttpStatus postPubicMessage(String doer, PublicMessage message) throws IOException, ParseException {
+	public HttpStatus postPubicMessage(String doer, PublicMessage message) {
 
 		if (!mongoTemplate.collectionExists(collection))
 			mongoTemplate.createCollection(collection);
@@ -66,7 +67,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 	}
 
 	@Override
-	public HttpStatus editPubicMessage(String doer, PublicMessage message) throws IOException, ParseException {
+	public HttpStatus editPubicMessage(String doer, PublicMessage message) {
 
 		PublicMessage oldMessage = showAllPubicMessages(message.getMessageId()).get(0);
 
@@ -77,7 +78,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 		message.setCreateDate(oldMessage.getCreateDate());
 
 		PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("messageId").is(message.getMessageId())), PublicMessage.class, collection);
-		message.set_id(publicMessage.get_id());
+		message.set_id(Objects.requireNonNull(publicMessage).get_id());
 		try {
 			mongoTemplate.save(message, collection);
 			uniformLogger.info(doer, new ReportMessage(model, message.getMessageId(), "", "update", Variables.RESULT_SUCCESS, ""));
@@ -91,7 +92,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
 	}
 
 	@Override
-	public HttpStatus deletePubicMessage(String doer, JSONObject jsonObject) throws IOException, ParseException {
+	public HttpStatus deletePubicMessage(String doer, JSONObject jsonObject) {
 
 		ArrayList jsonArray = (ArrayList) jsonObject.get("names");
 		Iterator<String> iterator = jsonArray.iterator();

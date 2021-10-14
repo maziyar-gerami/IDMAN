@@ -12,5 +12,5 @@ import java.util.List;
 public interface RolesRepo {
 	List<UserRole> retrieve();
 
-	HttpStatus updateRole(String doerId, String role, JSONObject userIDs) throws IOException, ParseException;
+	HttpStatus updateRole(String doerId, String role, JSONObject userIDs);
 }

@@ -6,6 +6,7 @@ import javax.xml.ws.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+@SuppressWarnings("SameReturnValue")
 @WebServiceClient(name = "MagfaSoapServer", targetNamespace = "http://impl.webservice.magfa.com/", wsdlLocation = "https://sms.magfa.com/api/soap/sms/v2/server?wsdl")
 public class MagfaSoapServer_Service
 		extends Service {

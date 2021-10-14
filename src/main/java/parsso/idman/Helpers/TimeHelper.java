@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 public class TimeHelper {
-	static ZoneId zoneId = ZoneId.of(Variables.ZONE);
+	static final ZoneId zoneId = ZoneId.of(Variables.ZONE);
 
 	public static List<Report> reportSetDate(List<Report> allReports) {
 		for (Report report : allReports) {

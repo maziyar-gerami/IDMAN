@@ -4,7 +4,7 @@ package parsso.idman.Utils.SMS.KaveNegar.models;
 import com.google.gson.JsonObject;
 
 public class StatusLocalMessageIdResult extends StatusResult {
-	long localId;
+	final long localId;
 
 	public StatusLocalMessageIdResult(JsonObject json) {
 		super(json);

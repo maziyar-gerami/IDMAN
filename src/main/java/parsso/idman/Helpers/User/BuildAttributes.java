@@ -26,7 +26,7 @@ public class BuildAttributes {
 	MongoTemplate mongoTemplate;
 	@Autowired
 	BuildDnUser buildDnUser;
-	ZoneId zoneId = ZoneId.of(Variables.ZONE);
+	final ZoneId zoneId = ZoneId.of(Variables.ZONE);
 	@Value("${default.user.password}")
 	private String defaultPassword;
 	@Autowired

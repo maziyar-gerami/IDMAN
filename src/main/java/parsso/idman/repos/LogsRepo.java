@@ -9,29 +9,28 @@ import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Logs.ReportMessage;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
 @Service
 
 public class LogsRepo{
 public interface AuditRepo {
-	Audit.ListAudits retrieve(String userId, String date, int p, int n) throws ParseException;
+	Audit.ListAudits retrieve(String userId, String date, int p, int n);
 }
 
 	public interface EventRepo {
 
-		Event.ListEvents retrieve(String userId, String date, int p, int n) throws ParseException;
+		Event.ListEvents retrieve(String userId, String date, int p, int n);
 
-		Event.ListEvents retrieveListSizeEvents(int page, int n) throws IOException, org.json.simple.parser.ParseException;
+		Event.ListEvents retrieveListSizeEvents(int page, int n);
 
 		List<Event> analyze(int skip, int limit);
 	}
 
 	public interface ReportRepo {
-		Report.ListReports retrieve(String userId, String date, int p, int n) throws ParseException;
+		Report.ListReports retrieve(String userId, String date, int p, int n);
 
-		List<ReportMessage> accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName) throws ParseException;
+		List<ReportMessage> accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName);
 	}
 
 	public interface TranscriptRepo {

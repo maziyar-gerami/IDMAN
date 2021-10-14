@@ -11,8 +11,8 @@ import java.util.Date;
 
 public class DateUtils {
 	public static Date MAX_DATE = new Date(Long.MAX_VALUE);
-	static ZoneId zoneId = ZoneId.of(Variables.ZONE);
-	OffsetDateTime offsetDateTime = OffsetDateTime.now();
+	static final ZoneId zoneId = ZoneId.of(Variables.ZONE);
+	final OffsetDateTime offsetDateTime = OffsetDateTime.now();
 	ZonedDateTime zonedDateTime = offsetDateTime.atZoneSameInstant(zoneId);
 
 	public static boolean isSameDay(Date date1, Date date2) {

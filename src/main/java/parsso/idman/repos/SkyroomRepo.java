@@ -17,11 +17,11 @@ public interface SkyroomRepo {
 
 	String GetRoomGuestUrl(int room_id) throws IOException, ParseException;
 
-	JSONObject Post(String json) throws IOException, ParseException;
+	JSONObject Post(String json) throws IOException;
 
 	String RandomPassMaker(int n);
 
-	int Register(String username, String password, String nickname) throws IOException;
+	int Register(String username, String password, String nickname);
 
 	boolean AddUserRooms(int user_id, int rooms) throws IOException, ParseException;
 

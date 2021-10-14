@@ -4,7 +4,7 @@ package parsso.idman.Utils.SMS.KaveNegar.excepctions;
 import parsso.idman.Utils.SMS.KaveNegar.enums.MetaData;
 
 public class ApiException extends BaseException {
-	int code;
+	final int code;
 
 	public ApiException(String message, int code) {
 		super(message);

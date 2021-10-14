@@ -80,7 +80,7 @@ public class UsersController {
     }
 
     @GetMapping("/api/users/u/{uid}")
-    public ResponseEntity<User> retrieveUser(@PathVariable("uid") String userId) throws IOException, ParseException {
+    public ResponseEntity<User> retrieveUser(@PathVariable("uid") String userId) {
         User user = userRepo.retrieveUsers(userId);
         if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(user, HttpStatus.OK);
@@ -211,7 +211,7 @@ public class UsersController {
 
 
     @GetMapping("/api/user")
-    public ResponseEntity<parsso.idman.Models.Users.User> retrieveUser(HttpServletRequest request) throws IOException, ParseException {
+    public ResponseEntity<parsso.idman.Models.Users.User> retrieveUser(HttpServletRequest request) {
 
         return new ResponseEntity<>(userRepo.retrieveUsers(request.getUserPrincipal().getName()), HttpStatus.OK);
     }
@@ -226,7 +226,7 @@ public class UsersController {
     }
 
     @GetMapping("/api/user/photo")
-    public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException, ParseException {
+    public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) {
         parsso.idman.Models.Users.User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
         return new ResponseEntity<>(userRepo.showProfilePic(response, user), HttpStatus.OK);
     }
@@ -251,7 +251,7 @@ public class UsersController {
     }
 
     @GetMapping("/api/user/password/request")
-    public ResponseEntity<Integer> requestSMS(HttpServletRequest request) throws IOException, ParseException {
+    public ResponseEntity<Integer> requestSMS(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
         parsso.idman.Models.Users.User user = userRepo.retrieveUsers(principal.getName());
         int status = userRepo.requestToken(user);
@@ -308,7 +308,7 @@ public class UsersController {
     public ResponseEntity<JSONObject> sendMessageUser(
             @PathVariable("uid") String uid,
             @PathVariable("cid") String cid,
-            @PathVariable("answer") String answer) throws IOException, ParseException {
+            @PathVariable("answer") String answer) {
         User user = userRepo.retrieveUsers(uid);
         if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
@@ -352,7 +352,7 @@ public class UsersController {
     }
 
     @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
-    public RedirectView resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token, RedirectAttributes attributes) throws IOException, ParseException {
+    public RedirectView resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token, RedirectAttributes attributes) {
         HttpStatus httpStatus = tokenClass.checkToken(uId, token);
 
         if (httpStatus == HttpStatus.OK) {
@@ -364,7 +364,7 @@ public class UsersController {
     }
 
     @GetMapping("/api/public/validateMessageToken/{uId}/{token}")
-    public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) throws IOException, ParseException {
+    public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) {
         return new ResponseEntity<>(tokenClass.checkToken(uId, token));
     }
 

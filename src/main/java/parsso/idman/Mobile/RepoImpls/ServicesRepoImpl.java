@@ -98,7 +98,7 @@ public class ServicesRepoImpl implements ServicesRepo {
 
 	}
 
-	public HttpStatus verifySMS(String userId, String token) throws IOException, ParseException {
+	public HttpStatus verifySMS(String userId, String token) {
 		// return OK or code 200: token is valid and time is ok
 		// return requestTimeOut or error 408: token is valid but time is not ok
 		// return forbidden or error code 403: token is not valid

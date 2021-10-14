@@ -38,7 +38,7 @@ public class GroupLicense {
 
 	public Groups groups(long serviceId) throws IOException, ParseException {
 
-		return new Groups(licensedGroups(serviceId), null);
+		return new Groups(licensedGroups(serviceId));
 	}
 
 	@Setter
@@ -51,9 +51,9 @@ public class GroupLicense {
 
 		List unLicensed;
 
-		Groups(List licensed, List unLicensed) {
+		Groups(List licensed) {
 			this.licensed = licensed;
-			this.unLicensed = unLicensed;
+			this.unLicensed = null;
 		}
 
 	}

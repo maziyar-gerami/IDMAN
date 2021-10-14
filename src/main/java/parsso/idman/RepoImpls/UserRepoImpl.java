@@ -59,7 +59,7 @@ import java.util.*;
 @Service
 public class UserRepoImpl implements UserRepo {
 	public ZoneId zoneId = ZoneId.of(Variables.ZONE);
-	String userExtraInfoCollection = Variables.col_usersExtraInfo;
+	final String userExtraInfoCollection = Variables.col_usersExtraInfo;
 	@Value("${user.profile.access}")
 	String profileAccessiblity;
 	@Value("${skyroom.api.key}")
@@ -118,7 +118,7 @@ public class UserRepoImpl implements UserRepo {
 	private EmailService emailService;
 
 	@Override
-	public JSONObject create(String doerID, User p) throws IOException, ParseException {
+	public JSONObject create(String doerID, User p) {
 
 		p.setUserId(p.getUserId().toLowerCase());
 
@@ -202,7 +202,7 @@ public class UserRepoImpl implements UserRepo {
 
 	@Override
 	@CachePut(cacheNames = "currentPic", key = "usid")
-	public User update(String doerID, String usid, User p) throws IOException, ParseException {
+	public User update(String doerID, String usid, User p) {
 
 		p.setUserId(usid.trim());
 		Name dn = buildDnUser.buildDn(p.getUserId());
@@ -287,7 +287,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public List<String> remove(String doer, JSONObject jsonObject) throws IOException, ParseException {
+	public List<String> remove(String doer, JSONObject jsonObject) {
 
 		List<User> people = new LinkedList<>();
 		List<String> undeletables = new LinkedList<>();
@@ -361,7 +361,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token) throws IOException, ParseException {
+	public HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token) {
 
 		User user = retrieveUsers(uId);
 
@@ -447,7 +447,7 @@ public class UserRepoImpl implements UserRepo {
 
 	@Override
 	@CachePut(cacheNames = "currentPic", key = "#file")
-	public HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException, ParseException {
+	public void uploadProfilePic(MultipartFile file, String name) throws IOException, ParseException {
 
 		String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
 
@@ -462,12 +462,10 @@ public class UserRepoImpl implements UserRepo {
 
 		userUpdate.setPhoto(s);
 		if (update(userUpdate.getUserId(), userUpdate.getUserId(), userUpdate) != null) {
-			if (oldPic.delete())
-				return HttpStatus.OK;
-			return HttpStatus.FORBIDDEN;
+			if (oldPic.delete()) {
+			}
 
 		}
-		return HttpStatus.BAD_REQUEST;
 	}
 
 	@Override
@@ -519,13 +517,7 @@ public class UserRepoImpl implements UserRepo {
 	public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
 		new Thread(() -> {
-			try {
-				systemRefresh.refreshLockedUsers();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+			systemRefresh.refreshLockedUsers();
 		}).start();
 
 		int skip = (page - 1) * nCount;
@@ -577,7 +569,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public User getName(String uid, String token) throws IOException, ParseException {
+	public User getName(String uid, String token) {
 		SearchControls searchControls = new SearchControls();
 		searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 		if (tokenClass.checkToken(uid, token) == HttpStatus.OK)
@@ -631,7 +623,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) throws IOException, ParseException {
+	public void updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) {
 
 		try {
 
@@ -653,13 +645,11 @@ public class UserRepoImpl implements UserRepo {
 			uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, doerID, Variables.MODEL_GROUP,
 					Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, old_ou, new_ou, ""));
 
-			return HttpStatus.OK;
 		} catch (Exception e) {
 			e.printStackTrace();
 			uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, doerID, Variables.MODEL_GROUP,
 					Variables.ACTION_UPDATE, Variables.RESULT_FAILED, new_ou, "writing to ldap"));
 
-			return HttpStatus.FORBIDDEN;
 		}
 	}
 
@@ -738,7 +728,7 @@ public class UserRepoImpl implements UserRepo {
 		return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("ou", groupId).encode(), searchControls, simpleUserAttributeMapper);
 	}
 
-	public HttpStatus removeCurrentEndTime(String uid) {
+	public void removeCurrentEndTime(String uid) {
 
 		Name dn = buildDnUser.buildDn(uid);
 
@@ -752,14 +742,11 @@ public class UserRepoImpl implements UserRepo {
 
 			try {
 				ldapTemplate.modifyAttributes(dn, modificationItems);
-				return HttpStatus.OK;
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				return HttpStatus.BAD_REQUEST;
 			}
 		} else {
-			return HttpStatus.BAD_REQUEST;
 		}
 	}
 
@@ -843,7 +830,7 @@ public class UserRepoImpl implements UserRepo {
 
 
 	@Override
-	public int sendEmail(String email, String uid, String cid, String answer) throws IOException, ParseException {
+	public int sendEmail(String email, String uid, String cid, String answer) {
 		if (uid != null)
 			return emailService.sendMail(email, uid, cid, answer);
 		return emailService.sendMail(email, cid, answer);
@@ -853,7 +840,7 @@ public class UserRepoImpl implements UserRepo {
 		return BASE_URL + /*"" +*/  "/api/public/validateEmailToken/" + userId + "/" + token;
 	}
 
-	public HttpStatus resetPassword(String userId, String pass, String token) throws IOException, ParseException {
+	public HttpStatus resetPassword(String userId, String pass, String token) {
 
 		User user;
 		try {

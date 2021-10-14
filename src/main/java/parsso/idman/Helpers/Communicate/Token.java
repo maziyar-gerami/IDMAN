@@ -20,12 +20,13 @@ import parsso.idman.repos.UserRepo;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
 @Service
 public class Token {
-	public static String collection = Variables.col_usersExtraInfo;
+	public static final String collection = Variables.col_usersExtraInfo;
 	@Autowired
 	BuildAttributes buildAttributes;
 	@Autowired
@@ -45,7 +46,7 @@ public class Token {
 	@Value("${sms.validation.digits}")
 	private int SMS_VALIDATION_DIGITS;
 
-	public HttpStatus checkToken(String userId, String token) throws IOException, ParseException {
+	public HttpStatus checkToken(String userId, String token) {
 		// return OK or code 200: token is valid and time is ok
 		// return requestTimeOut or error 408: token is valid but time is not ok
 		// return forbidden or error code 403: token is not valid
@@ -97,13 +98,13 @@ public class Token {
 				+ date.getTime();
 	}
 
-	public HttpStatus insertEmailToken(User user) {
+	public void insertEmailToken(User user) {
 
 		Query query = new Query(Criteria.where("userId").is(user.getUserId()));
 
 		String token = passwordResetToken(user.getUserId());
 		UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
-		usersExtraInfo.setResetPassToken(token);
+		Objects.requireNonNull(usersExtraInfo).setResetPassToken(token);
 
 		if (user.getUsersExtraInfo() != null)
 			user.getUsersExtraInfo().setResetPassToken(token);
@@ -114,10 +115,8 @@ public class Token {
 
 		try {
 			mongoTemplate.save(usersExtraInfo, collection);
-			return HttpStatus.OK;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return HttpStatus.BAD_REQUEST;
 		}
 
 	}
@@ -143,7 +142,7 @@ public class Token {
 
 		int token = createRandomNum();
 
-		usersExtraInfo.setResetPassToken(String.valueOf(token) + new Date().getTime());
+		Objects.requireNonNull(usersExtraInfo).setResetPassToken(String.valueOf(token) + new Date().getTime());
 		usersExtraInfo.setUserId(user.getUserId());
 
 		if (user.getUsersExtraInfo() != null)

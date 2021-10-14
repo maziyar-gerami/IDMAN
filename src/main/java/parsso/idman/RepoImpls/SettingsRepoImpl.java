@@ -3,7 +3,6 @@ package parsso.idman.RepoImpls;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
@@ -21,7 +20,7 @@ import java.util.List;
 public class SettingsRepoImpl implements SettingsRepo {
 	@Value("${interval.check.pass.hours}")
 	private static long intervalCheckPassTime;
-	int millis = 3600000;
+	final int millis = 3600000;
 	@Autowired
 	PasswordSettings passwordSettings;
 	@Autowired
@@ -39,27 +38,23 @@ public class SettingsRepoImpl implements SettingsRepo {
 	private long expirePwdMessageTime;
 
 	@Override
-	public HttpStatus emailNotification() {
+	public void emailNotification() {
 		try {
 			startNotification("email");
-			return HttpStatus.OK;
-		} catch (Exception e) {
-			return HttpStatus.FORBIDDEN;
-		}
+        } catch (Exception e) {
+        }
 	}
 
 	@Override
-	public HttpStatus instantMessageNotification() {
+	public void instantMessageNotification() {
 		try {
 			startNotification("instantMessage");
-			return HttpStatus.OK;
-		} catch (Exception e) {
-			return HttpStatus.FORBIDDEN;
-		}
+        } catch (Exception e) {
+        }
 	}
 
 
-	private HttpStatus startNotification(String method) {
+	private void startNotification(String method) {
 		long deadline = maxPwdLifetime * millis;
 		long messageTime = expirePwdMessageTime * millis;
 
@@ -79,12 +74,11 @@ public class SettingsRepoImpl implements SettingsRepo {
 				}
 			} catch (java.text.ParseException e) {
 				e.printStackTrace();
-				return HttpStatus.BAD_REQUEST;
+				return;
 			}
 
 		}
-		return HttpStatus.OK;
-	}
+    }
 
 	public void sendWarnExpireMessage(User user, String day) {
 

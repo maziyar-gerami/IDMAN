@@ -13,36 +13,37 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings("SameReturnValue")
 public interface UserRepo {
-	List<String> remove(String doerID, JSONObject jsonObject) throws IOException, ParseException;
+	List<String> remove(String doerID, JSONObject jsonObject);
 
-	HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token) throws IOException, ParseException;
+	HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token);
 
 	String showProfilePic(HttpServletResponse response, User user);
 
 	byte[] showProfilePic(User user);
 
-	HttpStatus uploadProfilePic(MultipartFile file, String name) throws IOException, ParseException;
+	void uploadProfilePic(MultipartFile file, String name) throws IOException, ParseException;
 
 	List<UsersExtraInfo> retrieveUsersMain(int page, int number);
 
 	int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus);
 
-	User getName(String uid, String token) throws IOException, ParseException;
+	User getName(String uid, String token);
 
 	List<User> retrieveUsersFull();
 
-	JSONObject create(String doerID, User p) throws IOException, ParseException;
+	JSONObject create(String doerID, User p);
 
 	JSONObject createUserImport(String doerId, User p) throws IOException, ParseException;
 
-	User update(String doer, String uid, User p) throws IOException, ParseException;
+	User update(String doer, String uid, User p);
 
 	List<User> getUsersOfOu(String ou);
 
-	HttpStatus updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) throws IOException, ParseException;
+	void updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou);
 
-	User retrieveUsers(String userId) throws IOException, ParseException;
+	User retrieveUsers(String userId);
 
 	User retrieveUsersWithLicensed(String userId) throws IOException, ParseException;
 
@@ -52,9 +53,9 @@ public interface UserRepo {
 
 	ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus);
 
-	int sendEmail(String email, String uid, String cid, String answer) throws IOException, ParseException;
+	int sendEmail(String email, String uid, String cid, String answer);
 
-	HttpStatus resetPassword(String userId, String oldPass, String token) throws IOException, ParseException;
+	HttpStatus resetPassword(String userId, String oldPass, String token);
 
 	String createUrl(String userId, String token);
 

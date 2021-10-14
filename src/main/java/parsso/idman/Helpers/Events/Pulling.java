@@ -15,11 +15,12 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings("SameReturnValue")
 @Service
 public class Pulling {
-	LogsRepo.EventRepo eventRepo;
-	ServiceRepo serviceRepo;
-	MongoTemplate mongoTemplate;
+	final LogsRepo.EventRepo eventRepo;
+	final ServiceRepo serviceRepo;
+	final MongoTemplate mongoTemplate;
 
 	@Autowired
 	public Pulling(LogsRepo.EventRepo eventRepo, ServiceRepo serviceRepo, MongoTemplate mongoTemplate){

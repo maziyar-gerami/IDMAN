@@ -18,11 +18,12 @@ import parsso.idman.repos.RolesRepo;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class RoleRepoImpl implements RolesRepo {
 	final String collection = Variables.col_usersExtraInfo;
-	String model = "Role";
+	final String model = "Role";
 	@Autowired
 	UniformLogger uniformLogger;
 	@Autowired
@@ -35,14 +36,14 @@ public class RoleRepoImpl implements RolesRepo {
 	}
 
 	@Override
-	public HttpStatus updateRole(String doerID, String role, JSONObject users) throws IOException, ParseException {
+	public HttpStatus updateRole(String doerID, String role, JSONObject users) {
 		int i = 0;
 		List<String> userIDs = (List<String>) users.get("names");
 		for (String userId : userIDs) {
 			try {
 				Query query = new Query(Criteria.where("userId").is(userId));
 				UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
-				String oldRole = usersExtraInfo.getRole();
+				String oldRole = Objects.requireNonNull(usersExtraInfo).getRole();
 				usersExtraInfo.setRole(role);
 				mongoTemplate.save(usersExtraInfo, collection);
 				uniformLogger.info(doerID, new ReportMessage(model, userId, "", "change", Variables.RESULT_SUCCESS,

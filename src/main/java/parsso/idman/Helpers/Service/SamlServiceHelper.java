@@ -70,7 +70,7 @@ public class SamlServiceHelper {
 				jsonObject = new JSONObject((Map) jo.get("attributeReleasePolicy"));
 
 			AttributeReleasePolicy attributeReleasePolicy = new AttributeReleasePolicy();
-			attributeReleasePolicy.setAtClass((String) jsonObject.get("@class"));
+			attributeReleasePolicy.setAtClass((String) Objects.requireNonNull(jsonObject).get("@class"));
 			attributeReleasePolicy.setAuthorizedToReleaseAuthenticationAttributes((boolean) jsonObject.get("authorizedToReleaseAuthenticationAttributes"));
 			attributeReleasePolicy.setAuthorizedToReleaseCredentialPassword((Boolean) jsonObject.get("authorizedToReleaseCredentialPassword"));
 			try {
@@ -130,7 +130,7 @@ public class SamlServiceHelper {
 			else if (jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
 				jsonObject = new JSONObject((Map) jo.get("multifactorPolicy"));
 
-			if (jsonObject.get("multifactorAuthenticationProviders") != null) {
+			if (Objects.requireNonNull(jsonObject).get("multifactorAuthenticationProviders") != null) {
 
 				MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
 
@@ -153,7 +153,7 @@ public class SamlServiceHelper {
 
 				String temp0 = (String) arrayList.get(0);
 
-				List contacts = new LinkedList<Contact>();
+				List<Contact> contacts = new LinkedList<>();
 
                 ArrayList temp1 = (ArrayList) arrayList.get(1);
                 for (Object o : temp1) {
@@ -169,7 +169,7 @@ public class SamlServiceHelper {
                         jsonObject1 = new JSONObject((Map) o);
 
                     Contact contact = new Contact();
-                    if (jsonObject1.get("name") != null) contact.setName(jsonObject1.get("name").toString());
+                    if (Objects.requireNonNull(jsonObject1).get("name") != null) contact.setName(jsonObject1.get("name").toString());
 
                     if (jsonObject1.get("email") != null) {
                         contact.setEmail((String) jsonObject1.get("email"));
@@ -193,7 +193,7 @@ public class SamlServiceHelper {
 		return service;
 	}
 
-	public long create(String doerID, JSONObject jo) throws IOException, ParseException {
+	public long create(String doerID, JSONObject jo) {
 		SamlService service = buildSamlService(jo);
 		service.setId(new Date().getTime());
 		String json = null;
@@ -233,13 +233,13 @@ public class SamlServiceHelper {
                     IPaddresses.add(machine.getHostAddress());
 
             file = new FileWriter(path + filePath + ".json");
-            file.write(json);
+            file.write(Objects.requireNonNull(json));
             file.close();
 
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                     "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
             return service.getId();
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                     "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
@@ -276,7 +276,7 @@ public class SamlServiceHelper {
 			String filePath = s1 + "-" + service.getId();
 
 			file = new FileWriter(path + filePath + ".json");
-			file.write(json);
+			file.write(Objects.requireNonNull(json));
 			file.close();
 			uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "", Variables.ACTION_UPDATE
 					, Variables.RESULT_SUCCESS, oldService, service, ""));

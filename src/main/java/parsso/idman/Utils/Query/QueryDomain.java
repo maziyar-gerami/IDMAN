@@ -14,7 +14,7 @@ import java.net.UnknownHostException;
 public class QueryDomain {
 	@Autowired
 	MongoTemplate mongoTemplate;
-	String collection = "IDMAN_DNS";
+	final String collection = "IDMAN_DNS";
 
 	private static String ipToDomain(String ip) throws UnknownHostException {
 

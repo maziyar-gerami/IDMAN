@@ -10,11 +10,9 @@ import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.TimeHelper;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Logs.Event;
-import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.other.Time;
 import parsso.idman.repos.LogsRepo;
 
-import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -25,7 +23,7 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
 	final MongoTemplate mongoTemplate;
 
 	@Override
-	public Event.ListEvents retrieve(String userId, String date, int p, int n) throws ParseException {
+	public Event.ListEvents retrieve(String userId, String date, int p, int n) {
 		Query query = new Query();
 		if (!userId.equals(""))
 			query.addCriteria(Criteria.where("principalId").is(userId));

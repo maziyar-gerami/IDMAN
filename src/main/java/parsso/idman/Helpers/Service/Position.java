@@ -12,12 +12,14 @@ import parsso.idman.Models.Services.ServiceType.MicroService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
+@SuppressWarnings("SameReturnValue")
 @Service
 public class Position {
 	@Autowired
 	MongoTemplate mongoTemplate;
-	String collection = Variables.col_servicesExtraInfo;
+	final String collection = Variables.col_servicesExtraInfo;
 
 	public int lastPosition() {
 		List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
@@ -33,7 +35,7 @@ public class Position {
 	public HttpStatus increase(String id) {
 		Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
 		MicroService ms = mongoTemplate.findOne(query, MicroService.class, collection);
-		int position = ms.getPosition();
+		int position = Objects.requireNonNull(ms).getPosition();
 		List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
 		if (position != microservices.size()) {
 			MicroService ms1 = searchByPosition(microservices, position + 1);
@@ -50,7 +52,7 @@ public class Position {
 	public HttpStatus decrease(String id) {
 		Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
 		MicroService ms = mongoTemplate.findOne(query, MicroService.class, collection);
-		int position = ms.getPosition();
+		int position = Objects.requireNonNull(ms).getPosition();
 		List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
 		if (position != 1) {
 			MicroService ms1 = searchByPosition(microservices, position);
@@ -72,7 +74,7 @@ public class Position {
 		return null;
 	}
 
-	public HttpStatus delete(int position) {
+	public void delete(int position) {
 		List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);
 		Collections.sort(microservices);
 		Collections.reverse(microservices);
@@ -82,8 +84,6 @@ public class Position {
 			mongoTemplate.save(microservices.get(i), collection);
 
 		}
-
-		return HttpStatus.OK;
 
 	}
 }

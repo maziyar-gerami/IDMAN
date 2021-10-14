@@ -32,6 +32,7 @@ import javax.naming.directory.SearchControls;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -53,12 +54,12 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 	@Autowired
 	DashboardData dashboardData;
 	String model = "Refresh";
-	String userExtraInfoCollection = Variables.col_usersExtraInfo;
+	final String userExtraInfoCollection = Variables.col_usersExtraInfo;
 	@Value("${spring.ldap.base.dn}")
 	private String BASE_DN;
 
 	@Override
-	public HttpStatus userRefresh(String doer) throws IOException, ParseException {
+	public HttpStatus userRefresh(String doer) {
 
 		SearchControls searchControls = new SearchControls();
 		searchControls.setReturningAttributes(new String[]{"*", "+"});
@@ -100,7 +101,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
 				} else {
 
-					userExtraInfo.setUserId(user.getUserId());
+					Objects.requireNonNull(userExtraInfo).setUserId(user.getUserId());
 					userExtraInfo = new UsersExtraInfo();
 					userExtraInfo.setQrToken(UUID.randomUUID().toString());
 				}
@@ -171,7 +172,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 	}
 
 	@Override
-	public HttpStatus captchaRefresh(String doer) throws IOException, ParseException {
+	public HttpStatus captchaRefresh(String doer) {
 
 		uniformLogger.info(doer, new ReportMessage(Variables.MODEL_CAPTCHA, "", "", Variables.ACTION_REFRESH, Variables.RESULT_STARTED, ""));
         mongoTemplate.getCollection(Variables.col_captchas);
@@ -251,7 +252,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 	}
 
 	@Override
-	public HttpStatus refreshLockedUsers() throws IOException, ParseException {
+	public void refreshLockedUsers() {
 
 		SearchControls searchControls = new SearchControls();
 		searchControls.setReturningAttributes(new String[]{"*", "+"});
@@ -270,7 +271,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 		for (User user : users) {
 			Query query = new Query(Criteria.where("userId").is(user.getUserId()));
 			UsersExtraInfo simpleUser = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
-			if (!simpleUser.getStatus().equalsIgnoreCase("lock")) {
+			if (!Objects.requireNonNull(simpleUser).getStatus().equalsIgnoreCase("lock")) {
 				simpleUser.setStatus("lock");
 
 				uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_LOCK, "", ""));
@@ -299,6 +300,5 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
 		}
 
-		return HttpStatus.OK;
 	}
 }
