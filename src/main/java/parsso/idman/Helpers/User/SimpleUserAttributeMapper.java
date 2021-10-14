@@ -28,7 +28,7 @@ public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInf
 		for (int i = 0; i < nGroups; i++) ls.add(attributes.get("ou").get(i).toString());
 
 		if (null != attributes.get("pwdAccountLockedTime"))
-			if (attributes.get("pwdAccountLockedTime").get().toString().equals("40400404040404.950Z"))
+			if (attributes.get("pwdAccountLockedTime").get().toString().equals("00010101000000Z"))
 				user.setStatus("disable");
 			else
 				user.setStatus("lock");

@@ -69,7 +69,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
 		}
 		if (null != attributes.get("pwdAccountLockedTime")) {
 
-			if (attributes.get("pwdAccountLockedTime").get().toString().equals("40400404040404.950Z")) {
+			if (attributes.get("pwdAccountLockedTime").get().toString().equals("00010101000000Z")) {
 				user.setEnabled(false);
 				user.setLocked(false);
 				user.setStatus("disable");

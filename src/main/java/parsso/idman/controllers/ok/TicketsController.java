@@ -33,8 +33,6 @@ public class TicketsController {
 		this.ticketRepo = ticketRepo;
 	}
 
-	//************************************* APIs ****************************************
-
 	@PostMapping("/api/user/ticket")
 	public ResponseEntity<HttpStatus> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request) throws IOException, ParseException {
 		return new ResponseEntity<>(ticketRepo.sendTicket(ticket, request.getUserPrincipal().getName().toLowerCase()));

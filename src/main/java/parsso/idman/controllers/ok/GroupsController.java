@@ -6,6 +6,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.Groups.Group;
 import parsso.idman.Models.Users.User;
@@ -67,25 +68,19 @@ public class GroupsController {
 	}
 
 	@PutMapping("/password/expire")
-	public ResponseEntity expireUsersGroupPassword(HttpServletRequest request,
+	public ResponseEntity<String> expireUsersGroupPassword(HttpServletRequest request,
 												   @RequestBody JSONObject jsonObject,
 												   @RequestParam(value = "id", defaultValue = "")String id) throws IOException, ParseException {
 
 		String userId = request.getUserPrincipal().getName();
-		List<String> preventedUsers = userRepo.expirePassword(userId, jsonObject);
 
-		switch ("") {
-			case "id":
-				if (preventedUsers == null)
-					return expirePassword(userId, jsonObject);
-				else
-					return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
-			default:
+		if(!id.equals(""))
+				return new ResponseEntity(userRepo.expirePassword(userId, jsonObject), HttpStatus.OK);
+			else
 				return expireUsersSpecGroupPassword(request, id);
-		}
 
 	}
-	private ResponseEntity expirePassword(String name, JSONObject jsonObject) throws IOException, ParseException {
+	private ResponseEntity<String> expirePassword(String name, JSONObject jsonObject) throws IOException, ParseException {
 
 		List<String> preventedUsers = userRepo.expirePassword(name, jsonObject);
 
@@ -94,10 +89,10 @@ public class GroupsController {
 			else if (preventedUsers.size() == 0)
 				return new ResponseEntity<>(HttpStatus.OK);
 			else
-				return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
+				return new ResponseEntity<>((MultiValueMap<String, String>) preventedUsers, HttpStatus.PARTIAL_CONTENT);
 	}
 
-	public ResponseEntity expireUsersSpecGroupPassword(HttpServletRequest request, String gid) throws IOException, ParseException {
+	public ResponseEntity<String> expireUsersSpecGroupPassword(HttpServletRequest request, String gid) throws IOException, ParseException {
 
 		ArrayList<String> temp = new ArrayList<>();
 		JSONObject jsonObject = new JSONObject();

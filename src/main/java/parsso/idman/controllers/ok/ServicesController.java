@@ -1,4 +1,4 @@
-package parsso.idman.controllers;
+package parsso.idman.controllers.ok;
 
 
 import org.apache.commons.io.IOUtils;
@@ -19,7 +19,6 @@ import parsso.idman.Repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.annotation.XmlElement;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -39,16 +38,9 @@ public class ServicesController {
 		this.userRepo = userRepo;
 	}
 
-
-
 	@GetMapping("/api/services/user")
 	public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
 		return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
-	}
-
-	@GetMapping("/api/services/full")
-	public ResponseEntity<List<Service>> listServicesFull() throws IOException, ParseException {
-		return new ResponseEntity<>(serviceRepo.listServicesFull(), HttpStatus.OK);
 	}
 
 	@GetMapping("/api/services/main")
@@ -120,7 +112,7 @@ public class ServicesController {
 	public @ResponseBody
 	Object getMetaDataFile(@PathVariable("file") String file) throws IOException {
 
-		FileInputStream in = new FileInputStream(new File(metadataPath + file));
+		FileInputStream in = new FileInputStream(metadataPath + file);
 
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(new MediaType("application", "xml"));

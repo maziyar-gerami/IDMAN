@@ -17,13 +17,13 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/refresh")
 public class RefreshController {
-	final
-	SystemRefresh refresh;
+	final SystemRefresh refresh;
 
 	public RefreshController(SystemRefresh refresh) {
 		this.refresh = refresh;
 	}
 
+	@GetMapping
 	public HttpEntity<HttpStatus> all(HttpServletRequest request,@RequestParam(name = "type", defaultValue ="" ) String type) throws IOException, ParseException {
 		switch (type){
 			case "service":

@@ -267,7 +267,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 		AndFilter andFilter = new AndFilter();
 
 		andFilter.and(new PresentFilter("pwdAccountLockedTime"));
-		andFilter.and(new NotFilter(new EqualsFilter("pwdAccountLockedTime", "40400404040404.950Z")));
+		andFilter.and(new NotFilter(new EqualsFilter("pwdAccountLockedTime", "00010101000000Z")));
 
 		List<User> users = new LinkedList<>();
 		try {

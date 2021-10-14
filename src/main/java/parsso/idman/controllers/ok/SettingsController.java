@@ -1,4 +1,4 @@
-package parsso.idman.controllers;
+package parsso.idman.controllers.ok;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,34 +6,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
-import parsso.idman.Models.Logs.Setting;
 import parsso.idman.Repos.settings.SettingsRepo;
-import parsso.idman.Repos.UserRepo;
-
-import java.io.IOException;
-import java.util.List;
 
 import static java.lang.Thread.sleep;
 
 @RestController
+@RequestMapping("/api/settings")
 public class SettingsController {
 	final int millis = 3600000;
 	private final SettingsRepo settingsRepo;
 	@Value("${interval.check.pass.hours}")
 	private long intervalCheckPassTime;
 
+
+	@Autowired
 	public SettingsController(SettingsRepo settingsRepo) {
 		this.settingsRepo = settingsRepo;
 	}
 
-	@Autowired
-	public SettingsController(UserRepo userRepo, PasswordSettings passwordSettings, SettingsRepo settingsRepo) {
-		this.settingsRepo = settingsRepo;
-	}
-
-	@GetMapping("/api/settings/notification/email")
+	@GetMapping("/notification/email")
 	public ResponseEntity<HttpStatus> enableEmailNotification() {
 
 		Runnable runnable = () -> {
@@ -72,7 +65,7 @@ public class SettingsController {
 	}
 
 	@SuppressWarnings("BusyWait")
-	@GetMapping("/api/settings/notification/message")
+	@GetMapping("/notification/message")
 	public ResponseEntity<String> enableMessageNotification() {
 
 		Runnable runnable = () -> {
@@ -108,10 +101,4 @@ public class SettingsController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@GetMapping("/api/settings/switches")
-	public ResponseEntity<List<Setting>> listSwitches() throws IOException {
-
-		return new ResponseEntity<>(settingsRepo.retrieveTFSetting(), HttpStatus.OK);
-
-	}
 }
