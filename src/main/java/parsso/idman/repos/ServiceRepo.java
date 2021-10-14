@@ -16,21 +16,21 @@ import java.util.List;
 
 @SuppressWarnings("SameReturnValue")
 public interface ServiceRepo {
-	List<MicroService> listUserServices(User user) throws IOException, ParseException;
+	List<MicroService> listUserServices(User user);
 
 	List<Service> listServicesFull();
 
-	List<Service> listServicesWithGroups(String ou) throws IOException, ParseException;
+	List<Service> listServicesWithGroups(String ou);
 
 	List<MicroService> listServicesMain();
 
-	Service retrieveService(long id) throws IOException, ParseException;
+	Service retrieveService(long id);
 
 	LinkedList<String> deleteServices(String doerID, JSONObject files);
 
 	String uploadMetadata(MultipartFile file);
 
-	void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException, ParseException;
+	void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException;
 
 	HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
 

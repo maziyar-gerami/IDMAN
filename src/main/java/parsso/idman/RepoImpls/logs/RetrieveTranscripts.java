@@ -47,7 +47,7 @@ public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 	}
 
 	@Override
-	public License servicesOfGroup(String ouID) throws IOException, ParseException {
+	public License servicesOfGroup(String ouID) {
 		List<MicroService> licensed = new LinkedList<>();
 
 		List<Service> allServices = serviceRepo.listServicesFull();
@@ -63,7 +63,7 @@ public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 	}
 
 	@Override
-	public License servicesOfUser(String userId) throws IOException, ParseException {
+	public License servicesOfUser(String userId) {
 		List<MicroService> licensed = new LinkedList<>();
 		List<MicroService> unLicensed = new LinkedList<>();
 

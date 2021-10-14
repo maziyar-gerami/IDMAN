@@ -186,7 +186,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 	}
 
 	@Override
-	public HttpStatus serivceRefresh(String doer) throws IOException, ParseException {
+	public HttpStatus serivceRefresh(String doer) {
 
         mongoTemplate.getCollection(Variables.col_servicesExtraInfo);
         int i = 1;

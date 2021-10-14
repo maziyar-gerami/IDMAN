@@ -130,7 +130,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return 0;
 	}
 
-	public String CreateLoginUrl(int room_id, String user_id, String nickname) throws IOException, ParseException {
+	public String CreateLoginUrl(int room_id, String user_id, String nickname) throws IOException {
 		JSONObject root = new JSONObject();
 		root.put("action", "createLoginUrl");
 		JSONObject params = new JSONObject();
@@ -154,7 +154,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return "error";
 	}
 
-	public int CreateRoom(String name) throws IOException, ParseException {
+	public int CreateRoom(String name) throws IOException {
 		JSONObject root = new JSONObject();
 		root.put("action", "createRoom");
 		JSONObject params = new JSONObject();
@@ -171,7 +171,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return 0;
 	}
 
-	public int GetRoomId(String name) throws IOException, ParseException {
+	public int GetRoomId(String name) throws IOException {
 		JSONObject root = new JSONObject();
 		root.put("action", "getRoom");
 		JSONObject params = new JSONObject();
@@ -188,7 +188,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return 0;
 	}
 
-	public String GetRoomGuestUrl(int room_id) throws IOException, ParseException {
+	public String GetRoomGuestUrl(int room_id) throws IOException {
 		if (skyroomEnable.equalsIgnoreCase("true")) {
 			JSONObject root = new JSONObject();
 			root.put("action", "getRoomUrl");
@@ -210,7 +210,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 		return "error";
 	}
 
-	public boolean AddUserRooms(int user_id, int rooms) throws IOException, ParseException {
+	public boolean AddUserRooms(int user_id, int rooms) throws IOException {
 		JSONObject root = new JSONObject();
 		root.put("action", "addUserRooms");
 		JSONObject params = new JSONObject();

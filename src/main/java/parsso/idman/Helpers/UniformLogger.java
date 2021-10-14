@@ -82,14 +82,8 @@ public class UniformLogger {
 
 
 		if (reportMessage.getUsersGroups() != null) {
-			try {
-				reportMessage.setInstanceName(serviceRepo.retrieveService(Long.parseLong(reportMessage.getInstance().toString())).getName());
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			for (String s : (List<String>) reportMessage.getUsersGroups().getUsers().getAdd())
+            reportMessage.setInstanceName(serviceRepo.retrieveService(Long.parseLong(reportMessage.getInstance().toString())).getName());
+            for (String s : (List<String>) reportMessage.getUsersGroups().getUsers().getAdd())
 				reportMessageList.add(new ReportMessage(Variables.MODEL_USER, s, Variables.ACCESS_ADD, reportMessage));
 
 			for (String s : (List<String>) reportMessage.getUsersGroups().getUsers().getRemove())

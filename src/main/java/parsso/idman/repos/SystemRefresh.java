@@ -12,7 +12,7 @@ public interface SystemRefresh {
 
 	HttpStatus captchaRefresh(String doer);
 
-	HttpStatus serivceRefresh(String doer) throws IOException, ParseException;
+	HttpStatus serivceRefresh(String doer);
 
 	HttpStatus all(String doer) throws IOException, ParseException;
 

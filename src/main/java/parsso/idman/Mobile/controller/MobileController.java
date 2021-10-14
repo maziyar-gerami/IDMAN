@@ -73,7 +73,7 @@ public class MobileController {
 	@SuppressWarnings("unchecked")
 	@PostMapping("/api/mobile/active")
 	public @ResponseBody
-	ResponseEntity<JSONObject> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) throws IOException, org.json.simple.parser.ParseException {
+	ResponseEntity<JSONObject> active(@RequestParam("uid") String uid, @RequestParam("smsCode") String smsCode, @RequestParam("qrToken") String QrToken) {
 		User user = userRepo.retrieveUsers(uid);
 
 		JSONObject jsonObject = new JSONObject();

@@ -29,14 +29,14 @@ public class Pulling {
 		this.mongoTemplate = mongoTemplate;
 	}
 
-	public String insert() throws  org.json.simple.parser.ParseException, IOException {
+	public String insert() throws IOException {
 		List<Event> mainEvents = eventRepo.analyze(0, 0);
 		List<parsso.idman.Models.Services.Service> services = serviceRepo.listServicesFull();
 		run(mainEvents, services);
 		return null;
 	}
 
-	public void update() throws org.json.simple.parser.ParseException, IOException {
+	public void update() throws IOException {
 		List<Event> secondaryEvents = eventRepo.analyze(0, 0);
 		List<parsso.idman.Models.Services.Service> services = serviceRepo.listServicesFull();
 		run(secondaryEvents, services);

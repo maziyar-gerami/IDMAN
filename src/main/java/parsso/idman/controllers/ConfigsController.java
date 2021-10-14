@@ -1,7 +1,6 @@
 package parsso.idman.controllers;
 
 
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +44,7 @@ public class ConfigsController {
     }
 
     @PutMapping("/api/configs")
-    public ResponseEntity<String> updateSettings(HttpServletRequest request, @RequestBody List<Setting> settings) throws IOException, ParseException {
+    public ResponseEntity<String> updateSettings(HttpServletRequest request, @RequestBody List<Setting> settings) {
         configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
         passwordSettings.update(settings);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -57,13 +56,12 @@ public class ConfigsController {
     }
 
     @GetMapping("/api/configs/restore/{cname}")
-    public ResponseEntity<HttpStatus> restoreSettings(HttpServletRequest request, @PathVariable String cname)
-            throws IOException, ParseException {
+    public ResponseEntity<HttpStatus> restoreSettings(HttpServletRequest request, @PathVariable String cname) {
         return new ResponseEntity<>(configRepo.restore(request.getUserPrincipal().getName(), cname));
     }
 
     @GetMapping("/api/configs/reset")
-    public ResponseEntity<HttpStatus> resetFactory(HttpServletRequest request) throws IOException, ParseException {
+    public ResponseEntity<HttpStatus> resetFactory(HttpServletRequest request) throws IOException {
         return new ResponseEntity<>(configRepo.factoryReset(request.getUserPrincipal().getName()));
     }
 }

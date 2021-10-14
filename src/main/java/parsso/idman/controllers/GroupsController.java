@@ -41,12 +41,12 @@ public class GroupsController {
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> bindLdapGroup(HttpServletRequest request, @RequestBody Group ou) throws IOException, ParseException {
+    public ResponseEntity<HttpStatus> bindLdapGroup(HttpServletRequest request, @RequestBody Group ou) {
         return new ResponseEntity<>(groupRepo.create(request.getUserPrincipal().getName(), ou));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request, @RequestBody Group ou, @PathVariable("id") String id) throws IOException, ParseException {
+    public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request, @RequestBody Group ou, @PathVariable("id") String id) {
 
         return new ResponseEntity<>(groupRepo.update(request.getUserPrincipal().getName(), id, ou));
     }
@@ -68,14 +68,14 @@ public class GroupsController {
     }
 
     @PutMapping("/password/expire")
-    public ResponseEntity<String> expireUsersGroupPassword(HttpServletRequest request,
-                                                           @RequestBody JSONObject jsonObject,
-                                                           @RequestParam(value = "id", defaultValue = "") String id) throws IOException, ParseException {
+    public ResponseEntity expireUsersGroupPassword(HttpServletRequest request,
+                                                   @RequestBody JSONObject jsonObject,
+                                                   @RequestParam(value = "id", defaultValue = "") String id) throws IOException, ParseException {
 
         String userId = request.getUserPrincipal().getName();
 
         if (!id.equals(""))
-            return new ResponseEntity(userRepo.expirePassword(userId, jsonObject), HttpStatus.OK);
+            return new ResponseEntity<List<String>>(userRepo.expirePassword(userId, jsonObject), HttpStatus.OK);
         else
             return expireUsersSpecGroupPassword(request, id);
 

@@ -44,7 +44,7 @@ public class ServicesController {
     }
 
     @GetMapping("/api/services/main")
-    public ResponseEntity<List<MicroService>> listServicesMain() throws IOException, ParseException {
+    public ResponseEntity<List<MicroService>> listServicesMain() {
         return new ResponseEntity<>(serviceRepo.listServicesMain(), HttpStatus.OK);
     }
 
@@ -54,7 +54,7 @@ public class ServicesController {
     }
 
     @DeleteMapping("/api/services")
-    public ResponseEntity<LinkedList<String>> deleteServices(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+    public ResponseEntity<LinkedList<String>> deleteServices(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
         LinkedList<String> ls = serviceRepo.deleteServices(request.getUserPrincipal().getName(), jsonObject);
         HttpStatus httpStatus = (ls == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 

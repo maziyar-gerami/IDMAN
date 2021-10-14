@@ -2,7 +2,6 @@ package parsso.idman.controllers;
 
 
 import net.minidev.json.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,6 @@ import parsso.idman.Models.Users.UserRole;
 import parsso.idman.repos.RolesRepo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -31,7 +29,7 @@ public class RolesController {
     }
 
     @PutMapping("/{role}")
-    public ResponseEntity<HttpStatus> updateTicket(HttpServletRequest request, @RequestBody JSONObject users, @PathVariable("role") String role) throws IOException, ParseException {
+    public ResponseEntity<HttpStatus> updateTicket(HttpServletRequest request, @RequestBody JSONObject users, @PathVariable("role") String role) {
         return new ResponseEntity<>(rolesRepo.updateRole(request.getUserPrincipal().getName(), role, users));
     }
 

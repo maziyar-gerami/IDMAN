@@ -27,7 +27,7 @@ public class ExcelAnalyzer {
 	@Autowired
 	UserRepo userRepo;
 
-	public List<String> excelSheetAnalyze(String doer, Sheet sheet, String ou, boolean hasHeader) throws IOException, ParseException {
+	public List<String> excelSheetAnalyze(String doer, Sheet sheet, String ou, boolean hasHeader) {
 
 		Iterator<Row> rowIterator = sheet.iterator();
 
@@ -67,7 +67,7 @@ public class ExcelAnalyzer {
 		return notExist;
 	}
 
-	public List csvSheetAnalyzer(String doer, BufferedReader sheet, String ou, boolean hasHeader) throws IOException, ParseException {
+	public List csvSheetAnalyzer(String doer, BufferedReader sheet, String ou, boolean hasHeader) throws IOException {
 
 		String row;
 		int i = 0;

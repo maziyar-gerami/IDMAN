@@ -68,7 +68,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	private String iconPath;
 
 	@Override
-	public List<MicroService> listUserServices(User user) throws IOException, ParseException {
+	public List<MicroService> listUserServices(User user) {
 
 		List<Service> services = listServicesFull();
 
@@ -162,7 +162,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public List<Service> listServicesWithGroups(String ou) throws IOException, ParseException {
+	public List<Service> listServicesWithGroups(String ou) {
 		List<Service> allServices = listServicesFull();
 
 		List<Service> relatedList = new LinkedList<>();
@@ -214,7 +214,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public Service retrieveService(long serviceId) throws IOException, ParseException {
+	public Service retrieveService(long serviceId) {
 
 		ExtraInfo extraInfo;
 
@@ -288,7 +288,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException, ParseException {
+	public void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException {
 
 		//Update ou
 		userRepo.updateUsersWithSpecificOU(doerID, oldOu, newOu);

@@ -287,10 +287,6 @@ public class GroupRepoImpl implements GroupRepo {
 				ioException.printStackTrace();
 				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "Group", "update", Variables.RESULT_FAILED, "ioException"));
 				return HttpStatus.BAD_REQUEST;
-			} catch (org.json.simple.parser.ParseException e) {
-				e.printStackTrace();
-				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "Group", "update", Variables.RESULT_FAILED, "parsing"));
-				return HttpStatus.BAD_REQUEST;
 			}
 
 		} else {

@@ -278,7 +278,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public JSONObject createUserImport(String doerID, User p) throws IOException, ParseException {
+	public JSONObject createUserImport(String doerID, User p) {
 
 		if (p.getUserPassword() == null)
 			p.setUserPassword(defaultPassword);
@@ -447,7 +447,7 @@ public class UserRepoImpl implements UserRepo {
 
 	@Override
 	@CachePut(cacheNames = "currentPic", key = "#file")
-	public void uploadProfilePic(MultipartFile file, String name) throws IOException, ParseException {
+	public void uploadProfilePic(MultipartFile file, String name) {
 
 		String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
 
@@ -800,7 +800,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) throws IOException, ParseException {
+	public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
 		val add = (List<String>) gu.get("add");
 		List<String> remove;
 		remove = (List<String>) gu.get("remove");
@@ -925,7 +925,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public List<String> expirePassword(String doer, JSONObject jsonObject) throws IOException, ParseException {
+	public List<String> expirePassword(String doer, JSONObject jsonObject) {
 
 		List<UsersExtraInfo> users = new LinkedList<>();
 

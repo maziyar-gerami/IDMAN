@@ -34,9 +34,9 @@ public interface AuditRepo {
 	}
 
 	public interface TranscriptRepo {
-		License servicesOfGroup(String ouid) throws IOException, org.json.simple.parser.ParseException;
+		License servicesOfGroup(String ouid);
 
-		License servicesOfUser(String userId) throws IOException, org.json.simple.parser.ParseException;
+		License servicesOfUser(String userId);
 
 	}
 }

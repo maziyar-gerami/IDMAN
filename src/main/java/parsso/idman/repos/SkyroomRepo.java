@@ -11,11 +11,11 @@ import java.io.IOException;
 public interface SkyroomRepo {
 	SkyRoom Run(User user) throws IOException, ParseException;
 
-	int CreateRoom(String name) throws IOException, ParseException;
+	int CreateRoom(String name) throws IOException;
 
-	int GetRoomId(String name) throws IOException, ParseException;
+	int GetRoomId(String name) throws IOException;
 
-	String GetRoomGuestUrl(int room_id) throws IOException, ParseException;
+	String GetRoomGuestUrl(int room_id) throws IOException;
 
 	JSONObject Post(String json) throws IOException;
 
@@ -23,7 +23,7 @@ public interface SkyroomRepo {
 
 	int Register(String username, String password, String nickname);
 
-	boolean AddUserRooms(int user_id, int rooms) throws IOException, ParseException;
+	boolean AddUserRooms(int user_id, int rooms) throws IOException;
 
-	String CreateLoginUrl(int room_id, String user_id, String nickname) throws IOException, ParseException;
+	String CreateLoginUrl(int room_id, String user_id, String nickname) throws IOException;
 }

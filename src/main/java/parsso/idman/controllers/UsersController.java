@@ -126,7 +126,7 @@ public class UsersController {
     }
 
     @PostMapping("/api/users")
-    public ResponseEntity<JSONObject> bindLdapUser(HttpServletRequest request, @RequestBody User user) throws IOException, ParseException {
+    public ResponseEntity<JSONObject> bindLdapUser(HttpServletRequest request, @RequestBody User user) {
         JSONObject jsonObject = userRepo.create(request.getUserPrincipal().getName(), user);
 
         if (jsonObject == null || jsonObject.size() == 0)
@@ -136,7 +136,7 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/u/{uId}")
-    public ResponseEntity<String> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) throws IOException, ParseException {
+    public ResponseEntity<String> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) {
 
         User userResult = userRepo.update(request.getUserPrincipal().getName(), uid, user);
         return new ResponseEntity<>((userResult == null ? HttpStatus.FORBIDDEN : HttpStatus.OK));
@@ -144,7 +144,7 @@ public class UsersController {
     }
 
     @DeleteMapping("/api/users")
-    public ResponseEntity<List<String>> unbindAllLdapUser(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+    public ResponseEntity<List<String>> unbindAllLdapUser(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
         Principal principal = request.getUserPrincipal();
         List<String> names = userRepo.remove(principal.getName(), jsonObject);
         if (names.size() == 0)
@@ -156,7 +156,7 @@ public class UsersController {
     @PutMapping("/api/users/operation")
     public ResponseEntity<HttpStatus> operation(HttpServletRequest request,
                                                 @RequestParam("id") String uid,
-                                                @RequestParam("operation") String operation) throws IOException, ParseException {
+                                                @RequestParam("operation") String operation) {
         switch (operation) {
             case "unlock":
                 return new ResponseEntity<>(operations.unlock(request.getUserPrincipal().getName(), uid));
@@ -172,7 +172,7 @@ public class UsersController {
     }
 
     @PostMapping("/api/users/sendMail")
-    public ResponseEntity<HttpStatus> sendMultipleMailByAdmin(@RequestBody JSONObject jsonObject) throws IOException, ParseException {
+    public ResponseEntity<HttpStatus> sendMultipleMailByAdmin(@RequestBody JSONObject jsonObject) {
         return new ResponseEntity<>(emailService.sendMail(jsonObject), HttpStatus.OK);
     }
 
@@ -217,7 +217,7 @@ public class UsersController {
     }
 
     @PutMapping("/api/user")
-    public ResponseEntity<HttpStatus> updateUser(HttpServletRequest request, @RequestBody parsso.idman.Models.Users.User user) throws IOException, ParseException {
+    public ResponseEntity<HttpStatus> updateUser(HttpServletRequest request, @RequestBody parsso.idman.Models.Users.User user) {
         String userId = request.getUserPrincipal().getName();
         parsso.idman.Models.Users.User userResult = userRepo.update(userId, userId, user);
         HttpStatus code = (userResult == null ? HttpStatus.FORBIDDEN : HttpStatus.OK);
@@ -239,7 +239,7 @@ public class UsersController {
 
     @PutMapping("/api/user/password")
     public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
-                                                     @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+                                                     @RequestBody JSONObject jsonObject) {
         Principal principal = request.getUserPrincipal();
         String oldPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
@@ -266,7 +266,7 @@ public class UsersController {
     public ResponseEntity<Integer> sendMail(@RequestParam("email") String email,
                                             @RequestParam(value = "uid", defaultValue = "") String uid,
                                             @RequestParam("cid") String cid,
-                                            @RequestParam("answer") String answer) throws IOException, ParseException {
+                                            @RequestParam("answer") String answer) {
         int time = uid.equals("") ? userRepo.sendEmail(email, null, cid, answer) : userRepo.sendEmail(email, uid, cid, answer);
         return getIntegerResponseEntity(time);
     }
@@ -286,7 +286,7 @@ public class UsersController {
     public ResponseEntity<JSONObject> sendMessage(@RequestParam("mobile") String mobile,
                                                   @RequestParam("cid") String cid,
                                                   @RequestParam(value = "uid", defaultValue = "") String uid,
-                                                  @RequestParam("answer") String answer) throws IOException, ParseException {
+                                                  @RequestParam("answer") String answer) {
 
         int time = uid.equals("") ? instantMessage.sendMessage(mobile, cid, answer) : instantMessage.sendMessage(mobile, uid, cid, answer);
 
@@ -329,7 +329,7 @@ public class UsersController {
 
     @PutMapping("/api/public/resetPass/{uid}/{token}")
     public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
-                                                     @PathVariable("uid") String uid) throws IOException, ParseException {
+                                                     @PathVariable("uid") String uid) {
         return new ResponseEntity<>(userRepo.resetPassword(uid, newPassword, token));
     }
 
@@ -344,7 +344,7 @@ public class UsersController {
     }
 
     @GetMapping("/api/public/getName/{uid}/{token}")
-    public ResponseEntity<User> getName(@PathVariable("uid") String uid, @PathVariable("token") String token) throws IOException, ParseException {
+    public ResponseEntity<User> getName(@PathVariable("uid") String uid, @PathVariable("token") String token) {
         User user = userRepo.getName(uid, token);
         HttpStatus httpStatus = (user != null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 

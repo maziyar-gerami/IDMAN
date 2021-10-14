@@ -23,7 +23,7 @@ public interface UserRepo {
 
 	byte[] showProfilePic(User user);
 
-	void uploadProfilePic(MultipartFile file, String name) throws IOException, ParseException;
+	void uploadProfilePic(MultipartFile file, String name);
 
 	List<UsersExtraInfo> retrieveUsersMain(int page, int number);
 
@@ -35,7 +35,7 @@ public interface UserRepo {
 
 	JSONObject create(String doerID, User p);
 
-	JSONObject createUserImport(String doerId, User p) throws IOException, ParseException;
+	JSONObject createUserImport(String doerId, User p);
 
 	User update(String doer, String uid, User p);
 
@@ -65,13 +65,13 @@ public interface UserRepo {
 
 	ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);
 
-	HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) throws IOException, ParseException;
+	HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu);
 
 	// --Commented out by Inspection (10/14/2021 9:10 PM):HttpStatus syncUsersDBs();
 
 	List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException;
 
-	List<String> expirePassword(String name, JSONObject jsonObject) throws IOException, ParseException;
+	List<String> expirePassword(String name, JSONObject jsonObject);
 
 	int retrieveUsersLDAPSize();
 }

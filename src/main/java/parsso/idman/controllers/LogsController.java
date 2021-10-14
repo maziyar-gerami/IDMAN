@@ -16,7 +16,6 @@ import parsso.idman.RepoImpls.logs.EventsRepoImpl;
 import parsso.idman.RepoImpls.logs.ReportsRepoImpl;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
 import java.util.List;
 
 
