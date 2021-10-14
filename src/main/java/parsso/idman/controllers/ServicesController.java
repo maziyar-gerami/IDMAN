@@ -26,104 +26,104 @@ import java.util.List;
 
 @Controller
 public class ServicesController {
-	private final UserRepo userRepo;
-	private final ServiceRepo serviceRepo;
-	@Value("${metadata.file.path}")
-	private String metadataPath;
+    private final UserRepo userRepo;
+    private final ServiceRepo serviceRepo;
+    @Value("${metadata.file.path}")
+    private String metadataPath;
 
 
-	@Autowired
-	public ServicesController(@Qualifier("userRepoImpl") UserRepo userRepo, @Qualifier("serviceRepoImpl") ServiceRepo serviceRepo) {
-		this.serviceRepo = serviceRepo;
-		this.userRepo = userRepo;
-	}
+    @Autowired
+    public ServicesController(@Qualifier("userRepoImpl") UserRepo userRepo, @Qualifier("serviceRepoImpl") ServiceRepo serviceRepo) {
+        this.serviceRepo = serviceRepo;
+        this.userRepo = userRepo;
+    }
 
-	@GetMapping("/api/services/user")
-	public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
-		return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
-	}
+    @GetMapping("/api/services/user")
+    public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
+        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
+    }
 
-	@GetMapping("/api/services/main")
-	public ResponseEntity<List<MicroService>> listServicesMain() throws IOException, ParseException {
-		return new ResponseEntity<>(serviceRepo.listServicesMain(), HttpStatus.OK);
-	}
+    @GetMapping("/api/services/main")
+    public ResponseEntity<List<MicroService>> listServicesMain() throws IOException, ParseException {
+        return new ResponseEntity<>(serviceRepo.listServicesMain(), HttpStatus.OK);
+    }
 
-	@GetMapping("/api/services/{id}")
-	public ResponseEntity<Service> retrieveService(@PathVariable("id") long serviceId) throws IOException, ParseException {
-		return new ResponseEntity<>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
-	}
+    @GetMapping("/api/services/{id}")
+    public ResponseEntity<Service> retrieveService(@PathVariable("id") long serviceId) throws IOException, ParseException {
+        return new ResponseEntity<>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
+    }
 
-	@DeleteMapping("/api/services")
-	public ResponseEntity<LinkedList<String>> deleteServices(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
-		LinkedList<String> ls = serviceRepo.deleteServices(request.getUserPrincipal().getName(), jsonObject);
-		HttpStatus httpStatus = (ls == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+    @DeleteMapping("/api/services")
+    public ResponseEntity<LinkedList<String>> deleteServices(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+        LinkedList<String> ls = serviceRepo.deleteServices(request.getUserPrincipal().getName(), jsonObject);
+        HttpStatus httpStatus = (ls == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 
-		return new ResponseEntity<>(ls, httpStatus);
-	}
+        return new ResponseEntity<>(ls, httpStatus);
+    }
 
-	@PostMapping("/api/services/{system}")
-	public ResponseEntity<String> createService(HttpServletRequest request, @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
+    @PostMapping("/api/services/{system}")
+    public ResponseEntity<String> createService(HttpServletRequest request, @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
 
-		return new ResponseEntity<>(serviceRepo.createService(request.getUserPrincipal().getName(), jsonObject, system));
-	}
+        return new ResponseEntity<>(serviceRepo.createService(request.getUserPrincipal().getName(), jsonObject, system));
+    }
 
-	@PutMapping("/api/service/{id}/{system}")
-	public ResponseEntity<String> updateService(HttpServletRequest request, @PathVariable("id") long id,
-	                                            @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
-		return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
-	}
+    @PutMapping("/api/service/{id}/{system}")
+    public ResponseEntity<String> updateService(HttpServletRequest request, @PathVariable("id") long id,
+                                                @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
+        return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
+    }
 
-	@GetMapping("/api/serviceAccess/{id}")
-	public ResponseEntity<HttpStatus> serviceAccess(@PathVariable("id") long id) {
-		return new ResponseEntity<>(serviceRepo.serviceAccess(id) ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
-	}
+    @GetMapping("/api/serviceAccess/{id}")
+    public ResponseEntity<HttpStatus> serviceAccess(@PathVariable("id") long id) {
+        return new ResponseEntity<>(serviceRepo.serviceAccess(id) ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+    }
 
-	@PostMapping("/api/services/metadata")
-	public ResponseEntity<String> uploadMetadata(@RequestParam("file") MultipartFile file) {
-		String result = serviceRepo.uploadMetadata(file);
-		if (result != null)
-			return new ResponseEntity<>(result, HttpStatus.OK);
-		else
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-	}
+    @PostMapping("/api/services/metadata")
+    public ResponseEntity<String> uploadMetadata(@RequestParam("file") MultipartFile file) {
+        String result = serviceRepo.uploadMetadata(file);
+        if (result != null)
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 
-	@PostMapping("/api/services/icon")
-	public ResponseEntity<String> uploadIcon(@RequestParam("file") MultipartFile file) {
-		String result = serviceRepo.uploadIcon(file);
-		if (result != null)
-			return new ResponseEntity<>(result, HttpStatus.OK);
-		else
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-	}
+    @PostMapping("/api/services/icon")
+    public ResponseEntity<String> uploadIcon(@RequestParam("file") MultipartFile file) {
+        String result = serviceRepo.uploadIcon(file);
+        if (result != null)
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 
-	@GetMapping("/api/services/position/{serviceId}")
-	public ResponseEntity<HttpStatus> increasePosition(@PathVariable("serviceId") String id, @RequestParam("value") int value) {
-		if (value == 1)
-			return new ResponseEntity<>(serviceRepo.increasePosition(id));
-		else if (value == -1)
-			return new ResponseEntity<>(serviceRepo.decreasePosition(id));
-		else
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-	}
+    @GetMapping("/api/services/position/{serviceId}")
+    public ResponseEntity<HttpStatus> increasePosition(@PathVariable("serviceId") String id, @RequestParam("value") int value) {
+        if (value == 1)
+            return new ResponseEntity<>(serviceRepo.increasePosition(id));
+        else if (value == -1)
+            return new ResponseEntity<>(serviceRepo.decreasePosition(id));
+        else
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    }
 
-	@XmlElement
-	@GetMapping(value = "/api/public/metadata/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
-	)
-	public @ResponseBody
-	Object getMetaDataFile(@PathVariable("file") String file) throws IOException {
+    @XmlElement
+    @GetMapping(value = "/api/public/metadata/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
+    )
+    public @ResponseBody
+    Object getMetaDataFile(@PathVariable("file") String file) throws IOException {
 
-		FileInputStream in = new FileInputStream(metadataPath + file);
+        FileInputStream in = new FileInputStream(metadataPath + file);
 
-		HttpHeaders header = new HttpHeaders();
-		header.setContentType(new MediaType("application", "xml"));
+        HttpHeaders header = new HttpHeaders();
+        header.setContentType(new MediaType("application", "xml"));
 
-		return new HttpEntity<>(IOUtils.toByteArray(in), header);
+        return new HttpEntity<>(IOUtils.toByteArray(in), header);
 
-	}
+    }
 
-	@GetMapping(value = "/api/public/icon/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	ResponseEntity<String> getIconFile(HttpServletResponse response, @PathVariable("file") String file) {
-		return new ResponseEntity<>(serviceRepo.showServicePic(response, file), HttpStatus.OK);
+    @GetMapping(value = "/api/public/icon/{file}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    ResponseEntity<String> getIconFile(HttpServletResponse response, @PathVariable("file") String file) {
+        return new ResponseEntity<>(serviceRepo.showServicePic(response, file), HttpStatus.OK);
 
-	}
+    }
 }

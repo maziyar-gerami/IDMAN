@@ -2,8 +2,8 @@ package parsso.idman.Utils.SMS.KaveNegar.utils;
 
 
 public class PairValue {
-	private String Key;
-	private String Value;
+	private final String Key;
+	private final String Value;
 
 	public PairValue(String Key, String Value) {
 		this.Key = Key;

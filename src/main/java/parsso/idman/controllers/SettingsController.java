@@ -15,90 +15,90 @@ import static java.lang.Thread.sleep;
 @RestController
 @RequestMapping("/api/settings")
 public class SettingsController {
-	final int millis = 3600000;
-	private final SettingsRepo settingsRepo;
-	@Value("${interval.check.pass.hours}")
-	private long intervalCheckPassTime;
+    final int millis = 3600000;
+    private final SettingsRepo settingsRepo;
+    @Value("${interval.check.pass.hours}")
+    private long intervalCheckPassTime;
 
 
-	@Autowired
-	public SettingsController(SettingsRepo settingsRepo) {
-		this.settingsRepo = settingsRepo;
-	}
+    @Autowired
+    public SettingsController(SettingsRepo settingsRepo) {
+        this.settingsRepo = settingsRepo;
+    }
 
-	@GetMapping("/notification/email")
-	public ResponseEntity<HttpStatus> enableEmailNotification() {
+    @GetMapping("/notification/email")
+    public ResponseEntity<HttpStatus> enableEmailNotification() {
 
-		Runnable runnable = () -> {
-			while (true) {
+        Runnable runnable = () -> {
+            while (true) {
 
-				settingsRepo.emailNotification();
-				try {
-					//noinspection BusyWait
-					sleep(intervalCheckPassTime * millis);
-				} catch (InterruptedException e) {
-					break;
-				}
+                settingsRepo.emailNotification();
+                try {
+                    //noinspection BusyWait
+                    sleep(intervalCheckPassTime * millis);
+                } catch (InterruptedException e) {
+                    break;
+                }
 
-			}
-		};
+            }
+        };
 
-		for (Thread t : Thread.getAllStackTraces().keySet()) {
-			if (t.getName().equals("thread-pulling-email-passExpire")) {
-				try {
-					t.interrupt();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return new ResponseEntity<>(HttpStatus.OK);
-			}
-		}
-		Thread thread = new Thread(runnable);
-		thread.setName("thread-pulling-email-passExpire");
+        for (Thread t : Thread.getAllStackTraces().keySet()) {
+            if (t.getName().equals("thread-pulling-email-passExpire")) {
+                try {
+                    t.interrupt();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+        }
+        Thread thread = new Thread(runnable);
+        thread.setName("thread-pulling-email-passExpire");
 
-		if (thread.isAlive())
-			thread.interrupt();
-		else
-			thread.start();
+        if (thread.isAlive())
+            thread.interrupt();
+        else
+            thread.start();
 
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-	@SuppressWarnings("BusyWait")
-	@GetMapping("/notification/message")
-	public ResponseEntity<String> enableMessageNotification() {
+    @SuppressWarnings("BusyWait")
+    @GetMapping("/notification/message")
+    public ResponseEntity<String> enableMessageNotification() {
 
-		Runnable runnable = () -> {
-			while (true) {
-				settingsRepo.instantMessageNotification();
-				try {
-					sleep(intervalCheckPassTime * millis);
-				} catch (InterruptedException e) {
-					break;
-				}
-			}
-		};
+        Runnable runnable = () -> {
+            while (true) {
+                settingsRepo.instantMessageNotification();
+                try {
+                    sleep(intervalCheckPassTime * millis);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        };
 
-		for (Thread t : Thread.getAllStackTraces().keySet()) {
-			if (t.getName().equals("thread-pulling-sms-passExpire")) {
-				try {
-					t.interrupt();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return new ResponseEntity<>(HttpStatus.OK);
-			}
-		}
+        for (Thread t : Thread.getAllStackTraces().keySet()) {
+            if (t.getName().equals("thread-pulling-sms-passExpire")) {
+                try {
+                    t.interrupt();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+        }
 
-		Thread thread = new Thread(runnable);
-		thread.setName("thread-pulling-sms-passExpire");
+        Thread thread = new Thread(runnable);
+        thread.setName("thread-pulling-sms-passExpire");
 
-		if (thread.isAlive()) {
-			thread.interrupt();
-		} else
-			thread.start();
+        if (thread.isAlive()) {
+            thread.interrupt();
+        } else
+            thread.start();
 
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }

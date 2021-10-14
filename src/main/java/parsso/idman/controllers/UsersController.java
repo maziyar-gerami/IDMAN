@@ -31,345 +31,331 @@ import java.util.List;
 
 @Controller
 public class UsersController {
-	final ImportUsers importUsers;
-	final Operations operations;
-	final EmailService emailService;
-	// default sequence of variables which can be changed using frontend
-	private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-	private final UserRepo userRepo;
-	private final UsersExcelView excelView;
-	private final Token tokenClass;
-	private final InstantMessage instantMessage;
+    final ImportUsers importUsers;
+    final Operations operations;
+    final EmailService emailService;
+    // default sequence of variables which can be changed using frontend
+    private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    private final UserRepo userRepo;
+    private final UsersExcelView excelView;
+    private final Token tokenClass;
+    private final InstantMessage instantMessage;
 
-	@Autowired
-	public UsersController(UserRepo userRepo, EmailService emailService, Operations operations, UsersExcelView excelView,
-						   ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage) {
-		this.userRepo = userRepo;
-		this.emailService = emailService;
-		this.operations = operations;
-		this.importUsers = importUsers;
-		this.excelView = excelView;
-		this.tokenClass = tokenClass;
-		this.instantMessage = instantMessage;
-	}
+    @Autowired
+    public UsersController(UserRepo userRepo, EmailService emailService, Operations operations, UsersExcelView excelView,
+                           ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage) {
+        this.userRepo = userRepo;
+        this.emailService = emailService;
+        this.operations = operations;
+        this.importUsers = importUsers;
+        this.excelView = excelView;
+        this.tokenClass = tokenClass;
+        this.instantMessage = instantMessage;
+    }
 
-	@RequestMapping("/api/users")
-	public class Admin{
+    @PutMapping("/api/users/password/expire")
+    public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
+                                                       @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+        Principal principal = request.getUserPrincipal();
+        List<String> preventedUsers = userRepo.expirePassword(principal.getName(), jsonObject);
 
-		@PutMapping("/password/expire")
-		public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
-														   @RequestBody JSONObject jsonObject) throws IOException, ParseException {
-			Principal principal = request.getUserPrincipal();
-			List<String> preventedUsers = userRepo.expirePassword(principal.getName(), jsonObject);
+        if (preventedUsers == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        else if (preventedUsers.size() == 0)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
 
-			if (preventedUsers == null)
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			else if (preventedUsers.size() == 0)
-				return new ResponseEntity<>(HttpStatus.OK);
-			else
-				return new ResponseEntity<>(preventedUsers, HttpStatus.PARTIAL_CONTENT);
+    }
 
-		}
+    @GetMapping("/api/users/u/{uid}")
+    public ResponseEntity<User> retrieveUser(@PathVariable("uid") String userId) throws IOException, ParseException {
+        User user = userRepo.retrieveUsers(userId);
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 
-		@GetMapping("/u/{uid}")
-		public ResponseEntity<User> retrieveUser(@PathVariable("uid") String userId) throws IOException, ParseException {
-			User user = userRepo.retrieveUsers(userId);
-			if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-			else return new ResponseEntity<>(user, HttpStatus.OK);
-		}
+    @GetMapping("/api/users/license/u/{uid}")
+    public ResponseEntity<User> retrieveUserLicense(@PathVariable("uid") String userId) throws IOException, ParseException {
+        User user = userRepo.retrieveUsersWithLicensed(userId);
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 
-		@GetMapping("/license/u/{uid}")
-		public ResponseEntity<User> retrieveUserLicense(@PathVariable("uid") String userId) throws IOException, ParseException {
-			User user = userRepo.retrieveUsersWithLicensed(userId);
-			if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-			else return new ResponseEntity<>(user, HttpStatus.OK);
-		}
+    @GetMapping
+    public ResponseEntity<List<UsersExtraInfo>> retrieveUsersMain() {
+        return new ResponseEntity<>(userRepo.retrieveUsersMain(-1, -1), HttpStatus.OK);
+    }
 
-		@GetMapping
-		public ResponseEntity<List<UsersExtraInfo>> retrieveUsersMain() {
-			return new ResponseEntity<>(userRepo.retrieveUsersMain(-1, -1), HttpStatus.OK);
-		}
-
-		@GetMapping("/{page}/{n}")
-		public ResponseEntity<ListUsers> retrieveUsersMain(@PathVariable("page") int page, @PathVariable("n") int n,
-														   @RequestParam(name = "sortType", defaultValue = "") String sortType,
-														   @RequestParam(name = "groupFilter", defaultValue = "") String groupFilter,
-														   @RequestParam(name = "searchUid", defaultValue = "") String searchUid,
-														   @RequestParam(name = "userStatus", defaultValue = "") String userStatus,
-														   @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName) {
-			return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName, userStatus), HttpStatus.OK);
-		}
+    @GetMapping("/api/users/{page}/{n}")
+    public ResponseEntity<ListUsers> retrieveUsersMain(@PathVariable("page") int page, @PathVariable("n") int n,
+                                                       @RequestParam(name = "sortType", defaultValue = "") String sortType,
+                                                       @RequestParam(name = "groupFilter", defaultValue = "") String groupFilter,
+                                                       @RequestParam(name = "searchUid", defaultValue = "") String searchUid,
+                                                       @RequestParam(name = "userStatus", defaultValue = "") String userStatus,
+                                                       @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName) {
+        return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName, userStatus), HttpStatus.OK);
+    }
 
 
-		@GetMapping("/group/{groupId}")
-		public ResponseEntity<ListUsers> retrieveUsersMainWithGroupId(@PathVariable(name = "groupId") String groupId,
-																	  @RequestParam(name = "page", defaultValue = "1") int page,
-																	  @RequestParam(name = "nRec", defaultValue = "90000") int nRec) {
-			ListUsers users = userRepo.retrieveUsersMainWithGroupId(groupId, page, nRec);
-			if (users == null) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			else return new ResponseEntity<>(users, HttpStatus.OK);
-		}
+    @GetMapping("/api/users/group/{groupId}")
+    public ResponseEntity<ListUsers> retrieveUsersMainWithGroupId(@PathVariable(name = "groupId") String groupId,
+                                                                  @RequestParam(name = "page", defaultValue = "1") int page,
+                                                                  @RequestParam(name = "nRec", defaultValue = "90000") int nRec) {
+        ListUsers users = userRepo.retrieveUsersMainWithGroupId(groupId, page, nRec);
+        if (users == null) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        else return new ResponseEntity<>(users, HttpStatus.OK);
+    }
 
-		@PutMapping("/group/{groupId}")
-		public ResponseEntity<HttpStatus> massUsersGroupUpdate(HttpServletRequest request,
-															   @RequestBody JSONObject gu,
-															   @PathVariable(name = "groupId") String groupId) throws IOException, ParseException {
-			return new ResponseEntity<>(userRepo.massUsersGroupUpdate(request.getUserPrincipal().getName(), groupId, gu));
-		}
+    @PutMapping("/api/users/group/{groupId}")
+    public ResponseEntity<HttpStatus> massUsersGroupUpdate(HttpServletRequest request,
+                                                           @RequestBody JSONObject gu,
+                                                           @PathVariable(name = "groupId") String groupId) throws IOException, ParseException {
+        return new ResponseEntity<>(userRepo.massUsersGroupUpdate(request.getUserPrincipal().getName(), groupId, gu));
+    }
 
-		@PostMapping
-		public ResponseEntity<JSONObject> bindLdapUser(HttpServletRequest request, @RequestBody User user) throws IOException, ParseException {
-			JSONObject jsonObject = userRepo.create(request.getUserPrincipal().getName(), user);
+    @PostMapping("/api/users")
+    public ResponseEntity<JSONObject> bindLdapUser(HttpServletRequest request, @RequestBody User user) throws IOException, ParseException {
+        JSONObject jsonObject = userRepo.create(request.getUserPrincipal().getName(), user);
 
-			if (jsonObject == null || jsonObject.size() == 0)
-				return new ResponseEntity<>(null, HttpStatus.OK);
-			else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
+        if (jsonObject == null || jsonObject.size() == 0)
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
 
-		}
+    }
 
-		@PutMapping("/u/{uId}")
-		public ResponseEntity<String> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) throws IOException, ParseException {
+    @PutMapping("/api/users/u/{uId}")
+    public ResponseEntity<String> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) throws IOException, ParseException {
 
-			User userResult = userRepo.update(request.getUserPrincipal().getName(), uid, user);
-			return new ResponseEntity<>((userResult == null ? HttpStatus.FORBIDDEN : HttpStatus.OK));
+        User userResult = userRepo.update(request.getUserPrincipal().getName(), uid, user);
+        return new ResponseEntity<>((userResult == null ? HttpStatus.FORBIDDEN : HttpStatus.OK));
 
-		}
+    }
 
-		@DeleteMapping
-		public ResponseEntity<List<String>> unbindAllLdapUser(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
-			Principal principal = request.getUserPrincipal();
-			List<String> names = userRepo.remove(principal.getName(), jsonObject);
-			if (names.size() == 0)
-				return new ResponseEntity<>(HttpStatus.OK);
-			else
-				return new ResponseEntity<>(names, HttpStatus.PARTIAL_CONTENT);
-		}
+    @DeleteMapping("/api/users")
+    public ResponseEntity<List<String>> unbindAllLdapUser(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+        Principal principal = request.getUserPrincipal();
+        List<String> names = userRepo.remove(principal.getName(), jsonObject);
+        if (names.size() == 0)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(names, HttpStatus.PARTIAL_CONTENT);
+    }
 
-		@PutMapping("/operation")
-		public ResponseEntity<HttpStatus> operation(HttpServletRequest request,
-													@RequestParam("id") String uid,
-													@RequestParam("operation") String operation) throws IOException, ParseException {
-			switch (operation){
-				case "unlock":
-					return new ResponseEntity<>(operations.unlock(request.getUserPrincipal().getName(), uid));
-				case "enable":
-					return new ResponseEntity<>(operations.enable(request.getUserPrincipal().getName(), uid));
-				case "disable":
-					return new ResponseEntity<>(operations.disable(request.getUserPrincipal().getName(), uid));
-				default:
-					return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    @PutMapping("/api/users/operation")
+    public ResponseEntity<HttpStatus> operation(HttpServletRequest request,
+                                                @RequestParam("id") String uid,
+                                                @RequestParam("operation") String operation) throws IOException, ParseException {
+        switch (operation) {
+            case "unlock":
+                return new ResponseEntity<>(operations.unlock(request.getUserPrincipal().getName(), uid));
+            case "enable":
+                return new ResponseEntity<>(operations.enable(request.getUserPrincipal().getName(), uid));
+            case "disable":
+                return new ResponseEntity<>(operations.disable(request.getUserPrincipal().getName(), uid));
+            default:
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-			}
+        }
 
-		}
+    }
 
-		@PostMapping("/sendMail")
-		public ResponseEntity<HttpStatus> sendMultipleMailByAdmin(@RequestBody JSONObject jsonObject) throws IOException, ParseException {
-			return new ResponseEntity<>(emailService.sendMail(jsonObject), HttpStatus.OK);
-		}
+    @PostMapping("/api/users/sendMail")
+    public ResponseEntity<HttpStatus> sendMultipleMailByAdmin(@RequestBody JSONObject jsonObject) throws IOException, ParseException {
+        return new ResponseEntity<>(emailService.sendMail(jsonObject), HttpStatus.OK);
+    }
 
-		@PostMapping("/import")
-		public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException, ParseException {
+    @PostMapping("/api/users/import")
+    public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException, ParseException {
 
-			JSONObject jsonObject = importUsers.importFileUsers(request.getUserPrincipal().getName(), file, defaultSequence, true);
-			if (Integer.parseInt(jsonObject.getAsString("nUnSuccessful")) == 0)
-				return new ResponseEntity<>(jsonObject, HttpStatus.OK);
-			else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
-		}
+        JSONObject jsonObject = importUsers.importFileUsers(request.getUserPrincipal().getName(), file, defaultSequence, true);
+        if (Integer.parseInt(jsonObject.getAsString("nUnSuccessful")) == 0)
+            return new ResponseEntity<>(jsonObject, HttpStatus.OK);
+        else return new ResponseEntity<>(jsonObject, HttpStatus.FOUND);
+    }
 
-		@PutMapping("/import/massUpdate")
-		public ResponseEntity<JSONObject> updateConflicts(HttpServletRequest request, @RequestBody List<User> users) {
-			return new ResponseEntity<>(userRepo.massUpdate(request.getUserPrincipal().getName(), users), HttpStatus.OK);
-		}
+    @PutMapping("/api/users/import/massUpdate")
+    public ResponseEntity<JSONObject> updateConflicts(HttpServletRequest request, @RequestBody List<User> users) {
+        return new ResponseEntity<>(userRepo.massUpdate(request.getUserPrincipal().getName(), users), HttpStatus.OK);
+    }
 
-		@GetMapping("/export")
-		public ModelAndView downloadExcel() {
+    @GetMapping("/api/users/export")
+    public ModelAndView downloadExcel() {
 
-			return new ModelAndView(excelView, "listUsers", Object.class);
-		}
+        return new ModelAndView(excelView, "listUsers", Object.class);
+    }
 
-		@PutMapping("/ou/{ou}")
-		public ResponseEntity<List<String>> addGroups(HttpServletRequest request, @RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException, ParseException {
-			List<String> notExist = userRepo.addGroupToUsers(request.getUserPrincipal().getName(), file, ou);
-			if (ou.equals("none"))
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			if (notExist == null)
-				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-			if (notExist.size() == 0)
-				return new ResponseEntity<>(HttpStatus.OK);
-			else
-				return new ResponseEntity<>(notExist, HttpStatus.PARTIAL_CONTENT);
-		}
+    @PutMapping("/api/users/ou/{ou}")
+    public ResponseEntity<List<String>> addGroups(HttpServletRequest request, @RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException, ParseException {
+        List<String> notExist = userRepo.addGroupToUsers(request.getUserPrincipal().getName(), file, ou);
+        if (ou.equals("none"))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (notExist == null)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (notExist.size() == 0)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(notExist, HttpStatus.PARTIAL_CONTENT);
+    }
 
-	}
 
-	@RequestMapping("/api/user")
-	protected class NormalUser{
+    @GetMapping("/api/user")
+    public ResponseEntity<parsso.idman.Models.Users.User> retrieveUser(HttpServletRequest request) throws IOException, ParseException {
 
-		@GetMapping
-		public ResponseEntity<parsso.idman.Models.Users.User> retrieveUser(HttpServletRequest request) throws IOException, ParseException {
+        return new ResponseEntity<>(userRepo.retrieveUsers(request.getUserPrincipal().getName()), HttpStatus.OK);
+    }
 
-			return new ResponseEntity<>(userRepo.retrieveUsers(request.getUserPrincipal().getName()), HttpStatus.OK);
-		}
+    @PutMapping("/api/user")
+    public ResponseEntity<HttpStatus> updateUser(HttpServletRequest request, @RequestBody parsso.idman.Models.Users.User user) throws IOException, ParseException {
+        String userId = request.getUserPrincipal().getName();
+        parsso.idman.Models.Users.User userResult = userRepo.update(userId, userId, user);
+        HttpStatus code = (userResult == null ? HttpStatus.FORBIDDEN : HttpStatus.OK);
 
-		@PutMapping
-		public ResponseEntity<HttpStatus> updateUser(HttpServletRequest request, @RequestBody parsso.idman.Models.Users.User user) throws IOException, ParseException {
-			String userId = request.getUserPrincipal().getName();
-			parsso.idman.Models.Users.User userResult = userRepo.update(userId, userId, user);
-			HttpStatus code = (userResult == null ? HttpStatus.FORBIDDEN : HttpStatus.OK);
+        return new ResponseEntity<>(code);
+    }
 
-			return new ResponseEntity<>(code);
-		}
+    @GetMapping("/api/user/photo")
+    public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException, ParseException {
+        parsso.idman.Models.Users.User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
+        return new ResponseEntity<>(userRepo.showProfilePic(response, user), HttpStatus.OK);
+    }
 
-		@GetMapping("/photo")
-		public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) throws IOException, ParseException {
-			parsso.idman.Models.Users.User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
-			return new ResponseEntity<>(userRepo.showProfilePic(response, user), HttpStatus.OK);
-		}
+    @PostMapping("/api/user/photo")
+    public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException, ParseException {
+        userRepo.uploadProfilePic(file, request.getUserPrincipal().getName());
+        return new RedirectView("/dashboard");
+    }
 
-		@PostMapping("/photo")
-		public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException, ParseException {
-			userRepo.uploadProfilePic(file, request.getUserPrincipal().getName());
-			return new RedirectView("/dashboard");
-		}
+    @PutMapping("/api/user/password")
+    public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
+                                                     @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+        Principal principal = request.getUserPrincipal();
+        String oldPassword = jsonObject.getAsString("currentPassword");
+        String newPassword = jsonObject.getAsString("newPassword");
+        String token = jsonObject.getAsString("token");
+        if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
 
-		@PutMapping("/password")
-		public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
-														 @RequestBody JSONObject jsonObject) throws IOException, ParseException {
-			Principal principal = request.getUserPrincipal();
-			String oldPassword = jsonObject.getAsString("currentPassword");
-			String newPassword = jsonObject.getAsString("newPassword");
-			String token = jsonObject.getAsString("token");
-			if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
+        return new ResponseEntity<>(userRepo.changePassword(principal.getName(), oldPassword, newPassword, token));
 
-			return new ResponseEntity<>(userRepo.changePassword(principal.getName(), oldPassword, newPassword, token));
+    }
 
-		}
+    @GetMapping("/api/user/password/request")
+    public ResponseEntity<Integer> requestSMS(HttpServletRequest request) throws IOException, ParseException {
+        Principal principal = request.getUserPrincipal();
+        parsso.idman.Models.Users.User user = userRepo.retrieveUsers(principal.getName());
+        int status = userRepo.requestToken(user);
 
-		@GetMapping("/password/request")
-		public ResponseEntity<Integer> requestSMS(HttpServletRequest request) throws IOException, ParseException {
-			Principal principal = request.getUserPrincipal();
-			parsso.idman.Models.Users.User user = userRepo.retrieveUsers(principal.getName());
-			int status = userRepo.requestToken(user);
+        if (status > 0)
+            return new ResponseEntity<>(status, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(status, HttpStatus.FORBIDDEN);
+    }
 
-			if (status > 0)
-				return new ResponseEntity<>(status, HttpStatus.OK);
-			else
-				return new ResponseEntity<>(status, HttpStatus.FORBIDDEN);
-		}
-	}
+    @GetMapping("/api/public/sendMail")
+    public ResponseEntity<Integer> sendMail(@RequestParam("email") String email,
+                                            @RequestParam(value = "uid", defaultValue = "") String uid,
+                                            @RequestParam("cid") String cid,
+                                            @RequestParam("answer") String answer) throws IOException, ParseException {
+        int time = uid.equals("") ? userRepo.sendEmail(email, null, cid, answer) : userRepo.sendEmail(email, uid, cid, answer);
+        return getIntegerResponseEntity(time);
+    }
 
-	@RequestMapping("/api/public")
-	protected class Public {
+    private ResponseEntity<Integer> getIntegerResponseEntity(int time) {
+        if (time > 0) {
+            return new ResponseEntity<>(time, HttpStatus.OK);
+        } else if (time == -1)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else if (time == -2)
+            return new ResponseEntity<>(HttpStatus.FOUND);
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
-		@GetMapping("/sendMail")
-		public ResponseEntity<Integer> sendMail(@RequestParam("email") String email,
-												@RequestParam(value = "uid",defaultValue ="") String uid,
-												@RequestParam("cid") String cid,
-												@RequestParam("answer") String answer) throws IOException, ParseException {
-			int time =uid.equals("")?userRepo.sendEmail(email, null, cid, answer): userRepo.sendEmail(email, uid, cid, answer);
-			return getIntegerResponseEntity(time);
-		}
+    @GetMapping("/api/public/sendSMS")
+    public ResponseEntity<JSONObject> sendMessage(@RequestParam("mobile") String mobile,
+                                                  @RequestParam("cid") String cid,
+                                                  @RequestParam(value = "uid", defaultValue = "") String uid,
+                                                  @RequestParam("answer") String answer) throws IOException, ParseException {
 
-		private ResponseEntity<Integer> getIntegerResponseEntity(int time) {
-			if (time > 0) {
-				return new ResponseEntity<>(time, HttpStatus.OK);
-			} else if (time == -1)
-				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-			else if (time == -2)
-				return new ResponseEntity<>(HttpStatus.FOUND);
-			else
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+        int time = uid.equals("") ? instantMessage.sendMessage(mobile, cid, answer) : instantMessage.sendMessage(mobile, uid, cid, answer);
 
-		@GetMapping("/sendSMS")
-		public ResponseEntity<JSONObject> sendMessage(@RequestParam("mobile") String mobile,
-													  @RequestParam("cid") String cid,
-													  @RequestParam(value = "uid", defaultValue = "") String uid,
-													  @RequestParam("answer") String answer) throws IOException, ParseException {
+        if (time > 0) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("time", time);
+            jsonObject.put("userId", userRepo.getByMobile(mobile));
 
-			int time = uid.equals("")?instantMessage.sendMessage(mobile, cid, answer) : instantMessage.sendMessage(mobile, uid, cid, answer);
+            return new ResponseEntity<>(jsonObject, HttpStatus.OK);
+        } else if (time == -1)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else if (time == -2)
+            return new ResponseEntity<>(HttpStatus.FOUND);
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
-			if (time > 0) {
-				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("time", time);
-				jsonObject.put("userId", userRepo.getByMobile(mobile));
+    @GetMapping("/api/public/sendTokenUser/{uid}/{cid}/{answer}")
+    public ResponseEntity<JSONObject> sendMessageUser(
+            @PathVariable("uid") String uid,
+            @PathVariable("cid") String cid,
+            @PathVariable("answer") String answer) throws IOException, ParseException {
+        User user = userRepo.retrieveUsers(uid);
+        if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-				return new ResponseEntity<>(jsonObject, HttpStatus.OK);
-			} else if (time == -1)
-				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-			else if (time == -2)
-				return new ResponseEntity<>(HttpStatus.FOUND);
-			else
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+        int time = instantMessage.sendMessage(user, cid, answer);
 
-		@GetMapping("/sendTokenUser/{uid}/{cid}/{answer}")
-		public ResponseEntity<JSONObject> sendMessageUser(
-				@PathVariable("uid") String uid,
-				@PathVariable("cid") String cid,
-				@PathVariable("answer") String answer) throws IOException, ParseException {
-			User user = userRepo.retrieveUsers(uid);
-			if (user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (time > 0) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("time", time);
+            jsonObject.put("userId", uid);
+            return new ResponseEntity<>(jsonObject, HttpStatus.OK);
+        } else if (time == -1)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        else if (time == -2)
+            return new ResponseEntity<>(HttpStatus.FOUND);
+        else
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
-			int time = instantMessage.sendMessage(user, cid, answer);
+    @PutMapping("/api/public/resetPass/{uid}/{token}")
+    public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
+                                                     @PathVariable("uid") String uid) throws IOException, ParseException {
+        return new ResponseEntity<>(userRepo.resetPassword(uid, newPassword, token));
+    }
 
-			if (time > 0) {
-				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("time", time);
-				jsonObject.put("userId", uid);
-				return new ResponseEntity<>(jsonObject, HttpStatus.OK);
-			} else if (time == -1)
-				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-			else if (time == -2)
-				return new ResponseEntity<>(HttpStatus.FOUND);
-			else
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
+    @GetMapping("/api/public/checkMail/{email}")
+    public HttpEntity<List<JSONObject>> checkMail(@PathVariable("email") String email) {
+        return new ResponseEntity<>(emailService.checkMail(email), HttpStatus.OK);
+    }
 
-		@PutMapping("/resetPass/{uid}/{token}")
-		public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
-														 @PathVariable("uid") String uid) throws IOException, ParseException {
-			return new ResponseEntity<>(userRepo.resetPassword(uid, newPassword, token));
-		}
+    @GetMapping("/api/public/checkMobile/{mobile}")
+    public HttpEntity<List<JSONObject>> checkMobile(@PathVariable("mobile") String mobile) {
+        return new ResponseEntity<>(instantMessage.checkMobile(mobile), HttpStatus.OK);
+    }
 
-		@GetMapping("/checkMail/{email}")
-		public HttpEntity<List<JSONObject>> checkMail(@PathVariable("email") String email) {
-			return new ResponseEntity<>(emailService.checkMail(email), HttpStatus.OK);
-		}
+    @GetMapping("/api/public/getName/{uid}/{token}")
+    public ResponseEntity<User> getName(@PathVariable("uid") String uid, @PathVariable("token") String token) throws IOException, ParseException {
+        User user = userRepo.getName(uid, token);
+        HttpStatus httpStatus = (user != null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 
-		@GetMapping("/checkMobile/{mobile}")
-		public HttpEntity<List<JSONObject>> checkMobile(@PathVariable("mobile") String mobile) {
-			return new ResponseEntity<>(instantMessage.checkMobile(mobile), HttpStatus.OK);
-		}
+        return new ResponseEntity<>(user, httpStatus);
+    }
 
-		@GetMapping("/getName/{uid}/{token}")
-		public ResponseEntity<User> getName(@PathVariable("uid") String uid, @PathVariable("token") String token) throws IOException, ParseException {
-			User user = userRepo.getName(uid, token);
-			HttpStatus httpStatus = (user != null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+    @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
+    public RedirectView resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token, RedirectAttributes attributes) throws IOException, ParseException {
+        HttpStatus httpStatus = tokenClass.checkToken(uId, token);
 
-			return new ResponseEntity<>(user, httpStatus);
-		}
+        if (httpStatus == HttpStatus.OK) {
+            attributes.addAttribute("uid", uId);
+            attributes.addAttribute("token", token);
+            return new RedirectView("/newpassword");
+        }
+        return null;
+    }
 
-		@GetMapping("/validateEmailToken/{uId}/{token}")
-		public RedirectView resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token, RedirectAttributes attributes) throws IOException, ParseException {
-			HttpStatus httpStatus = tokenClass.checkToken(uId, token);
-
-			if (httpStatus == HttpStatus.OK) {
-				attributes.addAttribute("uid", uId);
-				attributes.addAttribute("token", token);
-				return new RedirectView("/newpassword");
-			}
-			return null;
-		}
-
-		@GetMapping("/validateMessageToken/{uId}/{token}")
-		public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) throws IOException, ParseException {
-			return new ResponseEntity<>(tokenClass.checkToken(uId, token));
-		}
-
-	}
-
+    @GetMapping("/api/public/validateMessageToken/{uId}/{token}")
+    public ResponseEntity<HttpStatus> resetPassMessage(@PathVariable("uId") String uId, @PathVariable("token") String token) throws IOException, ParseException {
+        return new ResponseEntity<>(tokenClass.checkToken(uId, token));
+    }
 
 
 }

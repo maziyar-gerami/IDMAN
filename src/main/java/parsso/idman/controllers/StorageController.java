@@ -15,15 +15,15 @@ import parsso.idman.repos.FilesStorageService;
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Controller
 public class StorageController {
-	@Autowired
-	FilesStorageService storageService;
+    @Autowired
+    FilesStorageService storageService;
 
 
-	@GetMapping("/api/files/{filename:.+}")
-	@ResponseBody
-	public ResponseEntity<Resource> getFile(@PathVariable String filename) {
-		Resource file = storageService.load(filename);
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-	}
+    @GetMapping("/api/files/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
+        Resource file = storageService.load(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
 }

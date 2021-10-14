@@ -25,148 +25,162 @@ import javax.servlet.http.HttpServletResponse;
 public class PagesController implements ErrorController {
 
 
-	private final DashboardData dashboardData;
+    private final DashboardData dashboardData;
+    @Value("${cas.url.logout.path}")
+    private String casLogout;
 
-	@Autowired
-	public PagesController(DashboardData dashboardData){
-		this.dashboardData = dashboardData;
-	}
-	@Value("${cas.url.logout.path}")
-	private String casLogout;
+    @Autowired
+    public PagesController(DashboardData dashboardData) {
+        this.dashboardData = dashboardData;
+    }
 
-	//************************************* Pages ****************************************
+    //************************************* Pages ****************************************
 
-	@GetMapping("/publicmessages")
-	public String PublicMessages() {
-		return "publicmessages";
-	}
+    @GetMapping("/publicmessages")
+    public String PublicMessages() {
+        return "publicmessages";
+    }
 
-	@GetMapping("/groups")
-	public String getPageGroups() {
-		return "groups";
-	}
+    @GetMapping("/groups")
+    public String getPageGroups() {
+        return "groups";
+    }
 
-	@GetMapping("/")
-	public String Root() {
-		return "redirect:/dashboard";
-	}
+    @GetMapping("/")
+    public String Root() {
+        return "redirect:/dashboard";
+    }
 
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/roles")
-	public String getPageRoles() {
-		return "roles";
-	}
+    @SuppressWarnings("SameReturnValue")
+    @GetMapping("/roles")
+    public String getPageRoles() {
+        return "roles";
+    }
 
-	@GetMapping("/reports")
-	public String getPageReports() {
-		return "reports";
-	}
+    @GetMapping("/reports")
+    public String getPageReports() {
+        return "reports";
+    }
+
+    @GetMapping("/events")
+    public String getPageEvents() {
+        return "events";
+    }
+
+    @GetMapping("/audits")
+    public String getPageAudits() {
+        return "audits";
+    }
+
+    @GetMapping("/transcripts")
+    public String getPageTranscripts() {
+        return "transcripts";
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @GetMapping("/configs")
+    public String getPageConfigs() {
+        return "configs";
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @GetMapping("/ticketing")
+    public String Reports() {
+        return "ticketing";
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @RequestMapping("/error")
+    public String handleError() {
+        return "redirect:/errorpage";
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @GetMapping("/services")
+    public String getPageServices() {
+        return "services";
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @GetMapping("/createservice")
+    public String CreateService() {
+        return "createservice";
+    }
 
 
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/configs")
-	public String getPageConfigs() {
-		return "configs";
-	}
+    @SuppressWarnings("SameReturnValue")
+    @GetMapping("/403")
+    public String AccessDenied() {
+        return "403";
+    }
 
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/ticketing")
-	public String Reports() {
-		return "ticketing";
-	}
+    @Override
+    public String getErrorPath() {
+        return null;
+    }
 
-	@SuppressWarnings("SameReturnValue")
-	@RequestMapping("/error")
-	public String handleError() {
-		return "redirect:/errorpage";
-	}
+    @GetMapping("/dashboard")
+    public String Dashboard() {
+        return "dashboard";
+    }
 
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/services")
-	public String getPageServices() {
-		return "services";
-	}
+    @GetMapping("/privacy")
+    public String Privacy() {
+        return "privacy";
+    }
 
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/createservice")
-	public String CreateService() {
-		return "createservice";
-	}
+    @GetMapping("/errorpage")
+    public String Error() {
+        return "error";
+    }
 
+    @GetMapping("/login")
+    public String Login() {
+        return "redirect:/login/cas";
+    }
 
-	@SuppressWarnings("SameReturnValue")
-	@GetMapping("/403")
-	public String AccessDenied() {
-		return "403";
-	}
+    @GetMapping("/logout")
+    public String logout(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            SecurityContextLogoutHandler logoutHandler) {
+        Authentication auth = SecurityContextHolder
+                .getContext().getAuthentication();
+        logoutHandler.logout(request, response, auth);
+        new CookieClearingLogoutHandler(
+                AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY)
+                .logout(request, response, auth);
+        return "redirect:" + casLogout;
+    }
 
-	@Override
-	public String getErrorPath() {
-		return null;
-	}
+    //************************************* APIs ****************************************
 
-	@GetMapping("/dashboard")
-	public String Dashboard() {
-		return "dashboard";
-	}
+    @GetMapping("/api/dashboard")
+    public ResponseEntity<Dashboard> retrieveDashboardData() {
 
-	@GetMapping("/privacy")
-	public String Privacy() {
-		return "privacy";
-	}
+        return new ResponseEntity<>(dashboardData.retrieveDashboardData(), HttpStatus.OK);
+    }
 
-	@GetMapping("/errorpage")
-	public String Error() {
-		return "error";
-	}
+    //************************************* Pages ****************************************
 
-	@GetMapping("/login")
-	public String Login() {
-		return "redirect:/login/cas";
-	}
+    @GetMapping("/users")
+    public String Users() {
+        return "users";
+    }
 
-	@GetMapping("/logout")
-	public String logout(
-			HttpServletRequest request,
-			HttpServletResponse response,
-			SecurityContextLogoutHandler logoutHandler) {
-		Authentication auth = SecurityContextHolder
-				.getContext().getAuthentication();
-		logoutHandler.logout(request, response, auth);
-		new CookieClearingLogoutHandler(
-				AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY)
-				.logout(request, response, auth);
-		return "redirect:" + casLogout;
-	}
+    @GetMapping("/profile")
+    public String Profile() {
+        return "profile";
+    }
 
-	//************************************* APIs ****************************************
+    @GetMapping("/resetpassword")
+    public String resetPass() {
+        return "resetpassword";
+    }
 
-	@GetMapping("/api/dashboard")
-	public ResponseEntity<Dashboard> retrieveDashboardData() {
-
-		return new ResponseEntity<>(dashboardData.retrieveDashboardData(), HttpStatus.OK);
-	}
-
-	//************************************* Pages ****************************************
-
-	@GetMapping("/users")
-	public String Users() {
-		return "users";
-	}
-
-	@GetMapping("/profile")
-	public String Profile() {
-		return "profile";
-	}
-
-	@GetMapping("/resetpassword")
-	public String resetPass() {
-		return "resetpassword";
-	}
-
-	@GetMapping("/newpassword")
-	public String resetPassword() {
-		return "newpassword";
-	}
+    @GetMapping("/newpassword")
+    public String resetPassword() {
+        return "newpassword";
+    }
 
 }

@@ -17,29 +17,29 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/refresh")
 public class RefreshController {
-	final SystemRefresh refresh;
+    final SystemRefresh refresh;
 
-	public RefreshController(SystemRefresh refresh) {
-		this.refresh = refresh;
-	}
+    public RefreshController(SystemRefresh refresh) {
+        this.refresh = refresh;
+    }
 
-	@GetMapping
-	public HttpEntity<HttpStatus> all(HttpServletRequest request,@RequestParam(name = "type", defaultValue ="" ) String type) throws IOException, ParseException {
-		switch (type){
-			case "service":
-				return new ResponseEntity<>(refresh.serivceRefresh(request.getUserPrincipal().getName()));
+    @GetMapping
+    public HttpEntity<HttpStatus> all(HttpServletRequest request, @RequestParam(name = "type", defaultValue = "") String type) throws IOException, ParseException {
+        switch (type) {
+            case "service":
+                return new ResponseEntity<>(refresh.serivceRefresh(request.getUserPrincipal().getName()));
 
-			case "captcha":
-				return new ResponseEntity<>(refresh.captchaRefresh(request.getUserPrincipal().getName()));
+            case "captcha":
+                return new ResponseEntity<>(refresh.captchaRefresh(request.getUserPrincipal().getName()));
 
-			case "user":
-				return new ResponseEntity<>(refresh.userRefresh(request.getUserPrincipal().getName()));
+            case "user":
+                return new ResponseEntity<>(refresh.userRefresh(request.getUserPrincipal().getName()));
 
-			default:
-				return new ResponseEntity<>(refresh.all(request.getUserPrincipal().getName()));
+            default:
+                return new ResponseEntity<>(refresh.all(request.getUserPrincipal().getName()));
 
-		}
+        }
 
-	}
+    }
 
 }
