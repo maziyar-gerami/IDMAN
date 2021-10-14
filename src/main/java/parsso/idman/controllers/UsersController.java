@@ -20,7 +20,9 @@ import parsso.idman.Helpers.User.UsersExcelView;
 import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.Models.other.SkyRoom;
 import parsso.idman.repos.EmailService;
+import parsso.idman.repos.SkyroomRepo;
 import parsso.idman.repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,10 +42,11 @@ public class UsersController {
     private final UsersExcelView excelView;
     private final Token tokenClass;
     private final InstantMessage instantMessage;
+    private final SkyroomRepo skyroomRepo;
 
     @Autowired
     public UsersController(UserRepo userRepo, EmailService emailService, Operations operations, UsersExcelView excelView,
-                           ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage) {
+                           ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage,SkyroomRepo skyroomRepo) {
         this.userRepo = userRepo;
         this.emailService = emailService;
         this.operations = operations;
@@ -51,7 +54,15 @@ public class UsersController {
         this.excelView = excelView;
         this.tokenClass = tokenClass;
         this.instantMessage = instantMessage;
+        this.skyroomRepo = skyroomRepo;
     }
+
+    @GetMapping("/api/skyroom")
+    public ResponseEntity<SkyRoom> skyroom(HttpServletRequest request) throws IOException, ParseException {
+
+        return new ResponseEntity<>(skyroomRepo.Run(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
+    }
+
 
     @PutMapping("/api/users/password/expire")
     public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
