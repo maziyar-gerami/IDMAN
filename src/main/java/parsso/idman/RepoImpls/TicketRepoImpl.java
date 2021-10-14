@@ -94,7 +94,7 @@ public class TicketRepoImpl implements TicketRepo {
 
 		List<Message> messages = ticket.getMessages();
 		ticket.setModifiedTime(new Date().getTime());
-		String to = "";
+		String to;
 		if (userid.equalsIgnoreCase(ticket.getLastFrom()))
 			to = ticket.getLastTo();
 		else

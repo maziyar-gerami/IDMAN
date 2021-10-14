@@ -81,7 +81,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 						if (member != null) {
 							JSONArray s = (JSONArray) member;
 
-							if (user.getMemberOf()!=null && s != null)
+							if (user.getMemberOf() != null)
 								for (int i = 0; i < user.getMemberOf().size(); i++)
 									for (int j = 0; j < ((JSONArray) s.get(1)).size(); j++) {
 										if (user.getMemberOf().get(i).equals(((JSONArray) s.get(1)).get(j)) && !relatedList.contains(service)) {
@@ -321,7 +321,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 		long id = 0;
 		JSONObject jsonExtraInfo = new JSONObject();
 
-		extraInfo.setUrl(jsonExtraInfo != null && jsonExtraInfo.get("url") != null ?
+		extraInfo.setUrl(jsonExtraInfo.get("url") != null ?
 				jsonExtraInfo.get("url").toString() : jsonObject.get("serviceId").toString());
 
 		if (baseUrl.contains("localhost"))
@@ -336,9 +336,8 @@ public class ServiceRepoImpl implements ServiceRepo {
 		else if (system.equalsIgnoreCase("OAuth"))
 			id = oAuthServiceHelper.create(doerID, jsonObject);
 
-		if (id > 0)
-			if (extraInfo == null)
-				extraInfo = new ExtraInfo();
+		if (id > 0) {
+		}
 
 		String jsonString = new Gson().toJson(jsonObject.get("extraInfo"), Map.class);
 
@@ -419,7 +418,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 			extraInfo.setUrl(JsonExtraInfo.get("url") != null ? JsonExtraInfo.get("url").toString() : oldExtraInfo.getUrl());
 
 			try {
-				extraInfo.setNotificationApiURL((String) JsonExtraInfo.get("notificationApiURL") != null ? JsonExtraInfo.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
+				extraInfo.setNotificationApiURL(JsonExtraInfo.get("notificationApiURL") != null ? JsonExtraInfo.get("notificationApiURL").toString() : oldExtraInfo.getNotificationApiURL());
 
 			} catch (Exception e) {
 				extraInfo.setNotificationApiURL(null);

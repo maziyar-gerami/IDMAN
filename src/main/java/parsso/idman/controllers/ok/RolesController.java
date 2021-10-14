@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.Users.UserRole;
 import parsso.idman.Repos.RolesRepo;
-import parsso.idman.Repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;

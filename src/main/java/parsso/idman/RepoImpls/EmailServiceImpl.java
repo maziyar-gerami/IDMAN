@@ -154,7 +154,7 @@ public class EmailServiceImpl implements EmailService {
 			return -1;
 		}
 
-		User user = new User();
+		User user;
 
 		if (checkMail(email).size() == 0)
 			return -3;

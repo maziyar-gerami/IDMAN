@@ -66,10 +66,9 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
 		//0. create collection, if not exist
 
-		if (mongoTemplate.getCollection(userExtraInfoCollection) == null)
-			mongoTemplate.createCollection(userExtraInfoCollection);
+        mongoTemplate.getCollection(userExtraInfoCollection);
 
-		uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, "", "", Variables.ACTION_REFRESH, Variables.RESULT_STARTED, "Step 1"));
+        uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, "", "", Variables.ACTION_REFRESH, Variables.RESULT_STARTED, "Step 1"));
 
 		UsersExtraInfo userExtraInfo;
 
@@ -106,20 +105,18 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 					userExtraInfo.setQrToken(UUID.randomUUID().toString());
 				}
 
-				if (userExtraInfo != null) {
-					if (userExtraInfo.getRole() == null)
-						userExtraInfo.setRole("USER");
+                if (userExtraInfo.getRole() == null)
+                    userExtraInfo.setRole("USER");
 
-					else if (userExtraInfo.getUserId() != null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
-						userExtraInfo.setRole("SUPERADMIN");
+                else if (userExtraInfo.getUserId() != null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
+                    userExtraInfo.setRole("SUPERADMIN");
 
-					else if (userExtraInfo.getRole() != null)
-						userExtraInfo.setRole(userExtraInfo.getRole());
+                else if (userExtraInfo.getRole() != null)
+                    userExtraInfo.setRole(userExtraInfo.getRole());
 
-					userExtraInfo.setUnDeletable(userExtraInfo.isUnDeletable());
+                userExtraInfo.setUnDeletable(userExtraInfo.isUnDeletable());
 
-				}
-			} catch (Exception e) {
+            } catch (Exception e) {
 				userExtraInfo = new UsersExtraInfo(user.getUserId());
 			}
 
@@ -157,14 +154,13 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
 		//2. cleanUp mongo
 		List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, userExtraInfoCollection);
-		if (usersMongo != null)
-			for (UsersExtraInfo usersExtraInfo : usersMongo) {
-				List<UsersExtraInfo> usersExtraInfoList = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", usersExtraInfo.getUserId()).encode(), searchControls, simpleUserAttributeMapper);
-				if (usersExtraInfoList.size() == 0) {
-					mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
-					uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, usersExtraInfo.getUserId(), "MongoDB Document", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, "Step 2: removing extra document"));
-				}
-			}
+        for (UsersExtraInfo usersExtraInfo : usersMongo) {
+            List<UsersExtraInfo> usersExtraInfoList = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", usersExtraInfo.getUserId()).encode(), searchControls, simpleUserAttributeMapper);
+            if (usersExtraInfoList.size() == 0) {
+                mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
+                uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, usersExtraInfo.getUserId(), "MongoDB Document", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, "Step 2: removing extra document"));
+            }
+        }
 
 		uniformLogger.info(doer, new ReportMessage(Variables.ACTION_REFRESH, Variables.RESULT_FINISHED, "Step 2"));
 
@@ -178,12 +174,10 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 	public HttpStatus captchaRefresh(String doer) throws IOException, ParseException {
 
 		uniformLogger.info(doer, new ReportMessage(Variables.MODEL_CAPTCHA, "", "", Variables.ACTION_REFRESH, Variables.RESULT_STARTED, ""));
-		if (mongoTemplate.getCollection(Variables.col_captchas) != null) {
-			mongoTemplate.getCollection(Variables.col_captchas).drop();
+        mongoTemplate.getCollection(Variables.col_captchas);
+        mongoTemplate.getCollection(Variables.col_captchas).drop();
 
-		}
-
-		mongoTemplate.createCollection(Variables.col_captchas);
+        mongoTemplate.createCollection(Variables.col_captchas);
 		uniformLogger.info(doer, new ReportMessage(Variables.MODEL_CAPTCHA, "", "",
 				Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, ""));
 
@@ -193,9 +187,8 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 	@Override
 	public HttpStatus serivceRefresh(String doer) throws IOException, ParseException {
 
-		if (mongoTemplate.getCollection(Variables.col_servicesExtraInfo) == null)
-			mongoTemplate.createCollection(Variables.col_servicesExtraInfo);
-		int i = 1;
+        mongoTemplate.getCollection(Variables.col_servicesExtraInfo);
+        int i = 1;
 
 		for (parsso.idman.Models.Services.Service service : serviceRepo.listServicesFull()) {
 			Query query = new Query(Criteria.where("_id").is(service.getId()));

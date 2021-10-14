@@ -123,21 +123,21 @@ public class CaptchaRepoImp implements CAPTCHARepo {
 
 	private String createPhrase(int[] organization) {
 
-		String phrase = "";
+		StringBuilder phrase = new StringBuilder();
 		Random rand = new Random();
 
 		for (int value : organization) {
 			if (value == 0) {
 				if (rand.nextInt(2) == 1)
-					phrase += (char) (rand.nextInt(123 - 97) + 97);
+					phrase.append((char) (rand.nextInt(123 - 97) + 97));
 				else
-					phrase += (char) (rand.nextInt(123 - 97) + 97 - 32);
+					phrase.append((char) (rand.nextInt(123 - 97) + 97 - 32));
 
 			} else
-				phrase += rand.nextInt(10);
+				phrase.append(rand.nextInt(10));
 		}
 
-		return phrase;
+		return phrase.toString();
 	}
 
 	public HttpStatus validateCaptcha(CAPTCHA captcha) {

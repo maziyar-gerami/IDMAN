@@ -21,6 +21,7 @@ import parsso.idman.Utils.SMS.KaveNegar.utils.StringUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class KavenegarApi {
@@ -107,7 +108,7 @@ public class KavenegarApi {
 	}
 
 	public SendResult send(String sender, String receptor, String message, MessageType type, long date) throws BaseException {
-		return send(sender, Arrays.asList(receptor), message, type, date).get(0);
+		return send(sender, Collections.singletonList(receptor), message, type, date).get(0);
 	}
 
 	public List<SendResult> send(String sender, List<String> receptors, String message) throws BaseException {
@@ -119,8 +120,8 @@ public class KavenegarApi {
 	}
 
 	public SendResult send(String sender, String receptor, String message, MessageType type, long date, String localId) throws BaseException {
-		List<String> receptors = Arrays.asList(receptor);
-		List<String> localIds = Arrays.asList(localId);
+		List<String> receptors = Collections.singletonList(receptor);
+		List<String> localIds = Collections.singletonList(localId);
 		return send(sender, receptors, message, MessageType.MobileMemory, 0, localIds).get(0);
 	}
 
@@ -179,9 +180,6 @@ public class KavenegarApi {
 
 	public List<SendResult> sendArray(String sender, List<String> receptors, List<String> messages, String localId) throws BaseException {
 		List<MessageType> types = new ArrayList<>();
-		for (int i = 0; i < types.size(); i++) {
-			types.add(MessageType.MobileMemory);
-		}
 		List<String> senders = new ArrayList<>();
 		for (int i = 0; i < receptors.size(); i++) {
 			senders.add(sender);
@@ -214,7 +212,7 @@ public class KavenegarApi {
 	}
 
 	public StatusResult status(Long messageId) throws BaseException {
-		return status(Arrays.asList(messageId)).get(0);
+		return status(Collections.singletonList(messageId)).get(0);
 	}
 
 	public List<StatusLocalMessageIdResult> statusLocalMessageId(List<Long> localIds) throws BaseException {
@@ -230,7 +228,7 @@ public class KavenegarApi {
 	}
 
 	public StatusLocalMessageIdResult statusLocalMessageId(Long localId) throws BaseException {
-		return statusLocalMessageId(Arrays.asList(localId)).get(0);
+		return statusLocalMessageId(Collections.singletonList(localId)).get(0);
 	}
 
 	public List<SendResult> select(List<Long> ids) throws BaseException {
@@ -318,7 +316,7 @@ public class KavenegarApi {
 	}
 
 	public StatusResult cancel(Long messageId) throws BaseException {
-		return cancel(Arrays.asList(messageId)).get(0);
+		return cancel(Collections.singletonList(messageId)).get(0);
 	}
 
 	public List<ReceiveResult> receive(String lineNumber, int isRead) throws BaseException {

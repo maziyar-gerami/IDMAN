@@ -9,11 +9,11 @@ public class StringUtils {
 			return "";
 		}
 		// Number of elements not likely worth Arrays.stream overhead.
-		String result = elements.get(0).toString();
+		StringBuilder result = new StringBuilder(elements.get(0).toString());
 		for (int i = 1; i < elements.size(); i++) {
-			result += delimiter + elements.get(i).toString();
+			result.append(delimiter).append(elements.get(i).toString());
 		}
-		return result;
+		return result.toString();
 	}
 
 }

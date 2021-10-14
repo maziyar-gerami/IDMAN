@@ -43,7 +43,6 @@ public class OAuthService extends Service {
 
 		super.setAtClass("org.apereo.cas.support.oauth.services.OAuthRegisteredService");
 		properties = new Property();
-		super.setEvaluationOrder(1);
 
 		requiredHandlers = new Object[2];
 		requiredHandlers[0] = "java.util.HashSet";

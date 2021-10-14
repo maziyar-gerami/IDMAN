@@ -82,7 +82,7 @@ public class ImportUsers {
 
 				}
 
-			if (user != null && !user.getUserId().equals("")) {
+			if (!user.getUserId().equals("")) {
 
 				if (user.getUserId() == null || user.getUserId().equals("")) {
 					if (user.getDisplayName() == null || user.getDisplayName() == "")
@@ -186,18 +186,15 @@ public class ImportUsers {
 
 			i++;
 
-			if (user != null || user.getUserId() != null && !user.getUserId().equals("")) {
+            JSONObject temp = userRepo.createUserImport(doerId, user);
 
-				JSONObject temp = userRepo.createUserImport(doerId, user);
+            if (temp.size() > 0) {
+                jsonArray.add(temp);
+                nUnSuccessful++;
+            }
+            count++;
 
-				if (temp.size() > 0) {
-					jsonArray.add(temp);
-					nUnSuccessful++;
-				}
-				count++;
-
-			}
-		}
+        }
 
 		JSONObject finalJson = new JSONObject();
 		finalJson.put("count", count);
@@ -222,7 +219,7 @@ public class ImportUsers {
 
 		if (file.getOriginalFilename().endsWith(".xlsx")) {
 			//Create Workbook instance holding reference to .xlsx file
-			XSSFWorkbook workbookXLSX = null;
+			XSSFWorkbook workbookXLSX;
 			workbookXLSX = new XSSFWorkbook(insfile);
 
 			//Get first/desired sheet from the workbook
@@ -231,7 +228,7 @@ public class ImportUsers {
 			lsusers = excelSheetAnalyze(doerId, sheet, sequence, hasHeader);
 
 		} else if (file.getOriginalFilename().endsWith(".xls")) {
-			HSSFWorkbook workbookXLS = null;
+			HSSFWorkbook workbookXLS;
 
 			workbookXLS = new HSSFWorkbook(insfile);
 
@@ -257,7 +254,7 @@ public class ImportUsers {
 	}
 
 	private JSONObject ldifAnalayze(LDIFReader ldifReader, int[] sequence, boolean hasHeader) {
-		Entry entry = null;
+		Entry entry;
 		while (true) {
 			try {
 				entry = ldifReader.readEntry();

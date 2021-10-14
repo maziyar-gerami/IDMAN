@@ -218,37 +218,35 @@ public class OAuthServiceHelper {
 
 				List contacts = new LinkedList<Contact>();
 
-				if (arrayList != null && arrayList != null) {
-					ArrayList temp1 = (ArrayList) arrayList.get(1);
-					for (Object o : temp1) {
+                ArrayList temp1 = (ArrayList) arrayList.get(1);
+                for (Object o : temp1) {
 
-						JSONObject jsonObject1 = null;
+                    JSONObject jsonObject1 = null;
 
-						if (o != null &&
-								o.getClass().toString().equals("class org.json.simple.JSONObject")) {
-							jsonObject1 = (JSONObject) o;
-						}
-						if (o != null &&
-								o.getClass().toString().equals("class java.util.LinkedHashMap")) {
-							jsonObject1 = new JSONObject((Map) o);
-						}
+                    if (o != null &&
+                            o.getClass().toString().equals("class org.json.simple.JSONObject")) {
+                        jsonObject1 = (JSONObject) o;
+                    }
+                    if (o != null &&
+                            o.getClass().toString().equals("class java.util.LinkedHashMap")) {
+                        jsonObject1 = new JSONObject((Map) o);
+                    }
 
-						Contact contact = new Contact();
-						if (jsonObject1.get("name") != null) contact.setName(jsonObject1.get("name").toString());
-						if (jsonObject1.get("email") != null) {
-							contact.setEmail((String) jsonObject1.get("email"));
+                    Contact contact = new Contact();
+                    if (jsonObject1.get("name") != null) contact.setName(jsonObject1.get("name").toString());
+                    if (jsonObject1.get("email") != null) {
+                        contact.setEmail((String) jsonObject1.get("email"));
 
-							if (jsonObject1.get("phone") != (null))
-								contact.setPhone(jsonObject1.get("phone").toString());
-							if (jsonObject1.get("department") != (null))
-								contact.setDepartment(jsonObject1.get("department").toString());
-							contacts.add(contact);
-						}
+                        if (jsonObject1.get("phone") != (null))
+                            contact.setPhone(jsonObject1.get("phone").toString());
+                        if (jsonObject1.get("department") != (null))
+                            contact.setDepartment(jsonObject1.get("department").toString());
+                        contacts.add(contact);
+                    }
 
-					}
-				}
+                }
 
-				Object[] tempObj = new Object[2];
+                Object[] tempObj = new Object[2];
 				tempObj[0] = temp0;
 				tempObj[1] = contacts;
 				service.setContacts(tempObj);
@@ -320,58 +318,53 @@ public class OAuthServiceHelper {
 		OAuthService service = buildOAuthService(jo);
 		service.setId(new Date().getTime());
 		String json = null;
-		if (service != null) {
 
-			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-			try {
-				mongoTemplate.save(service, collection);
-				json = ow.writeValueAsString(service);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        try {
+            mongoTemplate.save(service, collection);
+            json = ow.writeValueAsString(service);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
-			FileWriter file;
-			try {
-				String fileName = service.getName();
-				String s1 = fileName.replaceAll("\\s+", "");
-				s1 = s1.replaceAll("[-,]", "");
-				String filePath = s1 + "-" + service.getId();
+        FileWriter file;
+        try {
+            String fileName = service.getName();
+            String s1 = fileName.replaceAll("\\s+", "");
+            s1 = s1.replaceAll("[-,]", "");
+            String filePath = s1 + "-" + service.getId();
 
-				InetAddress[] machines = null;
-				if (!(service.getServiceId().contains("localhost")))
-					try {
-						machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
-					} catch (Exception e) {
-						uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
-								"IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
-						machines = null;
-					}
+            InetAddress[] machines = null;
+            if (!(service.getServiceId().contains("localhost")))
+                try {
+                    machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
+                } catch (Exception e) {
+                    uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                            "IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
+                    machines = null;
+                }
 
-				List<String> IPaddresses = new LinkedList<>();
+            List<String> IPaddresses = new LinkedList<>();
 
-				if (machines != null)
-					for (InetAddress machine : machines)
-						IPaddresses.add(machine.getHostAddress());
+            if (machines != null)
+                for (InetAddress machine : machines)
+                    IPaddresses.add(machine.getHostAddress());
 
-				file = new FileWriter(path + filePath + ".json");
-				file.write(json);
-				file.close();
+            file = new FileWriter(path + filePath + ".json");
+            file.write(json);
+            file.close();
 
-				uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
-						"", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
+                    "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
 
-				return service.getId();
-			} catch (IOException | ParseException e) {
-				e.printStackTrace();
-				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
-						"", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
-				return 0;
-			}
+            return service.getId();
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                    "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
+            return 0;
+        }
 
-		}
-
-		return service.getId();
-
-	}
+    }
 
 }

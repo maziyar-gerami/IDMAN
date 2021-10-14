@@ -465,8 +465,6 @@ public class UserRepoImpl implements UserRepo {
 		File oldPic = new File(uploadedFilesPath + userUpdate.getPhoto());
 
 		userUpdate.setPhoto(s);
-		//uniformLogger.info(name,  new ReportMessage(Variables.MODEL_USER, name, Variables.ATTR_IMAGE,
-		//Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS,user,userUpdate, ""));
 		if (update(userUpdate.getUserId(), userUpdate.getUserId(), userUpdate) != null) {
 			if (oldPic.delete())
 				return HttpStatus.OK;
@@ -723,12 +721,10 @@ public class UserRepoImpl implements UserRepo {
 
 		boolean accessRole = false;
 		try {
-			if (user.getUsersExtraInfo()!=null || Objects.requireNonNull(user.getUsersExtraInfo()).getRole()!=null &&
-					user.getUsersExtraInfo().getRole().equalsIgnoreCase("superadmin") ||
-					user.getUsersExtraInfo().getRole().equalsIgnoreCase("admin") ||
-					user.getUsersExtraInfo().getRole().equalsIgnoreCase("supporter") ||
-					user.getUsersExtraInfo().getRole().equalsIgnoreCase("presenter"))
-				accessRole = true;
+			if (user.getUsersExtraInfo() == null) {
+				Objects.requireNonNull(user.getUsersExtraInfo());
+			}
+			accessRole = true;
 		} catch (Exception e) {
 			accessRole = false;
 		}
@@ -969,7 +965,7 @@ public class UserRepoImpl implements UserRepo {
 		} else {
 			final ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
 			for (String temp : jsonArray)
-				users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp.toString())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
+				users.add(mongoTemplate.findOne(new Query(Criteria.where("userId").is(temp)), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 		}
 
 		return expirePassword.expire(doer, users);

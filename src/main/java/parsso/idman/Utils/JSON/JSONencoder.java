@@ -16,7 +16,7 @@ public class JSONencoder {
 
 	public JSONArray encode(List<Setting> settings) {
 
-		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject;
 
 		JSONArray jsonArray = new JSONArray();
 

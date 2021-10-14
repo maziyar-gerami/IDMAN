@@ -184,8 +184,8 @@ public class ReportMessage {
 			first = first + description;
 
 		first = first.replaceAll("null", "");
-		first = first.replaceAll(separator + "  " + separator, ":");
-		first = first.replaceAll(separator + "  " + separator, String.valueOf(separator));
+		first = first.replaceAll(separator + " {2}" + separator, ":");
+		first = first.replaceAll(separator + " {2}" + separator, String.valueOf(separator));
 		String last = first.replaceAll(String.valueOf(separator) + separator, String.valueOf(separator));
 		last = last.replaceAll(String.valueOf(separator) + separator + separator + separator, String.valueOf(separator));
 		last = last.replaceAll(String.valueOf(separator), " " + separator + " ");

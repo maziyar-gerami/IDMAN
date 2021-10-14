@@ -176,16 +176,16 @@ public class ConfigRepoImpl implements ConfigRepo {
 	@Override
 	public String updateSettings(String doerID, List<Setting> settings) throws IOException, ParseException {
 
-		String file_properties = "";
+		StringBuilder file_properties = new StringBuilder();
 
 		for (Setting setting : settings) {
 
-			if (file_properties.equals(""))
-				file_properties += "###" + setting.getGroup();
+			if (file_properties.toString().equals(""))
+				file_properties.append("###").append(setting.getGroup());
 			else {
 
-				if (!file_properties.contains(setting.getGroup()))
-					file_properties += "\n\n\n###" + setting.getGroup();
+				if (!file_properties.toString().contains(setting.getGroup()))
+					file_properties.append("\n\n\n###").append(setting.getGroup());
 
 			}
 
@@ -195,7 +195,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 			temp += "\n##" + setting.getDescription() + "\n";
 			temp += setting.getName() + "=" + setting.getValue();
 
-			file_properties = file_properties.substring(0, index) + temp + file_properties.substring(index);
+			file_properties = new StringBuilder(file_properties.substring(0, index) + temp + file_properties.substring(index));
 
 		}
 
@@ -222,14 +222,14 @@ public class ConfigRepoImpl implements ConfigRepo {
 
 			BufferedWriter out = new BufferedWriter(fw);
 
-			out.write(file_properties);
+			out.write(file_properties.toString());
 			out.flush();
 			out.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
-		return file_properties;
+		return file_properties.toString();
 	}
 
 	@Override

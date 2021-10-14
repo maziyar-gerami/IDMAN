@@ -76,13 +76,13 @@ public class User implements UserDetails, Comparable {
 
 	public String getExportMemberOf() {
 		if (getMemberOf() != null && getMemberOf().size() != 0) {
-			String groups = "";
+			StringBuilder groups = new StringBuilder();
 			for (String group : getMemberOf()) {
-				if (!groups.equals(""))
-					groups += ", ";
-				groups += group;
+				if (!groups.toString().equals(""))
+					groups.append(", ");
+				groups.append(group);
 			}
-			return groups;
+			return groups.toString();
 		}
 		return "";
 	}

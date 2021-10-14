@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 public class PagesController implements ErrorController {
 
 
-	private DashboardData dashboardData;
+	private final DashboardData dashboardData;
 
 	@Autowired
 	public PagesController(DashboardData dashboardData){

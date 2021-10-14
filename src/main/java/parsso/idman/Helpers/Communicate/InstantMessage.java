@@ -108,8 +108,7 @@ public class InstantMessage {
 		else if (checked.size() > 1)
 			return -2;
 
-		else if (checked.size() == 1)
-			user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+		else user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
 
 		if (tokenClass.insertMobileToken(user)) {
 			try {
@@ -402,7 +401,7 @@ public class InstantMessage {
 			return -1;
 		}
 
-		User user = new User();
+		User user;
 
 		if (checkMobile(mobile).size() == 0) {
 

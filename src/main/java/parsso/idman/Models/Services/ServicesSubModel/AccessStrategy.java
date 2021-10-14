@@ -55,11 +55,7 @@ public class AccessStrategy {
 	private String groovyScript;
 
 	public AccessStrategy() {
-		if (startingDateTime != null || startingDateTime != "" ||
-				endingDateTime != null || endingDateTime != "")
-			atClass = "org.apereo.cas.services.TimeBasedRegisteredServiceAccessStrategy";
-		else
-			atClass = "org.apereo.cas.services.DefaultRegisteredServiceAccessStrategy";
+        atClass = "org.apereo.cas.services.TimeBasedRegisteredServiceAccessStrategy";
 		enabled = true;
 		ssoEnabled = true;
 		requireAllAttributes = false;
@@ -159,7 +155,7 @@ public class AccessStrategy {
 		accessStrategy.setSsoEnabled(jsonObject.get("ssoEnabled") != (null) && (boolean) jsonObject.get("ssoEnabled"));
 
 		JSONObject tempReqiredAttribute = new JSONObject();
-		JSONArray obj = null;
+		JSONArray obj;
 		JSONObject t1;
 		if (jsonObject.get("requiredAttributes") != (null)) {
 

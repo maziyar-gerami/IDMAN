@@ -14,10 +14,10 @@ public class GenerateUUID {
 
 		BufferedReader sNumReader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(UUID.randomUUID().toString().getBytes())));
 
-		String line = "";
+		String line;
 		while ((line = sNumReader.readLine()) != null) {
-			output.append(line + "\n");
+			output.append(line).append("\n");
 		}
-		return output.toString().substring(output.indexOf("\n"), output.length()).trim();
+		return output.substring(output.indexOf("\n"), output.length()).trim();
 	}
 }

@@ -76,7 +76,7 @@ public class ExcelAnalyzer {
 		while ((row = sheet.readLine()) != null) {
 			String[] data = row.split(",");
 
-			if (i == 0 && hasHeader || data == null || data.length == 0 || data[0] == null || data[0].equals("")) {
+			if (i == 0 && hasHeader || data.length == 0 || data[0] == null || data[0].equals("")) {
 				i++;
 				continue;
 			}

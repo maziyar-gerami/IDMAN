@@ -5,14 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import parsso.idman.Models.License.License;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Logs.Transcript;
 import parsso.idman.Repos.logs.transcripts.TranscriptRepo;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 

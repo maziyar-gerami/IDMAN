@@ -54,13 +54,13 @@ public class BuildAttributes {
 		String sn = new String(p.getLastName().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 		attrs.put("sn", sn.equals("") ? " " : sn.trim());
 		String userPassword = new String(p.getUserPassword().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-		attrs.put("userPassword", userPassword != null ? userPassword : defaultPassword);
+		attrs.put("userPassword", userPassword);
 		String displayName = new String(p.getDisplayName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 		attrs.put("displayName", displayName.trim());
 		String mobile = new String(p.getMobile().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 		attrs.put("mobile", mobile);
 		String employeeNumber = new String(p.getEmployeeNumber().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-		attrs.put("employeeNumber", employeeNumber == null || p.getEmployeeNumber().equals("") ? "0" : employeeNumber);
+		attrs.put("employeeNumber", p.getEmployeeNumber().equals("") ? "0" : employeeNumber);
 		String mail = new String(p.getMail().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 		attrs.put("mail", mail);
 		attrs.put("cn", givenName + ' ' + sn);
@@ -75,7 +75,7 @@ public class BuildAttributes {
 		}
 
 		String description = new String(p.getDescription().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-		if (description != null && !(description.equals("")))
+		if (!description.equals(""))
 			attrs.put("description", description);
 		else
 			attrs.put("description", " ");
