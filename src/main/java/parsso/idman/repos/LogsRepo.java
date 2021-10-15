@@ -12,30 +12,30 @@ import java.util.List;
 
 @Service
 
-public class LogsRepo{
-public interface AuditRepo {
-	Audit.ListAudits retrieve(String userId, String date, int p, int n);
-}
+public class LogsRepo {
+    public interface AuditRepo {
+        Audit.ListAudits retrieve(String userId, String date, int p, int n);
+    }
 
-	public interface EventRepo {
+    public interface EventRepo {
 
-		Event.ListEvents retrieve(String userId, String date, int p, int n);
+        Event.ListEvents retrieve(String userId, String date, int p, int n);
 
-		Event.ListEvents retrieveListSizeEvents(int page, int n);
+        Event.ListEvents retrieveListSizeEvents(int page, int n);
 
-		List<Event> analyze(int skip, int limit);
-	}
+        List<Event> analyze(int skip, int limit);
+    }
 
-	public interface ReportRepo {
-		Report.ListReports retrieve(String userId, String date, int p, int n);
+    public interface ReportRepo {
+        Report.ListReports retrieve(String userId, String date, int p, int n);
 
-		List<ReportMessage> accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName);
-	}
+        List<ReportMessage> accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName);
+    }
 
-	public interface TranscriptRepo {
-		License servicesOfGroup(String ouid);
+    public interface TranscriptRepo {
+        License servicesOfGroup(String ouid);
 
-		License servicesOfUser(String userId);
+        License servicesOfUser(String userId);
 
-	}
+    }
 }

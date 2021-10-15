@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface SettingsRepo {
-	void emailNotification();
+    void emailNotification();
 
-	void instantMessageNotification();
+    void instantMessageNotification();
 
 }

@@ -12,29 +12,29 @@ public class JSONencoder {
     public JSONencoder(List<Setting> settings) {
     }
 
-	public JSONArray encode(List<Setting> settings) {
+    public JSONArray encode(List<Setting> settings) {
 
-		JSONObject jsonObject;
+        JSONObject jsonObject;
 
-		JSONArray jsonArray = new JSONArray();
+        JSONArray jsonArray = new JSONArray();
 
-		for (Setting setting : settings) {
+        for (Setting setting : settings) {
 
-			if (setting.getName() != null) {
+            if (setting.getName() != null) {
 
-				jsonObject = new JSONObject();
+                jsonObject = new JSONObject();
 
-				jsonObject.put("name", setting.getName());
-				jsonObject.put("value", setting.getValue());
-				jsonObject.put("description", setting.getDescription());
-				jsonObject.put("group", setting.getGroup());
-				jsonObject.put("system", setting.getSystem());
+                jsonObject.put("name", setting.getName());
+                jsonObject.put("value", setting.getValue());
+                jsonObject.put("description", setting.getDescription());
+                jsonObject.put("group", setting.getGroup());
+                jsonObject.put("system", setting.getSystem());
 
-				jsonArray.add(jsonObject);
-			}
+                jsonArray.add(jsonObject);
+            }
 
-		}
+        }
 
-		return jsonArray;
-	}
+        return jsonArray;
+    }
 }

@@ -29,45 +29,42 @@ import java.util.Collections;
 @EnableWebSecurity
 @PropertySource(value = "file:${external.config}", ignoreResourceNotFound = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-	private final SingleSignOutFilter singleSignOutFilter;
-	private final LogoutFilter logoutFilter;
-	private final CasAuthenticationProvider casAuthenticationProvider;
-	private final ServiceProperties serviceProperties;
-	@Value("${cas.url.logout.path}")
-	private String casLogout;
-	@Value("${cas.url.login.path}")
-	private String casLogin;
+    private final SingleSignOutFilter singleSignOutFilter;
+    private final LogoutFilter logoutFilter;
+    private final CasAuthenticationProvider casAuthenticationProvider;
+    private final ServiceProperties serviceProperties;
+    @Value("${cas.url.logout.path}")
+    private String casLogout;
+    @Value("${cas.url.login.path}")
+    private String casLogin;
 
-	@Autowired
-	public WebSecurityConfig(SingleSignOutFilter singleSignOutFilter, LogoutFilter logoutFilter,
-	                         CasAuthenticationProvider casAuthenticationProvider,
-	                         ServiceProperties serviceProperties) {
-		this.logoutFilter = logoutFilter;
-		this.singleSignOutFilter = singleSignOutFilter;
-		this.serviceProperties = serviceProperties;
-		this.casAuthenticationProvider = casAuthenticationProvider;
-	}
+    @Autowired
+    public WebSecurityConfig(SingleSignOutFilter singleSignOutFilter, LogoutFilter logoutFilter,
+                             CasAuthenticationProvider casAuthenticationProvider,
+                             ServiceProperties serviceProperties) {
+        this.logoutFilter = logoutFilter;
+        this.singleSignOutFilter = singleSignOutFilter;
+        this.serviceProperties = serviceProperties;
+        this.casAuthenticationProvider = casAuthenticationProvider;
+    }
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
 
-		http
+        http
 
-				.authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
-				//.antMatchers("")
-				.and()
-				.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
-				.and()
-				.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
-				.addFilterBefore(logoutFilter, LogoutFilter.class)
+                .authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
+                //.antMatchers("")
+                .and()
+                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
+                .and()
+                .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
+                .addFilterBefore(logoutFilter, LogoutFilter.class)
 
-				.authorizeRequests().antMatchers("/dashboard", "/login")
-				.authenticated()
-				.and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
-				.and()
-
-
-
+                .authorizeRequests().antMatchers("/dashboard", "/login")
+                .authenticated()
+                .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
+                .and()
 
 
                 .authorizeRequests()
@@ -111,9 +108,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/reports/user/**").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/services/user").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/user/**").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
-				.antMatchers("/api/logs/reports/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-				.antMatchers("/api/logs/audits/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-				.antMatchers("/api/logs/events/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/reports/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/audits/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/events/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
 
 
                 //****************** SUPERUSER & ADMIN & SUPPORTER Objects************************
@@ -135,9 +132,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/audits/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/events/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/transcripts/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-				.antMatchers("/api/logs/reports/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-				.antMatchers("/api/logs/audits/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-				.antMatchers("/api/logs/events/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/reports/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/audits/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/events/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
 
 
                 //******************SUPERUSER Objects ONLY *******************
@@ -172,48 +169,45 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
 
+                .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
+                .csrf().disable()
+
+                .formLogin()
+                .loginPage("/login")
+
+                .defaultSuccessUrl("/dashboard", true)
+                .permitAll()
+
+                .and()
+                .exceptionHandling().accessDeniedPage("/403")
+
+                .and()
+                .logout()
+                .logoutUrl(casLogout)
+                .logoutSuccessUrl("/dashboard")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID");
+    }
+
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) {
+        auth
+                .authenticationProvider(casAuthenticationProvider);
 
 
+    }
 
-				.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
-				.csrf().disable()
+    @Bean
+    @Override
+    protected AuthenticationManager authenticationManager() {
+        return new ProviderManager(Collections.singletonList(casAuthenticationProvider));
+    }
 
-				.formLogin()
-				.loginPage("/login")
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
+        entryPoint.setLoginUrl(casLogin);
+        entryPoint.setServiceProperties(serviceProperties);
 
-				.defaultSuccessUrl("/dashboard", true)
-				.permitAll()
-
-				.and()
-				.exceptionHandling().accessDeniedPage("/403")
-
-				.and()
-				.logout()
-				.logoutUrl(casLogout)
-				.logoutSuccessUrl("/dashboard")
-				.invalidateHttpSession(true)
-				.deleteCookies("JSESSIONID");
-	}
-
-	@Override
-	public void configure(AuthenticationManagerBuilder auth) {
-		auth
-				.authenticationProvider(casAuthenticationProvider);
-
-
-	}
-
-	@Bean
-	@Override
-	protected AuthenticationManager authenticationManager() {
-		return new ProviderManager(Collections.singletonList(casAuthenticationProvider));
-	}
-
-	public AuthenticationEntryPoint authenticationEntryPoint() {
-		CasAuthenticationEntryPoint entryPoint = new CasAuthenticationEntryPoint();
-		entryPoint.setLoginUrl(casLogin);
-		entryPoint.setServiceProperties(serviceProperties);
-
-		return entryPoint;
-	}
+        return entryPoint;
+    }
 }

@@ -45,7 +45,7 @@ public class UsersController {
 
     @Autowired
     public UsersController(UserRepo userRepo, EmailService emailService, Operations operations, UsersExcelView excelView,
-                           ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage,SkyroomRepo skyroomRepo) {
+                           ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage, SkyroomRepo skyroomRepo) {
         this.userRepo = userRepo;
         this.emailService = emailService;
         this.operations = operations;

@@ -8,26 +8,26 @@ import org.javers.core.diff.changetype.ValueChange;
 @Getter
 @Setter
 public class Change {
-	private String attribute;
-	private Object from;
-	private Object to;
+    private String attribute;
+    private Object from;
+    private Object to;
 
-	public Change(){
+    public Change() {
 
-		this.attribute = null;
-		this.from = null;
-		this.to = null;
-	}
+        this.attribute = null;
+        this.from = null;
+        this.to = null;
+    }
 
-	public Change(Object from, Object to) {
-		this.from = from;
-		this.to = to;
-	}
+    public Change(Object from, Object to) {
+        this.from = from;
+        this.to = to;
+    }
 
-	public Change(ValueChange c) {
-		this.attribute = c.getPropertyName();
-		this.from = c.getLeft();
-		this.to = c.getRight();
+    public Change(ValueChange c) {
+        this.attribute = c.getPropertyName();
+        this.from = c.getLeft();
+        this.to = c.getRight();
 
-	}
+    }
 }

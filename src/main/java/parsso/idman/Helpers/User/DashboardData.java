@@ -25,114 +25,114 @@ import java.util.Objects;
 
 @Service
 public class DashboardData {
-	@Autowired
-	UserRepo userRepo;
-	@Autowired
-	LogsRepo.EventRepo eventRepo;
-	@Autowired
-	ServiceRepo serviceRepo;
-	@Autowired
-	MongoTemplate mongoTemplate;
-	@Autowired
-	UserAttributeMapper userAttributeMapper;
-	@Autowired
-	SimpleUserAttributeMapper simpleUserAttributeMapper;
-	@Autowired
-	LdapTemplate ldapTemplate;
-	final ZoneId zoneId = ZoneId.of(Variables.ZONE);
-	Dashboard.Users fUsers;
-	Dashboard.Services fServices;
-	Dashboard.Logins fLogins;
+    final ZoneId zoneId = ZoneId.of(Variables.ZONE);
+    @Autowired
+    UserRepo userRepo;
+    @Autowired
+    LogsRepo.EventRepo eventRepo;
+    @Autowired
+    ServiceRepo serviceRepo;
+    @Autowired
+    MongoTemplate mongoTemplate;
+    @Autowired
+    UserAttributeMapper userAttributeMapper;
+    @Autowired
+    SimpleUserAttributeMapper simpleUserAttributeMapper;
+    @Autowired
+    LdapTemplate ldapTemplate;
+    Dashboard.Users fUsers;
+    Dashboard.Services fServices;
+    Dashboard.Logins fLogins;
 
-	public Dashboard retrieveDashboardData() throws IOException {
+    public Dashboard retrieveDashboardData() throws IOException {
 
-		Thread thread = new Thread(() -> {
-			try {
-				updateDashboardData();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		});
+        Thread thread = new Thread(() -> {
+            try {
+                updateDashboardData();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
 
-		thread.start();
+        thread.start();
 
-		return mongoTemplate.findOne(new Query(Criteria.where("_id").is("Dashboard")), Dashboard.class,
-				Variables.col_extraInfo);
+        return mongoTemplate.findOne(new Query(Criteria.where("_id").is("Dashboard")), Dashboard.class,
+                Variables.col_extraInfo);
 
-	}
+    }
 
-	public void updateDashboardData() throws InterruptedException {
+    public void updateDashboardData() throws InterruptedException {
 
-		Thread userData = new Thread(() -> {
-			//________users data____________
-			int nUsers = userRepo.retrieveUsersLDAPSize();
+        Thread userData = new Thread(() -> {
+            //________users data____________
+            int nUsers = userRepo.retrieveUsersLDAPSize();
 
-			int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
-			int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
-			int temp = nUsers - nLocked - nDisabled;
-			int nActive = Math.min((temp), nUsers);
+            int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+            int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+            int temp = nUsers - nLocked - nDisabled;
+            int nActive = Math.min((temp), nUsers);
 
-			fUsers = new Dashboard.Users(nUsers, nActive, nDisabled, nLocked);
+            fUsers = new Dashboard.Users(nUsers, nActive, nDisabled, nLocked);
 
-		});
-		userData.start();
+        });
+        userData.start();
 
-		Thread servicesData = new Thread(() -> {
+        Thread servicesData = new Thread(() -> {
 
-			//________services data____________
-			List<parsso.idman.Models.Services.Service> services = null;
-			services = serviceRepo.listServicesFull();
-			int nServices = 0;
-			if (services != null) {
-				nServices = services.size();
-			}
-			int nEnabledServices = 0;
+            //________services data____________
+            List<parsso.idman.Models.Services.Service> services = null;
+            services = serviceRepo.listServicesFull();
+            int nServices = 0;
+            if (services != null) {
+                nServices = services.size();
+            }
+            int nEnabledServices = 0;
 
-			for (parsso.idman.Models.Services.Service service : Objects.requireNonNull(services)) {
-				if (service.getAccessStrategy() != null && service.getAccessStrategy().isEnabled())
-					nEnabledServices++;
-			}
+            for (parsso.idman.Models.Services.Service service : Objects.requireNonNull(services)) {
+                if (service.getAccessStrategy() != null && service.getAccessStrategy().isEnabled())
+                    nEnabledServices++;
+            }
 
-			int nDisabledServices = nServices - nEnabledServices;
+            int nDisabledServices = nServices - nEnabledServices;
 
-			fServices = new Dashboard.Services(nServices, nDisabledServices, nEnabledServices);
+            fServices = new Dashboard.Services(nServices, nDisabledServices, nEnabledServices);
 
-		});
+        });
 
-		Thread loginData = new Thread(() -> {
-			//__________________login data____________
+        Thread loginData = new Thread(() -> {
+            //__________________login data____________
 
-			List<Event> events = eventRepo.analyze(0, 0);
-			int nSuccessful = 0;
-			int nUnSucceful = 0;
+            List<Event> events = eventRepo.analyze(0, 0);
+            int nSuccessful = 0;
+            int nUnSucceful = 0;
 
-			for (Event event : events) {
-				ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
+            for (Event event : events) {
+                ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
 
-				if (event.getType().equals("Unsuccessful Login") && DateUtils.isToday(eventDate)) {
-					nUnSucceful++;
-				} else if (event.getType().equals("Successful Login") && DateUtils.isToday(eventDate))
-					nSuccessful++;
-			}
+                if (event.getType().equals("Unsuccessful Login") && DateUtils.isToday(eventDate)) {
+                    nUnSucceful++;
+                } else if (event.getType().equals("Successful Login") && DateUtils.isToday(eventDate))
+                    nSuccessful++;
+            }
 
-			fLogins = new Dashboard.Logins(nSuccessful + nUnSucceful, nUnSucceful, nSuccessful);
-		});
+            fLogins = new Dashboard.Logins(nSuccessful + nUnSucceful, nUnSucceful, nSuccessful);
+        });
 
-		loginData.start();
-		servicesData.start();
+        loginData.start();
+        servicesData.start();
 
-		loginData.join();
-		userData.join();
-		servicesData.join();
+        loginData.join();
+        userData.join();
+        servicesData.join();
 
-		Dashboard dashboard = new Dashboard(fServices, fLogins, fUsers);
+        Dashboard dashboard = new Dashboard(fServices, fLogins, fUsers);
 
-		dashboard.setId("Dashboard");
+        dashboard.setId("Dashboard");
 
-		mongoTemplate.remove(new Query(Criteria.where("_id").is("id")),
-				Variables.col_extraInfo);
+        mongoTemplate.remove(new Query(Criteria.where("_id").is("id")),
+                Variables.col_extraInfo);
 
-		mongoTemplate.save(dashboard, Variables.col_extraInfo);
+        mongoTemplate.save(dashboard, Variables.col_extraInfo);
 
-	}
+    }
 }

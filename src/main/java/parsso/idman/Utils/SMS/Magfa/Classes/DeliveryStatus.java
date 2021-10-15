@@ -9,56 +9,56 @@ import javax.xml.bind.annotation.XmlType;
 @SuppressWarnings("unused")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "deliveryStatus", propOrder = {
-		"mid",
-		"status",
-		"date",
-		"smsc"
+        "mid",
+        "status",
+        "date",
+        "smsc"
 })
 public class DeliveryStatus {
-	protected long mid;
-	protected int status;
-	@XmlElement(required = true)
-	protected String date;
-	protected String smsc;
+    protected long mid;
+    protected int status;
+    @XmlElement(required = true)
+    protected String date;
+    protected String smsc;
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     public long getMid() {
-		return mid;
-	}
+        return mid;
+    }
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     public void setMid(long value) {
-		this.mid = value;
-	}
+        this.mid = value;
+    }
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     public int getStatus() {
-		return status;
-	}
+        return status;
+    }
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     public void setStatus(int value) {
-		this.status = value;
-	}
+        this.status = value;
+    }
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     public String getDate() {
-		return date;
-	}
+        return date;
+    }
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     public void setDate(String value) {
-		this.date = value;
-	}
+        this.date = value;
+    }
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     public String getSmsc() {
-		return smsc;
-	}
+        return smsc;
+    }
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     public void setSmsc(String value) {
-		this.smsc = value;
-	}
+        this.smsc = value;
+    }
 
 }

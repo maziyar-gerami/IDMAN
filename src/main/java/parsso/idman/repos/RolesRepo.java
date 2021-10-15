@@ -8,7 +8,7 @@ import parsso.idman.Models.Users.UserRole;
 import java.util.List;
 
 public interface RolesRepo {
-	List<UserRole> retrieve();
+    List<UserRole> retrieve();
 
-	HttpStatus updateRole(String doerId, String role, JSONObject userIDs);
+    HttpStatus updateRole(String doerId, String role, JSONObject userIDs);
 }

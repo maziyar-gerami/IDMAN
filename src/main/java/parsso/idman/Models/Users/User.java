@@ -21,149 +21,149 @@ import java.util.List;
 @Getter
 @Setter
 public class User implements UserDetails, Comparable {
-	private static final String PREFIX = "ROLE_";
-	@JsonIgnore
-	ObjectId _id;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	SkyRoom skyRoom;
-	Boolean skyroomAccess;
-	private String userId;
-	private String firstName;
-	private String lastName;
-	private String displayName;
-	private String mobile;
-	@JsonIgnore
-	private long timeStamp;
-	@JsonIgnore
-	private long passwordChangedTime;
-	@JsonIgnore
-	private boolean locked;
-	@JsonIgnore
-	private boolean enabled;
-	private String mail;
-	private String description;
-	private List<String> memberOf;
-	@JsonIgnore
-	private String exportMemberOf;
-	private String userPassword;
-	@JsonIgnore
-	private String photo;
-	private String role;
-	private String employeeNumber;
-	@JsonProperty
-	private String status;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String endTime;
-	@JsonIgnore
-	private String exportEndTime;
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	private String cStatus;
-	@JsonIgnore
-	private UsersExtraInfo usersExtraInfo;
-	private boolean unDeletable;
-	private boolean profileInaccessibility;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private License services;
+    private static final String PREFIX = "ROLE_";
+    @JsonIgnore
+    ObjectId _id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    SkyRoom skyRoom;
+    Boolean skyroomAccess;
+    private String userId;
+    private String firstName;
+    private String lastName;
+    private String displayName;
+    private String mobile;
+    @JsonIgnore
+    private long timeStamp;
+    @JsonIgnore
+    private long passwordChangedTime;
+    @JsonIgnore
+    private boolean locked;
+    @JsonIgnore
+    private boolean enabled;
+    private String mail;
+    private String description;
+    private List<String> memberOf;
+    @JsonIgnore
+    private String exportMemberOf;
+    private String userPassword;
+    @JsonIgnore
+    private String photo;
+    private String role;
+    private String employeeNumber;
+    @JsonProperty
+    private String status;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String endTime;
+    @JsonIgnore
+    private String exportEndTime;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String cStatus;
+    @JsonIgnore
+    private UsersExtraInfo usersExtraInfo;
+    private boolean unDeletable;
+    private boolean profileInaccessibility;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private License services;
 
-	public User() {
-		locked = false;
-		enabled = true;
-	}
+    public User() {
+        locked = false;
+        enabled = true;
+    }
 
-	public String getExportEndTime() {
-		return TimeHelper.getExportEndTime(getEndTime());
-	}
+    public String getExportEndTime() {
+        return TimeHelper.getExportEndTime(getEndTime());
+    }
 
-	public String getExportMemberOf() {
-		if (getMemberOf() != null && getMemberOf().size() != 0) {
-			StringBuilder groups = new StringBuilder();
-			for (String group : getMemberOf()) {
-				if (!groups.toString().equals(""))
-					groups.append(", ");
-				groups.append(group);
-			}
-			return groups.toString();
-		}
-		return "";
-	}
+    public String getExportMemberOf() {
+        if (getMemberOf() != null && getMemberOf().size() != 0) {
+            StringBuilder groups = new StringBuilder();
+            for (String group : getMemberOf()) {
+                if (!groups.toString().equals(""))
+                    groups.append(", ");
+                groups.append(group);
+            }
+            return groups.toString();
+        }
+        return "";
+    }
 
-	public String getStatus() {
-		if (this.status != null)
-			return this.status;
+    public String getStatus() {
+        if (this.status != null)
+            return this.status;
 
-		if (this.isEnabled() && !this.isLocked())
-			return "enable";
-		if (this.isLocked())
-			return "lock";
-		if (!this.isEnabled())
-			return "disable";
+        if (this.isEnabled() && !this.isLocked())
+            return "enable";
+        if (this.isLocked())
+            return "lock";
+        if (!this.isEnabled())
+            return "disable";
 
-		return null;
-	}
+        return null;
+    }
 
-	@JsonIgnore
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> list = new ArrayList<>();
+    @JsonIgnore
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> list = new ArrayList<>();
 
-		if (this.getUserId().equalsIgnoreCase("su"))
-			list.add(new SimpleGrantedAuthority(PREFIX + "SUPERUSER"));
+        if (this.getUserId().equalsIgnoreCase("su"))
+            list.add(new SimpleGrantedAuthority(PREFIX + "SUPERUSER"));
 
-		else
-			list.add(new SimpleGrantedAuthority(PREFIX + this.getUsersExtraInfo().getRole()));
+        else
+            list.add(new SimpleGrantedAuthority(PREFIX + this.getUsersExtraInfo().getRole()));
 
-		return list;
-	}
+        return list;
+    }
 
-	@Override
-	public String toString() {
-		return "User{" +
-				"userId='" + userId + '\'' +
-				'}';
-	}
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId='" + userId + '\'' +
+                '}';
+    }
 
-	@JsonIgnore
-	@Override
-	public String getPassword() {
-		return null;
-	}
+    @JsonIgnore
+    @Override
+    public String getPassword() {
+        return null;
+    }
 
-	@JsonIgnore
-	@Override
-	public String getUsername() {
-		return null;
-	}
+    @JsonIgnore
+    @Override
+    public String getUsername() {
+        return null;
+    }
 
-	@JsonIgnore
-	@Override
-	public boolean isAccountNonExpired() {
-		return false;
-	}
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
 
-	@JsonIgnore
-	@Override
-	public boolean isAccountNonLocked() {
-		return false;
-	}
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
 
-	@JsonIgnore
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return false;
-	}
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
+    @Override
+    public boolean equals(Object obj) {
 
-		final User other = (User) obj;
+        final User other = (User) obj;
 
-		return this.getUserId().equals(other.getUserId());
-	}
+        return this.getUserId().equals(other.getUserId());
+    }
 
-	@Override
-	public int compareTo(Object second) {
-		return Long.compare(((User) second).timeStamp, this.timeStamp);
-	}
+    @Override
+    public int compareTo(Object second) {
+        return Long.compare(((User) second).timeStamp, this.timeStamp);
+    }
 }
 
 

@@ -16,44 +16,44 @@ import java.util.List;
 
 @Component
 public class GroupLicense {
-	@Autowired
-	GroupRepo groupRepo;
-	@Autowired
-	ServiceRepo serviceRepo;
+    @Autowired
+    GroupRepo groupRepo;
+    @Autowired
+    ServiceRepo serviceRepo;
 
-	public List<Group> licensedGroups(long serviceId) {
-		List<Group> groups = new LinkedList<>();
+    public List<Group> licensedGroups(long serviceId) {
+        List<Group> groups = new LinkedList<>();
 
-		parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
-		JSONArray jsonArray = (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1);
-		for (Object name : jsonArray)
-			try {
-				groups.add(groupRepo.retrieveOu(true, name.toString()));
-			} catch (NullPointerException e) {
-			}
-		return groups;
-	}
+        parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
+        JSONArray jsonArray = (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1);
+        for (Object name : jsonArray)
+            try {
+                groups.add(groupRepo.retrieveOu(true, name.toString()));
+            } catch (NullPointerException ignored) {
+            }
+        return groups;
+    }
 
-	public Groups groups(long serviceId) {
+    public Groups groups(long serviceId) {
 
-		return new Groups(licensedGroups(serviceId));
-	}
+        return new Groups(licensedGroups(serviceId));
+    }
 
-	@Setter
-	@Getter
-	private class Groups {
-		@JsonInclude(JsonInclude.Include.NON_NULL)
+    @Setter
+    @Getter
+    private static class Groups {
+        @JsonInclude(JsonInclude.Include.NON_NULL)
 
-		List licensed;
-		@JsonInclude(JsonInclude.Include.NON_NULL)
+        List licensed;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
 
-		List unLicensed;
+        List unLicensed;
 
-		Groups(List licensed) {
-			this.licensed = licensed;
-			this.unLicensed = null;
-		}
+        Groups(List licensed) {
+            this.licensed = licensed;
+            this.unLicensed = null;
+        }
 
-	}
+    }
 
 }

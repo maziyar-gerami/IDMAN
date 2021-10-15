@@ -21,108 +21,108 @@ import java.util.Objects;
 
 @Service
 public class PubMessageRepoImpl implements PubMessageRepo {
-	final String model = "PublicMessage";
-	private final String collection = Variables.col_publicMessage;
-	@Autowired
-	MongoTemplate mongoTemplate;
-	@Autowired
-	UniformLogger uniformLogger;
+    final String model = "PublicMessage";
+    private final String collection = Variables.col_publicMessage;
+    @Autowired
+    MongoTemplate mongoTemplate;
+    @Autowired
+    UniformLogger uniformLogger;
 
-	@Override
-	public List<PublicMessage> showVisiblePubicMessages() {
+    @Override
+    public List<PublicMessage> showVisiblePubicMessages() {
 
-		return mongoTemplate.find(new Query(Criteria.where("visible").is(true)), PublicMessage.class, collection);
-	}
+        return mongoTemplate.find(new Query(Criteria.where("visible").is(true)), PublicMessage.class, collection);
+    }
 
-	@Override
-	public List<PublicMessage> showAllPubicMessages(String id) {
-		if (id.equals(""))
-			return mongoTemplate.find(new Query(new Criteria()), PublicMessage.class, collection);
+    @Override
+    public List<PublicMessage> showAllPubicMessages(String id) {
+        if (id.equals(""))
+            return mongoTemplate.find(new Query(new Criteria()), PublicMessage.class, collection);
 
-		return mongoTemplate.find(new Query(Criteria.where("messageId").is(id)), PublicMessage.class, collection);
-	}
+        return mongoTemplate.find(new Query(Criteria.where("messageId").is(id)), PublicMessage.class, collection);
+    }
 
-	@Override
-	public HttpStatus postPubicMessage(String doer, PublicMessage message) {
+    @Override
+    public HttpStatus postPubicMessage(String doer, PublicMessage message) {
 
-		if (!mongoTemplate.collectionExists(collection))
-			mongoTemplate.createCollection(collection);
+        if (!mongoTemplate.collectionExists(collection))
+            mongoTemplate.createCollection(collection);
 
-		try {
-			PublicMessage messageToSave = new PublicMessage(message.getTitle(), message.getBody(), message.isVisible(), doer);
-			mongoTemplate.save(messageToSave, collection);
-			uniformLogger.info(doer, new ReportMessage(model, messageToSave.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
+        try {
+            PublicMessage messageToSave = new PublicMessage(message.getTitle(), message.getBody(), message.isVisible(), doer);
+            mongoTemplate.save(messageToSave, collection);
+            uniformLogger.info(doer, new ReportMessage(model, messageToSave.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
 
-			return HttpStatus.OK;
+            return HttpStatus.OK;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			uniformLogger.warn(doer, new ReportMessage(model, message.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongo"));
-			return HttpStatus.FORBIDDEN;
+        } catch (Exception e) {
+            e.printStackTrace();
+            uniformLogger.warn(doer, new ReportMessage(model, message.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongo"));
+            return HttpStatus.FORBIDDEN;
 
-		}
+        }
 
-	}
+    }
 
-	@Override
-	public HttpStatus editPubicMessage(String doer, PublicMessage message) {
+    @Override
+    public HttpStatus editPubicMessage(String doer, PublicMessage message) {
 
-		PublicMessage oldMessage = showAllPubicMessages(message.getMessageId()).get(0);
+        PublicMessage oldMessage = showAllPubicMessages(message.getMessageId()).get(0);
 
-		message.setUpdater(doer);
-		message.setUpdateDate(System.currentTimeMillis());
+        message.setUpdater(doer);
+        message.setUpdateDate(System.currentTimeMillis());
 
-		message.setCreator(oldMessage.getCreator());
-		message.setCreateDate(oldMessage.getCreateDate());
+        message.setCreator(oldMessage.getCreator());
+        message.setCreateDate(oldMessage.getCreateDate());
 
-		PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("messageId").is(message.getMessageId())), PublicMessage.class, collection);
-		message.set_id(Objects.requireNonNull(publicMessage).get_id());
-		try {
-			mongoTemplate.save(message, collection);
-			uniformLogger.info(doer, new ReportMessage(model, message.getMessageId(), "", "update", Variables.RESULT_SUCCESS, ""));
+        PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("messageId").is(message.getMessageId())), PublicMessage.class, collection);
+        message.set_id(Objects.requireNonNull(publicMessage).get_id());
+        try {
+            mongoTemplate.save(message, collection);
+            uniformLogger.info(doer, new ReportMessage(model, message.getMessageId(), "", "update", Variables.RESULT_SUCCESS, ""));
 
-			return HttpStatus.OK;
-		} catch (Exception e) {
-			e.printStackTrace();
-			uniformLogger.warn(doer, new ReportMessage(model, message.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongo"));
-			return HttpStatus.FORBIDDEN;
-		}
-	}
+            return HttpStatus.OK;
+        } catch (Exception e) {
+            e.printStackTrace();
+            uniformLogger.warn(doer, new ReportMessage(model, message.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongo"));
+            return HttpStatus.FORBIDDEN;
+        }
+    }
 
-	@Override
-	public HttpStatus deletePubicMessage(String doer, JSONObject jsonObject) {
+    @Override
+    public HttpStatus deletePubicMessage(String doer, JSONObject jsonObject) {
 
-		ArrayList jsonArray = (ArrayList) jsonObject.get("names");
-		Iterator<String> iterator = jsonArray.iterator();
+        ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+        Iterator<String> iterator = jsonArray.iterator();
 
-		if (!iterator.hasNext()) {
-			try {
+        if (!iterator.hasNext()) {
+            try {
 
-				mongoTemplate.remove(new Query(), collection);
-				uniformLogger.info(doer, new ReportMessage(model, "All", "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
+                mongoTemplate.remove(new Query(), collection);
+                uniformLogger.info(doer, new ReportMessage(model, "All", "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 
-			} catch (Exception e) {
+            } catch (Exception e) {
 
-				e.printStackTrace();
-				uniformLogger.warn(doer, new ReportMessage(model, "All", "", Variables.ACTION_DELETE, Variables.RESULT_FAILED, ""));
+                e.printStackTrace();
+                uniformLogger.warn(doer, new ReportMessage(model, "All", "", Variables.ACTION_DELETE, Variables.RESULT_FAILED, ""));
 
-			}
-		}
+            }
+        }
 
-		while (iterator.hasNext()) {
-			String next = iterator.next();
+        while (iterator.hasNext()) {
+            String next = iterator.next();
 
-			try {
-				mongoTemplate.remove(new Query(Criteria.where("messageId").is(next)), collection);
-				uniformLogger.info(doer, new ReportMessage(model, next, "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
+            try {
+                mongoTemplate.remove(new Query(Criteria.where("messageId").is(next)), collection);
+                uniformLogger.info(doer, new ReportMessage(model, next, "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 
-			} catch (Exception e) {
-				e.printStackTrace();
-				uniformLogger.warn(doer, new ReportMessage(model, next, "", Variables.ACTION_DELETE, Variables.RESULT_FAILED, "Writing to mongo"));
-			}
+            } catch (Exception e) {
+                e.printStackTrace();
+                uniformLogger.warn(doer, new ReportMessage(model, next, "", Variables.ACTION_DELETE, Variables.RESULT_FAILED, "Writing to mongo"));
+            }
 
-		}
+        }
 
-		return HttpStatus.OK;
-	}
+        return HttpStatus.OK;
+    }
 }

@@ -7,11 +7,11 @@ import lombok.Setter;
 @Setter
 @Getter
 public class UsersGroups {
-	private Inconsistency users;
-	private Inconsistency groups;
+    private Inconsistency users;
+    private Inconsistency groups;
 
-	public UsersGroups(Inconsistency users, Inconsistency groups) {
-		this.users = users;
-		this.groups = groups;
-	}
+    public UsersGroups(Inconsistency users, Inconsistency groups) {
+        this.users = users;
+        this.groups = groups;
+    }
 }

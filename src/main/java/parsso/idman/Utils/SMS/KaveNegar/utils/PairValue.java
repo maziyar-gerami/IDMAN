@@ -2,21 +2,21 @@ package parsso.idman.Utils.SMS.KaveNegar.utils;
 
 
 public class PairValue {
-	private final String Key;
-	private final String Value;
+    private final String Key;
+    private final String Value;
 
-	public PairValue(String Key, String Value) {
-		this.Key = Key;
-		this.Value = Value;
-	}
+    public PairValue(String Key, String Value) {
+        this.Key = Key;
+        this.Value = Value;
+    }
 
-	public String getKey() {
-		return Key;
-	}
+    public String getKey() {
+        return Key;
+    }
 
-	public String getValue() {
-		return Value;
-	}
+    public String getValue() {
+        return Value;
+    }
 
 
 }

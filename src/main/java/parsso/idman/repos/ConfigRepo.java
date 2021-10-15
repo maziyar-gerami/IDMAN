@@ -11,17 +11,17 @@ import java.util.List;
 @SuppressWarnings("SameReturnValue")
 public interface ConfigRepo {
 
-	String retrieveSetting() throws IOException;
+    String retrieveSetting() throws IOException;
 
-	void updateSettings(String doerID, List<Setting> settings);
+    void updateSettings(String doerID, List<Setting> settings);
 
-	HttpStatus backupConfig();
+    HttpStatus backupConfig();
 
-	HttpStatus factoryReset(String doerID) throws IOException;
+    HttpStatus factoryReset(String doerID) throws IOException;
 
-	HttpStatus restore(String doerID, String name);
+    HttpStatus restore(String doerID, String name);
 
-	List<Config> listBackedUpConfigs();
+    List<Config> listBackedUpConfigs();
 
-	HttpStatus saveToMongo() throws IOException;
+    HttpStatus saveToMongo() throws IOException;
 }

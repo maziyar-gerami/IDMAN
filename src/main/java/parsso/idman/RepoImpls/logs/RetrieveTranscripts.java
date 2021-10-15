@@ -25,78 +25,78 @@ import java.util.Objects;
 @Component
 public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 
-	final ServiceRepo serviceRepo;
+    final ServiceRepo serviceRepo;
 
-	final MongoTemplate mongoTemplate;
-	final UsersLicense usersLicense;
-	final parsso.idman.Helpers.Group.GroupLicense groupLicense;
-	final ExtractLicensedAndUnlicensed extract;
+    final MongoTemplate mongoTemplate;
+    final UsersLicense usersLicense;
+    final parsso.idman.Helpers.Group.GroupLicense groupLicense;
+    final ExtractLicensedAndUnlicensed extract;
 
-	@Autowired
-	public RetrieveTranscripts(ServiceRepo serviceRepo,
-	                           MongoTemplate mongoTemplate, UsersLicense usersLicense,
-	                           GroupLicense groupLicense, ExtractLicensedAndUnlicensed extract){
-		this.serviceRepo = serviceRepo;
-		this.mongoTemplate = mongoTemplate;
-		this.usersLicense = usersLicense;
-		this.groupLicense = groupLicense;
-		this.extract = extract;
+    @Autowired
+    public RetrieveTranscripts(ServiceRepo serviceRepo,
+                               MongoTemplate mongoTemplate, UsersLicense usersLicense,
+                               GroupLicense groupLicense, ExtractLicensedAndUnlicensed extract) {
+        this.serviceRepo = serviceRepo;
+        this.mongoTemplate = mongoTemplate;
+        this.usersLicense = usersLicense;
+        this.groupLicense = groupLicense;
+        this.extract = extract;
 
-	}
+    }
 
-	@Override
-	public License servicesOfGroup(String ouID) {
-		List<MicroService> licensed = new LinkedList<>();
+    @Override
+    public License servicesOfGroup(String ouID) {
+        List<MicroService> licensed = new LinkedList<>();
 
-		List<Service> allServices = serviceRepo.listServicesFull();
+        List<Service> allServices = serviceRepo.listServicesFull();
 
-		for (Service service : allServices)
-			if (service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
-				for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
-					if (ouID.equalsIgnoreCase(name.toString()))
-						licensed.add(new MicroService(service));
+        for (Service service : allServices)
+            if (service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
+                for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
+                    if (ouID.equalsIgnoreCase(name.toString()))
+                        licensed.add(new MicroService(service));
 
-		return new License(licensed, null);
+        return new License(licensed, null);
 
-	}
+    }
 
-	@Override
-	public License servicesOfUser(String userId) {
-		List<MicroService> licensed = new LinkedList<>();
-		List<MicroService> unLicensed = new LinkedList<>();
+    @Override
+    public License servicesOfUser(String userId) {
+        List<MicroService> licensed = new LinkedList<>();
+        List<MicroService> unLicensed = new LinkedList<>();
 
-		List<Service> allServices = serviceRepo.listServicesFull();
+        List<Service> allServices = serviceRepo.listServicesFull();
 
-		UsersExtraInfo user = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userId)), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+        UsersExtraInfo user = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userId)), UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
-		List<String> memberOf;
-		try {
-			memberOf = Objects.requireNonNull(user).getMemberOf();
+        List<String> memberOf;
+        try {
+            memberOf = Objects.requireNonNull(user).getMemberOf();
 
-		} catch (NullPointerException e) {
-			memberOf = null;
-		}
+        } catch (NullPointerException e) {
+            memberOf = null;
+        }
 
-		for (Service service : allServices) {
+        for (Service service : allServices) {
 
-			licensed = extract.licensedServicesForGroups(user, licensed, service);
+            licensed = extract.licensedServicesForGroups(user, licensed, service);
 
-			licensed = extract.licensedServicesForUserID(userId, licensed, service);
+            licensed = extract.licensedServicesForUserID(userId, licensed, service);
 
-			List<List<MicroService>> temp = extract.unLicensedServicesForUserID(userId, licensed, unLicensed, service);
+            List<List<MicroService>> temp = extract.unLicensedServicesForUserID(userId, licensed, unLicensed, service);
 
-			licensed = temp.get(0);
-			unLicensed = temp.get(1);
+            licensed = temp.get(0);
+            unLicensed = temp.get(1);
 
-			temp = extract.licensedServiceWithGroupID(licensed, unLicensed, service, memberOf);
+            temp = extract.licensedServiceWithGroupID(licensed, unLicensed, service, memberOf);
 
-			licensed = temp.get(0);
-			unLicensed = temp.get(1);
+            licensed = temp.get(0);
+            unLicensed = temp.get(1);
 
-		}
+        }
 
-		return new License(licensed, unLicensed);
-	}
+        return new License(licensed, unLicensed);
+    }
 
 }
 

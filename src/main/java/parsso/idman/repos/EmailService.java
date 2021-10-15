@@ -12,13 +12,13 @@ import java.util.List;
 @SuppressWarnings("SameReturnValue")
 @Service
 public interface EmailService {
-	HttpStatus sendMail(JSONObject jsonObject);
+    HttpStatus sendMail(JSONObject jsonObject);
 
-	int sendMail(String email, String cid, String answer);
+    int sendMail(String email, String cid, String answer);
 
-	void sendMail(User user, String day) throws MessagingException;
+    void sendMail(User user, String day) throws MessagingException;
 
-	int sendMail(String email, String uid, String cid, String answer);
+    int sendMail(String email, String uid, String cid, String answer);
 
-	List<JSONObject> checkMail(String email);
+    List<JSONObject> checkMail(String email);
 }

@@ -16,34 +16,34 @@ import java.util.List;
 
 @SuppressWarnings("SameReturnValue")
 public interface ServiceRepo {
-	List<MicroService> listUserServices(User user);
+    List<MicroService> listUserServices(User user);
 
-	List<Service> listServicesFull();
+    List<Service> listServicesFull();
 
-	List<Service> listServicesWithGroups(String ou);
+    List<Service> listServicesWithGroups(String ou);
 
-	List<MicroService> listServicesMain();
+    List<MicroService> listServicesMain();
 
-	Service retrieveService(long id);
+    Service retrieveService(long id);
 
-	LinkedList<String> deleteServices(String doerID, JSONObject files);
+    LinkedList<String> deleteServices(String doerID, JSONObject files);
 
-	String uploadMetadata(MultipartFile file);
+    String uploadMetadata(MultipartFile file);
 
-	void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException;
+    void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException;
 
-	HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
+    HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
 
-	HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system);
+    HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system);
 
-	HttpStatus increasePosition(String id);
+    HttpStatus increasePosition(String id);
 
-	HttpStatus decreasePosition(String id);
+    HttpStatus decreasePosition(String id);
 
 
-	boolean serviceAccess(long id);
+    boolean serviceAccess(long id);
 
-	String uploadIcon(MultipartFile file);
+    String uploadIcon(MultipartFile file);
 
-	String showServicePic(HttpServletResponse response, String file);
+    String showServicePic(HttpServletResponse response, String file);
 }

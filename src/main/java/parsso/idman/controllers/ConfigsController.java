@@ -20,8 +20,8 @@ import java.util.List;
 
 @Controller
 public class ConfigsController {
-    private final ConfigRepo configRepo;
     final PasswordSettings passwordSettings;
+    private final ConfigRepo configRepo;
 
     public ConfigsController(PasswordSettings passwordSettings, @Qualifier("configRepoImpl") ConfigRepo configRepo) {
         this.passwordSettings = passwordSettings;

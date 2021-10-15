@@ -15,53 +15,53 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public class UsersLicenseExcelView extends AbstractXlsView {
-	final LogsRepo.TranscriptRepo transcriptRepo;
+    final LogsRepo.TranscriptRepo transcriptRepo;
 
-	@Autowired
-	public UsersLicenseExcelView (LogsRepo.TranscriptRepo transcriptRepo){
-		this.transcriptRepo = transcriptRepo;
-	}
+    @Autowired
+    public UsersLicenseExcelView(LogsRepo.TranscriptRepo transcriptRepo) {
+        this.transcriptRepo = transcriptRepo;
+    }
 
-	@Override
-	protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
+    @Override
+    protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
-		// create a new Excel sheet
-		HSSFSheet sheetLicensed = (HSSFSheet) workbook.createSheet("Licensed");
-		HSSFSheet sheetUnlicensed = (HSSFSheet) workbook.createSheet("UnLicensed");
-		sheetLicensed.setDefaultColumnWidth(30);
-		sheetUnlicensed.setDefaultColumnWidth(30);
+        // create a new Excel sheet
+        HSSFSheet sheetLicensed = (HSSFSheet) workbook.createSheet("Licensed");
+        HSSFSheet sheetUnlicensed = (HSSFSheet) workbook.createSheet("UnLicensed");
+        sheetLicensed.setDefaultColumnWidth(30);
+        sheetUnlicensed.setDefaultColumnWidth(30);
 
-		// create style for licensedHeader cells
-		CellStyle style = workbook.createCellStyle();
-		Font font = workbook.createFont();
-		font.setFontName("Arial");
-		style.setFont(font);
+        // create style for licensedHeader cells
+        CellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setFontName("Arial");
+        style.setFont(font);
 
-		// create licensedHeader row
-		HSSFRow licensedHeader = sheetLicensed.createRow(0);
+        // create licensedHeader row
+        HSSFRow licensedHeader = sheetLicensed.createRow(0);
 
-		licensedHeader.createCell(0).setCellValue("userId");
-		licensedHeader.getCell(0).setCellStyle(style);
+        licensedHeader.createCell(0).setCellValue("userId");
+        licensedHeader.getCell(0).setCellStyle(style);
 
-		licensedHeader.createCell(1).setCellValue("Display Name");
-		licensedHeader.getCell(1).setCellStyle(style);
+        licensedHeader.createCell(1).setCellValue("Display Name");
+        licensedHeader.getCell(1).setCellStyle(style);
 
-		build();
+        build();
 
-		HSSFRow header = sheetUnlicensed.createRow(0);
+        HSSFRow header = sheetUnlicensed.createRow(0);
 
-		header.createCell(0).setCellValue("userId");
-		header.getCell(0).setCellStyle(style);
+        header.createCell(0).setCellValue("userId");
+        header.getCell(0).setCellStyle(style);
 
-		header.createCell(1).setCellValue("Display Name");
-		header.getCell(1).setCellStyle(style);
+        header.createCell(1).setCellValue("Display Name");
+        header.getCell(1).setCellStyle(style);
 
-		build();
+        build();
 
-	}
+    }
 
-	private void build() {
+    private void build() {
 
-	}
+    }
 
 }

@@ -14,63 +14,63 @@ import java.util.List;
 
 @SuppressWarnings("SameReturnValue")
 public interface UserRepo {
-	List<String> remove(String doerID, JSONObject jsonObject);
+    List<String> remove(String doerID, JSONObject jsonObject);
 
-	HttpStatus changePassword(String uId, String newPassword, String token);
+    HttpStatus changePassword(String uId, String newPassword, String token);
 
-	String showProfilePic(HttpServletResponse response, User user);
+    String showProfilePic(HttpServletResponse response, User user);
 
-	byte[] showProfilePic(User user);
+    byte[] showProfilePic(User user);
 
-	void uploadProfilePic(MultipartFile file, String name);
+    void uploadProfilePic(MultipartFile file, String name);
 
-	List<UsersExtraInfo> retrieveUsersMain(int page, int number);
+    List<UsersExtraInfo> retrieveUsersMain(int page, int number);
 
-	int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus);
+    int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus);
 
-	User getName(String uid, String token);
+    User getName(String uid, String token);
 
-	List<User> retrieveUsersFull();
+    List<User> retrieveUsersFull();
 
-	JSONObject create(String doerID, User p);
+    JSONObject create(String doerID, User p);
 
-	JSONObject createUserImport(String doerId, User p);
+    JSONObject createUserImport(String doerId, User p);
 
-	User update(String doer, String uid, User p);
+    User update(String doer, String uid, User p);
 
-	List<User> getUsersOfOu(String ou);
+    List<User> getUsersOfOu(String ou);
 
-	void updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou);
+    void updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou);
 
-	User retrieveUsers(String userId);
+    User retrieveUsers(String userId);
 
-	User retrieveUsersWithLicensed(String userId);
+    User retrieveUsersWithLicensed(String userId);
 
-	List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
+    List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
 
-	String getByMobile(String mobile);
+    String getByMobile(String mobile);
 
-	ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus);
+    ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus);
 
-	int sendEmail(String email, String uid, String cid, String answer);
+    int sendEmail(String email, String uid, String cid, String answer);
 
-	HttpStatus resetPassword(String userId, String oldPass, String token);
+    HttpStatus resetPassword(String userId, String oldPass, String token);
 
-	String createUrl(String userId, String token);
+    String createUrl(String userId, String token);
 
-	int requestToken(User user);
+    int requestToken(User user);
 
-	JSONObject massUpdate(String doerID, List<User> users);
+    JSONObject massUpdate(String doerID, List<User> users);
 
-	ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);
+    ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);
 
-	HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu);
+    HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu);
 
-	// --Commented out by Inspection (10/14/2021 9:10 PM):HttpStatus syncUsersDBs();
+    // --Commented out by Inspection (10/14/2021 9:10 PM):HttpStatus syncUsersDBs();
 
-	List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException;
+    List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException;
 
-	List<String> expirePassword(String name, JSONObject jsonObject);
+    List<String> expirePassword(String name, JSONObject jsonObject);
 
-	int retrieveUsersLDAPSize();
+    int retrieveUsersLDAPSize();
 }

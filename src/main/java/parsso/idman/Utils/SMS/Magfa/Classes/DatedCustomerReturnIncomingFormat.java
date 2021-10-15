@@ -9,21 +9,21 @@ import javax.xml.bind.annotation.XmlType;
 @SuppressWarnings("unused")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "datedCustomerReturnIncomingFormat", propOrder = {
-		"date"
+        "date"
 })
 public class DatedCustomerReturnIncomingFormat
-		extends CustomerReturnIncomingFormat {
-	@XmlElement(required = true)
-	protected String date;
+        extends CustomerReturnIncomingFormat {
+    @XmlElement(required = true)
+    protected String date;
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     public String getDate() {
-		return date;
-	}
+        return date;
+    }
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     public void setDate(String value) {
-		this.date = value;
-	}
+        this.date = value;
+    }
 
 }

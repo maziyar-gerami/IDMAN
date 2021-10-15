@@ -9,26 +9,26 @@ import lombok.Setter;
 @Getter
 
 public class AttributeReleasePolicy {
-	@JsonProperty("@class")
-	String atClass;
-	boolean authorizedToReleaseCredentialPassword;
-	boolean authorizedToReleaseProxyGrantingTicket;
-	boolean excludeDefaultAttributes;
-	boolean authorizedToReleaseAuthenticationAttributes;
-	long order;
-	ConsentPolicy consentPolicy;
-	PrincipalAttributesRepository principalAttributesRepository;
+    @JsonProperty("@class")
+    String atClass;
+    boolean authorizedToReleaseCredentialPassword;
+    boolean authorizedToReleaseProxyGrantingTicket;
+    boolean excludeDefaultAttributes;
+    boolean authorizedToReleaseAuthenticationAttributes;
+    long order;
+    ConsentPolicy consentPolicy;
+    PrincipalAttributesRepository principalAttributesRepository;
 
-	public AttributeReleasePolicy() {
-		atClass = "org.apereo.cas.services.ReturnAllAttributeReleasePolicy";
-		authorizedToReleaseCredentialPassword = false;
-		authorizedToReleaseProxyGrantingTicket = false;
-		excludeDefaultAttributes = false;
-		authorizedToReleaseAuthenticationAttributes = false;
-		consentPolicy = new ConsentPolicy();
-		order = 0;
-		principalAttributesRepository = new PrincipalAttributesRepository();
+    public AttributeReleasePolicy() {
+        atClass = "org.apereo.cas.services.ReturnAllAttributeReleasePolicy";
+        authorizedToReleaseCredentialPassword = false;
+        authorizedToReleaseProxyGrantingTicket = false;
+        excludeDefaultAttributes = false;
+        authorizedToReleaseAuthenticationAttributes = false;
+        consentPolicy = new ConsentPolicy();
+        order = 0;
+        principalAttributesRepository = new PrincipalAttributesRepository();
 
-	}
+    }
 
 }

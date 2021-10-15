@@ -10,15 +10,15 @@ import lombok.Setter;
 @Getter
 
 public class Property {
-	@JsonProperty("@class")
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String atClass;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private Email email;
+    @JsonProperty("@class")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String atClass;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Email email;
 
-	public Property() {
-		atClass = "java.util.LinkedHashMap";
+    public Property() {
+        atClass = "java.util.LinkedHashMap";
 
-	}
+    }
 
 }

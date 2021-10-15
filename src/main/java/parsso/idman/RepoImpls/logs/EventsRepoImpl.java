@@ -20,61 +20,59 @@ import java.util.List;
 
 @Service
 public class EventsRepoImpl implements LogsRepo.EventRepo {
-	final MongoTemplate mongoTemplate;
+    final MongoTemplate mongoTemplate;
 
-	@Override
-	public Event.ListEvents retrieve(String userId, String date, int p, int n) {
-		Query query = new Query();
-		if (!userId.equals(""))
-			query.addCriteria(Criteria.where("principalId").is(userId));
+    @Autowired
+    public EventsRepoImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
-		if (!date.equals("")){
-			long[] range = TimeHelper.specificDateToEpochRange(TimeHelper.stringInputToTime(date), ZoneId.of(Variables.ZONE));
-			query.addCriteria(Criteria.where("_id")
-					.gte(range[0]).lte(range[1]));
-		}
+    @Override
+    public Event.ListEvents retrieve(String userId, String date, int p, int n) {
+        Query query = new Query();
+        if (!userId.equals(""))
+            query.addCriteria(Criteria.where("principalId").is(userId));
 
-
-
-		long size = mongoTemplate.count(query, Event.class, Variables.col_casEvent);
-
-		query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "_id"));
-
-		List<Event> events =  mongoTemplate.find(query, Event.class, Variables.col_casEvent);
-
-		return new Event.ListEvents(events, size, (int) Math.ceil( size / (float) n));
-	}
+        if (!date.equals("")) {
+            long[] range = TimeHelper.specificDateToEpochRange(TimeHelper.stringInputToTime(date), ZoneId.of(Variables.ZONE));
+            query.addCriteria(Criteria.where("_id")
+                    .gte(range[0]).lte(range[1]));
+        }
 
 
-	@Autowired
-	public EventsRepoImpl(MongoTemplate mongoTemplate) {
-		this.mongoTemplate = mongoTemplate;
-	}
+        long size = mongoTemplate.count(query, Event.class, Variables.col_casEvent);
 
-	@Override
-	public Event.ListEvents retrieveListSizeEvents(int p, int n) {
-		List<Event> allEvents = analyze((p - 1) * n, n);
-		long size = mongoTemplate.getCollection(Variables.col_casEvent).countDocuments();
+        query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "_id"));
 
-		return new Event.ListEvents(size, (int) Math.ceil((double) size / (double) n), eventsSetTime(allEvents));
-	}
+        List<Event> events = mongoTemplate.find(query, Event.class, Variables.col_casEvent);
 
-	@Override
-	public List<Event> analyze(int skip, int limit) {
-		Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
-		List<Event> le = mongoTemplate.find(query, Event.class, Variables.col_casEvent);
-		return eventsSetTime(le);
-	}
+        return new Event.ListEvents(events, size, (int) Math.ceil(size / (float) n));
+    }
 
-	private List<Event> eventsSetTime(List<Event> le) {
-		for (Event event : le) {
-			ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(ZoneId.of(Variables.ZONE));
-			Time time1 = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
-					eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
-			event.setTime(time1);
-		}
-		return le;
-	}
+    @Override
+    public Event.ListEvents retrieveListSizeEvents(int p, int n) {
+        List<Event> allEvents = analyze((p - 1) * n, n);
+        long size = mongoTemplate.getCollection(Variables.col_casEvent).countDocuments();
+
+        return new Event.ListEvents(size, (int) Math.ceil((double) size / (double) n), eventsSetTime(allEvents));
+    }
+
+    @Override
+    public List<Event> analyze(int skip, int limit) {
+        Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
+        List<Event> le = mongoTemplate.find(query, Event.class, Variables.col_casEvent);
+        return eventsSetTime(le);
+    }
+
+    private List<Event> eventsSetTime(List<Event> le) {
+        for (Event event : le) {
+            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(ZoneId.of(Variables.ZONE));
+            Time time1 = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
+                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
+            event.setTime(time1);
+        }
+        return le;
+    }
 }
 
 

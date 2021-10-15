@@ -9,11 +9,11 @@ import java.util.List;
 @Setter
 @Getter
 public class Inconsistency {
-	List add;
-	List remove;
+    List add;
+    List remove;
 
-	public Inconsistency(List add, List remove) {
-		this.add = add;
-		this.remove = remove;
-	}
+    public Inconsistency(List add, List remove) {
+        this.add = add;
+        this.remove = remove;
+    }
 }

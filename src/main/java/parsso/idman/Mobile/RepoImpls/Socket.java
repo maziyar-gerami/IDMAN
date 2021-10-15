@@ -12,42 +12,42 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 @ServerEndpoint(value = "/webSocket")
 public class Socket {
-	private static final Set<Socket> connections = new CopyOnWriteArraySet<>();
-	public Session session;
+    private static final Set<Socket> connections = new CopyOnWriteArraySet<>();
+    public Session session;
 
-	@OnOpen
-	public void onOpen(Session session) {
-		this.session = session;
-		connections.add(this);
-		System.out.println("websocket is open");
+    @OnOpen
+    public void onOpen(Session session) {
+        this.session = session;
+        connections.add(this);
+        System.out.println("websocket is open");
 
-	}
+    }
 
-	@OnMessage
-	public void onMessage(String message) {
-		broadcast(message);
-	}
+    @OnMessage
+    public void onMessage(String message) {
+        broadcast(message);
+    }
 
-	@OnClose
-	public void onClose() {
-		System.out.println("websocket closed");
-	}
+    @OnClose
+    public void onClose() {
+        System.out.println("websocket closed");
+    }
 
-	@OnError
-	public void onError(Throwable throwable) {
-		throwable.printStackTrace();
-	}
+    @OnError
+    public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+    }
 
-	public void broadcast(String message) {
-		for (Socket current : connections)
-			try {
-				current.session.getBasicRemote().sendText(message);
+    public void broadcast(String message) {
+        for (Socket current : connections)
+            try {
+                current.session.getBasicRemote().sendText(message);
 
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-	}
+    }
 
 
 }
