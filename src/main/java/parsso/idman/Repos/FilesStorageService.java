@@ -1,22 +1,17 @@
-package parsso.idman.Repos;
+package parsso.idman.repos;
 
 
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Path;
-import java.util.stream.Stream;
-
 public interface FilesStorageService {
-	void init();
+    void init();
 
-	void saveMetadata(MultipartFile file, String name);
+    void saveMetadata(MultipartFile file, String name);
 
-	void saveProfilePhoto(MultipartFile file, String name);
+    void saveProfilePhoto(MultipartFile file, String name);
 
-	Resource load(String filename);
+    Resource load(String filename);
 
-	Stream<Path> loadAll();
-
-	void saveIcon(MultipartFile file, String fileName);
+    void saveIcon(MultipartFile file, String fileName);
 }

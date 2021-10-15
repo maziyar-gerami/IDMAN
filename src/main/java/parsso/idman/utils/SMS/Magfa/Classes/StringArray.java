@@ -10,17 +10,17 @@ import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "stringArray", namespace = "http://jaxb.dev.java.net/array", propOrder = {
-		"item"
+        "item"
 })
 public class StringArray {
-	@XmlElement(nillable = true)
-	protected List<String> item;
+    @XmlElement(nillable = true)
+    protected List<String> item;
 
-	public List<String> getItem() {
-		if (item == null) {
-			item = new ArrayList<>();
-		}
-		return this.item;
-	}
+    public List<String> getItem() {
+        if (item == null) {
+            item = new ArrayList<>();
+        }
+        return this.item;
+    }
 
 }

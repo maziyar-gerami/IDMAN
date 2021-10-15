@@ -216,27 +216,27 @@
                                         <i class="fa fa-dashboard fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s20}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                        v-bind:href="s15">
                                         <i class="fa fa-server fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s4}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                        v-bind:href="s16">
                                         <i class="fa fa-user fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s13}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                        v-bind:href="s21">
                                         <i class="fa fa-users fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s5}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                        v-bind:href="rolesURLText">
                                         <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{rolesText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                        v-bind:href="publicmessagesURLText">
                                         <i class="fa fa-bell fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{publicmessagesText}}</span>
@@ -262,7 +262,7 @@
                                         <i class="fa fa-file fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{reportsText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2"
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2"
                                        v-bind:href="transcriptsURLText">
                                         <i class="fa fa-file-text fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{transcriptsText}}</span>
@@ -272,7 +272,7 @@
                                         <i class="fa fa-cogs fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                        v-bind:href="s28">
                                         <i class="fa fa-cog fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s27}}</span>
@@ -285,7 +285,7 @@
                         <div class="card pr-0 pl-0">
                             <div class="card-body pb-0 pl-0 pr-0" style="background-color: #f8f9fa!important;">
                                 <div class="container">
-                                    <div sec:authorize="hasAnyRole('SUPPORTER', 'SUPERADMIN')">
+                                    <div sec:authorize="hasAnyRole('SUPPORTER', 'SUPERUSER')">
                                         <div v-bind:style="listS">
                                             <div class="ml-0 mr-0">
                                                 <h3 class="border-bottom pb-2">{{ticketingText}}</h3>
@@ -297,7 +297,7 @@
                                                 <li class="nav-item">
                                                     <a class="nav-link" @click.prevent="setActive('ticketsTab')" :class="{ active: isActive('ticketsTab') }" href="#ticketsTab">{{ticketsListText}}</a>
                                                 </li>
-                                                <li sec:authorize="hasRole('SUPERADMIN')" class="nav-item">
+                                                <li sec:authorize="hasRole('SUPERUSER')" class="nav-item">
                                                     <a class="nav-link" @click.prevent="setActive('archivesTab')" :class="{ active: isActive('archivesTab') }" href="#archivesTab">{{ticketArchivesText}}</a>
                                                 </li>
                                             </ul>
@@ -636,7 +636,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div sec:authorize="hasRole('SUPERADMIN')" class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('archivesTab') }" id="archivesTab">
+                                                <div sec:authorize="hasRole('SUPERUSER')" class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('archivesTab') }" id="archivesTab">
                                                     <div class="desktopView">
                                                         <div class="row mb-3 mt-3 ml-0 mr-0">
                                                             <div class="col-4 pl-1 pr-1">

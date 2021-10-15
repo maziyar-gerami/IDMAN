@@ -5,90 +5,88 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Repos.ServiceRepo;
-import parsso.idman.Repos.UserRepo;
+import parsso.idman.repos.ServiceRepo;
+import parsso.idman.repos.UserRepo;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 @Component
 public class UsersLicense {
-	@Autowired
-	ServiceRepo serviceRepo;
-	@Autowired
-	UserRepo userRepo;
+    @Autowired
+    ServiceRepo serviceRepo;
+    @Autowired
+    UserRepo userRepo;
 
-	public List<UsersExtraInfo> licensedUsers(long serviceId) throws IOException, ParseException {
-		List<UsersExtraInfo> users = new LinkedList<>();
-		parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
+    public List<UsersExtraInfo> licensedUsers(long serviceId) {
+        List<UsersExtraInfo> users = new LinkedList<>();
+        parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
 
-		if (service == null)
-			return users;
+        if (service == null)
+            return users;
 
-		JSONArray jsonArray;
-		if (service.getAccessStrategy().getRequiredAttributes().get("uid") != null) {
-			jsonArray = (JSONArray) service.getAccessStrategy().getRequiredAttributes().get("uid");
-			for (Object name : jsonArray)
-				try {
-					users.add(new UsersExtraInfo(userRepo.retrieveUsers(name.toString())));
-				} catch (NullPointerException e) {
-				}
-		}
+        JSONArray jsonArray;
+        if (service.getAccessStrategy().getRequiredAttributes().get("uid") != null) {
+            jsonArray = (JSONArray) service.getAccessStrategy().getRequiredAttributes().get("uid");
+            for (Object name : jsonArray)
+                try {
+                    users.add(new UsersExtraInfo(userRepo.retrieveUsers(name.toString())));
+                } catch (NullPointerException ignored) {
+                }
+        }
 
-		if (users.size() == 0)
-			return null;
+        if (users.size() == 0)
+            return null;
 
-		return users;
-	}
+        return users;
+    }
 
-	public List<UsersExtraInfo> unLicensedUsers(long serviceId) throws IOException, ParseException {
-		List<UsersExtraInfo> uids = new LinkedList<>();
-		parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
+    public List<UsersExtraInfo> unLicensedUsers(long serviceId) {
+        List<UsersExtraInfo> uids = new LinkedList<>();
+        parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
 
-		if (service == null)
-			return null;
+        if (service == null)
+            return null;
 
-		JSONArray jsonArray = (JSONArray) ((JSONArray) (service.getAccessStrategy().getRejectedAttributes().get("uid"))).get(1);
-		for (Object name : jsonArray)
-			try {
-				uids.add(new UsersExtraInfo(userRepo.retrieveUsers(name.toString())));
+        JSONArray jsonArray = (JSONArray) ((JSONArray) (service.getAccessStrategy().getRejectedAttributes().get("uid"))).get(1);
+        for (Object name : jsonArray)
+            try {
+                uids.add(new UsersExtraInfo(userRepo.retrieveUsers(name.toString())));
 
-			} catch (NullPointerException e) {
-			}
+            } catch (NullPointerException ignored) {
+            }
 
-		if (uids.size() == 0)
-			return null;
+        if (uids.size() == 0)
+            return null;
 
-		return uids;
-	}
+        return uids;
+    }
 
-	public Users users(long serviceId) throws IOException, ParseException {
-		List users = new LinkedList();
-		users.add(licensedUsers(serviceId));
-		users.add(unLicensedUsers(serviceId));
+    public Users users(long serviceId) {
+        List users = new LinkedList();
+        users.add(licensedUsers(serviceId));
+        users.add(unLicensedUsers(serviceId));
 
-		return new Users(licensedUsers(serviceId), unLicensedUsers(serviceId));
-	}
+        return new Users(licensedUsers(serviceId), unLicensedUsers(serviceId));
+    }
 
-	@Setter
-	@Getter
-	private class Users {
-		@JsonInclude(JsonInclude.Include.NON_NULL)
+    @Setter
+    @Getter
+    private static class Users {
+        @JsonInclude(JsonInclude.Include.NON_NULL)
 
-		List licensed;
-		@JsonInclude(JsonInclude.Include.NON_NULL)
+        List licensed;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
 
-		List unLicensed;
+        List unLicensed;
 
-		Users(List licensed, List unLicensed) {
-			this.licensed = licensed;
-			this.unLicensed = unLicensed;
-		}
+        Users(List licensed, List unLicensed) {
+            this.licensed = licensed;
+            this.unLicensed = unLicensed;
+        }
 
-	}
+    }
 }

@@ -20,7 +20,7 @@ import parsso.idman.Models.Services.Service;
 import parsso.idman.Models.Services.ServiceType.OAuthService;
 import parsso.idman.Models.Services.ServicesSubModel.*;
 import parsso.idman.Models.Users.UsersGroups;
-import parsso.idman.Repos.ServiceRepo;
+import parsso.idman.repos.ServiceRepo;
 
 import java.io.File;
 import java.io.FileReader;
@@ -31,347 +31,342 @@ import java.util.*;
 
 @Component
 public class OAuthServiceHelper {
-	private final String collection = Variables.col_services;
-	@Value("${services.folder.path}")
-	String path;
-	@Autowired
-	MongoTemplate mongoTemplate;
-	@Autowired
-	ServiceRepo serviceRepo;
-	@Autowired
-	UniformLogger uniformLogger;
-
-	public OAuthService buildOAuthService(JSONObject jo) {
-
-		OAuthService service = new OAuthService();
-		if (jo.get("id") != null)
-			service.setId(Long.parseLong(jo.get("id").toString()));
-
-		if (jo.get("serviceId") != null) service.setServiceId(jo.get("serviceId").toString());
-		if (jo.get("description") != null) service.setDescription(jo.get("description").toString());
-		if (jo.get("logoutType") != null) service.setLogoutType(jo.get("logoutType").toString());
-		if (jo.get("@class") != null) service.setAtClass(jo.get("@class").toString());
-		if (jo.get("logoutUrl") != null) service.setLogoutUrl(jo.get("logoutUrl").toString());
-		if (jo.get("name") != null) service.setName(jo.get("name").toString());
-		if (jo.get("privacyUrl") != null) service.setPrivacyUrl(jo.get("privacyUrl").toString());
-		if (jo.get("logo") != null) service.setLogo(jo.get("logo").toString());
-		if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
-		if (jo.get("clientSecret") != null) service.setClientSecret(jo.get("clientSecret").toString());
-		if (jo.get("clientId") != null) service.setClientId(jo.get("clientId").toString());
-		if (jo.get("supportedGrantTypes") != null) service.setSupportedGrantTypes( jo.get("supportedGrantTypes"));
-		if (jo.get("supportedResponseTypes") != null) service.setSupportedResponseTypes( jo.get("supportedResponseTypes"));
-
-		if (jo.get("expirationPolicy") == null)
-			service.setExpirationPolicy(new ExpirationPolicy());
-		else {
-			JSONObject jsonObject = null;
-			String s = jo.get("expirationPolicy").getClass().toString();
-			if (jo.get("expirationPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
-				jsonObject = (JSONObject) jo.get("expirationPolicy");
-			if (jo.get("expirationPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
-				jsonObject = new JSONObject((Map) jo.get("expirationPolicy"));
-
-			ExpirationPolicy expirationPolicy = new ExpirationPolicy();
-			expirationPolicy.setAtClass((String) jsonObject.get("@class"));
-			expirationPolicy.setDeleteWhenExpired((boolean) jsonObject.get("deleteWhenExpired"));
-			expirationPolicy.setNotifyWhenDeleted((boolean) jsonObject.get("notifyWhenDeleted"));
-			service.setExpirationPolicy(expirationPolicy);
-		}
-
-		if (jo.get("proxyPolicy") == null)
-			service.setProxyPolicy(new ProxyPolicy());
-		else {
-
-			JSONObject jsonObject = null;
-			if (jo.get("proxyPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
-				jsonObject = (JSONObject) jo.get("proxyPolicy");
-
-			if (jo.get("proxyPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
-				jsonObject = new JSONObject((Map) jo.get("proxyPolicy"));
-
-			ProxyPolicy proxyPolicy = new ProxyPolicy();
-			proxyPolicy.setAtClass((String) jsonObject.get("@class"));
-			proxyPolicy.setPattern((String) jsonObject.get("pattern"));
-			service.setProxyPolicy(proxyPolicy);
-		}
-
-		if (jo.get("usernameAttributeProvider") == null) {
-			service.setUsernameAttributeProvider(new UsernameAttributeProvider());
-		} else {
-
-			JSONObject jsonObject = null;
-			if (jo.get("usernameAttributeProvider").getClass().toString().equals("class org.json.simple.JSONObject"))
-				jsonObject = (JSONObject) jo.get("usernameAttributeProvider");
-
-			if (jo.get("usernameAttributeProvider").getClass().toString().equals("class java.util.LinkedHashMap"))
-				jsonObject = new JSONObject((Map) jo.get("usernameAttributeProvider"));
-
-			UsernameAttributeProvider usernameAttributeProvider = new UsernameAttributeProvider();
-			usernameAttributeProvider.setAtClass((String) jsonObject.get("@class"));
-			usernameAttributeProvider.setCanonicalizationMode((String) jsonObject.get("canonicalizationMode"));
-			usernameAttributeProvider.setEncryptUsername((Boolean) jsonObject.get("encryptUsername"));
-			service.setUsernameAttributeProvider(usernameAttributeProvider);
-		}
-		if (jo.get("attributeReleasePolicy") == null && jo.get("accessStrategy") != null) {
-
-			AttributeReleasePolicy attributeReleasePolicy = new AttributeReleasePolicy();
-			service.setAttributeReleasePolicy(attributeReleasePolicy);
-		} else {
-			JSONObject jsonObject = null;
-			String s = jo.get("attributeReleasePolicy").getClass().toString();
-			if (jo.get("attributeReleasePolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
-				jsonObject = (JSONObject) jo.get("attributeReleasePolicy");
-
-			if (jo.get("attributeReleasePolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
-				jsonObject = new JSONObject((Map) jo.get("attributeReleasePolicy"));
-
-			AttributeReleasePolicy attributeReleasePolicy = new AttributeReleasePolicy();
-			attributeReleasePolicy.setAtClass((String) jsonObject.get("@class"));
-			attributeReleasePolicy.setAuthorizedToReleaseAuthenticationAttributes((boolean) jsonObject.get("authorizedToReleaseAuthenticationAttributes"));
-			attributeReleasePolicy.setAuthorizedToReleaseCredentialPassword((Boolean) jsonObject.get("authorizedToReleaseCredentialPassword"));
-			try {
-				attributeReleasePolicy.setOrder((int) jsonObject.get("order"));
-			} catch (Exception e) {
-				attributeReleasePolicy.setOrder((long) jsonObject.get("order"));
-			}
-			attributeReleasePolicy.setExcludeDefaultAttributes((boolean) jsonObject.get("excludeDefaultAttributes"));
-			attributeReleasePolicy.setAuthorizedToReleaseProxyGrantingTicket((boolean) jsonObject.get("authorizedToReleaseProxyGrantingTicket"));
+    @Value("${services.folder.path}")
+    String path;
+    @Autowired
+    MongoTemplate mongoTemplate;
+    @Autowired
+    ServiceRepo serviceRepo;
+    @Autowired
+    UniformLogger uniformLogger;
+
+    public OAuthService buildOAuthService(JSONObject jo) {
+
+        OAuthService service = new OAuthService();
+        if (jo.get("id") != null)
+            service.setId(Long.parseLong(jo.get("id").toString()));
+
+        if (jo.get("serviceId") != null) service.setServiceId(jo.get("serviceId").toString());
+        if (jo.get("description") != null) service.setDescription(jo.get("description").toString());
+        if (jo.get("logoutType") != null) service.setLogoutType(jo.get("logoutType").toString());
+        if (jo.get("@class") != null) service.setAtClass(jo.get("@class").toString());
+        if (jo.get("logoutUrl") != null) service.setLogoutUrl(jo.get("logoutUrl").toString());
+        if (jo.get("name") != null) service.setName(jo.get("name").toString());
+        if (jo.get("privacyUrl") != null) service.setPrivacyUrl(jo.get("privacyUrl").toString());
+        if (jo.get("logo") != null) service.setLogo(jo.get("logo").toString());
+        if (jo.get("informationUrl") != null) service.setInformationUrl(jo.get("informationUrl").toString());
+        if (jo.get("clientSecret") != null) service.setClientSecret(jo.get("clientSecret").toString());
+        if (jo.get("clientId") != null) service.setClientId(jo.get("clientId").toString());
+        if (jo.get("supportedGrantTypes") != null) service.setSupportedGrantTypes(jo.get("supportedGrantTypes"));
+        if (jo.get("supportedResponseTypes") != null)
+            service.setSupportedResponseTypes(jo.get("supportedResponseTypes"));
+
+        if (jo.get("expirationPolicy") == null)
+            service.setExpirationPolicy(new ExpirationPolicy());
+        else {
+            JSONObject jsonObject = null;
+            String s = jo.get("expirationPolicy").getClass().toString();
+            if (jo.get("expirationPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
+                jsonObject = (JSONObject) jo.get("expirationPolicy");
+            if (jo.get("expirationPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
+                jsonObject = new JSONObject((Map) jo.get("expirationPolicy"));
+
+            ExpirationPolicy expirationPolicy = new ExpirationPolicy();
+            expirationPolicy.setAtClass((String) Objects.requireNonNull(jsonObject).get("@class"));
+            expirationPolicy.setDeleteWhenExpired((boolean) jsonObject.get("deleteWhenExpired"));
+            expirationPolicy.setNotifyWhenDeleted((boolean) jsonObject.get("notifyWhenDeleted"));
+            service.setExpirationPolicy(expirationPolicy);
+        }
+
+        if (jo.get("proxyPolicy") == null)
+            service.setProxyPolicy(new ProxyPolicy());
+        else {
+
+            JSONObject jsonObject = null;
+            if (jo.get("proxyPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
+                jsonObject = (JSONObject) jo.get("proxyPolicy");
+
+            if (jo.get("proxyPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
+                jsonObject = new JSONObject((Map) jo.get("proxyPolicy"));
+
+            ProxyPolicy proxyPolicy = new ProxyPolicy();
+            proxyPolicy.setAtClass((String) Objects.requireNonNull(jsonObject).get("@class"));
+            proxyPolicy.setPattern((String) jsonObject.get("pattern"));
+            service.setProxyPolicy(proxyPolicy);
+        }
+
+        if (jo.get("usernameAttributeProvider") == null) {
+            service.setUsernameAttributeProvider(new UsernameAttributeProvider());
+        } else {
+
+            JSONObject jsonObject = null;
+            if (jo.get("usernameAttributeProvider").getClass().toString().equals("class org.json.simple.JSONObject"))
+                jsonObject = (JSONObject) jo.get("usernameAttributeProvider");
+
+            if (jo.get("usernameAttributeProvider").getClass().toString().equals("class java.util.LinkedHashMap"))
+                jsonObject = new JSONObject((Map) jo.get("usernameAttributeProvider"));
+
+            UsernameAttributeProvider usernameAttributeProvider = new UsernameAttributeProvider();
+            usernameAttributeProvider.setAtClass((String) Objects.requireNonNull(jsonObject).get("@class"));
+            usernameAttributeProvider.setCanonicalizationMode((String) jsonObject.get("canonicalizationMode"));
+            usernameAttributeProvider.setEncryptUsername((Boolean) jsonObject.get("encryptUsername"));
+            service.setUsernameAttributeProvider(usernameAttributeProvider);
+        }
+        if (jo.get("attributeReleasePolicy") == null && jo.get("accessStrategy") != null) {
+
+            AttributeReleasePolicy attributeReleasePolicy = new AttributeReleasePolicy();
+            service.setAttributeReleasePolicy(attributeReleasePolicy);
+        } else {
+            JSONObject jsonObject = null;
+            String s = jo.get("attributeReleasePolicy").getClass().toString();
+            if (jo.get("attributeReleasePolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
+                jsonObject = (JSONObject) jo.get("attributeReleasePolicy");
+
+            if (jo.get("attributeReleasePolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
+                jsonObject = new JSONObject((Map) jo.get("attributeReleasePolicy"));
+
+            AttributeReleasePolicy attributeReleasePolicy = new AttributeReleasePolicy();
+            attributeReleasePolicy.setAtClass((String) Objects.requireNonNull(jsonObject).get("@class"));
+            attributeReleasePolicy.setAuthorizedToReleaseAuthenticationAttributes((boolean) jsonObject.get("authorizedToReleaseAuthenticationAttributes"));
+            attributeReleasePolicy.setAuthorizedToReleaseCredentialPassword((Boolean) jsonObject.get("authorizedToReleaseCredentialPassword"));
+            try {
+                attributeReleasePolicy.setOrder((int) jsonObject.get("order"));
+            } catch (Exception e) {
+                attributeReleasePolicy.setOrder((long) jsonObject.get("order"));
+            }
+            attributeReleasePolicy.setExcludeDefaultAttributes((boolean) jsonObject.get("excludeDefaultAttributes"));
+            attributeReleasePolicy.setAuthorizedToReleaseProxyGrantingTicket((boolean) jsonObject.get("authorizedToReleaseProxyGrantingTicket"));
 
-			LinkedHashMap jsonConcentPolicy = (LinkedHashMap) jo.get("ConsentPolicy");
-			if (jsonConcentPolicy == null) {
-				ConsentPolicy consentPolicy = new ConsentPolicy();
-				attributeReleasePolicy.setConsentPolicy(consentPolicy);
-			} else {
+            LinkedHashMap jsonConcentPolicy = (LinkedHashMap) jo.get("ConsentPolicy");
+            if (jsonConcentPolicy == null) {
+                ConsentPolicy consentPolicy = new ConsentPolicy();
+                attributeReleasePolicy.setConsentPolicy(consentPolicy);
+            } else {
 
-				if (jo.get("ConsentPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
-					jsonObject = (JSONObject) jo.get("ConsentPolicy");
+                if (jo.get("ConsentPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
+                    jsonObject = (JSONObject) jo.get("ConsentPolicy");
 
-				if (jo.get("ConsentPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
-					jsonObject = new JSONObject((Map) jo.get("ConsentPolicy"));
+                if (jo.get("ConsentPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
+                    jsonObject = new JSONObject((Map) jo.get("ConsentPolicy"));
 
-				ConsentPolicy consentPolicy = new ConsentPolicy();
-				consentPolicy.setAtClass((String) jsonConcentPolicy.get("@class"));
-				consentPolicy.setEnabled((boolean) jsonConcentPolicy.get("enabled"));
-				consentPolicy.setOrder((int) jsonConcentPolicy.get("order"));
-				attributeReleasePolicy.setConsentPolicy(consentPolicy);
-
-				JSONObject jsonPrincipalAttributesRepository = (JSONObject) jo.get("principalAttributesRepository");
-				PrincipalAttributesRepository principalAttributesRepository = new PrincipalAttributesRepository();
-				if (jsonPrincipalAttributesRepository == null) {
-					attributeReleasePolicy.setPrincipalAttributesRepository(principalAttributesRepository);
+                ConsentPolicy consentPolicy = new ConsentPolicy();
+                consentPolicy.setAtClass((String) jsonConcentPolicy.get("@class"));
+                consentPolicy.setEnabled((boolean) jsonConcentPolicy.get("enabled"));
+                consentPolicy.setOrder((int) jsonConcentPolicy.get("order"));
+                attributeReleasePolicy.setConsentPolicy(consentPolicy);
 
-				} else {
-					principalAttributesRepository.setAtClass((String) jsonPrincipalAttributesRepository.get("@class"));
-					principalAttributesRepository.setIgnoreResolvedAttributes((boolean) jsonPrincipalAttributesRepository.get("ignoreResolvedAttributes"));
-					principalAttributesRepository.setMergingStrategy((String) jsonPrincipalAttributesRepository.get("mergingStrategy"));
-					attributeReleasePolicy.setPrincipalAttributesRepository(principalAttributesRepository);
-					service.setAttributeReleasePolicy(attributeReleasePolicy);
+                JSONObject jsonPrincipalAttributesRepository = (JSONObject) jo.get("principalAttributesRepository");
+                PrincipalAttributesRepository principalAttributesRepository = new PrincipalAttributesRepository();
+                if (jsonPrincipalAttributesRepository == null) {
+                    attributeReleasePolicy.setPrincipalAttributesRepository(principalAttributesRepository);
 
-				}
-			}
-		}
+                } else {
+                    principalAttributesRepository.setAtClass((String) jsonPrincipalAttributesRepository.get("@class"));
+                    principalAttributesRepository.setIgnoreResolvedAttributes((boolean) jsonPrincipalAttributesRepository.get("ignoreResolvedAttributes"));
+                    principalAttributesRepository.setMergingStrategy((String) jsonPrincipalAttributesRepository.get("mergingStrategy"));
+                    attributeReleasePolicy.setPrincipalAttributesRepository(principalAttributesRepository);
+                    service.setAttributeReleasePolicy(attributeReleasePolicy);
 
-		if (jo.get("multifactorPolicy") != null) {
+                }
+            }
+        }
 
-			JSONObject jsonObject = null;
+        if (jo.get("multifactorPolicy") != null) {
 
-			if (jo.get("multifactorPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
-				jsonObject = (JSONObject) jo.get("multifactorPolicy");
+            JSONObject jsonObject = null;
 
-			else if (jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
-				jsonObject = new JSONObject((Map) jo.get("multifactorPolicy"));
+            if (jo.get("multifactorPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
+                jsonObject = (JSONObject) jo.get("multifactorPolicy");
 
-			if (jsonObject.get("multifactorAuthenticationProviders") != null) {
+            else if (jo.get("multifactorPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
+                jsonObject = new JSONObject((Map) jo.get("multifactorPolicy"));
 
-				MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
+            if (Objects.requireNonNull(jsonObject).get("multifactorAuthenticationProviders") != null) {
 
-				if (jsonObject.get("failureMode") != null)
-					multifactorPolicy.setFailureMode((String) jsonObject.get("failureMode"));
-				if (jsonObject.get("bypassEnabled") != null)
-					multifactorPolicy.setBypassEnabled((Boolean) jsonObject.get("bypassEnabled"));
-				if (jsonObject.get("multifactorAuthenticationProviders") != null)
-					multifactorPolicy.setMultifactorAuthenticationProviders(jsonObject.get("multifactorAuthenticationProviders").toString());
-				service.setMultifactorPolicy(multifactorPolicy);
+                MultifactorPolicy multifactorPolicy = new MultifactorPolicy();
 
-			}
-		}
+                if (jsonObject.get("failureMode") != null)
+                    multifactorPolicy.setFailureMode((String) jsonObject.get("failureMode"));
+                if (jsonObject.get("bypassEnabled") != null)
+                    multifactorPolicy.setBypassEnabled((Boolean) jsonObject.get("bypassEnabled"));
+                if (jsonObject.get("multifactorAuthenticationProviders") != null)
+                    multifactorPolicy.setMultifactorAuthenticationProviders(jsonObject.get("multifactorAuthenticationProviders").toString());
+                service.setMultifactorPolicy(multifactorPolicy);
 
-		// AccessStrategy
-		JSONObject jsonObject;
-		if (jo.get("accessStrategy") != null) {
-			jsonObject = new JSONObject((Map) jo.get("accessStrategy"));
-			AccessStrategy accessStrategy = new AccessStrategy();
+            }
+        }
 
-			AccessStrategy ac = accessStrategy.parse(jsonObject);
+        // AccessStrategy
+        JSONObject jsonObject;
+        if (jo.get("accessStrategy") != null) {
+            jsonObject = new JSONObject((Map) jo.get("accessStrategy"));
+            AccessStrategy accessStrategy = new AccessStrategy();
 
-			service.setAccessStrategy(ac);
-		}
+            AccessStrategy ac = accessStrategy.parse(jsonObject);
 
-		//contacts
-		if (jo.get("contacts") != null) {
-
-			ArrayList arrayList = (ArrayList) jo.get("contacts");
-
-			if (arrayList != null) {
-
-				String temp0 = (String) arrayList.get(0);
+            service.setAccessStrategy(ac);
+        }
 
-				List contacts = new LinkedList<Contact>();
+        //contacts
+        if (jo.get("contacts") != null) {
+
+            ArrayList arrayList = (ArrayList) jo.get("contacts");
+
+            if (arrayList != null) {
+
+                String temp0 = (String) arrayList.get(0);
 
-				if (arrayList != null && arrayList != null) {
-					ArrayList temp1 = (ArrayList) arrayList.get(1);
-					for (Object o : temp1) {
-
-						JSONObject jsonObject1 = null;
+                List<Contact> contacts = new LinkedList<>();
 
-						if (o != null &&
-								o.getClass().toString().equals("class org.json.simple.JSONObject")) {
-							jsonObject1 = (JSONObject) o;
-						}
-						if (o != null &&
-								o.getClass().toString().equals("class java.util.LinkedHashMap")) {
-							jsonObject1 = new JSONObject((Map) o);
-						}
-
-						Contact contact = new Contact();
-						if (jsonObject1.get("name") != null) contact.setName(jsonObject1.get("name").toString());
-						if (jsonObject1.get("email") != null) {
-							contact.setEmail((String) jsonObject1.get("email"));
-
-							if (jsonObject1.get("phone") != (null))
-								contact.setPhone(jsonObject1.get("phone").toString());
-							if (jsonObject1.get("department") != (null))
-								contact.setDepartment(jsonObject1.get("department").toString());
-							contacts.add(contact);
-						}
-
-					}
-				}
-
-				Object[] tempObj = new Object[2];
-				tempObj[0] = temp0;
-				tempObj[1] = contacts;
-				service.setContacts(tempObj);
-			}
-		}
-
-		return service;
-
-	}
-
-	public OAuthService analyze(String file) throws IOException, ParseException {
-
-		FileReader reader = new FileReader(path + file);
-		JSONParser jsonParser = new JSONParser();
-		Object obj = jsonParser.parse(reader);
-
-		reader.close();
-		return buildOAuthService((JSONObject) obj);
-
-	}
-
-	public HttpStatus update(String doerID, long id, JSONObject jsonObject) throws IOException, ParseException {
-		Service oldService = serviceRepo.retrieveService(id);
-
-		Service service = buildOAuthService(jsonObject);
-		service.setId(id);
-
-		String json = null;
-
-		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-		try {
-			json = ow.writeValueAsString(service);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
-					Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, "Fetching problem"));
-			return HttpStatus.FORBIDDEN;
-		}
-
-		FileWriter file;
-		try {
-
-			File oldFile = new File(path + oldService.getName() + "-" + service.getId() + ".json");
-			oldFile.delete();
-			String fileName = service.getName();
-			String s1 = fileName.replaceAll("\\s+", "");
-			s1 = s1.replaceAll("[-,]", "");
-			String filePath = s1 + "-" + service.getId();
-
-			file = new FileWriter(path + filePath + ".json");
-			file.write(json);
-			file.close();
-			UsersGroups usersGroups = new Comparison().compare(oldService.getAccessStrategy(), service.getAccessStrategy());
-
-			uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
-					Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, oldService, service, usersGroups, ""));
-			return HttpStatus.OK;
-		} catch (IOException e) {
-			e.printStackTrace();
-			uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
-					Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, "Saving problem"));
-			return HttpStatus.FORBIDDEN;
-		}
-
-	}
-
-	public long create(String doerID, JSONObject jo) throws IOException, ParseException {
-
-		OAuthService service = buildOAuthService(jo);
-		service.setId(new Date().getTime());
-		String json = null;
-		if (service != null) {
-
-			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-			try {
-				mongoTemplate.save(service, collection);
-				json = ow.writeValueAsString(service);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
-
-			FileWriter file;
-			try {
-				String fileName = service.getName();
-				String s1 = fileName.replaceAll("\\s+", "");
-				s1 = s1.replaceAll("[-,]", "");
-				String filePath = s1 + "-" + service.getId();
-
-				InetAddress[] machines = null;
-				if (!(service.getServiceId().contains("localhost")))
-					try {
-						machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
-					} catch (Exception e) {
-						uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
-								"IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
-						machines = null;
-					}
-
-				List<String> IPaddresses = new LinkedList<>();
-
-				if (machines != null)
-					for (InetAddress machine : machines)
-						IPaddresses.add(machine.getHostAddress());
-
-				file = new FileWriter(path + filePath + ".json");
-				file.write(json);
-				file.close();
-
-				uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
-						"", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
-
-				return service.getId();
-			} catch (IOException | ParseException e) {
-				e.printStackTrace();
-				uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
-						"", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
-				return 0;
-			}
-
-		}
-
-		return service.getId();
-
-	}
+                ArrayList temp1 = (ArrayList) arrayList.get(1);
+                for (Object o : temp1) {
+
+                    JSONObject jsonObject1 = null;
+
+                    if (o != null &&
+                            o.getClass().toString().equals("class org.json.simple.JSONObject")) {
+                        jsonObject1 = (JSONObject) o;
+                    }
+                    if (o != null &&
+                            o.getClass().toString().equals("class java.util.LinkedHashMap")) {
+                        jsonObject1 = new JSONObject((Map) o);
+                    }
+
+                    Contact contact = new Contact();
+                    if (Objects.requireNonNull(jsonObject1).get("name") != null)
+                        contact.setName(jsonObject1.get("name").toString());
+                    if (jsonObject1.get("email") != null) {
+                        contact.setEmail((String) jsonObject1.get("email"));
+
+                        if (jsonObject1.get("phone") != (null))
+                            contact.setPhone(jsonObject1.get("phone").toString());
+                        if (jsonObject1.get("department") != (null))
+                            contact.setDepartment(jsonObject1.get("department").toString());
+                        contacts.add(contact);
+                    }
+
+                }
+
+                Object[] tempObj = new Object[2];
+                tempObj[0] = temp0;
+                tempObj[1] = contacts;
+                service.setContacts(tempObj);
+            }
+        }
+
+        return service;
+
+    }
+
+    public OAuthService analyze(String file) throws IOException, ParseException {
+
+        FileReader reader = new FileReader(path + file);
+        JSONParser jsonParser = new JSONParser();
+        Object obj = jsonParser.parse(reader);
+
+        reader.close();
+        return buildOAuthService((JSONObject) obj);
+
+    }
+
+    public HttpStatus update(String doerID, long id, JSONObject jsonObject) {
+        Service oldService = serviceRepo.retrieveService(id);
+
+        Service service = buildOAuthService(jsonObject);
+        service.setId(id);
+
+        String json;
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        try {
+            json = ow.writeValueAsString(service);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, "Fetching problem"));
+            return HttpStatus.FORBIDDEN;
+        }
+
+        FileWriter file;
+        try {
+
+            File oldFile = new File(path + oldService.getName() + "-" + service.getId() + ".json");
+            oldFile.delete();
+            String fileName = service.getName();
+            String s1 = fileName.replaceAll("\\s+", "");
+            s1 = s1.replaceAll("[-,]", "");
+            String filePath = s1 + "-" + service.getId();
+
+            file = new FileWriter(path + filePath + ".json");
+            file.write(json);
+            file.close();
+            UsersGroups usersGroups = new Comparison().compare(oldService.getAccessStrategy(), service.getAccessStrategy());
+
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, oldService, service, usersGroups, ""));
+            return HttpStatus.OK;
+        } catch (IOException e) {
+            e.printStackTrace();
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
+                    Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, "Saving problem"));
+            return HttpStatus.FORBIDDEN;
+        }
+
+    }
+
+    public long create(String doerID, JSONObject jo) {
+
+        OAuthService service = buildOAuthService(jo);
+        service.setId(new Date().getTime());
+        String json = null;
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        try {
+            String collection = Variables.col_services;
+            mongoTemplate.save(service, collection);
+            json = ow.writeValueAsString(service);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        FileWriter file;
+        try {
+            String fileName = service.getName();
+            String s1 = fileName.replaceAll("\\s+", "");
+            s1 = s1.replaceAll("[-,]", "");
+            String filePath = s1 + "-" + service.getId();
+
+            InetAddress[] machines = null;
+            if (!(service.getServiceId().contains("localhost")))
+                try {
+                    machines = InetAddress.getAllByName(Trim.trimServiceId(service.getServiceId()));
+                } catch (Exception e) {
+                    uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                            "IP", Variables.ACTION_GET, Variables.RESULT_FAILED, ""));
+                    machines = null;
+                }
+
+            List<String> IPaddresses = new LinkedList<>();
+
+            if (machines != null)
+                for (InetAddress machine : machines)
+                    IPaddresses.add(machine.getHostAddress());
+
+            file = new FileWriter(path + filePath + ".json");
+            file.write(Objects.requireNonNull(json));
+            file.close();
+
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
+                    "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, new Comparison().compare(null, service.getAccessStrategy()), ""));
+
+            return service.getId();
+        } catch (IOException e) {
+            e.printStackTrace();
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, service.getServiceId(),
+                    "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, ""));
+            return 0;
+        }
+
+    }
 
 }

@@ -6,9 +6,9 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class Period{
-	SimpleTime from;
-	SimpleTime to;
+public class Period {
+    SimpleTime from;
+    SimpleTime to;
 
 
 }

@@ -15,54 +15,53 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class Notifs {
-	public ServiceGist getNotifications(String userId, String notificationApiURL, String notificationApiKey) throws IOException {
-		URL url;
-		try {
-			url = new URL(notificationApiURL);
-		}catch (Exception e){return null;}
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		con.setRequestMethod("POST");
+    public ServiceGist getNotifications(String userId, String notificationApiURL, String notificationApiKey) throws IOException {
+        URL url;
+        try {
+            url = new URL(notificationApiURL);
+        } catch (Exception e) {
+            return null;
+        }
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
 
-		con.setRequestProperty("Content-Type", "application/json; utf-8");
+        con.setRequestProperty("Content-Type", "application/json; utf-8");
 
-		con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Accept", "application/json");
 
-		con.setDoOutput(true);
-
-
-
-
-
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("api-key" , notificationApiKey);
-		jsonObject.put("user-id" , userId);
-
-		try(OutputStream os = con.getOutputStream()) {
-			byte[] input = jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8);
-			os.write(input, 0, input.length);
-		}
+        con.setDoOutput(true);
 
 
-		ServiceGist sg = null;
-		
-		try(BufferedReader br = new BufferedReader(
-				new InputStreamReader(con.getInputStream(),
-						StandardCharsets.UTF_8))) {
-			StringBuilder response = new StringBuilder();
-			String responseLine;
-			while ((responseLine = br.readLine()) != null) {
-				response.append(responseLine.trim());
-			}
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response.toString());
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("api-key", notificationApiKey);
+        jsonObject.put("user-id", userId);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+        try (OutputStream os = con.getOutputStream()) {
+            byte[] input = jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        }
 
-			sg = objectMapper.readValue (json.toJSONString(),ServiceGist.class) ;
-		}catch (Exception e){
-			e.getMessage();
-		}
 
-		return sg;
-	}
+        ServiceGist sg = null;
+
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(con.getInputStream(),
+                        StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(response.toString());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            sg = objectMapper.readValue(json.toJSONString(), ServiceGist.class);
+        } catch (Exception e) {
+            e.getMessage();
+        }
+
+        return sg;
+    }
 }

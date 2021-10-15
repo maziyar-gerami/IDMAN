@@ -10,18 +10,18 @@ import lombok.Setter;
 @Setter
 
 public class Contact {
-	@JsonProperty("@class")
-	private String atClass;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String name;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String email;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String phone;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String department;
+    @JsonProperty("@class")
+    private String atClass;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String name;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String email;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String phone;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String department;
 
-	public Contact() {
-		atClass = "org.apereo.cas.services.DefaultRegisteredServiceContact";
-	}
+    public Contact() {
+        atClass = "org.apereo.cas.services.DefaultRegisteredServiceContact";
+    }
 }

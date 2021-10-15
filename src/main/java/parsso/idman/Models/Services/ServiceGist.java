@@ -13,11 +13,11 @@ import java.util.List;
 @Setter
 @Getter
 public class ServiceGist {
-	@JsonIgnore
-	@JsonProperty("return")
-	private Return aReturn;
-	private int count;
-	private List<Notification> notifications;
+    @JsonIgnore
+    @JsonProperty("return")
+    private Return aReturn;
+    private int count;
+    private List<Notification> notifications;
 
 
 }

@@ -2,7 +2,6 @@ package parsso.idman.RepoImpls;
 
 
 import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -19,10 +18,10 @@ import parsso.idman.Models.Logs.Config;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.Logs.Setting;
 import parsso.idman.Models.other.Time;
-import parsso.idman.Repos.ConfigRepo;
-import parsso.idman.Repos.UserRepo;
 import parsso.idman.Utils.Convertor.DateConverter;
 import parsso.idman.Utils.JSON.JSONencoder;
+import parsso.idman.repos.ConfigRepo;
+import parsso.idman.repos.UserRepo;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -37,350 +36,324 @@ import java.util.*;
 @SuppressWarnings("DuplicatedCode")
 @Service
 public class ConfigRepoImpl implements ConfigRepo {
-	@Autowired
-	PasswordSettings passwordSettings;
-	MongoTemplate mongoTemplate;
-	@Autowired
-	InstantMessage instantMessage;
-	@Autowired
-	UserRepo userRepo;
-	@Autowired
-	UniformLogger uniformLogger;
-	@Autowired
-	private ApplicationContext appContext;
-	@Value("${external.config}")
-	private String pathToProperties;
-	@Value("${external.config.backup}")
-	private String backUpOfProperties;
-	@Value("${backup.path}")
-	private String backUpPath;
+    @Autowired
+    PasswordSettings passwordSettings;
+    MongoTemplate mongoTemplate;
+    @Autowired
+    InstantMessage instantMessage;
+    @Autowired
+    UserRepo userRepo;
+    @Autowired
+    UniformLogger uniformLogger;
+    @Autowired
+    private ApplicationContext appContext;
+    @Value("${external.config}")
+    private String pathToProperties;
+    @Value("${external.config.backup}")
+    private String backUpOfProperties;
+    @Value("${backup.path}")
+    private String backUpPath;
 
-	public static List<Setting> parser(Scanner reader, String system) {
+    public static List<Setting> parser(Scanner reader, String system) {
 
-		Setting setting = new Setting();
-		List<Setting> settings = new LinkedList<>();
-		String groupName = null;
-		String description = null;
-		String name;
-		String value;
+        Setting setting = new Setting();
+        List<Setting> settings = new LinkedList<>();
+        String groupName = null;
+        String description = null;
+        String name;
+        String value;
 
-		String line;
+        String line;
 
-		while (reader.hasNextLine()) {
+        while (reader.hasNextLine()) {
 
-			line = reader.nextLine();
+            line = reader.nextLine();
 
-			while (line.equals("")) {
-					settings.add(setting);
-					setting = new Setting();
+            while (line.equals("")) {
+                settings.add(setting);
+                setting = new Setting();
 
-				if (reader.hasNextLine()) line = reader.nextLine();
-				else return settings;
-			}
+                if (reader.hasNextLine()) line = reader.nextLine();
+                else return settings;
+            }
 
-			if (line.charAt(0) == '#') {
+            if (line.charAt(0) == '#') {
 
-				if (line.charAt(1) == '#') {
+                if (line.charAt(1) == '#') {
 
-					if (line.charAt(2) == '#') {
+                    if (line.charAt(2) == '#') {
 
-						groupName = line.substring(3);
+                        groupName = line.substring(3);
 
-						continue;
+                        continue;
 
-					}
+                    }
 
-					description = line.substring(2);
+                    description = line.substring(2);
 
-					continue;
+                    continue;
 
-				}
+                }
 
-				continue;
+                continue;
 
-			}
+            }
 
-			int equalIndex = line.indexOf('=');
+            int equalIndex = line.indexOf('=');
 
-			if (equalIndex > 0) {
-				name = line.substring(0, equalIndex);
+            if (equalIndex > 0) {
+                name = line.substring(0, equalIndex);
 
-				value = line.substring(equalIndex + 1);
+                value = line.substring(equalIndex + 1);
 
-				setting.setName(name);
+                setting.setName(name);
 
-				setting.setValue(value.trim());
+                setting.setValue(value.trim());
 
-				setting.setDescription(description);
+                setting.setDescription(description);
 
-				setting.setGroup(groupName.trim());
+                setting.setGroup(Objects.requireNonNull(groupName).trim());
 
-				setting.setSystem(system.trim());
+                setting.setSystem(system.trim());
 
-				settings.add(setting);
+                settings.add(setting);
 
-			}
-			setting = new Setting();
+            }
+            setting = new Setting();
 
 
-		}
+        }
 
-		return settings;
-	}
+        return settings;
+    }
 
-	@Override
-	public List<Setting> retrieveTFSetting() throws IOException {
 
-		Resource resource = appContext.getResource("file:" + pathToProperties);
-		File file = resource.getFile();
-		String fullFileName = file.getName();
-		int equalIndex = fullFileName.indexOf('.');
-		String system = fullFileName.substring(0, equalIndex);
+    @Override
+    public String retrieveSetting() throws IOException {
 
-		Scanner myReader = new Scanner(file);
+        Resource resource = appContext.getResource("file:" + pathToProperties);
+        File file = resource.getFile();
+        String fullFileName = file.getName();
+        int equalIndex = fullFileName.indexOf('.');
+        String system = fullFileName.substring(0, equalIndex);
 
-		List<Setting> allSettings = parser(myReader, system);
+        Scanner myReader = new Scanner(file);
 
-		List<Setting> relatedSettings = new LinkedList<>();
+        List<Setting> settings = parser(myReader, system);
 
-		for (Setting setting : allSettings) {
-			if (setting.getValue() != null && (setting.getValue().equalsIgnoreCase("true") || setting.getValue().equalsIgnoreCase("false")))
-				relatedSettings.add(setting);
-		}
+        JSONencoder jsonEncoder = new JSONencoder(settings);
 
-		return relatedSettings;
-	}
+        JSONArray jsonArray = jsonEncoder.encode(settings);
 
-	@Override
-	public String retrieveSetting() throws IOException {
+        myReader.close();
 
-		Resource resource = appContext.getResource("file:" + pathToProperties);
-		File file = resource.getFile();
-		String fullFileName = file.getName();
-		int equalIndex = fullFileName.indexOf('.');
-		String system = fullFileName.substring(0, equalIndex);
+        return jsonArray.toString();
+    }
 
-		Scanner myReader = new Scanner(file);
+    @Override
+    public void updateSettings(String doerID, List<Setting> settings) {
 
-		List<Setting> settings = parser(myReader, system);
+        StringBuilder file_properties = new StringBuilder();
 
-		JSONencoder jsonEncoder = new JSONencoder(settings);
+        for (Setting setting : settings) {
 
-		JSONArray jsonArray = jsonEncoder.encode(settings);
+            if (file_properties.toString().equals(""))
+                file_properties.append("###").append(setting.getGroup());
+            else {
 
-		myReader.close();
+                if (!file_properties.toString().contains(setting.getGroup()))
+                    file_properties.append("\n\n\n###").append(setting.getGroup());
 
-		return jsonArray.toString();
-	}
+            }
 
-	@Override
-	public String updateSettings(String doerID, List<Setting> settings) throws IOException, ParseException {
+            int index = file_properties.indexOf(setting.getGroup()) + setting.getGroup().length();
 
-		String file_properties = "";
+            String temp = "";
+            temp += "\n##" + setting.getDescription() + "\n";
+            temp += setting.getName() + "=" + setting.getValue();
 
-		for (Setting setting : settings) {
+            file_properties = new StringBuilder(file_properties.substring(0, index) + temp + file_properties.substring(index));
 
-			if (file_properties.equals(""))
-				file_properties += "###" + setting.getGroup();
-			else {
+        }
 
-				if (!file_properties.contains(setting.getGroup()))
-					file_properties += "\n\n\n###" + setting.getGroup();
+        String date = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 
-			}
+        try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("application.properties")) {
+            Files.copy(Objects.requireNonNull(is), Paths.get(this.getClass().getClassLoader() + "/backup/" + date + "_application.properties"));
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, settings, ""));
 
-			int index = file_properties.indexOf(setting.getGroup()) + setting.getGroup().length();
+        } catch (IOException e) {
+            e.printStackTrace();
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, settings, "unknown error"));
 
-			String temp = "";
-			temp += "\n##" + setting.getDescription() + "\n";
-			temp += setting.getName() + "=" + setting.getValue();
+        }
 
-			file_properties = file_properties.substring(0, index) + temp + file_properties.substring(index);
+        try {
 
-		}
+            File newFile = new File(pathToProperties);
 
-		String date = LocalDateTime.now()
-				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+            newFile.createNewFile();
 
-		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("application.properties")) {
-			Files.copy(is, Paths.get(this.getClass().getClassLoader() + "/backup/" + date + "_application.properties"));
-			uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, settings, ""));
+            FileWriter fw = new FileWriter(newFile);
 
-		} catch (IOException | ParseException e) {
-			e.printStackTrace();
-			uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, settings, "unknown error"));
+            BufferedWriter out = new BufferedWriter(fw);
 
-		}
+            out.write(file_properties.toString());
+            out.flush();
+            out.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
-		try {
+    }
 
-			File newFile = new File(pathToProperties);
+    @Override
+    public HttpStatus backupConfig() {
 
-			newFile.createNewFile();
+        String date = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 
-			FileWriter fw = new FileWriter(newFile);
+        Path copied = Paths.get(pathToProperties);
+        String s = backUpPath + date + "_application.properties";
 
-			BufferedWriter out = new BufferedWriter(fw);
+        new File(backUpPath).mkdirs();
 
-			out.write(file_properties);
-			out.flush();
-			out.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+        Path originalPath = Paths.get(s);
+        try {
+            Files.copy(copied, originalPath);
 
-		return file_properties;
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return HttpStatus.OK;
 
-	@Override
-	public HttpStatus backupConfig() {
+    }
 
-		String date = LocalDateTime.now()
-				.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+    @Override
+    public HttpStatus factoryReset(String doerID) throws IOException {
 
-		Path copied = Paths.get(pathToProperties);
-		String s = backUpPath + date + "_application.properties";
+        Path copied = Paths.get(pathToProperties);
+        Resource resource = new ClassPathResource(backUpOfProperties);
+        File file = resource.getFile().getAbsoluteFile();
+        Path originalPath = Paths.get(file.getAbsolutePath());
+        try {
+            Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
 
-		new File(backUpPath).mkdirs();
+        } catch (Exception e) {
+            e.printStackTrace();
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_RESET, Variables.RESULT_FAILED, ""));
 
-		Path originalPath = Paths.get(s);
-		try {
-			Files.copy(copied, originalPath);
+        }
+        return HttpStatus.OK;
+    }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return HttpStatus.OK;
+    @Override
+    public HttpStatus restore(String doerID, String name) {
 
-	}
+        List<Config> configs = listBackedUpConfigs();
 
-	@Override
-	public HttpStatus factoryReset(String doerID) throws IOException, ParseException {
+        for (Config config : configs) {
+            if (config.getName().equals(name)) {
 
-		Path copied = Paths.get(pathToProperties);
-		Resource resource = new ClassPathResource(backUpOfProperties);
-		File file = resource.getFile().getAbsoluteFile();
-		Path originalPath = Paths.get(file.getAbsolutePath());
-		try {
-			Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
-			uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
+                Path copied = Paths.get(pathToProperties);
+                String s = backUpPath + config.getName();
+                Path originalPath = Paths.get(s);
+                try {
+                    Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
+                    uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, config.getName(), "",
+                            Variables.ACTION_RESTORE, Variables.RESULT_SUCCESS, config.getName(), ""));
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, "", "", Variables.ACTION_RESET, Variables.RESULT_FAILED, ""));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, config.getName(), "",
+                            Variables.ACTION_RESTORE, Variables.RESULT_FAILED, config.getName(), "Restoring file"));
 
-		}
-		return HttpStatus.OK;
-	}
+                }
+                return HttpStatus.OK;
+            }
+        }
+        return HttpStatus.OK;
+    }
 
-	@Override
-	public HttpStatus restore(String doerID, String name) throws IOException, ParseException {
+    @Override
+    public List<Config> listBackedUpConfigs() {
+        File folder = new File(backUpPath); // ./services/
+        String[] files = folder.list();
+        List<Config> configs = new LinkedList<>();
+        Config config = null;
+        if (files != null)
+            for (String file : files) {
+                if (file.endsWith(".properties"))
+                    config = new Config();
 
-		List<Config> configs = listBackedUpConfigs();
+                try {
 
-		for (Config config : configs) {
-			if (config.getName().equals(name)) {
+                    Objects.requireNonNull(config).setName(file);
+                    SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
-				Path copied = Paths.get(pathToProperties);
-				String s = backUpPath + config.getName();
-				Path originalPath = Paths.get(s);
-				try {
-					Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
-					uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_CONFIG, config.getName(), "",
-							Variables.ACTION_RESTORE, Variables.RESULT_SUCCESS, config.getName(), ""));
+                    Date date = parserSDF.parse(file);
 
-				} catch (Exception e) {
-					e.printStackTrace();
-					uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_CONFIG, config.getName(), "",
-							Variables.ACTION_RESTORE, Variables.RESULT_FAILED, config.getName(), "Restoring file"));
+                    Calendar myCal = new GregorianCalendar();
+                    myCal.setTime(date);
 
-				}
-				return HttpStatus.OK;
-			}
-		}
-		return HttpStatus.OK;
-	}
+                    DateConverter dateConverter = new DateConverter();
 
-	@Override
-	public List<Config> listBackedUpConfigs() {
-		File folder = new File(backUpPath); // ./services/
-		String[] files = folder.list();
-		List<Config> configs = new LinkedList<>();
-		Config config = null;
-		if (files != null)
-			for (String file : files) {
-				if (file.endsWith(".properties"))
-					config = new Config();
+                    dateConverter.gregorianToPersian(myCal.get(Calendar.YEAR), myCal.get(Calendar.MONTH) + 1, myCal.get(Calendar.DAY_OF_MONTH));
 
-				try {
+                    int inPersianDay = dateConverter.getDay();
+                    int inPersianMonth = dateConverter.getMonth();
+                    int inPersianYear = dateConverter.getYear();
 
-					config.setName(file);
-					SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+                    Time time = new Time(
+                            inPersianYear,
+                            inPersianMonth,
+                            inPersianDay,
 
-					Date date = parserSDF.parse(file);
+                            myCal.get(Calendar.HOUR_OF_DAY),
+                            myCal.get(Calendar.MINUTE),
+                            myCal.get(Calendar.SECOND)
+                    );
 
-					Calendar myCal = new GregorianCalendar();
-					myCal.setTime(date);
+                    config.setDateTime(time);
+                    Resource resource = new ClassPathResource(backUpOfProperties);
+                    File filetemp = resource.getFile().getAbsoluteFile();
+                    Scanner myReader = new Scanner(filetemp);
 
-					DateConverter dateConverter = new DateConverter();
+                    int dot = file.indexOf('.');
+                    String system = file.substring(20, dot);
 
-					dateConverter.gregorianToPersian(myCal.get(Calendar.YEAR), myCal.get(Calendar.MONTH) + 1, myCal.get(Calendar.DAY_OF_MONTH));
+                    List<Setting> settings = parser(myReader, system);
+                    config.setSettingList(settings);
 
-					int inPersianDay = dateConverter.getDay();
-					int inPersianMonth = dateConverter.getMonth();
-					int inPersianYear = dateConverter.getYear();
+                } catch (Exception e) {
+                    continue;
+                }
+                configs.add(config);
+            }
+        return configs;
+    }
 
-					Time time = new Time(
-							inPersianYear,
-							inPersianMonth,
-							inPersianDay,
+    @Override
+    public HttpStatus saveToMongo() throws IOException {
 
-							myCal.get(Calendar.HOUR_OF_DAY),
-							myCal.get(Calendar.MINUTE),
-							myCal.get(Calendar.SECOND)
-					);
+        Resource resource = appContext.getResource("file:" + pathToProperties);
+        File file = resource.getFile();
+        String fullFileName = file.getName();
+        int equalIndex = fullFileName.indexOf('.');
+        String system = fullFileName.substring(0, equalIndex);
 
-					config.setDateTime(time);
-					Resource resource = new ClassPathResource(backUpOfProperties);
-					File filetemp = resource.getFile().getAbsoluteFile();
-					Scanner myReader = new Scanner(filetemp);
+        Scanner myReader = new Scanner(file);
 
-					int dot = file.indexOf('.');
-					String system = file.substring(20, dot);
+        List<Setting> settings = parser(myReader, system);
 
-					List<Setting> settings = parser(myReader, system);
-					config.setSettingList(settings);
+        for (Setting setting : settings)
+            if (setting.getGroup() != null)
+                mongoTemplate.save(setting, Variables.col_properties);
 
-				} catch (Exception e) {
-					continue;
-				}
-				configs.add(config);
-			}
-		return configs;
-	}
 
-	@Override
-	public HttpStatus saveToMongo() throws IOException {
-
-		Resource resource = appContext.getResource("file:" + pathToProperties);
-		File file = resource.getFile();
-		String fullFileName = file.getName();
-		int equalIndex = fullFileName.indexOf('.');
-		String system = fullFileName.substring(0, equalIndex);
-
-		Scanner myReader = new Scanner(file);
-
-		List<Setting> settings = parser(myReader, system);
-
-		for (Setting setting : settings) {
-			if (setting.getGroup() != null) {
-				setting.setChangable(!setting.getGroup().equalsIgnoreCase("Main"));
-
-				mongoTemplate.save(setting, Variables.col_properties);
-			}
-		}
-
-		return HttpStatus.OK;
-	}
+        return HttpStatus.OK;
+    }
 
 }

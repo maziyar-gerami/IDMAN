@@ -6,9 +6,9 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class Schedule{
-	int weekDay;
-	Period period;
+public class Schedule {
+    int weekDay;
+    Period period;
 
 
 }
