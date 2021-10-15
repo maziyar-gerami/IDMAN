@@ -28,6 +28,8 @@ import parsso.idman.repos.SystemRefresh;
 import parsso.idman.repos.UserRepo;
 
 import javax.naming.directory.SearchControls;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -194,14 +196,24 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             MicroService serviceExtraInfo = mongoTemplate.findOne(query, MicroService.class, Variables.col_servicesExtraInfo);
             MicroService newServiceExtraInfo = new MicroService();
 
-            if (serviceExtraInfo == null) {
-                newServiceExtraInfo.setUrl(service.getServiceId());
-                newServiceExtraInfo.set_id(service.getId());
-                serviceExtraInfo = newServiceExtraInfo;
+            String tempUrl;
+
+            if (serviceExtraInfo != null & serviceExtraInfo.getUrl() != null) {
+                tempUrl = serviceExtraInfo.getUrl();
             } else
-                serviceExtraInfo.set_id(service.getId());
-            if (serviceExtraInfo.getUrl() == null)
-                serviceExtraInfo.setUrl(service.getServiceId());
+                tempUrl = service.getServiceId();
+
+            try {
+                URL url = new URL(tempUrl);
+                newServiceExtraInfo.setUrl(new URL(tempUrl).getProtocol()+"://"+url.getAuthority());
+            } catch (MalformedURLException e) {
+                newServiceExtraInfo.setUrl("www.example.com");
+            }
+            newServiceExtraInfo.set_id(service.getId());
+            serviceExtraInfo = newServiceExtraInfo;
+
+            serviceExtraInfo.set_id(service.getId());
+
 
             serviceExtraInfo.setPosition(i++);
 
