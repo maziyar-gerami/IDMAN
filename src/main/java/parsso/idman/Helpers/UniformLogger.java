@@ -3,7 +3,6 @@ package parsso.idman.Helpers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -11,7 +10,6 @@ import parsso.idman.Models.Logs.Change;
 import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.repos.ServiceRepo;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 

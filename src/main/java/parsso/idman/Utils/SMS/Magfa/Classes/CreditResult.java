@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import java.math.BigDecimal;
 
+@SuppressWarnings("ALL")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "creditResult", propOrder = {
 		"status",

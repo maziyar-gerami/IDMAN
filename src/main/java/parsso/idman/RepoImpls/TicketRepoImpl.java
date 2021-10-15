@@ -4,7 +4,6 @@ package parsso.idman.RepoImpls;
 import net.minidev.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -24,7 +23,6 @@ import parsso.idman.Models.other.Time;
 import parsso.idman.repos.TicketRepo;
 import parsso.idman.repos.UserRepo;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -385,7 +383,7 @@ public class TicketRepoImpl implements TicketRepo {
 	}
 
 	@Override
-	public ListTickets retrieveArchivedTickets(String doer, String cat, String subCat, String status, String page, String count, String from, String ticketId, String date) {
+	public ListTickets retrieveArchivedTickets(String cat, String subCat, String page, String count, String from, String ticketId, String date) {
 
 		int skip = (Integer.parseInt(page) - 1) * Integer.parseInt(count);
 		int limit = Integer.parseInt(count);

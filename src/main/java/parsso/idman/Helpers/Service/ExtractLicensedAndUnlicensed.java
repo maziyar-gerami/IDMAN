@@ -36,7 +36,7 @@ public class ExtractLicensedAndUnlicensed {
 		return licensed;
 	}
 
-	public List<List<MicroService>> licensedServiceWithGroupID(List<MicroService> licensed, List<MicroService> unLicensed, Service service, List<String> memberOf) {
+	public List licensedServiceWithGroupID(List<MicroService> licensed, List<MicroService> unLicensed, Service service, List<String> memberOf) {
 
 		if (memberOf != null)
 			for (String groupStr : memberOf)
@@ -56,7 +56,7 @@ public class ExtractLicensedAndUnlicensed {
 		return list;
 	}
 
-	public List<List<MicroService>> unLicensedServicesForUserID(String userId, List<MicroService> licensed, List<MicroService> unLicensed, Service service) {
+	public List unLicensedServicesForUserID(String userId, List<MicroService> licensed, List<MicroService> unLicensed, Service service) {
 		if (service.getAccessStrategy().getRejectedAttributes().get("uid") != null)
 			for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRejectedAttributes().get("uid"))).get(1))
 				if (userId.equalsIgnoreCase(name.toString())) {

@@ -395,7 +395,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 	}
 
 	@Override
-	public HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) throws IOException, ParseException {
+	public HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) {
 
 		JSONObject JsonExtraInfo = null;
 

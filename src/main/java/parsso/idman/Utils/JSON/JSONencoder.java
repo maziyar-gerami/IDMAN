@@ -8,11 +8,9 @@ import parsso.idman.Models.Logs.Setting;
 import java.util.List;
 
 public class JSONencoder {
-	private final List<Setting> settings;
 
-	public JSONencoder(List<Setting> settings) {
-		this.settings = settings;
-	}
+    public JSONencoder(List<Setting> settings) {
+    }
 
 	public JSONArray encode(List<Setting> settings) {
 

@@ -8,7 +8,6 @@ import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Logs.ReportMessage;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service

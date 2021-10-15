@@ -1,7 +1,6 @@
 package parsso.idman.controllers;
 
 import net.minidev.json.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -58,7 +57,7 @@ public class UsersController {
     }
 
     @GetMapping("/api/skyroom")
-    public ResponseEntity<SkyRoom> skyroom(HttpServletRequest request) throws IOException, ParseException {
+    public ResponseEntity<SkyRoom> skyroom(HttpServletRequest request) throws IOException {
 
         return new ResponseEntity<>(skyroomRepo.Run(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
     }
@@ -66,7 +65,7 @@ public class UsersController {
 
     @PutMapping("/api/users/password/expire")
     public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
-                                                       @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+                                                       @RequestBody JSONObject jsonObject) {
         Principal principal = request.getUserPrincipal();
         List<String> preventedUsers = userRepo.expirePassword(principal.getName(), jsonObject);
 
@@ -87,7 +86,7 @@ public class UsersController {
     }
 
     @GetMapping("/api/users/license/u/{uid}")
-    public ResponseEntity<User> retrieveUserLicense(@PathVariable("uid") String userId) throws IOException, ParseException {
+    public ResponseEntity<User> retrieveUserLicense(@PathVariable("uid") String userId) {
         User user = userRepo.retrieveUsersWithLicensed(userId);
         if (user == null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         else return new ResponseEntity<>(user, HttpStatus.OK);
@@ -121,7 +120,7 @@ public class UsersController {
     @PutMapping("/api/users/group/{groupId}")
     public ResponseEntity<HttpStatus> massUsersGroupUpdate(HttpServletRequest request,
                                                            @RequestBody JSONObject gu,
-                                                           @PathVariable(name = "groupId") String groupId) throws IOException, ParseException {
+                                                           @PathVariable(name = "groupId") String groupId) {
         return new ResponseEntity<>(userRepo.massUsersGroupUpdate(request.getUserPrincipal().getName(), groupId, gu));
     }
 
@@ -177,7 +176,7 @@ public class UsersController {
     }
 
     @PostMapping("/api/users/import")
-    public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException, ParseException {
+    public ResponseEntity<JSONObject> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException {
 
         JSONObject jsonObject = importUsers.importFileUsers(request.getUserPrincipal().getName(), file, defaultSequence, true);
         if (Integer.parseInt(jsonObject.getAsString("nUnSuccessful")) == 0)
@@ -197,7 +196,7 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/ou/{ou}")
-    public ResponseEntity<List<String>> addGroups(HttpServletRequest request, @RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException, ParseException {
+    public ResponseEntity<List<String>> addGroups(HttpServletRequest request, @RequestParam("file") MultipartFile file, @PathVariable("ou") String ou) throws IOException {
         List<String> notExist = userRepo.addGroupToUsers(request.getUserPrincipal().getName(), file, ou);
         if (ou.equals("none"))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -232,7 +231,7 @@ public class UsersController {
     }
 
     @PostMapping("/api/user/photo")
-    public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException, ParseException {
+    public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         userRepo.uploadProfilePic(file, request.getUserPrincipal().getName());
         return new RedirectView("/dashboard");
     }
@@ -246,7 +245,7 @@ public class UsersController {
         String token = jsonObject.getAsString("token");
         if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
 
-        return new ResponseEntity<>(userRepo.changePassword(principal.getName(), oldPassword, newPassword, token));
+        return new ResponseEntity<>(userRepo.changePassword(principal.getName(), newPassword, token));
 
     }
 

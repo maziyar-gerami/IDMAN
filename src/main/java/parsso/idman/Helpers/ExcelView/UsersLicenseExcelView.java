@@ -46,7 +46,7 @@ public class UsersLicenseExcelView extends AbstractXlsView {
 		licensedHeader.createCell(1).setCellValue("Display Name");
 		licensedHeader.getCell(1).setCellStyle(style);
 
-		build("licensed", sheetLicensed);
+		build();
 
 		HSSFRow header = sheetUnlicensed.createRow(0);
 
@@ -56,11 +56,11 @@ public class UsersLicenseExcelView extends AbstractXlsView {
 		header.createCell(1).setCellValue("Display Name");
 		header.getCell(1).setCellStyle(style);
 
-		build("unLicensed", sheetUnlicensed);
+		build();
 
 	}
 
-	private void build(String licenseStatus, HSSFSheet sheet) {
+	private void build() {
 
 	}
 

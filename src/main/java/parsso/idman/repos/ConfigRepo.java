@@ -1,7 +1,6 @@
 package parsso.idman.repos;
 
 
-import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import parsso.idman.Models.Logs.Config;
 import parsso.idman.Models.Logs.Setting;

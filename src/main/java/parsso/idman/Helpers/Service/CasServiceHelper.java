@@ -31,7 +31,6 @@ import java.util.*;
 
 @Component
 public class CasServiceHelper {
-	private final String collection = Variables.col_services;
 	@Value("${services.folder.path}")
 	String path;
 	@Autowired
@@ -264,7 +263,7 @@ public class CasServiceHelper {
 
 	}
 
-	public HttpStatus update(String doerID, long id, JSONObject jsonObject) throws IOException, ParseException {
+	public HttpStatus update(String doerID, long id, JSONObject jsonObject) {
 		Service oldService = serviceRepo.retrieveService(id);
 
 		Service service = buildCasService(jsonObject);
@@ -317,7 +316,8 @@ public class CasServiceHelper {
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         try {
-            mongoTemplate.save(service, collection);
+			String collection = Variables.col_services;
+			mongoTemplate.save(service, collection);
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
             e.printStackTrace();

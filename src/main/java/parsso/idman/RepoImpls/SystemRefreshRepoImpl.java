@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -29,7 +28,6 @@ import parsso.idman.repos.SystemRefresh;
 import parsso.idman.repos.UserRepo;
 
 import javax.naming.directory.SearchControls;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -110,7 +108,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                     userExtraInfo.setRole("USER");
 
                 else if (userExtraInfo.getUserId() != null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
-                    userExtraInfo.setRole("SUPERADMIN");
+                    userExtraInfo.setRole("SUPERUSER");
 
                 else if (userExtraInfo.getRole() != null)
                     userExtraInfo.setRole(userExtraInfo.getRole());
@@ -233,7 +231,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 	}
 
 	@Override
-	public HttpStatus all(String doer) throws IOException, ParseException {
+	public HttpStatus all(String doer) {
 		try {
 			mongoTemplate.getCollection("IDMAN_Tokens").drop();
 		} catch (Exception e) {

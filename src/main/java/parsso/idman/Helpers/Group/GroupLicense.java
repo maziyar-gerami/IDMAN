@@ -5,14 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import parsso.idman.Models.Groups.Group;
 import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.ServiceRepo;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,7 +21,7 @@ public class GroupLicense {
 	@Autowired
 	ServiceRepo serviceRepo;
 
-	public List<Group> licensedGroups(long serviceId) throws IOException, ParseException {
+	public List<Group> licensedGroups(long serviceId) {
 		List<Group> groups = new LinkedList<>();
 
 		parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
@@ -36,7 +34,7 @@ public class GroupLicense {
 		return groups;
 	}
 
-	public Groups groups(long serviceId) throws IOException, ParseException {
+	public Groups groups(long serviceId) {
 
 		return new Groups(licensedGroups(serviceId));
 	}

@@ -2,7 +2,6 @@ package parsso.idman.repos;
 
 
 import net.minidev.json.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Users.ListUsers;
@@ -17,7 +16,7 @@ import java.util.List;
 public interface UserRepo {
 	List<String> remove(String doerID, JSONObject jsonObject);
 
-	HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token);
+	HttpStatus changePassword(String uId, String newPassword, String token);
 
 	String showProfilePic(HttpServletResponse response, User user);
 
@@ -45,7 +44,7 @@ public interface UserRepo {
 
 	User retrieveUsers(String userId);
 
-	User retrieveUsersWithLicensed(String userId) throws IOException, ParseException;
+	User retrieveUsersWithLicensed(String userId);
 
 	List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
 
@@ -69,7 +68,7 @@ public interface UserRepo {
 
 	// --Commented out by Inspection (10/14/2021 9:10 PM):HttpStatus syncUsersDBs();
 
-	List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException;
+	List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException;
 
 	List<String> expirePassword(String name, JSONObject jsonObject);
 

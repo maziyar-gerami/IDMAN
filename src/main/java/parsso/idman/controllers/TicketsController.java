@@ -108,7 +108,7 @@ public class TicketsController {
 
     }
 
-    @GetMapping("/api/superadmin/tickets/archive/{page}/{count}")
+    @GetMapping("/api/superuser/tickets/archive/{page}/{count}")
     public ResponseEntity<ListTickets> archiveTickets(@RequestParam(name = "cat", defaultValue = "") String cat,
                                                       @RequestParam(name = "subCat", defaultValue = "") String subCat,
                                                       @RequestParam(name = "status", defaultValue = "") String status,
@@ -118,7 +118,7 @@ public class TicketsController {
                                                       @PathVariable(name = "page") String page,
                                                       @PathVariable(name = "count") String count,
                                                       HttpServletRequest request) {
-        ListTickets ls = ticketRepo.retrieveArchivedTickets(request.getUserPrincipal().getName(), cat, subCat, status, page, count, from, id, date);
+        ListTickets ls = ticketRepo.retrieveArchivedTickets(cat, subCat, page, count, from, id, date);
         return new ResponseEntity<>(ls, HttpStatus.OK);
 
     }

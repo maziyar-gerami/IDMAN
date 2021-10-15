@@ -3,7 +3,6 @@ package parsso.idman.RepoImpls;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 	@Autowired
 	UniformLogger uniformLogger;
 
-	public SkyRoom Run(User user) throws IOException, ParseException {
+	public SkyRoom Run(User user) throws IOException {
 
 		String Realname = user.getFirstName() + user.getLastName();
 		String Classname = user.getFirstName().split("")[0] + user.getLastName().split("")[0] + (int) (Long.parseLong(user.getMobile()) % 937);

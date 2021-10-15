@@ -1,7 +1,6 @@
 package parsso.idman.Helpers.User;
 
 
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -17,7 +16,6 @@ import parsso.idman.Models.Users.UsersExtraInfo;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,12 +32,12 @@ public class ExpirePassword {
 
 	public List<String> expire(String doer, List<UsersExtraInfo> users) {
 
-		List<String> superAdminUsers = new LinkedList<>();
+		List<String> superUsers = new LinkedList<>();
 
 		for (UsersExtraInfo user : users) {
 			if (user == null)
 				continue;
-			if (!user.getRole().equals("SUPERADMIN")) {
+			if (!user.getRole().equals("SUPERUSER")) {
 
 				ModificationItem[] modificationItems;
 				modificationItems = new ModificationItem[1];
@@ -70,14 +68,14 @@ public class ExpirePassword {
 					}
 				}
 			} else {
-				superAdminUsers.add(user.getUserId());
+				superUsers.add(user.getUserId());
 
 				uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), Variables.ACTION_EXPIREPASSWORD,
 						Variables.ACTION_INSERT, Variables.RESULT_FAILED, "Cant add to SUPERUSER role"));
 
 			}
 		}
-		return superAdminUsers;
+		return superUsers;
 	}
 
 }

@@ -2,7 +2,6 @@ package parsso.idman.RepoImpls;
 
 
 import net.minidev.json.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
@@ -29,7 +28,6 @@ import parsso.idman.repos.UserRepo;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.naming.directory.SearchControls;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -115,7 +113,7 @@ public class EmailServiceImpl implements EmailService {
 			List<User> users = userRepo.retrieveUsersFull();
 
 			for (User user : users)
-				if (!user.getUsersExtraInfo().getRole().equals("SUPERADMIN") && user.getMail() != null && user.getMail() != null && user.getMail() != "" && user.getMail() != " ")
+				if (!user.getUsersExtraInfo().getRole().equals("SUPERUSER") && user.getMail() != null && user.getMail() != null && user.getMail() != "" && user.getMail() != " ")
 					sendMail(user.getMail());
 
 		} else {
@@ -124,9 +122,7 @@ public class EmailServiceImpl implements EmailService {
 
 				User user = userRepo.retrieveUsers(temp.toString());
 				{
-					Thread thread = new Thread(() -> {
-						sendMail(user.getMail());
-					});
+					Thread thread = new Thread(() -> sendMail(user.getMail()));
 					if (checkMail(user.getMail()) != null)
 						thread.start();
 				}

@@ -2,7 +2,6 @@ package parsso.idman.Helpers.Communicate;
 
 
 import net.minidev.json.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +20,6 @@ import parsso.idman.Utils.SMS.Magfa.Texts;
 import parsso.idman.repos.MagfaSMSSendRepo;
 import parsso.idman.repos.UserRepo;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -3,6 +3,7 @@ package parsso.idman.Utils.SMS.Magfa.Classes;
 
 import javax.xml.bind.annotation.*;
 
+@SuppressWarnings("ALL")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "customerReturnIncomingFormat", propOrder = {
 		"body",

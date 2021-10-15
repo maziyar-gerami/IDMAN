@@ -39,7 +39,7 @@ public class ServicesController {
     }
 
     @GetMapping("/api/services/user")
-    public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) throws IOException, ParseException {
+    public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) {
         return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
     }
 
@@ -49,7 +49,7 @@ public class ServicesController {
     }
 
     @GetMapping("/api/services/{id}")
-    public ResponseEntity<Service> retrieveService(@PathVariable("id") long serviceId) throws IOException, ParseException {
+    public ResponseEntity<Service> retrieveService(@PathVariable("id") long serviceId) {
         return new ResponseEntity<>(serviceRepo.retrieveService(serviceId), HttpStatus.OK);
     }
 
@@ -69,7 +69,7 @@ public class ServicesController {
 
     @PutMapping("/api/service/{id}/{system}")
     public ResponseEntity<String> updateService(HttpServletRequest request, @PathVariable("id") long id,
-                                                @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws IOException, ParseException {
+                                                @RequestBody JSONObject jsonObject, @PathVariable("system") String system) {
         return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
     }
 

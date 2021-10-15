@@ -2,7 +2,6 @@ package parsso.idman.controllers;
 
 
 import net.minidev.json.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,7 +14,6 @@ import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +50,7 @@ public class GroupsController {
     }
 
     @GetMapping
-    public ResponseEntity<?> retrieveGroups(@RequestParam(value = "id", defaultValue = "") String id) throws IOException, ParseException {
+    public ResponseEntity<?> retrieveGroups(@RequestParam(value = "id", defaultValue = "") String id) {
         if (!id.equals(""))
             return new ResponseEntity<>(groupRepo.retrieveOu(false, id), HttpStatus.OK);
         else {
@@ -63,25 +61,25 @@ public class GroupsController {
     }
 
     @DeleteMapping
-    public ResponseEntity<HttpStatus> unbindAllLdapOU(HttpServletRequest request, @RequestBody JSONObject jsonObject) throws IOException, ParseException {
+    public ResponseEntity<HttpStatus> unbindAllLdapOU(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
         return new ResponseEntity<>(groupRepo.remove(request.getUserPrincipal().getName(), jsonObject));
     }
 
     @PutMapping("/password/expire")
     public ResponseEntity expireUsersGroupPassword(HttpServletRequest request,
                                                    @RequestBody JSONObject jsonObject,
-                                                   @RequestParam(value = "id", defaultValue = "") String id) throws IOException, ParseException {
+                                                   @RequestParam(value = "id", defaultValue = "") String id) {
 
         String userId = request.getUserPrincipal().getName();
 
         if (!id.equals(""))
-            return new ResponseEntity<List<String>>(userRepo.expirePassword(userId, jsonObject), HttpStatus.OK);
+            return new ResponseEntity<>(userRepo.expirePassword(userId, jsonObject), HttpStatus.OK);
         else
             return expireUsersSpecGroupPassword(request, id);
 
     }
 
-    private ResponseEntity<String> expirePassword(String name, JSONObject jsonObject) throws IOException, ParseException {
+    private ResponseEntity<String> expirePassword(String name, JSONObject jsonObject) {
 
         List<String> preventedUsers = userRepo.expirePassword(name, jsonObject);
 
@@ -93,7 +91,7 @@ public class GroupsController {
             return new ResponseEntity<>((MultiValueMap<String, String>) preventedUsers, HttpStatus.PARTIAL_CONTENT);
     }
 
-    public ResponseEntity<String> expireUsersSpecGroupPassword(HttpServletRequest request, String gid) throws IOException, ParseException {
+    public ResponseEntity<String> expireUsersSpecGroupPassword(HttpServletRequest request, String gid) {
 
         ArrayList<String> temp = new ArrayList<>();
         JSONObject jsonObject = new JSONObject();

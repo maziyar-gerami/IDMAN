@@ -2,7 +2,6 @@ package parsso.idman.RepoImpls;
 
 
 import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;

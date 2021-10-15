@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+@SuppressWarnings("unused")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "deliveryStatus", propOrder = {
 		"mid",
@@ -20,35 +21,43 @@ public class DeliveryStatus {
 	protected String date;
 	protected String smsc;
 
-	public long getMid() {
+	@SuppressWarnings("unused")
+    public long getMid() {
 		return mid;
 	}
 
-	public void setMid(long value) {
+	@SuppressWarnings("unused")
+    public void setMid(long value) {
 		this.mid = value;
 	}
 
-	public int getStatus() {
+	@SuppressWarnings("unused")
+    public int getStatus() {
 		return status;
 	}
 
-	public void setStatus(int value) {
+	@SuppressWarnings("unused")
+    public void setStatus(int value) {
 		this.status = value;
 	}
 
-	public String getDate() {
+	@SuppressWarnings("unused")
+    public String getDate() {
 		return date;
 	}
 
-	public void setDate(String value) {
+	@SuppressWarnings("unused")
+    public void setDate(String value) {
 		this.date = value;
 	}
 
-	public String getSmsc() {
+	@SuppressWarnings("unused")
+    public String getSmsc() {
 		return smsc;
 	}
 
-	public void setSmsc(String value) {
+	@SuppressWarnings("unused")
+    public void setSmsc(String value) {
 		this.smsc = value;
 	}
 

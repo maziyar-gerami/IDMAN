@@ -3,7 +3,6 @@ package parsso.idman.RepoImpls;
 
 import net.minidev.json.JSONObject;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -63,7 +62,7 @@ public class GroupRepoImpl implements GroupRepo {
 	private LogsRepo.TranscriptRepo transcriptRepo;
 
 	@Override
-	public HttpStatus remove(String doerID, JSONObject jsonObject) throws IOException, ParseException {
+	public HttpStatus remove(String doerID, JSONObject jsonObject) {
 
 		ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
 		DirContextOperations context;
@@ -125,7 +124,7 @@ public class GroupRepoImpl implements GroupRepo {
 	}
 
 	@Override
-	public Group retrieveOu(boolean simple, String uid) throws IOException, ParseException {
+	public Group retrieveOu(boolean simple, String uid) {
 
 		List<Group> groups = retrieve();
 
@@ -147,15 +146,13 @@ public class GroupRepoImpl implements GroupRepo {
 			for (String s : memberOf) {
 				groups.add(retrieveOu(false, s));
 			}
-		} catch (NullPointerException | IOException ignored) {
+		} catch (NullPointerException ignored) {
 
-		} catch (ParseException e) {
-			e.printStackTrace();
 		}
 		return groups;
 	}
 
-	private Attributes buildAttributes(String uid, Group group) {
+	private Attributes buildAttributes(Group group) {
 
 		BasicAttribute ocattr = new BasicAttribute("objectclass");
 		ocattr.add("extensibleObject");
@@ -202,7 +199,7 @@ public class GroupRepoImpl implements GroupRepo {
 
 		Name dn = buildDn(ou.getId());
 		try {
-			ldapTemplate.bind(dn, null, buildAttributes(ou.getId(), ou));
+			ldapTemplate.bind(dn, null, buildAttributes(ou));
 
 			uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, ou.getId(), Variables.MODEL_GROUP,
 					Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
@@ -292,7 +289,7 @@ public class GroupRepoImpl implements GroupRepo {
 		} else {
 
 			try {
-				ldapTemplate.rebind(dn, null, buildAttributes(ou.getId(), ou));
+				ldapTemplate.rebind(dn, null, buildAttributes(ou));
 				uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, ou.getId(), "",
 						Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ou, ""));
 

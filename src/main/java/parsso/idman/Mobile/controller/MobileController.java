@@ -91,7 +91,7 @@ public class MobileController {
 
 	@PostMapping("/api/mobile/services")
 	public @ResponseBody
-	ResponseEntity<List<MicroService>> M_listServices(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) throws IOException, org.json.simple.parser.ParseException {
+	ResponseEntity<List<MicroService>> M_listServices(@RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) {
 		User user = userRepo.retrieveUsers(uid);
 		if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
 			return new ResponseEntity<>(serviceRepo.listUserServices(user), HttpStatus.OK);

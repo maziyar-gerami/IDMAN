@@ -2,7 +2,6 @@ package parsso.idman.RepoImpls;
 
 
 import net.minidev.json.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -15,7 +14,6 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.Models.other.PublicMessage;
 import parsso.idman.repos.PubMessageRepo;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

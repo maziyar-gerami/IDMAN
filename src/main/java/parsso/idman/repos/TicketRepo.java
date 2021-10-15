@@ -2,13 +2,10 @@ package parsso.idman.repos;
 
 
 import net.minidev.json.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Ticket;
-
-import java.io.IOException;
 
 @SuppressWarnings("SameReturnValue")
 @Service
@@ -31,5 +28,5 @@ public interface TicketRepo {
 
 	ListTickets retrieve(String doer, String cat, String subCat, String status, String page, String count, String from, String ticketId, String date);
 
-	ListTickets retrieveArchivedTickets(String doer, String cat, String subCat, String status, String page, String count, String from, String ticketId, String date);
+	ListTickets retrieveArchivedTickets(String cat, String subCat, String page, String count, String from, String ticketId, String date);
 }

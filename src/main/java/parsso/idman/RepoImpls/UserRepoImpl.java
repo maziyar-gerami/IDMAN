@@ -10,7 +10,6 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
@@ -361,7 +360,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public HttpStatus changePassword(String uId, String oldPassword, String newPassword, String token) {
+	public HttpStatus changePassword(String uId, String newPassword, String token) {
 
 		User user = retrieveUsers(uId);
 
@@ -516,9 +515,7 @@ public class UserRepoImpl implements UserRepo {
 	@Override
 	public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
-		new Thread(() -> {
-			systemRefresh.refreshLockedUsers();
-		}).start();
+		new Thread(() -> systemRefresh.refreshLockedUsers()).start();
 
 		int skip = (page - 1) * nCount;
 
@@ -693,7 +690,7 @@ public class UserRepoImpl implements UserRepo {
 	}
 
 	@Override
-	public User retrieveUsersWithLicensed(String userId) throws IOException, ParseException {
+	public User retrieveUsersWithLicensed(String userId) {
 
 		User user = retrieveUsers(userId);
 
@@ -890,7 +887,7 @@ public class UserRepoImpl implements UserRepo {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, ParseException {
+	public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException {
 		List<String> result = null;
 		InputStream insfile = file.getInputStream();
 

@@ -2,7 +2,6 @@ package parsso.idman.Helpers.User;
 
 
 import io.jsonwebtoken.io.IOException;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

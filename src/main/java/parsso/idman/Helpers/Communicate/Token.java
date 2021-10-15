@@ -1,7 +1,6 @@
 package parsso.idman.Helpers.Communicate;
 
 
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -17,7 +16,6 @@ import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.repos.UserRepo;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
@@ -70,14 +68,14 @@ public class Token {
 
 				String timeStamp = user.getUsersExtraInfo().getResetPassToken().substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
 
-				if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000 * EMAIL_VALID_TIME))
+				if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * EMAIL_VALID_TIME))
 					return HttpStatus.OK;
 
 				else
 					return HttpStatus.REQUEST_TIMEOUT;
 			} else {
 				String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
-				if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000 * SMS_VALID_TIME)) {
+				if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * SMS_VALID_TIME)) {
 					return HttpStatus.OK;
 				} else
 					return HttpStatus.REQUEST_TIMEOUT;

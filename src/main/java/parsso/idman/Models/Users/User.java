@@ -107,7 +107,7 @@ public class User implements UserDetails, Comparable {
 		List<GrantedAuthority> list = new ArrayList<>();
 
 		if (this.getUserId().equalsIgnoreCase("su"))
-			list.add(new SimpleGrantedAuthority(PREFIX + "SUPERADMIN"));
+			list.add(new SimpleGrantedAuthority(PREFIX + "SUPERUSER"));
 
 		else
 			list.add(new SimpleGrantedAuthority(PREFIX + this.getUsersExtraInfo().getRole()));

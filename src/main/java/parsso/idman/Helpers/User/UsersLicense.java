@@ -5,14 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,7 +21,7 @@ public class UsersLicense {
 	@Autowired
 	UserRepo userRepo;
 
-	public List<UsersExtraInfo> licensedUsers(long serviceId) throws IOException, ParseException {
+	public List<UsersExtraInfo> licensedUsers(long serviceId) {
 		List<UsersExtraInfo> users = new LinkedList<>();
 		parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
 
@@ -46,7 +44,7 @@ public class UsersLicense {
 		return users;
 	}
 
-	public List<UsersExtraInfo> unLicensedUsers(long serviceId) throws IOException, ParseException {
+	public List<UsersExtraInfo> unLicensedUsers(long serviceId) {
 		List<UsersExtraInfo> uids = new LinkedList<>();
 		parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
 
@@ -67,7 +65,7 @@ public class UsersLicense {
 		return uids;
 	}
 
-	public Users users(long serviceId) throws IOException, ParseException {
+	public Users users(long serviceId) {
 		List users = new LinkedList();
 		users.add(licensedUsers(serviceId));
 		users.add(unLicensedUsers(serviceId));

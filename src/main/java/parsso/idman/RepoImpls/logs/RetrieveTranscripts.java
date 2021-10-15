@@ -2,7 +2,6 @@ package parsso.idman.RepoImpls.logs;
 
 
 import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -19,7 +18,6 @@ import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.repos.LogsRepo;
 import parsso.idman.repos.ServiceRepo;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;

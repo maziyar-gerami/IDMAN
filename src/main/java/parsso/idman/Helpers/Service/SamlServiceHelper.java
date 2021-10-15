@@ -31,7 +31,6 @@ import java.util.*;
 @Component
 public class SamlServiceHelper {
 	final String model = "Service";
-	private final String collection = Variables.col_services;
 	@Value("${services.folder.path}")
 	String path;
 	@Autowired
@@ -200,7 +199,8 @@ public class SamlServiceHelper {
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         try {
-            mongoTemplate.save(service, collection);
+			String collection = Variables.col_services;
+			mongoTemplate.save(service, collection);
             json = ow.writeValueAsString(service);
         } catch (JsonProcessingException e) {
 
@@ -248,7 +248,7 @@ public class SamlServiceHelper {
 
     }
 
-	public HttpStatus update(String doerID, long id, JSONObject jsonObject) throws IOException, ParseException {
+	public HttpStatus update(String doerID, long id, JSONObject jsonObject) {
 		Service oldService = serviceRepo.retrieveService(id);
 
 		Service service = buildSamlService(jsonObject);

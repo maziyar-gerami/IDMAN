@@ -1,7 +1,6 @@
 package parsso.idman.controllers;
 
 
-import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import parsso.idman.repos.SystemRefresh;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/refresh")
@@ -24,7 +22,7 @@ public class RefreshController {
     }
 
     @GetMapping
-    public HttpEntity<HttpStatus> all(HttpServletRequest request, @RequestParam(name = "type", defaultValue = "") String type) throws IOException, ParseException {
+    public HttpEntity<HttpStatus> all(HttpServletRequest request, @RequestParam(name = "type", defaultValue = "") String type) {
         switch (type) {
             case "service":
                 return new ResponseEntity<>(refresh.serivceRefresh(request.getUserPrincipal().getName()));

@@ -14,7 +14,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,7 +36,7 @@ public class ImportUsers {
 	@Autowired
 	private UserRepo userRepo;
 
-	public JSONObject excelSheetAnalyze(String doerId, Sheet sheet, int[] sequence, boolean hasHeader) throws IOException, ParseException {
+	public JSONObject excelSheetAnalyze(String doerId, Sheet sheet, int[] sequence, boolean hasHeader) {
 		JSONArray jsonArray = new JSONArray();
 
 		Iterator<Row> rowIterator = sheet.iterator();
@@ -154,7 +153,7 @@ public class ImportUsers {
 		return jsonObject;
 	}
 
-	public JSONObject csvSheetAnalyze(String doerId, BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException, ParseException {
+	public JSONObject csvSheetAnalyze(String doerId, BufferedReader sheet, int[] sequence, boolean hasHeader) throws IOException {
 
 		String row;
 		JSONArray jsonArray = new JSONArray();
@@ -214,7 +213,7 @@ public class ImportUsers {
 		return ls;
 	}
 
-	public JSONObject importFileUsers(String doerId, MultipartFile file, int[] sequence, boolean hasHeader) throws IOException, ParseException {
+	public JSONObject importFileUsers(String doerId, MultipartFile file, int[] sequence, boolean hasHeader) throws IOException {
 
 		JSONObject lsusers = new JSONObject();
 		InputStream insfile = file.getInputStream();
@@ -249,13 +248,13 @@ public class ImportUsers {
 
 			final LDIFReader ldifReader = new LDIFReader(insfile);
 
-			lsusers = ldifAnalayze(ldifReader, sequence, hasHeader);
+			lsusers = ldifAnalayze(ldifReader);
 		}
 
 		return lsusers;
 	}
 
-	private JSONObject ldifAnalayze(LDIFReader ldifReader, int[] sequence, boolean hasHeader) {
+	private JSONObject ldifAnalayze(LDIFReader ldifReader) {
 		Entry entry;
 		while (true) {
 			try {

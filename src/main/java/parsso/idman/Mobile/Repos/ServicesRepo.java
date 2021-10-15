@@ -2,7 +2,6 @@ package parsso.idman.Mobile.Repos;
 
 
 import com.google.zxing.WriterException;
-import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import parsso.idman.Models.Users.User;
 
