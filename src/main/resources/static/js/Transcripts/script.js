@@ -223,10 +223,49 @@ document.addEventListener("DOMContentLoaded", function () {
         let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         let vm = this;
         let recordNumber = 1;
+        let searchQuery = "?";
+        searchQuery = searchQuery + "searchUid=";
+          if(this.searchUserId.trim() != ""){
+              searchQuery = searchQuery + this.searchUserId.trim() + "&";
+          }else{
+              searchQuery = searchQuery + "&";
+          }
+          searchQuery = searchQuery + "searchDisplayName=";
+          if(this.searchDisplayName.trim() != ""){
+              searchQuery = searchQuery + this.searchDisplayName.trim() + "&";
+          }else{
+              searchQuery = searchQuery + "&";
+          }
+          searchQuery = searchQuery + "groupFilter=";
+          if(this.searchGroup != ""){
+              searchQuery = searchQuery + this.searchGroup + "&";
+          }else{
+              searchQuery = searchQuery + "&";
+          }
+          searchQuery = searchQuery + "userStatus=";
+          if(this.searchStatus != ""){
+              searchQuery = searchQuery + this.searchStatus + "&";
+          }else{
+              searchQuery = searchQuery + "&";
+          }
+          searchQuery = searchQuery + "sortType=";
+          if(this.userIdm2MFlag){
+              searchQuery = searchQuery + "uid_m2M";
+          }else if(this.userIdM2mFlag){
+              searchQuery = searchQuery + "uid_M2m";
+          }else if(this.displayNamem2MFlag){
+              searchQuery = searchQuery + "displayName_m2M";
+          }else if(this.displayNameM2mFlag){
+              searchQuery = searchQuery + "displayName_M2m";
+          }
+          if(p != "paginationCurrentPage"){
+              this.currentPage = 1;
+              this.paginationCurrentPage = this.currentPage;
+          }
         this.serviceTranscriptsLoader = true;
         this.serviceTranscripts = [];
 
-        axios.get(url + "/api/transcripts/access/services/" + vm.serviceIdSearch) //
+        axios.get(url + "/api/logs/reports/serviceAccess" + vm.serviceIdSearch) //
           .then((res) => {
             //vm.serviceTranscripts = res.data;
             vm.serviceTranscriptsLoader = false;
