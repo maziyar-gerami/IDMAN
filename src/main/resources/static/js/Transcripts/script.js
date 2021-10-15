@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     mode: "history",
     routes: []
   });
+  Vue.component("v-pagination", window["vue-plain-pagination"])
   new Vue({
     router,
     el: "#app",
@@ -11,12 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
       dateNav: "",
       dateNavEn: "",
       dateNavText: "",
-      recordsShownOnPage: 20,
-      recordsShownOnPageReports: 20,
-      currentPageReports: 1,
-      totalReports: 1,
-      currentPageReport: 1,
-      totalReport: 1,
       userInfo: [],
       username: "",
       name: "",
@@ -31,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
         li: 'page-item',
         liActive: 'active',
         liDisable: 'disabled',
-        button: 'page-link'  
+        button: 'page-link'
       },
       paginationAnchorTexts: {
           first: '<<',
@@ -39,6 +34,10 @@ document.addEventListener("DOMContentLoaded", function () {
           next: '>',
           last: '>>'
       },
+      serviceTranscriptsCurrentPage: 1,
+      serviceTranscriptsCurrentPageBuffer: 1,
+      serviceTranscriptsTotal: 1,
+      serviceTranscriptsRecordsOnPage: 20,
       loader: false,
       overlayLoader: false,
       serviceTranscriptsLoader: false,
@@ -99,6 +98,15 @@ document.addEventListener("DOMContentLoaded", function () {
       serviceTranscripts: [],
       date: "تاریخ",
       time: "زمان",
+      serviceTranscriptsFilterController: {
+        Id: false,
+        Name: true,
+        DoerId: false,
+        Date: false
+      },
+      deleteAllFiltersText: "حذف تمام فیلتر ها",
+      deleteFilterText: "حذف فیلتر",
+      recordsOnPageText: " رکورد در صفحه",
     },
     created: function () {
       this.setDateNav();
@@ -171,8 +179,8 @@ document.addEventListener("DOMContentLoaded", function () {
         this.activeItem = menuItem
       },
       getUserInfo: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         axios.get(url + "/api/user") //
           .then((res) => {
             vm.username = res.data.userId;
@@ -189,25 +197,25 @@ document.addEventListener("DOMContentLoaded", function () {
           });
       },
       getUserPic: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         axios.get(url + "/api/user/photo") //
-            .then((res) => {
-              if(res.data == "Problem" || res.data == "NotExist"){
+          .then((res) => {
+            if(res.data === "Problem" || res.data === "NotExist"){
+              vm.userPicture = "images/PlaceholderUser.png";
+            }else{
+              vm.userPicture = "/api/user/photo";
+            }
+          })
+          .catch((error) => {
+            if (error.response) {
+              if (error.response.status === 400 || error.response.status === 500 || error.response.status === 403) {
                 vm.userPicture = "images/PlaceholderUser.png";
               }else{
                 vm.userPicture = "/api/user/photo";
               }
-            })
-            .catch((error) => {
-                if (error.response) {
-                  if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
-                    vm.userPicture = "images/PlaceholderUser.png";
-                  }else{
-                    vm.userPicture = "/api/user/photo";
-                  }
-                }
-            });
+            }
+          });
       },
       getServices: function () {
         let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -219,21 +227,108 @@ document.addEventListener("DOMContentLoaded", function () {
             vm.services = res.data;
           });
       },
-      getServiceTranscripts: function () {
+      getServiceTranscripts: function (src) {
         let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         let vm = this;
-        let recordNumber = 1;
+        let date;
+
+        if(document.getElementById("serviceTranscriptsFilterDate").value.split("/").length === 3){
+          date = this.FaNumToEnNum(document.getElementById("serviceTranscriptsFilterDate").value.split("/")[2]) +
+              this.FaNumToEnNum(document.getElementById("serviceTranscriptsFilterDate").value.split("/")[1]) +
+              this.FaNumToEnNum(document.getElementById("serviceTranscriptsFilterDate").value.split("/")[0]);
+        }else {
+          date = document.getElementById("serviceTranscriptsFilterDate").value;
+        }
+
+        if(src !== "pagination"){
+          this.serviceTranscriptsCurrentPageBuffer = 1;
+          this.serviceTranscriptsCurrentPage = this.serviceTranscriptsCurrentPageBuffer;
+        }
+
         this.serviceTranscriptsLoader = true;
         this.serviceTranscripts = [];
 
-        axios.get(url + "/api/transcripts/access/services/" + vm.serviceIdSearch) //
-          .then((res) => {
-            //vm.serviceTranscripts = res.data;
-            vm.serviceTranscriptsLoader = false;
-          });
+        axios.get(url + "/api/logs/reports/serviceAccess", {
+          params: {
+              count: vm.serviceTranscriptsRecordsOnPage,
+              page: vm.serviceTranscriptsCurrentPageBuffer,
+              id: document.getElementById("serviceTranscriptsFilterId").value,
+              name: document.getElementById("serviceTranscriptsFilterName").value,
+              doerId: document.getElementById("serviceTranscriptsFilterDoerId").value,
+              date: date
+          }
+        }).then((res) => {
+          for(let i = 0; i < res.data.reportMessageList.length; ++i){
+            res.data.reportMessageList[i].recordNumber = i + 1;
+          }
+          vm.serviceTranscripts = res.data.reportMessageList;
+          vm.serviceTranscriptsTotal = res.data.pages;
+          vm.serviceTranscriptsLoader = false;
+        });
+      },
+      changeActiveFilter: function(filter) {
+        for(const prop in this.serviceTranscriptsFilterController){
+          this.serviceTranscriptsFilterController[prop] = prop === filter;
+        }
+        let timer = setInterval(function() {
+          if($("#serviceTranscriptsFilter" + filter).is(":visible")){
+            $("#serviceTranscriptsFilter" + filter).focus();
+            clearInterval(timer);
+          }
+        }, 100);
+      },
+      removeServiceTranscriptsFilter: function(filter) {
+        if(filter === "id"){
+          document.getElementById("serviceTranscriptsFilterId").value = "";
+        }else if(filter === "name"){
+          document.getElementById("serviceTranscriptsFilterName").selectedIndex = "0";
+        }else if(filter === "doerId"){
+          document.getElementById("serviceTranscriptsFilterDoerId").value = "";
+        }else if(filter === "date"){
+          document.getElementById("serviceTranscriptsFilterDate").value = "";
+        }else if(filter === "all"){
+          document.getElementById("serviceTranscriptsFilterId").value = "";
+          document.getElementById("serviceTranscriptsFilterName").selectedIndex = "0";
+          document.getElementById("serviceTranscriptsFilterDoerId").value = "";
+          document.getElementById("serviceTranscriptsFilterDate").value = "";
+        }
+        this.getServiceTranscripts();
+      },
+      changeRecordsOnPage: function(event) {
+        this.serviceTranscriptsRecordsOnPage = event.target.value;
+        this.getServiceTranscripts();
+        document.getElementById("serviceTranscriptsFilterCount").selectedIndex = "0";
+      },
+      FaNumToEnNum: function (str) {
+        let s = str.split("");
+        let sEn = "";
+        for(let i = 0; i < s.length; ++i){
+          if(s[i] === "۰" || s[i] === "0"){
+            sEn = sEn + "0";
+          }else if(s[i] === "۱" || s[i] === "1"){
+            sEn = sEn + "1";
+          }else if(s[i] === "۲" || s[i] === "2"){
+            sEn = sEn + "2";
+          }else if(s[i] === "۳" || s[i] === "3"){
+            sEn = sEn + "3";
+          }else if(s[i] === "۴" || s[i] === "4"){
+            sEn = sEn + "4";
+          }else if(s[i] === "۵" || s[i] === "5"){
+            sEn = sEn + "5";
+          }else if(s[i] === "۶" || s[i] === "6"){
+            sEn = sEn + "6";
+          }else if(s[i] === "۷" || s[i] === "7"){
+            sEn = sEn + "7";
+          }else if(s[i] === "۸" || s[i] === "8"){
+            sEn = sEn + "8";
+          }else if(s[i] === "۹" || s[i] === "9"){
+            sEn = sEn + "9";
+          }
+        }
+        return sEn;
       },
       changeLang: function () {
-        if(this.lang == "EN"){
+        if(this.lang === "EN"){
           window.localStorage.setItem("lang", "EN");
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
@@ -273,6 +368,9 @@ document.addEventListener("DOMContentLoaded", function () {
           this.serviceNameText = "Service Name";
           this.date = "Date";
           this.time = "Time";
+          this.deleteAllFiltersText = "Delete All Filters";
+          this.deleteFilterText = "Delete Filter";
+          this.recordsOnPageText = " Records On Page";
         }else {
             window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
@@ -313,12 +411,19 @@ document.addEventListener("DOMContentLoaded", function () {
             this.serviceNameText = "نام سرویس";
             this.date = "تاریخ";
             this.time = "زمان";
+            this.deleteAllFiltersText = "حذف تمام فیلتر ها";
+            this.deleteFilterText = "حذف فیلتر";
+            this.recordsOnPageText = " رکورد در صفحه";
         }
       },
     },
-
-    computed:{
-
+    watch : {
+      serviceTranscriptsCurrentPage : function () {
+        if(this.serviceTranscriptsCurrentPage !== this.serviceTranscriptsCurrentPageBuffer){
+          this.serviceTranscriptsCurrentPageBuffer = this.serviceTranscriptsCurrentPage;
+          this.getServiceTranscripts("pagination");
+        }
+      }
     }
   })
 })
