@@ -702,7 +702,7 @@ public class UserRepoImpl implements UserRepo {
     private Boolean skyRoomAccess(User user) {
         boolean isEnable = skyroomEnable.equalsIgnoreCase("true");
 
-        boolean accessRole = false;
+        boolean accessRole;
         try {
             if (user.getUsersExtraInfo() == null) {
                 Objects.requireNonNull(user.getUsersExtraInfo());

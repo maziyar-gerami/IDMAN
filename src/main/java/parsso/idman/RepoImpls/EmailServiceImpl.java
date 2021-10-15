@@ -113,7 +113,7 @@ public class EmailServiceImpl implements EmailService {
             List<User> users = userRepo.retrieveUsersFull();
 
             for (User user : users)
-                if (!user.getUsersExtraInfo().getRole().equals("SUPERUSER") && user.getMail() != null && user.getMail() != null && user.getMail() != "" && user.getMail() != " ")
+                if (!user.getUsersExtraInfo().getRole().equals("SUPERUSER") && user.getMail() != null && user.getMail() != null && !user.getMail().equals("") && !user.getMail().equals(" "))
                     sendMail(user.getMail());
 
         } else {

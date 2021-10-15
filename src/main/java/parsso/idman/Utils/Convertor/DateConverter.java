@@ -77,7 +77,7 @@ public class DateConverter {
         gYear = jY + 621;
         int leapJ = -14;
         int jp = breaks[0];
-        int jump = 0;
+        int jump;
         for (int j = 1; j <= 19; j++) {
             int jm = breaks[j];
             jump = jm - jp;

@@ -275,7 +275,7 @@ public class OAuthServiceHelper {
         Service service = buildOAuthService(jsonObject);
         service.setId(id);
 
-        String json = null;
+        String json;
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         try {

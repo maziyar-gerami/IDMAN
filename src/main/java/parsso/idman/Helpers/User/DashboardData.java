@@ -80,7 +80,7 @@ public class DashboardData {
         Thread servicesData = new Thread(() -> {
 
             //________services data____________
-            List<parsso.idman.Models.Services.Service> services = null;
+            List<parsso.idman.Models.Services.Service> services;
             services = serviceRepo.listServicesFull();
             int nServices = 0;
             if (services != null) {

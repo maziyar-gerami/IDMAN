@@ -86,7 +86,7 @@ public class ImportUsers {
             if (!user.getUserId().equals("")) {
 
                 if (user.getUserId() == null || user.getUserId().equals("")) {
-                    if (user.getDisplayName() == null || user.getDisplayName() == "")
+                    if (user.getDisplayName() == null || user.getDisplayName().equals(""))
                         continue;
 
                     nUserIdEmpty++;

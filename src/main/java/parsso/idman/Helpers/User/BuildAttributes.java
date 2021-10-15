@@ -115,28 +115,28 @@ public class BuildAttributes {
 
         //First name (givenName) *
         if (p.getFirstName() != null)
-            if (p.getFirstName() != "") {
+            if (!p.getFirstName().equals("")) {
                 String givenName = new String(p.getFirstName().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
                 context.setAttributeValue("givenName", givenName);
             }
 
         //Last Name (sn) *
         if (p.getLastName() != null)
-            if (p.getLastName() != "") {
+            if (!p.getLastName().equals("")) {
                 String sn = new String(p.getLastName().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
                 context.setAttributeValue("sn", sn);
             }
 
         //Persian name (displayName) *
         if (p.getDisplayName() != null)
-            if (p.getDisplayName() != "") {
+            if (!p.getDisplayName().equals("")) {
                 String displayName = new String(p.getDisplayName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
                 context.setAttributeValue("displayName", displayName);
             }
 
         //attribute (Mobile) *
         if (p.getMobile() != null)
-            if (p.getMobile() != "") {
+            if (!p.getMobile().equals("")) {
                 String mobile = new String(p.getMobile().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
                 context.setAttributeValue("mobile", mobile);
             }
@@ -151,7 +151,7 @@ public class BuildAttributes {
 
         //Mail Address attribute (Mail) *
         if (p.getMail() != null)
-            if (p.getMail() != "") {
+            if (!p.getMail().equals("")) {
                 context.setAttributeValue("mail", p.getMail().trim());
             }
 
@@ -208,7 +208,7 @@ public class BuildAttributes {
 
         //ou attribute stating membrane in group
         if (p.getMemberOf() != null) {
-            if (p.getMemberOf().size() != 0 && p.getMemberOf().get(0) != ("")) {
+            if (p.getMemberOf().size() != 0 && !p.getMemberOf().get(0).equals("")) {
                 for (int i = 0; i < p.getMemberOf().size(); i++) {
                     if (old.getMemberOf() == null && i == 0) context.setAttributeValue("ou", p.getMemberOf().get(i));
                     else context.addAttributeValue("ou", p.getMemberOf().get(i));
@@ -235,7 +235,7 @@ public class BuildAttributes {
         //EndTime
 
         if (p.getEndTime() != null && !p.getEndTime().equals(old.getEndTime()) && p.getEndTime().charAt(0) != ('-')) {
-            if (p.getEndTime() != null && p.getEndTime() != "") {
+            if (p.getEndTime() != null && !p.getEndTime().equals("")) {
                 if (p.getEndTime().length() == 10)
                     context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getEndTime()) * 1000));
                 else
@@ -249,7 +249,7 @@ public class BuildAttributes {
 
                     }
 
-            } else if (p.getEndTime() != null && p.getEndTime() == "")
+            } else if (p.getEndTime() != null && p.getEndTime().equals(""))
                 context.removeAttributeValue("pwdEndTime", old.getEndTime());
 
             ModificationItem[] modificationItems;

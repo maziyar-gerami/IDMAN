@@ -55,7 +55,7 @@ public class JwtUtil {
     }
 
     public String externFromCookie(String s) {
-        String temp = "s";
+        String temp;
         if (s.contains("Authorization=Bearer"))
             temp = s.substring(s.indexOf("Authorization") + 14);
         else
