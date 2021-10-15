@@ -90,12 +90,12 @@ public class LogsController {
     }
 
     @GetMapping("/api/logs/reports/serviceAccess")
-    public ResponseEntity<List<ReportMessage>> accessManaging(@RequestParam(value = "page") String p,
-                                                              @RequestParam(value = "count") String n,
-                                                              @RequestParam(value = "name", defaultValue = "") String instanceName,
-                                                              @RequestParam(value = "id", defaultValue = "") String id,
-                                                              @RequestParam(value = "date", defaultValue = "") String date,
-                                                              @RequestParam(value = "doerID", defaultValue = "") String doerId) {
+    public ResponseEntity<ReportMessage.ListReportMessage> accessManaging(@RequestParam(value = "page") String p,
+                                                                          @RequestParam(value = "count") String n,
+                                                                          @RequestParam(value = "name", defaultValue = "") String instanceName,
+                                                                          @RequestParam(value = "id", defaultValue = "") String id,
+                                                                          @RequestParam(value = "date", defaultValue = "") String date,
+                                                                          @RequestParam(value = "doerID", defaultValue = "") String doerId) {
         long _id = !id.equals("") ? Long.parseLong(id) : 0;
         int page = !p.equals("") ? Integer.parseInt(p) : 0;
         int nRows = !n.equals("") ? Integer.parseInt(n) : 0;

@@ -61,8 +61,8 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
     }
 
     @Override
-    public List<ReportMessage> accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName) {
-        int skip;
+    public ReportMessage.ListReportMessage accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName) {
+        int skip=0;
 
         Query query = new Query(Criteria.where("attribute").is("Access Strategy"));
         if (id != 0)
@@ -80,10 +80,14 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
         }
         if (page != 0 && nRows != 0) {
             skip = (page - 1) * nRows;
-            query.skip(skip).limit(nRows);
         }
 
-        return mongoTemplate.find(query, ReportMessage.class, Variables.col_idmanLog);
+        int size = (int) mongoTemplate.count(query, ReportMessage.class, Variables.col_idmanLog);
+
+        List<ReportMessage> reportMessageList = mongoTemplate.find(query.skip(skip).limit(nRows), ReportMessage.class, Variables.col_idmanLog);
+
+        return new ReportMessage.ListReportMessage(size, (int) Math.ceil(size / (float) nRows), reportMessageList);
+
     }
 }
 

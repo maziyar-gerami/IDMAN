@@ -29,7 +29,7 @@ public class LogsRepo {
     public interface ReportRepo {
         Report.ListReports retrieve(String userId, String date, int p, int n);
 
-        List<ReportMessage> accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName);
+        ReportMessage.ListReportMessage accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName);
     }
 
     public interface TranscriptRepo {
