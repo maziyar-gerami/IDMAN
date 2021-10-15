@@ -14,6 +14,7 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.RepoImpls.logs.AuditsRepoImpl;
 import parsso.idman.RepoImpls.logs.EventsRepoImpl;
 import parsso.idman.RepoImpls.logs.ReportsRepoImpl;
+import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -21,13 +22,16 @@ import java.util.List;
 
 @RestController
 public class LogsController {
-    final AuditsRepoImpl auditRepo;
-    EventsRepoImpl eventRepo;
-    ReportsRepoImpl reportsRepo;
+    final LogsRepo.AuditRepo auditRepo;
+    LogsRepo.EventRepo eventRepo;
+    LogsRepo.ReportRepo reportsRepo;
 
     @Autowired
-    public LogsController(AuditsRepoImpl auditRepo) {
+    public LogsController(LogsRepo.AuditRepo auditRepo, LogsRepo.EventRepo eventRepo, LogsRepo.ReportRepo reportsRepo) {
         this.auditRepo = auditRepo;
+        this.eventRepo = eventRepo;
+        this.reportsRepo = reportsRepo;
+
     }
 
 

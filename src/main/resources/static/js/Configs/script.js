@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
         this.configsList = [];
         this.configsDescription = [];
         this.configsGroupNames = [];
-        axios.get(url + "/api/configs") // /settings?lang=" + vm.contentLang
+        axios.get(url + "/api/config") // /settings?lang=" + vm.contentLang
         .then((res) => {
           vm.configsList = res.data;
           for(let i = 0; i < vm.configsList.length; ++i){
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         this.restorePoints = [];
-        axios.get(url + "/api/configs/list") //
+        axios.get(url + "/api/configs") //
           .then((res) => {
             for(let i = 0; i < res.data.length; ++i){
               vm.restorePoints.push(res.data[i].name);
@@ -300,10 +300,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       },
       refreshServices: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.loader = true;
-        axios.get(url + "/api/refresh/services") //
+        axios.get(url + "/api/refresh", { params: { type: "service" } }) //
           .then((res) => {
             vm.loader = false;
             vm.refreshSuccessText = vm.s39;
@@ -312,10 +312,10 @@ document.addEventListener('DOMContentLoaded', function () {
           });
       },
       refreshUsers: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.loader = true;
-        axios.get(url + "/api/refresh/users") //
+        axios.get(url + "/api/refresh", { params: { type: "user" } }) //
           .then((res) => {
             vm.loader = false;
             vm.refreshSuccessText = vm.s40;
@@ -324,10 +324,10 @@ document.addEventListener('DOMContentLoaded', function () {
           });
       },
       refreshCaptchas: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.loader = true;
-        axios.get(url + "/api/refresh/captchas") //
+        axios.get(url + "/api/refresh", { params: { type: "captcha" } }) //
           .then((res) => {
             vm.loader = false;
             vm.refreshSuccessText = vm.s41;
@@ -336,10 +336,10 @@ document.addEventListener('DOMContentLoaded', function () {
           });
       },
       refreshAll: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.loader = true;
-        axios.get(url + "/api/refresh/all") //
+        axios.get(url + "/api/refresh") //
           .then((res) => {
             vm.loader = false;
             vm.refreshSuccessText = vm.s42;

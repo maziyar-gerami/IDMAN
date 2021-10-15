@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             changeInboxRecords: function(event) {
                 this.recordsShownOnInboxPage = event.target.value;
-                if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERADMIN"){
+                if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERUSER"){
                     this.getInboxTickets();
                 }else {
                     this.getSentTickets();
@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             changeArchivesRecords: function(event) {
                 this.recordsShownOnArchivesPage = event.target.value;
-                if(userInfo.role == "SUPERADMIN"){
+                if(userInfo.role == "SUPERUSER"){
                     this.getArchivesTickets();
                 }
             },
@@ -383,12 +383,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     if(res.data.skyroomAccess){
                         vm.showMeeting = true;
                     }
-                    if(res.data.role == "SUPPORTER" || res.data.role == "SUPERADMIN"){
+                    if(res.data.role == "SUPPORTER" || res.data.role == "SUPERUSER"){
                         vm.getInboxTickets();
                     }else {
                         vm.getSentTickets();
                     }
-                    if(res.data.role == "SUPERADMIN"){
+                    if(res.data.role == "SUPERUSER"){
                         vm.getArchivesTickets();
                     }
                 });
@@ -1065,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', function () {
             paginationCurrentInboxPage : function () {
                 if(this.paginationCurrentInboxPage != this.currentInboxPage){
                     this.currentInboxPage = this.paginationCurrentInboxPage;
-                    if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERADMIN"){
+                    if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERUSER"){
                         this.getInboxTickets("paginationCurrentPage");
                     }else {
                         this.getSentTickets("paginationCurrentPage");
@@ -1075,7 +1075,7 @@ document.addEventListener('DOMContentLoaded', function () {
             paginationCurrentArchivesPage : function () {
                 if(this.paginationCurrentArchivesPage != this.currentArchivesPage){
                     this.currentArchivesPage = this.paginationCurrentArchivesPage;
-                    if(userInfo.role == "SUPERADMIN"){
+                    if(userInfo.role == "SUPERUSER"){
                         this.getArchivesTickets("paginationCurrentPage");
                     }
                 }

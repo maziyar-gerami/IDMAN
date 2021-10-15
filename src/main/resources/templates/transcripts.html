@@ -24,7 +24,6 @@
     <script src="js/vue-spinners-css.min.js"></script>
 
 </head>
-
 <body class="h-100">
     <div id="app">
         <div id="overlay">
@@ -117,30 +116,30 @@
                                         <i class="fa fa-dashboard fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s3}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2"
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2"
                                     v-bind:href="s15">
                                         <i class="fa fa-server fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s4}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2"
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2"
                                     v-bind:href="s16">
                                         <i class="fa fa-user fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s13}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2"
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2"
                                     v-bind:href="s21">
                                         <i class="fa fa-users fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s5}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="rolesURLText">
                                         <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{rolesText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
-                                       v-bind:href="publicmessagesURLText">
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                       v-bind:href="publicMessagesURLText">
                                         <i class="fa fa-bell fa-fw" aria-hidden="true"></i>&nbsp;
-                                        <span>{{publicmessagesText}}</span>
+                                        <span>{{publicMessagesText}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                        v-bind:href="ticketingURLText">
@@ -162,7 +161,7 @@
                                         <i class="fa fa-file fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{reportsText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2"
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2"
                                        style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                        v-bind:href="transcriptsURLText">
                                         <i class="fa fa-file-text fa-fw" aria-hidden="true"></i>&nbsp;
@@ -173,7 +172,7 @@
                                         <i class="fa fa-cogs fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2"
+                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2"
                                     v-bind:href="s25">
                                         <i class="fa fa-cog fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s24}}</span>
@@ -189,103 +188,78 @@
                                     <div class="ml-0 mr-0">
                                         <h3 class="border-bottom pb-2">{{transcriptsText}}</h3>
                                     </div>
-                                    <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
-                                        <ul class="nav nav-tabs nav-justified">
-                                            <!--<li class="nav-item">
-                                                <a class="nav-link" @click.prevent="setActive('userTranscripts')" :class="{ active: isActive('userTranscripts') }" href="#userTranscripts">{{userReportText}}</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" @click.prevent="setActive('groupTranscripts')" :class="{ active: isActive('groupTranscripts') }" href="#groupTranscripts">{{groupReportText}}</a>
-                                            </li>-->
-                                            <li class="nav-item">
-                                                <a class="nav-link" @click.prevent="setActive('serviceTranscripts')" :class="{ active: isActive('serviceTranscripts') }" href="#serviceTranscripts">{{serviceReportText}}</a>
-                                            </li>
-                                        </ul>
-                                        <div class="tab-content py-3" style="background-color: white;">
-                                            <!--<div class="tab-pane fade" :class="{ 'active show': isActive('userTranscripts') }" id="userTranscripts">
-                                            </div>
-                                            <div class="tab-pane fade" :class="{ 'active show': isActive('groupTranscripts') }" id="groupTranscripts">
-                                            </div>-->
-                                            <div class="tab-pane fade" :class="{ 'active show': isActive('serviceTranscripts') }" id="serviceTranscripts">
-                                                <div class="row border-bottom ml-0 mr-0 w-100 py-2 mb-2">
-                                                    <div class="col-4">
-                                                        <input v-model="serviceIdSearch" type="text" :placeholder="idText" class="form-control icon-input">
-                                                    </div>
-                                                    <div class="col-2">
-                                                        <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getServiceTranscripts()">{{showText}}</button>
-                                                    </div>
-                                                    <div class="col-6"></div>
-                                                </div>
-                                                <div class="row my-2">
-                                                    <div class="col-6">
-                                                        <div class="form-group">
-                                                            <label>{{idText}}</label>
-                                                            <input type="text" readonly="readonly" class="form-control" v-bind:value="reportedService.id">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <div class="form-group">
-                                                            <label>{{serviceNameText}}</label>
-                                                            <input type="text" readonly="readonly" class="form-control" v-bind:value="reportedService.name">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-6">
-                                                        <div class="form-group">
-                                                            <label>{{serviceIdText}}</label>
-                                                            <input type="text" readonly="readonly" class="form-control" v-bind:value="reportedService.serviceId">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <div class="form-group">
-                                                            <label>{{serviceFaNameText}}</label>
-                                                            <input type="text" readonly="readonly" class="form-control" v-bind:value="reportedService.description">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div style="overflow: auto;">
-                                                    <div v-if="serviceTranscriptsLoader" class="text-center">
-                                                        <br><br>
-                                                        <roller-loader color="#007bff"/>
-                                                    </div>
-                                                    <div v-else>
-                                                        <div class="table-wrapper">
-                                                            <div v-if="serviceTranscriptsList.length == 0" class="emptyList">
-                                                                <div>
-                                                                    <i class="fa fa-signing fa-2x"></i>
+                                    <div class="row mb-3 mt-3 ml-0 mr-0">
+                                        <div class="col pr-0 pl-0">
+                                            <ul class="nav nav-tabs nav-justified">
+                                                <li class="nav-item">
+                                                    <a class="nav-link" @click.prevent="setActive('serviceTranscripts')" :class="{ active: isActive('serviceTranscripts') }" href="#serviceTranscripts">{{serviceReportText}}</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content py-3" style="background-color: white;">
+                                                <div class="tab-pane fade" :class="{ 'active show': isActive('serviceTranscripts') }" id="serviceTranscripts">
+                                                    <div class="card">
+                                                        <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                            <div class="row ml-0 mr-0 w-100">
+                                                                <div class="col-4 pl-1 pr-1">
+                                                                    <div class="input-group input-group-sm">
+                                                                        <select v-model="serviceIdSearch" class="form-control">
+                                                                            <option value="" selected disabled>{{serviceNameText}}</option>
+                                                                            <option v-for="service in services" :value="service._id">{{service.name}}</option>
+                                                                        </select>
+                                                                    </div>
                                                                 </div>
-                                                                <div>
-                                                                    <span>{{recordNotFoundText}}</span>
+                                                                <div class="col-2 pl-1 pr-1">
+                                                                    <div class="input-group input-group-sm">
+                                                                        <button class="btn btn-success btn-sm form-control" v-on:click="getServiceTranscripts()">
+                                                                            {{searchText}}
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
+                                                                <div class="col-6"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="list-group list-group-flush" style="overflow: auto;">
+                                                        <div class="table-wrapper list-group-item">
+                                                            <div v-if="serviceTranscriptsLoader" class="text-center">
+                                                                <br><br>
+                                                                <roller-loader color="#007bff"/>
                                                             </div>
                                                             <div v-else>
-                                                                <table class="tableList table table-responsive p-2 text-center">
-                                                                    <tr>
-                                                                        <th>#</th>
-                                                                        <th>result</th>
-                                                                        <th>action</th>
-                                                                        <th>doerID</th>
-                                                                        <th>entity</th>
-                                                                        <th>accessChange</th>
-                                                                        <th>doerID</th>
-                                                                        <th>تاریخ</th>
-                                                                        <th>زمان</th>
-                                                                    </tr>
-                                                                    <tbody id="body" style="font-size: .8rem;">
-                                                                        <tr v-for="transcript in serviceTranscriptsList">
-                                                                            <td>{{transcript.recordNumber}}</td>
-                                                                            <td>{{transcript.result}}</td>
-                                                                            <td>{{transcript.action}}</td>
-                                                                            <td>{{transcript.doerID}}</td>
-                                                                            <td>{{transcript.type}}:{{transcript.item}}</td>
-                                                                            <td>{{transcript.accessChange}}</td>
-                                                                            <td>{{transcript.doerID}}</td>
-                                                                            <td>{{transcript.time.year}}/{{transcript.time.month}}/{{transcript.time.day}}</td>
-                                                                            <td>{{transcript.time.hours}}:{{transcript.time.minutes}}:{{transcript.time.seconds}}</td>
+                                                                <div v-if="serviceTranscripts.length == 0" class="emptyList">
+                                                                    <div>
+                                                                        <i class="fa fa-signing fa-2x"></i>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span>{{recordNotFoundText}}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div v-else>
+                                                                    <table class="tableList table table-responsive p-2 text-center">
+                                                                        <tr>
+                                                                            <th style="border: none;">#</th>
+                                                                            <th style="border: none;">Result</th>
+                                                                            <th style="border: none;">Action</th>
+                                                                            <th style="border: none;">DoerID</th>
+                                                                            <th style="border: none;">Entity</th>
+                                                                            <th style="border: none;">AccessChange</th>
+                                                                            <th style="border: none;">{{date}}</th>
+                                                                            <th style="border: none;">{{time}}</th>
                                                                         </tr>
-                                                                    </tbody>
-                                                                </table>
+                                                                        <tbody style="font-size: .8rem;">
+                                                                            <tr v-for="transcript in serviceTranscripts">
+                                                                                <td>{{transcript.recordNumber}}</td>
+                                                                                <td>{{transcript.result}}</td>
+                                                                                <td>{{transcript.action}}</td>
+                                                                                <td>{{transcript.doerID}}</td>
+                                                                                <td>{{transcript.type}}:{{transcript.item}}</td>
+                                                                                <td>{{transcript.accessChange}}</td>
+                                                                                <td>{{transcript.time.year}}/{{transcript.time.month}}/{{transcript.time.day}}</td>
+                                                                                <td>{{transcript.time.hours}}:{{transcript.time.minutes}}:{{transcript.time.seconds}}</td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>

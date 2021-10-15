@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then((res) => {
                     for(let i = 0; i < res.data.length; ++i){
                         res.data[i].checked = false;
-                        if(res.data[i].role == "SUPERADMIN"){
+                        if(res.data[i].role == "SUPERUSER"){
                             res.data[i].roleFa = "مدیر کل";
                             res.data[i].icon = "color: #dc3545;";
                             superAdminTempList.push(res.data[i]);
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.noRoleSelectedAlertText = "No Role Selected.";
                     this.userIdText = "UserId";
                     this.roleText = "Role";
-                    this.superAdminText = "SUPERADMIN";
+                    this.superAdminText = "SUPERUSER";
                     this.supporterText = "SUPPORTER";
                     this.adminText = "ADMIN";
                     this.presenterText = "PRESENTER";

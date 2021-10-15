@@ -92,7 +92,7 @@ public class UsersController {
         else return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/api/users")
     public ResponseEntity<List<UsersExtraInfo>> retrieveUsersMain() {
         return new ResponseEntity<>(userRepo.retrieveUsersMain(-1, -1), HttpStatus.OK);
     }

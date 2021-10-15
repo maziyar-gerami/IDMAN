@@ -54,8 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
       s5: "گروه ها",
       s6: "رویداد ها",
       s7: "پروفایل",
-      s8: "دسترسی سریع",
-      s9: "خلاصه وضعیت",
       s10: "قوانین",
       s11: "حریم خصوصی",
       s12: "راهنما",
@@ -63,47 +61,24 @@ document.addEventListener("DOMContentLoaded", function () {
       s14: "./dashboard",
       s15: "./services",
       s16: "./users",
-      s18: "نام",
-      s19: "توضیحات",
-      s20: "اتصال",
       s21: "./groups",
       s22: "./profile",
       s23: "./privacy",
       s24: "پیکربندی",
       s25: "./configs",
-      s26: "تاریخ",
-      s27: "جستجو",
-      s28: "عملیات",
-      s29: "برنامه",
-      s30: "زمان",
-      s31: "گزارش های من",
-      s32: "گزارش های کاربران",
-      s34: " مثال: admin ",
-      s35: " مثال: 1399/05/01 ",
       s36: "./events",
-      s38: "تاریخ",
-      s39: "ورود موفق",
-      s40: "ورود ناموفق",
-      s41: "سرویس",
-      s42: "سیستم عامل",
-      s43: "مرورگر",
-      s44: "تعداد رکورد ها: ",
       s45: "ممیزی ها",
       s46: "/audits",
-      s47: "بازگشت",
-      s48: "رکوردی یافت نشد",
       rolesText: "نقش ها",
       rolesURLText: "./roles",
       reportsText: "گزارش ها",
       reportsURLText: "./reports",
-      publicmessagesText: "اعلان های عمومی",
-      publicmessagesURLText: "./publicmessages",
+      publicMessagesText: "اعلان های عمومی",
+      publicMessagesURLText: "./publicmessages",
       ticketingText: "پشتیبانی",
       ticketingURLText: "./ticketing",
       transcriptsText: "گزارش های دسترسی",
       transcriptsURLText: "./transcripts",
-      messageText: "پیام",
-      userIdText: "شناسه کاربری",
       showMeeting: false,
       meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
       meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
@@ -114,22 +89,23 @@ document.addEventListener("DOMContentLoaded", function () {
       inviteToMeetingText: "دعوت به جلسه",
       copyText: "کپی",
       returnText: "بازگشت",
-      searchText: "جستجو...",
       reportedService: {},
       recordNotFoundText: "موردی یافت نشد",
       serviceIdSearch: "",
       serviceReportText: "گزارش سرویس",
-      showText: "نمایش",
-      idText: "شناسه",
+      searchText: "جستجو",
       serviceNameText: "نام سرویس",
-      serviceIdText: "شناسه سرویس",
-      serviceFaNameText: "نام فارسی سرویس",
-      serviceTranscriptsList: [],
+      services: [],
+      serviceTranscripts: [],
+      date: "تاریخ",
+      time: "زمان",
     },
     created: function () {
       this.setDateNav();
       this.getUserInfo();
       this.getUserPic();
+      this.getServices();
+      this.getServiceTranscripts();
       if(window.localStorage.getItem("lang") === null){
         window.localStorage.setItem("lang", "FA");
       }else if(window.localStorage.getItem("lang") === "EN") {
@@ -233,26 +209,27 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
       },
+      getServices: function () {
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
+        this.services = [];
+
+        axios.get(url + "/api/services/main")
+          .then((res) => {
+            vm.services = res.data;
+          });
+      },
       getServiceTranscripts: function () {
         let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         let vm = this;
         let recordNumber = 1;
-
         this.serviceTranscriptsLoader = true;
-        this.serviceTranscriptsList = [];
+        this.serviceTranscripts = [];
 
-        axios.get(url + "/api/services/" + vm.serviceIdSearch) //
-          .then((res1) => {
-            vm.reportedService = res1.data;
-              axios.get(url + "/api/transcripts/access/services/" + vm.serviceIdSearch) //
-                .then((res2) => {
-                  for(let i = 0; i < res2.data.length; ++i){
-                    res2.data[i].recordNumber = recordNumber;
-                    recordNumber += 1;
-                  }
-                  vm.serviceTranscriptsList = res2.data;
-                  vm.serviceTranscriptsLoader = false;
-                });
+        axios.get(url + "/api/transcripts/access/services/" + vm.serviceIdSearch) //
+          .then((res) => {
+            //vm.serviceTranscripts = res.data;
+            vm.serviceTranscriptsLoader = false;
           });
       },
       changeLang: function () {
@@ -272,42 +249,17 @@ document.addEventListener("DOMContentLoaded", function () {
           this.s5 = "Groups";
           this.s6 = "Events";
           this.s7 = "Profile";
-          this.s8 = "Quick Access";
-          this.s9 = "Status Summary";
           this.s10 = "Rules";
           this.s11 = "Privacy";
           this.s12 = "Guide";
           this.s13 = "Users";
-          this.s18 = "Name";
-          this.s19 = "Description";
-          this.s20 = "Connect";
           this.s24 = "Configs";
-          this.s26 = "Date";
-          this.s27 = "Search";
-          this.s28 = "Action";
-          this.s29 = "Application";
-          this.s30 = "Time";
-          this.s31 = "My Reports";
-          this.s32 = "Users Reports";
-          this.s34 = "Example: admin";
-          this.s35 = "Example: 1399/05/01";
-          this.s38 = "Date";
-          this.s39 = "Successful Login";
-          this.s40 = "Failed Login";
-          this.s41 = "Service";
-          this.s42 = "OS";
-          this.s43 = "Browser";
-          this.s44 = "Records a Page: ";
           this.s45 = "Audits";
-          this.s47 = "Go Back";
-          this.s48 = "No Records Found";
           this.rolesText = "Roles";
           this.reportsText = "Reports";
-          this.publicmessagesText = "Public Messages";
+          this.publicMessagesText = "Public Messages";
           this.ticketingText = "Ticketing";
           this.transcriptsText = "Access Reports";
-          this.messageText = "Message";
-          this.userIdText = "UserId";
           this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
           this.meetingInviteLinkCopyStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
           this.meetingText = "Meeting";
@@ -315,31 +267,12 @@ document.addEventListener("DOMContentLoaded", function () {
           this.inviteToMeetingText = "Invite To Meeting";
           this.copyText = "Copy";
           this.returnText = "Return";
-          this.searchText = "Search...";
-          this.displayNameFaText = "Full Name";
-          this.userNotFoundText = "User Not Found";
-          this.groupNotFoundText = "Group Not Found";
-          this.allowedGroupsText = "Allowed Groups";
-          this.bannedGroupsText = "Banned Groups";
-          this.enNameText = "English Name";
-          this.faNameText = "Persian Name";
-          this.idText = "ID";
-          this.nameText = "Name";
           this.recordNotFoundText = "Record Not Found";
-          this.allowedServicesText = "Allowed Services";
-          this.bannedServicesText = "Banned Services";
-          this.userReportText = "User Report";
-          this.groupReportText = "Group Report";
           this.serviceReportText = "Service Report";
-          this.faFullNameText = "FullName (In Persian)";
-          this.showText = "Show";
-          this.mobileText = "Mobile";
-          this.emailText = "Email";
+          this.searchText = "Search";
           this.serviceNameText = "Service Name";
-          this.serviceIdText = "Service Id";
-          this.serviceFaNameText = "Service Persian Name";
-          this.allowedUsersText = "Allowed Users";
-          this.bannedUsersText = "Banned Users";
+          this.date = "Date";
+          this.time = "Time";
         }else {
             window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
@@ -356,42 +289,17 @@ document.addEventListener("DOMContentLoaded", function () {
             this.s5 = "گروه ها";
             this.s6 = "رویداد ها";
             this.s7 = "پروفایل";
-            this.s8 = "دسترسی سریع";
-            this.s9 = "خلاصه وضعیت";
             this.s10 = "قوانین";
             this.s11 = "حریم خصوصی";
             this.s12 = "راهنما";
             this.s13 = "کاربران";
-            this.s18 = "نام";
-            this.s19 = "توضیحات";
-            this.s20 = "اتصال";
             this.s24 = "پیکربندی";
-            this.s26 = "تاریخ";
-            this.s27 = "جستجو";
-            this.s28 = "عملیات";
-            this.s29 = "برنامه";
-            this.s30 = "زمان";
-            this.s31 = "گزارش های من";
-            this.s32 = "گزارش های کاربران";
-            this.s34 = "مثال: admin";
-            this.s35 = " مثال: 1399/05/01";
-            this.s38 = "تاریخ";
-            this.s39 = "ورود موفق";
-            this.s40 = "ورود ناموفق";
-            this.s41 = "سرویس";
-            this.s42 = "سیستم عامل";
-            this.s43 = "مرورگر";
-            this.s44 = "تعداد رکورد ها: ";
             this.s45 = "ممیزی ها";
-            this.s47 = "بازگشت";
-            this.s48 = "رکوردی یافت نشد";
             this.rolesText = "نقش ها";
             this.reportsText = "گزارش ها";
-            this.publicmessagesText = "اعلان های عمومی";
+            this.publicMessagesText = "اعلان های عمومی";
             this.ticketingText = "پشتیبانی";
             this.transcriptsText = "گزارش های دسترسی";
-            this.messageText = "پیام";
-            this.userIdText = "شناسه کاربری";
             this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
             this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
             this.meetingText = "جلسه مجازی";
@@ -399,31 +307,12 @@ document.addEventListener("DOMContentLoaded", function () {
             this.inviteToMeetingText = "دعوت به جلسه";
             this.copyText = "کپی";
             this.returnText = "بازگشت";
-            this.searchText = "جستجو...";
-            this.displayNameFaText = "نام کامل";
-            this.userNotFoundText = "کاربری یافت نشد";
-            this.groupNotFoundText = "گروهی یافت نشد";
-            this.allowedGroupsText = "گروه های دارای دسترسی";
-            this.bannedGroupsText = "گروه های منع شده";
-            this.enNameText = "نام انگلیسی";
-            this.faNameText = "نام فارسی";
-            this.idText = "شناسه";
-            this.nameText = "نام";
             this.recordNotFoundText = "موردی یافت نشد";
-            this.allowedServicesText = "سرویس های دارای دسترسی";
-            this.bannedServicesText = "سرویس های منع شده";
-            this.userReportText = "گزارش کاربر";
-            this.groupReportText = "گزارش گروه";
             this.serviceReportText = "گزارش سرویس";
-            this.faFullNameText = "نام کامل (به فارسی)";
-            this.showText = "نمایش";
-            this.mobileText = "شماره تلفن";
-            this.emailText = "ایمیل";
+            this.searchText = "جستجو";
             this.serviceNameText = "نام سرویس";
-            this.serviceIdText = "شناسه سرویس";
-            this.serviceFaNameText = "نام فارسی سرویس";
-            this.allowedUsersText = "کاربران دارای دسترسی";
-            this.bannedUsersText = "کاربران منع شده";
+            this.date = "تاریخ";
+            this.time = "زمان";
         }
       },
     },

@@ -363,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 //this.editingGroupID = id;
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/groups/" + id) //
+                axios.get(url + "/api/groups", { params: { id: id } }) //
                     .then((res) => {
                         vm.group = res.data;
                         vm.getAllUsersList(id);
@@ -797,7 +797,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let vm = this;
 
                 this.reportLoader = true;
-                axios.get(url + "/api/groups/" + id) //
+                axios.get(url + "/api/groups", { params: { id: id } }) //
                     .then((res) => {
                         vm.reportedGroup = res.data;
                         if(typeof res.data.service !== "undefined"){
