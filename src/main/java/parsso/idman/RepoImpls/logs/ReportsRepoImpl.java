@@ -83,7 +83,7 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
             query.skip(skip).limit(nRows);
         }
 
-        return mongoTemplate.find(query, ReportMessage.class, Variables.col_Log);
+        return mongoTemplate.find(query, ReportMessage.class, Variables.col_idmanLog);
     }
 }
 

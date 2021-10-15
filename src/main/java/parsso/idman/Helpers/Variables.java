@@ -58,7 +58,7 @@ public class Variables {
     public static final String MODEL_TICKETING = "Ticketing";
     public static final String email_recoverySubject = "بازنشانی رمز عبور";
     public static final String ZONE = "Asia/Tehran";
-    public static final String col_idmanLog = "IDMAN_idmanLog";
+    public static final String col_idmanLog = "IDMAN_IdmanLog";
     public static final String col_Log = "IDMAN_Log";
     public static final String ACCESS_ADD = "Access Add";
     public static final String ACCESS_REM = "Access Remove";
