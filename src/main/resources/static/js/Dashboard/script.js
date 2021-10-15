@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
         hasLegend: true,
         legendPlacement: "bottom"
       },
-      s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
+      s0: "احراز هویت متمرکز شرکت فلات قاره",
       s1: "",
       s2: "خروج",
       s3: "داشبورد",
@@ -99,8 +99,6 @@ document.addEventListener('DOMContentLoaded', function () {
       publicmessagesURLText: "./publicmessages",
       ticketingText: "پشتیبانی",
       ticketingURLText: "./ticketing",
-      transcriptsText: "گزارش های دسترسی",
-      transcriptsURLText: "./transcripts",
       showMeeting: false,
       meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
       meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
@@ -259,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
           vm.services = res.data;
           for(let i = 0; i < vm.services.length; ++i){
             if(typeof vm.services[i].logo !== "undefined"){
-              if(vm.services[i].logo === ""){
+              if(vm.services[i].logo == ""){
                 vm.services[i].logo = "images/PlaceholderService.jpg";
               }
             }else{
@@ -272,12 +270,6 @@ document.addEventListener('DOMContentLoaded', function () {
               }
             }else{
               vm.services[i].description = "...";
-            }
-
-            if(window.localStorage.getItem("lang") === "FA"){
-                vm.services[i].nameContainer = vm.services[i].description;
-            }else if(window.localStorage.getItem("lang") === "EN") {
-                vm.services[i].nameContainer = vm.services[i].name;
             }
 
             vm.services[i].serviceId = vm.services[i].serviceId.replace(/\((.*?)\)/g, "");
@@ -337,7 +329,6 @@ document.addEventListener('DOMContentLoaded', function () {
           this.reportsText = "Reports";
           this.publicmessagesText = "Public Messages";
           this.ticketingText = "Ticketing";
-          this.transcriptsText = "Access Reports";
           this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
           this.meetingInviteLinkCopyStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
           this.meetingText = "Meeting";
@@ -352,9 +343,6 @@ document.addEventListener('DOMContentLoaded', function () {
           this.ActiveServicesChart.sections[1].label = "Disabled";
           this.SuccessfulLoginsChart.sections[0].label = "Successful";
           this.SuccessfulLoginsChart.sections[1].label = "Unsuccessful";
-          for(let i = 0; i < this.services.length; ++i){
-              this.services[i].nameContainer = this.services[i].name;
-          }
         }else {
             window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
@@ -362,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.lang = "EN";
             this.isRtl = true;
             this.dateNavText = this.dateNav;
-            this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
+            this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
             this.s1 = this.name;
             this.s2 = "خروج";
             this.s3 = "داشبورد";
@@ -387,7 +375,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this.reportsText = "گزارش ها";
             this.publicmessagesText = "اعلان های عمومی";
             this.ticketingText = "پشتیبانی";
-            this.transcriptsText = "گزارش های دسترسی";
             this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
             this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
             this.meetingText = "جلسه مجازی";
@@ -402,9 +389,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this.ActiveServicesChart.sections[1].label = "غیرفعال";
             this.SuccessfulLoginsChart.sections[0].label = "موفق";
             this.SuccessfulLoginsChart.sections[1].label = "ناموفق";
-            for(let i = 0; i < this.services.length; ++i){
-                this.services[i].nameContainer = this.services[i].description;
-            }
         }
       }
     }

@@ -24,7 +24,7 @@
     <script src="js/xlsx.full.min.js"></script>
     <script src="js/Services/script.js"></script>
     <script src="js/vue-plain-pagination.umd.min.js"></script>
-    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.js"></script>
     <script src="js/persian-datepicker.min.js"></script>
     <script src="js/persian-rex.min.js"></script>
     <script src="js/vue-spinners-css.min.js"></script>
@@ -220,28 +220,28 @@
                                         <i class="fa fa-dashboard fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s3}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s17">
                                         <i class="fa fa-server fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s4}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s19">
                                         <i class="fa fa-user fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s15}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s48">
                                         <i class="fa fa-users fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s5}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="rolesURLText">
                                         <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{rolesText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                        v-bind:href="publicmessagesURLText">
                                         <i class="fa fa-bell fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{publicmessagesText}}</span>
@@ -266,17 +266,12 @@
                                         <i class="fa fa-file fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{reportsText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2"
-                                       v-bind:href="transcriptsURLText">
-                                        <i class="fa fa-file-text fa-fw" aria-hidden="true"></i>&nbsp;
-                                        <span>{{transcriptsText}}</span>
-                                    </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s49">
                                         <i class="fa fa-cogs fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s52">
                                         <i class="fa fa-cog fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s51}}</span>
@@ -475,7 +470,7 @@
                                                                 <label>{{s30}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s89}}</small></label>
                                                                 <input name="serviceId" class="form-control enInput" type="text" placeholder="URL" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                             </div>
-                                                            <div v-bind:style="samls ? 'display: block;' : 'display: none;' " class="form-group"><!--v-if="samls"-->
+                                                            <div v-if="samls" class="form-group">
                                                                 <label>Metadata Location<span style="color: red;"> *</span></label>
                                                                 <div class="row">
                                                                     <div class="col-3">
@@ -490,88 +485,8 @@
                                                                         </div>
                                                                         <div v-bind:style="metaDataFile ? 'display: block;' : 'display: none;' ">
                                                                             <form id="myForm" method="POST" enctype="multipart/form-data" action="/api/services/user/metadata">
-                                                                                <input type="file" ref="file" class="btn btn-primary btn-sm" name="file" id="metadataFile">
-                                                                            </form>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div v-bind:style="oauths ? 'display: block;' : 'display: none;' " class="form-group"><!--v-if="oauths"-->
-                                                                <div class="form-group">
-                                                                    <label>Client Id<span style="color: red;"> *</span></label>
-                                                                    <input name="clientId" class="form-control enInput" type="text" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label>Client Secret<span style="color: red;"> *</span></label>
-                                                                    <input name="clientSecret" class="form-control enInput" type="text" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label>Supported Grant Types<span style="color: red;"> *</span></label>
-                                                                    <div id="supportedGrantTypesContainer" class="dropdown-checkbox form-control" data-control="dropdown-checkbox">
-                                                                        <label class="dropdown-checkbox-label">
-                                                                            <div name="supportedGrantTypes" class="dropdown-checkbox-label-container" text="Select"></div>
-                                                                        </label>
-                                                                        <div class="dropdown-checkbox-list">
-                                                                            <a href="#" data-toggle="check-all" class="dropdown-checkbox-option" :checkText="selectAllText" :uncheckText="removeText"></a>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="none" text="none" />
-                                                                                none
-                                                                            </label>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="authorization_code" text="authorization_code" />
-                                                                                authorization_code
-                                                                            </label>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="password" text="password" />
-                                                                                password
-                                                                            </label>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="client_credentials" text="client_credentials" />
-                                                                                client_credentials
-                                                                            </label>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="refresh_token" text="refresh_token" />
-                                                                                refresh_token
-                                                                            </label>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="uma_ticket" text="uma_ticket" />
-                                                                                uma_ticket
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label>Supported Response Types<span style="color: red;"> *</span></label>
-                                                                    <div id="supportedResponseTypesContainer" class="dropdown-checkbox form-control" data-control="dropdown-checkbox">
-                                                                        <label class="dropdown-checkbox-label">
-                                                                            <div name="supportedResponseTypes" class="dropdown-checkbox-label-container" text="Select"></div>
-                                                                        </label>
-                                                                        <div class="dropdown-checkbox-list">
-                                                                            <a href="#" data-toggle="check-all" class="dropdown-checkbox-option" :checkText="selectAllText" :uncheckText="removeText"></a>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="code" text="code" />
-                                                                                code
-                                                                            </label>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="none" text="none" />
-                                                                                none
-                                                                            </label>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="token" text="token" />
-                                                                                token
-                                                                            </label>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="device_code" text="device_code" />
-                                                                                device_code
-                                                                            </label>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="idtoken_token" text="idtoken_token" />
-                                                                                idtoken_token
-                                                                            </label>
-                                                                            <label class="dropdown-checkbox-option bg">
-                                                                                <input type="checkbox" name="dropdown-checkbox-group" value="id_token" text="id_token" />
-                                                                                id_token
-                                                                            </label>
+                                                                                <input type="file" ref="file" class="btn btn-primary btn-sm" name="file" id="file">
+                                                                            </form>                
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -585,20 +500,11 @@
                                                                 <label>URL<span style="color: red;"> *</span></label>
                                                                 <input name="url" class="form-control enInput" type="text" placeholder="URL" maxlength="255" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                             </div>
-
+                        
                                                             <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s33}}</span></h4>
                                                             <div class="form-group">
                                                                 <label>{{s34}}</label>
-                                                                <div class="row">
-                                                                    <div class="col-8">
-                                                                        <input name="logo" class="form-control enInput" type="text" placeholder="URL">
-                                                                    </div>
-                                                                    <div class="col-4">
-                                                                        <form>
-                                                                            <input type="file" ref="file" class="w-100 btn btn-primary btn-sm" name="file" id="logoFile" style="padding: .375rem .75rem;">
-                                                                        </form>
-                                                                    </div>
-                                                                </div>
+                                                                <input name="logo" class="form-control enInput" type="text" placeholder="URL">
                                                             </div>
                                                             <div class="form-group">
                                                                 <label>{{s35}}</label>
@@ -608,7 +514,7 @@
                                                                 <label>{{s36}}</label>
                                                                 <input name="privacyUrl" class="form-control enInput" type="text" placeholder="URL">
                                                             </div>
-
+                        
                                                             <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s37}}</span></h4>
                                                             <div class="form-group">
                                                                 <label>{{s38}}<span style="color: red;"> *</span></label>
@@ -644,383 +550,290 @@
                                                 </div>
 
                                                 <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('accessStrategy') }" id="accessStrategy">
-                                                    <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s54}}</span></h4>
-
-                                                    <div class="form-group">
-                                                        <label>{{s56}}</label>
-                                                        <input name="unauthorizedRedirectUrl" class="form-control enInput" type="text" placeholder="URL">
-                                                    </div>
-
-                                                    <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s32}}</span></h5>
-                                                    <div class="form-group">
-                                                        <input type="hidden" name="groups" v-bind:value="groupList">
-                                                        <label class="form-check-label">{{allGroupsHolderText}}</label>
-                                                        <label class="switch">
-                                                            <input type="checkbox">
-                                                            <span id="selectAllGroups" v-on:click="allGroups()" class="slider round"></span>
-                                                        </label> <br>
-                                                        <ul>
-                                                            <li v-for="group in groups" :key="group.name">
-                                                                <label class="form-check-label">{{group.name}}</label>
-                                                                <label class="form-check-label" style="font-size: 80%; color: #0000008c;"> ( <small>{{group.id}}</small> ) </label>
+                                                            <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s54}}</span></h4>
+                                                            
+                                                            <div class="form-group">
+                                                                <label>{{s56}}</label>
+                                                                <input name="unauthorizedRedirectUrl" class="form-control enInput" type="text" placeholder="URL">
+                                                            </div>
+                            
+                                                            <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s32}}</span></h5>
+                                                            <div class="form-group">
+                                                                <input type="hidden" name="groups" v-bind:value="groupList">
+                                                                <label class="form-check-label">{{allGroupsHolderText}}</label>
                                                                 <label class="switch">
                                                                     <input type="checkbox">
-                                                                    <span :id="'groupNameId' + group.id" v-on:click="addGroup(group.id)" class="slider round"></span>
-                                                                </label>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-
-                                                    <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s69}}</span></h5>
-                                                    <div class="form-group">
-                                                        <div class="card mb-3">
-                                                            <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                                                                <div>
-                                                                    <span>{{s70}}</span>
-                                                                </div>
-                                                                <div class="d-flex">
-                                                                    <div style="width: 250px;">
-                                                                        <div class="input-group input-group-sm">
-                                                                            <input type="text" :placeholder="s71" class="form-control" v-model="searchQuery">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+                                                                    <span id="selectAllGroups" v-on:click="allGroups()" class="slider round"></span>                                                      
+                                                                </label> <br>
+                                                                <ul>   
+                                                                    <li v-for="group in groups" :key="group.name">
+                                                                        <label class="form-check-label">{{group.name}}</label>
+                                                                        <label class="form-check-label" style="font-size: 80%; color: #0000008c;"> ( <small>{{group.id}}</small> ) </label>
+                                                                        <label class="switch">
+                                                                            <input type="checkbox">
+                                                                            <span :id="'groupNameId' + group.id" v-on:click="addGroup(group.id)" class="slider round"></span>  
+                                                                        </label>
+                                                                    </li>
+                                                                </ul>
                                                             </div>
-                                                            <div class="list-group list-group-flush">
-                                                                <div class="list-group-item" v-if="resultQuery.length > 0">
-                                                                    <div v-if="accessStrategyUsersLoader" class="text-center">
-                                                                        <roller-loader color="#007bff"/>
-                                                                    </div>
-                                                                    <div v-else class="row align-items-start">
-                                                                        <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in resultQuery" >
-                                                                            <div>
-                                                                                <label>{{user.userId}}</label>
-                                                                                <div class="text-muted text-ellipsis">
-                                                                                    <small>{{user.displayName}}</small>
-                                                                                </div>
-                                                                                <div class="row">
-                                                                                    <div class="col-6">
-                                                                                        <button @click="allowUserAccess(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s72">
-                                                                                            <i class="fa fa-plus" style="color: green;"></i>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                    <div class="col-6">
-                                                                                        <button @click="blockUserAccess(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s73">
-                                                                                            <i class="fa fa-ban" style="color: red;"></i>
-                                                                                        </button>
-                                                                                    </div>
+
+                                                            <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s69}}</span></h5>
+                                                            <div class="form-group">
+                                                                <div class="card mb-3">
+                                                                    <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                                        <div>
+                                                                            <span>{{s70}}</span>
+                                                                        </div> 
+                                                                        <div class="d-flex">
+                                                                            <div style="width: 250px;">
+                                                                                <div class="input-group input-group-sm">
+                                                                                    <input type="text" :placeholder="s71" class="form-control" v-model="searchQuery">
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div v-if="resultQuery.length == 0 && searchQuery.length != 0" class="list-group-item text-center">
-                                                                    <div v-if="accessStrategyUsersLoader" class="text-center">
-                                                                        <roller-loader color="#007bff"/>
-                                                                    </div>
-                                                                    <div v-else>
-                                                                        <div>
-                                                                            <i class="fa fa-times fa-2x"></i>
-                                                                        </div>
-                                                                        <div>
-                                                                            <span>{{s74}}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div v-if="resultQuery.length == 0 && searchQuery.length == 0" class="list-group-item text-center">
-                                                                    <div v-if="accessStrategyUsersLoader" class="text-center">
-                                                                        <roller-loader color="#007bff"/>
-                                                                    </div>
-                                                                    <div v-else>
-                                                                        <div>
-                                                                            <i class="fa fa-search fa-2x"></i>
-                                                                        </div>
-                                                                        <div>
-                                                                            <span>{{s75}}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="card mb-3">
-                                                            <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                                                                <div>
-                                                                    <span>{{s76}}</span>
-                                                                </div>
-                                                                <div class="d-flex">
-                                                                    <div style="width: 250px;">
-                                                                        <div class="input-group input-group-sm">
-                                                                            <input type="text" :placeholder="s71" class="form-control" v-model="searchQueryAllowedList">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="list-group list-group-flush">
-                                                                <div class="list-group-item" v-if="allowedResultQuery.length > 0">
-                                                                    <div v-if="accessStrategyUsersLoader" class="text-center">
-                                                                        <roller-loader color="#007bff"/>
-                                                                    </div>
-                                                                    <div v-else class="row align-items-start">
-                                                                        <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in allowedResultQuery" >
-                                                                            <div>
-                                                                                <label>{{user.userId}}</label>
-                                                                                <div class="text-muted text-ellipsis">
-                                                                                    <small>{{user.displayName}}</small>
-                                                                                </div>
-                                                                                <div class="row">
-                                                                                    <div class="col-12">
-                                                                                        <button @click="deleteFromAllowedList(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s77">
-                                                                                            <i class="fa fa-times" style="color: red;"></i>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </div>
+                                                                    </div> 
+                                                                    <div class="list-group list-group-flush">
+                                                                        <div class="list-group-item" v-if="resultQuery.length > 0">
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
                                                                             </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div v-if="allowedResultQuery.length == 0 && searchQueryAllowedList.length != 0" class="list-group-item text-center">
-                                                                    <div v-if="accessStrategyUsersLoader" class="text-center">
-                                                                        <roller-loader color="#007bff"/>
-                                                                    </div>
-                                                                    <div v-else>
-                                                                        <div>
-                                                                            <i class="fa fa-times fa-2x"></i>
-                                                                        </div>
-                                                                        <div>
-                                                                            <span>{{s74}}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div v-if="allowedResultQuery.length == 0 && searchQueryAllowedList.length == 0" class="list-group-item list-group-item-warning text-center">
-                                                                    <div v-if="accessStrategyUsersLoader" class="text-center">
-                                                                        <roller-loader color="#007bff"/>
-                                                                    </div>
-                                                                    <div v-else>
-                                                                        <div>
-                                                                            <i class="fa fa-signing fa-2x"></i>
-                                                                        </div>
-                                                                        <div>
-                                                                            <span>{{s78}}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="card mb-3">
-                                                                <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                                                                    <div>
-                                                                        <span>{{s79}}</span>
-                                                                    </div>
-                                                                    <div class="d-flex">
-                                                                        <div style="width: 250px;">
-                                                                            <div class="input-group input-group-sm">
-                                                                                <input type="text" :placeholder="s71" class="form-control" v-model="searchQueryBlockedList">
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="list-group list-group-flush">
-                                                                    <div class="list-group-item" v-if="blockedResultQuery.length > 0">
-                                                                        <div v-if="accessStrategyUsersLoader" class="text-center">
-                                                                            <roller-loader color="#007bff"/>
-                                                                        </div>
-                                                                        <div v-else class="row align-items-start">
-                                                                            <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in blockedResultQuery" >
-                                                                                <div>
-                                                                                    <label>{{user.userId}}</label>
-                                                                                    <div class="text-muted text-ellipsis">
-                                                                                        <small>{{user.displayName}}</small>
-                                                                                    </div>
-                                                                                    <div class="row">
-                                                                                        <div class="col-12">
-                                                                                            <button @click="deleteFromBlockedList(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s77">
-                                                                                                <i class="fa fa-times" style="color: red;"></i>
-                                                                                            </button>
+                                                                            <div v-else class="row align-items-start">
+                                                                                <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in resultQuery" >
+                                                                                    <div>
+                                                                                        <label>{{user.userId}}</label>
+                                                                                        <div class="text-muted text-ellipsis">
+                                                                                            <small>{{user.displayName}}</small>
+                                                                                        </div>
+                                                                                        <div class="row">
+                                                                                            <div class="col-6">
+                                                                                                <button @click="allowUserAccess(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s72">
+                                                                                                    <i class="fa fa-plus" style="color: green;"></i>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                            <div class="col-6">
+                                                                                                <button @click="blockUserAccess(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s73">
+                                                                                                    <i class="fa fa-ban" style="color: red;"></i>
+                                                                                                </button>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                    <div v-if="blockedResultQuery.length == 0 && searchQueryBlockedList.length != 0" class="list-group-item text-center">
-                                                                        <div v-if="accessStrategyUsersLoader" class="text-center">
-                                                                            <roller-loader color="#007bff"/>
-                                                                        </div>
-                                                                        <div v-else>
-                                                                            <div>
-                                                                                <i class="fa fa-times fa-2x"></i>
+                                                                        <div v-if="resultQuery.length == 0 && searchQuery.length != 0" class="list-group-item text-center">
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
                                                                             </div>
-                                                                            <div>
-                                                                                <span>{{s74}}</span>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-times fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s74}}</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                    <div v-if="blockedResultQuery.length == 0 && searchQueryBlockedList.length == 0" class="list-group-item list-group-item-warning text-center">
-                                                                        <div v-if="accessStrategyUsersLoader" class="text-center">
-                                                                            <roller-loader color="#007bff"/>
-                                                                        </div>
-                                                                        <div v-else>
-                                                                            <div>
-                                                                                <i class="fa fa-signing fa-2x"></i>
+                                                                        <div v-if="resultQuery.length == 0 && searchQuery.length == 0" class="list-group-item text-center">
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
                                                                             </div>
-                                                                            <div>
-                                                                                <span>{{s78}}</span>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-search fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s75}}</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                        </div>
-                                                    </div>
 
-                                                    <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{accessByHoursAndDaysOfTheWeekText}}</span></h5>
-                                                    <select name="type" class="form-control mb-3" v-model="dailyAccessType">
-                                                        <option value="DAY" selected>{{dayBasedText}}</option>
-                                                        <option value="URL">{{urlBasedText}}</option>
-                                                    </select>
-                                                    <div v-bind:class="dailyAccessType === 'DAY' ? '' : 'd-none'" class="form-group">
-                                                        <div name="dailyAccess" class="d-none" value=""></div>
-                                                        <a id="dailyAccessSelectAll" href="#" v-on:click.prevent="dailyAccessController('selectAll')">{{selectAllText}}</a>
-                                                        <a id="dailyAccessRemoveAll" href="#" class="d-none" v-on:click.prevent="dailyAccessController('removeAll')">{{removeText}}</a>
-                                                        <label class="d-flex justify-content-between">
-                                                            <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                <input id="dailyAccessCheckbox0" type="checkbox" value="0" class="form-control mx-2" v-on:click="dailyAccessController('0')"/>
-                                                                {{saturdayText}}
-                                                            </div>
-                                                            <div id="dailyAccessContainer0" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                <label class="mx-2">{{fromText}}</label>
-                                                                <input id="dailyAccessStart0" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                <label class="mx-2">{{toText}}</label>
-                                                                <input id="dailyAccessEnd0" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                            </div>
-                                                        </label>
-                                                        <label class="d-flex justify-content-between">
-                                                            <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                <input id="dailyAccessCheckbox1" type="checkbox" value="1" class="form-control mx-2" v-on:click="dailyAccessController('1')"/>
-                                                                {{sundayText}}
-                                                            </div>
-                                                            <div id="dailyAccessContainer1" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                <label class="mx-2">{{fromText}}</label>
-                                                                <input id="dailyAccessStart1" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                <label class="mx-2">{{toText}}</label>
-                                                                <input id="dailyAccessEnd1" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                            </div>
-                                                        </label>
-                                                        <label class="d-flex justify-content-between">
-                                                            <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                <input id="dailyAccessCheckbox2" type="checkbox" value="2" class="form-control mx-2" v-on:click="dailyAccessController('2')"/>
-                                                                {{mondayText}}
-                                                            </div>
-                                                            <div id="dailyAccessContainer2" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                <label class="mx-2">{{fromText}}</label>
-                                                                <input id="dailyAccessStart2" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                <label class="mx-2">{{toText}}</label>
-                                                                <input id="dailyAccessEnd2" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                            </div>
-                                                        </label>
-                                                        <label class="d-flex justify-content-between">
-                                                            <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                <input id="dailyAccessCheckbox3" type="checkbox" value="3" class="form-control mx-2" v-on:click="dailyAccessController('3')"/>
-                                                                {{tuesdayText}}
-                                                            </div>
-                                                            <div id="dailyAccessContainer3" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                <label class="mx-2">{{fromText}}</label>
-                                                                <input id="dailyAccessStart3" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                <label class="mx-2">{{toText}}</label>
-                                                                <input id="dailyAccessEnd3" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                            </div>
-                                                        </label>
-                                                        <label class="d-flex justify-content-between">
-                                                            <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                <input id="dailyAccessCheckbox4" type="checkbox" value="4" class="form-control mx-2" v-on:click="dailyAccessController('4')"/>
-                                                                {{wednesdayText}}
-                                                            </div>
-                                                            <div id="dailyAccessContainer4" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                <label class="mx-2">{{fromText}}</label>
-                                                                <input id="dailyAccessStart4" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                <label class="mx-2">{{toText}}</label>
-                                                                <input id="dailyAccessEnd4" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                            </div>
-                                                        </label>
-                                                        <label class="d-flex justify-content-between">
-                                                            <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                <input id="dailyAccessCheckbox5" type="checkbox" value="5" class="form-control mx-2" v-on:click="dailyAccessController('5')"/>
-                                                                {{thursdayText}}
-                                                            </div>
-                                                            <div id="dailyAccessContainer5" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                                <label class="mx-2">{{fromText}}</label>
-                                                                <input id="dailyAccessStart5" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                <label class="mx-2">{{toText}}</label>
-                                                                <input id="dailyAccessEnd5" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                            </div>
-                                                        </label>
-                                                        <label class="d-flex justify-content-between">
-                                                            <div class="d-flex justify-content-center align-items-center mx-1">
-                                                                <input id="dailyAccessCheckbox6" type="checkbox" value="6" class="form-control mx-2" v-on:click="dailyAccessController('6')"/>
-                                                                {{fridayText}}
-                                                            </div>
-                                                            <div id="dailyAccessContainer6" style="visibility: hidden;" class="d-flex justify-content-center align-items-center mx-1" >
-                                                                <label class="mx-2">{{fromText}}</label>
-                                                                <input id="dailyAccessStart6" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                                <label class="mx-2">{{toText}}</label>
-                                                                <input id="dailyAccessEnd6" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                            </div>
-                                                        </label>
-                                                    </div>
-                                                    <div v-bind:class="dailyAccessType === 'URL' ? '' : 'd-none'" class="form-group">
-                                                        <label>{{s90}}</label>
-                                                        <input name="endpointUrl" class="form-control enInput mb-3" type="text" placeholder="URL">
-                                                        <label>{{s97}}</label>
-                                                        <input name="acceptableResponseCodes" class="form-control enInput" type="text" placeholder="200,202">
-                                                    </div>
+                                                                <div class="card mb-3">
+                                                                    <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                                        <div>
+                                                                            <span>{{s76}}</span>
+                                                                        </div> 
+                                                                        <div class="d-flex">
+                                                                            <div style="width: 250px;">
+                                                                                <div class="input-group input-group-sm">
+                                                                                    <input type="text" :placeholder="s71" class="form-control" v-model="searchQueryAllowedList"> 
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div> 
+                                                                    <div class="list-group list-group-flush">
+                                                                        <div class="list-group-item" v-if="allowedResultQuery.length > 0">
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else class="row align-items-start">
+                                                                                <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in allowedResultQuery" >
+                                                                                    <div>
+                                                                                        <label>{{user.userId}}</label>
+                                                                                        <div class="text-muted text-ellipsis">
+                                                                                            <small>{{user.displayName}}</small>
+                                                                                        </div>
+                                                                                        <div class="row">
+                                                                                            <div class="col-12">
+                                                                                                <button @click="deleteFromAllowedList(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s77">
+                                                                                                    <i class="fa fa-times" style="color: red;"></i>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div v-if="allowedResultQuery.length == 0 && searchQueryAllowedList.length != 0" class="list-group-item text-center">
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-times fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s74}}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div v-if="allowedResultQuery.length == 0 && searchQueryAllowedList.length == 0" class="list-group-item list-group-item-warning text-center">
+                                                                            <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                <roller-loader color="#007bff"/>
+                                                                            </div>
+                                                                            <div v-else>
+                                                                                <div>
+                                                                                    <i class="fa fa-signing fa-2x"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span>{{s78}}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
 
-                                                    <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s60}}</span></h5>
-                                                    <div class="form-group">
-                                                        <ul class="nav nav-tabs nav-justified" style="padding-right: 0; border-bottom: 0;">
-                                                            <li class="nav-item" style="padding-left: .5rem;">
-                                                                <label>{{s61}}</label>
-                                                                <input name="dateStart" type="text" class="datePickerFa form-control"/>
-                                                            </li>
-                                                            <li class="nav-item">
-                                                                <label>{{s63}}</label>
-                                                                <input name="dateEnd" type="text" class="datePickerFa form-control" />
-                                                            </li>
-                                                        </ul>
-                                                    </div>
+                                                                <div class="card mb-3">
+                                                                        <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                                            <div>
+                                                                                <span>{{s79}}</span>
+                                                                            </div> 
+                                                                            <div class="d-flex">
+                                                                                <div style="width: 250px;">
+                                                                                    <div class="input-group input-group-sm">
+                                                                                        <input type="text" :placeholder="s71" class="form-control" v-model="searchQueryBlockedList"> 
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div> 
+                                                                        <div class="list-group list-group-flush">
+                                                                            <div class="list-group-item" v-if="blockedResultQuery.length > 0">
+                                                                                <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                    <roller-loader color="#007bff"/>
+                                                                                </div>
+                                                                                <div v-else class="row align-items-start">
+                                                                                    <div class="card mb-3 col-6 col-sm-4 col-md-3 col-lg-2 text-center" v-for="user in blockedResultQuery" >
+                                                                                        <div>
+                                                                                            <label>{{user.userId}}</label>
+                                                                                            <div class="text-muted text-ellipsis">
+                                                                                                <small>{{user.displayName}}</small>
+                                                                                            </div>
+                                                                                            <div class="row">
+                                                                                                <div class="col-12">
+                                                                                                    <button @click="deleteFromBlockedList(user)" class="btn btn-link btn-sm" data-toggle="tooltip" data-placement="top" :title="s77">
+                                                                                                        <i class="fa fa-times" style="color: red;"></i>
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div v-if="blockedResultQuery.length == 0 && searchQueryBlockedList.length != 0" class="list-group-item text-center">
+                                                                                <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                    <roller-loader color="#007bff"/>
+                                                                                </div>
+                                                                                <div v-else>
+                                                                                    <div>
+                                                                                        <i class="fa fa-times fa-2x"></i>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span>{{s74}}</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div v-if="blockedResultQuery.length == 0 && searchQueryBlockedList.length == 0" class="list-group-item list-group-item-warning text-center">
+                                                                                <div v-if="accessStrategyUsersLoader" class="text-center">
+                                                                                    <roller-loader color="#007bff"/>
+                                                                                </div>
+                                                                                <div v-else>
+                                                                                    <div>
+                                                                                        <i class="fa fa-signing fa-2x"></i>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span>{{s78}}</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                </div>
+                                                            </div>
 
-                                                    <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s80}}</span></h5>
-                                                    <div class="form-group">
-                                                        <div class="row">
-                                                            <div class="col-3" style="text-align: center;">
-                                                                <label>{{s81}}</label>
+                                                            <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s96}}</span></h5>
+                                                            <div class="form-group">
+                                                                <label>{{s90}}</label>
+                                                                <input name="endpointUrl" class="form-control enInput mb-3" type="text" placeholder="URL">
+                                                                <label>{{s97}}</label>
+                                                                <input name="acceptableResponseCodes" class="form-control enInput" type="text" placeholder="200,202">
                                                             </div>
-                                                            <div class="col-8" style="text-align: center;">
-                                                                <label>{{s82}}</label>
+
+                                                            <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s60}}</span></h5>
+                                                            <div class="form-group">
+                                                                <ul class="nav nav-tabs nav-justified" style="padding-right: 0; border-bottom: 0;">
+                                                                    <li class="nav-item" style="padding-left: .5rem;">
+                                                                        <label>{{s61}}</label>
+                                                                        <input name="dateStart" type="text" class="datePickerFa form-control"/>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <label>{{s63}}</label>
+                                                                        <input name="dateEnd" type="text" class="datePickerFa form-control" />
+                                                                    </li>
+                                                                </ul>
                                                             </div>
-                                                            <div class="col-1">
-                                                            </div>
-                                                        </div>
-                                                        <div class="row mt-2" v-for="index in indexList" v-bind:id="'attribute' + index">
-                                                            <div class="col-3">
-                                                                <input v-model:value="attKey[index]" v-bind:id="'attributeKey' + index" class="form-control enInput" type="text" placeholder="name">
-                                                            </div>
-                                                            <div class="col-8">
-                                                                <input v-model:value="attVal[index]" v-bind:id="'attributeValue' + index" class="form-control enInput" type="text" placeholder="value1,value2,value3">
-                                                            </div>
-                                                            <div class="col-1">
-                                                                <button v-on:click="deleteAttribute(index)" class="btn btn-danger btn-circle" v-if="index != 0">
-                                                                    <i class="fa fa-minus"></i>
+
+                                                            <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s80}}</span></h5>
+                                                            <div class="form-group">
+                                                                <div class="row">
+                                                                    <div class="col-3" style="text-align: center;">
+                                                                        <label>{{s81}}</label>
+                                                                    </div>
+                                                                    <div class="col-8" style="text-align: center;">
+                                                                        <label>{{s82}}</label>
+                                                                    </div>
+                                                                    <div class="col-1">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row mt-2" v-for="index in indexList" v-bind:id="'attribute' + index">
+                                                                    <div class="col-3">
+                                                                        <input v-model:value="attKey[index]" v-bind:id="'attributeKey' + index" class="form-control enInput" type="text" placeholder="name">
+                                                                    </div>
+                                                                    <div class="col-8">
+                                                                        <input v-model:value="attVal[index]" v-bind:id="'attributeValue' + index" class="form-control enInput" type="text" placeholder="value1,value2,value3">
+                                                                    </div>
+                                                                    <div class="col-1">
+                                                                        <button v-on:click="deleteAttribute(index)" class="btn btn-danger btn-circle" v-if="index != 0">
+                                                                            <i class="fa fa-minus"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <button v-on:click="addAttribute()" class="btn btn-success btn-circle mt-2">
+                                                                    <i class="fa fa-plus"></i>
                                                                 </button>
                                                             </div>
-                                                        </div>
-                                                        <button v-on:click="addAttribute()" class="btn btn-success btn-circle mt-2">
-                                                            <i class="fa fa-plus"></i>
-                                                        </button>
-                                                    </div>
 
-                                                    <button v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
-                                                    <button v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
+                                                            <button v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
+                                                            <button v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
                                                 </div>
 
                                                 <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('mfa') }" id="mfa">

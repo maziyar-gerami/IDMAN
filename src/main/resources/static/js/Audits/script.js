@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
       deleteInputIcon1: "left: 10%;",
       isListEmpty: false,
       isListEmpty1: false,
-      s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
+      s0: "احراز هویت متمرکز شرکت فلات قاره",
       s1: "",
       s2: "خروج",
       s3: "داشبورد",
@@ -113,8 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
       publicmessagesURLText: "./publicmessages",
       ticketingText: "پشتیبانی",
       ticketingURLText: "./ticketing",
-      transcriptsText: "گزارش های دسترسی",
-      transcriptsURLText: "./transcripts",
       showMeeting: false,
       meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
       meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
@@ -644,7 +642,6 @@ document.addEventListener('DOMContentLoaded', function () {
           this.reportsText = "Reports";
           this.publicmessagesText = "Public Messages";
           this.ticketingText = "Ticketing";
-          this.transcriptsText = "Access Reports";
           this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
           this.meetingInviteLinkCopyStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
           this.meetingText = "Meeting";
@@ -660,7 +657,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.deleteInputIcon = "left: 7%;";
             this.deleteInputIcon1 = "left: 10%;";
             this.dateNavText = this.dateNav;
-            this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
+            this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
             this.s1 = this.name;
             this.s2 = "خروج";
             this.s3 = "داشبورد";
@@ -704,7 +701,6 @@ document.addEventListener('DOMContentLoaded', function () {
             this.reportsText = "گزارش ها";
             this.publicmessagesText = "اعلان های عمومی";
             this.ticketingText = "پشتیبانی";
-            this.transcriptsText = "گزارش های دسترسی";
             this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
             this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
             this.meetingText = "جلسه مجازی";

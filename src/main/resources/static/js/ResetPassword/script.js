@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
             captchaId: "",
             capAnswer: "",
             loader: false,
-            s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
+            s0: "احراز هویت متمرکز شرکت فلات قاره",
             s1: "",
             s2: "خروج",
             s3: "بازنشانی رمز عبور",
@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.lang = "EN";
                     this.isRtl = true;
                     this.dateNavText = this.dateNav;
-                    this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
+                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
                     this.s1 = this.name;
                     this.s2 = "خروج";
                     this.s3 = "بازنشانی رمز عبور";

@@ -6,33 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>پارسو</title>
 
-    <link type="text/css" href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link type="text/css" href="css/CreateService/style.css" rel="stylesheet">
-    <link type="text/css" href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
-    <link type="text/css" href="fonts/IranSans/font.css" rel="stylesheet">
-    <link type="text/css" href="css/persian-datepicker.min.css" rel="stylesheet"/>
-    <link type="text/css" href="css/bootstrap-multiselect.min.css" rel="stylesheet"/>
+    <link href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/CreateService/style.css" rel="stylesheet">
+    <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="fonts/IranSans/font.css" rel="stylesheet">
+    <link href="css/persian-datepicker.min.css" rel="stylesheet"/>
 
 
-    <script type="text/javascript" src="js/es6-promise.min.js"></script>
-    <script type="text/javascript" src="js/es6-promise.auto.min.js"></script>
-    <script type="text/javascript" src="js/polyfill.min.js"></script>
-    <script type="text/javascript" src="js/vue.min.js"></script>
-    <script type="text/javascript" src="js/vue-router.js"></script>
-    <script type="text/javascript" src="js/axios.min.js"></script>
-    <script type="text/javascript" src="js/persian-date.min.js"></script>
-    <script type="text/javascript" src="js/CreateService/script.js"></script>
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/persian-datepicker.min.js"></script>
-    <script type="text/javascript" src="js/persian-rex.min.js"></script>
-    <script type="text/javascript" src="js/vue-spinners-css.min.js"></script>
-    <script type="text/javascript" src="js/Bootstrap/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap-multiselect.min.js"></script>
+    <script src="js/es6-promise.min.js"></script>
+    <script src="js/es6-promise.auto.min.js"></script>
+    <script src="js/polyfill.min.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/persian-date.min.js"></script>
+    <script src="js/CreateService/script.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/persian-datepicker.min.js"></script>
+    <script src="js/persian-rex.min.js"></script>
+    <script src="js/vue-spinners-css.min.js"></script>
 
 </head>
 <script type="text/javascript">
     $(document).ready(function() {
-        $(".datePickerFa").pDatepicker({
+      $(".datePickerFa").pDatepicker({
         inline: false,
         format: "LLLL",
         viewMode: "day",
@@ -82,7 +79,7 @@
             }
             },
             submitButton: {
-            enabled: false,
+            enabled: true,
             text: {
                 fa: "تایید",
                 en: "Submit"
@@ -124,98 +121,6 @@
             titleFormat: "YYYY"
         },
         responsive: true
-        });
-        $(".timePickerFa").pDatepicker({
-            inline: false,
-            format: "H:m",
-            viewMode: "day",
-            initialValue: false,
-            autoClose: false,
-            position: "auto",
-            altFormat: "H:m",
-            altField: "#altfieldExample",
-            onlyTimePicker: true,
-            onlySelectOnDate: false,
-            calendarType: "persian",
-            inputDelay: 800,
-            observer: false,
-            calendar: {
-                persian: {
-                    locale: "fa",
-                    showHint: false,
-                    leapYearMode: "algorithmic"
-                },
-                gregorian: {
-                    locale: "en",
-                    showHint: false
-                }
-            },
-            navigator: {
-                enabled: true,
-                scroll: {
-                    enabled: true
-                },
-                text: {
-                    btnNextText: "<",
-                    btnPrevText: ">"
-                }
-            },
-            toolbox: {
-                enabled: false,
-                calendarSwitch: {
-                    enabled: false,
-                    format: "MMMM"
-                },
-                todayButton: {
-                    enabled: false,
-                    text: {
-                        fa: "امروز",
-                        en: "Today"
-                    }
-                },
-                submitButton: {
-                    enabled: false,
-                    text: {
-                        fa: "تایید",
-                        en: "Submit"
-                    }
-                },
-                text: {
-                    btnToday: "امروز"
-                }
-            },
-            timePicker: {
-                enabled: true,
-                step: 1,
-                hour: {
-                    enabled: true,
-                    step: null
-                },
-                minute: {
-                    enabled: true,
-                    step: null
-                },
-                second: {
-                    enabled: false,
-                    step: null
-                },
-                meridian: {
-                    enabled: false
-                }
-            },
-            dayPicker: {
-                enabled: false,
-                titleFormat: "YYYY MMMM"
-            },
-            monthPicker: {
-                enabled: false,
-                titleFormat: "YYYY"
-            },
-            yearPicker: {
-                enabled: false,
-                titleFormat: "YYYY"
-            },
-            responsive: true
         });
     });
 </script>
@@ -311,28 +216,28 @@
                                         <i class="fa fa-dashboard fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s3}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     style="color: #fff; background-color: #007bff; border-color: #007bff;"
                                     v-bind:href="s34">
                                         <i class="fa fa-server fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s4}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s37">
                                         <i class="fa fa-user fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s13}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s38">
                                         <i class="fa fa-users fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s5}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="rolesURLText">
                                         <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{rolesText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                        v-bind:href="publicmessagesURLText">
                                         <i class="fa fa-bell fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{publicmessagesText}}</span>
@@ -357,17 +262,12 @@
                                         <i class="fa fa-file fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{reportsText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2"
-                                       v-bind:href="transcriptsURLText">
-                                        <i class="fa fa-file-text fa-fw" aria-hidden="true"></i>&nbsp;
-                                        <span>{{transcriptsText}}</span>
-                                    </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s39">
                                         <i class="fa fa-cogs fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s42">
                                         <i class="fa fa-cog fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s41}}</span>
@@ -419,10 +319,9 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>{{s16}}</label>
-                                                    <select name="type" class="form-control" @change="setServiceType" v-model="serviceType">
+                                                    <select name="type" class="form-control" @change="setServiceType()" v-model="serviceType">
                                                         <option value="CAS" selected>CAS</option>
                                                         <option value="SAML">SAML</option>
-                                                        <option value="Oauth2">Oauth2</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
@@ -434,7 +333,7 @@
                                                     <label>{{s36}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{s73}}</small></label>
                                                     <input name="serviceId" class="form-control enInput" type="text" placeholder="URL" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
                                                 </div>
-                                                <div v-if="serviceType === 'SAML'" class="form-group">
+                                                <div v-if="samls" class="form-group">
                                                     <label>Metadata Location<span style="color: red;"> *</span></label>
                                                     <div class="row">
                                                         <div class="col-3">
@@ -449,95 +348,8 @@
                                                             </div>
                                                             <div v-bind:style="metaDataFile ? 'display: block;' : 'display: none;' ">
                                                                 <form id="myForm" method="POST" enctype="multipart/form-data" action="/api/services/user/metadata">
-                                                                    <input type="file" ref="file" class="btn btn-primary btn-sm" name="file" id="metadataFile">
+                                                                    <input type="file" ref="file" class="btn btn-primary btn-sm" name="file" id="file">
                                                                 </form>                
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div v-bind:style="serviceType === 'Oauth2' ? 'display: block;' : 'display: none;' " class="form-group"><!--v-if="serviceType === 'Oauth2'"-->
-                                                    <div class="form-group">
-                                                        <label>Client Id<span style="color: red;"> *</span></label>
-                                                        <input name="clientId" class="form-control enInput" type="text" required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Client Secret<span style="color: red;"> *</span></label>
-                                                        <div class="row">
-                                                            <div class="col-8">
-                                                                <input name="clientSecret" class="form-control enInput" type="text">
-                                                            </div>
-                                                            <div class="col-4">
-                                                                <button v-on:click="generateClientSecret" class="w-100 h-100 btn btn-success btn-sm">{{generateSecretText}}</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Supported Grant Types<span style="color: red;"> *</span></label>
-                                                        <div id="supportedGrantTypesContainer" class="dropdown-checkbox form-control" data-control="dropdown-checkbox">
-                                                            <label class="dropdown-checkbox-label">
-                                                                <div name="supportedGrantTypes" class="dropdown-checkbox-label-container" value="" text="Select"></div>
-                                                            </label>
-                                                            <div class="dropdown-checkbox-list">
-                                                                <a href="#" data-toggle="check-all" class="dropdown-checkbox-option" :checkText="selectAllText" :uncheckText="removeText"></a>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="none" text="none" />
-                                                                    none
-                                                                </label>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="authorization_code" text="authorization_code" checked/>
-                                                                    authorization_code
-                                                                </label>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="password" text="password" />
-                                                                    password
-                                                                </label>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="client_credentials" text="client_credentials" />
-                                                                    client_credentials
-                                                                </label>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="refresh_token" text="refresh_token" />
-                                                                    refresh_token
-                                                                </label>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="uma_ticket" text="uma_ticket" />
-                                                                    uma_ticket
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Supported Response Types<span style="color: red;"> *</span></label>
-                                                        <div id="supportedResponseTypesContainer" class="dropdown-checkbox form-control" data-control="dropdown-checkbox">
-                                                            <label class="dropdown-checkbox-label">
-                                                                <div name="supportedResponseTypes" class="dropdown-checkbox-label-container" value="" text="Select"></div>
-                                                            </label>
-                                                            <div class="dropdown-checkbox-list">
-                                                                <a href="#" data-toggle="check-all" class="dropdown-checkbox-option" :checkText="selectAllText" :uncheckText="removeText"></a>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="code" text="code" checked/>
-                                                                    code
-                                                                </label>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="none" text="none" />
-                                                                    none
-                                                                </label>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="token" text="token" />
-                                                                    token
-                                                                </label>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="device_code" text="device_code" />
-                                                                    device_code
-                                                                </label>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="idtoken_token" text="idtoken_token" />
-                                                                    idtoken_token
-                                                                </label>
-                                                                <label class="dropdown-checkbox-option bg">
-                                                                    <input type="checkbox" name="dropdown-checkbox-group" value="id_token" text="id_token" />
-                                                                    id_token
-                                                                </label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -555,9 +367,7 @@
                                                 <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s20}}</span></h4>
                                                 <div class="form-group">
                                                     <label>{{s21}}</label>
-                                                    <form>
-                                                        <input type="file" ref="file" class="btn btn-primary btn-sm" name="file" id="logoFile">
-                                                    </form>
+                                                    <input name="logo" class="form-control enInput" type="text" placeholder="URL">
                                                 </div>
                                                 <div class="form-group">
                                                     <label>{{s22}}</label>
@@ -794,101 +604,8 @@
                                                 </div>
                                             </div>
 
-                                            <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{accessByHoursAndDaysOfTheWeekText}}</span></h5>
-                                            <select name="type" class="form-control mb-3" v-model="dailyAccessType">
-                                                <option value="DAY" selected>{{dayBasedText}}</option>
-                                                <option value="URL">{{urlBasedText}}</option>
-                                            </select>
-                                            <div v-bind:class="dailyAccessType === 'DAY' ? '' : 'd-none'" class="form-group">
-                                                <div name="dailyAccess" class="d-none" value=""></div>
-                                                <a id="dailyAccessSelectAll" href="#" v-on:click.prevent="dailyAccessController('selectAll')">{{selectAllText}}</a>
-                                                <a id="dailyAccessRemoveAll" href="#" class="d-none" v-on:click.prevent="dailyAccessController('removeAll')">{{removeText}}</a>
-                                                <label class="d-flex justify-content-between">
-                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                        <input id="dailyAccessCheckbox0" type="checkbox" value="0" class="form-control mx-2" v-on:click="dailyAccessController('0')"/>
-                                                        {{saturdayText}}
-                                                    </div>
-                                                    <div id="dailyAccessContainer0" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                        <label class="mx-2">{{fromText}}</label>
-                                                        <input id="dailyAccessStart0" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                        <label class="mx-2">{{toText}}</label>
-                                                        <input id="dailyAccessEnd0" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                    </div>
-                                                </label>
-                                                <label class="d-flex justify-content-between">
-                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                        <input id="dailyAccessCheckbox1" type="checkbox" value="1" class="form-control mx-2" v-on:click="dailyAccessController('1')"/>
-                                                        {{sundayText}}
-                                                    </div>
-                                                    <div id="dailyAccessContainer1" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                        <label class="mx-2">{{fromText}}</label>
-                                                        <input id="dailyAccessStart1" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                        <label class="mx-2">{{toText}}</label>
-                                                        <input id="dailyAccessEnd1" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                    </div>
-                                                </label>
-                                                <label class="d-flex justify-content-between">
-                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                        <input id="dailyAccessCheckbox2" type="checkbox" value="2" class="form-control mx-2" v-on:click="dailyAccessController('2')"/>
-                                                        {{mondayText}}
-                                                    </div>
-                                                    <div id="dailyAccessContainer2" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                        <label class="mx-2">{{fromText}}</label>
-                                                        <input id="dailyAccessStart2" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                        <label class="mx-2">{{toText}}</label>
-                                                        <input id="dailyAccessEnd2" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                    </div>
-                                                </label>
-                                                <label class="d-flex justify-content-between">
-                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                        <input id="dailyAccessCheckbox3" type="checkbox" value="3" class="form-control mx-2" v-on:click="dailyAccessController('3')"/>
-                                                        {{tuesdayText}}
-                                                    </div>
-                                                    <div id="dailyAccessContainer3" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                        <label class="mx-2">{{fromText}}</label>
-                                                        <input id="dailyAccessStart3" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                        <label class="mx-2">{{toText}}</label>
-                                                        <input id="dailyAccessEnd3" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                    </div>
-                                                </label>
-                                                <label class="d-flex justify-content-between">
-                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                        <input id="dailyAccessCheckbox4" type="checkbox" value="4" class="form-control mx-2" v-on:click="dailyAccessController('4')"/>
-                                                        {{wednesdayText}}
-                                                    </div>
-                                                    <div id="dailyAccessContainer4" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                        <label class="mx-2">{{fromText}}</label>
-                                                        <input id="dailyAccessStart4" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                        <label class="mx-2">{{toText}}</label>
-                                                        <input id="dailyAccessEnd4" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                    </div>
-                                                </label>
-                                                <label class="d-flex justify-content-between">
-                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                        <input id="dailyAccessCheckbox5" type="checkbox" value="5" class="form-control mx-2" v-on:click="dailyAccessController('5')"/>
-                                                        {{thursdayText}}
-                                                    </div>
-                                                    <div id="dailyAccessContainer5" class="d-flex justify-content-center align-items-center mx-1" style="visibility: hidden;">
-                                                        <label class="mx-2">{{fromText}}</label>
-                                                        <input id="dailyAccessStart5" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                        <label class="mx-2">{{toText}}</label>
-                                                        <input id="dailyAccessEnd5" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                    </div>
-                                                </label>
-                                                <label class="d-flex justify-content-between">
-                                                    <div class="d-flex justify-content-center align-items-center mx-1">
-                                                        <input id="dailyAccessCheckbox6" type="checkbox" value="6" class="form-control mx-2" v-on:click="dailyAccessController('6')"/>
-                                                        {{fridayText}}
-                                                    </div>
-                                                    <div id="dailyAccessContainer6" style="visibility: hidden;" class="d-flex justify-content-center align-items-center mx-1" >
-                                                        <label class="mx-2">{{fromText}}</label>
-                                                        <input id="dailyAccessStart6" type="text" value="۰:۰۰" class="timePickerFa form-control"/>
-                                                        <label class="mx-2">{{toText}}</label>
-                                                        <input id="dailyAccessEnd6" type="text" value="۲۳:۵۹" class="timePickerFa form-control"/>
-                                                    </div>
-                                                </label>
-                                            </div>
-                                            <div v-bind:class="dailyAccessType === 'URL' ? '' : 'd-none'" class="form-group">
+                                            <h5 class="border-bottom pb-3 mb-3 mt-5"><span>{{s80}}</span></h5>
+                                            <div class="form-group">
                                                 <label>{{s74}}</label>
                                                 <input name="endpointUrl" class="form-control enInput mb-3" type="text" placeholder="URL">
                                                 <label>{{s81}}</label>
