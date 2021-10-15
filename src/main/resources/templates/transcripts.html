@@ -6,24 +6,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>پارسو</title>
 
-    <link href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="css/Events/style.css" rel="stylesheet">
-    <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
-    <link href="fonts/IranSans/font.css" rel="stylesheet">
+    <link type="text/css" href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="css/Events/style.css" rel="stylesheet">
+    <link type="text/css" href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
+    <link type="text/css" href="fonts/IranSans/font.css" rel="stylesheet">
+    <link type="text/css" href="css/persian-datepicker.min.css" rel="stylesheet"/>
 
-
-    <script src="js/es6-promise.min.js"></script>
-    <script src="js/es6-promise.auto.min.js"></script>
-    <script src="js/polyfill.min.js"></script>
-    <script src="js/vue.min.js"></script>
-    <script src="js/vue-router.js"></script>
-    <script src="js/axios.min.js"></script>
-    <script src="js/persian-date.min.js"></script>
-    <script src="js/Transcripts/script.js"></script>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/vue-spinners-css.min.js"></script>
-
+    <script type="text/javascript" src="js/es6-promise.min.js"></script>
+    <script type="text/javascript" src="js/es6-promise.auto.min.js"></script>
+    <script type="text/javascript" src="js/polyfill.min.js"></script>
+    <script type="text/javascript" src="js/vue.min.js"></script>
+    <script type="text/javascript" src="js/vue-router.js"></script>
+    <script type="text/javascript" src="js/axios.min.js"></script>
+    <script type="text/javascript" src="js/persian-date.min.js"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/Transcripts/script.js"></script>
+    <script type="text/javascript" src="js/vue-spinners-css.min.js"></script>
+    <script type="text/javascript" src="js/vue-plain-pagination.umd.min.js"></script>
+    <script type="text/javascript" src="js/persian-datepicker.min.js"></script>
 </head>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".datePickerFa").pDatepicker({
+            inline: false,
+            format: "L",
+            viewMode: "day",
+            initialValue: false,
+            initialValueType: "persian",
+            autoClose: true,
+            position: "auto",
+            altFormat: "ll",
+            altField: ".alt-field",
+            onlyTimePicker: false,
+            onlySelectOnDate: false,
+            calendarType: "persian",
+            inputDelay: 800,
+            observer: false,
+            calendar: {
+                persian: {
+                    locale: "fa",
+                    showHint: true,
+                    leapYearMode: "algorithmic"
+                },
+                gregorian: {
+                    locale: "en",
+                    showHint: true
+                }
+            },
+            navigator: {
+                enabled: true,
+                scroll: {
+                    enabled: true
+                },
+                text: {
+                    btnNextText: "<",
+                    btnPrevText: ">"
+                }
+            },
+            toolbox: {
+                enabled: true,
+                calendarSwitch: {
+                    enabled: true,
+                    format: "MMMM"
+                },
+                todayButton: {
+                    enabled: true,
+                    text: {
+                        fa: "امروز",
+                        en: "Today"
+                    }
+                },
+                submitButton: {
+                    enabled: false,
+                    text: {
+                        fa: "تایید",
+                        en: "Submit"
+                    }
+                },
+                text: {
+                    btnToday: "امروز"
+                }
+            },
+            timePicker: {
+                enabled: false,
+                step: 1,
+                hour: {
+                    enabled: false,
+                    step: null
+                },
+                minute: {
+                    enabled: false,
+                    step: null
+                },
+                second: {
+                    enabled: false,
+                    step: null
+                },
+                meridian: {
+                    enabled: false
+                }
+            },
+            dayPicker: {
+                enabled: true,
+                titleFormat: "YYYY MMMM"
+            },
+            monthPicker: {
+                enabled: true,
+                titleFormat: "YYYY"
+            },
+            yearPicker: {
+                enabled: true,
+                titleFormat: "YYYY"
+            },
+            responsive: true
+        });
+    });
+</script>
 <body class="h-100">
     <div id="app">
         <div id="overlay">
@@ -201,11 +299,28 @@
                                                         <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
                                                             <div class="row ml-0 mr-0 w-100">
                                                                 <div class="col-4 pl-1 pr-1">
-                                                                    <div class="input-group input-group-sm">
-                                                                        <select v-model="serviceIdSearch" class="form-control">
-                                                                            <option value="" selected disabled>{{serviceNameText}}</option>
-                                                                            <option v-for="service in services" :value="service._id">{{service.name}}</option>
-                                                                        </select>
+                                                                    <div v-bind:class="serviceTranscriptsFilterController.Id ? '' : 'd-none'">
+                                                                        <div class="input-group input-group-sm">
+                                                                            <input id="serviceTranscriptsFilterId" type="text" class="form-control" placeholder="ID">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div v-bind:class="serviceTranscriptsFilterController.Name ? '' : 'd-none'">
+                                                                        <div class="input-group input-group-sm">
+                                                                            <select id="serviceTranscriptsFilterName" class="form-control">
+                                                                                <option value="" selected disabled>{{serviceNameText}}</option>
+                                                                                <option v-for="service in services" :value="service.name">{{service.name}}</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div v-bind:class="serviceTranscriptsFilterController.DoerId ? '' : 'd-none'">
+                                                                        <div class="input-group input-group-sm">
+                                                                            <input id="serviceTranscriptsFilterDoerId" type="text" class="form-control" placeholder="Doer ID">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div v-bind:class="serviceTranscriptsFilterController.Date ? '' : 'd-none'">
+                                                                        <div class="input-group input-group-sm">
+                                                                            <input id="serviceTranscriptsFilterDate" type="text" class="datePickerFa form-control" :placeholder="date">
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-2 pl-1 pr-1">
@@ -215,9 +330,50 @@
                                                                         </button>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-6"></div>
+                                                                <div class="col-1"></div>
+                                                                <div class="col-2 pl-1 pr-1">
+                                                                    <div v-bind:class="serviceTranscriptsFilterController.Id ? '' : 'd-none'">
+                                                                        <div class="input-group input-group-sm">
+                                                                            <button class="btn btn-danger btn-sm form-control" v-on:click="removeServiceTranscriptsFilter('id')">
+                                                                                {{deleteFilterText}}
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div v-bind:class="serviceTranscriptsFilterController.Name ? '' : 'd-none'">
+                                                                        <div class="input-group input-group-sm">
+                                                                            <button class="btn btn-danger btn-sm form-control" v-on:click="removeServiceTranscriptsFilter('name')">
+                                                                                {{deleteFilterText}}
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div v-bind:class="serviceTranscriptsFilterController.DoerId ? '' : 'd-none'">
+                                                                        <div class="input-group input-group-sm">
+                                                                            <button class="btn btn-danger btn-sm form-control" v-on:click="removeServiceTranscriptsFilter('doerId')">
+                                                                                {{deleteFilterText}}
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div v-bind:class="serviceTranscriptsFilterController.Date ? '' : 'd-none'">
+                                                                        <div class="input-group input-group-sm">
+                                                                            <button class="btn btn-danger btn-sm form-control" v-on:click="removeServiceTranscriptsFilter('date')">
+                                                                                {{deleteFilterText}}
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-3 pl-1 pr-1">
+                                                                    <div class="input-group input-group-sm">
+                                                                        <button class="btn btn-danger btn-sm form-control" v-on:click="removeServiceTranscriptsFilter('all')">
+                                                                            {{deleteAllFiltersText}}
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                    <div class="my-3" style="direction: rtl;">
+                                                        <v-pagination v-model="serviceTranscriptsCurrentPage" :page-count="serviceTranscriptsTotal"
+                                                            :classes="bootstrapPaginationClasses" :labels="paginationAnchorTexts"></v-pagination>
                                                     </div>
                                                     <div class="list-group list-group-flush" style="overflow: auto;">
                                                         <div class="table-wrapper list-group-item">
@@ -238,27 +394,61 @@
                                                                     <table class="tableList table table-responsive p-2 text-center">
                                                                         <tr>
                                                                             <th style="border: none;">#</th>
-                                                                            <th style="border: none;">Result</th>
+                                                                            <th style="border: none;">
+                                                                                <i class="fa fa-filter fa-fw" aria-hidden="true"
+                                                                                style="cursor: pointer;" v-on:click="changeActiveFilter('Name')"></i>Name</th>
                                                                             <th style="border: none;">Action</th>
-                                                                            <th style="border: none;">DoerID</th>
+                                                                            <th style="border: none;">Access Change</th>
                                                                             <th style="border: none;">Entity</th>
-                                                                            <th style="border: none;">AccessChange</th>
-                                                                            <th style="border: none;">{{date}}</th>
+                                                                            <th style="border: none;">Result</th>
+                                                                            <th style="border: none;">
+                                                                                <i class="fa fa-filter fa-fw" aria-hidden="true"
+                                                                                style="cursor: pointer;" v-on:click="changeActiveFilter('DoerId')"></i>Doer ID</th>
+                                                                            <th style="border: none;">
+                                                                                <i class="fa fa-filter fa-fw" aria-hidden="true"
+                                                                                style="cursor: pointer;" v-on:click="changeActiveFilter('Date')"></i>{{date}}</th>
                                                                             <th style="border: none;">{{time}}</th>
                                                                         </tr>
                                                                         <tbody style="font-size: .8rem;">
-                                                                            <tr v-for="transcript in serviceTranscripts">
+                                                                            <tr v-for="transcript in serviceTranscripts" data-toggle="tooltip"
+                                                                                data-placement="top" :title="transcript.instance">
                                                                                 <td>{{transcript.recordNumber}}</td>
-                                                                                <td>{{transcript.result}}</td>
+                                                                                <td>{{transcript.instanceName}}</td>
                                                                                 <td>{{transcript.action}}</td>
-                                                                                <td>{{transcript.doerID}}</td>
-                                                                                <td>{{transcript.type}}:{{transcript.item}}</td>
                                                                                 <td>{{transcript.accessChange}}</td>
+                                                                                <td>{{transcript.type}}:{{transcript.item}}</td>
+                                                                                <td>{{transcript.result}}</td>
+                                                                                <td>{{transcript.doerID}}</td>
                                                                                 <td>{{transcript.time.year}}/{{transcript.time.month}}/{{transcript.time.day}}</td>
                                                                                 <td>{{transcript.time.hours}}:{{transcript.time.minutes}}:{{transcript.time.seconds}}</td>
                                                                             </tr>
                                                                         </tbody>
                                                                     </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="my-3" style="direction: rtl;">
+                                                        <v-pagination v-model="serviceTranscriptsCurrentPage" :page-count="serviceTranscriptsTotal"
+                                                            :classes="bootstrapPaginationClasses" :labels="paginationAnchorTexts"></v-pagination>
+                                                    </div>
+                                                    <div class="card">
+                                                        <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                            <div class="row ml-0 mr-0 w-100">
+                                                                <div class="col-8"></div>
+                                                                <div class="col-4 pl-1 pr-1">
+                                                                    <div class="input-group input-group-sm">
+                                                                        <select id="serviceTranscriptsFilterCount" class="form-control" v-on:change="changeRecordsOnPage($event)">
+                                                                            <option :value="serviceTranscriptsRecordsOnPage" selected disabled>
+                                                                                {{serviceTranscriptsRecordsOnPage}}{{recordsOnPageText}}
+                                                                            </option>
+                                                                            <option value="20">20</option>
+                                                                            <option value="50">50</option>
+                                                                            <option value="100">100</option>
+                                                                            <option value="300">300</option>
+                                                                            <option value="500">500</option>
+                                                                        </select>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>

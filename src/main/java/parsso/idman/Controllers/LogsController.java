@@ -14,6 +14,7 @@ import parsso.idman.Models.Logs.ReportMessage;
 import parsso.idman.RepoImpls.logs.AuditsRepoImpl;
 import parsso.idman.RepoImpls.logs.EventsRepoImpl;
 import parsso.idman.RepoImpls.logs.ReportsRepoImpl;
+import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -21,13 +22,16 @@ import java.util.List;
 
 @RestController
 public class LogsController {
-    final AuditsRepoImpl auditRepo;
-    EventsRepoImpl eventRepo;
-    ReportsRepoImpl reportsRepo;
+    final LogsRepo.AuditRepo auditRepo;
+    LogsRepo.EventRepo eventRepo;
+    LogsRepo.ReportRepo reportsRepo;
 
     @Autowired
-    public LogsController(AuditsRepoImpl auditRepo) {
+    public LogsController(LogsRepo.AuditRepo auditRepo, LogsRepo.EventRepo eventRepo, LogsRepo.ReportRepo reportsRepo) {
         this.auditRepo = auditRepo;
+        this.eventRepo = eventRepo;
+        this.reportsRepo = reportsRepo;
+
     }
 
 
@@ -86,12 +90,12 @@ public class LogsController {
     }
 
     @GetMapping("/api/logs/reports/serviceAccess")
-    public ResponseEntity<List<ReportMessage>> accessManaging(@RequestParam(value = "page") String p,
-                                                              @RequestParam(value = "count") String n,
-                                                              @RequestParam(value = "name", defaultValue = "") String instanceName,
-                                                              @RequestParam(value = "id", defaultValue = "") String id,
-                                                              @RequestParam(value = "date", defaultValue = "") String date,
-                                                              @RequestParam(value = "doerID", defaultValue = "") String doerId) {
+    public ResponseEntity<ReportMessage.ListReportMessage> accessManaging(@RequestParam(value = "page") String p,
+                                                                          @RequestParam(value = "count") String n,
+                                                                          @RequestParam(value = "name", defaultValue = "") String instanceName,
+                                                                          @RequestParam(value = "id", defaultValue = "") String id,
+                                                                          @RequestParam(value = "date", defaultValue = "") String date,
+                                                                          @RequestParam(value = "doerID", defaultValue = "") String doerId) {
         long _id = !id.equals("") ? Long.parseLong(id) : 0;
         int page = !p.equals("") ? Integer.parseInt(p) : 0;
         int nRows = !n.equals("") ? Integer.parseInt(n) : 0;

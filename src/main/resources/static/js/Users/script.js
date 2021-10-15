@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 let searchQuery = "?";
-                searchQuery = searchQuery + "n=";
+                searchQuery = searchQuery + "searchUid=";
                 if(this.searchUserId.trim() != ""){
                     searchQuery = searchQuery + this.searchUserId.trim() + "&";
                 }else{

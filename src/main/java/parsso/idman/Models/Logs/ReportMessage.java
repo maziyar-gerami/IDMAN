@@ -209,5 +209,25 @@ public class ReportMessage {
         return chs;
     }
 
+    @Setter
+    @Getter
+    public static class ListReportMessage{
+
+        long size;
+        int pages;
+        List<ReportMessage> reportMessageList;
+
+        ListReportMessage(){
+
+        }
+
+        public ListReportMessage(long size, int pages, List<ReportMessage> reportMessageList) {
+            this.size = size;
+            this.pages = pages;
+            this.reportMessageList = reportMessageList;
+        }
+    }
 
 }
+
+
