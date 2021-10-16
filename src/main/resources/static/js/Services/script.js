@@ -599,12 +599,6 @@ document.addEventListener('DOMContentLoaded', function () {
               document.getElementsByName("description")[0].value = res.data.description;
             }
 
-            if(typeof res.data.extraInfo !== 'undefined'){
-              if(typeof res.data.extraInfo.url !== 'undefined'){
-                document.getElementsByName("url")[0].value = res.data.extraInfo.url;
-              }
-            }
-
             if(res.data.accessStrategy.ssoEnabled){
               document.getElementsByName("ssoEnabled")[0].checked = true;
             }else{
@@ -807,33 +801,39 @@ document.addEventListener('DOMContentLoaded', function () {
               }
             }
 
-            if(typeof res.data.extraInfo.notificationApiURL !== "undefined"){
-              document.getElementsByName("notificationApiURL")[0].value = res.data.extraInfo.notificationApiURL;
-            }
+            if(typeof res.data.extraInfo !== "undefined"){
+              if(typeof res.data.extraInfo.url !== "undefined"){
+                document.getElementsByName("url")[0].value = res.data.extraInfo.url;
+              }
+              if(typeof res.data.extraInfo.notificationApiURL !== "undefined"){
+                document.getElementsByName("notificationApiURL")[0].value = res.data.extraInfo.notificationApiURL;
+              }
 
-            if(typeof res.data.extraInfo.notificationApiKey !== "undefined"){
-              document.getElementsByName("notificationApiKey")[0].value = res.data.extraInfo.notificationApiKey;
-            }
+              if(typeof res.data.extraInfo.notificationApiKey !== "undefined"){
+                document.getElementsByName("notificationApiKey")[0].value = res.data.extraInfo.notificationApiKey;
+              }
 
-            if(typeof res.data.extraInfo.dailyAccess !== "undefined"){
-              let tempDailyAccessFrom = "";
-              let tempDailyAccessTo = "";
-              if(res.data.extraInfo.dailyAccess.length > 0){
-                for(let i = 0; i < res.data.extraInfo.dailyAccess.length; ++i){
-                  document.getElementById("dailyAccessCheckbox" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("checked", "true");
-                  tempDailyAccessFrom = this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.minute));
-                  tempDailyAccessTo = this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.minute));
-                  document.getElementById("dailyAccessStart" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("value", tempDailyAccessFrom);
-                  document.getElementById("dailyAccessEnd" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("value", tempDailyAccessTo);
-                  this.dailyAccessController(res.data.extraInfo.dailyAccess[i].weekDay);
+              if(typeof res.data.extraInfo.dailyAccess !== "undefined"){
+                let tempDailyAccessFrom = "";
+                let tempDailyAccessTo = "";
+                if(res.data.extraInfo.dailyAccess.length > 0){
+                  for(let i = 0; i < res.data.extraInfo.dailyAccess.length; ++i){
+                    document.getElementById("dailyAccessCheckbox" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("checked", "true");
+                    tempDailyAccessFrom = this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.minute));
+                    tempDailyAccessTo = this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.minute));
+                    document.getElementById("dailyAccessStart" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("value", tempDailyAccessFrom);
+                    document.getElementById("dailyAccessEnd" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("value", tempDailyAccessTo);
+                    this.dailyAccessController(res.data.extraInfo.dailyAccess[i].weekDay);
+                  }
+                }
+              }else if(typeof res.data.accessStrategy.endpointUrl !== "undefined"){
+                document.getElementsByName("endpointUrl")[0].value = res.data.accessStrategy.endpointUrl;
+                if(typeof res.data.accessStrategy.acceptableResponseCodes !== "undefined"){
+                  document.getElementsByName("acceptableResponseCodes")[0].value = res.data.accessStrategy.acceptableResponseCodes;
                 }
               }
-            }else if(typeof res.data.accessStrategy.endpointUrl !== "undefined"){
-              document.getElementsByName("endpointUrl")[0].value = res.data.accessStrategy.endpointUrl;
-              if(typeof res.data.accessStrategy.acceptableResponseCodes !== "undefined"){
-                document.getElementsByName("acceptableResponseCodes")[0].value = res.data.accessStrategy.acceptableResponseCodes;
-              }
             }
+
           });
         },
         editService: function (id) {
@@ -2520,100 +2520,136 @@ document.addEventListener('DOMContentLoaded', function () {
           return this.servicesPage;
         },
         resultQuery(){
+          let buffer = [];
           if(this.searchQuery){
-            let buffer = [];
             buffer = buffer.concat(this.userSearch.filter((item)=>{
-              return this.searchQuery.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
+              if(typeof item.userId !== "undefined") {
+                return this.searchQuery.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v));
+              }
             }));
             buffer = buffer.concat(this.userSearch.filter((item)=>{
-              return this.searchQuery.split(' ').every(v => item.displayName.includes(v))
+              if(typeof item.displayName !== "undefined") {
+                return this.searchQuery.split(" ").every(v => item.displayName.includes(v));
+              }
             }));
             let uniqueBuffer = [...new Set(buffer)];
             return uniqueBuffer;
           }else{
-            return [];
+            return buffer;
           }
         },
         allowedResultQuery(){
           let buffer = [];
-          buffer = buffer.concat(this.userAllowed.filter((item)=>{
-            return this.searchQueryAllowedList.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
-          }));
-          buffer = buffer.concat(this.userAllowed.filter((item)=>{
-            return this.searchQueryAllowedList.split(' ').every(v => item.displayName.includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
+          if(this.userAllowed.length !== 0){
+            buffer = buffer.concat(this.userAllowed.filter((item)=>{
+              if(typeof item.userId !== "undefined"){
+                return this.searchQueryAllowedList.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v));
+              }
+            }));
+            buffer = buffer.concat(this.userAllowed.filter((item)=>{
+              if(typeof item.displayName !== "undefined"){
+                return this.searchQueryAllowedList.split(" ").every(v => item.displayName.includes(v));
+              }
+            }));
+            let uniqueBuffer = [...new Set(buffer)];
+            return uniqueBuffer;
+          }else {
+            return buffer;
+          }
         },
         blockedResultQuery(){
           let buffer = [];
-          buffer = buffer.concat(this.userBlocked.filter((item)=>{
-            return this.searchQueryBlockedList.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
-          }));
-          buffer = buffer.concat(this.userBlocked.filter((item)=>{
-            return this.searchQueryBlockedList.split(' ').every(v => item.displayName.includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
-        },
-        allowedUsersReportListResult(){
-          if(this.allowedUsersReportSearch){
-            let buffer = [];
-            buffer = buffer.concat(this.allowedUsersReportList.filter((item)=>{
-              return this.allowedUsersReportSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v))
+          if(this.userBlocked.length !== 0){
+            buffer = buffer.concat(this.userBlocked.filter((item)=>{
+              if(typeof item.userId !== "undefined") {
+                return this.searchQueryBlockedList.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v));
+              }
             }));
-            buffer = buffer.concat(this.allowedUsersReportList.filter((item)=>{
-              return this.allowedUsersReportSearch.toLowerCase().split(" ").every(v => item.displayName.toLowerCase().includes(v))
+            buffer = buffer.concat(this.userBlocked.filter((item)=>{
+              if(typeof item.displayName !== "undefined"){
+                return this.searchQueryBlockedList.split(" ").every(v => item.displayName.includes(v));
+              }
             }));
             let uniqueBuffer = [...new Set(buffer)];
             return uniqueBuffer;
-          }else{
-            return [];
+          }else {
+            return buffer;
+          }
+        },
+        allowedUsersReportListResult(){
+          let buffer = [];
+          if(this.allowedUsersReportSearch){
+            buffer = buffer.concat(this.allowedUsersReportList.filter((item)=>{
+              if(typeof item.userId !== "undefined") {
+                return this.allowedUsersReportSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v));
+              }
+            }));
+            buffer = buffer.concat(this.allowedUsersReportList.filter((item)=>{
+              if(typeof item.displayName !== "undefined") {
+                return this.allowedUsersReportSearch.toLowerCase().split(" ").every(v => item.displayName.toLowerCase().includes(v));
+              }
+            }));
+            let uniqueBuffer = [...new Set(buffer)];
+            return uniqueBuffer;
+          }else {
+            return buffer;
           }
         },
         bannedUsersReportListResult(){
+          let buffer = [];
           if(this.bannedUsersReportSearch){
-            let buffer = [];
             buffer = buffer.concat(this.bannedUsersReportList.filter((item)=>{
-              return this.bannedUsersReportSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v))
+              if(typeof item.userId !== "undefined") {
+                return this.bannedUsersReportSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v));
+              }
             }));
             buffer = buffer.concat(this.bannedUsersReportList.filter((item)=>{
-              return this.bannedUsersReportSearch.toLowerCase().split(" ").every(v => item.displayName.toLowerCase().includes(v))
+              if(typeof item.displayName !== "undefined") {
+                return this.bannedUsersReportSearch.toLowerCase().split(" ").every(v => item.displayName.toLowerCase().includes(v));
+              }
             }));
             let uniqueBuffer = [...new Set(buffer)];
             return uniqueBuffer;
           }else{
-            return [];
+            return buffer;
           }
         },
         allowedGroupsReportListResult(){
+          let buffer = [];
           if(this.allowedGroupsReportSearch){
-            let buffer = [];
             buffer = buffer.concat(this.allowedGroupsReportList.filter((item)=>{
-              return this.allowedGroupsReportSearch.toLowerCase().split(" ").every(v => item.id.toLowerCase().includes(v))
+              if(typeof item.id !== "undefined") {
+                return this.allowedGroupsReportSearch.toLowerCase().split(" ").every(v => item.id.toLowerCase().includes(v));
+              }
             }));
             buffer = buffer.concat(this.allowedGroupsReportList.filter((item)=>{
-              return this.allowedGroupsReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v))
+              if(typeof item.description !== "undefined") {
+                return this.allowedGroupsReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v));
+              }
             }));
             let uniqueBuffer = [...new Set(buffer)];
             return uniqueBuffer;
           }else{
-            return [];
+            return buffer;
           }
         },
         bannedGroupsReportListResult(){
+          let buffer = [];
           if(this.bannedGroupsReportSearch){
-            let buffer = [];
             buffer = buffer.concat(this.bannedGroupsReportList.filter((item)=>{
-              return this.bannedGroupsReportSearch.toLowerCase().split(" ").every(v => item.id.toLowerCase().includes(v))
+              if(typeof item.id !== "undefined") {
+                return this.bannedGroupsReportSearch.toLowerCase().split(" ").every(v => item.id.toLowerCase().includes(v));
+              }
             }));
             buffer = buffer.concat(this.bannedGroupsReportList.filter((item)=>{
-              return this.bannedGroupsReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v))
+              if(typeof item.description !== "undefined") {
+                return this.bannedGroupsReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v));
+              }
             }));
             let uniqueBuffer = [...new Set(buffer)];
             return uniqueBuffer;
           }else{
-            return [];
+            return buffer;
           }
         },
       },
