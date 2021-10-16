@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
             showUnDeletableList: false,
             unDeletableList: "",
             isListEmpty: false,
-            s0: "احراز هویت متمرکز شرکت فلات قاره",
+            s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
             s1: "",
             s2: "خروج",
             s3: "بازیابی رمز عبور",
@@ -215,6 +215,8 @@ document.addEventListener('DOMContentLoaded', function () {
             publicmessagesURLText: "./publicmessages",
             ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
+            transcriptsText: "گزارش های دسترسی",
+            transcriptsURLText: "./transcripts",
             importUserListGroupError: false,
             importUserListGroupErrorList: "",
             importUserListGroupErrorText: "گروه های مشخص شده برای کاربران زیر، تعریف نشده اند.",
@@ -1627,6 +1629,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "Reports";
                     this.publicmessagesText = "Public Messages";
                     this.ticketingText = "Ticketing";
+                    this.transcriptsText = "Access Reports";
                     this.importUserListGroupErrorText = "The Groups Specified For The Following Users Are Not Defined.";
                     this.importUserListRepetitiveErrorText = "The Following Users Are Duplicates.";
                     this.importUserListOverride1Text = "From Total Users, Information Of ";
@@ -1698,7 +1701,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.eye = "right: 1%;";
                     this.font = "font-size: 0.74em; text-align: right;"
                     this.dateNavText = this.dateNav;
-                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
+                    this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
                     this.s1 = this.name;
                     this.s2 = "خروج";
                     this.s3 = "بازیابی رمز عبور";
@@ -1776,6 +1779,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "گزارش ها";
                     this.publicmessagesText = "اعلان های عمومی";
                     this.ticketingText = "پشتیبانی";
+                    this.transcriptsText = "گزارش های دسترسی";
                     this.importUserListGroupErrorText = "گروه های مشخص شده برای کاربران زیر، تعریف نشده اند.";
                     this.importUserListRepetitiveErrorText = "کاربران زیر، تکراری می باشند.";
                     this.importUserListOverride1Text = "از مجموع کاربران، اطلاعات ";

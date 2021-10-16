@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             userListSearch: "",
             userList: [],
             editList: [],
-            parssoTitleText: "احراز هویت متمرکز شرکت فلات قاره",
+            parssoTitleText: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
             usernameText: "",
             exitText: "خروج",
             dashboardText: "داشبورد",
@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesText: "نقش ها",
             publicmessagesText: "اعلان های عمومی",
             ticketingText: "پشتیبانی",
+            transcriptsText: "گزارش های دسترسی",
             eventsText: "رویداد ها",
             auditsText: "ممیزی ها",
             reportsText: "گزارش ها",
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
             rolesURLText: "./roles",
             publicmessagesURLText: "./publicmessages",
             ticketingURLText: "./ticketing",
+            transcriptsURLText: "./transcripts",
             eventsURLText: "./events",
             auditsURLText: "./audits",
             reportsURLText: "./reports",
@@ -206,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then((res) => {
                     for(let i = 0; i < res.data.length; ++i){
                         res.data[i].checked = false;
-                        if(res.data[i].role == "SUPERADMIN"){
+                        if(res.data[i].role == "SUPERUSER"){
                             res.data[i].roleFa = "مدیر کل";
                             res.data[i].icon = "color: #dc3545;";
                             superAdminTempList.push(res.data[i]);
@@ -293,6 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesText = "Roles";
                     this.publicmessagesText = "Public Messages";
                     this.ticketingText = "Ticketing";
+                    this.transcriptsText = "Access Reports";
                     this.eventsText = "Events";
                     this.auditsText = "Audits";
                     this.reportsText = "Reports";
@@ -315,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.noRoleSelectedAlertText = "No Role Selected.";
                     this.userIdText = "UserId";
                     this.roleText = "Role";
-                    this.superAdminText = "SUPERADMIN";
+                    this.superAdminText = "SUPERUSER";
                     this.supporterText = "SUPPORTER";
                     this.adminText = "ADMIN";
                     this.presenterText = "PRESENTER";
@@ -333,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.isRtl = true;
                     this.margin = "margin-right: 30px;";
                     this.dateNavText = this.dateNav;
-                    this.parssoTitleText = "احراز هویت متمرکز شرکت فلات قاره";
+                    this.parssoTitleText = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
                     this.usernameText = this.name;
                     this.exitText = "خروج";
                     this.dashboardText = "داشبورد";
@@ -343,6 +346,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rolesText = "نقش ها";
                     this.publicmessagesText = "اعلان های عمومی";
                     this.ticketingText = "پشتیبانی";
+                    this.transcriptsText = "گزارش های دسترسی";
                     this.eventsText = "رویداد ها";
                     this.auditsText = "ممیزی ها";
                     this.reportsText = "گزارش ها";

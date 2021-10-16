@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
             duplicateUsersList: "",
             usersAddedSuccess: false,
             usersAddedError: false,
-            s0: "احراز هویت متمرکز شرکت فلات قاره",
+            s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
             s1: "",
             s2: "خروج",
             s3: "بازنشانی رمز عبور",
@@ -145,6 +145,8 @@ document.addEventListener('DOMContentLoaded', function () {
             publicmessagesURLText: "./publicmessages",
             ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
+            transcriptsText: "گزارش های دسترسی",
+            transcriptsURLText: "./transcripts",
             groupIdDuplicate: false,
             groupIdDuplicateText: "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.",
             fileUploadGroupNotSelectedText: "لطفا گروه مورد نظر خود را انتخاب کنید",
@@ -361,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 //this.editingGroupID = id;
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                axios.get(url + "/api/groups/" + id) //
+                axios.get(url + "/api/groups", { params: { id: id } }) //
                     .then((res) => {
                         vm.group = res.data;
                         vm.getAllUsersList(id);
@@ -795,7 +797,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let vm = this;
 
                 this.reportLoader = true;
-                axios.get(url + "/api/groups/" + id) //
+                axios.get(url + "/api/groups", { params: { id: id } }) //
                     .then((res) => {
                         vm.reportedGroup = res.data;
                         if(typeof res.data.service !== "undefined"){
@@ -1013,6 +1015,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "Reports";
                     this.publicmessagesText = "Public Messages";
                     this.ticketingText = "Ticketing";
+                    this.transcriptsText = "Access Reports";
                     this.groupIdDuplicateText = "A Group With This Name Already Exists, Please Choose Another.";
                     this.fileUploadGroupNotSelectedText = "Please Select The Intended Group";
                     this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
@@ -1038,7 +1041,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
-                    this.U3= "Name";
+                    this.U3= "Persian Name";
                     this.U4= "Last Name (In English)";
                     this.U5= "FullName (In Persian)";
                     this.U6= "Phone";
@@ -1058,7 +1061,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.isRtl = true;
                     this.margin1 = "ml-1";
                     this.dateNavText = this.dateNav;
-                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
+                    this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
                     this.s1 = this.name;
                     this.s2 = "خروج";
                     this.s3 = "بازنشانی رمز عبور";
@@ -1109,6 +1112,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "گزارش ها";
                     this.publicmessagesText = "اعلان های عمومی";
                     this.ticketingText = "پشتیبانی";
+                    this.transcriptsText = "گزارش های دسترسی";
                     this.groupIdDuplicateText = "گروهی با این نام وجود دارد، نام دیگری انتخاب کنید.";
                     this.fileUploadGroupNotSelectedText = "لطفا گروه مورد نظر خود را انتخاب کنید";
                     this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
@@ -1134,7 +1138,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";
-                    this.U3 = "نام";
+                    this.U3 = "نام فارسی";
                     this.U4 = "نام خانوادگی (به انگلیسی)";
                     this.U5 = "نام کامل (به فارسی)";
                     this.U6 = "شماره تماس";

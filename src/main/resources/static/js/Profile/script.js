@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
             duplicatePasswords: false,
             incorrectPassword: false,
             incorrectToken: false,
-            s0: "احراز هویت متمرکز شرکت فلات قاره",
+            s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
             s1: "",
             s2: "خروج",
             s3: "بازنشانی رمز عبور",
@@ -106,6 +106,8 @@ document.addEventListener('DOMContentLoaded', function () {
             publicmessagesURLText: "./publicmessages",
             ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
+            transcriptsText: "گزارش های دسترسی",
+            transcriptsURLText: "./transcripts",
             emailFormatErrorText: "فرمت آدرس ایمیل را به درستی وارد کنید",
             mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
             inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
@@ -306,16 +308,16 @@ document.addEventListener('DOMContentLoaded', function () {
             editPass: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 if(document.getElementById('token').value != ""){
-                    var check = confirm(this.s24);
+                    let check = confirm(this.s24);
                     if (check == true) {
                         axios({
-                            method: 'put',
-                            url: url + '/api/user/password',   //
-                            headers: {'Content-Type': 'application/json'},
+                            method: "put",
+                            url: url + "/api/user/password",   //
+                            headers: {"Content-Type": "application/json"},
                             data: JSON.stringify({
-                                newPassword: document.getElementById('newPassword').value,
-                                currentPassword: document.getElementById('currentPassword').value,
-                                token: document.getElementById('token').value
+                                newPassword: document.getElementById("newPassword").value,
+                                currentPassword: "dummyPassword",
+                                token: document.getElementById("token").value
                             }).replace(/\\\\/g, "\\")
                         }).then((res) => {
                             location.replace(url + "/profile"); //
@@ -499,6 +501,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "Reports";
                     this.publicmessagesText = "Public Messages";
                     this.ticketingText = "Ticketing";
+                    this.transcriptsText = "Access Reports";
                     this.emailFormatErrorText = "Enter Email Address Format Correctly";
                     this.mobileFormatErrorText = "Enter Phone Number Format Correctly";
                     this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
@@ -544,7 +547,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.isRtl = true;
                     this.eye = "right: 1%;";
                     this.dateNavText = this.dateNav;
-                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
+                    this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
                     this.s1 = this.name;
                     this.s2 = "خروج";
                     this.s3 = "بازنشانی رمز عبور";
@@ -583,6 +586,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "گزارش ها";
                     this.publicmessagesText = "اعلان های عمومی";
                     this.ticketingText = "پشتیبانی";
+                    this.transcriptsText = "گزارش های دسترسی";
                     this.emailFormatErrorText = "فرمت آدرس ایمیل را به درستی وارد کنید";
                     this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
                     this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";

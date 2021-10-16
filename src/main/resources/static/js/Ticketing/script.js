@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
             dateSearch: "",
             inboxDateSearch: "",
             archivesDateSearch: "",
-            s0: "احراز هویت متمرکز شرکت فلات قاره",
+            s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
             s1: "",
             s2: "خروج",
             s3: "بازنشانی رمز عبور",
@@ -129,6 +129,8 @@ document.addEventListener('DOMContentLoaded', function () {
             publicmessagesURLText: "./publicmessages",
             ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
+            transcriptsText: "گزارش های دسترسی",
+            transcriptsURLText: "./transcripts",
             meetingText: "جلسه مجازی",
             enterMeetingText: "ورود به جلسه",
             inviteToMeetingText: "دعوت به جلسه",
@@ -352,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             changeInboxRecords: function(event) {
                 this.recordsShownOnInboxPage = event.target.value;
-                if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERADMIN"){
+                if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERUSER"){
                     this.getInboxTickets();
                 }else {
                     this.getSentTickets();
@@ -360,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             changeArchivesRecords: function(event) {
                 this.recordsShownOnArchivesPage = event.target.value;
-                if(userInfo.role == "SUPERADMIN"){
+                if(userInfo.role == "SUPERUSER"){
                     this.getArchivesTickets();
                 }
             },
@@ -381,12 +383,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     if(res.data.skyroomAccess){
                         vm.showMeeting = true;
                     }
-                    if(res.data.role == "SUPPORTER" || res.data.role == "SUPERADMIN"){
+                    if(res.data.role == "SUPPORTER" || res.data.role == "SUPERUSER"){
                         vm.getInboxTickets();
                     }else {
                         vm.getSentTickets();
                     }
-                    if(res.data.role == "SUPERADMIN"){
+                    if(res.data.role == "SUPERUSER"){
                         vm.getArchivesTickets();
                     }
                 });
@@ -517,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 this.archivesTickets = [];
                 this.isArchivesListEmpty = false;
-                axios.get(url + "/api/superadmin/tickets/archive/" + vm.currentArchivesPage + "/" + vm.recordsShownOnArchivesPage + searchQuery) //
+                axios.get(url + "/api/superuser/tickets/archive/" + vm.currentArchivesPage + "/" + vm.recordsShownOnArchivesPage + searchQuery) //
                     .then((res) => {
                         vm.totalArchives = Math.ceil(res.data.size / vm.recordsShownOnArchivesPage);
                         vm.archivesTickets = res.data.ticketList;
@@ -919,6 +921,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.copyText = "Copy";
                     this.returnText = "Return";
                     this.ticketingText = "Ticketing";
+                    this.transcriptsText = "Access Reports";
                     this.replyText = "Reply";
                     this.subjectText = "Subject";
                     this.fromText = "From";
@@ -960,7 +963,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.margin1 = "ml-1";
                     this.dateNavText = this.dateNav;
                     this.deleteInputIcon = "left: 10%;";
-                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
+                    this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
                     this.s1 = this.name;
                     this.s2 = "خروج";
                     this.s3 = "بازنشانی رمز عبور";
@@ -1002,6 +1005,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.copyText = "کپی";
                     this.returnText = "بازگشت";
                     this.ticketingText = "پشتیبانی";
+                    this.transcriptsText = "گزارش های دسترسی";
                     this.replyText = "پاسخ";
                     this.subjectText = "موضوع";
                     this.fromText = "ارسال کننده";
@@ -1061,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', function () {
             paginationCurrentInboxPage : function () {
                 if(this.paginationCurrentInboxPage != this.currentInboxPage){
                     this.currentInboxPage = this.paginationCurrentInboxPage;
-                    if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERADMIN"){
+                    if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERUSER"){
                         this.getInboxTickets("paginationCurrentPage");
                     }else {
                         this.getSentTickets("paginationCurrentPage");
@@ -1071,7 +1075,7 @@ document.addEventListener('DOMContentLoaded', function () {
             paginationCurrentArchivesPage : function () {
                 if(this.paginationCurrentArchivesPage != this.currentArchivesPage){
                     this.currentArchivesPage = this.paginationCurrentArchivesPage;
-                    if(userInfo.role == "SUPERADMIN"){
+                    if(userInfo.role == "SUPERUSER"){
                         this.getArchivesTickets("paginationCurrentPage");
                     }
                 }

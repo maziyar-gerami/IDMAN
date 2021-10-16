@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
       overlayLoader: false,
       refreshSuccess: false,
       refreshSuccessText: "",
-      s0: "احراز هویت متمرکز شرکت فلات قاره",
+      s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
       s1: "",
       s2: "خروج",
       s3: "داشبورد",
@@ -81,6 +81,8 @@ document.addEventListener('DOMContentLoaded', function () {
       publicmessagesURLText: "./publicmessages",
       ticketingText: "پشتیبانی",
       ticketingURLText: "./ticketing",
+      transcriptsText: "گزارش های دسترسی",
+      transcriptsURLText: "./transcripts",
       showMeeting: false,
       meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
       meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
@@ -225,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
         this.configsList = [];
         this.configsDescription = [];
         this.configsGroupNames = [];
-        axios.get(url + "/api/configs") // /settings?lang=" + vm.contentLang
+        axios.get(url + "/api/config") // /settings?lang=" + vm.contentLang
         .then((res) => {
           vm.configsList = res.data;
           for(let i = 0; i < vm.configsList.length; ++i){
@@ -261,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         this.restorePoints = [];
-        axios.get(url + "/api/configs/list") //
+        axios.get(url + "/api/configs") //
           .then((res) => {
             for(let i = 0; i < res.data.length; ++i){
               vm.restorePoints.push(res.data[i].name);
@@ -298,10 +300,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       },
       refreshServices: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.loader = true;
-        axios.get(url + "/api/refresh/services") //
+        axios.get(url + "/api/refresh", { params: { type: "service" } }) //
           .then((res) => {
             vm.loader = false;
             vm.refreshSuccessText = vm.s39;
@@ -310,10 +312,10 @@ document.addEventListener('DOMContentLoaded', function () {
           });
       },
       refreshUsers: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.loader = true;
-        axios.get(url + "/api/refresh/users") //
+        axios.get(url + "/api/refresh", { params: { type: "user" } }) //
           .then((res) => {
             vm.loader = false;
             vm.refreshSuccessText = vm.s40;
@@ -322,10 +324,10 @@ document.addEventListener('DOMContentLoaded', function () {
           });
       },
       refreshCaptchas: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.loader = true;
-        axios.get(url + "/api/refresh/captchas") //
+        axios.get(url + "/api/refresh", { params: { type: "captcha" } }) //
           .then((res) => {
             vm.loader = false;
             vm.refreshSuccessText = vm.s41;
@@ -334,10 +336,10 @@ document.addEventListener('DOMContentLoaded', function () {
           });
       },
       refreshAll: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.loader = true;
-        axios.get(url + "/api/refresh/all") //
+        axios.get(url + "/api/refresh") //
           .then((res) => {
             vm.loader = false;
             vm.refreshSuccessText = vm.s42;
@@ -390,6 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.reportsText = "Reports";
           this.publicmessagesText = "Public Messages";
           this.ticketingText = "Ticketing";
+          this.transcriptsText = "Access Reports";
           this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
           this.meetingInviteLinkCopyStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
           this.meetingText = "Meeting";
@@ -405,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.lang = "EN";
             this.isRtl = true;
             this.dateNavText = this.dateNav;
-            this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
+            this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
             this.s1 = this.name;
             this.s2 = "خروج";
             this.s3 = "داشبورد";
@@ -443,6 +446,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.reportsText = "گزارش ها";
             this.publicmessagesText = "اعلان های عمومی";
             this.ticketingText = "پشتیبانی";
+            this.transcriptsText = "گزارش های دسترسی";
             this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
             this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
             this.meetingText = "جلسه مجازی";

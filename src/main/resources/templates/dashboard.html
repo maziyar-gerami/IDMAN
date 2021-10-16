@@ -142,27 +142,27 @@
                                         <i class="fa fa-dashboard fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s3}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s15">
                                         <i class="fa fa-server fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s4}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s16">
                                         <i class="fa fa-user fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s13}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s21">
                                         <i class="fa fa-users fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s5}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="rolesURLText">
                                         <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{rolesText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                        v-bind:href="publicmessagesURLText">
                                         <i class="fa fa-bell fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{publicmessagesText}}</span>
@@ -187,12 +187,17 @@
                                         <i class="fa fa-file fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{reportsText}}</span>
                                     </a>
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2"
+                                       v-bind:href="transcriptsURLText">
+                                        <i class="fa fa-file-text fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{transcriptsText}}</span>
+                                    </a>
                                     <a class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s22">
                                         <i class="fa fa-cogs fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERADMIN')" class="list-group-item list-group-item-action py-2 "
+                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
                                     v-bind:href="s25">
                                         <i class="fa fa-cog fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s24}}</span>
@@ -205,7 +210,7 @@
                         <div class="card">
                             <div class="card-body" style="background-color: #f8f9fa!important;">
                                 <h3 class="border-bottom pb-3 mb-3"><span>{{s3}}</span></h3>
-                                <div sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERADMIN')" class="container mb-3">
+                                <div sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="container mb-3">
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <vc-donut v-bind="ActiveUsersChart">
@@ -240,7 +245,7 @@
                                         <div class="row">
                                             <div class="col-md-6 mb-3" v-for="service in services">
                                                 <div class="card">
-                                                    <div class="card-body bg-light pb-0">
+                                                    <div class="card-body bg-light">
                                                         <div class="media">
                                                             <div :class="marginServiceBox">
                                                                 <a :href="service.url" target="_blank" class="serviceLink" style="text-decoration: none;">
@@ -248,13 +253,10 @@
                                                                 </a>
                                                             </div>
                                                             <div class="media-body overflow-hidden">
-                                                                <a :href="service.url" target="_blank" class="serviceLink" style="text-decoration: none;">
-                                                                    <h4 class="text-ellipsis mb-3">{{service.description}}</h4>
-                                                                </a>
-                                                                <div class="d-flex justify-content-between">
-                                                                    <div class="btn-group btn-group-sm px-0">
-                                                                        <p class="text-muted">{{service.name}}</p>
-                                                                    </div>
+                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                    <a :href="service.url" target="_blank" class="serviceLink" style="text-decoration: none;">
+                                                                        <h4 class="text-ellipsis mb-3">{{service.nameContainer}}</h4>
+                                                                    </a>
                                                                     <div v-if="service.notification">
                                                                         <a v-if="service.notification.count == 0" class="notificationLink px-0" style="position: relative;" :style="isRtl ? 'right: -36px;' : 'right: 0'">
                                                                             <i class="notificationFas fa fa-bell" style="font-size: 21px; color: #6c757d;"></i>
@@ -304,7 +306,7 @@
                         </div>
                     </div>
                 </div>
-            </div> <!-- B.A -->
+            </div>
             <footer class="mb-3 mt-4">
                 <div class="container">
                     <div class="d-flex justify-content-center">

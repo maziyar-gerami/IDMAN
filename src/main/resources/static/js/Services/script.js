@@ -1,3 +1,83 @@
+let CheckboxDropdown = function (el) {
+  let _this = this;
+  this.isOpen = false;
+  this.areAllChecked = false;
+  this.$el = $(el);
+  this.$label = this.$el.find(".dropdown-checkbox-label");
+  this.$labelContainer = this.$el.find(".dropdown-checkbox-label-container");
+  this.$checkAll = this.$el.find("[data-toggle='check-all']").first();
+  this.$inputs = this.$el.find("[type='checkbox']");
+  this.onCheckBox();
+  this.$label.on("click", function(e) {
+    e.preventDefault();
+    _this.toggleOpen();
+  });
+  this.$checkAll.on("click", function(e) {
+    e.preventDefault();
+    _this.onCheckAll();
+  });
+  this.$inputs.on("change", function(e) {
+    _this.onCheckBox();
+  });
+};
+CheckboxDropdown.prototype.onCheckBox = function() {
+  this.updateStatus();
+};
+CheckboxDropdown.prototype.updateStatus = function() {
+  let checked = this.$el.find(":checked");
+  let value = "";
+  let text = "";
+  this.areAllChecked = false;
+  this.$checkAll.html(this.$checkAll.attr("checkText"));
+  if(checked.length === this.$inputs.length) {
+    this.areAllChecked = true;
+    this.$checkAll.html(this.$checkAll.attr("uncheckText"));
+  }
+  for(let i = 0; i < this.$inputs.length; ++i){
+    if(typeof $(this.$inputs[i]).attr("setVisible") !== typeof undefined && $(this.$inputs[i]).attr("setVisible") !== false){
+      if($(this.$inputs[i]).is(":checked")){
+        $("#" + $(this.$inputs[i]).attr("setVisible")).css("visibility", "visible");
+      }else {
+        $("#" + $(this.$inputs[i]).attr("setVisible")).css("visibility", "hidden");
+      }
+    }
+  }
+  if(checked.length > 0){
+    for(let i = 0; i < checked.length - 1; ++i){
+      value = value + $(checked[i]).attr("value") + ", ";
+      text = text + $(checked[i]).attr("text") + ", ";
+    }
+    value = value + $(checked[checked.length - 1]).attr("value");
+    text = text + $(checked[checked.length - 1]).attr("text");
+    this.$labelContainer.html(text);
+    this.$labelContainer.attr("value", value);
+  }else {
+    this.$labelContainer.html(this.$labelContainer.attr("text"));
+    this.$labelContainer.attr("value", "");
+  }
+};
+CheckboxDropdown.prototype.onCheckAll = function(checkAll) {
+  if(!this.areAllChecked || checkAll) {
+    this.areAllChecked = true;
+    this.$checkAll.html(this.$checkAll.attr("uncheckText"));
+    this.$inputs.prop("checked", true);
+  }else {
+    this.areAllChecked = false;
+    this.$checkAll.html(this.$checkAll.attr("checkText"));
+    this.$inputs.prop("checked", false);
+  }
+  this.updateStatus();
+};
+CheckboxDropdown.prototype.toggleOpen = function(forceOpen) {
+  if(!this.isOpen || forceOpen) {
+    this.isOpen = true;
+    this.$el.addClass("on");
+  }else {
+    this.isOpen = false;
+    this.$el.removeClass("on");
+  }
+};
+
 document.addEventListener('DOMContentLoaded', function () {
     var router = new VueRouter({
       mode: 'history',
@@ -41,7 +121,8 @@ document.addEventListener('DOMContentLoaded', function () {
         isRtl: true,
         groups: [],
         groupList: "",
-        samls: true,
+        samls: false,
+        oauths: false,
         editS: "display: none;",
         reportS: "display: none;",
         showS: "",
@@ -82,11 +163,12 @@ document.addEventListener('DOMContentLoaded', function () {
         contactsObj: {},
         activeItem: "main",
         reportActiveItem: "usersReport",
+        dailyAccessType: "DAY",
         metaDataAddress: true,
         metaDataFile: false,
         allIsSelected: false,
         isListEmpty: false,
-        s0: "احراز هویت متمرکز شرکت فلات قاره",
+        s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
         s1: "",
         s2: "خروج",
         s3: "داشبورد",
@@ -196,6 +278,8 @@ document.addEventListener('DOMContentLoaded', function () {
         publicmessagesURLText: "./publicmessages",
         ticketingText: "پشتیبانی",
         ticketingURLText: "./ticketing",
+        transcriptsText: "گزارش های دسترسی",
+        transcriptsURLText: "./transcripts",
         addAllGroupsText: "انتخاب همه",
         removeAllGroupsText: "لغو انتخاب همه",
         allGroupsHolderText: "انتخاب همه",
@@ -231,13 +315,29 @@ document.addEventListener('DOMContentLoaded', function () {
         enNameText: "نام انگلیسی",
         faNameText: "نام فارسی",
         reportedService: {},
-        returnText: "بازگشت",
         serviceNotificationsText: "پیام های سرویس",
         apiAddressText: "آدرس API",
         apiKeyText: "کلید API",
         tempUserDict: {},
         userFaNameInGroupText: "نام فارسی کاربر عضو",
         userIdInGroupText: "شناسه کاربر عضو",
+        selectText: "انتخاب کنید",
+        selectAllText: "انتخاب همه",
+        removeText: "لغو انتخاب همه",
+        generateSecretText: "ایجاد رمز",
+        accessByHoursAndDaysOfTheWeekText: "دسترسی بر اساس ساعات و روزهای هفته",
+        saturdayText: "شنبه",
+        sundayText: "یکشنبه",
+        mondayText: "دوشنبه",
+        tuesdayText: "سه‌شنبه",
+        wednesdayText: "چهارشنبه",
+        thursdayText: "پنجشنبه",
+        fridayText: "جمعه",
+        daysText: "روز ها",
+        fromText: "از: ",
+        toText: "تا: ",
+        dayBasedText: "بر اساس روز",
+        urlBasedText: "بر اساس آدرس",
       },
       created: function () {
         this.setDateNav();
@@ -445,8 +545,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.showS = "display: none;";
           this.editS = "";
           this.reportS = "display: none;";
-          var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          var vm = this;
+          let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+          let vm = this;
           axios.get(url + `/api/services/${id}`) //
           .then((res) => {
             vm.service.id = res.data.id;
@@ -464,21 +564,39 @@ document.addEventListener('DOMContentLoaded', function () {
             res.data.serviceId = res.data.serviceId.replace(/\\/g, "\\\\")
             document.getElementsByName("serviceId")[0].value = res.data.serviceId;
 
-            if(typeof res.data.metadataLocation !== 'undefined'){
+            if(typeof res.data.metadataLocation !== "undefined"){
               vm.samls = true;
               document.getElementsByName("metadataLocation")[0].value = res.data.metadataLocation;
             }else{
               vm.samls = false;
             }
 
-            if(typeof res.data.description !== 'undefined'){
-              document.getElementsByName("description")[0].value = res.data.description;
+            if(typeof res.data.clientId !== "undefined" && typeof res.data.clientSecret !== "undefined"){
+              vm.oauths = true;
+              document.getElementsByName("clientId")[0].value = res.data.clientId;
+              document.getElementsByName("clientSecret")[0].value = res.data.clientSecret;
+              let supportedGrantTypesContainer = document.getElementById("supportedGrantTypesContainer");
+              let supportedGrantTypesObj =  new CheckboxDropdown(supportedGrantTypesContainer);
+              let supportedResponseTypesContainer = document.getElementById("supportedResponseTypesContainer");
+              let supportedResponseTypesObj =  new CheckboxDropdown(supportedResponseTypesContainer);
+              if(typeof res.data.supportedGrantTypes !== "undefined"){
+                for(let i = 0; i < res.data.supportedGrantTypes[1].length; ++i){
+                  $(supportedGrantTypesContainer).find("[value='" + res.data.supportedGrantTypes[1][i] + "']").attr("checked","true");
+                }
+                supportedGrantTypesObj.updateStatus();
+              }
+              if(typeof res.data.supportedResponseTypes !== "undefined"){
+                for(let i = 0; i < res.data.supportedResponseTypes[1].length; ++i){
+                  $(supportedResponseTypesContainer).find("[value='" + res.data.supportedResponseTypes[1][i] + "']").attr("checked","true");
+                }
+                supportedResponseTypesObj.updateStatus();
+              }
+            }else{
+              vm.oauths = false;
             }
 
-            if(typeof res.data.extraInfo !== 'undefined'){
-              if(typeof res.data.extraInfo.url !== 'undefined'){
-                document.getElementsByName("url")[0].value = res.data.extraInfo.url;
-              }
+            if(typeof res.data.description !== 'undefined'){
+              document.getElementsByName("description")[0].value = res.data.description;
             }
 
             if(res.data.accessStrategy.ssoEnabled){
@@ -489,14 +607,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if(typeof res.data.accessStrategy.unauthorizedRedirectUrl !== 'undefined'){
               document.getElementsByName("unauthorizedRedirectUrl")[0].value = res.data.accessStrategy.unauthorizedRedirectUrl;
-            }
-
-            if(typeof res.data.accessStrategy.endpointUrl !== 'undefined'){
-              document.getElementsByName("endpointUrl")[0].value = res.data.accessStrategy.endpointUrl;
-            }
-
-            if(typeof res.data.accessStrategy.acceptableResponseCodes !== 'undefined'){
-              document.getElementsByName("acceptableResponseCodes")[0].value = res.data.accessStrategy.acceptableResponseCodes;
             }
 
             if(typeof res.data.accessStrategy.startingDateTime !== 'undefined'){
@@ -514,8 +624,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 seTime.substring(11,13), seTime.substring(14,16), seTime.substring(17,19), seTime.substring(20,23)]);
               document.getElementsByName("dateEnd")[0].value = dayWrapper.toCalendar('persian').format("dddd DD MMMM YYYY  HH:mm  a");
             }
-
-
 
             if(typeof res.data.logo !== 'undefined'){
               document.getElementsByName("logo")[0].value = res.data.logo;
@@ -692,13 +800,40 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
               }
             }
-            if(typeof res.data.extraInfo.notificationApiURL !== "undefined"){
-              document.getElementsByName("notificationApiURL")[0].value = res.data.extraInfo.notificationApiURL;
+
+            if(typeof res.data.extraInfo !== "undefined"){
+              if(typeof res.data.extraInfo.url !== "undefined"){
+                document.getElementsByName("url")[0].value = res.data.extraInfo.url;
+              }
+              if(typeof res.data.extraInfo.notificationApiURL !== "undefined"){
+                document.getElementsByName("notificationApiURL")[0].value = res.data.extraInfo.notificationApiURL;
+              }
+
+              if(typeof res.data.extraInfo.notificationApiKey !== "undefined"){
+                document.getElementsByName("notificationApiKey")[0].value = res.data.extraInfo.notificationApiKey;
+              }
+
+              if(typeof res.data.extraInfo.dailyAccess !== "undefined"){
+                let tempDailyAccessFrom = "";
+                let tempDailyAccessTo = "";
+                if(res.data.extraInfo.dailyAccess.length > 0){
+                  for(let i = 0; i < res.data.extraInfo.dailyAccess.length; ++i){
+                    document.getElementById("dailyAccessCheckbox" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("checked", "true");
+                    tempDailyAccessFrom = this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.minute));
+                    tempDailyAccessTo = this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + this.EnNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.minute));
+                    document.getElementById("dailyAccessStart" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("value", tempDailyAccessFrom);
+                    document.getElementById("dailyAccessEnd" + res.data.extraInfo.dailyAccess[i].weekDay).setAttribute("value", tempDailyAccessTo);
+                    this.dailyAccessController(res.data.extraInfo.dailyAccess[i].weekDay);
+                  }
+                }
+              }else if(typeof res.data.accessStrategy.endpointUrl !== "undefined"){
+                document.getElementsByName("endpointUrl")[0].value = res.data.accessStrategy.endpointUrl;
+                if(typeof res.data.accessStrategy.acceptableResponseCodes !== "undefined"){
+                  document.getElementsByName("acceptableResponseCodes")[0].value = res.data.accessStrategy.acceptableResponseCodes;
+                }
+              }
             }
 
-            if(typeof res.data.extraInfo.notificationApiKey !== "undefined"){
-              document.getElementsByName("notificationApiKey")[0].value = res.data.extraInfo.notificationApiKey;
-            }
           });
         },
         editService: function (id) {
@@ -749,12 +884,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             this.extraInfo.url = document.getElementsByName('url')[0].value;
 
-            if(document.getElementsByName('logo')[0].value != ""){
-              this.service.logo = document.getElementsByName('logo')[0].value;
-            }else{
-              this.service.logo = null;
-            }
-
             if(document.getElementsByName('informationUrl')[0].value != ""){
               this.service.informationUrl = document.getElementsByName('informationUrl')[0].value;
             }else{
@@ -795,22 +924,6 @@ document.addEventListener('DOMContentLoaded', function () {
               this.accessStrategy.unauthorizedRedirectUrl = document.getElementsByName('unauthorizedRedirectUrl')[0].value;
             }else{
               this.accessStrategy.unauthorizedRedirectUrl = null;
-            }
-
-            if(document.getElementsByName('endpointUrl')[0].value != ""){
-              this.accessStrategy.endpointUrl = document.getElementsByName('endpointUrl')[0].value;
-            }else{
-              this.accessStrategy.endpointUrl = null;
-            }
-  
-            if(document.getElementsByName('acceptableResponseCodes')[0].value != ""){
-              this.accessStrategy.acceptableResponseCodes = document.getElementsByName('acceptableResponseCodes')[0].value;
-            }else{
-              if(document.getElementsByName('endpointUrl')[0].value != ""){
-                this.accessStrategy.acceptableResponseCodes = "200";
-              }else{
-                this.accessStrategy.acceptableResponseCodes = null;
-              }
             }
 
             if(document.getElementsByName('dateStart')[0].value != "" && 
@@ -1057,28 +1170,138 @@ document.addEventListener('DOMContentLoaded', function () {
               this.extraInfo.notificationApiKey = null;
             }
 
-            if(this.samls){
-              if(this.metaDataAddress || this.metaDataFile){
-                if(this.metaDataFile){
-                  let file = document.querySelector('#file');
-                  if(!file.files[0]){
-                    alert("لطفا قسمت های الزامی را پر کنید.");
-                  }else{
-                    let bodyFormData = new FormData();
-                    bodyFormData.append("file", file.files[0]);
-                    axios({
-                      method: 'post',
-                      url: url + "/api/services/metadata",  //
-                      headers: {'Content-Type': 'multipart/form-data'},
-                      data: bodyFormData,
-                    }).then((res) => {
-                      if(res.data != ""){
-                        this.service.metadataLocation = res.data;
+            if(this.dailyAccessType === "DAY"){
+              let dailyAccessArray = document.getElementsByName("dailyAccess")[0].getAttribute("value").split("");
+              if(dailyAccessArray.length !== 0){
+                this.extraInfo.dailyAccess = [];
+                let tempDailyAccessDay = {};
+                let tempDailyAccessStart = "";
+                let tempDailyAccessEnd = "";
+                for(let i = 0; i < dailyAccessArray.length; ++i){
+                  if(typeof document.getElementById("dailyAccessStart" + dailyAccessArray[i]) !== "undefined" &&
+                      typeof document.getElementById("dailyAccessEnd" + dailyAccessArray[i]) !== "undefined"){
+                    tempDailyAccessStart = document.getElementById("dailyAccessStart" + dailyAccessArray[i]).value.split(":");
+                    tempDailyAccessEnd =  document.getElementById("dailyAccessEnd" + dailyAccessArray[i]).value.split(":");
+                    if(tempDailyAccessStart[0] === ""){
+                      tempDailyAccessStart[0] = "0";
+                      tempDailyAccessStart.push("00");
+                    }else if(typeof tempDailyAccessStart[1] === "undefined"){
+                      tempDailyAccessStart.push("00");
+                    }
+                    if(tempDailyAccessEnd[0] === ""){
+                      tempDailyAccessEnd[0] = "23";
+                      tempDailyAccessEnd.push("59");
+                    }else if(typeof tempDailyAccessEnd[1] === "undefined"){
+                      tempDailyAccessEnd.push("00");
+                    }
+                    tempDailyAccessStart[0] = this.FaNumToEnNum(tempDailyAccessStart[0]);
+                    tempDailyAccessStart[1] = this.FaNumToEnNum(tempDailyAccessStart[1]);
+                    tempDailyAccessEnd[0] = this.FaNumToEnNum(tempDailyAccessEnd[0]);
+                    tempDailyAccessEnd[1] = this.FaNumToEnNum(tempDailyAccessEnd[1]);
+                    tempDailyAccessDay = {
+                      "weekDay": dailyAccessArray[i],
+                      "period": {
+                        "from": {
+                          "hour": tempDailyAccessStart[0],
+                          "minute": tempDailyAccessStart[1]
+                        },
+                        "to": {
+                          "hour": tempDailyAccessEnd[0],
+                          "minute": tempDailyAccessEnd[1]
+                        }
+                      }
+                    }
+                    this.extraInfo.dailyAccess.push(tempDailyAccessDay);
+                  }else {
+                    this.extraInfo.dailyAccess = null;
+                  }
+                }
+              }else {
+                this.extraInfo.dailyAccess = null;
+              }
+            }else if(this.dailyAccessType === "URL"){
+              if(document.getElementsByName("endpointUrl")[0].value !== ""){
+                this.accessStrategy.endpointUrl = document.getElementsByName("endpointUrl")[0].value;
+              }else{
+                this.accessStrategy.endpointUrl = null;
+              }
 
+              if(document.getElementsByName("acceptableResponseCodes")[0].value !== ""){
+                this.accessStrategy.acceptableResponseCodes = document.getElementsByName("acceptableResponseCodes")[0].value;
+              }else{
+                if(document.getElementsByName("endpointUrl")[0].value !== ""){
+                  this.accessStrategy.acceptableResponseCodes = "200";
+                }else{
+                  this.accessStrategy.acceptableResponseCodes = null;
+                }
+              }
+            }
+
+
+            let logoFile = document.querySelector("#logoFile");
+            if(logoFile.files[0]) {
+              let logoFileBodyFormData = new FormData();
+              logoFileBodyFormData.append("file", logoFile.files[0]);
+              axios({
+                method: "post",
+                url: url + "/api/services/icon",  //
+                headers: {"Content-Type": "multipart/form-data"},
+                data: logoFileBodyFormData,
+              }).then((logoRes) => {
+                if (logoRes.data !== "") {
+                  vm.service.logo = logoRes.data;
+                } else {
+                  vm.service.logo = null;
+                }
+                if(vm.samls){
+                  if(vm.metaDataAddress || vm.metaDataFile){
+                    if(vm.metaDataFile){
+                      let metadataFile = document.querySelector("#metadataFile");
+                      if(!metadataFile.files[0]){
+                        alert("لطفا قسمت های الزامی را پر کنید.");
+                      }else{
+                        let metadataFileBodyFormData = new FormData();
+                        metadataFileBodyFormData.append("file", metadataFile.files[0]);
                         axios({
-                          method: 'put',
-                          url: url + `/api/service/${id}/saml`, //
-                          headers: {'Content-Type': 'application/json'},
+                          method: "post",
+                          url: url + "/api/services/metadata",  //
+                          headers: {"Content-Type": "multipart/form-data"},
+                          data: metadataFileBodyFormData,
+                        }).then((res) => {
+                          if(res.data !== ""){
+                            vm.service.metadataLocation = res.data;
+                            axios({
+                              method: "put",
+                              url: url + "/api/service/" + id + "/saml", //
+                              headers: {"Content-Type": "application/json"},
+                              data: JSON.stringify({
+                                name: vm.service.name,
+                                serviceId: vm.service.serviceId,
+                                extraInfo: vm.extraInfo,
+                                metadataLocation: vm.service.metadataLocation,
+                                multifactorPolicy: vm.multifactorPolicy,
+                                description: vm.service.description,
+                                logo: vm.service.logo,
+                                informationUrl: vm.service.informationUrl,
+                                privacyUrl: vm.service.privacyUrl,
+                                logoutType: vm.service.logoutType,
+                                logoutUrl: vm.service.logoutUrl,
+                                accessStrategy: vm.accessStrategy,
+                                contacts: vm.contacts,
+                              }).replace(/\\\\/g, "\\")
+                            }).then((res) => {
+                              location.reload();
+                            });
+                          }
+                        });
+                      }
+                    }else if(vm.metaDataAddress){
+                      if(document.getElementsByName("metadataLocation")[0].value !== ""){
+                        vm.service.metadataLocation = document.getElementsByName("metadataLocation")[0].value;
+                        axios({
+                          method: "put",
+                          url: url + "/api/service/" + id + "/saml", //
+                          headers: {"Content-Type": "application/json"},
                           data: JSON.stringify({
                             name: vm.service.name,
                             serviceId: vm.service.serviceId,
@@ -1094,28 +1317,38 @@ document.addEventListener('DOMContentLoaded', function () {
                             accessStrategy: vm.accessStrategy,
                             contacts: vm.contacts,
                           }).replace(/\\\\/g, "\\")
-                        })
-                        .then((res) => {
+                        }).then((res) => {
                           location.reload();
                         });
+                      }else{
+                        alert("لطفا قسمت های الزامی را پر کنید.");
                       }
-                    });
+                    }
+                  }else{
+                    alert("لطفا قسمت های الزامی را پر کنید.");
                   }
-                }
-  
-                if(this.metaDataAddress){
-                  if(document.getElementsByName('metadataLocation')[0].value != ""){
-                    this.service.metadataLocation = document.getElementsByName('metadataLocation')[0].value;
+                }else if(vm.oauths){
+                  let supportedGrantTypesArray = document.getElementsByName("supportedGrantTypes")[0].getAttribute("value").split(", ");
+                  let supportedResponseTypesArray = document.getElementsByName("supportedResponseTypes")[0].getAttribute("value").split(", ");
+                  vm.service.clientId = document.getElementsByName("clientId")[0].value;
+                  vm.service.clientSecret = document.getElementsByName("clientSecret")[0].value;
+                  vm.service.supportedGrantTypes = [ "java.util.HashSet", supportedGrantTypesArray ];
+                  vm.service.supportedResponseTypes = [ "java.util.HashSet", supportedResponseTypesArray ];
 
+                  if(vm.service.clientId !== "" && vm.service.clientSecret !== "" &&
+                      supportedGrantTypesArray[0] !== "" && supportedResponseTypesArray[0] !== ""){
                     axios({
-                      method: 'put',
-                      url: url + `/api/service/${id}/saml`, //
-                      headers: {'Content-Type': 'application/json'},
+                      method: "put",
+                      url: url + "/api/service/" + id + "/oauth", //
+                      headers: {"Content-Type": "application/json"},
                       data: JSON.stringify({
                         name: vm.service.name,
                         serviceId: vm.service.serviceId,
+                        clientId: vm.service.clientId,
+                        clientSecret: vm.service.clientSecret,
+                        supportedGrantTypes: vm.service.supportedGrantTypes,
+                        supportedResponseTypes: vm.service.supportedResponseTypes,
                         extraInfo: vm.extraInfo,
-                        metadataLocation: vm.service.metadataLocation,
                         multifactorPolicy: vm.multifactorPolicy,
                         description: vm.service.description,
                         logo: vm.service.logo,
@@ -1126,41 +1359,177 @@ document.addEventListener('DOMContentLoaded', function () {
                         accessStrategy: vm.accessStrategy,
                         contacts: vm.contacts,
                       }).replace(/\\\\/g, "\\")
-                    })
-                    .then((res) => {
+                    }).then((res) => {
                       location.reload();
                     });
                   }else{
                     alert("لطفا قسمت های الزامی را پر کنید.");
                   }
-                }                
-              }else{
-                alert("لطفا قسمت های الزامی را پر کنید.");
-              }
-            }else{
-
-              axios({
-                method: 'put',
-                url: url + `/api/service/${id}/cas`, //
-                headers: {'Content-Type': 'application/json'},
-                data: JSON.stringify({
-                  name: vm.service.name,
-                  serviceId: vm.service.serviceId,
-                  extraInfo: vm.extraInfo,
-                  multifactorPolicy: vm.multifactorPolicy,
-                  description: vm.service.description,
-                  logo: vm.service.logo,
-                  informationUrl: vm.service.informationUrl,
-                  privacyUrl: vm.service.privacyUrl,
-                  logoutType: vm.service.logoutType,
-                  logoutUrl: vm.service.logoutUrl,
-                  accessStrategy: vm.accessStrategy,
-                  contacts: vm.contacts,
-                }).replace(/\\\\/g, "\\")
-              })
-              .then((res) => {
-                location.reload();
+                }else{
+                  axios({
+                    method: "put",
+                    url: url + "/api/service/" + id + "/cas", //
+                    headers: {"Content-Type": "application/json"},
+                    data: JSON.stringify({
+                      name: vm.service.name,
+                      serviceId: vm.service.serviceId,
+                      extraInfo: vm.extraInfo,
+                      multifactorPolicy: vm.multifactorPolicy,
+                      description: vm.service.description,
+                      logo: vm.service.logo,
+                      informationUrl: vm.service.informationUrl,
+                      privacyUrl: vm.service.privacyUrl,
+                      logoutType: vm.service.logoutType,
+                      logoutUrl: vm.service.logoutUrl,
+                      accessStrategy: vm.accessStrategy,
+                      contacts: vm.contacts,
+                    }).replace(/\\\\/g, "\\")
+                  }).then((res) => {
+                    location.reload();
+                  });
+                }
               });
+            }else {
+              if(document.getElementsByName("logo")[0].value !== ""){
+                vm.service.logo = document.getElementsByName("logo")[0].value;
+              }else{
+                vm.service.logo = null;
+              }
+              if(vm.samls){
+                if(vm.metaDataAddress || vm.metaDataFile){
+                  if(vm.metaDataFile){
+                    let metadataFile = document.querySelector("#metadataFile");
+                    if(!metadataFile.files[0]){
+                      alert("لطفا قسمت های الزامی را پر کنید.");
+                    }else{
+                      let metadataFileBodyFormData = new FormData();
+                      metadataFileBodyFormData.append("file", metadataFile.files[0]);
+                      axios({
+                        method: "post",
+                        url: url + "/api/services/metadata",  //
+                        headers: {"Content-Type": "multipart/form-data"},
+                        data: metadataFileBodyFormData,
+                      }).then((res) => {
+                        if(res.data !== ""){
+                          vm.service.metadataLocation = res.data;
+                          axios({
+                            method: "put",
+                            url: url + "/api/service/" + id + "/saml", //
+                            headers: {"Content-Type": "application/json"},
+                            data: JSON.stringify({
+                              name: vm.service.name,
+                              serviceId: vm.service.serviceId,
+                              extraInfo: vm.extraInfo,
+                              metadataLocation: vm.service.metadataLocation,
+                              multifactorPolicy: vm.multifactorPolicy,
+                              description: vm.service.description,
+                              logo: vm.service.logo,
+                              informationUrl: vm.service.informationUrl,
+                              privacyUrl: vm.service.privacyUrl,
+                              logoutType: vm.service.logoutType,
+                              logoutUrl: vm.service.logoutUrl,
+                              accessStrategy: vm.accessStrategy,
+                              contacts: vm.contacts,
+                            }).replace(/\\\\/g, "\\")
+                          }).then((res) => {
+                            location.reload();
+                          });
+                        }
+                      });
+                    }
+                  }else if(vm.metaDataAddress){
+                    if(document.getElementsByName("metadataLocation")[0].value !== ""){
+                      vm.service.metadataLocation = document.getElementsByName("metadataLocation")[0].value;
+                      axios({
+                        method: "put",
+                        url: url + "/api/service/" + id + "/saml", //
+                        headers: {"Content-Type": "application/json"},
+                        data: JSON.stringify({
+                          name: vm.service.name,
+                          serviceId: vm.service.serviceId,
+                          extraInfo: vm.extraInfo,
+                          metadataLocation: vm.service.metadataLocation,
+                          multifactorPolicy: vm.multifactorPolicy,
+                          description: vm.service.description,
+                          logo: vm.service.logo,
+                          informationUrl: vm.service.informationUrl,
+                          privacyUrl: vm.service.privacyUrl,
+                          logoutType: vm.service.logoutType,
+                          logoutUrl: vm.service.logoutUrl,
+                          accessStrategy: vm.accessStrategy,
+                          contacts: vm.contacts,
+                        }).replace(/\\\\/g, "\\")
+                      }).then((res) => {
+                        location.reload();
+                      });
+                    }else{
+                      alert("لطفا قسمت های الزامی را پر کنید.");
+                    }
+                  }
+                }else{
+                  alert("لطفا قسمت های الزامی را پر کنید.");
+                }
+              }else if(vm.oauths){
+                let supportedGrantTypesArray = document.getElementsByName("supportedGrantTypes")[0].getAttribute("value").split(", ");
+                let supportedResponseTypesArray = document.getElementsByName("supportedResponseTypes")[0].getAttribute("value").split(", ");
+                vm.service.clientId = document.getElementsByName("clientId")[0].value;
+                vm.service.clientSecret = document.getElementsByName("clientSecret")[0].value;
+                vm.service.supportedGrantTypes = [ "java.util.HashSet", supportedGrantTypesArray ];
+                vm.service.supportedResponseTypes = [ "java.util.HashSet", supportedResponseTypesArray ];
+
+                if(vm.service.clientId !== "" && vm.service.clientSecret !== "" &&
+                    supportedGrantTypesArray[0] !== "" && supportedResponseTypesArray[0] !== ""){
+                  axios({
+                    method: "put",
+                    url: url + "/api/service/" + id + "/oauth", //
+                    headers: {"Content-Type": "application/json"},
+                    data: JSON.stringify({
+                      name: vm.service.name,
+                      serviceId: vm.service.serviceId,
+                      clientId: vm.service.clientId,
+                      clientSecret: vm.service.clientSecret,
+                      supportedGrantTypes: vm.service.supportedGrantTypes,
+                      supportedResponseTypes: vm.service.supportedResponseTypes,
+                      extraInfo: vm.extraInfo,
+                      multifactorPolicy: vm.multifactorPolicy,
+                      description: vm.service.description,
+                      logo: vm.service.logo,
+                      informationUrl: vm.service.informationUrl,
+                      privacyUrl: vm.service.privacyUrl,
+                      logoutType: vm.service.logoutType,
+                      logoutUrl: vm.service.logoutUrl,
+                      accessStrategy: vm.accessStrategy,
+                      contacts: vm.contacts,
+                    }).replace(/\\\\/g, "\\")
+                  }).then((res) => {
+                    location.reload();
+                  });
+                }else{
+                  alert("لطفا قسمت های الزامی را پر کنید.");
+                }
+              }else{
+                axios({
+                  method: "put",
+                  url: url + "/api/service/" + id + "/cas", //
+                  headers: {"Content-Type": "application/json"},
+                  data: JSON.stringify({
+                    name: vm.service.name,
+                    serviceId: vm.service.serviceId,
+                    extraInfo: vm.extraInfo,
+                    multifactorPolicy: vm.multifactorPolicy,
+                    description: vm.service.description,
+                    logo: vm.service.logo,
+                    informationUrl: vm.service.informationUrl,
+                    privacyUrl: vm.service.privacyUrl,
+                    logoutType: vm.service.logoutType,
+                    logoutUrl: vm.service.logoutUrl,
+                    accessStrategy: vm.accessStrategy,
+                    contacts: vm.contacts,
+                  }).replace(/\\\\/g, "\\")
+                }).then((res) => {
+                  location.reload();
+                });
+              }
             }
           }
         },
@@ -1246,30 +1615,58 @@ document.addEventListener('DOMContentLoaded', function () {
         FaNumToEnNum: function (str) {
           let s = str.split("");
           let sEn = "";
-          for(i = 0; i < s.length; ++i){
-            if(s[i] == '۰'){
-              sEn = sEn + '0';
-            }else if(s[i] == '۱'){
-              sEn = sEn + '1';
-            }else if(s[i] == '۲'){
-              sEn = sEn + '2';
-            }else if(s[i] == '۳'){
-              sEn = sEn + '3';
-            }else if(s[i] == '۴'){
-              sEn = sEn + '4';
-            }else if(s[i] == '۵'){
-              sEn = sEn + '5';
-            }else if(s[i] == '۶'){
-              sEn = sEn + '6';
-            }else if(s[i] == '۷'){
-              sEn = sEn + '7';
-            }else if(s[i] == '۸'){
-              sEn = sEn + '8';
-            }else if(s[i] == '۹'){
-              sEn = sEn + '9';
+          for(let i = 0; i < s.length; ++i){
+            if(s[i] === "۰" || s[i] === "0"){
+              sEn = sEn + "0";
+            }else if(s[i] === "۱" || s[i] === "1"){
+              sEn = sEn + "1";
+            }else if(s[i] === "۲" || s[i] === "2"){
+              sEn = sEn + "2";
+            }else if(s[i] === "۳" || s[i] === "3"){
+              sEn = sEn + "3";
+            }else if(s[i] === "۴" || s[i] === "4"){
+              sEn = sEn + "4";
+            }else if(s[i] === "۵" || s[i] === "5"){
+              sEn = sEn + "5";
+            }else if(s[i] === "۶" || s[i] === "6"){
+              sEn = sEn + "6";
+            }else if(s[i] === "۷" || s[i] === "7"){
+              sEn = sEn + "7";
+            }else if(s[i] === "۸" || s[i] === "8"){
+              sEn = sEn + "8";
+            }else if(s[i] === "۹" || s[i] === "9"){
+              sEn = sEn + "9";
             }
           }
           return sEn;
+        },
+        EnNumToFaNum: function (str) {
+          let s = str.split("");
+          let sFa = "";
+          for(let i = 0; i < s.length; ++i){
+            if(s[i] === "۰" || s[i] === "0"){
+              sFa = sFa + "۰";
+            }else if(s[i] === "۱" || s[i] === "1"){
+              sFa = sFa + "۱";
+            }else if(s[i] === "۲" || s[i] === "2"){
+              sFa = sFa + "۲";
+            }else if(s[i] === "۳" || s[i] === "3"){
+              sFa = sFa + "۳";
+            }else if(s[i] === "۴" || s[i] === "4"){
+              sFa = sFa + "۴";
+            }else if(s[i] === "۵" || s[i] === "5"){
+              sFa = sFa + "۵";
+            }else if(s[i] === "۶" || s[i] === "6"){
+              sFa = sFa + "۶";
+            }else if(s[i] === "۷" || s[i] === "7"){
+              sFa = sFa + "۷";
+            }else if(s[i] === "۸" || s[i] === "8"){
+              sFa = sFa + "۸";
+            }else if(s[i] === "۹" || s[i] === "9"){
+              sFa = sFa + "۹";
+            }
+          }
+          return sFa;
         },
         allowUserAccess: function (user) {
           if(this.userAllowedId.indexOf(user.userId) == -1){
@@ -1736,6 +2133,41 @@ document.addEventListener('DOMContentLoaded', function () {
             this.exportReportLoader = false;
           }
         },
+        dailyAccessController: function (input) {
+          if(input === "selectAll"){
+            for(let i = 0; i < 7; ++i){
+              document.getElementById("dailyAccessCheckbox" + i).checked = true;
+              document.getElementById("dailyAccessContainer" + i).style.visibility = "visible";
+            }
+            document.getElementsByName("dailyAccess")[0].setAttribute("value", "0123456");
+            document.getElementById("dailyAccessSelectAll").classList.add("d-none");
+            document.getElementById("dailyAccessRemoveAll").classList.remove("d-none");
+          }else if(input === "removeAll"){
+            for(let i = 0; i < 7; ++i){
+              document.getElementById("dailyAccessCheckbox" + i).checked = false;
+              document.getElementById("dailyAccessContainer" + i).style.visibility = "hidden";
+            }
+            document.getElementsByName("dailyAccess")[0].setAttribute("value", "");
+            document.getElementById("dailyAccessSelectAll").classList.remove("d-none");
+            document.getElementById("dailyAccessRemoveAll").classList.add("d-none");
+          }else{
+            if(document.getElementById("dailyAccessCheckbox" + input).checked){
+              document.getElementById("dailyAccessContainer" + input).style.visibility = "visible";
+              document.getElementsByName("dailyAccess")[0].setAttribute("value",
+                  document.getElementsByName("dailyAccess")[0].getAttribute("value") + input);
+              if(document.getElementsByName("dailyAccess")[0].getAttribute("value").length === 7){
+                document.getElementById("dailyAccessSelectAll").classList.add("d-none");
+                document.getElementById("dailyAccessRemoveAll").classList.remove("d-none");
+              }
+            }else {
+              document.getElementById("dailyAccessContainer" + input).style.visibility = "hidden";
+              document.getElementsByName("dailyAccess")[0].setAttribute("value",
+                  document.getElementsByName("dailyAccess")[0].getAttribute("value").replace(input, ""));
+              document.getElementById("dailyAccessSelectAll").classList.remove("d-none");
+              document.getElementById("dailyAccessRemoveAll").classList.add("d-none");
+            }
+          }
+        },
         changeLang: function () {
           if(this.lang == "EN"){
             window.localStorage.setItem("lang", "EN");
@@ -1840,6 +2272,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.reportsText = "Reports";
             this.publicmessagesText = "Public Messages";
             this.ticketingText = "Ticketing";
+            this.transcriptsText = "Access Reports";
             this.addAllGroupsText = "Select All";
             this.removeAllGroupsText = "Unselect All";
             this.inputEnglishFilterText = " (Only English Letters And Numbers Are Allowed)";
@@ -1867,136 +2300,171 @@ document.addEventListener('DOMContentLoaded', function () {
             this.apiKeyText = "API Key";
             this.userFaNameInGroupText = "Member's Name";
             this.userIdInGroupText = "Member's UserId";
+            this.selectText = "Select";
+            this.selectAllText = "Select All";
+            this.removeText = "Unselect All";
+            this.generateSecretText = "Generate Secret";
+            this.accessByHoursAndDaysOfTheWeekText = "Daily Based Access";
+            this.saturdayText = "Saturday";
+            this.sundayText = "Sunday";
+            this.mondayText = "Monday";
+            this.tuesdayText = "Tuesday";
+            this.wednesdayText = "Wednesday";
+            this.thursdayText = "Thursday";
+            this.fridayText = "Friday";
+            this.daysText = "Days";
+            this.fromText = "From: ";
+            this.toText = "To: ";
+            this.dayBasedText = "Day Based";
+            this.urlBasedText = "URL Based";
           }else {
-              window.localStorage.setItem("lang", "FA");
-              this.margin = "margin-right: 30px;";
-              this.margin1 = "ml-1";
-              this.lang = "EN";
-              this.isRtl = true;
-              this.dateNavText = this.dateNav;
-              this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
-              this.s1 = this.name;
-              this.s2 = "خروج";
-              this.s3 = "داشبورد";
-              this.s4 = "سرویس ها";
-              this.s5 = "گروه ها";
-              this.s6 = "رویداد ها";
-              this.s7 = "پروفایل";
-              this.s8 = "سرویس های متصل";
-              this.s9 = "سرویس ها";
-              this.s10 = "قوانین";
-              this.s11 = "حریم خصوصی";
-              this.s12 = "راهنما";
-              this.s13 = "ایجاد سرویس جدید";
-              this.s14 = "جدید";
-              this.s15 = "کاربران";
-              this.s20 = "شناسه";
-              this.s21 = "نام";
-              this.s22 = "آدرس";
-              this.s23 = "ویرایش";
-              this.s24 = "حذف";
-              this.s25 = "تنظیمات پایه";
-              this.s26 = "فعال سازی سرویس";
-              this.s27 = "نوع سرویس";
-              this.s28 = "نام سرویس";
-              this.s29 = "آدرس سرویس";
-              this.s30 = "شناسه سرویس";
-              this.s31 = "نام فارسی سرویس";
-              this.s32 = "دسترسی گروه ها";
-              this.s33 = "پیوندهای مرجع";
-              this.s34 = "آدرس لوگو";
-              this.s35 = "آدرس راهنما";
-              this.s36 = "آدرس قوانین";
-              this.s37 = "اطلاعات تماس";
-              this.s38 = "نام";
-              this.s39 = "ایمیل";
-              this.s40 = "شماره تماس";
-              this.s41 = "دپارتمان";
-              this.s42 = "تنظیمات خروج";
-              this.s43 = "آدرس خروج";
-              this.s44 = "نوع خروج";
-              this.s45 = "تایید";
-              this.s46 = "بازگشت";
-              this.s47 = "حذف";
-              this.s51 = "پیکربندی";
-              this.s54 = "استراتژی دسترسی";
-              this.s55 = "فعال سازی SSO";
-              this.s56 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
-              this.s57 = " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
-              this.s58 = "تنظیمات پایه";
-              this.s59 = "استراتژی دسترسی";
-              this.s60 = "دسترسی بر اساس زمان";
-              this.s61 = "تاریخ شروع";
-              this.s62 = "زمان شروع";
-              this.s63 = "تاریخ پایان";
-              this.s64 = "زمان پایان";
-              this.s65 = "احراز هویت چند مرحله ای";
-              this.s66 = "فعال سازی MFA";
-              this.s67 = " مثال: 1399/05/01 ";
-              this.s68 = " مثال: 20:30 ";
-              this.s69 = "دسترسی کاربران";
-              this.s70 = "لیست کاربران";
-              this.s71 = "جستجو...";
-              this.s72 = "اعطا دسترسی";
-              this.s73 = "منع دسترسی";
-              this.s74 = "کاربری یافت نشد";
-              this.s75 = "جستجو کنید";
-              this.s76 = "کاربران دارای دسترسی";
-              this.s77 = "حذف";
-              this.s78 = "لیست خالی است";
-              this.s79 = "کاربران منع شده";
-              this.s80 = "دسترسی بر اساس پارامتر";
-              this.s81 = "نام پارامتر";
-              this.s82 = "مقدار پارامتر";
-              this.s83 = "حذف سرویس";
-              this.s84 = "اعمال";
-              this.s85 = "آیا از حذف سرویس های انتخاب شده اطمینان دارید؟";
-              this.s86 = "هیچ سرویسی انتخاب نشده است.";
-              this.s87 = "آیا از حذف این سرویس اطمینان دارید؟";
-              this.s88 = "آیا از حذف تمامی سرویس ها اطمینان دارید؟";
-              this.s89 = " (در صورت وارد کردن آدرس، http یا https ذکر شود)";
-              this.s90 = "آدرس";
-              this.s91 = "فایل";
-              this.s92 = "تعداد رکورد ها: ";
-              this.s93 = "موقعیت";
-              this.s94 = "ممیزی ها";
-              this.s96 = "دسترسی از راه دور";
-              this.s97 = "کد پاسخ های قابل قبول";
-              this.s98 = "ویرایش سرویس";
-              this.s99 = "توکن سخت افزاری";
-              this.s100 = "غیرفعال";
-              this.s101 = "سرویسی یافت نشد";
-              this.rolesText = "نقش ها";
-              this.reportsText = "گزارش ها";
-              this.publicmessagesText = "اعلان های عمومی";
-              this.ticketingText = "پشتیبانی";
-              this.addAllGroupsText = "انتخاب همه";
-              this.removeAllGroupsText = "لغو انتخاب همه";
-              this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
-              this.inputPersianFilterText = " (تنها حروف فارسی و اعداد مجاز می باشند)";
-              this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
-              this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
-              this.meetingText = "جلسه مجازی";
-              this.enterMeetingText = "ورود به جلسه";
-              this.inviteToMeetingText = "دعوت به جلسه";
-              this.copyText = "کپی";
-              this.returnText = "بازگشت";
-              this.dynamicOTPPassword = "رمز پویا (یکبار مصرف)";
-              this.accessReport = "گزارش های دسترسی سرویس";
-              this.searchText = "جستجو...";
-              this.displayNameFaText = "نام کامل";
-              this.userNotFoundText = "کاربری یافت نشد";
-              this.groupNotFoundText = "گروهی یافت نشد";
-              this.allowedGroupsText = "گروه های دارای دسترسی";
-              this.bannedGroupsText = "گروه های منع شده";
-              this.enNameText = "نام انگلیسی";
-              this.faNameText = "نام فارسی";
-              this.returnText = "بازگشت";
-              this.serviceNotificationsText = "پیام های سرویس";
-              this.apiAddressText = "آدرس API";
-              this.apiKeyText = "کلید API";
-              this.userFaNameInGroupText = "نام فارسی کاربر عضو";
-              this.userIdInGroupText = "شناسه کاربر عضو";
+            window.localStorage.setItem("lang", "FA");
+            this.margin = "margin-right: 30px;";
+            this.margin1 = "ml-1";
+            this.lang = "EN";
+            this.isRtl = true;
+            this.dateNavText = this.dateNav;
+            this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
+            this.s1 = this.name;
+            this.s2 = "خروج";
+            this.s3 = "داشبورد";
+            this.s4 = "سرویس ها";
+            this.s5 = "گروه ها";
+            this.s6 = "رویداد ها";
+            this.s7 = "پروفایل";
+            this.s8 = "سرویس های متصل";
+            this.s9 = "سرویس ها";
+            this.s10 = "قوانین";
+            this.s11 = "حریم خصوصی";
+            this.s12 = "راهنما";
+            this.s13 = "ایجاد سرویس جدید";
+            this.s14 = "جدید";
+            this.s15 = "کاربران";
+            this.s20 = "شناسه";
+            this.s21 = "نام";
+            this.s22 = "آدرس";
+            this.s23 = "ویرایش";
+            this.s24 = "حذف";
+            this.s25 = "تنظیمات پایه";
+            this.s26 = "فعال سازی سرویس";
+            this.s27 = "نوع سرویس";
+            this.s28 = "نام سرویس";
+            this.s29 = "آدرس سرویس";
+            this.s30 = "شناسه سرویس";
+            this.s31 = "نام فارسی سرویس";
+            this.s32 = "دسترسی گروه ها";
+            this.s33 = "پیوندهای مرجع";
+            this.s34 = "آدرس لوگو";
+            this.s35 = "آدرس راهنما";
+            this.s36 = "آدرس قوانین";
+            this.s37 = "اطلاعات تماس";
+            this.s38 = "نام";
+            this.s39 = "ایمیل";
+            this.s40 = "شماره تماس";
+            this.s41 = "دپارتمان";
+            this.s42 = "تنظیمات خروج";
+            this.s43 = "آدرس خروج";
+            this.s44 = "نوع خروج";
+            this.s45 = "تایید";
+            this.s46 = "بازگشت";
+            this.s47 = "حذف";
+            this.s51 = "پیکربندی";
+            this.s54 = "استراتژی دسترسی";
+            this.s55 = "فعال سازی SSO";
+            this.s56 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
+            this.s57 = " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
+            this.s58 = "تنظیمات پایه";
+            this.s59 = "استراتژی دسترسی";
+            this.s60 = "دسترسی بر اساس زمان";
+            this.s61 = "تاریخ شروع";
+            this.s62 = "زمان شروع";
+            this.s63 = "تاریخ پایان";
+            this.s64 = "زمان پایان";
+            this.s65 = "احراز هویت چند مرحله ای";
+            this.s66 = "فعال سازی MFA";
+            this.s67 = " مثال: 1399/05/01 ";
+            this.s68 = " مثال: 20:30 ";
+            this.s69 = "دسترسی کاربران";
+            this.s70 = "لیست کاربران";
+            this.s71 = "جستجو...";
+            this.s72 = "اعطا دسترسی";
+            this.s73 = "منع دسترسی";
+            this.s74 = "کاربری یافت نشد";
+            this.s75 = "جستجو کنید";
+            this.s76 = "کاربران دارای دسترسی";
+            this.s77 = "حذف";
+            this.s78 = "لیست خالی است";
+            this.s79 = "کاربران منع شده";
+            this.s80 = "دسترسی بر اساس پارامتر";
+            this.s81 = "نام پارامتر";
+            this.s82 = "مقدار پارامتر";
+            this.s83 = "حذف سرویس";
+            this.s84 = "اعمال";
+            this.s85 = "آیا از حذف سرویس های انتخاب شده اطمینان دارید؟";
+            this.s86 = "هیچ سرویسی انتخاب نشده است.";
+            this.s87 = "آیا از حذف این سرویس اطمینان دارید؟";
+            this.s88 = "آیا از حذف تمامی سرویس ها اطمینان دارید؟";
+            this.s89 = " (در صورت وارد کردن آدرس، http یا https ذکر شود)";
+            this.s90 = "آدرس";
+            this.s91 = "فایل";
+            this.s92 = "تعداد رکورد ها: ";
+            this.s93 = "موقعیت";
+            this.s94 = "ممیزی ها";
+            this.s96 = "دسترسی از راه دور";
+            this.s97 = "کد پاسخ های قابل قبول";
+            this.s98 = "ویرایش سرویس";
+            this.s99 = "توکن سخت افزاری";
+            this.s100 = "غیرفعال";
+            this.s101 = "سرویسی یافت نشد";
+            this.rolesText = "نقش ها";
+            this.reportsText = "گزارش ها";
+            this.publicmessagesText = "اعلان های عمومی";
+            this.ticketingText = "پشتیبانی";
+            this.transcriptsText = "گزارش های دسترسی";
+            this.addAllGroupsText = "انتخاب همه";
+            this.removeAllGroupsText = "لغو انتخاب همه";
+            this.inputEnglishFilterText = " (تنها حروف انگلیسی و اعداد مجاز می باشند)";
+            this.inputPersianFilterText = " (تنها حروف فارسی و اعداد مجاز می باشند)";
+            this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+            this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+            this.meetingText = "جلسه مجازی";
+            this.enterMeetingText = "ورود به جلسه";
+            this.inviteToMeetingText = "دعوت به جلسه";
+            this.copyText = "کپی";
+            this.returnText = "بازگشت";
+            this.dynamicOTPPassword = "رمز پویا (یکبار مصرف)";
+            this.accessReport = "گزارش های دسترسی سرویس";
+            this.searchText = "جستجو...";
+            this.displayNameFaText = "نام کامل";
+            this.userNotFoundText = "کاربری یافت نشد";
+            this.groupNotFoundText = "گروهی یافت نشد";
+            this.allowedGroupsText = "گروه های دارای دسترسی";
+            this.bannedGroupsText = "گروه های منع شده";
+            this.enNameText = "نام انگلیسی";
+            this.faNameText = "نام فارسی";
+            this.returnText = "بازگشت";
+            this.serviceNotificationsText = "پیام های سرویس";
+            this.apiAddressText = "آدرس API";
+            this.apiKeyText = "کلید API";
+            this.userFaNameInGroupText = "نام فارسی کاربر عضو";
+            this.userIdInGroupText = "شناسه کاربر عضو";
+            this.selectText = "انتخاب کنید";
+            this.selectAllText = "انتخاب همه";
+            this.removeText = "لغو انتخاب همه";
+            this.generateSecretText = "ایجاد رمز";
+            this.accessByHoursAndDaysOfTheWeekText = "دسترسی بر اساس ساعات و روزهای هفته";
+            this.saturdayText = "شنبه";
+            this.sundayText = "یکشنبه";
+            this.mondayText = "دوشنبه";
+            this.tuesdayText = "سه‌شنبه";
+            this.wednesdayText = "چهارشنبه";
+            this.thursdayText = "پنجشنبه";
+            this.fridayText = "جمعه";
+            this.daysText = "روز ها";
+            this.fromText = "از: ";
+            this.toText = "تا: ";
+            this.dayBasedText = "بر اساس روز";
+            this.urlBasedText = "بر اساس آدرس";
           }
         },
         div: function (a, b) {
@@ -2052,102 +2520,138 @@ document.addEventListener('DOMContentLoaded', function () {
           return this.servicesPage;
         },
         resultQuery(){
+          let buffer = [];
           if(this.searchQuery){
-            let buffer = [];
             buffer = buffer.concat(this.userSearch.filter((item)=>{
-              return this.searchQuery.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
+              if(typeof item.userId !== "undefined") {
+                return this.searchQuery.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v));
+              }
             }));
             buffer = buffer.concat(this.userSearch.filter((item)=>{
-              return this.searchQuery.split(' ').every(v => item.displayName.includes(v))
+              if(typeof item.displayName !== "undefined") {
+                return this.searchQuery.split(" ").every(v => item.displayName.includes(v));
+              }
             }));
             let uniqueBuffer = [...new Set(buffer)];
             return uniqueBuffer;
           }else{
-            return [];
+            return buffer;
           }
         },
         allowedResultQuery(){
           let buffer = [];
-          buffer = buffer.concat(this.userAllowed.filter((item)=>{
-            return this.searchQueryAllowedList.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
-          }));
-          buffer = buffer.concat(this.userAllowed.filter((item)=>{
-            return this.searchQueryAllowedList.split(' ').every(v => item.displayName.includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
+          if(this.userAllowed.length !== 0){
+            buffer = buffer.concat(this.userAllowed.filter((item)=>{
+              if(typeof item.userId !== "undefined"){
+                return this.searchQueryAllowedList.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v));
+              }
+            }));
+            buffer = buffer.concat(this.userAllowed.filter((item)=>{
+              if(typeof item.displayName !== "undefined"){
+                return this.searchQueryAllowedList.split(" ").every(v => item.displayName.includes(v));
+              }
+            }));
+            let uniqueBuffer = [...new Set(buffer)];
+            return uniqueBuffer;
+          }else {
+            return buffer;
+          }
         },
         blockedResultQuery(){
           let buffer = [];
-          buffer = buffer.concat(this.userBlocked.filter((item)=>{
-            return this.searchQueryBlockedList.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
-          }));
-          buffer = buffer.concat(this.userBlocked.filter((item)=>{
-            return this.searchQueryBlockedList.split(' ').every(v => item.displayName.includes(v))
-          }));
-          let uniqueBuffer = [...new Set(buffer)];
-          return uniqueBuffer;
-        },
-        allowedUsersReportListResult(){
-          if(this.allowedUsersReportSearch){
-            let buffer = [];
-            buffer = buffer.concat(this.allowedUsersReportList.filter((item)=>{
-              return this.allowedUsersReportSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v))
+          if(this.userBlocked.length !== 0){
+            buffer = buffer.concat(this.userBlocked.filter((item)=>{
+              if(typeof item.userId !== "undefined") {
+                return this.searchQueryBlockedList.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v));
+              }
             }));
-            buffer = buffer.concat(this.allowedUsersReportList.filter((item)=>{
-              return this.allowedUsersReportSearch.toLowerCase().split(" ").every(v => item.displayName.toLowerCase().includes(v))
+            buffer = buffer.concat(this.userBlocked.filter((item)=>{
+              if(typeof item.displayName !== "undefined"){
+                return this.searchQueryBlockedList.split(" ").every(v => item.displayName.includes(v));
+              }
             }));
             let uniqueBuffer = [...new Set(buffer)];
             return uniqueBuffer;
-          }else{
-            return [];
+          }else {
+            return buffer;
+          }
+        },
+        allowedUsersReportListResult(){
+          let buffer = [];
+          if(this.allowedUsersReportSearch){
+            buffer = buffer.concat(this.allowedUsersReportList.filter((item)=>{
+              if(typeof item.userId !== "undefined") {
+                return this.allowedUsersReportSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v));
+              }
+            }));
+            buffer = buffer.concat(this.allowedUsersReportList.filter((item)=>{
+              if(typeof item.displayName !== "undefined") {
+                return this.allowedUsersReportSearch.toLowerCase().split(" ").every(v => item.displayName.toLowerCase().includes(v));
+              }
+            }));
+            let uniqueBuffer = [...new Set(buffer)];
+            return uniqueBuffer;
+          }else {
+            return buffer;
           }
         },
         bannedUsersReportListResult(){
+          let buffer = [];
           if(this.bannedUsersReportSearch){
-            let buffer = [];
             buffer = buffer.concat(this.bannedUsersReportList.filter((item)=>{
-              return this.bannedUsersReportSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v))
+              if(typeof item.userId !== "undefined") {
+                return this.bannedUsersReportSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v));
+              }
             }));
             buffer = buffer.concat(this.bannedUsersReportList.filter((item)=>{
-              return this.bannedUsersReportSearch.toLowerCase().split(" ").every(v => item.displayName.toLowerCase().includes(v))
+              if(typeof item.displayName !== "undefined") {
+                return this.bannedUsersReportSearch.toLowerCase().split(" ").every(v => item.displayName.toLowerCase().includes(v));
+              }
             }));
             let uniqueBuffer = [...new Set(buffer)];
             return uniqueBuffer;
           }else{
-            return [];
+            return buffer;
           }
         },
         allowedGroupsReportListResult(){
+          let buffer = [];
           if(this.allowedGroupsReportSearch){
-            let buffer = [];
             buffer = buffer.concat(this.allowedGroupsReportList.filter((item)=>{
-              return this.allowedGroupsReportSearch.toLowerCase().split(" ").every(v => item.id.toLowerCase().includes(v))
+              if(typeof item.id !== "undefined") {
+                return this.allowedGroupsReportSearch.toLowerCase().split(" ").every(v => item.id.toLowerCase().includes(v));
+              }
             }));
             buffer = buffer.concat(this.allowedGroupsReportList.filter((item)=>{
-              return this.allowedGroupsReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v))
+              if(typeof item.description !== "undefined") {
+                return this.allowedGroupsReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v));
+              }
             }));
             let uniqueBuffer = [...new Set(buffer)];
             return uniqueBuffer;
           }else{
-            return [];
+            return buffer;
           }
         },
         bannedGroupsReportListResult(){
+          let buffer = [];
           if(this.bannedGroupsReportSearch){
-            let buffer = [];
             buffer = buffer.concat(this.bannedGroupsReportList.filter((item)=>{
-              return this.bannedGroupsReportSearch.toLowerCase().split(" ").every(v => item.id.toLowerCase().includes(v))
+              if(typeof item.id !== "undefined") {
+                return this.bannedGroupsReportSearch.toLowerCase().split(" ").every(v => item.id.toLowerCase().includes(v));
+              }
             }));
             buffer = buffer.concat(this.bannedGroupsReportList.filter((item)=>{
-              return this.bannedGroupsReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v))
+              if(typeof item.description !== "undefined") {
+                return this.bannedGroupsReportSearch.toLowerCase().split(" ").every(v => item.description.toLowerCase().includes(v));
+              }
             }));
             let uniqueBuffer = [...new Set(buffer)];
             return uniqueBuffer;
           }else{
-            return [];
+            return buffer;
           }
         },
-      }
+      },
     });
   })

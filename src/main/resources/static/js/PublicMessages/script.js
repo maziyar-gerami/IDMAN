@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
             loader: false,
             overlayLoader: false,
             isListEmpty: false,
-            s0: "احراز هویت متمرکز شرکت فلات قاره",
+            s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
             s1: "",
             s2: "خروج",
             s3: "بازنشانی رمز عبور",
@@ -105,6 +105,8 @@ document.addEventListener('DOMContentLoaded', function () {
             publicmessagesURLText: "./publicmessages",
             ticketingText: "پشتیبانی",
             ticketingURLText: "./ticketing",
+            transcriptsText: "گزارش های دسترسی",
+            transcriptsURLText: "./transcripts",
             showMeeting: false,
             meetingInviteLinkStyle: "border-top-left-radius: 0;border-bottom-left-radius: 0;",
             meetingInviteLinkCopyStyle: "border-top-right-radius: 0;border-bottom-right-radius: 0;",
@@ -463,6 +465,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "Reports";
                     this.publicmessagesText = "Public Messages";
                     this.ticketingText = "Ticketing";
+                    this.transcriptsText = "Access Reports";
                     this.meetingInviteLinkStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
                     this.meetingInviteLinkCopyStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
                     this.meetingText = "Meeting";
@@ -485,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.isRtl = true;
                     this.margin1 = "ml-1";
                     this.dateNavText = this.dateNav;
-                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
+                    this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
                     this.s1 = this.name;
                     this.s2 = "خروج";
                     this.s3 = "بازنشانی رمز عبور";
@@ -520,6 +523,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.reportsText = "گزارش ها";
                     this.publicmessagesText = "اعلان های عمومی";
                     this.ticketingText = "پشتیبانی";
+                    this.transcriptsText = "گزارش های دسترسی";
                     this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
                     this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
                     this.meetingText = "جلسه مجازی";

@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
             lang: "EN",
             rtl: "direction: rtl;",
             eye: "right: 3%;",
-            s0: "احراز هویت متمرکز شرکت فلات قاره",
+            s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
             s1: "نام کاربری و رمز عبور خود را وارد کنید",
             s2: "نام کاربری",
             s3: "رمز عبور",
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rtl = "direction: rtl;";
                     this.eye = "right: 3%;";
                     this.dateNavText = this.dateNav;
-                    this.s0 = "احراز هویت متمرکز شرکت فلات قاره";
+                    this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
                     this.s1 = "نام کاربری و رمز عبور خود را وارد کنید";
                     this.s2 = "نام کاربری";
                     this.s3 = "رمز عبور";

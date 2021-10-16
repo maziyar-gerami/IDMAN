@@ -338,3 +338,63 @@ html,body {
   padding: 5px;
   text-align: center;
 }
+
+/* -------------------- Dropdown Checkboxes -------------------- */
+.dropdown-checkbox {
+  position: relative;
+}
+.dropdown-checkbox .dropdown-checkbox-list {
+  padding: 12px;
+  background: #fff;
+  position: absolute;
+  top: 38px;
+  left: 0;
+  right: 0;
+  box-shadow: 0 1px 2px 1px rgba(0, 0, 0, .15);
+  transform-origin: 50% 0;
+  transform: scale(1, 0);
+  transition: transform 0.15s ease-in-out 0.15s;
+  max-height: 410px;
+  overflow-y: auto;
+  z-index: 4;
+}
+.dropdown-checkbox .dropdown-checkbox-option {
+  display: block;
+  padding: 8px 12px;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+  cursor: pointer;
+}
+.dropdown-checkbox .dropdown-checkbox-label {
+  display: block;
+  height: 30px;
+  background: #fff;
+  padding: 6px 12px;
+  line-height: .7;
+  cursor: pointer;
+}
+.dropdown-checkbox .bg:hover {
+  background-color: #eaeaea;
+}
+.dropdown-checkbox .dropdown-checkbox-label:before {
+  content: "▼";
+  float: left;
+}
+.dropdown-checkbox.on .dropdown-checkbox-list {
+  transform: scale(1, 1);
+  transition-delay: 0s;
+}
+.dropdown-checkbox.on .dropdown-checkbox-list .dropdown-checkbox-option {
+  opacity: 1;
+  transition-delay: 0.2s;
+}
+.dropdown-checkbox.on .dropdown-checkbox-label:before {
+  content: "▲";
+}
+.dropdown-checkbox [type="checkbox"] {
+  position: relative;
+  top: -1px;
+  margin-right: 4px;
+  margin-left: 8px;
+}
+/* ------------------------------------------------------------- */
