@@ -517,7 +517,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 this.archivesTickets = [];
                 this.isArchivesListEmpty = false;
-                axios.get(url + "/api/superadmin/tickets/archive/" + vm.currentArchivesPage + "/" + vm.recordsShownOnArchivesPage + searchQuery) //
+                axios.get(url + "/api/superuser/tickets/archive/" + vm.currentArchivesPage + "/" + vm.recordsShownOnArchivesPage + searchQuery) //
                     .then((res) => {
                         vm.totalArchives = Math.ceil(res.data.size / vm.recordsShownOnArchivesPage);
                         vm.archivesTickets = res.data.ticketList;
