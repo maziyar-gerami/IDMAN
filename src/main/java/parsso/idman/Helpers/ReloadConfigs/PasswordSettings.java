@@ -90,7 +90,6 @@ public class PasswordSettings {
                 case "pwd.min.lentgh":
                     attrs[8] = new BasicAttribute("ads-pwdminlength", setting.getValue());
                     items[8] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[8]);
-                    continue;
             }
 
         }

@@ -211,13 +211,13 @@ public class ReportMessage {
 
     @Setter
     @Getter
-    public static class ListReportMessage{
+    public static class ListReportMessage {
 
         long size;
         int pages;
         List<ReportMessage> reportMessageList;
 
-        ListReportMessage(){
+        ListReportMessage() {
 
         }
 

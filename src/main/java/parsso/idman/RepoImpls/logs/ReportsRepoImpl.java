@@ -62,7 +62,7 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
 
     @Override
     public ReportMessage.ListReportMessage accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName) {
-        int skip=0;
+        int skip = 0;
 
         Query query = new Query(Criteria.where("attribute").is("Access Strategy"));
         if (id != 0)

@@ -12,6 +12,7 @@ import parsso.idman.Helpers.Variables;
 import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Map;
 
 @Setter
@@ -155,23 +156,17 @@ public class AccessStrategy {
         accessStrategy.setSsoEnabled(jsonObject.get("ssoEnabled") != (null) && (boolean) jsonObject.get("ssoEnabled"));
 
         JSONObject tempReqiredAttribute = new JSONObject();
-        JSONArray obj;
-        JSONObject t1;
         if (jsonObject.get("requiredAttributes") != (null)) {
 
             Object ob1 = jsonObject.get("requiredAttributes");
 
-            if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
-                obj = new JSONArray();
-                obj = (JSONArray) jsonObject.get("requiredAttributes");
-                t1 = (JSONObject) obj.get(0);
-                tempReqiredAttribute = t1;
-                tempReqiredAttribute.put("@class", "java.util.HashMap");
-
-            } else {
+            if (ob1.getClass().toString().equals("class org.json.simple.JSONArray"))
+                tempReqiredAttribute = (JSONObject) ((JSONArray) jsonObject.get("requiredAttributes")).get(0);
+            else
                 tempReqiredAttribute = new JSONObject((Map) ob1);
-                tempReqiredAttribute.put("@class", "java.util.HashMap");
-            }
+
+            tempReqiredAttribute.put("@class", "java.util.HashMap");
+
 
         }
 
@@ -183,17 +178,15 @@ public class AccessStrategy {
 
             Object ob1 = jsonObject.get("rejectedAttributes");
 
-            if (ob1.getClass().toString().equals("class org.json.simple.JSONArray")) {
-                obj = new JSONArray();
-                obj = (JSONArray) jsonObject.get("rejectedAttributes");
-                t1 = (JSONObject) obj.get(0);
-                tempRejectedAttribute = t1;
-                tempRejectedAttribute.put("@class", "java.util.HashMap");
+            if (ob1.getClass().toString().equals("class org.json.simple.JSONArray"))
+                tempRejectedAttribute = (JSONObject) ((JSONArray) jsonObject.get("rejectedAttributes")).get(0);
 
-            } else {
+            else
                 tempRejectedAttribute = new JSONObject((Map) ob1);
-                tempRejectedAttribute.put("@class", "java.util.HashMap");
-            }
+
+
+            tempRejectedAttribute.put("@class", "java.util.HashMap");
+
 
         }
 

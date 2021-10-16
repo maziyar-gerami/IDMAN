@@ -168,8 +168,7 @@ public class CaptchaRepoImp implements CAPTCHARepo {
     private int[] createOrganization(int len, Double alphabetRate) {
         int nAlphabet = (int) Math.ceil(alphabetRate * len);
         int rAlphabet = nAlphabet;
-        int nNumbers = len - nAlphabet;
-        int rNumbers = nNumbers;
+        int rNumbers = len - nAlphabet;
         int[] org = new int[len];
         Random rand = new Random();
         int temp;

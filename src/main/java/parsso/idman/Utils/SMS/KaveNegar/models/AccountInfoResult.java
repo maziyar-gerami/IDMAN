@@ -3,6 +3,7 @@ package parsso.idman.Utils.SMS.KaveNegar.models;
 
 import com.google.gson.JsonObject;
 
+@SuppressWarnings("ALL")
 public class AccountInfoResult {
     private final Long remainCredit;
     private final Long expireDate;

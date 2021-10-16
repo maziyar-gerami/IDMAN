@@ -205,7 +205,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
             try {
                 URL url = new URL(tempUrl);
-                newServiceExtraInfo.setUrl(new URL(tempUrl).getProtocol()+"://"+url.getAuthority());
+                newServiceExtraInfo.setUrl(new URL(tempUrl).getProtocol() + "://" + url.getAuthority());
             } catch (MalformedURLException e) {
                 newServiceExtraInfo.setUrl("www.example.com");
             }

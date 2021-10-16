@@ -26,8 +26,7 @@ public class QueryDomain {
     public String matchIPwithService(String ip) throws UnknownHostException {
         String host = ipToDomain(ip);
         Query query = new Query(Criteria.where("host").is(host));
-        String serviceName = mongoTemplate.findOne(query, String.class, collection);
-        return serviceName;
+        return mongoTemplate.findOne(query, String.class, collection);
 
     }
 }

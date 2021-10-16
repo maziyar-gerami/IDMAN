@@ -9,8 +9,8 @@ import java.util.List;
 @Setter
 @Getter
 public class Inconsistency {
-    List add;
-    List remove;
+    List<Object> add;
+    List<Object> remove;
 
     public Inconsistency(List add, List remove) {
         this.add = add;

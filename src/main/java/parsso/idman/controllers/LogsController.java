@@ -11,20 +11,16 @@ import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.RepoImpls.logs.AuditsRepoImpl;
-import parsso.idman.RepoImpls.logs.EventsRepoImpl;
-import parsso.idman.RepoImpls.logs.ReportsRepoImpl;
 import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 
 @RestController
 public class LogsController {
     final LogsRepo.AuditRepo auditRepo;
-    LogsRepo.EventRepo eventRepo;
-    LogsRepo.ReportRepo reportsRepo;
+    final LogsRepo.EventRepo eventRepo;
+    final LogsRepo.ReportRepo reportsRepo;
 
     @Autowired
     public LogsController(LogsRepo.AuditRepo auditRepo, LogsRepo.EventRepo eventRepo, LogsRepo.ReportRepo reportsRepo) {

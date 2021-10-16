@@ -523,8 +523,6 @@ public class UserRepoImpl implements UserRepo {
 
         switch (sortType) {
             case "":
-                query.with(Sort.by(Sort.Direction.ASC, "userId"));
-                break;
             case "uid_m2M":
                 query.with(Sort.by(Sort.Direction.ASC, "userId"));
                 break;
