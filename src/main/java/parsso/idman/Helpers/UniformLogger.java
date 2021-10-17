@@ -78,6 +78,7 @@ public class UniformLogger {
                             if (!ch.getAttribute().equalsIgnoreCase("timestamp"))
                                 reportMessageList.add(new ReportMessage(ch, reportMessage));
 
+                        /*
 
                     if (reportMessage.getUsersGroups() != null) {
                         reportMessage.setInstanceName(serviceRepo.retrieveService(Long.parseLong(reportMessage.getInstance().toString())).getName());
@@ -94,6 +95,9 @@ public class UniformLogger {
                             reportMessageList.add(new ReportMessage(Variables.MODEL_GROUP, s, Variables.ACCESS_REM, reportMessage));
 
                     }
+                                            /*
+
+                         */
 
                     if (reportMessageList.size() == 0)
                         reportMessageList.add(reportMessage);
