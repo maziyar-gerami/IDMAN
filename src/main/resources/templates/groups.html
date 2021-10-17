@@ -625,11 +625,19 @@
                                             <div class="form-group">
                                                 <div class="card mb-3">
                                                     <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                                                        <div>
-                                                            <span>{{s39}}</span>
-                                                        </div> 
-                                                        <div class="d-flex">
-                                                            <div style="width: 250px;">
+                                                        <div class="row ml-0 mr-0 w-100">
+                                                            <div class="col-3 pl-1 pr-1">
+                                                                <span>{{s39}}</span>
+                                                            </div>
+                                                            <div class="col-2 pl-1 pr-1">
+                                                                <div class="input-group input-group-sm">
+                                                                    <button class="btn btn-success btn-sm form-control" v-on:click="addAllUsersToGroupC()">
+                                                                        افزودن همه
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-3"></div>
+                                                            <div class="col-4 pl-1 pr-1">
                                                                 <div class="input-group input-group-sm">
                                                                     <input type="text" :placeholder="s40" class="form-control" v-model="allUsersListSearchQueryC">
                                                                 </div>
@@ -977,9 +985,9 @@
             <footer class="mb-3 mt-4">
                 <div class="container">
                     <div class="d-flex justify-content-center">
-                        <a href="#" class="btn btn-link" style="text-decoration: none;">{{s10}}</a>
-                        <a v-bind:href="s26" class="btn btn-link" style="text-decoration: none;">{{s11}}</a>
-                        <a href="public/Parsso-User-Guide.pdf" class="btn btn-link" style="text-decoration: none;">{{s12}}</a>
+                        <a href="#" class="btn btn-link" style="text-decoration: none;" target="_blank">{{s10}}</a>
+                        <a v-bind:href="s26" class="btn btn-link" style="text-decoration: none;" target="_blank">{{s11}}</a>
+                        <a href="public/Parsso-User-Guide.pdf" class="btn btn-link" style="text-decoration: none;" target="_blank">{{s12}}</a>
                     </div>
                 </div>
             </footer>
