@@ -1,6 +1,7 @@
 package parsso.idman.Helpers;
 
 
+import org.springframework.http.HttpStatus;
 import parsso.idman.Models.Users.User;
 
 public class Variables {
@@ -74,9 +75,12 @@ public class Variables {
     public static String col_propertiesBackup = "IDMAN_PropertiesBackup";
     public static String MODEL_ROLE = "Role";
     public static String MSG_FA_CODE_200 = "پاسخ ارسال شد.";
-    public static String MSG_FA_CODE_400 = "بدنه JSON ارسال شده به API  فرمتی نادرست دارد.";
+    public static String MSG_FA_CODE_400 = "بدنه JSON ارسال شده از API  فرمتی نادرست دارد.";
+    public static String MSG_FA_CODE_501 = "بدنه JSON ارسال شده از API  مطابق استاندارد نیست";
     public static String MSG_FA_CODE_401 = "نام کاربری ارسال شده صحیح نیست.";
     public static String MSG_FA_CODE_403 = "کلید API وارد شده صحیح نیست.";
+    public static String MSG_FA_CODE_405 = "فرمت آدرس API صحیح نیست.";
+    public static String MSG_FA_CODE_503 = "آدرس API صحیح نیست و یا متد آن به درستی تعیین نشده است.";
 
     public static String template(User user, String url) {
 

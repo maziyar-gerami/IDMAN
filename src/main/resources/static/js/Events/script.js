@@ -333,9 +333,187 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return sEn;
       },
+      getEvent: function () {
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
+        this.isListEmpty = false;
+        if(!this.changePageEvent){
+          this.currentPageEvent = 1;
+        }
+
+        let tempEvent = {};
+        this.event = [];
+        axios.get(url + "/api/logs/events/user", {
+          params: {
+            count: vm.recordsShownOnPage,
+            page: vm.currentPageEvent
+          }
+        }).then((res) => {
+          if(res.data.eventList.length === 0){
+            vm.isListEmpty = true;
+          }
+          vm.totalEvent = Math.ceil(res.data.size / vm.recordsShownOnPage);
+          res.data.eventList.forEach(function (item) {
+            tempEvent = {};
+            if(item.action === "Successful Login"){
+              tempEvent.action = vm.s39;
+              tempEvent.rowStyle = "";
+            }else if(item.action === "Unsuccessful Login"){
+              tempEvent.action = vm.s40;
+              tempEvent.rowStyle = "color: red;";
+            }
+
+            tempEvent.userId = item.userId;
+            tempEvent.application = item.application;
+            tempEvent.clientIP = item.clientIP;
+            tempEvent.service = item.service;
+
+            tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
+            tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+
+            let osName = item.agentInfo.os.toLowerCase();
+            tempEvent.osdes = item.agentInfo.os;
+            if(osName.search("windows") !== -1){
+              tempEvent.oscol = "color: darkblue;";
+              tempEvent.os = "fa fa-windows fa-stack-2x";
+            }else if(osName.search("ios") !== -1 || osName.search("mac") !== -1){
+              tempEvent.oscol = "color: dimgray;";
+              tempEvent.os = "fa fa-apple fa-stack-2x";
+            }else if(osName.search("android") !== -1){
+              tempEvent.oscol = "color: #56c736;";
+              tempEvent.os = "fa fa-android fa-stack-2x";
+            }else if(osName.search("linux") !== -1 || osName.search("ubuntu") !== -1 || osName.search("debian") !== -1){
+              tempEvent.oscol = "color: #f7c600;";
+              tempEvent.os = "fa fa-linux fa-stack-2x";
+            }else{
+              tempEvent.os = "fa fa-question-circle fa-stack-2x";
+            }
+
+            let browserName = item.agentInfo.browser.toLowerCase();
+            tempEvent.browserdes = item.agentInfo.browser;
+            if(browserName.search("firefox") !== -1){
+              tempEvent.browsercol = "color: #f65d2b;";
+              tempEvent.browser = "fa fa-firefox fa-stack-2x";
+            }else if(browserName.search("chrome") !== -1){
+              tempEvent.browsercol = "color: #109855;";
+              tempEvent.browser = "fa fa-chrome fa-stack-2x";
+            }else if(browserName.search("safari") !== -1){
+              tempEvent.browsercol = "color: #1688e2;";
+              tempEvent.browser = "fa fa-safari fa-stack-2x";
+            }else if(browserName.search("edge") !== -1){
+              tempEvent.browsercol = "color: #44ce90;";
+              tempEvent.browser = "fa fa-edge fa-stack-2x";
+            }else if(browserName.search("opera") !== -1){
+              tempEvent.browsercol = "color: #e21126;";
+              tempEvent.browser = "fa fa-opera fa-stack-2x";
+            }else if(browserName.search("internet explorer") !== -1 || browserName.search("ie") !== -1){
+              tempEvent.browsercol = "color: #1db5e7;";
+              tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
+            }else{
+              tempEvent.browser = "fa fa-question-circle fa-stack-2x";
+            }
+
+            vm.event.push(tempEvent);
+          });
+        });
+        this.changePageEvent = false;
+      },
+      getEventDate: function () {
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
+        this.isListEmpty = false;
+        if(!this.changePageEvent){
+          this.currentPageEvent = 1;
+        }
+
+        this.eventDate = document.getElementById("eventDate").value;
+        if(this.eventDate === ""){
+          this.getEvent();
+        }else{
+          let tempArray = this.eventDate.split(" ");
+          this.eventDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+          let tempEvent = {};
+          this.event = [];
+          axios.get(url + "/api/logs/events/user", {
+            params: {
+              count: vm.recordsShownOnPage,
+              page: vm.currentPageEvent,
+              date: vm.eventDate
+            }
+          }).then((res) => {
+            if(res.data.eventList.length === 0){
+              vm.isListEmpty = true;
+            }
+            vm.totalEvent = Math.ceil(res.data.size / vm.recordsShownOnPage);
+            res.data.eventList.forEach(function (item) {
+              tempEvent = {};
+              if(item.action === "Successful Login"){
+                tempEvent.action = vm.s39;
+                tempEvent.rowStyle = "";
+              }else if(item.action === "Unsuccessful Login"){
+                tempEvent.action = vm.s40;
+                tempEvent.rowStyle = "color: red;";
+              }
+
+              tempEvent.userId = item.userId;
+              tempEvent.application = item.application;
+              tempEvent.clientIP = item.clientIP;
+              tempEvent.service = item.service;
+
+              tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
+              tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+
+              let osName = item.agentInfo.os.toLowerCase();
+              tempEvent.osdes = item.agentInfo.os;
+              if(osName.search("windows") !== -1){
+                tempEvent.oscol = "color: darkblue;";
+                tempEvent.os = "fa fa-windows fa-stack-2x";
+              }else if(osName.search("ios") !== -1 || osName.search("mac") !== -1){
+                tempEvent.oscol = "color: dimgray;";
+                tempEvent.os = "fa fa-apple fa-stack-2x";
+              }else if(osName.search("android") !== -1){
+                tempEvent.oscol = "color: #56c736;";
+                tempEvent.os = "fa fa-android fa-stack-2x";
+              }else if(osName.search("linux") !== -1 || osName.search("ubuntu") !== -1 || osName.search("debian") !== -1){
+                tempEvent.oscol = "color: #f7c600;";
+                tempEvent.os = "fa fa-linux fa-stack-2x";
+              }else{
+                tempEvent.os = "fa fa-question-circle fa-stack-2x";
+              }
+
+              let browserName = item.agentInfo.browser.toLowerCase();
+              tempEvent.browserdes = item.agentInfo.browser;
+              if(browserName.search("firefox") !== -1){
+                tempEvent.browsercol = "color: #f65d2b;";
+                tempEvent.browser = "fa fa-firefox fa-stack-2x";
+              }else if(browserName.search("chrome") !== -1){
+                tempEvent.browsercol = "color: #109855;";
+                tempEvent.browser = "fa fa-chrome fa-stack-2x";
+              }else if(browserName.search("safari") !== -1){
+                tempEvent.browsercol = "color: #1688e2;";
+                tempEvent.browser = "fa fa-safari fa-stack-2x";
+              }else if(browserName.search("edge") !== -1){
+                tempEvent.browsercol = "color: #44ce90;";
+                tempEvent.browser = "fa fa-edge fa-stack-2x";
+              }else if(browserName.search("opera") !== -1){
+                tempEvent.browsercol = "color: #e21126;";
+                tempEvent.browser = "fa fa-opera fa-stack-2x";
+              }else if(browserName.search("internet explorer") !== -1 || browserName.search("ie") !== -1){
+                tempEvent.browsercol = "color: #1db5e7;";
+                tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
+              }else{
+                tempEvent.browser = "fa fa-question-circle fa-stack-2x";
+              }
+
+              vm.event.push(tempEvent);
+            });
+          });
+        }
+        this.changePageEvent = false;
+      },
       getEvents: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty1 = false;
         if(!this.changePageEvents){
           this.currentPageEvents = 1;
@@ -343,18 +521,22 @@ document.addEventListener('DOMContentLoaded', function () {
         
         let tempEvent = {};
         this.events = [];
-        axios.get(url + "/api/events/users/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents)
-        .then((res) => {
-          if(res.data.eventList.length == 0){
+        axios.get(url + "/api/logs/events/users", {
+          params: {
+            count: vm.recordsShownOnPageEvents,
+            page: vm.currentPageEvents
+          }
+        }).then((res) => {
+          if(res.data.eventList.length === 0){
             vm.isListEmpty1 = true;
           }
           vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
           res.data.eventList.forEach(function (item) {
             tempEvent = {};
-            if(item.action == "Successful Login"){
+            if(item.action === "Successful Login"){
               tempEvent.action = vm.s39;
               tempEvent.rowStyle = "";
-            }else if(item.action == "Unsuccessful Login"){
+            }else if(item.action === "Unsuccessful Login"){
               tempEvent.action = vm.s40;
               tempEvent.rowStyle = "color: red;";
             }
@@ -368,42 +550,42 @@ document.addEventListener('DOMContentLoaded', function () {
             tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
             tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
 
-            var osName = item.agentInfo.os.toLowerCase();
+            let osName = item.agentInfo.os.toLowerCase();
             tempEvent.osdes = item.agentInfo.os;
-            if(osName.search("windows") != -1){
+            if(osName.search("windows") !== -1){
               tempEvent.oscol = "color: darkblue;";
               tempEvent.os = "fa fa-windows fa-stack-2x";
-            }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+            }else if(osName.search("ios") !== -1 || osName.search("mac") !== -1){
               tempEvent.oscol = "color: dimgray;";
               tempEvent.os = "fa fa-apple fa-stack-2x";
-            }else if(osName.search("android") != -1){
+            }else if(osName.search("android") !== -1){
               tempEvent.oscol = "color: #56c736;";
               tempEvent.os = "fa fa-android fa-stack-2x";
-            }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+            }else if(osName.search("linux") !== -1 || osName.search("ubuntu") !== -1 || osName.search("debian") !== -1){
               tempEvent.oscol = "color: #f7c600;";
               tempEvent.os = "fa fa-linux fa-stack-2x";
             }else{
               tempEvent.os = "fa fa-question-circle fa-stack-2x";
             }
 
-            var browserName = item.agentInfo.browser.toLowerCase();
+            let browserName = item.agentInfo.browser.toLowerCase();
             tempEvent.browserdes = item.agentInfo.browser;
-            if(browserName.search("firefox") != -1){
+            if(browserName.search("firefox") !== -1){
               tempEvent.browsercol = "color: #f65d2b;";
               tempEvent.browser = "fa fa-firefox fa-stack-2x";
-            }else if(browserName.search("chrome") != -1){
+            }else if(browserName.search("chrome") !== -1){
               tempEvent.browsercol = "color: #109855";
               tempEvent.browser = "fa fa-chrome fa-stack-2x";
-            }else if(browserName.search("safari") != -1){
+            }else if(browserName.search("safari") !== -1){
               tempEvent.browsercol = "color: #1688e2;";
               tempEvent.browser = "fa fa-safari fa-stack-2x";
-            }else if(browserName.search("edge") != -1){
+            }else if(browserName.search("edge") !== -1){
               tempEvent.browsercol = "color: #44ce90;";
               tempEvent.browser = "fa fa-edge fa-stack-2x";
-            }else if(browserName.search("opera") != -1){
+            }else if(browserName.search("opera") !== -1){
               tempEvent.browsercol = "color: #e21126;";
               tempEvent.browser = "fa fa-opera fa-stack-2x";
-            }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+            }else if(browserName.search("internet explorer") !== -1 || browserName.search("ie") !== -1){
               tempEvent.browsercol = "color: #1db5e7;";
               tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
             }else{
@@ -415,201 +597,37 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         this.changePageEvents = false;
       },
-      getEvent: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        this.isListEmpty = false;
-        if(!this.changePageEvent){
-          this.currentPageEvent = 1;
-        }
-        
-        let tempEvent = {};
-        this.event = [];
-        axios.get(url + "/api/events/user/" + vm.currentPageEvent + "/" + vm.recordsShownOnPage) //
-        .then((res) => {
-          if(res.data.eventList.length == 0){
-            vm.isListEmpty = true;
-          }
-          vm.totalEvent = Math.ceil(res.data.size / vm.recordsShownOnPage);
-          res.data.eventList.forEach(function (item) {
-            tempEvent = {};
-            if(item.action == "Successful Login"){
-              tempEvent.action = vm.s39;
-              tempEvent.rowStyle = "";
-            }else if(item.action == "Unsuccessful Login"){
-              tempEvent.action = vm.s40;
-              tempEvent.rowStyle = "color: red;";
-            }
-
-            tempEvent.userId = item.userId;
-            tempEvent.application = item.application;
-            tempEvent.clientIP = item.clientIP;
-            tempEvent.service = item.service;
-
-            tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
-            tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-
-            var osName = item.agentInfo.os.toLowerCase();
-            tempEvent.osdes = item.agentInfo.os;
-            if(osName.search("windows") != -1){
-              tempEvent.oscol = "color: darkblue;";
-              tempEvent.os = "fa fa-windows fa-stack-2x";
-            }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
-              tempEvent.oscol = "color: dimgray;";
-              tempEvent.os = "fa fa-apple fa-stack-2x";
-            }else if(osName.search("android") != -1){
-              tempEvent.oscol = "color: #56c736;";
-              tempEvent.os = "fa fa-android fa-stack-2x";
-            }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
-              tempEvent.oscol = "color: #f7c600;";
-              tempEvent.os = "fa fa-linux fa-stack-2x";
-            }else{
-              tempEvent.os = "fa fa-question-circle fa-stack-2x";
-            }
-
-            var browserName = item.agentInfo.browser.toLowerCase();
-            tempEvent.browserdes = item.agentInfo.browser;
-            if(browserName.search("firefox") != -1){
-              tempEvent.browsercol = "color: #f65d2b;";
-              tempEvent.browser = "fa fa-firefox fa-stack-2x";
-            }else if(browserName.search("chrome") != -1){
-              tempEvent.browsercol = "color: #109855;";
-              tempEvent.browser = "fa fa-chrome fa-stack-2x";
-            }else if(browserName.search("safari") != -1){
-              tempEvent.browsercol = "color: #1688e2;";
-              tempEvent.browser = "fa fa-safari fa-stack-2x";
-            }else if(browserName.search("edge") != -1){
-              tempEvent.browsercol = "color: #44ce90;";
-              tempEvent.browser = "fa fa-edge fa-stack-2x";
-            }else if(browserName.search("opera") != -1){
-              tempEvent.browsercol = "color: #e21126;";
-              tempEvent.browser = "fa fa-opera fa-stack-2x";
-            }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
-              tempEvent.browsercol = "color: #1db5e7;";
-              tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
-            }else{
-              tempEvent.browser = "fa fa-question-circle fa-stack-2x";
-            }
-
-            vm.event.push(tempEvent);
-          });
-        });
-        this.changePageEvent = false;
-      },
-      getEventDate: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        this.isListEmpty = false;
-        if(!this.changePageEvent){
-          this.currentPageEvent = 1;
-        }
-        
-        this.eventDate = document.getElementById("eventDate").value;
-        if(this.eventDate == ""){
-          this.getEvent();
-        }else{
-          let tempArray = this.eventDate.split(" ");
-          this.eventDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
-          let tempEvent = {};
-          this.event = [];
-          axios.get(url + "/api/events/user/date/" + vm.eventDate + "/" + vm.currentPageEvent + "/" + vm.recordsShownOnPage) //
-            .then((res) => {
-              if(res.data.eventList.length == 0){
-                vm.isListEmpty = true;
-              }
-              vm.totalEvent = Math.ceil(res.data.size / vm.recordsShownOnPage);
-              res.data.eventList.forEach(function (item) {
-                tempEvent = {};
-                if(item.action == "Successful Login"){
-                  tempEvent.action = vm.s39;
-                  tempEvent.rowStyle = "";
-                }else if(item.action == "Unsuccessful Login"){
-                  tempEvent.action = vm.s40;
-                  tempEvent.rowStyle = "color: red;";
-                }
-
-                tempEvent.userId = item.userId;
-                tempEvent.application = item.application;
-                tempEvent.clientIP = item.clientIP;
-                tempEvent.service = item.service;
-
-                tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
-                tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-
-                var osName = item.agentInfo.os.toLowerCase();
-                tempEvent.osdes = item.agentInfo.os;
-                if(osName.search("windows") != -1){
-                  tempEvent.oscol = "color: darkblue;";
-                  tempEvent.os = "fa fa-windows fa-stack-2x";
-                }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
-                  tempEvent.oscol = "color: dimgray;";
-                  tempEvent.os = "fa fa-apple fa-stack-2x";
-                }else if(osName.search("android") != -1){
-                  tempEvent.oscol = "color: #56c736;";
-                  tempEvent.os = "fa fa-android fa-stack-2x";
-                }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
-                  tempEvent.oscol = "color: #f7c600;";
-                  tempEvent.os = "fa fa-linux fa-stack-2x";
-                }else{
-                  tempEvent.os = "fa fa-question-circle fa-stack-2x";
-                }
-
-                var browserName = item.agentInfo.browser.toLowerCase();
-                tempEvent.browserdes = item.agentInfo.browser;
-                if(browserName.search("firefox") != -1){
-                  tempEvent.browsercol = "color: #f65d2b;";
-                  tempEvent.browser = "fa fa-firefox fa-stack-2x";
-                }else if(browserName.search("chrome") != -1){
-                  tempEvent.browsercol = "color: #109855;";
-                  tempEvent.browser = "fa fa-chrome fa-stack-2x";
-                }else if(browserName.search("safari") != -1){
-                  tempEvent.browsercol = "color: #1688e2;";
-                  tempEvent.browser = "fa fa-safari fa-stack-2x";
-                }else if(browserName.search("edge") != -1){
-                  tempEvent.browsercol = "color: #44ce90;";
-                  tempEvent.browser = "fa fa-edge fa-stack-2x";
-                }else if(browserName.search("opera") != -1){
-                  tempEvent.browsercol = "color: #e21126;";
-                  tempEvent.browser = "fa fa-opera fa-stack-2x";
-                }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
-                  tempEvent.browsercol = "color: #1db5e7;";
-                  tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
-                }else{
-                  tempEvent.browser = "fa fa-question-circle fa-stack-2x";
-                }
-
-                vm.event.push(tempEvent);
-              });
-            });
-        }
-        this.changePageEvent = false;
-      },
       getEventsUserId: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty1 = false;
         if(!this.changePageEvents){
           this.currentPageEvents = 1;
         }
         
         this.eventsDate = document.getElementById("eventsDate").value;
-        if(this.eventsDate == "" && this.eventsUserId == ""){
+        if(this.eventsDate === "" && this.eventsUserId === ""){
           this.getEvents();
-        }else if(this.eventsDate == "" && this.eventsUserId != ""){
+        }else if(this.eventsDate === "" && this.eventsUserId !== ""){
           let tempEvent = {};
           this.events = [];
-          axios.get(url + "/api/events/users/" + vm.eventsUserId + "/" + + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
-          .then((res) => {
-            if(res.data.eventList.length == 0){
+          axios.get(url + "/api/logs/events/users", {
+            params: {
+              count: vm.recordsShownOnPageEvents,
+              page: vm.currentPageEvents,
+              userID: vm.eventsUserId
+            }
+          }).then((res) => {
+            if(res.data.eventList.length === 0){
               vm.isListEmpty1 = true;
             }
             vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
             res.data.eventList.forEach(function (item) {
               tempEvent = {};
-              if(item.action == "Successful Login"){
+              if(item.action === "Successful Login"){
                 tempEvent.action = vm.s39;
                 tempEvent.rowStyle = "";
-              }else if(item.action == "Unsuccessful Login"){
+              }else if(item.action === "Unsuccessful Login"){
                 tempEvent.action = vm.s40;
                 tempEvent.rowStyle = "color: red;";
               }
@@ -623,42 +641,42 @@ document.addEventListener('DOMContentLoaded', function () {
               tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
               tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
 
-              var osName = item.agentInfo.os.toLowerCase();
+              let osName = item.agentInfo.os.toLowerCase();
               tempEvent.osdes = item.agentInfo.os;
-              if(osName.search("windows") != -1){
+              if(osName.search("windows") !== -1){
                 tempEvent.oscol = "color: darkblue;";
                 tempEvent.os = "fa fa-windows fa-stack-2x";
-              }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
+              }else if(osName.search("ios") !== -1 || osName.search("mac") !== -1){
                 tempEvent.oscol = "color: dimgray;";
                 tempEvent.os = "fa fa-apple fa-stack-2x";
-              }else if(osName.search("android") != -1){
+              }else if(osName.search("android") !== -1){
                 tempEvent.oscol = "color: #56c736;";
                 tempEvent.os = "fa fa-android fa-stack-2x";
-              }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
+              }else if(osName.search("linux") !== -1 || osName.search("ubuntu") !== -1 || osName.search("debian") !== -1){
                 tempEvent.oscol = "color: #f7c600;";
                 tempEvent.os = "fa fa-linux fa-stack-2x";
               }else{
                 tempEvent.os = "fa fa-question-circle fa-stack-2x";
               }
 
-              var browserName = item.agentInfo.browser.toLowerCase();
+              let browserName = item.agentInfo.browser.toLowerCase();
               tempEvent.browserdes = item.agentInfo.browser;
-              if(browserName.search("firefox") != -1){
+              if(browserName.search("firefox") !== -1){
                 tempEvent.browsercol = "color: #f65d2b;";
                 tempEvent.browser = "fa fa-firefox fa-stack-2x";
-              }else if(browserName.search("chrome") != -1){
+              }else if(browserName.search("chrome") !== -1){
                 tempEvent.browsercol = "color: #109855;";
                 tempEvent.browser = "fa fa-chrome fa-stack-2x";
-              }else if(browserName.search("safari") != -1){
+              }else if(browserName.search("safari") !== -1){
                 tempEvent.browsercol = "color: #1688e2;";
                 tempEvent.browser = "fa fa-safari fa-stack-2x";
-              }else if(browserName.search("edge") != -1){
+              }else if(browserName.search("edge") !== -1){
                 tempEvent.browsercol = "color: #44ce90;";
                 tempEvent.browser = "fa fa-edge fa-stack-2x";
-              }else if(browserName.search("opera") != -1){
+              }else if(browserName.search("opera") !== -1){
                 tempEvent.browsercol = "color: #e21126;";
                 tempEvent.browser = "fa fa-opera fa-stack-2x";
-              }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
+              }else if(browserName.search("internet explorer") !== -1 || browserName.search("ie") !== -1){
                 tempEvent.browsercol = "color: #1db5e7;";
                 tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
               }else{
@@ -668,109 +686,114 @@ document.addEventListener('DOMContentLoaded', function () {
               vm.events.push(tempEvent);
             });
           });
-        }else if(this.eventsDate != "" && this.eventsUserId == ""){
+        }else if(this.eventsDate !== "" && this.eventsUserId === ""){
           this.getEventsDate();
-        }else if(this.eventsDate != "" && this.eventsUserId != ""){
+        }else if(this.eventsDate !== "" && this.eventsUserId !== ""){
           this.getEventsUserIdDate();
         }
         this.changePageEvents = false;
       },
       getEventsDate: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty1 = false;
         if(!this.changePageEvents){
           this.currentPageEvents = 1;
         }
         
         this.eventsDate = document.getElementById("eventsDate").value;
-        if(this.eventsDate == "" && this.eventsUserId == ""){
+        if(this.eventsDate === "" && this.eventsUserId === ""){
           this.getEvents();
-        }else if(this.eventsDate == "" && this.eventsUserId != ""){
+        }else if(this.eventsDate === "" && this.eventsUserId !== ""){
           this.getEventsUserId();
-        }else if(this.eventsDate != "" && this.eventsUserId == ""){
+        }else if(this.eventsDate !== "" && this.eventsUserId === ""){
           let tempArray = this.eventsDate.split(" ");
           this.eventsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
           let tempEvent = {};
           this.events = [];
-          axios.get(url + "/api/events/users/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
-            .then((res) => {
-              if(res.data.eventList.length == 0){
-                vm.isListEmpty1 = true;
+          axios.get(url + "/api/logs/events/users", {
+            params: {
+              count: vm.recordsShownOnPageEvents,
+              page: vm.currentPageEvents,
+              date: vm.eventsDate
+            }
+          }).then((res) => {
+            if(res.data.eventList.length === 0){
+              vm.isListEmpty1 = true;
+            }
+            vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
+            res.data.eventList.forEach(function (item) {
+              tempEvent = {};
+              if(item.action === "Successful Login"){
+                tempEvent.action = vm.s39;
+                tempEvent.rowStyle = "";
+              }else if(item.action === "Unsuccessful Login"){
+                tempEvent.action = vm.s40;
+                tempEvent.rowStyle = "color: red;";
               }
-              vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
-              res.data.eventList.forEach(function (item) {
-                tempEvent = {};
-                if(item.action == "Successful Login"){
-                  tempEvent.action = vm.s39;
-                  tempEvent.rowStyle = "";
-                }else if(item.action == "Unsuccessful Login"){
-                  tempEvent.action = vm.s40;
-                  tempEvent.rowStyle = "color: red;";
-                }
 
-                tempEvent.userId = item.userId;
-                tempEvent.application = item.application;
-                tempEvent.clientIP = item.clientIP;
-                tempEvent.serverIP = item.serverIP;
-                tempEvent.service = item.service;
+              tempEvent.userId = item.userId;
+              tempEvent.application = item.application;
+              tempEvent.clientIP = item.clientIP;
+              tempEvent.serverIP = item.serverIP;
+              tempEvent.service = item.service;
 
-                tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
-                tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+              tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
+              tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
 
-                var osName = item.agentInfo.os.toLowerCase();
-                tempEvent.osdes = item.agentInfo.os;
-                if(osName.search("windows") != -1){
-                  tempEvent.oscol = "color: darkblue;";
-                  tempEvent.os = "fa fa-windows fa-stack-2x";
-                }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
-                  tempEvent.oscol = "color: dimgray;";
-                  tempEvent.os = "fa fa-apple fa-stack-2x";
-                }else if(osName.search("android") != -1){
-                  tempEvent.oscol = "color: #56c736;";
-                  tempEvent.os = "fa fa-android fa-stack-2x";
-                }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
-                  tempEvent.oscol = "color: #f7c600;";
-                  tempEvent.os = "fa fa-linux fa-stack-2x";
-                }else{
-                  tempEvent.os = "fa fa-question-circle fa-stack-2x";
-                }
+              let osName = item.agentInfo.os.toLowerCase();
+              tempEvent.osdes = item.agentInfo.os;
+              if(osName.search("windows") !== -1){
+                tempEvent.oscol = "color: darkblue;";
+                tempEvent.os = "fa fa-windows fa-stack-2x";
+              }else if(osName.search("ios") !== -1 || osName.search("mac") !== -1){
+                tempEvent.oscol = "color: dimgray;";
+                tempEvent.os = "fa fa-apple fa-stack-2x";
+              }else if(osName.search("android") !== -1){
+                tempEvent.oscol = "color: #56c736;";
+                tempEvent.os = "fa fa-android fa-stack-2x";
+              }else if(osName.search("linux") !== -1 || osName.search("ubuntu") !== -1 || osName.search("debian") !== -1){
+                tempEvent.oscol = "color: #f7c600;";
+                tempEvent.os = "fa fa-linux fa-stack-2x";
+              }else{
+                tempEvent.os = "fa fa-question-circle fa-stack-2x";
+              }
 
-                var browserName = item.agentInfo.browser.toLowerCase();
-                tempEvent.browserdes = item.agentInfo.browser;
-                if(browserName.search("firefox") != -1){
-                  tempEvent.browsercol = "color: #f65d2b;";
-                  tempEvent.browser = "fa fa-firefox fa-stack-2x";
-                }else if(browserName.search("chrome") != -1){
-                  tempEvent.browsercol = "color: #109855;";
-                  tempEvent.browser = "fa fa-chrome fa-stack-2x";
-                }else if(browserName.search("safari") != -1){
-                  tempEvent.browsercol = "color: #1688e2;";
-                  tempEvent.browser = "fa fa-safari fa-stack-2x";
-                }else if(browserName.search("edge") != -1){
-                  tempEvent.browsercol = "color: #44ce90;";
-                  tempEvent.browser = "fa fa-edge fa-stack-2x";
-                }else if(browserName.search("opera") != -1){
-                  tempEvent.browsercol = "color: #e21126;";
-                  tempEvent.browser = "fa fa-opera fa-stack-2x";
-                }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
-                  tempEvent.browsercol = "color: #1db5e7;";
-                  tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
-                }else{
-                  tempEvent.browser = "fa fa-question-circle fa-stack-2x";
-                }
+              let browserName = item.agentInfo.browser.toLowerCase();
+              tempEvent.browserdes = item.agentInfo.browser;
+              if(browserName.search("firefox") !== -1){
+                tempEvent.browsercol = "color: #f65d2b;";
+                tempEvent.browser = "fa fa-firefox fa-stack-2x";
+              }else if(browserName.search("chrome") !== -1){
+                tempEvent.browsercol = "color: #109855;";
+                tempEvent.browser = "fa fa-chrome fa-stack-2x";
+              }else if(browserName.search("safari") !== -1){
+                tempEvent.browsercol = "color: #1688e2;";
+                tempEvent.browser = "fa fa-safari fa-stack-2x";
+              }else if(browserName.search("edge") !== -1){
+                tempEvent.browsercol = "color: #44ce90;";
+                tempEvent.browser = "fa fa-edge fa-stack-2x";
+              }else if(browserName.search("opera") !== -1){
+                tempEvent.browsercol = "color: #e21126;";
+                tempEvent.browser = "fa fa-opera fa-stack-2x";
+              }else if(browserName.search("internet explorer") !== -1 || browserName.search("ie") !== -1){
+                tempEvent.browsercol = "color: #1db5e7;";
+                tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
+              }else{
+                tempEvent.browser = "fa fa-question-circle fa-stack-2x";
+              }
 
-                vm.events.push(tempEvent);
-              });
+              vm.events.push(tempEvent);
             });
-        }else if(this.eventsDate != "" && this.eventsUserId != ""){
+          });
+        }else if(this.eventsDate !== "" && this.eventsUserId !== ""){
           this.getEventsUserIdDate();
         }
         this.changePageEvents = false;
       },
       getEventsUserIdDate: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty1 = false;
         if(!this.changePageEvents){
           this.currentPageEvents = 1;
@@ -781,76 +804,82 @@ document.addEventListener('DOMContentLoaded', function () {
         this.eventsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
         let tempEvent = {};
         this.events = [];
-        axios.get(url + "/api/events/users/" + vm.eventsUserId + "/date/" + vm.eventsDate + "/" + vm.currentPageEvents + "/" + vm.recordsShownOnPageEvents) //
-            .then((res) => {
-              if(res.data.eventList.length == 0){
-                vm.isListEmpty1 = true;
-              }
-              vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
-              res.data.eventList.forEach(function (item) {
-                tempEvent = {};
-                if(item.action == "Successful Login"){
-                  tempEvent.action = vm.s39;
-                  tempEvent.rowStyle = "";
-                }else if(item.action == "Unsuccessful Login"){
-                  tempEvent.action = vm.s40;
-                  tempEvent.rowStyle = "color: red;";
-                }
+        axios.get(url + "/api/logs/events/users", {
+          params: {
+            count: vm.recordsShownOnPageEvents,
+            page: vm.currentPageEvents,
+            date: vm.eventsDate,
+            userID: vm.eventsUserId
+          }
+        }).then((res) => {
+          if(res.data.eventList.length === 0){
+            vm.isListEmpty1 = true;
+          }
+          vm.totalEvents = Math.ceil(res.data.size / vm.recordsShownOnPageEvents);
+          res.data.eventList.forEach(function (item) {
+            tempEvent = {};
+            if(item.action === "Successful Login"){
+              tempEvent.action = vm.s39;
+              tempEvent.rowStyle = "";
+            }else if(item.action === "Unsuccessful Login"){
+              tempEvent.action = vm.s40;
+              tempEvent.rowStyle = "color: red;";
+            }
 
-                tempEvent.userId = item.userId;
-                tempEvent.application = item.application;
-                tempEvent.clientIP = item.clientIP;
-                tempEvent.serverIP = item.serverIP;
-                tempEvent.service = item.service;
+            tempEvent.userId = item.userId;
+            tempEvent.application = item.application;
+            tempEvent.clientIP = item.clientIP;
+            tempEvent.serverIP = item.serverIP;
+            tempEvent.service = item.service;
 
-                tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
-                tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+            tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
+            tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
 
-                var osName = item.agentInfo.os.toLowerCase();
-                tempEvent.osdes = item.agentInfo.os;
-                if(osName.search("windows") != -1){
-                  tempEvent.oscol = "color: darkblue;";
-                  tempEvent.os = "fa fa-windows fa-stack-2x";
-                }else if(osName.search("ios") != -1 || osName.search("mac") != -1){
-                  tempEvent.oscol = "color: dimgray;";
-                  tempEvent.os = "fa fa-apple fa-stack-2x";
-                }else if(osName.search("android") != -1){
-                  tempEvent.oscol = "color: #56c736;";
-                  tempEvent.os = "fa fa-android fa-stack-2x";
-                }else if(osName.search("linux") != -1 || osName.search("ubuntu") != -1 || osName.search("debian") != -1){
-                  tempEvent.oscol = "color: #f7c600;";
-                  tempEvent.os = "fa fa-linux fa-stack-2x";
-                }else{
-                  tempEvent.os = "fa fa-question-circle fa-stack-2x";
-                }
+            let osName = item.agentInfo.os.toLowerCase();
+            tempEvent.osdes = item.agentInfo.os;
+            if(osName.search("windows") !== -1){
+              tempEvent.oscol = "color: darkblue;";
+              tempEvent.os = "fa fa-windows fa-stack-2x";
+            }else if(osName.search("ios") !== -1 || osName.search("mac") !== -1){
+              tempEvent.oscol = "color: dimgray;";
+              tempEvent.os = "fa fa-apple fa-stack-2x";
+            }else if(osName.search("android") !== -1){
+              tempEvent.oscol = "color: #56c736;";
+              tempEvent.os = "fa fa-android fa-stack-2x";
+            }else if(osName.search("linux") !== -1 || osName.search("ubuntu") !== -1 || osName.search("debian") !== -1){
+              tempEvent.oscol = "color: #f7c600;";
+              tempEvent.os = "fa fa-linux fa-stack-2x";
+            }else{
+              tempEvent.os = "fa fa-question-circle fa-stack-2x";
+            }
 
-                var browserName = item.agentInfo.browser.toLowerCase();
-                tempEvent.browserdes = item.agentInfo.browser;
-                if(browserName.search("firefox") != -1){
-                  tempEvent.browsercol = "color: #f65d2b;";
-                  tempEvent.browser = "fa fa-firefox fa-stack-2x";
-                }else if(browserName.search("chrome") != -1){
-                  tempEvent.browsercol = "color: #109855;";
-                  tempEvent.browser = "fa fa-chrome fa-stack-2x";
-                }else if(browserName.search("safari") != -1){
-                  tempEvent.browsercol = "color: #1688e2;";
-                  tempEvent.browser = "fa fa-safari fa-stack-2x";
-                }else if(browserName.search("edge") != -1){
-                  tempEvent.browsercol = "color: #44ce90;";
-                  tempEvent.browser = "fa fa-edge fa-stack-2x";
-                }else if(browserName.search("opera") != -1){
-                  tempEvent.browsercol = "color: #e21126;";
-                  tempEvent.browser = "fa fa-opera fa-stack-2x";
-                }else if(browserName.search("internet explorer") != -1 || browserName.search("ie") != -1){
-                  tempEvent.browsercol = "color: #1db5e7;";
-                  tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
-                }else{
-                  tempEvent.browser = "fa fa-question-circle fa-stack-2x";
-                }
+            let browserName = item.agentInfo.browser.toLowerCase();
+            tempEvent.browserdes = item.agentInfo.browser;
+            if(browserName.search("firefox") !== -1){
+              tempEvent.browsercol = "color: #f65d2b;";
+              tempEvent.browser = "fa fa-firefox fa-stack-2x";
+            }else if(browserName.search("chrome") !== -1){
+              tempEvent.browsercol = "color: #109855;";
+              tempEvent.browser = "fa fa-chrome fa-stack-2x";
+            }else if(browserName.search("safari") !== -1){
+              tempEvent.browsercol = "color: #1688e2;";
+              tempEvent.browser = "fa fa-safari fa-stack-2x";
+            }else if(browserName.search("edge") !== -1){
+              tempEvent.browsercol = "color: #44ce90;";
+              tempEvent.browser = "fa fa-edge fa-stack-2x";
+            }else if(browserName.search("opera") !== -1){
+              tempEvent.browsercol = "color: #e21126;";
+              tempEvent.browser = "fa fa-opera fa-stack-2x";
+            }else if(browserName.search("internet explorer") !== -1 || browserName.search("ie") !== -1){
+              tempEvent.browsercol = "color: #1db5e7;";
+              tempEvent.browser = "fa fa-internet-explorer fa-stack-2x";
+            }else{
+              tempEvent.browser = "fa fa-question-circle fa-stack-2x";
+            }
 
-                vm.events.push(tempEvent);
-              });
-            });
+            vm.events.push(tempEvent);
+          });
+        });
         this.changePageEvents = false;
       },
       removeEventDate: function () {

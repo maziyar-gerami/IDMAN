@@ -336,50 +336,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return sEn;
       },
-      getReports: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        this.isListEmpty1 = false;
-        if(!this.changePageReports){
-          this.currentPageReports = 1;
-        }
-        
-        let tempEvent = {};
-        this.reports = [];
-        axios.get(url + "/api/reports/users/" + vm.currentPageReports + "/" + vm.recordsShownOnPageReports)
-        .then((res) => {
-          if(res.data.reportsList.length == 0){
-            vm.isListEmpty1 = true;
-          }
-          vm.totalReports = Math.ceil(res.data.size / vm.recordsShownOnPageReports);
-          res.data.reportsList.forEach(function (item) {
-            tempEvent = {};
-
-            tempEvent.loggerName = item.loggerName;
-            tempEvent.message = item.message;
-            /*tempEvent.details = item.details;*/
-
-            tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
-            tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
-            
-            vm.reports.push(tempEvent);
-          });
-        });
-        this.changePageReports = false;
-      },
       getReport: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty = false;
         if(!this.changePageReport){
           this.currentPageReport = 1;
         }
-        
+
         let tempEvent = {};
         this.report = [];
-        axios.get(url + "/api/reports/user/" + vm.currentPageReport + "/" + vm.recordsShownOnPage) //
-        .then((res) => {
-          if(res.data.reportsList.length == 0){
+        axios.get(url + "/api/logs/reports/user", {
+          params: {
+            count: vm.recordsShownOnPage,
+            page: vm.currentPageReport
+          }
+        }).then((res) => {
+          if(res.data.reportsList.length === 0){
             vm.isListEmpty = true;
           }
           vm.totalReport = Math.ceil(res.data.size / vm.recordsShownOnPage);
@@ -392,31 +365,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
             tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
             tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
-            
+
             vm.report.push(tempEvent);
           });
         });
         this.changePageReport = false;
       },
       getReportDate: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty = false;
         if(!this.changePageReport){
           this.currentPageReport = 1;
         }
 
         this.reportDate = document.getElementById("reportDate").value;
-        if(this.reportDate == ""){
+        if(this.reportDate === ""){
           this.getReport();
         }else{
           let tempArray = this.reportDate.split(" ");
           this.reportDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
           let tempEvent = {};
           this.report = [];
-          axios.get(url + "/api/reports/user/date/" + vm.reportDate + "/" + vm.currentPageReport + "/" + vm.recordsShownOnPage) //
-          .then((res) => {
-            if(res.data.reportsList.length == 0){
+          axios.get(url + "/api/logs/reports/user", {
+            params: {
+              count: vm.recordsShownOnPage,
+              page: vm.currentPageReport,
+              date: vm.reportDate
+            }
+          }).then((res) => {
+            if(res.data.reportsList.length === 0){
               vm.isListEmpty = true;
             }
             vm.totalReport = Math.ceil(res.data.size / vm.recordsShownOnPage);
@@ -425,34 +403,72 @@ document.addEventListener('DOMContentLoaded', function () {
 
               tempEvent.loggerName = item.loggerName;
               tempEvent.message = item.message;
-              /*tempEvent.details = item.details;*/
 
               tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
               tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
-                
+
               vm.report.push(tempEvent);
             });
           });
         }
         this.changePageReport = false;
       },
+      getReports: function () {
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
+        this.isListEmpty1 = false;
+        if(!this.changePageReports){
+          this.currentPageReports = 1;
+        }
+        
+        let tempEvent = {};
+        this.reports = [];
+        axios.get(url + "/api/logs/reports/users", {
+          params: {
+            count: vm.recordsShownOnPageReports,
+            page: vm.currentPageReports
+          }
+        }).then((res) => {
+          if(res.data.reportsList.length === 0){
+            vm.isListEmpty1 = true;
+          }
+          vm.totalReports = Math.ceil(res.data.size / vm.recordsShownOnPageReports);
+          res.data.reportsList.forEach(function (item) {
+            tempEvent = {};
+
+            tempEvent.loggerName = item.loggerName;
+            tempEvent.message = item.message;
+
+            tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
+            tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
+            
+            vm.reports.push(tempEvent);
+          });
+        });
+        this.changePageReports = false;
+      },
       getReportsUserId: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty1 = false;
         if(!this.changePageReports){
           this.currentPageReports = 1;
         }
 
         this.reportsDate = document.getElementById("reportsDate").value;
-        if(this.reportsDate == "" && this.reportsUserId == ""){
+        if(this.reportsDate === "" && this.reportsUserId === ""){
           this.getReports();
-        }else if(this.reportsDate == "" && this.reportsUserId != ""){
+        }else if(this.reportsDate === "" && this.reportsUserId !== ""){
           let tempEvent = {};
           this.reports = [];
-          axios.get(url + "/api/reports/users/" + vm.reportsUserId + "/" + + vm.currentPageReports + "/" + vm.recordsShownOnPageReports) //
-          .then((res) => {
-            if(res.data.reportsList.length == 0){
+          axios.get(url + "/api/logs/reports/users", {
+            params: {
+              count: vm.recordsShownOnPageReports,
+              page: vm.currentPageReports,
+              userID: vm.reportsUserId
+            }
+          }).then((res) => {
+            if(res.data.reportsList.length === 0){
               vm.isListEmpty1 = true;
             }
             vm.totalReports = Math.ceil(res.data.size / vm.recordsShownOnPageReports);
@@ -461,7 +477,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
               tempEvent.loggerName = item.loggerName;
               tempEvent.message = item.message;
-              /*tempEvent.details = item.details;*/
 
               tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
               tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
@@ -469,58 +484,62 @@ document.addEventListener('DOMContentLoaded', function () {
               vm.reports.push(tempEvent);
             });
           });
-        }else if(this.reportsDate != "" && this.reportsUserId == ""){
+        }else if(this.reportsDate !== "" && this.reportsUserId === ""){
           this.getReportsDate();
-        }else if(this.reportsDate != "" && this.reportsUserId != ""){
+        }else if(this.reportsDate !== "" && this.reportsUserId !== ""){
           this.getReportsUserIdDate();
         }
         this.changePageReports = false;
       },
       getReportsDate: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty1 = false;
         if(!this.changePageReports){
           this.currentPageReports = 1;
         }
 
         this.reportsDate = document.getElementById("reportsDate").value;
-        if(this.reportsDate == "" && this.reportsUserId == ""){
+        if(this.reportsDate === "" && this.reportsUserId === ""){
           this.getReports();
-        }else if(this.reportsDate == "" && this.reportsUserId != ""){
+        }else if(this.reportsDate === "" && this.reportsUserId !== ""){
           this.getReportsUserId();
-        }else if(this.reportsDate != "" && this.reportsUserId == ""){
+        }else if(this.reportsDate !== "" && this.reportsUserId === ""){
           let tempArray = this.reportsDate.split(" ");
           this.reportsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
           let tempEvent = {};
           this.reports = [];
-          axios.get(url + "/api/reports/users/date/" + vm.reportsDate + "/" + vm.currentPageReports + "/" + vm.recordsShownOnPageReports) //
-            .then((res) => {
-              if(res.data.reportsList.length == 0){
-                vm.isListEmpty1 = true;
-              }
-              vm.totalReports = Math.ceil(res.data.size / vm.recordsShownOnPageReports);
-              res.data.reportsList.forEach(function (item) {
-                tempEvent = {};
+          axios.get(url + "/api/logs/reports/users", {
+            params: {
+              count: vm.recordsShownOnPageReports,
+              page: vm.currentPageReports,
+              date: vm.reportsDate
+            }
+          }).then((res) => {
+            if(res.data.reportsList.length === 0){
+              vm.isListEmpty1 = true;
+            }
+            vm.totalReports = Math.ceil(res.data.size / vm.recordsShownOnPageReports);
+            res.data.reportsList.forEach(function (item) {
+              tempEvent = {};
 
-                tempEvent.loggerName = item.loggerName;
-                tempEvent.message = item.message;
-                /*tempEvent.details = item.details;*/
+              tempEvent.loggerName = item.loggerName;
+              tempEvent.message = item.message;
 
-                tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
-                tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
-                
-                vm.reports.push(tempEvent);
-              });
+              tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
+              tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
+
+              vm.reports.push(tempEvent);
             });
-        }else if(this.reportsDate != "" && this.reportsUserId != ""){
+          });
+        }else if(this.reportsDate !== "" && this.reportsUserId !== ""){
           this.getReportsUserIdDate();
         }
         this.changePageReports = false;
       },
       getReportsUserIdDate: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty1 = false;
         if(!this.changePageReports){
           this.currentPageReports = 1;
@@ -531,25 +550,30 @@ document.addEventListener('DOMContentLoaded', function () {
         this.reportsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);  
         let tempEvent = {};
         this.reports = [];
-        axios.get(url + "/api/reports/users/" + vm.reportsUserId + "/date/" + vm.reportsDate + "/" + vm.currentPageReports + "/" + vm.recordsShownOnPageReports) //
-          .then((res) => {
-            if(res.data.reportsList.length == 0){
-              vm.isListEmpty1 = true;
-            }
-            vm.totalReports = Math.ceil(res.data.size / vm.recordsShownOnPageReports);
-            res.data.reportsList.forEach(function (item) {
-              tempEvent = {};
+        axios.get(url + "/api/logs/reports/users", {
+          params: {
+            count: vm.recordsShownOnPageReports,
+            page: vm.currentPageReports,
+            date: vm.reportsDate,
+            userID: vm.reportsUserId
+          }
+        }).then((res) => {
+          if(res.data.reportsList.length === 0){
+            vm.isListEmpty1 = true;
+          }
+          vm.totalReports = Math.ceil(res.data.size / vm.recordsShownOnPageReports);
+          res.data.reportsList.forEach(function (item) {
+            tempEvent = {};
 
-              tempEvent.loggerName = item.loggerName;
-              tempEvent.message = item.message;
-              /*tempEvent.details = item.details;*/
+            tempEvent.loggerName = item.loggerName;
+            tempEvent.message = item.message;
 
-              tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
-              tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
-                
-              vm.reports.push(tempEvent);
-            });
+            tempEvent.date = item.dateTime.year + "/" + item.dateTime.month + "/" + item.dateTime.day;
+            tempEvent.clock = item.dateTime.hours + ":" + item.dateTime.minutes + ":" + item.dateTime.seconds;
+
+            vm.reports.push(tempEvent);
           });
+        });
         this.changePageReports = false;
       },
       removeReportDate: function () {

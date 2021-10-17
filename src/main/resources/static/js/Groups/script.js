@@ -178,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
             bannedServicesText: "سرویس های منع شده",
             reportedGroup: {},
             returnText: "بازگشت",
+            addAllText: "افزودن همه",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام انگلیسی",
@@ -654,6 +655,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
+            addAllUsersToGroupC: function (){
+                for(let i = 0; i < this.allUsersSearchC.length; ++i){
+                    this.addUserToGroupC(this.allUsersSearchC[i]);
+                }
+            },
             removeUserFromGroupC: function (user){
                 let index = this.groupsAddedUsersListC.indexOf(user.userId);
                 if (index > -1) {
@@ -1038,6 +1044,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.allowedServicesText = "Allowed Services";
                     this.bannedServicesText = "Banned Services";
                     this.returnText = "Return";
+                    this.addAllText = "Add All";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
@@ -1135,6 +1142,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.allowedServicesText = "سرویس های دارای دسترسی";
                     this.bannedServicesText = "سرویس های منع شده";
                     this.returnText = "بازگشت";
+                    this.addAllText = "افزودن همه";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";
@@ -1149,7 +1157,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U11 = "حذف"
                     this.U12 = "جدید";
                     this.U13 = "ویرایش";
-                    this.U17 = "حذف"
+                    this.U17 = "حذف";
                 }
             }
         },

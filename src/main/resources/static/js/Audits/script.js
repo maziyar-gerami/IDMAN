@@ -345,9 +345,91 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return sEn;
       },
+      getAudit: function () {
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
+        this.isListEmpty = false;
+        if(!this.changePageAudit){
+          this.currentPageAudit = 1;
+        }
+
+        let tempEvent = {};
+        this.audit = [];
+        axios.get(url + "/api/logs/audits/user", {
+          params: {
+            count: vm.recordsShownOnPage,
+            page: vm.currentPageAudit
+          }
+        }).then((res) => {
+          if(res.data.auditList.length === 0){
+            vm.isListEmpty = true;
+          }
+          vm.totalAudit = Math.ceil(res.data.size / vm.recordsShownOnPage);
+          res.data.auditList.forEach(function (item) {
+            tempEvent = {};
+
+            tempEvent.actionPerformed = item.actionPerformed;
+            tempEvent.principal = item.principal.replace("audit:", "");
+            tempEvent.applicationCode = item.applicationCode;
+            tempEvent.clientIpAddress = item.clientIpAddress;
+            tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
+
+            tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
+            tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+
+            vm.audit.push(tempEvent);
+          });
+        });
+        this.changePageAudit = false;
+      },
+      getAuditDate: function () {
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
+        this.isListEmpty = false;
+        if(!this.changePageAudit){
+          this.currentPageAudit = 1;
+        }
+
+        this.auditDate = document.getElementById("auditDate").value;
+        if(this.auditDate === ""){
+          this.getAudit();
+        }else{
+          let tempArray = this.auditDate.split(" ");
+          this.auditDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
+          let tempEvent = {};
+          this.audit = [];
+          axios.get(url + "/api/logs/audits/user", {
+            params: {
+              count: vm.recordsShownOnPage,
+              page: vm.currentPageAudit,
+              date: vm.auditDate
+            }
+          }).then((res) => {
+            if(res.data.auditList.length === 0){
+              vm.isListEmpty = true;
+            }
+            vm.totalAudit = Math.ceil(res.data.size / vm.recordsShownOnPage);
+            res.data.auditList.forEach(function (item) {
+              tempEvent = {};
+
+              tempEvent.actionPerformed = item.actionPerformed;
+              tempEvent.principal = item.principal.replace("audit:", "");
+              tempEvent.applicationCode = item.applicationCode;
+              tempEvent.clientIpAddress = item.clientIpAddress;
+              tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
+
+              tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
+              tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+
+              vm.audit.push(tempEvent);
+            });
+          });
+        }
+        this.changePageAudit = false;
+      },
       getAudits: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty1 = false;
         if(!this.changePageAudits){
           this.currentPageAudits = 1;
@@ -355,9 +437,13 @@ document.addEventListener('DOMContentLoaded', function () {
         
         let tempEvent = {};
         this.audits = [];
-        axios.get(url + "/api/audits/users/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits)
-        .then((res) => {
-          if(res.data.auditList.length == 0){
+        axios.get(url + "/api/logs/audits/users", {
+          params: {
+            count: vm.recordsShownOnPageAudits,
+            page: vm.currentPageAudits
+          }
+        }).then((res) => {
+          if(res.data.auditList.length === 0){
             vm.isListEmpty1 = true;
           }
           vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
@@ -381,96 +467,28 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         this.changePageAudits = false;
       },
-      getAudit: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        this.isListEmpty = false;
-        if(!this.changePageAudit){
-          this.currentPageAudit = 1;
-        }
-        
-        let tempEvent = {};
-        this.audit = [];
-        axios.get(url + "/api/audits/user/" + vm.currentPageAudit + "/" + vm.recordsShownOnPage) //
-        .then((res) => {
-          if(res.data.auditList.length == 0){
-            vm.isListEmpty = true;
-          }
-          vm.totalAudit = Math.ceil(res.data.size / vm.recordsShownOnPage);
-          res.data.auditList.forEach(function (item) {
-            tempEvent = {};
-
-            tempEvent.actionPerformed = item.actionPerformed;
-            tempEvent.principal = item.principal.replace("audit:", "");
-            tempEvent.applicationCode = item.applicationCode;
-            tempEvent.clientIpAddress = item.clientIpAddress;
-            tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
-
-            tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
-            tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-            
-            vm.audit.push(tempEvent);
-          });
-        });
-        this.changePageAudit = false;
-      },
-      getAuditDate: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        this.isListEmpty = false;
-        if(!this.changePageAudit){
-          this.currentPageAudit = 1;
-        }
-
-        this.auditDate = document.getElementById("auditDate").value;
-        if(this.auditDate == ""){
-          this.getAudit();
-        }else{
-          let tempArray = this.auditDate.split(" ");
-          this.auditDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
-          let tempEvent = {};
-          this.audit = [];
-          axios.get(url + "/api/audits/user/date/" + vm.auditDate + "/" + vm.currentPageAudit + "/" + vm.recordsShownOnPage) //
-          .then((res) => {
-            if(res.data.auditList.length == 0){
-              vm.isListEmpty = true;
-            }
-            vm.totalAudit = Math.ceil(res.data.size / vm.recordsShownOnPage);
-            res.data.auditList.forEach(function (item) {
-              tempEvent = {};
-
-              tempEvent.actionPerformed = item.actionPerformed;
-              tempEvent.principal = item.principal.replace("audit:", "");
-              tempEvent.applicationCode = item.applicationCode;
-              tempEvent.clientIpAddress = item.clientIpAddress;
-              tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
-
-              tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
-              tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-                
-              vm.audit.push(tempEvent);
-            });
-          });
-        }
-        this.changePageAudit = false;
-      },
       getAuditsUserId: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty1 = false;
         if(!this.changePageAudits){
           this.currentPageAudits = 1;
         }
 
         this.auditsDate = document.getElementById("auditsDate").value;
-        if(this.auditsDate == "" && this.auditsUserId == ""){
+        if(this.auditsDate === "" && this.auditsUserId === ""){
           this.getAudits();
-        }else if(this.auditsDate == "" && this.auditsUserId != ""){
+        }else if(this.auditsDate === "" && this.auditsUserId !== ""){
           let tempEvent = {};
           this.audits = [];
-          axios.get(url + "/api/audits/users/" + vm.auditsUserId + "/" + + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
-          .then((res) => {
-            if(res.data.auditList.length == 0){
+          axios.get(url + "/api/logs/audits/users", {
+            params: {
+              count: vm.recordsShownOnPageAudits,
+              page: vm.currentPageAudits,
+              userID: vm.auditsUserId
+            }
+          }).then((res) => {
+            if(res.data.auditList.length === 0){
               vm.isListEmpty1 = true;
             }
             vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
@@ -490,74 +508,39 @@ document.addEventListener('DOMContentLoaded', function () {
               vm.audits.push(tempEvent);
             });
           });
-        }else if(this.auditsDate != "" && this.auditsUserId == ""){
+        }else if(this.auditsDate !== "" && this.auditsUserId === ""){
           this.getAuditsDate();
-        }else if(this.auditsDate != "" && this.auditsUserId != ""){
+        }else if(this.auditsDate !== "" && this.auditsUserId !== ""){
           this.getAuditsUserIdDate();
         }
         this.changePageAudits = false;
       },
       getAuditsDate: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         this.isListEmpty1 = false;
         if(!this.changePageAudits){
           this.currentPageAudits = 1;
         }
 
         this.auditsDate = document.getElementById("auditsDate").value;
-        if(this.auditsDate == "" && this.auditsUserId == ""){
+        if(this.auditsDate === "" && this.auditsUserId === ""){
           this.getAudits();
-        }else if(this.auditsDate == "" && this.auditsUserId != ""){
+        }else if(this.auditsDate === "" && this.auditsUserId !== ""){
           this.getAuditsUserId();
-        }else if(this.auditsDate != "" && this.auditsUserId == ""){
+        }else if(this.auditsDate !== "" && this.auditsUserId === ""){
           let tempArray = this.auditsDate.split(" ");
           this.auditsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
           let tempEvent = {};
           this.audits = [];
-          axios.get(url + "/api/audits/users/date/" + vm.auditsDate + "/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
-            .then((res) => {
-              if(res.data.auditList.length == 0){
-                vm.isListEmpty1 = true;
-              }
-              vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
-              res.data.auditList.forEach(function (item) {
-                tempEvent = {};
-
-                tempEvent.actionPerformed = item.actionPerformed;
-                tempEvent.principal = item.principal.replace("audit:", "");
-                tempEvent.applicationCode = item.applicationCode;
-                tempEvent.clientIpAddress = item.clientIpAddress;
-                tempEvent.serverIpAddress = item.serverIpAddress;
-                tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
-
-                tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
-                tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-                
-                vm.audits.push(tempEvent);
-              });
-            });
-        }else if(this.auditsDate != "" && this.auditsUserId != ""){
-          this.getAuditsUserIdDate();
-        }
-        this.changePageAudits = false;
-      },
-      getAuditsUserIdDate: function () {
-        var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
-        this.isListEmpty1 = false;
-        if(!this.changePageAudits){
-          this.currentPageAudits = 1;
-        }
-        
-        this.auditsDate = document.getElementById("auditsDate").value;
-        let tempArray = this.auditsDate.split(" ");
-        this.auditsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);  
-        let tempEvent = {};
-        this.audits = [];
-        axios.get(url + "/api/audits/users/" + vm.auditsUserId + "/date/" + vm.auditsDate + "/" + vm.currentPageAudits + "/" + vm.recordsShownOnPageAudits) //
-          .then((res) => {
-            if(res.data.auditList.length == 0){
+          axios.get(url + "/api/logs/audits/users", {
+            params: {
+              count: vm.recordsShownOnPageAudits,
+              page: vm.currentPageAudits,
+              date: vm.auditsDate
+            }
+          }).then((res) => {
+            if(res.data.auditList.length === 0){
               vm.isListEmpty1 = true;
             }
             vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
@@ -573,10 +556,56 @@ document.addEventListener('DOMContentLoaded', function () {
 
               tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
               tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
-                
+
               vm.audits.push(tempEvent);
             });
           });
+        }else if(this.auditsDate !== "" && this.auditsUserId !== ""){
+          this.getAuditsUserIdDate();
+        }
+        this.changePageAudits = false;
+      },
+      getAuditsUserIdDate: function () {
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
+        this.isListEmpty1 = false;
+        if(!this.changePageAudits){
+          this.currentPageAudits = 1;
+        }
+        
+        this.auditsDate = document.getElementById("auditsDate").value;
+        let tempArray = this.auditsDate.split(" ");
+        this.auditsDate = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);  
+        let tempEvent = {};
+        this.audits = [];
+        axios.get(url + "/api/logs/audits/users", {
+          params: {
+            count: vm.recordsShownOnPageAudits,
+            page: vm.currentPageAudits,
+            date: vm.auditsDate,
+            userID: vm.auditsUserId
+          }
+        }).then((res) => {
+          if(res.data.auditList.length === 0){
+            vm.isListEmpty1 = true;
+          }
+          vm.totalAudits = Math.ceil(res.data.size / vm.recordsShownOnPageAudits);
+          res.data.auditList.forEach(function (item) {
+            tempEvent = {};
+
+            tempEvent.actionPerformed = item.actionPerformed;
+            tempEvent.principal = item.principal.replace("audit:", "");
+            tempEvent.applicationCode = item.applicationCode;
+            tempEvent.clientIpAddress = item.clientIpAddress;
+            tempEvent.serverIpAddress = item.serverIpAddress;
+            tempEvent.resourceOperatedUpon = item.resourceOperatedUpon;
+
+            tempEvent.date = item.time.year + "/" + item.time.month + "/" + item.time.day;
+            tempEvent.clock = item.time.hours + ":" + item.time.minutes + ":" + item.time.seconds;
+
+            vm.audits.push(tempEvent);
+          });
+        });
         this.changePageAudits = false;
       },
       removeAuditDate: function () {
