@@ -118,8 +118,7 @@ public class OAuthServiceHelper {
             service.setAttributeReleasePolicy(attributeReleasePolicy);
         } else {
             JSONObject jsonObject = null;
-            String s = jo.get("attributeReleasePolicy").getClass().toString();
-            if (jo.get("attributeReleasePolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
+            if (jo.get("attributeReleasePolicy")!=null&&jo.get("attributeReleasePolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
                 jsonObject = (JSONObject) jo.get("attributeReleasePolicy");
 
             if (jo.get("attributeReleasePolicy").getClass().toString().equals("class java.util.LinkedHashMap"))
