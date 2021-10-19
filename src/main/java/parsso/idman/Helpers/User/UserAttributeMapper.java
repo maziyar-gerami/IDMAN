@@ -41,7 +41,12 @@ public class UserAttributeMapper implements AttributesMapper<User> {
         user.setTimeStamp(null != attributes.get("createtimestamp") ? Long.parseLong(attributes.get("createtimestamp").get().toString().substring(0, 14)) : 0);
         user.setPasswordChangedTime(null != attributes.get("pwdChangedTime") ? Long.parseLong(attributes.get("pwdChangedTime").get().toString().substring(0, 14)) : user.getTimeStamp());
         user.setEmployeeNumber((null != attributes.get("employeeNumber") && !attributes.get("employeeNumber").equals("")) ? attributes.get("employeeNumber").get().toString() : null);
-        int nGroups = (null == attributes.get("ou") && !attributes.get("displayName").equals("")) ? 0 : attributes.get("ou").size();
+        int nGroups;
+        try {
+            nGroups = (null == attributes.get("ou") && !attributes.get("ou").equals("")) ? 0 : attributes.get("ou").size();
+        }catch (Exception e){
+            nGroups = 0;
+        }
         user.setDescription(attributes.get("description") != null ? attributes.get("description").get().toString() : " ");
         List<String> ls = new LinkedList<>();
         for (int i = 0; i < nGroups; i++) ls.add(attributes.get("ou").get(i).toString());
