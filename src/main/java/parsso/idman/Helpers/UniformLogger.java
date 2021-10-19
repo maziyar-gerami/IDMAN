@@ -78,7 +78,7 @@ public class UniformLogger {
                             if (!ch.getAttribute().equalsIgnoreCase("timestamp"))
                                 reportMessageList.add(new ReportMessage(ch, reportMessage));
 
-                        /*
+                        /* TODO:ENABLE it
 
                     if (reportMessage.getUsersGroups() != null) {
                         reportMessage.setInstanceName(serviceRepo.retrieveService(Long.parseLong(reportMessage.getInstance().toString())).getName());

@@ -1,6 +1,7 @@
 package parsso.idman.RepoImpls;
 
 
+import com.sun.org.apache.bcel.internal.classfile.Unknown;
 import lombok.val;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
@@ -10,6 +11,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.omg.CORBA.portable.UnknownException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
@@ -374,7 +376,6 @@ public class UserRepoImpl implements UserRepo {
             if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
 
                 DirContextOperations contextUser;
-
                 contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
                 contextUser.setAttributeValue("userPassword", newPassword);
 
@@ -382,11 +383,10 @@ public class UserRepoImpl implements UserRepo {
                     ldapTemplate.modifyAttributes(contextUser);
                     uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
                     return HttpStatus.OK;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to LDAP"));
-                    return HttpStatus.BAD_REQUEST;
-                }
+                } catch (Exception e){
+                uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
+                return HttpStatus.FOUND;
+            }
 
             } else
                 return HttpStatus.METHOD_NOT_ALLOWED;

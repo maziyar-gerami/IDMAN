@@ -38,8 +38,8 @@ public class Notifs {
 
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("api-key", notificationApiKey);
-        jsonObject.put("user-id", userId);
+        jsonObject.put("api_key", notificationApiKey);
+        jsonObject.put("user_id", userId);
 
         try (OutputStream os = con.getOutputStream()) {
             byte[] input = jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8);
