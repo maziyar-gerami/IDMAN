@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import parsso.idman.Helpers.Variables;
 import parsso.idman.Models.Services.ServiceGist;
+import parsso.idman.Models.other.Notification;
 import parsso.idman.Models.other.Return;
 
 import java.io.BufferedReader;
@@ -16,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 
 public class Notifs {
     public ServiceGist getNotifications(String userId, String notificationApiURL, String notificationApiKey) throws IOException {
@@ -49,7 +51,7 @@ public class Notifs {
         }
 
 
-        ServiceGist sg = null;
+        JSONObject json = null;
 
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(con.getInputStream(),
@@ -60,7 +62,6 @@ public class Notifs {
                 response.append(responseLine.trim());
             }
             JSONParser parser = new JSONParser();
-            JSONObject json;
             try {
                 json = (JSONObject) parser.parse(response.toString());
             } catch (Exception e){
@@ -70,14 +71,18 @@ public class Notifs {
             if (!ServiceGist.parseServiceGist(json).isNotExist())
                 return new ServiceGist(new Return(501 , Variables.MSG_FA_CODE_501),ServiceGist.parseServiceGist(json));
 
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            sg = objectMapper.readValue(json.toJSONString(), ServiceGist.class);
         } catch (Exception e) {
-            e.getMessage();
+        }
+        int count = Integer.parseInt(json.get("count").toString());
+        LinkedList<Notification> notifications;
+        try {
+            //TODO: Correct it
+            notifications = (LinkedList<Notification>)json.get("notifications");
+        }catch (Exception e){
+            notifications = new LinkedList<>();
         }
 
-        return new ServiceGist(sg.getCount(), sg.getNotifications(), new Return(200 , Variables.MSG_FA_CODE_200));
+        return new ServiceGist(count, notifications, new Return(200 , Variables.MSG_FA_CODE_200));
 
     }
 }
