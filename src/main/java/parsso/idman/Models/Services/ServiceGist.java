@@ -42,7 +42,7 @@ public class ServiceGist {
     }
 
 
-    public static Inconsistency parseServiceGist(JSONObject json){
+    public static Inconsistency parseServiceGist(JSONObject json) {
         List<String> omitted = new LinkedList();
 
         List<String> malformed = new LinkedList();
@@ -62,16 +62,16 @@ public class ServiceGist {
         else if (!(json.get("return") instanceof Return))
             malformed.add("return");
 
-        if (malformed.isEmpty()&&omitted.isEmpty())
+        if (malformed.isEmpty() && omitted.isEmpty())
             return new Inconsistency(true);
 
 
-        return new Inconsistency(omitted,malformed,true);
+        return new Inconsistency(omitted, malformed, true);
     }
 
     @Getter
     @Setter
-    public static class Inconsistency{
+    public static class Inconsistency {
         private boolean notExist;
         private List<String> omitted;
         private List<String> malformed;

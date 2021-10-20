@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-@Controller
+@RestController
 public class ServicesController {
     private final UserRepo userRepo;
     private final ServiceRepo serviceRepo;

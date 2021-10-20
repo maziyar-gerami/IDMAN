@@ -29,6 +29,7 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
+    @SuppressWarnings("deprecation")
     public Claims extractAllClamis(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
 
@@ -43,6 +44,7 @@ public class JwtUtil {
         return createToken(claims, user.getUserId());
     }
 
+    @SuppressWarnings("deprecation")
     public String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1200000))

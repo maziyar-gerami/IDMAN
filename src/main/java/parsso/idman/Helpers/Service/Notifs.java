@@ -1,7 +1,6 @@
 package parsso.idman.Helpers.Service;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import parsso.idman.Helpers.Variables;
@@ -25,7 +24,7 @@ public class Notifs {
         try {
             url = new URL(notificationApiURL);
         } catch (MalformedURLException e) {
-            return new ServiceGist(new Return(405 , Variables.MSG_FA_CODE_405));
+            return new ServiceGist(new Return(405, Variables.MSG_FA_CODE_405));
         }
 
 
@@ -46,8 +45,8 @@ public class Notifs {
         try (OutputStream os = con.getOutputStream()) {
             byte[] input = jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
-        }catch (Exception e){
-            return new ServiceGist(new Return(503 , Variables.MSG_FA_CODE_503));
+        } catch (Exception e) {
+            return new ServiceGist(new Return(503, Variables.MSG_FA_CODE_503));
         }
 
 
@@ -64,25 +63,25 @@ public class Notifs {
             JSONParser parser = new JSONParser();
             try {
                 json = (JSONObject) parser.parse(response.toString());
-            } catch (Exception e){
-                return new ServiceGist(new Return(400 , Variables.MSG_FA_CODE_400));
+            } catch (Exception e) {
+                return new ServiceGist(new Return(400, Variables.MSG_FA_CODE_400));
             }
 
             if (!ServiceGist.parseServiceGist(json).isNotExist())
-                return new ServiceGist(new Return(501 , Variables.MSG_FA_CODE_501),ServiceGist.parseServiceGist(json));
+                return new ServiceGist(new Return(501, Variables.MSG_FA_CODE_501), ServiceGist.parseServiceGist(json));
 
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         int count = Integer.parseInt(json.get("count").toString());
         LinkedList<Notification> notifications;
         try {
             //TODO: Correct it
-            notifications = (LinkedList<Notification>)json.get("notifications");
-        }catch (Exception e){
+            notifications = (LinkedList<Notification>) json.get("notifications");
+        } catch (Exception e) {
             notifications = new LinkedList<>();
         }
 
-        return new ServiceGist(count, notifications, new Return(200 , Variables.MSG_FA_CODE_200));
+        return new ServiceGist(count, notifications, new Return(200, Variables.MSG_FA_CODE_200));
 
     }
 }

@@ -44,7 +44,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
         int nGroups;
         try {
             nGroups = (null == attributes.get("ou") && !attributes.get("ou").equals("")) ? 0 : attributes.get("ou").size();
-        }catch (Exception e){
+        } catch (Exception e) {
             nGroups = 0;
         }
         user.setDescription(attributes.get("description") != null ? attributes.get("description").get().toString() : " ");

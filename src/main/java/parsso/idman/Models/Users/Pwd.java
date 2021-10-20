@@ -29,7 +29,7 @@ public class Pwd {
     @Service
     public static class PwdAttributeMapper implements AttributesMapper<Pwd> {
 
-        Pwd pwd = new Pwd();
+        final Pwd pwd = new Pwd();
 
         @Override
         public Pwd mapFromAttributes(Attributes attributes) throws NamingException {
@@ -43,18 +43,18 @@ public class Pwd {
             pwd.pwdlockout = attributes.get("pwdLockout").toString();
 
 
-                pwd.pwdlockoutduration = attributes.get("pwdLockoutDuration").toString();
+            pwd.pwdlockoutduration = attributes.get("pwdLockoutDuration").toString();
 
-                pwd.pwdgraceauthnlimit = attributes.get("pwdGraceAuthNlimit").toString();
-
-
-                pwd.pwdlockoutduration = attributes.get("pwdLockoutDuration").toString();
+            pwd.pwdgraceauthnlimit = attributes.get("pwdGraceAuthNlimit").toString();
 
 
-                pwd.pwdinhistory = attributes.get("pwdInHistory").toString();
+            pwd.pwdlockoutduration = attributes.get("pwdLockoutDuration").toString();
 
 
-                pwd.pwdmaxfailure = attributes.get("pwdMaxFailure").toString();
+            pwd.pwdinhistory = attributes.get("pwdInHistory").toString();
+
+
+            pwd.pwdmaxfailure = attributes.get("pwdMaxFailure").toString();
 
 
             return pwd;

@@ -1,7 +1,6 @@
 package parsso.idman.Helpers;
 
 
-import org.springframework.http.HttpStatus;
 import parsso.idman.Models.Users.User;
 
 public class Variables {
@@ -64,6 +63,11 @@ public class Variables {
     public static final String ACCESS_ADD = "Access Add";
     public static final String ACCESS_REM = "Access Remove";
     public static final String ACCESS_STRATEGY = "Access Strategy";
+    public static final String MSG_FA_CODE_200 = "پاسخ ارسال شد.";
+    public static final String MSG_FA_CODE_400 = "بدنه JSON ارسال شده از API  فرمتی نادرست دارد.";
+    public static final String MSG_FA_CODE_501 = "بدنه JSON ارسال شده از API  مطابق استاندارد نیست";
+    public static final String MSG_FA_CODE_405 = "فرمت آدرس API صحیح نیست.";
+    public static final String MSG_FA_CODE_503 = "آدرس API صحیح نیست و یا متد آن به درستی تعیین نشده است.";
     static final String email_body = "شما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید." +
             "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +
             "در غیر این صورت با کلیک بر روی  لینک زیر نسبت به بازنشانی و تغییر رمز عبور خود اقدام نمایید.\n";
@@ -74,13 +78,8 @@ public class Variables {
     public static String col_events = "IDMAN_Events";
     public static String col_propertiesBackup = "IDMAN_PropertiesBackup";
     public static String MODEL_ROLE = "Role";
-    public static String MSG_FA_CODE_200 = "پاسخ ارسال شد.";
-    public static String MSG_FA_CODE_400 = "بدنه JSON ارسال شده از API  فرمتی نادرست دارد.";
-    public static String MSG_FA_CODE_501 = "بدنه JSON ارسال شده از API  مطابق استاندارد نیست";
     public static String MSG_FA_CODE_401 = "نام کاربری ارسال شده صحیح نیست.";
     public static String MSG_FA_CODE_403 = "کلید API وارد شده صحیح نیست.";
-    public static String MSG_FA_CODE_405 = "فرمت آدرس API صحیح نیست.";
-    public static String MSG_FA_CODE_503 = "آدرس API صحیح نیست و یا متد آن به درستی تعیین نشده است.";
 
     public static String template(User user, String url) {
 

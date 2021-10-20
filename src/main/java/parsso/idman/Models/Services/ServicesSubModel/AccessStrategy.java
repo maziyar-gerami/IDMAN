@@ -12,7 +12,6 @@ import parsso.idman.Helpers.Variables;
 import parsso.idman.Utils.Convertor.DateConverter;
 
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Map;
 
 @Setter

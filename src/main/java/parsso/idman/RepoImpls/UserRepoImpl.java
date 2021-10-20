@@ -1,7 +1,6 @@
 package parsso.idman.RepoImpls;
 
 
-import com.sun.org.apache.bcel.internal.classfile.Unknown;
 import lombok.val;
 import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
@@ -382,10 +381,10 @@ public class UserRepoImpl implements UserRepo {
                     ldapTemplate.modifyAttributes(contextUser);
                     uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
                     return HttpStatus.OK;
-                } catch (Exception e){
-                uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
-                return HttpStatus.FOUND;
-            }
+                } catch (Exception e) {
+                    uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
+                    return HttpStatus.FOUND;
+                }
 
             } else
                 return HttpStatus.METHOD_NOT_ALLOWED;

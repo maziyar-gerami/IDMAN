@@ -52,6 +52,7 @@ public class KavenegarApi {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private JsonElement execute(String path, Object... params) throws BaseException {
         UrlEncodedFormEntity parameters;
         parameters = createParams(params);

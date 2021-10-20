@@ -13,7 +13,7 @@ import parsso.idman.repos.RolesRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping(("/api/roles"))
 public class RolesController {
     final RolesRepo rolesRepo;

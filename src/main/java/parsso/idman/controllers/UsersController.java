@@ -247,32 +247,31 @@ public class UsersController {
 
     @PutMapping("/api/user/password")
     public ResponseEntity<Integer> changePassword(HttpServletRequest request,
-                                                     @RequestBody JSONObject jsonObject) {
-        Principal principal = request.getUserPrincipal();
-        String oldPassword = jsonObject.getAsString("currentPassword");
+                                                  @RequestBody JSONObject jsonObject) {
+        //String oldPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");
         if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
 
         HttpStatus httpStatus = userRepo.changePassword(request.getUserPrincipal().getName(), newPassword, token);
 
-        String pwdInHistory = null;
+        String pwdInHistory = "";
         int pwdin = -1;
 
-        if (httpStatus == HttpStatus.FOUND){
-                try{
-                    String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
-                    Pwd pwd = this.ldapTemplate.lookup(dn,pwdAttributeMapper);
-                    pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
-                    return new ResponseEntity<>(pwdin, httpStatus);
-                } catch(Exception e){
-                    e.printStackTrace();
-                };
+        if (httpStatus == HttpStatus.FOUND) {
+            try {
+                String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
+                Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
+                pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
+                return new ResponseEntity<>(pwdin, httpStatus);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         }
         try {
             pwdin = Integer.parseInt(pwdInHistory);
-        }catch (Exception e){
+        } catch (Exception ignored) {
         }
         return new ResponseEntity<>(pwdin, httpStatus);
 

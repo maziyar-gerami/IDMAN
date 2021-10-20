@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RequestMapping("/api/groups")
-@Controller
+@RestController
 public class GroupsController {
     private final GroupRepo groupRepo;
     private final UserRepo userRepo;
