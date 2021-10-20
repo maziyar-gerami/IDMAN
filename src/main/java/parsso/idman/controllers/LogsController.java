@@ -113,7 +113,7 @@ public class LogsController {
     public ModelAndView downloadExcelAudit(@RequestParam("type") String type) {
         // return a view which will be resolved by an excel view resolver
         switch (type) {
-            case "audit":
+            case "audits":
                 return new ModelAndView(auditsExcelView, "listAudits", null);
             case "events":
                 return new ModelAndView(eventsExcelView, "listEvents", null);
