@@ -65,6 +65,7 @@ public class UsersController {
         this.pwdAttributeMapper = pwdAttributeMapper;
     }
 
+
     @GetMapping("/api/skyroom")
     public ResponseEntity<SkyRoom> skyroom(HttpServletRequest request) throws IOException {
 

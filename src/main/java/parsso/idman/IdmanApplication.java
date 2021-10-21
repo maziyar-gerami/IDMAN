@@ -1,6 +1,7 @@
 package parsso.idman;
 
 
+import com.mongodb.client.MongoClients;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -19,6 +20,12 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.mongodb.core.ExecutableUpdateOperation;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.UpdateDefinition;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
@@ -29,6 +36,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Models.Users.User;
+import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.RepoImpls.UserRepoImpl;
 import parsso.idman.configs.CasUserDetailService;
 import parsso.idman.repos.FilesStorageService;
@@ -51,6 +59,8 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private static long expirePwdMessageTime;
     @Value("${interval.check.pass.hours}")
     private static long intervalCheckPassTime;
+    @Value("${mongo.uri}")
+    private static String mongoUri;
     @Resource
     FilesStorageService storageService;
     @Autowired
@@ -61,6 +71,9 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private String ticketValidator;
     @Value("${base.url}")
     private String baseurl;
+
+    //@Autowired
+    //private static SAtoSU sAtoSU;
 
     public static void main(String[] args) {
 
@@ -83,6 +96,9 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         // in old days, we need to check the log level to increase performance
 
         // with Java 8, we can do this, no need to check the log level
+
+
+        //sAtoSU.start();
 
         //refresh(context);
         Thread thread = new Thread(runnable);
@@ -111,11 +127,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     public void run(String... arg) {
         //storageService.deleteAll();
         storageService.init();
-    }
-
-    @EventListener(ApplicationReadyEvent.class)
-    public void doSomethingAfterStartup() {
-
     }
 
     @Bean
@@ -180,7 +191,33 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         UserRepoImpl userRepo;
 
 
+
     }
+
+    /*
+    @Service
+    public static class SAtoSU {
+
+        static MongoTemplate mongoTemplate;
+
+        public SAtoSU() {
+             mongoTemplate = new MongoTemplate(MongoClients.create(mongoUri), "parssodb");
+        }
+
+        public static void start() {
+            System.out.println("started");
+            List<UsersExtraInfo> SaUsers = mongoTemplate.find(new Query(Criteria.where("role").is("SUPERADMIN")), UsersExtraInfo.class, "UsersExtraInfo");
+            for (UsersExtraInfo user : SaUsers){
+                user.setRole("SUPERUSER");
+                mongoTemplate.save(user);
+        }
+            System.out.println("finished");
+
+
+    }
+
+    }
+     */
 
 }
 

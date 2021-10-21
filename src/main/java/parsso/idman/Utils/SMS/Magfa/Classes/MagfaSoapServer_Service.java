@@ -6,7 +6,7 @@ import javax.xml.ws.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-@SuppressWarnings("SameReturnValue")
+@SuppressWarnings({})
 @WebServiceClient(name = "MagfaSoapServer", targetNamespace = "http://impl.webservice.magfa.com/", wsdlLocation = "https://sms.magfa.com/api/soap/sms/v2/server?wsdl")
 public class MagfaSoapServer_Service
         extends Service {
@@ -27,10 +27,12 @@ public class MagfaSoapServer_Service
     }
 
 
+    @SuppressWarnings("unused")
     public MagfaSoapServer_Service() {
         super(__getWsdlLocation(), MAGFASOAPSERVER_QNAME);
     }
 
+    @SuppressWarnings("unused")
     public MagfaSoapServer_Service(WebServiceFeature... features) {
         super(__getWsdlLocation(), MAGFASOAPSERVER_QNAME, features);
     }
@@ -39,14 +41,17 @@ public class MagfaSoapServer_Service
         super(wsdlLocation, MAGFASOAPSERVER_QNAME);
     }
 
+    @SuppressWarnings("unused")
     public MagfaSoapServer_Service(URL wsdlLocation, WebServiceFeature... features) {
         super(wsdlLocation, MAGFASOAPSERVER_QNAME, features);
     }
 
+    @SuppressWarnings("unused")
     public MagfaSoapServer_Service(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
     }
 
+    @SuppressWarnings("unused")
     public MagfaSoapServer_Service(URL wsdlLocation, QName serviceName, WebServiceFeature... features) {
         super(wsdlLocation, serviceName, features);
     }
@@ -63,6 +68,7 @@ public class MagfaSoapServer_Service
         return super.getPort(new QName("http://impl.webservice.magfa.com/", "MagfaSoapServer"), MagfaSoapServer.class);
     }
 
+    @SuppressWarnings("unused")
     @WebEndpoint(name = "MagfaSoapServer")
     public MagfaSoapServer getMagfaSoapServer(WebServiceFeature... features) {
         return super.getPort(new QName("http://impl.webservice.magfa.com/", "MagfaSoapServer"), MagfaSoapServer.class, features);

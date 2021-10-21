@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class KavenegarApi {
     static final String API_PATH = "https://api.kavenegar.com/v1/%s/%s.json";
     private final String apiKey;
