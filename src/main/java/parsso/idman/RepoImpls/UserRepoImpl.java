@@ -941,5 +941,15 @@ public class UserRepoImpl implements UserRepo {
         return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("objectClass", "person").encode(), searchControls, simpleUserAttributeMapper).size();
 
     }
+
+    @Override
+    public Boolean SAtoSU() {
+        List<UsersExtraInfo> usersExtraInfos =  mongoTemplate.find(new Query(Criteria.where("role").is("SUPERADMIN")),UsersExtraInfo.class,Variables.col_usersExtraInfo);
+        for (UsersExtraInfo usersExtraInfo :usersExtraInfos){
+            usersExtraInfo.setRole("SUPERUSER");
+            mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
+        }
+        return true;
+    }
 }
 

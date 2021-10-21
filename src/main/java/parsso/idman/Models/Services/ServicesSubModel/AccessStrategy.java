@@ -164,6 +164,7 @@ public class AccessStrategy {
             else
                 tempReqiredAttribute = new JSONObject((Map) ob1);
 
+            //noinspection unchecked
             tempReqiredAttribute.put("@class", "java.util.HashMap");
 
 

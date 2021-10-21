@@ -36,6 +36,7 @@ public class ExtractLicensedAndUnlicensed {
         return licensed;
     }
 
+    @SuppressWarnings("unchecked")
     public List licensedServiceWithGroupID(List<MicroService> licensed, List<MicroService> unLicensed, Service service, List<String> memberOf) {
 
         if (memberOf != null)
@@ -49,13 +50,14 @@ public class ExtractLicensedAndUnlicensed {
                                 licensed.add(new MicroService(service));
                             }
 
-        List list = new LinkedList();
+        LinkedList<Object> list = new LinkedList<>();
         list.add(licensed);
         list.add(unLicensed);
 
         return list;
     }
 
+    @SuppressWarnings("unchecked")
     public List unLicensedServicesForUserID(String userId, List<MicroService> licensed, List<MicroService> unLicensed, Service service) {
         if (service.getAccessStrategy().getRejectedAttributes().get("uid") != null)
             for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRejectedAttributes().get("uid"))).get(1))

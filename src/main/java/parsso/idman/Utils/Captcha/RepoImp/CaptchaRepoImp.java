@@ -72,7 +72,6 @@ public class CaptchaRepoImp implements CAPTCHARepo {
             return null;
         }
 
-
     }
 
     private CAPTCHAimage createImage(String phrase, CAPTCHA captcha) {

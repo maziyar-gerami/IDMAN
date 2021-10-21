@@ -64,6 +64,7 @@ public class GroupRepoImpl implements GroupRepo {
     @Override
     public HttpStatus remove(String doerID, JSONObject jsonObject) {
 
+        @SuppressWarnings("unchecked")
         ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
         DirContextOperations context;
         for (String s : jsonArray) {
@@ -261,11 +262,14 @@ public class GroupRepoImpl implements GroupRepo {
                     for (parsso.idman.Models.Services.Service service : services) {
 
                         //remove old id and add new id
-                        boolean ou1 = ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).remove(id);
+                        //noinspection unchecked
+                        ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).remove(id);
+                        //noinspection unchecked
                         ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1)).add(ou.getId());
 
                         // delete old service
                         org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+                        //noinspection unchecked
                         jsonObject.put("names", ((((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1))));
                         serviceRepo.deleteServices(doerID, jsonObject);
 

@@ -44,10 +44,10 @@ public class GroupLicense {
     private static class Groups {
         @JsonInclude(JsonInclude.Include.NON_NULL)
 
-        List<Object> licensed;
+        List licensed;
         @JsonInclude(JsonInclude.Include.NON_NULL)
 
-        List<Object> unLicensed;
+        List unLicensed;
 
         Groups(List licensed) {
             this.licensed = licensed;

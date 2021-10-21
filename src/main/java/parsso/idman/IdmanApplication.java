@@ -1,7 +1,6 @@
 package parsso.idman;
 
 
-import com.mongodb.client.MongoClients;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -15,17 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.event.EventListener;
-import org.springframework.data.mongodb.core.ExecutableUpdateOperation;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.UpdateDefinition;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
@@ -93,6 +87,15 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
         logger.warn("Started!");
 
+
+        val SUrunnable = new Runnable(){
+
+            @Override
+            public void run() {
+                context.getBean(UserRepo.class).SAtoSU();
+            }
+        };
+
         // in old days, we need to check the log level to increase performance
 
         // with Java 8, we can do this, no need to check the log level
@@ -102,6 +105,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
         //refresh(context);
         Thread thread = new Thread(runnable);
+        Thread sathread = new Thread(SUrunnable);
         thread.start();
 
     }
@@ -194,14 +198,15 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
     }
 
-    /*
+
     @Service
     public static class SAtoSU {
 
         static MongoTemplate mongoTemplate;
 
-        public SAtoSU() {
-             mongoTemplate = new MongoTemplate(MongoClients.create(mongoUri), "parssodb");
+        public SAtoSU(ConfigurableApplicationContext context) {
+            Boolean users = context.getBean(UserRepo.class).SAtoSU();
+
         }
 
         public static void start() {
@@ -217,7 +222,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     }
 
     }
-     */
 
 }
 

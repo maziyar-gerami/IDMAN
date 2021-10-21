@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @RequestMapping("/api/groups")
 @RestController
 public class GroupsController {
