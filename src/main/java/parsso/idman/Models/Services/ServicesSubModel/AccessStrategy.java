@@ -14,6 +14,7 @@ import parsso.idman.Utils.Convertor.DateConverter;
 import java.time.ZoneId;
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 @Setter
 @Getter
 

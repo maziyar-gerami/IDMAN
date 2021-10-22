@@ -43,9 +43,9 @@ public class ServiceGist {
 
 
     public static Inconsistency parseServiceGist(JSONObject json) {
-        List<String> omitted = new LinkedList();
+        List<String> omitted = new LinkedList<>();
 
-        List<String> malformed = new LinkedList();
+        List<String> malformed = new LinkedList<>();
 
         if (!json.containsKey("count"))
             omitted.add("count");
