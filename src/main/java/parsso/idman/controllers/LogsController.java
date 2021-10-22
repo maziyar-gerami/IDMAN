@@ -36,7 +36,6 @@ public class LogsController {
         this.auditRepo = auditRepo;
         this.eventRepo = eventRepo;
         this.reportsRepo = reportsRepo;
-
         this.eventsExcelView = eventsExcelView;
         this.auditsExcelView = auditsExcelView;
         this.logsExcelView = logsExcelView;

@@ -197,7 +197,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
             String tempUrl;
 
-            if (serviceExtraInfo != null & serviceExtraInfo.getUrl() != null) {
+            if (serviceExtraInfo != null && serviceExtraInfo.getUrl() != null) {
                 tempUrl = serviceExtraInfo.getUrl();
             } else
                 tempUrl = service.getServiceId();
