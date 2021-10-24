@@ -870,6 +870,39 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById("archivesDateSearch").value = "";
                 this.getArchivesTickets();
             },
+            addFilterEventListener: function () {
+                let vm = this;
+                document.getElementById("inboxIdSearch").addEventListener("keydown", function (e) {
+                    if (e.code === "Enter") {
+                        vm.getInboxTickets();
+                    }
+                });
+                document.getElementById("inboxDateSearch").addEventListener("keydown", function (e) {
+                    if (e.code === "Enter") {
+                        vm.getInboxTickets();
+                    }
+                });
+                document.getElementById("idSearch").addEventListener("keydown", function (e) {
+                    if (e.code === "Enter") {
+                        vm.getTickets();
+                    }
+                });
+                document.getElementById("dateSearch").addEventListener("keydown", function (e) {
+                    if (e.code === "Enter") {
+                        vm.getTickets();
+                    }
+                });
+                document.getElementById("archivesIdSearch").addEventListener("keydown", function (e) {
+                    if (e.code === "Enter") {
+                        vm.getArchivesTickets();
+                    }
+                });
+                document.getElementById("archivesDateSearch").addEventListener("keydown", function (e) {
+                    if (e.code === "Enter") {
+                        vm.getArchivesTickets();
+                    }
+                });
+            },
             changeLang: function () {
                 if(this.lang == "EN"){
                     window.localStorage.setItem("lang", "EN");
@@ -1080,6 +1113,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
-        }
+        },
+        mounted() {
+            this.addFilterEventListener();
+        },
     });
 })

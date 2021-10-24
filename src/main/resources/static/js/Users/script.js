@@ -1534,6 +1534,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
+            addFilterEventListener: function () {
+                let vm = this;
+                document.getElementById("searchUserId").addEventListener("keydown", function (e) {
+                    if (e.code === "Enter") {
+                        vm.filter();
+                    }
+                });
+                document.getElementById("searchDisplayName").addEventListener("keydown", function (e) {
+                    if (e.code === "Enter") {
+                        vm.filter();
+                    }
+                });
+            },
             changeLang: function () {
                 if(this.lang == "EN"){
                     window.localStorage.setItem("lang", "EN");
@@ -2025,6 +2038,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.filter("paginationCurrentPage");
                 }
             }
-        }
+        },
+        mounted() {
+            this.addFilterEventListener();
+        },
     });
 })

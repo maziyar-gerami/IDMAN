@@ -242,17 +242,18 @@ document.addEventListener('DOMContentLoaded', function () {
             });
       },
       exportEvents: function(){
-        url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         vm.loader = true;
           axios({
-            url: url_ + "/api/events/users/export",
+            url: url_ + "/api/logs/export",
+            params: { type: "events" },
             method: "GET",
             responseType: "blob",
           }).then((response) => {
             vm.loader = false;
             const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
+            const link = document.createElement("a");
             link.href = url;
             link.setAttribute("download", "events.xls");
             document.body.appendChild(link);
@@ -894,6 +895,24 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("eventsDate").value = "";
         this.getEventsDate();
       },
+      addFilterEventListener: function () {
+        let vm = this;
+        document.getElementById("eventDate").addEventListener("keydown", function (e) {
+          if (e.code === "Enter") {
+            vm.getEventDate();
+          }
+        });
+        document.getElementById("eventsDate").addEventListener("keydown", function (e) {
+          if (e.code === "Enter") {
+            vm.getEventsDate();
+          }
+        });
+        document.getElementById("eventsUserId").addEventListener("keydown", function (e) {
+          if (e.code === "Enter") {
+            vm.getEventsUserId();
+          }
+        });
+      },
       changeLang: function () {
         if(this.lang == "EN"){
           window.localStorage.setItem("lang", "EN");
@@ -1072,7 +1091,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return this.eventsPage;
       }
     },
-
     watch : {
       currentPageEvent : function() {
         this.changePageEvent = true;
@@ -1082,6 +1100,9 @@ document.addEventListener('DOMContentLoaded', function () {
         this.changePageEvents = true;
         this.getEventsDate();
       }
-    }
+    },
+    mounted() {
+      this.addFilterEventListener();
+    },
   })
 })

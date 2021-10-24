@@ -354,7 +354,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <div sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" style="font-size: 15px;">
                                                 <ul class="nav nav-tabs nav-justified">
                                                     <li class="nav-item">
@@ -368,7 +367,7 @@
                                                     <div class="tab-pane fade" :class="{ 'active show': isActive('usersReports') }" id="usersReports">
                                                         <div class="row justify-content-center">
                                                             <div class="col-4">
-                                                                <input v-model="reportsUserId" type="text" :placeholder="s33" class="form-control icon-input">
+                                                                <input id="reportsUserId" v-model="reportsUserId" type="text" :placeholder="s33" class="form-control icon-input">
                                                                 <i class="fa fa-times icon" v-bind:style="deleteInputIcon1" v-on:click="removeReportsUserId()"></i>
                                                             </div>
                                                             <div class="col-2">

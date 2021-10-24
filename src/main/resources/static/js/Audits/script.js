@@ -254,17 +254,18 @@ document.addEventListener('DOMContentLoaded', function () {
             });
       },
       exportAudits: function () {
-        url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-        var vm = this;
+        let url_ = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
         vm.loader = true;
           axios({
-            url: url_ + "/api/audits/users/export",
+            url: url_ + "/api/logs/export",
+            params: { type: "audits" },
             method: "GET",
             responseType: "blob",
           }).then((response) => {
             vm.loader = false;
             const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
+            const link = document.createElement("a");
             link.href = url;
             link.setAttribute("download", "audits.xls");
             document.body.appendChild(link);
@@ -620,6 +621,24 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("auditsDate").value = "";
         this.getAuditsDate();
       },
+      addFilterEventListener: function () {
+        let vm = this;
+        document.getElementById("auditDate").addEventListener("keydown", function (e) {
+          if (e.code === "Enter") {
+            vm.getAuditDate();
+          }
+        });
+        document.getElementById("auditsDate").addEventListener("keydown", function (e) {
+          if (e.code === "Enter") {
+            vm.getAuditsDate();
+          }
+        });
+        document.getElementById("auditsUserId").addEventListener("keydown", function (e) {
+          if (e.code === "Enter") {
+            vm.getAuditsUserId();
+          }
+        });
+      },
       changeLang: function () {
         if(this.lang == "EN"){
           window.localStorage.setItem("lang", "EN");
@@ -796,7 +815,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return this.auditsPage;
       }
     },
-
     watch : {
       currentPageAudit : function() {
         this.changePageAudit = true;
@@ -806,6 +824,9 @@ document.addEventListener('DOMContentLoaded', function () {
         this.changePageAudits = true;
         this.getAuditsDate();
       }
-    }
+    },
+    mounted() {
+      this.addFilterEventListener();
+    },
   })
 })
