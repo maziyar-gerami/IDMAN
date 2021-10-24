@@ -179,6 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reportedGroup: {},
             returnText: "بازگشت",
             addAllText: "افزودن همه",
+            removeAllText: "حذف همه",
             U0: "رمز عبور",
             U1: "گروه ها",
             U2: "نام انگلیسی",
@@ -603,6 +604,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
+            addAllUsersToGroup: function (){
+                let count = this.allUsersSearch.length;
+                let tempList = [...this.allUsersSearch];
+                for(let i = 0; i < count; ++i){
+                    this.addUserToGroup(tempList[i]);
+                }
+            },
             removeUserFromGroup: function (user){
                 let index = this.groupsAddedUsersList.indexOf(user.userId);
                 if (index > -1) {
@@ -622,6 +630,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (index > -1) {
                         this.groupUsersSearch.splice(index, 1);
                     }
+                }
+            },
+            removeAllUsersFromGroup: function (){
+                let count = this.groupUsersSearch.length;
+                let tempList = [...this.groupUsersSearch];
+                for(let i = 0; i < count; ++i){
+                    this.removeUserFromGroup(tempList[i]);
                 }
             },
             getAllUsersListC: function (){
@@ -656,15 +671,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             addAllUsersToGroupC: function (){
-                console.log(this.allUsersSearchC.length);
-                console.log(this.groupUsersSearchC.length);
                 let count = this.allUsersSearchC.length;
-                let tempList = this.allUsersSearchC;
+                let tempList = [...this.allUsersSearchC];
                 for(let i = 0; i < count; ++i){
                     this.addUserToGroupC(tempList[i]);
                 }
-                console.log(this.allUsersSearchC.length);
-                console.log(this.groupUsersSearchC.length);
             },
             removeUserFromGroupC: function (user){
                 let index = this.groupsAddedUsersListC.indexOf(user.userId);
@@ -685,6 +696,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (index > -1) {
                         this.groupUsersSearchC.splice(index, 1);
                     }
+                }
+            },
+            removeAllUsersFromGroupC: function (){
+                let count = this.groupUsersSearchC.length;
+                let tempList = [...this.groupUsersSearchC];
+                for(let i = 0; i < count; ++i){
+                    this.removeUserFromGroupC(tempList[i]);
                 }
             },
             fileUploadCheck: function () {
@@ -1051,6 +1069,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.bannedServicesText = "Banned Services";
                     this.returnText = "Return";
                     this.addAllText = "Add All";
+                    this.removeAllText = "Remove All";
                     this.U0= "Password";
                     this.U1= "Groups";
                     this.U2= "English Name";
@@ -1149,6 +1168,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.bannedServicesText = "سرویس های منع شده";
                     this.returnText = "بازگشت";
                     this.addAllText = "افزودن همه";
+                    this.removeAllText = "حذف همه";
                     this.U0 = "رمز";
                     this.U1 = "گروه ها";
                     this.U2 = "نام انگلیسی";
