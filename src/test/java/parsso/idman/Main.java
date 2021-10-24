@@ -1,5 +1,5 @@
 package parsso.idman;
-
+/*
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import parsso.idman.controllers.UsersControllerTest;
@@ -12,3 +12,4 @@ public class Main {
         return;
     }
 }
+ */
