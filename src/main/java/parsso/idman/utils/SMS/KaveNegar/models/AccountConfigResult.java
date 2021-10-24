@@ -3,6 +3,7 @@ package parsso.idman.Utils.SMS.KaveNegar.models;
 
 import com.google.gson.JsonObject;
 
+@SuppressWarnings("unused")
 public class AccountConfigResult {
     private final String apiLogs;
     private final String dailyReport;

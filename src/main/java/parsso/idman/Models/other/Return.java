@@ -9,4 +9,9 @@ import lombok.Setter;
 public class Return {
     int status;
     String message;
+
+    public Return(int status, String message) {
+        this.status = status;
+        this.message = message;
+    }
 }

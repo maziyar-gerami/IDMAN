@@ -45,7 +45,7 @@ public class ImportUsers {
         int nUnSuccessful = 0;
         int nUserIdEmpty = 0;
 
-        if (hasHeader == true) rowIterator.next();
+        if (hasHeader) rowIterator.next();
 
         List<JSONObject> invalidGroups = new LinkedList<>();
         List<JSONObject> invalidParameter = new LinkedList<>();
@@ -275,8 +275,6 @@ public class ImportUsers {
     }
 
     private void extractAttrEntry(Entry entry) {
-
-        List<User> lsUserConflicts = new LinkedList();
 
         User user = new User();
 

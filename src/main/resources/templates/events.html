@@ -384,7 +384,7 @@
                                                 <div class="tab-pane fade" :class="{ 'active show': isActive('usersEvents') }" id="usersEvents">
                                                     <div class="row justify-content-center">
                                                         <div class="col-4">
-                                                            <input v-model="eventsUserId" type="text" :placeholder="s33" class="form-control icon-input">
+                                                            <input id="eventsUserId" v-model="eventsUserId" type="text" :placeholder="s33" class="form-control icon-input">
                                                             <i class="fa fa-times icon" v-bind:style="deleteInputIcon1" v-on:click="removeEventsUserId()"></i>
                                                         </div>
                                                         <div class="col-2">

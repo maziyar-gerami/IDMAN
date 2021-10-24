@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.loader = true;
                 axios({
                     method: "get",
-                    url: url + "/api/roles", //
+                    url: url + "/api/roles/users", //
                 })
                 .then((res) => {
                     for(let i = 0; i < res.data.length; ++i){

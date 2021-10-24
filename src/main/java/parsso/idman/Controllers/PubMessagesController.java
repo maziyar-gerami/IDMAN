@@ -12,7 +12,7 @@ import parsso.idman.repos.PubMessageRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@Controller
+@RestController
 public class PubMessagesController {
     final
     PubMessageRepo pubMessageRepo;

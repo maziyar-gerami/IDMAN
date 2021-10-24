@@ -327,6 +327,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         return sEn;
       },
+      addFilterEventListener: function () {
+        let vm = this;
+        document.getElementById("serviceTranscriptsFilterDoerId").addEventListener("keydown", function (e) {
+          if (e.code === "Enter") {
+            vm.getServiceTranscripts();
+          }
+        });
+        document.getElementById("serviceTranscriptsFilterDate").addEventListener("keydown", function (e) {
+          if (e.code === "Enter") {
+            vm.getServiceTranscripts();
+          }
+        });
+      },
       changeLang: function () {
         if(this.lang === "EN"){
           window.localStorage.setItem("lang", "EN");
@@ -424,6 +437,9 @@ document.addEventListener("DOMContentLoaded", function () {
           this.getServiceTranscripts("pagination");
         }
       }
-    }
+    },
+    mounted() {
+      this.addFilterEventListener();
+    },
   })
 })

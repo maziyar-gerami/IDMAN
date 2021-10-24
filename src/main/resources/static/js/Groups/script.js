@@ -656,9 +656,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             addAllUsersToGroupC: function (){
-                for(let i = 0; i < this.allUsersSearchC.length; ++i){
-                    this.addUserToGroupC(this.allUsersSearchC[i]);
+                console.log(this.allUsersSearchC.length);
+                console.log(this.groupUsersSearchC.length);
+                let count = this.allUsersSearchC.length;
+                let tempList = this.allUsersSearchC;
+                for(let i = 0; i < count; ++i){
+                    this.addUserToGroupC(tempList[i]);
                 }
+                console.log(this.allUsersSearchC.length);
+                console.log(this.groupUsersSearchC.length);
             },
             removeUserFromGroupC: function (user){
                 let index = this.groupsAddedUsersListC.indexOf(user.userId);

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Service
 public class Comparison {
     public UsersGroups compare(AccessStrategy strategy1, AccessStrategy strategy2) {

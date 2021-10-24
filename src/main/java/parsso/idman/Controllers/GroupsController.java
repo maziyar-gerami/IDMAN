@@ -4,7 +4,6 @@ package parsso.idman.controllers;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.Groups.Group;
@@ -19,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RequestMapping("/api/groups")
-@Controller
+@RestController
 public class GroupsController {
     private final GroupRepo groupRepo;
     private final UserRepo userRepo;
@@ -33,6 +32,9 @@ public class GroupsController {
     @GetMapping("/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
+        if(user==null){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         List<Group> groups = groupRepo.retrieveCurrentUserGroup(user);
         groups.removeAll(Collections.singleton(null));
         return new ResponseEntity<>(groups, HttpStatus.OK);
@@ -41,12 +43,6 @@ public class GroupsController {
     @PostMapping
     public ResponseEntity<HttpStatus> bindLdapGroup(HttpServletRequest request, @RequestBody Group ou) {
         return new ResponseEntity<>(groupRepo.create(request.getUserPrincipal().getName(), ou));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request, @RequestBody Group ou, @PathVariable("id") String id) {
-
-        return new ResponseEntity<>(groupRepo.update(request.getUserPrincipal().getName(), id, ou));
     }
 
     @GetMapping
@@ -66,7 +62,7 @@ public class GroupsController {
     }
 
     @PutMapping("/password/expire")
-    public ResponseEntity expireUsersGroupPassword(HttpServletRequest request,
+    public ResponseEntity<?> expireUsersGroupPassword(HttpServletRequest request,
                                                    @RequestBody JSONObject jsonObject,
                                                    @RequestParam(value = "id", defaultValue = "") String id) {
 

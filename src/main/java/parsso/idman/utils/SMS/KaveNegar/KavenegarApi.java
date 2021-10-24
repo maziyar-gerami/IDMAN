@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class KavenegarApi {
     static final String API_PATH = "https://api.kavenegar.com/v1/%s/%s.json";
     private final String apiKey;
@@ -52,6 +53,7 @@ public class KavenegarApi {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private JsonElement execute(String path, Object... params) throws BaseException {
         UrlEncodedFormEntity parameters;
         parameters = createParams(params);

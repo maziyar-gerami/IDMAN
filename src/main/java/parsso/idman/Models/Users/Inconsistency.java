@@ -6,11 +6,12 @@ import lombok.Setter;
 
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 @Setter
 @Getter
 public class Inconsistency {
-    List add;
-    List remove;
+    List<Object> add;
+    List<Object> remove;
 
     public Inconsistency(List add, List remove) {
         this.add = add;

@@ -30,7 +30,12 @@ public class RoleRepoImpl implements RolesRepo {
     @Override
     public List<UserRole> retrieve() {
         Query query = new Query();
-        return mongoTemplate.find(query, UserRole.class, collection);
+        try {
+            return mongoTemplate.find(query, UserRole.class, collection);
+
+        } catch (Exception e){
+            return null;
+        }
     }
 
     @Override

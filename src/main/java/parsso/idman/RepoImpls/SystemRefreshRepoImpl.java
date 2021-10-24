@@ -28,6 +28,8 @@ import parsso.idman.repos.SystemRefresh;
 import parsso.idman.repos.UserRepo;
 
 import javax.naming.directory.SearchControls;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +37,6 @@ import java.util.UUID;
 
 @Service
 public class SystemRefreshRepoImpl implements SystemRefresh {
-    final String userExtraInfoCollection = Variables.col_usersExtraInfo;
     @Autowired
     ServiceRepo serviceRepo;
     @Autowired
@@ -65,7 +66,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         //0. create collection, if not exist
 
-        mongoTemplate.getCollection(userExtraInfoCollection);
+        mongoTemplate.getCollection(Variables.col_usersExtraInfo);
 
         uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, "", "", Variables.ACTION_REFRESH, Variables.RESULT_STARTED, "Step 1"));
 
@@ -78,7 +79,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                 Query queryMongo = new Query(new Criteria("userId").regex(user.getUserId(), "i"));
 
-                userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, userExtraInfoCollection);
+                userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
                 if (userExtraInfo != null) {
 
@@ -131,7 +132,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
             try {
 
-                mongoTemplate.save(userExtraInfo, userExtraInfoCollection);
+                mongoTemplate.save(userExtraInfo, Variables.col_usersExtraInfo);
                 uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, "Step 1: creating documents"));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -152,11 +153,11 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, "", "", Variables.ACTION_REFRESH, Variables.RESULT_STARTED, "Step 2"));
 
         //2. cleanUp mongo
-        List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, userExtraInfoCollection);
+        List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, Variables.col_usersExtraInfo);
         for (UsersExtraInfo usersExtraInfo : usersMongo) {
             List<UsersExtraInfo> usersExtraInfoList = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", usersExtraInfo.getUserId()).encode(), searchControls, simpleUserAttributeMapper);
             if (usersExtraInfoList.size() == 0) {
-                mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.getUserId())), UsersExtraInfo.class, userExtraInfoCollection);
+                mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
                 uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, usersExtraInfo.getUserId(), "MongoDB Document", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, "Step 2: removing extra document"));
             }
         }
@@ -184,7 +185,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     }
 
     @Override
-    public HttpStatus serivceRefresh(String doer) {
+    public HttpStatus serviceRefresh(String doer) {
 
         mongoTemplate.getCollection(Variables.col_servicesExtraInfo);
         int i = 1;
@@ -194,14 +195,24 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             MicroService serviceExtraInfo = mongoTemplate.findOne(query, MicroService.class, Variables.col_servicesExtraInfo);
             MicroService newServiceExtraInfo = new MicroService();
 
-            if (serviceExtraInfo == null) {
-                newServiceExtraInfo.setUrl(service.getServiceId());
-                newServiceExtraInfo.set_id(service.getId());
-                serviceExtraInfo = newServiceExtraInfo;
+            String tempUrl;
+
+            if (serviceExtraInfo != null && serviceExtraInfo.getUrl() != null) {
+                tempUrl = serviceExtraInfo.getUrl();
             } else
-                serviceExtraInfo.set_id(service.getId());
-            if (serviceExtraInfo.getUrl() == null)
-                serviceExtraInfo.setUrl(service.getServiceId());
+                tempUrl = service.getServiceId();
+
+            try {
+                URL url = new URL(tempUrl);
+                newServiceExtraInfo.setUrl(new URL(tempUrl).getProtocol() + "://" + url.getAuthority());
+            } catch (MalformedURLException e) {
+                newServiceExtraInfo.setUrl("www.example.com");
+            }
+            newServiceExtraInfo.set_id(service.getId());
+            serviceExtraInfo = newServiceExtraInfo;
+
+            serviceExtraInfo.set_id(service.getId());
+
 
             serviceExtraInfo.setPosition(i++);
 
@@ -240,7 +251,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         captchaRefresh(doer);
 
-        serivceRefresh(doer);
+        serviceRefresh(doer);
 
         userRefresh(doer);
 
@@ -268,18 +279,18 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         }
         for (User user : users) {
             Query query = new Query(Criteria.where("userId").is(user.getUserId()));
-            UsersExtraInfo simpleUser = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
+            UsersExtraInfo simpleUser = mongoTemplate.findOne(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
             if (!Objects.requireNonNull(simpleUser).getStatus().equalsIgnoreCase("lock")) {
                 simpleUser.setStatus("lock");
 
                 uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_LOCK, "", ""));
-                mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
-                mongoTemplate.save(simpleUser, userExtraInfoCollection);
+                mongoTemplate.remove(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
+                mongoTemplate.save(simpleUser, Variables.col_usersExtraInfo);
             }
 
         }
 
-        List<UsersExtraInfo> simpleUsers = mongoTemplate.find(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, userExtraInfoCollection);
+        List<UsersExtraInfo> simpleUsers = mongoTemplate.find(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
         for (UsersExtraInfo simple : simpleUsers) {
             Query query = new Query(Criteria.where("userId").is(simple.getUserId()));
 
@@ -287,8 +298,8 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                 simple.setStatus("enable");
 
-                mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
-                mongoTemplate.save(simple, userExtraInfoCollection);
+                mongoTemplate.remove(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
+                mongoTemplate.save(simple, Variables.col_usersExtraInfo);
 
                 uniformLogger.info(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_USER, simple.getUserId(), "", Variables.ACTION_UNLOCK, Variables.RESULT_SUCCESS, "due to time pass"));
 

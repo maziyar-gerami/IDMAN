@@ -38,6 +38,7 @@ import java.util.*;
 public class ConfigRepoImpl implements ConfigRepo {
     @Autowired
     PasswordSettings passwordSettings;
+    @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
     InstantMessage instantMessage;

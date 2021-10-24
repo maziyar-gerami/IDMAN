@@ -5,37 +5,44 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+import parsso.idman.Helpers.Events.EventsExcelView;
+import parsso.idman.Helpers.ExcelView.AuditsExcelView;
+import parsso.idman.Helpers.LogsExcelView;
 import parsso.idman.Models.Logs.Audit;
 import parsso.idman.Models.Logs.Event;
 import parsso.idman.Models.Logs.Report;
 import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.RepoImpls.logs.AuditsRepoImpl;
-import parsso.idman.RepoImpls.logs.EventsRepoImpl;
-import parsso.idman.RepoImpls.logs.ReportsRepoImpl;
 import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 
 @RestController
+@RequestMapping("/api/logs")
 public class LogsController {
     final LogsRepo.AuditRepo auditRepo;
-    LogsRepo.EventRepo eventRepo;
-    LogsRepo.ReportRepo reportsRepo;
+    final LogsRepo.EventRepo eventRepo;
+    final LogsRepo.ReportRepo reportsRepo;
+    final EventsExcelView eventsExcelView;
+    final AuditsExcelView auditsExcelView;
+    final LogsExcelView logsExcelView;
 
     @Autowired
-    public LogsController(LogsRepo.AuditRepo auditRepo, LogsRepo.EventRepo eventRepo, LogsRepo.ReportRepo reportsRepo) {
+    public LogsController(LogsRepo.AuditRepo auditRepo, LogsRepo.EventRepo eventRepo, LogsRepo.ReportRepo reportsRepo, EventsExcelView eventsExcelView, AuditsExcelView auditsExcelView, LogsExcelView reportExcelView, LogsExcelView logsExcelView) {
         this.auditRepo = auditRepo;
         this.eventRepo = eventRepo;
         this.reportsRepo = reportsRepo;
-
+        this.eventsExcelView = eventsExcelView;
+        this.auditsExcelView = auditsExcelView;
+        this.logsExcelView = logsExcelView;
     }
 
 
-    @GetMapping("/api/logs/audits/users")
+    @GetMapping("/audits/users")
     public ResponseEntity<Audit.ListAudits> getUsersAudits(@RequestParam(name = "userID", defaultValue = "") String userID,
                                                            @RequestParam(name = "date", defaultValue = "") String date,
                                                            @RequestParam(name = "page") String page,
@@ -43,7 +50,7 @@ public class LogsController {
         return new ResponseEntity<>(auditRepo.retrieve(userID, date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
     }
 
-    @GetMapping("/api/logs/audits/user")
+    @GetMapping("/audits/user")
     public ResponseEntity<Audit.ListAudits> getUserAudits(HttpServletRequest request,
                                                           @RequestParam(name = "date", defaultValue = "") String date,
                                                           @RequestParam(name = "page") String page,
@@ -51,8 +58,7 @@ public class LogsController {
         return new ResponseEntity<>(auditRepo.retrieve(request.getUserPrincipal().getName(), date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
     }
 
-
-    @GetMapping("/api/logs/events/users")
+    @GetMapping("/events/users")
     public ResponseEntity<Event.ListEvents> getUsersEvents(@RequestParam(name = "userID", defaultValue = "") String userID,
                                                            @RequestParam(name = "date", defaultValue = "") String date,
                                                            @RequestParam(name = "page") String page,
@@ -61,7 +67,7 @@ public class LogsController {
                 !count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);
     }
 
-    @GetMapping("/api/logs/events/user")
+    @GetMapping("/events/user")
     public ResponseEntity<Event.ListEvents> getUserEvents(HttpServletRequest request,
                                                           @RequestParam(name = "date", defaultValue = "") String date,
                                                           @RequestParam(name = "page") String page,
@@ -71,8 +77,7 @@ public class LogsController {
 
     }
 
-
-    @GetMapping("/api/logs/reports/users")
+    @GetMapping("/reports/users")
     public ResponseEntity<Report.ListReports> getUsersReports(@RequestParam(name = "userID", defaultValue = "") String userID,
                                                               @RequestParam(name = "date", defaultValue = "") String date,
                                                               @RequestParam(name = "page") String page,
@@ -81,7 +86,7 @@ public class LogsController {
 
     }
 
-    @GetMapping("/api/logs/reports/user")
+    @GetMapping("/reports/user")
     public ResponseEntity<Report.ListReports> getUserReports(HttpServletRequest request,
                                                              @RequestParam(name = "date", defaultValue = "") String date,
                                                              @RequestParam(name = "page") String page,
@@ -89,7 +94,7 @@ public class LogsController {
         return new ResponseEntity<>(reportsRepo.retrieve(request.getUserPrincipal().getName(), date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
     }
 
-    @GetMapping("/api/logs/reports/serviceAccess")
+    @GetMapping("/reports/serviceAccess")
     public ResponseEntity<ReportMessage.ListReportMessage> accessManaging(@RequestParam(value = "page") String p,
                                                                           @RequestParam(value = "count") String n,
                                                                           @RequestParam(value = "name", defaultValue = "") String instanceName,
@@ -103,7 +108,20 @@ public class LogsController {
         return new ResponseEntity<>(reportsRepo.accessManaging(page, nRows, _id, date, doerId, instanceName), HttpStatus.OK);
     }
 
-
+    @GetMapping("/export")
+    public ModelAndView downloadExcelAudit(@RequestParam("type") String type) {
+        // return a view which will be resolved by an excel view resolver
+        switch (type) {
+            case "audits":
+                return new ModelAndView(auditsExcelView, "listAudits", null);
+            case "events":
+                return new ModelAndView(eventsExcelView, "listEvents", null);
+            case "reports":
+                return new ModelAndView(logsExcelView, "listLogs", null);
+            default:
+                return null;
+        }
+    }
 }
 
 

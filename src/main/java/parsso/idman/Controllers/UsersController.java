@@ -2,9 +2,11 @@ package parsso.idman.controllers;
 
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +19,7 @@ import parsso.idman.Helpers.User.ImportUsers;
 import parsso.idman.Helpers.User.Operations;
 import parsso.idman.Helpers.User.UsersExcelView;
 import parsso.idman.Models.Users.ListUsers;
+import parsso.idman.Models.Users.Pwd;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.Models.other.SkyRoom;
@@ -42,10 +45,14 @@ public class UsersController {
     private final Token tokenClass;
     private final InstantMessage instantMessage;
     private final SkyroomRepo skyroomRepo;
+    private final LdapTemplate ldapTemplate;
+    private final Pwd.PwdAttributeMapper pwdAttributeMapper;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
 
     @Autowired
     public UsersController(UserRepo userRepo, EmailService emailService, Operations operations, UsersExcelView excelView,
-                           ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage, SkyroomRepo skyroomRepo) {
+                           ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage, SkyroomRepo skyroomRepo, LdapTemplate ldapTemplate, Pwd.PwdAttributeMapper pwdAttributeMapper) {
         this.userRepo = userRepo;
         this.emailService = emailService;
         this.operations = operations;
@@ -54,7 +61,10 @@ public class UsersController {
         this.tokenClass = tokenClass;
         this.instantMessage = instantMessage;
         this.skyroomRepo = skyroomRepo;
+        this.ldapTemplate = ldapTemplate;
+        this.pwdAttributeMapper = pwdAttributeMapper;
     }
+
 
     @GetMapping("/api/skyroom")
     public ResponseEntity<SkyRoom> skyroom(HttpServletRequest request) throws IOException {
@@ -237,15 +247,34 @@ public class UsersController {
     }
 
     @PutMapping("/api/user/password")
-    public ResponseEntity<HttpStatus> changePassword(HttpServletRequest request,
-                                                     @RequestBody JSONObject jsonObject) {
-        Principal principal = request.getUserPrincipal();
-        String oldPassword = jsonObject.getAsString("currentPassword");
+    public ResponseEntity<Integer> changePassword(HttpServletRequest request,
+                                                  @RequestBody JSONObject jsonObject) {
+        //String oldPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");
         if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
 
-        return new ResponseEntity<>(userRepo.changePassword(principal.getName(), newPassword, token));
+        HttpStatus httpStatus = userRepo.changePassword(request.getUserPrincipal().getName(), newPassword, token);
+
+        String pwdInHistory = "";
+        int pwdin = -1;
+
+        if (httpStatus == HttpStatus.FOUND) {
+            try {
+                String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
+                Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
+                pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
+                return new ResponseEntity<>(pwdin, httpStatus);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        try {
+            pwdin = Integer.parseInt(pwdInHistory);
+        } catch (Exception ignored) {
+        }
+        return new ResponseEntity<>(pwdin, httpStatus);
 
     }
 

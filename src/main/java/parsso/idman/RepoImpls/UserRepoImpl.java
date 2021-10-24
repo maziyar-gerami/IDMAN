@@ -57,7 +57,6 @@ import java.util.*;
 
 @Service
 public class UserRepoImpl implements UserRepo {
-    final String userExtraInfoCollection = Variables.col_usersExtraInfo;
     public ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @Value("${user.profile.access}")
     String profileAccessiblity;
@@ -167,7 +166,7 @@ public class UserRepoImpl implements UserRepo {
                             operations.disable(doerID, p.getUserId());
 
                     usersExtraInfo = new UsersExtraInfo(p, p.getPhoto(), p.isUnDeletable());
-                    mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
+                    mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
 
                     uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE,
                             Variables.RESULT_SUCCESS, ""));
@@ -196,7 +195,7 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
-        return (int) mongoTemplate.count(queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus), userExtraInfoCollection);
+        return (int) mongoTemplate.count(queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus), Variables.col_usersExtraInfo);
     }
 
     @Override
@@ -222,7 +221,7 @@ public class UserRepoImpl implements UserRepo {
 
         context = buildAttributes.buildAttributes(doerID, usid, p, dn);
         Query query = new Query(Criteria.where("userId").is(p.getUserId().toLowerCase()));
-        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, userExtraInfoCollection);
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
         try {
             Objects.requireNonNull(usersExtraInfo).setUnDeletable(p.isUnDeletable());
@@ -263,7 +262,7 @@ public class UserRepoImpl implements UserRepo {
 
             ldapTemplate.modifyAttributes(context);
 
-            mongoTemplate.save(usersExtraInfo, userExtraInfoCollection);
+            mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
 
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
 
@@ -312,7 +311,7 @@ public class UserRepoImpl implements UserRepo {
 
                 try {
                     ldapTemplate.unbind(dn);
-                    mongoTemplate.remove(query, UsersExtraInfo.class, userExtraInfoCollection);
+                    mongoTemplate.remove(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
                     uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 
                 } catch (Exception e) {
@@ -374,7 +373,6 @@ public class UserRepoImpl implements UserRepo {
             if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
 
                 DirContextOperations contextUser;
-
                 contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
                 contextUser.setAttributeValue("userPassword", newPassword);
 
@@ -383,9 +381,8 @@ public class UserRepoImpl implements UserRepo {
                     uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
                     return HttpStatus.OK;
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "writing to LDAP"));
-                    return HttpStatus.BAD_REQUEST;
+                    uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
+                    return HttpStatus.FOUND;
                 }
 
             } else
@@ -479,9 +476,9 @@ public class UserRepoImpl implements UserRepo {
         List<UsersExtraInfo> usersExtraInfos;
 
         if (page == -1 && number == -1)
-            usersExtraInfos = mongoTemplate.find(new Query(), UsersExtraInfo.class, userExtraInfoCollection);
+            usersExtraInfos = mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo);
         else
-            usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(number), UsersExtraInfo.class, userExtraInfoCollection);
+            usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(number), UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
         OrFilter orFilter = new OrFilter();
 
@@ -523,8 +520,6 @@ public class UserRepoImpl implements UserRepo {
 
         switch (sortType) {
             case "":
-                query.with(Sort.by(Sort.Direction.ASC, "userId"));
-                break;
             case "uid_m2M":
                 query.with(Sort.by(Sort.Direction.ASC, "userId"));
                 break;
@@ -542,7 +537,7 @@ public class UserRepoImpl implements UserRepo {
         query.with(Sort.by(Sort.Direction.DESC, "_id"));
 
         List<UsersExtraInfo> userList = mongoTemplate.find(query.skip(skip).limit(nCount),
-                UsersExtraInfo.class, userExtraInfoCollection);
+                UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
         int size = retrieveUsersSize(groupFilter, searchUid, searchDisplayName, userStatus);
 
@@ -945,6 +940,16 @@ public class UserRepoImpl implements UserRepo {
 
         return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("objectClass", "person").encode(), searchControls, simpleUserAttributeMapper).size();
 
+    }
+
+    @Override
+    public Boolean SAtoSU() {
+        List<UsersExtraInfo> usersExtraInfos =  mongoTemplate.find(new Query(Criteria.where("role").is("SUPERADMIN")),UsersExtraInfo.class,Variables.col_usersExtraInfo);
+        for (UsersExtraInfo usersExtraInfo :usersExtraInfos){
+            usersExtraInfo.setRole("SUPERUSER");
+            mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
+        }
+        return true;
     }
 }
 

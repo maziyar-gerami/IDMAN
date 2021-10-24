@@ -226,8 +226,7 @@ public class BuildAttributes {
         }
 
         Instant instant = Instant.now(); //can be LocalDateTime
-        ZoneId systemZone = zoneId; // my timezone
-        ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
+        ZoneOffset currentOffsetForMyZone = zoneId.getRules().getOffset(instant);
 
         if (p.getUsersExtraInfo() != null && p.getUsersExtraInfo().getResetPassToken() != null)
             mongoTemplate.save(p.getUsersExtraInfo(), Variables.col_usersExtraInfo);
@@ -260,13 +259,6 @@ public class BuildAttributes {
                 modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
                 ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
 
-            } else if (p.getEndTime() == null && old.getEndTime() != null) {
-                modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
-                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
-
-            } else if (p.getEndTime() != null && old.getEndTime() != null) {
-                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
-                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
             }
 
         }

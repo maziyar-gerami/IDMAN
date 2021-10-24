@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         let vm = this;
         this.loader = true;
-        axios.get(url + "/api/refresh", { params: { type: "service" } }) //
+        axios.get(url + "/api/refresh", { params: { type: "services" } }) //
           .then((res) => {
             vm.loader = false;
             vm.refreshSuccessText = vm.s39;
@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         let vm = this;
         this.loader = true;
-        axios.get(url + "/api/refresh", { params: { type: "user" } }) //
+        axios.get(url + "/api/refresh", { params: { type: "users" } }) //
           .then((res) => {
             vm.loader = false;
             vm.refreshSuccessText = vm.s40;

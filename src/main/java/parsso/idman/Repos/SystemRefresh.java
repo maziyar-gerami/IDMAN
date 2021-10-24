@@ -9,7 +9,7 @@ public interface SystemRefresh {
 
     HttpStatus captchaRefresh(String doer);
 
-    HttpStatus serivceRefresh(String doer);
+    HttpStatus serviceRefresh(String doer);
 
     HttpStatus all(String doer);
 

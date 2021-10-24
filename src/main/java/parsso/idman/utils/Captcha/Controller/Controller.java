@@ -16,23 +16,18 @@ import parsso.idman.Utils.Captcha.RepoImp.CaptchaRepoImp;
 public class Controller {
     @Autowired
     CaptchaRepoImp captchaRepoImp;
-    @Value("${captcha.lenght}")
-    private String captchaLenght;
+    @Value("${captcha.length}")
+    private String captchaLength;
     @Value("${captcha.alphabet.rate}")
     private String captchaAlphabetRate;
 
     @GetMapping("/api/captcha/request")
     private ResponseEntity<CAPTCHAimage> requestCaptcha() {
 
-        CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.parseInt(captchaLenght), Double.parseDouble(captchaAlphabetRate));
+        CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.parseInt(captchaLength), Double.parseDouble(captchaAlphabetRate));
         if (captchaImage != null)
             return new ResponseEntity<>(captchaImage, HttpStatus.OK);
         else
-            return new ResponseEntity<>(captchaImage, HttpStatus.FORBIDDEN);
-    }
-
-    @GetMapping("/api/captcha/validate")
-    private ResponseEntity<CAPTCHAimage> validateCaptcha(@RequestBody CAPTCHA captcha) {
-        return new ResponseEntity<>(captchaRepoImp.validateCaptcha(captcha));
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 }

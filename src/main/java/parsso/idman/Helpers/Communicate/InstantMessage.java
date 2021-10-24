@@ -110,10 +110,9 @@ public class InstantMessage {
         if (tokenClass.insertMobileToken(user)) {
             try {
 
-                String receptor = mobile;
                 String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS));
                 KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-                api.verifyLookup(receptor, message, "", "", "mfa");
+                api.verifyLookup(mobile, message, "", "", "mfa");
                 mongoTemplate.remove(query, collection);
                 return Integer.parseInt(SMS_VALID_TIME);
 
@@ -349,10 +348,9 @@ public class InstantMessage {
                     if (tokenClass.insertMobileToken(user)) {
 
                         try {
-                            String receptor = mobile;
                             String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS));
                             KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-                            api.verifyLookup(receptor, message, "", "", "mfa");
+                            api.verifyLookup(mobile, message, "", "", "mfa");
                             mongoTemplate.remove(query, collection);
                             return Integer.parseInt(SMS_VALID_TIME);
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.

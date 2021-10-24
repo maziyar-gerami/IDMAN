@@ -24,13 +24,13 @@ public class RefreshController {
     @GetMapping
     public HttpEntity<HttpStatus> all(HttpServletRequest request, @RequestParam(name = "type", defaultValue = "") String type) {
         switch (type) {
-            case "service":
-                return new ResponseEntity<>(refresh.serivceRefresh(request.getUserPrincipal().getName()));
+            case "services":
+                return new ResponseEntity<>(refresh.serviceRefresh(request.getUserPrincipal().getName()));
 
             case "captcha":
                 return new ResponseEntity<>(refresh.captchaRefresh(request.getUserPrincipal().getName()));
 
-            case "user":
+            case "users":
                 return new ResponseEntity<>(refresh.userRefresh(request.getUserPrincipal().getName()));
 
             default:

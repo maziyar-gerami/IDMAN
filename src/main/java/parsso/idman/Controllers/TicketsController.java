@@ -5,7 +5,6 @@ import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.Models.Tickets.ListTickets;
 import parsso.idman.Models.Tickets.Ticket;
@@ -15,7 +14,7 @@ import parsso.idman.repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Controller
+@RestController
 public class TicketsController {
     final
     UserRepo userRepo;
@@ -116,8 +115,7 @@ public class TicketsController {
                                                       @RequestParam(name = "id", defaultValue = "") String id,
                                                       @RequestParam(name = "date", defaultValue = "") String date,
                                                       @PathVariable(name = "page") String page,
-                                                      @PathVariable(name = "count") String count,
-                                                      HttpServletRequest request) {
+                                                      @PathVariable(name = "count") String count) {
         ListTickets ls = ticketRepo.retrieveArchivedTickets(cat, subCat, page, count, from, id, date);
         return new ResponseEntity<>(ls, HttpStatus.OK);
 

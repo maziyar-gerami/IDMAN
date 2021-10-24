@@ -22,12 +22,6 @@ public class Group {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private License service;
 
-    public Group(String name, String description, long usersCount) {
-
-        this.name = name;
-        this.description = description;
-        this.usersCount = usersCount;
-    }
 
     public Group() {
     }

@@ -13,7 +13,7 @@ import parsso.idman.repos.RolesRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping(("/api/roles"))
 public class RolesController {
     final RolesRepo rolesRepo;
@@ -23,14 +23,14 @@ public class RolesController {
         this.rolesRepo = rolesRepo;
     }
 
-    @GetMapping
+    @GetMapping("/users")
     public ResponseEntity<List<UserRole>> retrieveRoles() {
         return new ResponseEntity<>(rolesRepo.retrieve(), rolesRepo.retrieve() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/{role}")
     public ResponseEntity<HttpStatus> updateTicket(HttpServletRequest request, @RequestBody JSONObject users, @PathVariable("role") String role) {
-        return new ResponseEntity<>(rolesRepo.updateRole(request.getUserPrincipal().getName(), role, users));
+        return new ResponseEntity<>(rolesRepo.updateRole("SU", role, users));
     }
 
 }
