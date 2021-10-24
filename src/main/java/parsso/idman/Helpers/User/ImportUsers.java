@@ -15,6 +15,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Helpers.TimeHelper;
@@ -30,11 +32,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("SameReturnValue")
 @Service
 public class ImportUsers {
     @Autowired
     private UserRepo userRepo;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
+    @Autowired
+    LdapTemplate ldapTemplate;
 
     public JSONObject excelSheetAnalyze(String doerId, Sheet sheet, int[] sequence, boolean hasHeader) {
         JSONArray jsonArray = new JSONArray();
@@ -76,9 +81,9 @@ public class ImportUsers {
             user.setEmployeeNumber(formatter.formatCellValue(row.getCell(sequence[9])));
             user.setUserPassword(formatter.formatCellValue(row.getCell(sequence[10])));
 
-            if ((row.getCell(sequence[11]) != null) && !(row.getCell(sequence[11]).equals("")))
+            if ((row.getCell(sequence[11]) != null) && !(row.getCell(sequence[11]).toString().equals("")))
                 try {
-                    user.setEndTime(TimeHelper.setEndTime(formatter.formatCellValue(row.getCell(sequence[11]))));
+                    user.setEndTime(TimeHelper.setEndTime(ldapTemplate,BASE_DN, formatter.formatCellValue(row.getCell(sequence[11]))));
                 } catch (Exception ignored) {
 
                 }

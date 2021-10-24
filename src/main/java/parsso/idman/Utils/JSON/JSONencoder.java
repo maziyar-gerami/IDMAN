@@ -27,7 +27,7 @@ public class JSONencoder {
                 jsonObject.put("name", setting.getName());
                 jsonObject.put("value", setting.getValue());
                 jsonObject.put("description", setting.getDescription());
-                jsonObject.put("group", setting.getGroup());
+                jsonObject.put("group", setting.getGroupEN());
                 jsonObject.put("system", setting.getSystem());
 
                 jsonArray.add(jsonObject);

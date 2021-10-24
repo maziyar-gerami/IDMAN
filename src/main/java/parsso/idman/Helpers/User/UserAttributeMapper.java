@@ -1,7 +1,9 @@
 package parsso.idman.Helpers.User;
 
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -27,23 +29,26 @@ public class UserAttributeMapper implements AttributesMapper<User> {
     LdapTemplate ldapTemplate;
     @Autowired
     UserRepo userRepo;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
 
+    @SneakyThrows
     @Override
-    public User mapFromAttributes(Attributes attributes) throws NamingException {
+    public User mapFromAttributes(Attributes attributes) {
         User user = new User();
 
         user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
         user.setFirstName(null != attributes.get("givenName") ? attributes.get("givenName").get().toString() : "");
         user.setLastName(null != attributes.get("sn") ? attributes.get("sn").get().toString() : null);
-        user.setDisplayName((null != attributes.get("displayName") && !attributes.get("displayName").equals("")) ? attributes.get("displayName").get().toString() : null);
+        user.setDisplayName((null != attributes.get("displayName") && !attributes.get("displayName").toString().equals("")) ? attributes.get("displayName").get().toString() : null);
         user.setMobile(null != attributes.get("mobile") ? attributes.get("mobile").get().toString() : null);
         user.setMail(null != attributes.get("mail") ? attributes.get("mail").get().toString() : null);
         user.setTimeStamp(null != attributes.get("createtimestamp") ? Long.parseLong(attributes.get("createtimestamp").get().toString().substring(0, 14)) : 0);
         user.setPasswordChangedTime(null != attributes.get("pwdChangedTime") ? Long.parseLong(attributes.get("pwdChangedTime").get().toString().substring(0, 14)) : user.getTimeStamp());
-        user.setEmployeeNumber((null != attributes.get("employeeNumber") && !attributes.get("employeeNumber").equals("")) ? attributes.get("employeeNumber").get().toString() : null);
+        user.setEmployeeNumber((null != attributes.get("employeeNumber") && !attributes.get("employeeNumber").toString().equals("")) ? attributes.get("employeeNumber").get().toString() : null);
         int nGroups;
         try {
-            nGroups = (null == attributes.get("ou") && !attributes.get("ou").equals("")) ? 0 : attributes.get("ou").size();
+            nGroups = (null == attributes.get("ou") && !attributes.get("ou").toString().equals("")) ? 0 : attributes.get("ou").size();
         } catch (Exception e) {
             nGroups = 0;
         }
@@ -64,13 +69,11 @@ public class UserAttributeMapper implements AttributesMapper<User> {
             user.setUnDeletable(usersExtraInfo.isUnDeletable());
 
             //user.getUsersExtraInfo().setMobileToken(null != attributes.get("mobileToken") ? attributes.get("mobileToken").get().toString() : null);
-            user.setEndTime(null != attributes.get("pwdEndTime") ? TimeHelper.setEndTime(attributes.get("pwdEndTime").get().toString()) : null);
+            user.setEndTime(null != attributes.get("pwdEndTime") ? TimeHelper.setEndTime(ldapTemplate,BASE_DN, attributes.get("pwdEndTime").get().toString()) : null);
 
             if (usersExtraInfo.getRole() == null)
                 user.setRole(usersExtraInfo.getRole());
-            else {
 
-            }
         }
         if (null != attributes.get("pwdAccountLockedTime")) {
 
