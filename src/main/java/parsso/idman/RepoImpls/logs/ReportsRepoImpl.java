@@ -28,7 +28,7 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
     }
 
     @Override
-    public Report.ListReports retrieve(String userId, String date, int p, int n) {
+    public ReportMessage.ListReportMessage retrieve(String userId, String date, int p, int n) {
         Query query = new Query();
         if (!userId.equals(""))
             query.addCriteria(Criteria.where("doerID").is(userId));
@@ -39,13 +39,13 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
                     .gte(range[0]).lte(range[1]));
         }
 
-        long size = mongoTemplate.count(query, Report.class, Variables.col_Log);
+        int size = (int) mongoTemplate.count(query, ReportMessage.class, Variables.col_idmanLog);
 
         query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "millis"));
 
-        List<Report> reports = mongoTemplate.find(query, Report.class, Variables.col_Log);
+        List<ReportMessage> reports = mongoTemplate.find(query, ReportMessage.class, Variables.col_idmanLog);
 
-        return new Report.ListReports(reports, size, (int) Math.ceil(size / (float) n));
+        return new ReportMessage.ListReportMessage((int) Math.ceil(size / (float) n), size, reports);
     }
 
     private int getSkip(int p, int n) {

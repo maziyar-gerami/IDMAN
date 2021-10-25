@@ -27,7 +27,7 @@ public class LogsRepo {
     }
 
     public interface ReportRepo {
-        Report.ListReports retrieve(String userId, String date, int p, int n);
+        ReportMessage.ListReportMessage retrieve(String userId, String date, int p, int n);
 
         ReportMessage.ListReportMessage accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName);
     }
