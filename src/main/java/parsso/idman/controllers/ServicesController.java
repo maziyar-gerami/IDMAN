@@ -70,7 +70,7 @@ public class ServicesController {
     @PutMapping("/api/service/{id}/{system}")
     public ResponseEntity<String> updateService(HttpServletRequest request, @PathVariable("id") long id,
                                                 @RequestBody JSONObject jsonObject, @PathVariable("system") String system) {
-        return new ResponseEntity<>(serviceRepo.updateService("request.getUserPrincipal().getName()", id, jsonObject, system));
+        return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
     }
 
     @GetMapping("/api/serviceAccess/{id}")

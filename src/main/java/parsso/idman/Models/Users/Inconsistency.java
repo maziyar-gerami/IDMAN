@@ -10,10 +10,10 @@ import java.util.List;
 @Setter
 @Getter
 public class Inconsistency {
-    List<Object> add;
-    List<Object> remove;
+    List<String> add;
+    List<String> remove;
 
-    public Inconsistency(List add, List remove) {
+    public Inconsistency(List<String> add, List<String> remove) {
         this.add = add;
         this.remove = remove;
     }
