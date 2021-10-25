@@ -78,6 +78,7 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
             long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
             query.addCriteria(Criteria.where("millis").gte(range[0]).lte(range[1]));
         }
+        query.with(Sort.by(Sort.Direction.DESC, "millis"));
         if (page != 0 && nRows != 0) {
             skip = (page - 1) * nRows;
         }
