@@ -28,10 +28,10 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
     }
 
     @Override
-    public ReportMessage.ListReportMessage retrieve(String userId, String date, int p, int n) {
+    public Report.ListReports retrieve(String userId, String date, int p, int n) {
         Query query = new Query();
         if (!userId.equals(""))
-            query.addCriteria(Criteria.where("doerID").is(userId));
+            query.addCriteria(Criteria.where("loggerName").is(userId));
 
         if (!date.equals("")) {
             long[] range = TimeHelper.specificDateToEpochRange(TimeHelper.stringInputToTime(date), ZoneId.of(Variables.ZONE));
@@ -39,13 +39,13 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
                     .gte(range[0]).lte(range[1]));
         }
 
-        int size = (int) mongoTemplate.count(query, ReportMessage.class, Variables.col_idmanLog);
+        long size = mongoTemplate.count(query, Report.class, Variables.col_Log);
 
         query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "millis"));
 
-        List<ReportMessage> reports = mongoTemplate.find(query, ReportMessage.class, Variables.col_idmanLog);
+        List<Report> reports = mongoTemplate.find(query, Report.class, Variables.col_Log);
 
-        return new ReportMessage.ListReportMessage((int) Math.ceil(size / (float) n), size, reports);
+        return new Report.ListReports(reports, size, (int) Math.ceil(size / (float) n));
     }
 
     private int getSkip(int p, int n) {
@@ -78,7 +78,6 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
             long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
             query.addCriteria(Criteria.where("millis").gte(range[0]).lte(range[1]));
         }
-        query.with(Sort.by(Sort.Direction.DESC, "millis"));
         if (page != 0 && nRows != 0) {
             skip = (page - 1) * nRows;
         }

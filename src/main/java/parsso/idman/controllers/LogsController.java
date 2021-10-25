@@ -78,18 +78,18 @@ public class LogsController {
     }
 
     @GetMapping("/reports/users")
-    public ResponseEntity<ReportMessage.ListReportMessage> getUsersReports(@RequestParam(name = "userID", defaultValue = "") String userID,
+    public ResponseEntity<Report.ListReports> getUsersReports(@RequestParam(name = "userID", defaultValue = "") String userID,
                                                               @RequestParam(name = "date", defaultValue = "") String date,
                                                               @RequestParam(name = "page") String page,
                                                               @RequestParam(name = "count") String count) {
-        ReportMessage.ListReportMessage s1 = reportsRepo.retrieve(userID, date, Integer.parseInt(page),Integer.parseInt(count));
+        Report.ListReports s1 = reportsRepo.retrieve(userID, date, Integer.parseInt(page),Integer.parseInt(count));
 
         return new ResponseEntity<>(s1,HttpStatus.OK);
 
     }
 
     @GetMapping("/reports/user")
-    public ResponseEntity<ReportMessage.ListReportMessage> getUserReports(HttpServletRequest request,
+    public ResponseEntity<Report.ListReports> getUserReports(HttpServletRequest request,
                                                              @RequestParam(name = "date", defaultValue = "") String date,
                                                              @RequestParam(name = "page") String page,
                                                              @RequestParam(name = "count") String count) {
