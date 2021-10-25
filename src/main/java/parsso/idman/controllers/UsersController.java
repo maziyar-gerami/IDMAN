@@ -379,6 +379,11 @@ public class UsersController {
         return new ResponseEntity<>(user, httpStatus);
     }
 
+    @GetMapping("/api/public/googleAuth/registered/{uid}")
+    public ResponseEntity<Boolean> getName(@PathVariable("uid") String uid) {
+        return new ResponseEntity<>(userRepo.retrieveUsersDevice(uid), HttpStatus.OK);
+    }
+
     @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
     public RedirectView resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token, RedirectAttributes attributes) {
         HttpStatus httpStatus = tokenClass.checkToken(uId, token);

@@ -81,6 +81,7 @@ public class Variables {
     public static String MODEL_ROLE = "Role";
     public static String MSG_FA_CODE_401 = "نام کاربری ارسال شده صحیح نیست.";
     public static String MSG_FA_CODE_403 = "کلید API وارد شده صحیح نیست.";
+    public static String col_GoogleAuthDevice= "MongoDbGoogleAuthenticatorRepository";
 
     public static String template(User user, String url) {
 
