@@ -140,16 +140,7 @@ public class PagesController implements ErrorController {
     }
 
     @GetMapping("/logout")
-    public String logout(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            SecurityContextLogoutHandler logoutHandler) {
-        Authentication auth = SecurityContextHolder
-                .getContext().getAuthentication();
-        logoutHandler.logout(request, response, auth);
-        new CookieClearingLogoutHandler(
-                AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY)
-                .logout(request, response, auth);
+    public String logout(){
         return "redirect:" + casLogout;
     }
 
