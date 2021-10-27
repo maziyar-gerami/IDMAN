@@ -73,7 +73,7 @@ public class ServicesController {
         return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
     }
 
-    @GetMapping("/api/serviceAccess/{id}")
+    @GetMapping("/api/serviceCheck/{id}")
     public ResponseEntity<HttpStatus> serviceAccess(@PathVariable("id") long id) {
         return new ResponseEntity<>(serviceRepo.serviceAccess(id) ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
