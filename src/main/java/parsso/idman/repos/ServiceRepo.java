@@ -32,7 +32,7 @@ public interface ServiceRepo {
 
     void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException;
 
-    HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
+    long createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
 
     HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system);
 

@@ -316,7 +316,7 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
     @Override
-    public HttpStatus createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException {
+    public long createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException {
 
         ExtraInfo extraInfo = new ExtraInfo();
         long id = 0;
@@ -337,8 +337,6 @@ public class ServiceRepoImpl implements ServiceRepo {
         else if (system.equalsIgnoreCase("OAuth"))
             id = oAuthServiceHelper.create(doerID, jsonObject);
 
-        if (id > 0) {
-        }
 
         String jsonString = new Gson().toJson(jsonObject.get("extraInfo"), Map.class);
 
@@ -350,11 +348,11 @@ public class ServiceRepoImpl implements ServiceRepo {
         try {
             mongoTemplate.save(extraInfo, collection);
 
-            return HttpStatus.OK;
+            return id;
         } catch (Exception e) {
             e.printStackTrace();
             uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, extraInfo.getId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongoDB"));
-            return HttpStatus.FORBIDDEN;
+            return 0;
         }
 
     }
