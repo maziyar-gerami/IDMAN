@@ -97,7 +97,26 @@ public class ServicesController {
 
     @PutMapping("/api/service/{id}/{system}")
     public ResponseEntity<String> updateService(HttpServletRequest request, @PathVariable("id") long id,
-                                                @RequestBody JSONObject jsonObject, @PathVariable("system") String system) {
+                                                @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws ParseException {
+        if (jsonObject.get("extraInfo")!=null){
+            LinkedHashMap extra = (LinkedHashMap) jsonObject.get("extraInfo");
+            if(extra.get("dailyAccess")!=null){
+                Service service = serviceRepo.retrieveService(id);
+
+                service.getAccessStrategy().setAtClass("org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
+                service.getAccessStrategy().setEndpointUrl(baseUrl+"/api/serviceCheck/"+id);
+                service.getAccessStrategy().setAcceptableResponseCodes("200");
+
+
+                String jsonInString = new Gson().toJson(service);
+                JSONParser parser = new JSONParser();
+                JSONObject jsonObjectExtraInfo = (JSONObject) parser.parse(jsonInString);
+
+                serviceRepo.updateService("System",id,jsonObjectExtraInfo,system);
+
+            }
+        }
+
         return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
     }
 
