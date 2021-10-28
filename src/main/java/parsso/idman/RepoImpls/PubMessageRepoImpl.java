@@ -67,7 +67,12 @@ public class PubMessageRepoImpl implements PubMessageRepo {
     @Override
     public HttpStatus editPubicMessage(String doer, PublicMessage message) {
 
-        PublicMessage oldMessage = showAllPubicMessages(message.getMessageId()).get(0);
+        PublicMessage oldMessage;
+        try {
+            oldMessage = showAllPubicMessages(message.getMessageId()).get(0);
+        } catch (IndexOutOfBoundsException e){
+            return HttpStatus.BAD_REQUEST;
+        }
 
         message.setUpdater(doer);
         message.setUpdateDate(System.currentTimeMillis());
@@ -84,7 +89,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
             return HttpStatus.OK;
         } catch (Exception e) {
             e.printStackTrace();
-            uniformLogger.warn(doer, new ReportMessage(model, message.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Writing to mongo"));
+            uniformLogger.warn(doer, new ReportMessage(model, message.getMessageId(), "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Writing to mongo"));
             return HttpStatus.FORBIDDEN;
         }
     }

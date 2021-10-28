@@ -380,20 +380,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     var check = confirm(this.s23);
                     if (check == true) {
                         axios({
-                            method: 'put',
-                            url: url + '/api/groups/' + id, //
-                            headers: {'Content-Type': 'application/json'},
+                            method: "put",
+                            url: url + "/api/groups",
+                            params: {
+                                id: id,
+                            },
+                            headers: {"Content-Type": "application/json"},
                             data: JSON.stringify({
-                                id: document.getElementById('group.idUpdate').value,
-                                name: document.getElementById('group.nameUpdate').value,
-                                description: document.getElementById('group.descriptionUpdate').value,
+                                id: document.getElementById("group.idUpdate").value,
+                                name: document.getElementById("group.nameUpdate").value,
+                                description: document.getElementById("group.descriptionUpdate").value,
                             }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
                             axios({
-                                method: 'put',
-                                url: url + '/api/users/group/' + id, //
-                                headers: {'Content-Type': 'application/json'},
+                                method: "put",
+                                url: url + "/api/users/group/" + id, //
+                                headers: {"Content-Type": "application/json"},
                                 data: JSON.stringify({
                                     add: vm.groupsAddedUsersList,
                                     remove: vm.groupsRemovedUsersList,
@@ -951,22 +954,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     };
                     wb.SheetNames.push(fileName);
                     let ws = XLSX.utils.aoa_to_sheet(fileData);
-                    /*ws["A3", "B3", "C3", "I3", "J3", "K3"].s = {
-                      font: {
-                        color: {rgb: "FFFFFF"}
-                      },
-                      fill: {
-                        bgColor: {rgb: "28a745"}
-                      },
-                    };
-                    ws["E3", "F3", "G3", "M3", "N3", "O3"].s = {
-                      font: {
-                        color: {rgb: "FFFFFF"}
-                      },
-                      fill: {
-                        bgColor: {rgb: "dc3545"}
-                      },
-                    };*/
                     wb.Sheets[fileName] = ws;
                     let wbout = XLSX.write(wb, {bookType:"xlsx",  type: "binary"});
                     let fileBlob = new Blob([this.s2ab(wbout)],{type:"application/octet-stream"});

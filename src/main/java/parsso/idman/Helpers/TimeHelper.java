@@ -1,15 +1,25 @@
 package parsso.idman.Helpers;
 
 
+import org.springframework.ldap.core.AttributesMapper;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.support.LdapNameBuilder;
 import parsso.idman.Models.Logs.Report;
+import parsso.idman.Models.Users.Pwd;
 import parsso.idman.Models.other.Time;
 import parsso.idman.Utils.Convertor.DateConverter;
 
+import javax.naming.Name;
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class TimeHelper {
     static final ZoneId zoneId = ZoneId.of(Variables.ZONE);
@@ -95,67 +105,20 @@ public class TimeHelper {
 
     }
 
-    public static String setEndTime(String input) {
+    public static String setEndTime(LdapTemplate ldapTemplate , String BASE_DN , String input) throws ParseException {
         //if is jalali
         if (Integer.parseInt(input.substring(0, 4)) < 2000) {
 
             if (!(input.contains("-")) && !(input.contains("/"))) {
-                String Y = input.substring(0, 4);
-                String M = input.substring(4, 6);
-                String D = input.substring(6, 8);
 
-                String H = input.substring(8, 10);
-                String m = input.substring(10, 12);
-                String s = input.substring(12, 14);
-                String S = input.substring(15, 15);
+                Date selectedDate = new Date(Long.parseLong(input)*1000);
 
-                ZonedDateTime eventDate =
-                        OffsetDateTime.parse(Y + "-" + M + "-" + D + 'T' + H + ":" + m + ":" + s + "." + S).atZoneSameInstant(zoneId);
+                int day = (int) TimeUnit.SECONDS.toDays(getMaxAge(ldapTemplate, BASE_DN));
 
-                return eventDate.getYear()
-                        + String.format("%02d", eventDate.getMonth())
-                        + String.format("%02d", eventDate.getDayOfMonth())
-                        + String.format("%02d", eventDate.getHour())
-                        + String.format("%02d", eventDate.getMinute())
-                        + String.format("%02d", eventDate.getSecond())
-                        + String.format("%03d", eventDate.getNano());
-            } else if (input.contains("/")) {
-                String Y = input.substring(0, 4);
-                String M = input.substring(5, 7);
-                String D = input.substring(8, 10);
+                Date sDate = subtractDate(selectedDate, day);
 
-                String H;
-                String m;
-                String s;
-                String S;
+                return TimeHelper.epochToDateLdapFormat(sDate.getTime());
 
-                try {
-                    H = input.substring(11, 13);
-                    m = input.substring(14, 16);
-                    s = input.substring(17, 19);
-                    S = input.substring(20, 22);
-                } catch (Exception e) {
-                    H = "23";
-                    m = "59";
-                    s = "59";
-                    S = "99";
-
-                }
-
-                String date = convertDateJalaliToGeorgian(Integer.parseInt(Y), Integer.parseInt(M), Integer.parseInt(D));
-
-                Instant instant = Instant.now(); //can be LocalDateTime
-                ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
-                ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
-
-                ZonedDateTime eventDate = OffsetDateTime.parse(date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8) + 'T' + H + ":" + m + ":" + s + "." + S + currentOffsetForMyZone).atZoneSameInstant(zoneId);
-
-                return eventDate.getYear()
-                        + String.format("%02d", eventDate.getMonthValue())
-                        + String.format("%02d", eventDate.getDayOfMonth())
-                        + String.format("%02d", eventDate.getHour())
-                        + String.format("%02d", eventDate.getMinute())
-                        + String.format("%02d", eventDate.getSecond());
             } else {
                 String temp = convertDateTimeJalali(input);
 
@@ -180,6 +143,28 @@ public class TimeHelper {
         }
 
     }
+
+
+
+    private static int getMaxAge(LdapTemplate ldapTemplate, String BASE_DN) {
+        String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
+        String pwd = ldapTemplate.lookup(dn, (AttributesMapper<String>) attrs -> {
+            if (attrs.get("pwdMaxAge") != null)
+                return attrs.get("pwdMaxAge").get().toString();
+            return "0";
+        });
+        return Integer.parseInt(pwd);
+    }
+
+
+    private static Date subtractDate(Date selectedDate , int maxAgedDay){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(selectedDate);
+        cal.add(Calendar.DATE, -maxAgedDay);
+        return cal.getTime();
+    }
+
+
 
     public static String convertDateTimeJalali(String seTime) {
 

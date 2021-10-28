@@ -3,9 +3,16 @@ package parsso.idman.RepoImpls;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import parsso.idman.Helpers.Communicate.InstantMessage;
 import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
+import parsso.idman.Helpers.UniformLogger;
+import parsso.idman.Helpers.Variables;
+import parsso.idman.Models.Logs.ReportMessage;
+import parsso.idman.Models.Logs.Setting;
 import parsso.idman.Models.Users.User;
 import parsso.idman.repos.ConfigRepo;
 import parsso.idman.repos.EmailService;
@@ -31,11 +38,28 @@ public class SettingsRepoImpl implements SettingsRepo {
     ConfigRepo configRepo;
     @Autowired
     EmailService emailService;
+    @Autowired
+    MongoTemplate mongoTemplate;
+    @Autowired
+    UniformLogger uniformLogger;
+
     private SettingsRepo settingsRepo;
     @Value("${max.pwd.lifetime.hours}")
     private long maxPwdLifetime;
     @Value("${expire.pwd.message.hours}")
     private long expirePwdMessageTime;
+
+    @Override
+    public Setting retrieve(String settingName) {
+        Setting s= null;
+        try {
+            s = mongoTemplate.findOne(new Query(Criteria.where("_id").is(settingName)), Setting.class, Variables.col_properties);
+        }catch (Exception e){
+            e.printStackTrace();
+            uniformLogger.error("System",new ReportMessage(Variables.MODEL_SETTINGS, settingName, Variables.ACTION_GET,Variables.RESULT_FAILED ));
+        }
+        return s;
+    }
 
     @Override
     public void emailNotification() {

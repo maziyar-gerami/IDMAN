@@ -75,4 +75,6 @@ public interface UserRepo {
     int retrieveUsersLDAPSize();
 
     Boolean SAtoSU();
+
+    Boolean retrieveUsersDevice(String userName);
 }

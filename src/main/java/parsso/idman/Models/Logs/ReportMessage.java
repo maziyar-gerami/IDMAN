@@ -160,6 +160,15 @@ public class ReportMessage {
 
     }
 
+    public ReportMessage(String model,String instance ,String action, String result) {
+        this.model = model;
+        this.instance = instance;
+        this.result = result;
+        this.action = action;
+        this.millis = new Date().getTime();
+        time = TimeHelper.longToPersianTime(millis);
+    }
+
     @SuppressWarnings("DuplicatedCode")
     @Override
     public String toString() {

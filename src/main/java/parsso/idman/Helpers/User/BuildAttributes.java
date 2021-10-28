@@ -16,6 +16,7 @@ import parsso.idman.repos.UserRepo;
 import javax.naming.Name;
 import javax.naming.directory.*;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -27,16 +28,17 @@ public class BuildAttributes {
     MongoTemplate mongoTemplate;
     @Autowired
     BuildDnUser buildDnUser;
-    @Value("${default.user.password}")
-    private String defaultPassword;
     @Autowired
     private UserRepo userRepo;
     @Autowired
     private LdapTemplate ldapTemplate;
     @Autowired
     private Operations operations;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
 
-    public Attributes build(User p) {
+
+    public Attributes build(User p) throws ParseException {
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
         ocattr.add("top");
@@ -87,15 +89,15 @@ public class BuildAttributes {
 
             try {
                 if (p.getEndTime().length() == 13)
-                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getEndTime())));
+                    attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN,p.getEndTime()));
                 if (p.getEndTime().length() == 10)
-                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getEndTime()) * 1000));
+                    attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN, p.getEndTime()));
                 if (p.getEndTime().contains("."))
-                    attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(TimeHelper.convertDateToEpoch(p.getEndTime())));
+                    attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN,p.getEndTime()));
 
 
             } catch (Exception e) {
-                attrs.put("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getEndTime().substring(0, p.getEndTime().indexOf('.'))) * 1000));
+                attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN,p.getEndTime()));
             }
 
         }

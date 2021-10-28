@@ -61,6 +61,11 @@ public class GroupsController {
         return new ResponseEntity<>(groupRepo.remove(request.getUserPrincipal().getName(), jsonObject));
     }
 
+    @PutMapping
+    public ResponseEntity<HttpStatus> rebind(HttpServletRequest request, @RequestParam(value = "id") String ouID, @RequestBody Group ou){
+        return new ResponseEntity<>(groupRepo.update("maziyar",ouID, ou));
+    }
+
     @PutMapping("/password/expire")
     public ResponseEntity<?> expireUsersGroupPassword(HttpServletRequest request,
                                                    @RequestBody JSONObject jsonObject,

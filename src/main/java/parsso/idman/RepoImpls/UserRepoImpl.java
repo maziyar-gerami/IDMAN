@@ -951,5 +951,12 @@ public class UserRepoImpl implements UserRepo {
         }
         return true;
     }
+
+    @Override
+    public Boolean retrieveUsersDevice(String userName) {
+        if (mongoTemplate.count(new Query(Criteria.where("username").is(userName)), Variables.col_GoogleAuthDevice)>0)
+            return true;
+        return false;
+    }
 }
 

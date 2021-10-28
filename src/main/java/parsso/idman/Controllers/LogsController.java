@@ -82,7 +82,9 @@ public class LogsController {
                                                               @RequestParam(name = "date", defaultValue = "") String date,
                                                               @RequestParam(name = "page") String page,
                                                               @RequestParam(name = "count") String count) {
-        return new ResponseEntity<>(reportsRepo.retrieve(userID, date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
+        Report.ListReports s1 = reportsRepo.retrieve(userID, date, Integer.parseInt(page),Integer.parseInt(count));
+
+        return new ResponseEntity<>(s1,HttpStatus.OK);
 
     }
 

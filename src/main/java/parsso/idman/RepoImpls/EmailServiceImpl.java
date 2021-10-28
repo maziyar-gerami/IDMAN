@@ -182,10 +182,11 @@ public class EmailServiceImpl implements EmailService {
         String middle = " روز دیگر منقضی می شود.\n";
         String end = "\n\nبرای جلوگیری از غیرفعال شدن حساب کاربری، هرچه زودتر به تغییر رمز عبور خود از طریق پارسو اقدام فرمایید.";
 
-        String text = user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')) + start + day + middle + end;
-
-        sendHtmlMessage(user, subject, text);
-
+        String text;
+        try {
+            text = user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')) + start + day + middle + end;
+            sendHtmlMessage(user, subject, text);
+        }catch (StringIndexOutOfBoundsException ignored){}
     }
 
     @Override

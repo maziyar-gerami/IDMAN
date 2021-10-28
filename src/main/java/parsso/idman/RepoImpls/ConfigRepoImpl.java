@@ -113,7 +113,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 
                 setting.setDescription(description);
 
-                setting.setGroup(Objects.requireNonNull(groupName).trim());
+                setting.setGroupEN(Objects.requireNonNull(groupName).trim());
 
                 setting.setSystem(system.trim());
 
@@ -159,15 +159,15 @@ public class ConfigRepoImpl implements ConfigRepo {
         for (Setting setting : settings) {
 
             if (file_properties.toString().equals(""))
-                file_properties.append("###").append(setting.getGroup());
+                file_properties.append("###").append(setting.getGroupEN());
             else {
 
-                if (!file_properties.toString().contains(setting.getGroup()))
-                    file_properties.append("\n\n\n###").append(setting.getGroup());
+                if (!file_properties.toString().contains(setting.getGroupEN()))
+                    file_properties.append("\n\n\n###").append(setting.getGroupEN());
 
             }
 
-            int index = file_properties.indexOf(setting.getGroup()) + setting.getGroup().length();
+            int index = file_properties.indexOf(setting.getGroupEN()) + setting.getGroupEN().length();
 
             String temp = "";
             temp += "\n##" + setting.getDescription() + "\n";
@@ -350,7 +350,7 @@ public class ConfigRepoImpl implements ConfigRepo {
         List<Setting> settings = parser(myReader, system);
 
         for (Setting setting : settings)
-            if (setting.getGroup() != null)
+            if (setting.getGroupEN() != null)
                 mongoTemplate.save(setting, Variables.col_properties);
 
 

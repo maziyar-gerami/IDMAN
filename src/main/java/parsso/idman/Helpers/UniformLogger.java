@@ -78,26 +78,24 @@ public class UniformLogger {
                             if (!ch.getAttribute().equalsIgnoreCase("timestamp"))
                                 reportMessageList.add(new ReportMessage(ch, reportMessage));
 
-                        /* TODO:ENABLE it
+
 
                     if (reportMessage.getUsersGroups() != null) {
                         reportMessage.setInstanceName(serviceRepo.retrieveService(Long.parseLong(reportMessage.getInstance().toString())).getName());
-                        for (String s : (List<String>) reportMessage.getUsersGroups().getUsers().getAdd())
+                        for (String s : reportMessage.getUsersGroups().getUsers().getAdd())
                             reportMessageList.add(new ReportMessage(Variables.MODEL_USER, s, Variables.ACCESS_ADD, reportMessage));
 
-                        for (String s : (List<String>) reportMessage.getUsersGroups().getUsers().getRemove())
+                        for (String s : reportMessage.getUsersGroups().getUsers().getRemove())
                             reportMessageList.add(new ReportMessage(Variables.MODEL_USER, s, Variables.ACCESS_REM, reportMessage));
 
-                        for (String s : (List<String>) reportMessage.getUsersGroups().getGroups().getAdd())
+                        for (String s : reportMessage.getUsersGroups().getGroups().getAdd())
                             reportMessageList.add(new ReportMessage(Variables.MODEL_GROUP, s, Variables.ACCESS_ADD, reportMessage));
 
-                        for (String s : (List<String>) reportMessage.getUsersGroups().getGroups().getRemove())
+                        for (String s :  reportMessage.getUsersGroups().getGroups().getRemove())
                             reportMessageList.add(new ReportMessage(Variables.MODEL_GROUP, s, Variables.ACCESS_REM, reportMessage));
 
                     }
-                                            /*
 
-                         */
 
                     if (reportMessageList.size() == 0)
                         reportMessageList.add(reportMessage);

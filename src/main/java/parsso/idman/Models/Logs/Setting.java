@@ -10,7 +10,7 @@ public class Setting {
     private String name;
     private String value;
     private String description;
-    private String group;
-    private String sub_group;
+    private String groupFA;
+    private String groupEN;
     private String system;
 }
