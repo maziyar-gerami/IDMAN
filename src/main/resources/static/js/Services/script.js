@@ -814,6 +814,7 @@ document.addEventListener('DOMContentLoaded', function () {
               }
 
               if(typeof res.data.extraInfo.dailyAccess !== "undefined"){
+                this.dailyAccessType = "DAY";
                 let tempDailyAccessFrom = "";
                 let tempDailyAccessTo = "";
                 if(res.data.extraInfo.dailyAccess.length > 0){
@@ -827,6 +828,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   }
                 }
               }else if(typeof res.data.accessStrategy.endpointUrl !== "undefined"){
+                this.dailyAccessType = "URL";
                 document.getElementsByName("endpointUrl")[0].value = res.data.accessStrategy.endpointUrl;
                 if(typeof res.data.accessStrategy.acceptableResponseCodes !== "undefined"){
                   document.getElementsByName("acceptableResponseCodes")[0].value = res.data.accessStrategy.acceptableResponseCodes;
