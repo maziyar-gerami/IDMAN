@@ -63,7 +63,7 @@ public class GroupsController {
 
     @PutMapping
     public ResponseEntity<HttpStatus> rebind(HttpServletRequest request, @RequestParam(value = "id") String ouID, @RequestBody Group ou){
-        return new ResponseEntity<>(groupRepo.update("maziyar",ouID, ou));
+        return new ResponseEntity<>(groupRepo.update(request.getUserPrincipal().getName(),ouID, ou));
     }
 
     @PutMapping("/password/expire")

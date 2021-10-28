@@ -247,6 +247,9 @@ public class GroupRepoImpl implements GroupRepo {
                                     (new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
                             if (usersExtraInfo != null) usersExtraInfo.getMemberOf().remove(id);
                             Objects.requireNonNull(usersExtraInfo).getMemberOf().add(ou.getId());
+                            List<String> temp = usersExtraInfo.getMemberOf();
+                            temp.add(ou.getId());
+                            usersExtraInfo.setMemberOf(temp);
 
                             mongoTemplate.remove
                                     (new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
@@ -318,7 +321,7 @@ public class GroupRepoImpl implements GroupRepo {
             group.setId(null != attributes.get("ou") ? attributes.get("ou").get().toString() : null);
             group.setName(null != attributes.get("name") ? attributes.get("name").get().toString() : null);
             group.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
-            group.setUsersCount(mongoTemplate.count(new Query(Criteria.where("memberOf").is(group.getId())), Variables.col_usersExtraInfo));
+            group.setUsersCount(mongoTemplate.count(new Query(Criteria.where("memberOf").is(attributes.get("ou").get().toString())), Variables.col_usersExtraInfo));
             return group;
         }
     }
