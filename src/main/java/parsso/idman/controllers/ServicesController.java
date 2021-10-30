@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.Models.Services.Service;
@@ -27,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 @RestController
 public class ServicesController {
     private final UserRepo userRepo;
@@ -79,7 +79,6 @@ public class ServicesController {
                     service.getAccessStrategy().setAtClass("org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
                     service.getAccessStrategy().setEndpointUrl(baseUrl+"/api/serviceCheck/"+id);
                     service.getAccessStrategy().setAcceptableResponseCodes("200");
-
 
                     String jsonInString = new Gson().toJson(service);
                     JSONParser parser = new JSONParser();

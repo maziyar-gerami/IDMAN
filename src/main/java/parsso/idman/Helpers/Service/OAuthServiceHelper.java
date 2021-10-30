@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 @Component
 public class OAuthServiceHelper {
     @Value("${services.folder.path}")

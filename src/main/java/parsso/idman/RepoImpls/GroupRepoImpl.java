@@ -31,10 +31,7 @@ import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;
 import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.BasicAttributes;
-import javax.naming.directory.SearchControls;
+import javax.naming.directory.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

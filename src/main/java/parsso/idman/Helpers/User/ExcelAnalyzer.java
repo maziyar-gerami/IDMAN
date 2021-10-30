@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Service
 public class ExcelAnalyzer {
     @Autowired

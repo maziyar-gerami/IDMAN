@@ -45,19 +45,15 @@ import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.repos.*;
 
 import javax.naming.Name;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
-import javax.naming.directory.SearchControls;
+import javax.naming.NamingException;
+import javax.naming.directory.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.util.*;
 
 @Service
 public class UserRepoImpl implements UserRepo {
-    public ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @Value("${user.profile.access}")
     String profileAccessiblity;
     @Value("${skyroom.api.key}")
@@ -137,6 +133,8 @@ public class UserRepoImpl implements UserRepo {
             user = null;
         }
 
+
+
         try {
             if (user == null || user.getUserId() == null) {
 
@@ -160,6 +158,7 @@ public class UserRepoImpl implements UserRepo {
                     //create user in ldap
                     Name dn = buildDnUser.buildDn(p.getUserId());
                     ldapTemplate.bind(dn, null, buildAttributes.build(p));
+
 
                     if (p.getStatus() != null)
                         if (p.getStatus().equals("disable"))
@@ -192,7 +191,28 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
-    @Override
+    private DirContext authenticateAsAdmin() {
+        DirContext ctx = null;
+        try {
+            ctx = ldapTemplate.getContextSource().getContext("cn=admin,dc=sso,dc=iooc,dc=local", "09189975223");
+        } catch (Exception ignored) {
+        }
+        return ctx;
+    }
+
+    private boolean changePasswordAsAdmin(String userId, String newPassword) throws NamingException {
+        DirContext ctx = null;
+        if(authenticateAsAdmin()!=null){
+            ModificationItem[] modificationItems;
+            modificationItems = new ModificationItem[1];
+            modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword",newPassword));
+            ctx.modifyAttributes(buildDnUser.buildDn(userId), modificationItems);
+            return true;
+        }
+        return false;
+    }
+
+
     public int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
         return (int) mongoTemplate.count(queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus), Variables.col_usersExtraInfo);
@@ -359,7 +379,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus changePassword(String uId, String newPassword, String token) {
+    public HttpStatus changePassword(String uId, String newPassword, String token) throws NamingException {
 
         User user = retrieveUsers(uId);
 
@@ -371,6 +391,17 @@ public class UserRepoImpl implements UserRepo {
         //if (ldapTemplate.authenticate("ou=People," + BASE_DN, andFilter.toString(), oldPassword)) {
         if (token != null) {
             if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
+
+                if(retrieveUsers(uId).getRole().equals("SUPERUSER")) {
+                    if (changePasswordAsAdmin(uId, newPassword)) {
+                        uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
+                        return HttpStatus.OK;
+                    } else {
+                        uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, ""));
+                        return HttpStatus.BAD_REQUEST;
+                    }
+                }
+
 
                 DirContextOperations contextUser;
                 contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
@@ -428,7 +459,6 @@ public class UserRepoImpl implements UserRepo {
 
         if (file.exists()) {
             try {
-                String contentType = "image/png";
                 FileInputStream out = new FileInputStream(file);
                 // copy from in to out
                 media = IOUtils.toByteArray(out);
@@ -595,7 +625,6 @@ public class UserRepoImpl implements UserRepo {
         return relatedPeople;
     }
 
-    @Override
     public List<User> getUsersOfOu(String ou) {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});

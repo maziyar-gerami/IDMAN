@@ -16,7 +16,6 @@ import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 import parsso.idman.repos.UserRepo;
 
-import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import java.util.LinkedList;
 import java.util.List;
@@ -97,6 +96,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
 
         return user;
     }
+
 
 
 }

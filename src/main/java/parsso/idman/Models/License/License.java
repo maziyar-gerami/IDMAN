@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Setter
 @Getter
 public class License {

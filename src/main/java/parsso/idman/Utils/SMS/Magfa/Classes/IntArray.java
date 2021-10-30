@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("HttpUrlsUsage")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "intArray", namespace = "http://jaxb.dev.java.net/array", propOrder = {
         "item"

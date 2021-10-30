@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
+@SuppressWarnings("unused")
 public class DateUtils {
     static final ZoneId zoneId = ZoneId.of(Variables.ZONE);
     public static Date MAX_DATE = new Date(Long.MAX_VALUE);

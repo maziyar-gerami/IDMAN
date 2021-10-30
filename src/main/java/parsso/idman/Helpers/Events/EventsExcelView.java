@@ -25,7 +25,6 @@ import java.util.Map;
 
 @Service
 public class EventsExcelView extends AbstractXlsView {
-    public static String mainCollection = "MongoDbCasEventRepository";
     final ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @Autowired
     LogsRepo.EventRepo eventRepo;

@@ -8,6 +8,7 @@ import parsso.idman.Models.Users.ListUsers;
 import parsso.idman.Models.Users.User;
 import parsso.idman.Models.Users.UsersExtraInfo;
 
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 public interface UserRepo {
     List<String> remove(String doerID, JSONObject jsonObject);
 
-    HttpStatus changePassword(String uId, String newPassword, String token);
+    HttpStatus changePassword(String uId, String newPassword, String token) throws NamingException;
 
     String showProfilePic(HttpServletResponse response, User user);
 
@@ -26,7 +27,6 @@ public interface UserRepo {
 
     List<UsersExtraInfo> retrieveUsersMain(int page, int number);
 
-    int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus);
 
     User getName(String uid, String token);
 
@@ -37,8 +37,6 @@ public interface UserRepo {
     JSONObject createUserImport(String doerId, User p);
 
     User update(String doer, String uid, User p);
-
-    List<User> getUsersOfOu(String ou);
 
     void updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou);
 

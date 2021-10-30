@@ -100,9 +100,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
         // with Java 8, we can do this, no need to check the log level
 
-
-        //sAtoSU.start();
-
         //refresh(context);
         Thread thread = new Thread(runnable);
         Thread sathread = new Thread(SUrunnable);

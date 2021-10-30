@@ -32,6 +32,4 @@ public class Group {
         List<String> add;
         List<String> remove;
     }
-
-
 }

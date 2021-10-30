@@ -3,22 +3,16 @@ package parsso.idman.Helpers;
 
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.support.LdapNameBuilder;
 import parsso.idman.Models.Logs.Report;
-import parsso.idman.Models.Users.Pwd;
 import parsso.idman.Models.other.Time;
 import parsso.idman.Utils.Convertor.DateConverter;
 
-import javax.naming.Name;
-import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class TimeHelper {
@@ -105,7 +99,7 @@ public class TimeHelper {
 
     }
 
-    public static String setEndTime(LdapTemplate ldapTemplate , String BASE_DN , String input) throws ParseException {
+    public static String setEndTime(LdapTemplate ldapTemplate , String BASE_DN , String input) {
         //if is jalali
         if (Integer.parseInt(input.substring(0, 4)) < 2000) {
 

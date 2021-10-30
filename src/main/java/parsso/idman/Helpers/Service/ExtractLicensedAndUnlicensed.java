@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Component
 public class ExtractLicensedAndUnlicensed {
     public List<MicroService> licensedServicesForGroups(UsersExtraInfo user, List<MicroService> licensed, Service service) {

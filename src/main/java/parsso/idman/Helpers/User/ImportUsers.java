@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("SameReturnValue")
 @Service
 public class ImportUsers {
     @Autowired

@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 @org.springframework.stereotype.Service
 public class ServiceRepoImpl implements ServiceRepo {
     final String collection = Variables.col_servicesExtraInfo;

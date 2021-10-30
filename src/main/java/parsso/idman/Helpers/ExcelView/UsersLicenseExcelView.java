@@ -6,21 +6,13 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
-import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public class UsersLicenseExcelView extends AbstractXlsView {
-    final LogsRepo.TranscriptRepo transcriptRepo;
-
-    @Autowired
-    public UsersLicenseExcelView(LogsRepo.TranscriptRepo transcriptRepo) {
-        this.transcriptRepo = transcriptRepo;
-    }
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {

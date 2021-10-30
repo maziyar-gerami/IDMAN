@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Getter
 @Setter
 public class User implements UserDetails, Comparable {

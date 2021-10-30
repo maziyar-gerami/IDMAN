@@ -16,7 +16,6 @@ import parsso.idman.repos.UserRepo;
 import javax.naming.Name;
 import javax.naming.directory.*;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -38,7 +37,7 @@ public class BuildAttributes {
     private String BASE_DN;
 
 
-    public Attributes build(User p) throws ParseException {
+    public Attributes build(User p) {
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
         ocattr.add("top");
@@ -85,25 +84,7 @@ public class BuildAttributes {
         if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
 
-        if (p.getEndTime() != null) {
-
-            try {
-                if (p.getEndTime().length() == 13)
-                    attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN,p.getEndTime()));
-                if (p.getEndTime().length() == 10)
-                    attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN, p.getEndTime()));
-                if (p.getEndTime().contains("."))
-                    attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN,p.getEndTime()));
-
-
-            } catch (Exception e) {
-                attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN,p.getEndTime()));
-            }
-
-        }
-
         attrs.put("pwdAttribute", "userPassword");
-
 
         return attrs;
     }

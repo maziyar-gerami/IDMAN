@@ -14,6 +14,7 @@ import parsso.idman.repos.ServiceRepo;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Component
 public class GroupLicense {
     @Autowired

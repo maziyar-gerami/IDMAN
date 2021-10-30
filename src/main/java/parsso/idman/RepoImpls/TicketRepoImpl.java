@@ -27,6 +27,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 @Service
 public class TicketRepoImpl implements TicketRepo {
     final String collection = Variables.col_tickets;
