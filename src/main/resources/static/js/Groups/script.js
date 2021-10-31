@@ -377,8 +377,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(document.getElementById('group.nameUpdate').value == ""){
                     alert("لطفا قسمت های الزامی را پر کنید.");
                 }else{
-                    var check = confirm(this.s23);
+                    let check = confirm(this.s23);
                     if (check == true) {
+                        vm.loader = true;
                         axios({
                             method: "put",
                             url: url + "/api/groups",
@@ -403,6 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 }).replace(/\\\\/g, "\\")
                             })
                             .then((resp) => {
+                                vm.loader = false;
                                 location.reload();
                             });
                         });
@@ -417,35 +419,38 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.getAllUsersListC();
             },
             addGroup: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
-                if(document.getElementById('group.nameCreate').value == "" || document.getElementById('group.idCreate').value == ""){
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
+                if(document.getElementById("group.nameCreate").value === "" || document.getElementById("group.idCreate").value === ""){
                     alert("لطفا قسمت های الزامی را پر کنید.");
                 }else{
+                    vm.loader1 = true;
                     axios({
-                        method: 'post',
+                        method: "post",
                         url: url + "/api/groups", //
-                        headers: {'Content-Type': 'application/json'},
+                        headers: {"Content-Type": "application/json"},
                         data: JSON.stringify({
-                            id: document.getElementById('group.idCreate').value,
-                            name: document.getElementById('group.nameCreate').value,
-                            description: document.getElementById('group.descriptionCreate').value,
+                            id: document.getElementById("group.idCreate").value,
+                            name: document.getElementById("group.nameCreate").value,
+                            description: document.getElementById("group.descriptionCreate").value,
                         }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
                         axios({
-                            method: 'put',
-                            url: url + '/api/users/group/' + document.getElementById('group.idCreate').value, //
-                            headers: {'Content-Type': 'application/json'},
+                            method: "put",
+                            url: url + "/api/users/group/" + document.getElementById("group.idCreate").value, //
+                            headers: {"Content-Type": "application/json"},
                             data: JSON.stringify({
                                 add: vm.groupsAddedUsersListC,
                                 remove: vm.groupsRemovedUsersListC,
                             }).replace(/\\\\/g, "\\")
                         })
                         .then((resp) => {
+                            vm.loader1 = false;
                             location.reload();
                         });
                     }).catch((error) => {
+                        vm.loader1 = false;
                         if (error.response) {
                             if(error.response.status === 302){
                                 vm.groupIdDuplicate = true;
