@@ -92,7 +92,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/mobile/**").permitAll()
 
 
-                //************* Any Authenticated Users Objects **********
+                //************* Any Authenticated users Objects **********
                 //Pages
                 .antMatchers("/dashboard").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/events").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")

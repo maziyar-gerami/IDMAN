@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import parsso.idman.Helpers.User.DashboardData;
-import parsso.idman.Models.DashboardData.Dashboard;
+import parsso.idman.helpers.user.DashboardData;
+import parsso.idman.models.dashboardData.Dashboard;
 
 @SuppressWarnings("SameReturnValue")
 @Controller

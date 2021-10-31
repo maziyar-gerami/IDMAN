@@ -4,9 +4,9 @@ package parsso.idman.repos;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Models.Users.ListUsers;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.models.users.ListUsers;
+import parsso.idman.models.users.User;
+import parsso.idman.models.users.UsersExtraInfo;
 
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletResponse;

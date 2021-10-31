@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.models.services.Service;
+import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 

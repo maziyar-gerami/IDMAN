@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
-import parsso.idman.Models.Logs.Config;
-import parsso.idman.Models.Logs.Setting;
+import parsso.idman.helpers.reloadConfigs.PasswordSettings;
+import parsso.idman.models.logs.Config;
+import parsso.idman.models.logs.Setting;
 import parsso.idman.repos.ConfigRepo;
 
 import javax.servlet.http.HttpServletRequest;

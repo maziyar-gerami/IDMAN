@@ -5,7 +5,7 @@ import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Models.other.PublicMessage;
+import parsso.idman.models.other.PublicMessage;
 import parsso.idman.repos.PubMessageRepo;
 
 import javax.servlet.http.HttpServletRequest;
