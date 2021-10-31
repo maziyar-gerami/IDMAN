@@ -1838,7 +1838,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   for(let i = 0; i < vm.groups.length; ++i){
                     if(typeof vm.reportedService.accessStrategy.requiredAttributes.ou !== "undefined") {
                       if(vm.reportedService.accessStrategy.requiredAttributes.ou[1].length !== 0){
-                        if(vm.reportedService.data.accessStrategy.requiredAttributes.ou[1].includes(vm.groups[i].id)){
+                        if(vm.reportedService.accessStrategy.requiredAttributes.ou[1].includes(vm.groups[i].id)){
                           vm.groups[i].recordNumber = n;
                           vm.allowedGroupsReportList.push(vm.groups[i]);
                           n += 1;
