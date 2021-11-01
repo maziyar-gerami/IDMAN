@@ -62,10 +62,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(logoutFilter, LogoutFilter.class)
 
 
-                .authorizeRequests().antMatchers("/**", "/login")
+                .authorizeRequests().antMatchers("/dashboard", "/login")
                 .authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .and()
+
 
 
                 .authorizeRequests()
