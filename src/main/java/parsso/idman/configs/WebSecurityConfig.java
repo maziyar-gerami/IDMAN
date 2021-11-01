@@ -53,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
 
-                .authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
+                .authorizeRequests().antMatchers("/**", "/login").authenticated()
                 //.antMatchers("")
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
@@ -62,12 +62,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(logoutFilter, LogoutFilter.class)
 
 
-                .authorizeRequests().antMatchers("/dashboard", "/login")
+                .authorizeRequests().antMatchers("/**", "/login")
                 .authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .and()
 
-                /*
 
                 .authorizeRequests()
                 //****************Public Objects*********************
@@ -167,7 +166,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
 
-                 */
+
 
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .csrf().disable()
