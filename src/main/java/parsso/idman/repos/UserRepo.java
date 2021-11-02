@@ -36,7 +36,7 @@ public interface UserRepo {
 
     JSONObject createUserImport(String doerId, User p);
 
-    User update(String doer, String uid, User p);
+    HttpStatus update(String doer, String uid, User p);
 
     void updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou);
 

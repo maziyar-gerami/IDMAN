@@ -45,7 +45,6 @@ import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.*;
 
 import javax.naming.Name;
-import javax.naming.NamingException;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
@@ -204,18 +203,6 @@ public class UserRepoImpl implements UserRepo {
         return ctx;
     }
 
-    private boolean changePasswordAsAdmin(String userId, String newPassword) throws NamingException {
-        DirContext ctx = null;
-        if(authenticateAsAdmin()!=null){
-            ModificationItem[] modificationItems;
-            modificationItems = new ModificationItem[1];
-            modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("userPassword",newPassword));
-            ctx.modifyAttributes(buildDnUser.buildDn(userId), modificationItems);
-            return true;
-        }
-        return false;
-    }
-
 
     public int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
@@ -224,7 +211,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     @CachePut(cacheNames = "currentPic", key = "usid")
-    public User update(String doerID, String usid, User p) {
+    public HttpStatus update(String doerID, String usid, User p) {
 
         p.setUserId(usid.trim());
         Name dn = buildDnUser.buildDn(p.getUserId());
@@ -233,7 +220,7 @@ public class UserRepoImpl implements UserRepo {
 
         if (!retrieveUsers(usid).getRole().equals("USER") &&
                 user.getRole().equals("USER") && access.equalsIgnoreCase("false"))
-            return null;
+            return HttpStatus.FORBIDDEN;
 
         DirContextOperations context;
 
@@ -290,13 +277,15 @@ public class UserRepoImpl implements UserRepo {
 
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
 
+        }catch (org.springframework.ldap.InvalidAttributeValueException e){
+            uniformLogger.warn(p.getUserId(), new ReportMessage(Variables.MODEL_USER, p.getUserId(), Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
+            return HttpStatus.FOUND;
         } catch (Exception e) {
             e.printStackTrace();
             uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Writing to DB"));
-
         }
 
-        return p;
+        return HttpStatus.OK;
     }
 
     @Override
@@ -383,7 +372,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public HttpStatus changePassword(String uId, String newPassword, String token) throws NamingException {
+    public HttpStatus changePassword(String uId, String newPassword, String token) {
 
         User user = retrieveUsers(uId);
 
@@ -396,17 +385,6 @@ public class UserRepoImpl implements UserRepo {
         if (token != null) {
             if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
 
-                if(retrieveUsers(uId).getRole().equals("SUPERUSER")) {
-                    if (changePasswordAsAdmin(uId, newPassword)) {
-                        uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
-                        return HttpStatus.OK;
-                    } else {
-                        uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, ""));
-                        return HttpStatus.BAD_REQUEST;
-                    }
-                }
-
-
                 DirContextOperations contextUser;
                 contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
                 contextUser.setAttributeValue("userPassword", newPassword);
@@ -415,7 +393,7 @@ public class UserRepoImpl implements UserRepo {
                     ldapTemplate.modifyAttributes(contextUser);
                     uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
                     return HttpStatus.OK;
-                } catch (Exception e) {
+                } catch (org.springframework.ldap.InvalidAttributeValueException e){
                     uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
                     return HttpStatus.FOUND;
                 }
@@ -428,7 +406,6 @@ public class UserRepoImpl implements UserRepo {
         //} else
         //return HttpStatus.FORBIDDEN;
     }
-
     @Override
     @Cacheable(value = "currentPic", key = "user.userId")
     public String showProfilePic(HttpServletResponse response, User user) {

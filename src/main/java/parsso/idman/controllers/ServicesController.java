@@ -44,7 +44,7 @@ public class ServicesController {
 
     @GetMapping("/api/services/user")
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) {
-        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
+        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers("maziyar")), HttpStatus.OK);
     }
 
     @GetMapping("/api/services/main")

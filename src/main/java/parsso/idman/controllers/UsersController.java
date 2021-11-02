@@ -146,11 +146,8 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/u/{uId}")
-    public ResponseEntity<String> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) {
-
-        User userResult = userRepo.update(request.getUserPrincipal().getName(), uid, user);
-        return new ResponseEntity<>((userResult == null ? HttpStatus.FORBIDDEN : HttpStatus.OK));
-
+    public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) {
+        return new ResponseEntity<>(userRepo.update(request.getUserPrincipal().getName(), uid, user));
     }
 
     @DeleteMapping("/api/users")
@@ -228,11 +225,7 @@ public class UsersController {
 
     @PutMapping("/api/user")
     public ResponseEntity<HttpStatus> updateUser(HttpServletRequest request, @RequestBody parsso.idman.models.users.User user) {
-        String userId = request.getUserPrincipal().getName();
-        parsso.idman.models.users.User userResult = userRepo.update(userId, userId, user);
-        HttpStatus code = (userResult == null ? HttpStatus.FORBIDDEN : HttpStatus.OK);
-
-        return new ResponseEntity<>(code);
+        return new ResponseEntity<>(userRepo.update(request.getUserPrincipal().getName(), request.getUserPrincipal().getName(), user));
     }
 
     @GetMapping("/api/user/photo")
