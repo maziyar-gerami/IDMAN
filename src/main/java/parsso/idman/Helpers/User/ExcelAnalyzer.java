@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.User;
+package parsso.idman.helpers.user;
 
 
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Users.User;
+import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 
 import java.io.BufferedReader;
@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Service
 public class ExcelAnalyzer {
     @Autowired

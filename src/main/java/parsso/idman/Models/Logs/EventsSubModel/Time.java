@@ -1,4 +1,4 @@
-package parsso.idman.Models.Logs.EventsSubModel;
+package parsso.idman.models.logs.eventsSubModel;
 
 
 import lombok.Getter;

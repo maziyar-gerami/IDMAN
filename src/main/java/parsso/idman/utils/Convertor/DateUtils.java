@@ -1,7 +1,7 @@
-package parsso.idman.Utils.Convertor;
+package parsso.idman.utils.Convertor;
 
 
-import parsso.idman.Helpers.Variables;
+import parsso.idman.helpers.Variables;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
+@SuppressWarnings("unused")
 public class DateUtils {
     static final ZoneId zoneId = ZoneId.of(Variables.ZONE);
     public static Date MAX_DATE = new Date(Long.MAX_VALUE);

@@ -1,16 +1,17 @@
-package parsso.idman.Helpers.Service;
+package parsso.idman.helpers.service;
 
 
 import org.json.simple.JSONArray;
 import org.springframework.stereotype.Component;
-import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.models.services.Service;
+import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.users.UsersExtraInfo;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Component
 public class ExtractLicensedAndUnlicensed {
     public List<MicroService> licensedServicesForGroups(UsersExtraInfo user, List<MicroService> licensed, Service service) {

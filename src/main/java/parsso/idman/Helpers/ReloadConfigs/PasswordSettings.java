@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.ReloadConfigs;
+package parsso.idman.helpers.reloadConfigs;
 
 
 import lombok.Getter;
@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Logs.Setting;
+import parsso.idman.models.logs.Setting;
 
 import javax.naming.Name;
 import javax.naming.directory.Attribute;

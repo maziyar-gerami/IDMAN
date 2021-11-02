@@ -1,12 +1,12 @@
-package parsso.idman.Helpers.Service;
+package parsso.idman.helpers.service;
 
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Services.ServiceGist;
-import parsso.idman.Models.other.Notification;
-import parsso.idman.Models.other.Return;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.services.ServiceGist;
+import parsso.idman.models.other.Notification;
+import parsso.idman.models.other.Return;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +18,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 
+@SuppressWarnings("unchecked")
 public class Notifs {
     public ServiceGist getNotifications(String userId, String notificationApiURL, String notificationApiKey) throws IOException {
         URL url;

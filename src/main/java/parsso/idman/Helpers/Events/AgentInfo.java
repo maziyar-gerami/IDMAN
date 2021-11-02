@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.Events;
+package parsso.idman.helpers.events;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.User;
+package parsso.idman.helpers.user;
 
 
 import com.unboundid.ldap.sdk.Entry;
@@ -19,8 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Models.Users.User;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 
 import java.io.BufferedReader;
@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("SameReturnValue")
 @Service
 public class ImportUsers {
     @Autowired

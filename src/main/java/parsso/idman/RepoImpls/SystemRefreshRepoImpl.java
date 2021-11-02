@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.repoImpls;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +14,15 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.NotFilter;
 import org.springframework.ldap.filter.PresentFilter;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.User.DashboardData;
-import parsso.idman.Helpers.User.SimpleUserAttributeMapper;
-import parsso.idman.Helpers.User.UserAttributeMapper;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.user.DashboardData;
+import parsso.idman.helpers.user.SimpleUserAttributeMapper;
+import parsso.idman.helpers.user.UserAttributeMapper;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.users.User;
+import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.SystemRefresh;
 import parsso.idman.repos.UserRepo;
@@ -190,7 +190,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         mongoTemplate.getCollection(Variables.col_servicesExtraInfo);
         int i = 1;
 
-        for (parsso.idman.Models.Services.Service service : serviceRepo.listServicesFull()) {
+        for (parsso.idman.models.services.Service service : serviceRepo.listServicesFull()) {
             Query query = new Query(Criteria.where("_id").is(service.getId()));
             MicroService serviceExtraInfo = mongoTemplate.findOne(query, MicroService.class, Variables.col_servicesExtraInfo);
             MicroService newServiceExtraInfo = new MicroService();
@@ -221,14 +221,14 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             uniformLogger.info(doer, new ReportMessage(Variables.MODEL_SERVICE, "", "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, ""));
         }
 
-        List<parsso.idman.Models.Services.Service> serviceList = serviceRepo.listServicesFull();
+        List<parsso.idman.models.services.Service> serviceList = serviceRepo.listServicesFull();
         List<Long> ids = new LinkedList<>();
 
         List<MicroService> microServices = mongoTemplate.findAll(MicroService.class, Variables.col_servicesExtraInfo);
 
         for (MicroService microService : microServices) ids.add(microService.get_id());
 
-        for (parsso.idman.Models.Services.Service service : serviceList)
+        for (parsso.idman.models.services.Service service : serviceList)
             ids.remove(service.getId());
 
         Query query;

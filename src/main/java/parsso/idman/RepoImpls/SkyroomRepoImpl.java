@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.repoImpls;
 
 
 import org.json.JSONArray;
@@ -6,11 +6,11 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.other.SkyRoom;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.users.User;
+import parsso.idman.models.other.SkyRoom;
 import parsso.idman.repos.SkyroomRepo;
 import parsso.idman.repos.UserRepo;
 
@@ -46,7 +46,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 
             skyRoom = new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole()
                     , CreateLoginUrl(roomId, String.valueOf(userId), Realname), GetRoomGuestUrl(roomId));
-            uniformLogger.info("System", new ReportMessage("Skyroom", "", "", "created", Variables.RESULT_SUCCESS, "for User \"" + user.getUserId() + "\""));
+            uniformLogger.info("System", new ReportMessage("Skyroom", "", "", "created", Variables.RESULT_SUCCESS, "for user \"" + user.getUserId() + "\""));
             return skyRoom;
         }
         int roomId = CreateRoom(Classname);
@@ -70,7 +70,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
             HttpsURLConnection con = (HttpsURLConnection) Objects.requireNonNull(url).openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json");
-            con.setRequestProperty("User-Agent", "PostmanRuntime/7.26.10");
+            con.setRequestProperty("user-Agent", "PostmanRuntime/7.26.10");
             con.setRequestProperty("Accept-Encoding", "*/*");
             con.setRequestProperty("Accept", "gzip, deflate");
             con.setRequestProperty("Connection", "close");

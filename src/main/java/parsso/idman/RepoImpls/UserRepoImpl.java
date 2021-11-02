@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.repoImpls;
 
 
 import lombok.val;
@@ -32,16 +32,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Helpers.Communicate.Token;
-import parsso.idman.Helpers.Group.GroupsChecks;
-import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.User.*;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Users.ListUsers;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.helpers.communicate.Token;
+import parsso.idman.helpers.group.GroupsChecks;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.user.*;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.users.ListUsers;
+import parsso.idman.models.users.User;
+import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.*;
 
 import javax.naming.Name;
@@ -52,12 +52,11 @@ import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 @Service
 public class UserRepoImpl implements UserRepo {
-    public ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @Value("${user.profile.access}")
     String profileAccessiblity;
     @Value("${skyroom.api.key}")
@@ -137,6 +136,8 @@ public class UserRepoImpl implements UserRepo {
             user = null;
         }
 
+
+
         try {
             if (user == null || user.getUserId() == null) {
 
@@ -161,6 +162,7 @@ public class UserRepoImpl implements UserRepo {
                     Name dn = buildDnUser.buildDn(p.getUserId());
                     ldapTemplate.bind(dn, null, buildAttributes.build(p));
 
+
                     if (p.getStatus() != null)
                         if (p.getStatus().equals("disable"))
                             operations.disable(doerID, p.getUserId());
@@ -174,7 +176,7 @@ public class UserRepoImpl implements UserRepo {
                     return new JSONObject();
                 } else {
                     uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE,
-                            Variables.RESULT_FAILED, "Group not exist"));
+                            Variables.RESULT_FAILED, "group not exist"));
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("userId", p.getUserId());
                     jsonObject.put("invalidGroups", groupsChecks.invalidGroups(p.getMemberOf()));
@@ -192,7 +194,16 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
-    @Override
+    private DirContext authenticateAsAdmin() {
+        DirContext ctx = null;
+        try {
+            ctx = ldapTemplate.getContextSource().getContext("cn=admin,dc=sso,dc=iooc,dc=local", "09189975223");
+        } catch (Exception ignored) {
+        }
+        return ctx;
+    }
+
+
     public int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
 
         return (int) mongoTemplate.count(queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus), Variables.col_usersExtraInfo);
@@ -200,7 +211,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     @CachePut(cacheNames = "currentPic", key = "usid")
-    public User update(String doerID, String usid, User p) {
+    public HttpStatus update(String doerID, String usid, User p) {
 
         p.setUserId(usid.trim());
         Name dn = buildDnUser.buildDn(p.getUserId());
@@ -209,7 +220,7 @@ public class UserRepoImpl implements UserRepo {
 
         if (!retrieveUsers(usid).getRole().equals("USER") &&
                 user.getRole().equals("USER") && access.equalsIgnoreCase("false"))
-            return null;
+            return HttpStatus.FORBIDDEN;
 
         DirContextOperations context;
 
@@ -266,13 +277,15 @@ public class UserRepoImpl implements UserRepo {
 
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
 
+        }catch (org.springframework.ldap.InvalidAttributeValueException e){
+            uniformLogger.warn(p.getUserId(), new ReportMessage(Variables.MODEL_USER, p.getUserId(), Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
+            return HttpStatus.FOUND;
         } catch (Exception e) {
             e.printStackTrace();
             uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Writing to DB"));
-
         }
 
-        return p;
+        return HttpStatus.OK;
     }
 
     @Override
@@ -380,7 +393,7 @@ public class UserRepoImpl implements UserRepo {
                     ldapTemplate.modifyAttributes(contextUser);
                     uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
                     return HttpStatus.OK;
-                } catch (Exception e) {
+                } catch (org.springframework.ldap.InvalidAttributeValueException e){
                     uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
                     return HttpStatus.FOUND;
                 }
@@ -393,7 +406,6 @@ public class UserRepoImpl implements UserRepo {
         //} else
         //return HttpStatus.FORBIDDEN;
     }
-
     @Override
     @Cacheable(value = "currentPic", key = "user.userId")
     public String showProfilePic(HttpServletResponse response, User user) {
@@ -428,7 +440,6 @@ public class UserRepoImpl implements UserRepo {
 
         if (file.exists()) {
             try {
-                String contentType = "image/png";
                 FileInputStream out = new FileInputStream(file);
                 // copy from in to out
                 media = IOUtils.toByteArray(out);
@@ -595,7 +606,6 @@ public class UserRepoImpl implements UserRepo {
         return relatedPeople;
     }
 
-    @Override
     public List<User> getUsersOfOu(String ou) {
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});

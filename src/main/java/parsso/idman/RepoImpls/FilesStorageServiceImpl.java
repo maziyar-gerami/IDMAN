@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.repoImpls;
 
 
 import org.springframework.beans.factory.annotation.Value;

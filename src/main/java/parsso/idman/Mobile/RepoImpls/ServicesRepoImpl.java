@@ -1,4 +1,4 @@
-package parsso.idman.Mobile.RepoImpls;
+package parsso.idman.mobile.repoImpls;
 
 
 import com.google.zxing.BarcodeFormat;
@@ -15,13 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.Communicate.InstantMessage;
-import parsso.idman.Helpers.Communicate.Token;
-import parsso.idman.Mobile.Repos.ServicesRepo;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Utils.SMS.KaveNegar.KavenegarApi;
-import parsso.idman.Utils.SMS.KaveNegar.excepctions.ApiException;
-import parsso.idman.Utils.SMS.KaveNegar.excepctions.HttpException;
+import parsso.idman.helpers.communicate.InstantMessage;
+import parsso.idman.helpers.communicate.Token;
+import parsso.idman.mobile.repos.ServicesRepo;
+import parsso.idman.models.users.User;
+import parsso.idman.utils.SMS.KaveNegar.KavenegarApi;
+import parsso.idman.utils.SMS.KaveNegar.excepctions.ApiException;
+import parsso.idman.utils.SMS.KaveNegar.excepctions.HttpException;
 import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;
@@ -93,7 +93,7 @@ public class ServicesRepoImpl implements ServicesRepo {
         mongoTemplate.remove(query, Token.collection);
         mongoTemplate.save(user.getUsersExtraInfo(), Token.collection);
 
-        return "Mobile Token for " + user.getUserId() + " is created";
+        return "mobile Token for " + user.getUserId() + " is created";
 
     }
 

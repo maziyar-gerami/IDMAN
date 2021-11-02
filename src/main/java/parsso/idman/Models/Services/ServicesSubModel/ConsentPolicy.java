@@ -1,4 +1,4 @@
-package parsso.idman.Models.Services.ServicesSubModel;
+package parsso.idman.models.services.servicesSubModel;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

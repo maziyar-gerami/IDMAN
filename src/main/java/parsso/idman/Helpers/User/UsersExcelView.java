@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.User;
+package parsso.idman.helpers.user;
 
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -10,7 +10,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
-import parsso.idman.Models.Users.User;
+import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +30,7 @@ public class UsersExcelView extends AbstractXlsView {
         List<User> users = userRepo.retrieveUsersFull();
 
         // create a new Excel sheet
-        HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Users");
+        HSSFSheet sheet = (HSSFSheet) workbook.createSheet("users");
         sheet.setDefaultColumnWidth(20);
 
         // create style for header cells

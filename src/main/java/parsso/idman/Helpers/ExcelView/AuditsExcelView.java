@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.ExcelView;
+package parsso.idman.helpers.excelView;
 
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.Audit;
-import parsso.idman.Models.other.Time;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.Audit;
+import parsso.idman.models.other.Time;
 import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;

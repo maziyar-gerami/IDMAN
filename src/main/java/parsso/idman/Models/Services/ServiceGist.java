@@ -1,4 +1,4 @@
-package parsso.idman.Models.Services;
+package parsso.idman.models.services;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
-import parsso.idman.Models.other.Notification;
-import parsso.idman.Models.other.Return;
+import parsso.idman.models.other.Notification;
+import parsso.idman.models.other.Return;
 
 import java.util.LinkedList;
 import java.util.List;

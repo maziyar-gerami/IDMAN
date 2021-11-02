@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.Communicate;
+package parsso.idman.helpers.communicate;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +9,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.User.BuildAttributes;
-import parsso.idman.Helpers.User.BuildDnUser;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.helpers.user.BuildAttributes;
+import parsso.idman.helpers.user.BuildDnUser;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.users.User;
+import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.UserRepo;
 
 import java.sql.Timestamp;

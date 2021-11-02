@@ -1,4 +1,4 @@
-package parsso.idman.Utils.Query;
+package parsso.idman.utils.Query;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

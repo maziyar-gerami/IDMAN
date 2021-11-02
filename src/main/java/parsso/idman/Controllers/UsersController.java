@@ -13,20 +13,21 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-import parsso.idman.Helpers.Communicate.InstantMessage;
-import parsso.idman.Helpers.Communicate.Token;
-import parsso.idman.Helpers.User.ImportUsers;
-import parsso.idman.Helpers.User.Operations;
-import parsso.idman.Helpers.User.UsersExcelView;
-import parsso.idman.Models.Users.ListUsers;
-import parsso.idman.Models.Users.Pwd;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Models.other.SkyRoom;
+import parsso.idman.helpers.communicate.InstantMessage;
+import parsso.idman.helpers.communicate.Token;
+import parsso.idman.helpers.user.ImportUsers;
+import parsso.idman.helpers.user.Operations;
+import parsso.idman.helpers.user.UsersExcelView;
+import parsso.idman.models.users.ListUsers;
+import parsso.idman.models.users.Pwd;
+import parsso.idman.models.users.User;
+import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.models.other.SkyRoom;
 import parsso.idman.repos.EmailService;
 import parsso.idman.repos.SkyroomRepo;
 import parsso.idman.repos.UserRepo;
 
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -145,11 +146,8 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/u/{uId}")
-    public ResponseEntity<String> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) {
-
-        User userResult = userRepo.update(request.getUserPrincipal().getName(), uid, user);
-        return new ResponseEntity<>((userResult == null ? HttpStatus.FORBIDDEN : HttpStatus.OK));
-
+    public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) {
+        return new ResponseEntity<>(userRepo.update(request.getUserPrincipal().getName(), uid, user));
     }
 
     @DeleteMapping("/api/users")
@@ -220,23 +218,19 @@ public class UsersController {
 
 
     @GetMapping("/api/user")
-    public ResponseEntity<parsso.idman.Models.Users.User> retrieveUser(HttpServletRequest request) {
+    public ResponseEntity<parsso.idman.models.users.User> retrieveUser(HttpServletRequest request) {
 
         return new ResponseEntity<>(userRepo.retrieveUsers(request.getUserPrincipal().getName()), HttpStatus.OK);
     }
 
     @PutMapping("/api/user")
-    public ResponseEntity<HttpStatus> updateUser(HttpServletRequest request, @RequestBody parsso.idman.Models.Users.User user) {
-        String userId = request.getUserPrincipal().getName();
-        parsso.idman.Models.Users.User userResult = userRepo.update(userId, userId, user);
-        HttpStatus code = (userResult == null ? HttpStatus.FORBIDDEN : HttpStatus.OK);
-
-        return new ResponseEntity<>(code);
+    public ResponseEntity<HttpStatus> updateUser(HttpServletRequest request, @RequestBody parsso.idman.models.users.User user) {
+        return new ResponseEntity<>(userRepo.update(request.getUserPrincipal().getName(), request.getUserPrincipal().getName(), user));
     }
 
     @GetMapping("/api/user/photo")
     public ResponseEntity<String> getImage(HttpServletResponse response, HttpServletRequest request) {
-        parsso.idman.Models.Users.User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
+        parsso.idman.models.users.User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
         return new ResponseEntity<>(userRepo.showProfilePic(response, user), HttpStatus.OK);
     }
 
@@ -248,7 +242,7 @@ public class UsersController {
 
     @PutMapping("/api/user/password")
     public ResponseEntity<Integer> changePassword(HttpServletRequest request,
-                                                  @RequestBody JSONObject jsonObject) {
+                                                  @RequestBody JSONObject jsonObject) throws NamingException {
         //String oldPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");
@@ -281,7 +275,7 @@ public class UsersController {
     @GetMapping("/api/user/password/request")
     public ResponseEntity<Integer> requestSMS(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        parsso.idman.Models.Users.User user = userRepo.retrieveUsers(principal.getName());
+        parsso.idman.models.users.User user = userRepo.retrieveUsers(principal.getName());
         int status = userRepo.requestToken(user);
 
         if (status > 0)

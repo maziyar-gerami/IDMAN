@@ -2,11 +2,11 @@ package parsso.idman.repos;
 
 
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.License.License;
-import parsso.idman.Models.Logs.Audit;
-import parsso.idman.Models.Logs.Event;
-import parsso.idman.Models.Logs.Report;
-import parsso.idman.Models.Logs.ReportMessage;
+import parsso.idman.models.license.License;
+import parsso.idman.models.logs.Audit;
+import parsso.idman.models.logs.Event;
+import parsso.idman.models.logs.Report;
+import parsso.idman.models.logs.ReportMessage;
 
 import java.util.List;
 

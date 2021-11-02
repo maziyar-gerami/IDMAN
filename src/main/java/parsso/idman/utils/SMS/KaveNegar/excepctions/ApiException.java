@@ -1,7 +1,7 @@
-package parsso.idman.Utils.SMS.KaveNegar.excepctions;
+package parsso.idman.utils.SMS.KaveNegar.excepctions;
 
 
-import parsso.idman.Utils.SMS.KaveNegar.enums.MetaData;
+import parsso.idman.utils.SMS.KaveNegar.enums.MetaData;
 
 public class ApiException extends BaseException {
     final int code;
@@ -11,6 +11,7 @@ public class ApiException extends BaseException {
         this.code = code;
     }
 
+    @SuppressWarnings("unused")
     public MetaData getCode() {
         return MetaData.valueOf(code);
     }

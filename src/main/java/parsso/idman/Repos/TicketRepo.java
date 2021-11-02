@@ -4,8 +4,8 @@ package parsso.idman.repos;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Tickets.ListTickets;
-import parsso.idman.Models.Tickets.Ticket;
+import parsso.idman.models.tickets.ListTickets;
+import parsso.idman.models.tickets.Ticket;
 
 @SuppressWarnings("SameReturnValue")
 @Service

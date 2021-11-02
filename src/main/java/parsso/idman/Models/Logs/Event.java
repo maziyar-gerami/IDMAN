@@ -1,4 +1,4 @@
-package parsso.idman.Models.Logs;
+package parsso.idman.models.logs;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,10 +8,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Helpers.Events.ActionInfo;
-import parsso.idman.Helpers.Events.AgentInfo;
-import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Models.other.Time;
+import parsso.idman.helpers.events.ActionInfo;
+import parsso.idman.helpers.events.AgentInfo;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.models.other.Time;
 import ua_parser.Client;
 import ua_parser.Parser;
 

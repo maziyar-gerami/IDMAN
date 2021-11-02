@@ -61,12 +61,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .addFilterBefore(logoutFilter, LogoutFilter.class)
 
+
                 .authorizeRequests().antMatchers("/dashboard", "/login")
                 .authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .and()
 
-/*
+
+
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources
@@ -90,7 +92,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/mobile/**").permitAll()
 
 
-                //************* Any Authenticated Users Objects **********
+                //************* Any Authenticated users Objects **********
                 //Pages
                 .antMatchers("/dashboard").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/events").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
@@ -128,13 +130,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/services").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/groups/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/dashboard").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/reports/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/audits/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/events/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/reports/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/audits/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/events/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/transcripts/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/reports/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/audits/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/events/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
 
 
                 //******************SUPERUSER Objects ONLY *******************
@@ -168,7 +167,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
 
-*/
+
+
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .csrf().disable()
 
@@ -193,7 +193,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(AuthenticationManagerBuilder auth) {
         auth
                 .authenticationProvider(casAuthenticationProvider);
-
 
     }
 

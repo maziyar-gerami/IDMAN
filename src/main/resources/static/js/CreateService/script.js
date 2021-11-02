@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
       inviteToMeetingText: "دعوت به جلسه",
       copyText: "کپی",
       returnText: "بازگشت",
-      dynamicOTPPassword: "رمز پویا (یکبار مصرف)",
+      otpText: "رمز یکبار مصرف (Google Authenticator)",
       serviceNotificationsText: "پیام های سرویس",
       apiAddressText: "آدرس API",
       apiKeyText: "کلید API",
@@ -263,6 +263,7 @@ document.addEventListener('DOMContentLoaded', function () {
       toText: "تا: ",
       dayBasedText: "بر اساس روز",
       urlBasedText: "بر اساس آدرس",
+      smsText: "رمز پیامکی (SMS)",
     },
     created: function () {
       this.setDateNav();
@@ -1417,7 +1418,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.inviteToMeetingText = "Invite To Meeting";
           this.copyText = "Copy";
           this.returnText = "Return";
-          this.dynamicOTPPassword = "Dynamic Password (OTP)";
+          this.otpText = "One Time Password (Google Authenticator)";
           this.serviceNotificationsText = "Service Notifications";
           this.apiAddressText = "API Address";
           this.apiKeyText = "API Key";
@@ -1438,6 +1439,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.toText = "To: ";
           this.dayBasedText = "Day Based";
           this.urlBasedText = "URL Based";
+          this.smsText = "SMS";
         }else {
           window.localStorage.setItem("lang", "FA");
           this.margin = "margin-right: 30px;";
@@ -1540,7 +1542,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.inviteToMeetingText = "دعوت به جلسه";
           this.copyText = "کپی";
           this.returnText = "بازگشت";
-          this.dynamicOTPPassword = "رمز پویا (یکبار مصرف)";
+          this.otpText = "رمز یکبار مصرف (Google Authenticator)";
           this.serviceNotificationsText = "پیام های سرویس";
           this.apiAddressText = "آدرس API";
           this.apiKeyText = "کلید API";
@@ -1561,6 +1563,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.toText = "تا: ";
           this.dayBasedText = "بر اساس روز";
           this.urlBasedText = "بر اساس آدرس";
+          this.smsText = "رمز پیامکی (SMS)";
         }
       },
     },

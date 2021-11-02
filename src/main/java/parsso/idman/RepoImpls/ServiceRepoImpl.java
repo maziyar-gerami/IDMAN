@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.repoImpls;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,20 +17,20 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Helpers.Service.*;
-import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Services.Period;
-import parsso.idman.Models.Services.Schedule;
-import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Services.ServicesSubModel.ExtraInfo;
-import parsso.idman.Models.Services.SimpleTime;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.other.Time;
-import parsso.idman.Utils.Other.GenerateUUID;
+import parsso.idman.helpers.service.*;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.services.Period;
+import parsso.idman.models.services.Schedule;
+import parsso.idman.models.services.Service;
+import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.services.servicesSubModel.ExtraInfo;
+import parsso.idman.models.services.SimpleTime;
+import parsso.idman.models.users.User;
+import parsso.idman.models.other.Time;
+import parsso.idman.utils.Other.GenerateUUID;
 import parsso.idman.repos.FilesStorageService;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 @org.springframework.stereotype.Service
 public class ServiceRepoImpl implements ServiceRepo {
     final String collection = Variables.col_servicesExtraInfo;

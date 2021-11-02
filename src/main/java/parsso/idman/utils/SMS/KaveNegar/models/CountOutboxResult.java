@@ -1,8 +1,12 @@
-package parsso.idman.Utils.SMS.KaveNegar.models;
+package parsso.idman.utils.SMS.KaveNegar.models;
 
 
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class CountOutboxResult extends CountInboxResult {
     private final Long sumPart;
     private final Long cost;
@@ -13,11 +17,4 @@ public class CountOutboxResult extends CountInboxResult {
         this.cost = json.get("cost").getAsLong();
     }
 
-    public Long getSumPart() {
-        return sumPart;
-    }
-
-    public Long getCost() {
-        return cost;
-    }
 }

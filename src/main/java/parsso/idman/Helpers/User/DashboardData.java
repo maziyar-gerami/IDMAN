@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.User;
+package parsso.idman.helpers.user;
 
 
 import io.jsonwebtoken.io.IOException;
@@ -8,11 +8,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.DashboardData.Dashboard;
-import parsso.idman.Models.Logs.Event;
-import parsso.idman.Models.Users.UsersExtraInfo;
-import parsso.idman.Utils.Convertor.DateUtils;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.dashboardData.Dashboard;
+import parsso.idman.models.logs.Event;
+import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.utils.Convertor.DateUtils;
 import parsso.idman.repos.LogsRepo;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
@@ -80,7 +80,7 @@ public class DashboardData {
         Thread servicesData = new Thread(() -> {
 
             //________services data____________
-            List<parsso.idman.Models.Services.Service> services;
+            List<parsso.idman.models.services.Service> services;
             services = serviceRepo.listServicesFull();
             int nServices = 0;
             if (services != null) {
@@ -88,7 +88,7 @@ public class DashboardData {
             }
             int nEnabledServices = 0;
 
-            for (parsso.idman.Models.Services.Service service : Objects.requireNonNull(services)) {
+            for (parsso.idman.models.services.Service service : Objects.requireNonNull(services)) {
                 if (service.getAccessStrategy() != null && service.getAccessStrategy().isEnabled())
                     nEnabledServices++;
             }

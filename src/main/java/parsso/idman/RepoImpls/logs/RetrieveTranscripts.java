@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls.logs;
+package parsso.idman.repoImpls.logs;
 
 
 import org.json.simple.JSONArray;
@@ -7,14 +7,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import parsso.idman.Helpers.Group.GroupLicense;
-import parsso.idman.Helpers.Service.ExtractLicensedAndUnlicensed;
-import parsso.idman.Helpers.User.UsersLicense;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.License.License;
-import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.helpers.group.GroupLicense;
+import parsso.idman.helpers.service.ExtractLicensedAndUnlicensed;
+import parsso.idman.helpers.user.UsersLicense;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.license.License;
+import parsso.idman.models.services.Service;
+import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.LogsRepo;
 import parsso.idman.repos.ServiceRepo;
 
@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unchecked")
 @Component
 public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 
@@ -29,7 +30,7 @@ public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 
     final MongoTemplate mongoTemplate;
     final UsersLicense usersLicense;
-    final parsso.idman.Helpers.Group.GroupLicense groupLicense;
+    final parsso.idman.helpers.group.GroupLicense groupLicense;
     final ExtractLicensedAndUnlicensed extract;
 
     @Autowired

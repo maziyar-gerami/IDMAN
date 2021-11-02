@@ -1,4 +1,4 @@
-package parsso.idman.Models.DashboardData;
+package parsso.idman.models.dashboardData;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

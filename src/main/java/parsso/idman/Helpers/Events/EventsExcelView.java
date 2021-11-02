@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.Events;
+package parsso.idman.helpers.events;
 
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -9,10 +9,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.Event;
-import parsso.idman.Models.other.Time;
-import parsso.idman.Utils.Convertor.DateConverter;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.Event;
+import parsso.idman.models.other.Time;
+import parsso.idman.utils.Convertor.DateConverter;
 import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +25,6 @@ import java.util.Map;
 
 @Service
 public class EventsExcelView extends AbstractXlsView {
-    public static String mainCollection = "MongoDbCasEventRepository";
     final ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @Autowired
     LogsRepo.EventRepo eventRepo;
@@ -37,7 +36,7 @@ public class EventsExcelView extends AbstractXlsView {
         List<Event> events = eventRepo.analyze(0, 0);
 
         // create a new Excel sheet
-        HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Events");
+        HSSFSheet sheet = (HSSFSheet) workbook.createSheet("events");
         sheet.setDefaultColumnWidth(30);
 
         // create style for header cells

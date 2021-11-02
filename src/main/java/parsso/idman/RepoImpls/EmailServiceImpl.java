@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.repoImpls;
 
 
 import net.minidev.json.JSONObject;
@@ -16,12 +16,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
-import parsso.idman.Helpers.Communicate.Token;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.User.UserAttributeMapper;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Utils.Captcha.Models.CAPTCHA;
+import parsso.idman.helpers.communicate.Token;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.user.UserAttributeMapper;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.users.User;
+import parsso.idman.utils.Captcha.Models.CAPTCHA;
 import parsso.idman.repos.EmailService;
 import parsso.idman.repos.UserRepo;
 
@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Service
 public class EmailServiceImpl implements EmailService {
     private final String collection = Variables.col_captchas;

@@ -1,4 +1,4 @@
-package parsso.idman.Utils.Captcha.RepoImp;
+package parsso.idman.utils.Captcha.RepoImp;
 
 
 import lombok.Getter;
@@ -10,11 +10,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Utils.Captcha.Models.CAPTCHA;
-import parsso.idman.Utils.Captcha.Models.CAPTCHAimage;
-import parsso.idman.Utils.Captcha.Models.Points;
-import parsso.idman.Utils.Captcha.Repo.CAPTCHARepo;
+import parsso.idman.helpers.Variables;
+import parsso.idman.utils.Captcha.Models.CAPTCHA;
+import parsso.idman.utils.Captcha.Models.CAPTCHAimage;
+import parsso.idman.utils.Captcha.Models.Points;
+import parsso.idman.utils.Captcha.Repo.CAPTCHARepo;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package parsso.idman.Utils.SMS.Magfa.Classes;
+package parsso.idman.utils.SMS.Magfa.Classes;
 
 
 import javax.jws.WebMethod;

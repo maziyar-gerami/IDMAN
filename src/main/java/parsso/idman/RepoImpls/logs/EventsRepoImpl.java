@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls.logs;
+package parsso.idman.repoImpls.logs;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +7,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.Event;
-import parsso.idman.Models.other.Time;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.Event;
+import parsso.idman.models.other.Time;
 import parsso.idman.repos.LogsRepo;
 
 import java.time.OffsetDateTime;

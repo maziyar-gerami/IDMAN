@@ -735,7 +735,6 @@
                                                             <button v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
                                                             <button v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
                                                 </div>
-
                                                 <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('accessStrategy') }" id="accessStrategy">
                                                     <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s54}}</span></h4>
 
@@ -1122,7 +1121,6 @@
                                                     <button v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
                                                     <button v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
                                                 </div>
-
                                                 <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('mfa') }" id="mfa">
                                                             <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{s65}}</span></h4>
                                                             
@@ -1130,8 +1128,8 @@
                                                                 <label>{{s66}}</label>
                                                                 <select name="mfaEnabled" class="form-control">
                                                                     <option id="option17" value="" selected>{{s100}}</option>
-                                                                    <option id="option14" value="mfa-simple">SMS</option>
-                                                                    <option id="option15" value="mfa-gauth">{{dynamicOTPPassword}}</option>
+                                                                    <option id="option14" value="mfa-simple">{{smsText}}</option>
+                                                                    <option id="option15" value="mfa-gauth">{{otpText}}</option>
                                                                     <option id="option16" value="mfa-u2f">{{s99}}</option>
                                                                 </select>
                                                             </div>
@@ -1157,7 +1155,6 @@
                                                             <button v-on:click="showServices()" class="btn btn-danger">{{s46}}</button>
                                                             <button v-on:click="editService(service.id)" class="btn btn-primary">{{s45}}</button>
                                                 </div>
-
                                                 <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('notifications') }" id="notifications">
                                                     <h4 class="border-bottom pb-3 mb-3 mt-5"><span>{{serviceNotificationsText}}</span></h4>
 

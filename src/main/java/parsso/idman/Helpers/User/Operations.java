@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.User;
+package parsso.idman.helpers.user;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Users.User;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;
@@ -24,9 +24,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.UUID;
 
+@SuppressWarnings("unchecked")
 @Service
 public class Operations {
-    private final String model = "Users";
+    private final String model = "users";
     @Autowired
     BuildDnUser buildDnUser;
     @Autowired

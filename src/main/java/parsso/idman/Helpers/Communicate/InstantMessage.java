@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.Communicate;
+package parsso.idman.helpers.communicate;
 
 
 import net.minidev.json.JSONObject;
@@ -10,13 +10,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Utils.Captcha.Models.CAPTCHA;
-import parsso.idman.Utils.SMS.KaveNegar.KavenegarApi;
-import parsso.idman.Utils.SMS.KaveNegar.excepctions.ApiException;
-import parsso.idman.Utils.SMS.KaveNegar.excepctions.HttpException;
-import parsso.idman.Utils.SMS.Magfa.Texts;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.users.User;
+import parsso.idman.utils.Captcha.Models.CAPTCHA;
+import parsso.idman.utils.SMS.KaveNegar.KavenegarApi;
+import parsso.idman.utils.SMS.KaveNegar.excepctions.ApiException;
+import parsso.idman.utils.SMS.KaveNegar.excepctions.HttpException;
+import parsso.idman.utils.SMS.Magfa.Texts;
 import parsso.idman.repos.MagfaSMSSendRepo;
 import parsso.idman.repos.UserRepo;
 
@@ -47,7 +47,7 @@ public class InstantMessage {
     @Autowired
     private Token tokenClass;
     @Autowired
-    private parsso.idman.Helpers.User.UserAttributeMapper userAttributeMapper;
+    private parsso.idman.helpers.user.UserAttributeMapper userAttributeMapper;
     @Autowired
     private MagfaSMSSendRepo magfaSMSSendRepo;
 

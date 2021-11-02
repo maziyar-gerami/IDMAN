@@ -1,4 +1,4 @@
-package parsso.idman.Mobile.controller;
+package parsso.idman.mobile.controller;
 
 
 import com.google.zxing.WriterException;
@@ -9,10 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
-import parsso.idman.Models.Logs.Event;
-import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Users.User;
+import parsso.idman.mobile.repoImpls.ServicesRepoImpl;
+import parsso.idman.models.logs.Event;
+import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.users.User;
 import parsso.idman.repos.LogsRepo;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
@@ -36,7 +36,7 @@ public class MobileController {
     @Autowired
     private ServiceRepo serviceRepo;
     @Autowired
-    private parsso.idman.Helpers.User.Operations operations;
+    private parsso.idman.helpers.user.Operations operations;
 
     @GetMapping(value = "/api/mobile/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody

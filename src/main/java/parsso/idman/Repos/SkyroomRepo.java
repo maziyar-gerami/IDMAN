@@ -2,8 +2,8 @@ package parsso.idman.repos;
 
 
 import org.json.JSONObject;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.other.SkyRoom;
+import parsso.idman.models.users.User;
+import parsso.idman.models.other.SkyRoom;
 
 import java.io.IOException;
 

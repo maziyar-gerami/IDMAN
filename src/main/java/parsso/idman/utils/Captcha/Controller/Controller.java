@@ -1,4 +1,4 @@
-package parsso.idman.Utils.Captcha.Controller;
+package parsso.idman.utils.Captcha.Controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,11 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import parsso.idman.Utils.Captcha.Models.CAPTCHA;
-import parsso.idman.Utils.Captcha.Models.CAPTCHAimage;
-import parsso.idman.Utils.Captcha.RepoImp.CaptchaRepoImp;
+import parsso.idman.utils.Captcha.Models.CAPTCHAimage;
+import parsso.idman.utils.Captcha.RepoImp.CaptchaRepoImp;
 
 @RestController
 public class Controller {

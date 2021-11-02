@@ -1,9 +1,9 @@
-package parsso.idman.Helpers.User;
+package parsso.idman.helpers.user;
 
 
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.models.users.UsersExtraInfo;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;

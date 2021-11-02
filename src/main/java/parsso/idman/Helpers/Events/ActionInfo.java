@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.Events;
+package parsso.idman.helpers.events;
 
 
 import lombok.Getter;

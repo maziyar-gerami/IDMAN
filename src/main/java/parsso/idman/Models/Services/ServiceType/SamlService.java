@@ -1,10 +1,10 @@
-package parsso.idman.Models.Services.ServiceType;
+package parsso.idman.models.services.serviceType;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Models.Services.Service;
+import parsso.idman.models.services.Service;
 
 import java.util.LinkedList;
 

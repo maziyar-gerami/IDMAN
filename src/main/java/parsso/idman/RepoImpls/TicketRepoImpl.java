@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.repoImpls;
 
 
 import net.minidev.json.JSONObject;
@@ -12,14 +12,14 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Tickets.ListTickets;
-import parsso.idman.Models.Tickets.Message;
-import parsso.idman.Models.Tickets.Ticket;
-import parsso.idman.Models.other.Time;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.tickets.ListTickets;
+import parsso.idman.models.tickets.Message;
+import parsso.idman.models.tickets.Ticket;
+import parsso.idman.models.other.Time;
 import parsso.idman.repos.TicketRepo;
 import parsso.idman.repos.UserRepo;
 
@@ -27,10 +27,11 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 @Service
 public class TicketRepoImpl implements TicketRepo {
     final String collection = Variables.col_tickets;
-    final String model = "Tickets";
+    final String model = "tickets";
     final ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @Autowired
     TicketRepo ticketRepo;

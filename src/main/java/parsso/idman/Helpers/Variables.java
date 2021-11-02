@@ -1,7 +1,7 @@
-package parsso.idman.Helpers;
+package parsso.idman.helpers;
 
 
-import parsso.idman.Models.Users.User;
+import parsso.idman.models.users.User;
 
 public class Variables {
     public static final String col_casEvent = "MongoDbCasEventRepository";
@@ -14,7 +14,6 @@ public class Variables {
     public static final String ACTION_UNLOCK = "Unlock";
     public static final String ATTR_DEVICEID = "DeviceID";
     public static final String ATTR_PASSWORD = "Password";
-    public static final String ATTR_IMAGE = "Profile Image";
     public static final String ACTION_RESET = "Reset";
     public static final String ACTION_CLOSE = "Close";
     public static final String ACTION_REOPEN = "Reopen";
@@ -22,16 +21,12 @@ public class Variables {
     public static final String ACTION_LOCK = "Lock";
     public static final String ACTION_RESTORE = "Restore";
     public static final String MODEL_CONFIG = "Config";
-    public static final String ATTR_USERID = "UserID";
     public static final String ACTION_GET = "Get";
     public static final String LEVEL_INFO = "INFO";
     public static final String LEVEL_WARN = "WARN";
     public static final String LEVEL_ERROR = "ERROR";
     public static final String MODEL_CAPTCHA = "Captcha";
     public static final String STATUS_ENABLE = "Enable";
-    public static final String STATUS_DISABLE = "DISABLE";
-    public static final String STATUS_UNLOCK = "UNLOCK";
-    public static final String STATUS_LOCK = "Lock";
     public static final String STATUS_CHANGE = "Change";
     public static final String ACTION_REMOVE = "Remove";
     public static final String col_captchas = "IDMAN_Captchas";
@@ -52,9 +47,9 @@ public class Variables {
     public static final String ACTION_INSERT = "Insert";
     public static final String ACTION_DELETE = "Delete";
     public static final String ACTION_RETRIEVE = "Retrieve";
-    public static final String MODEL_USER = "User";
-    public static final String MODEL_SERVICE = "Service";
-    public static final String MODEL_GROUP = "Group";
+    public static final String MODEL_USER = "user";
+    public static final String MODEL_SERVICE = "service";
+    public static final String MODEL_GROUP = "group";
     public static final String MODEL_TICKETING = "Ticketing";
     public static final String email_recoverySubject = "بازنشانی رمز عبور";
     public static final String ZONE = "Asia/Tehran";
@@ -76,12 +71,7 @@ public class Variables {
     static final String email_stringUid = "نام کاربری: ";
     static final String email_stringLink = "لینک بازنشانی رمز عبور: ";
     static final String logo = "https://blog.pars-sso.ir/wp-content/uploads/2021/02/magit-logo.png";
-    public static String col_events = "IDMAN_Events";
-    public static String col_propertiesBackup = "IDMAN_PropertiesBackup";
-    public static String MODEL_ROLE = "Role";
-    public static String MSG_FA_CODE_401 = "نام کاربری ارسال شده صحیح نیست.";
-    public static String MSG_FA_CODE_403 = "کلید API وارد شده صحیح نیست.";
-    public static String col_GoogleAuthDevice= "MongoDbGoogleAuthenticatorRepository";
+    public static final String col_GoogleAuthDevice= "MongoDbGoogleAuthenticatorRepository";
 
     public static String template(User user, String url) {
 

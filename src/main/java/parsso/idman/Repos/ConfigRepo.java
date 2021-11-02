@@ -2,8 +2,8 @@ package parsso.idman.repos;
 
 
 import org.springframework.http.HttpStatus;
-import parsso.idman.Models.Logs.Config;
-import parsso.idman.Models.Logs.Setting;
+import parsso.idman.models.logs.Config;
+import parsso.idman.models.logs.Setting;
 
 import java.io.IOException;
 import java.util.List;

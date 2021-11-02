@@ -1,4 +1,4 @@
-package parsso.idman.Mobile.controller;
+package parsso.idman.mobile.controller;
 
 
 import com.google.zxing.WriterException;
@@ -10,9 +10,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Mobile.RepoImpls.JwtUtil;
-import parsso.idman.Mobile.RepoImpls.ServicesRepoImpl;
-import parsso.idman.Models.Users.User;
+import parsso.idman.mobile.repoImpls.JwtUtil;
+import parsso.idman.mobile.repoImpls.ServicesRepoImpl;
+import parsso.idman.models.users.User;
 import parsso.idman.configs.WebSecurityConfig;
 import parsso.idman.repos.UserRepo;
 

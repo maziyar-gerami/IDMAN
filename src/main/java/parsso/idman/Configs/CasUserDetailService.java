@@ -13,8 +13,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.users.UsersExtraInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;

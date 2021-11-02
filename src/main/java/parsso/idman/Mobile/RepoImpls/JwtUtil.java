@@ -1,11 +1,11 @@
-package parsso.idman.Mobile.RepoImpls;
+package parsso.idman.mobile.repoImpls;
 
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Users.User;
+import parsso.idman.models.users.User;
 
 import java.util.Date;
 import java.util.HashMap;

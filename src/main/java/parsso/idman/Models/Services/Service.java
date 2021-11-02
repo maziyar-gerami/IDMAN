@@ -1,4 +1,4 @@
-package parsso.idman.Models.Services;
+package parsso.idman.models.services;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.javers.core.metamodel.annotation.DiffIgnore;
-import parsso.idman.Models.Services.ServicesSubModel.AccessStrategy;
-import parsso.idman.Models.Services.ServicesSubModel.AttributeReleasePolicy;
-import parsso.idman.Models.Services.ServicesSubModel.ExtraInfo;
-import parsso.idman.Models.Services.ServicesSubModel.MultifactorPolicy;
+import parsso.idman.models.services.servicesSubModel.AccessStrategy;
+import parsso.idman.models.services.servicesSubModel.AttributeReleasePolicy;
+import parsso.idman.models.services.servicesSubModel.ExtraInfo;
+import parsso.idman.models.services.servicesSubModel.MultifactorPolicy;
 
 @Setter
 @Getter

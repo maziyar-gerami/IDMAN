@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ldap.core.LdapTemplate;
-import parsso.idman.Models.Users.User;
+import parsso.idman.models.users.user;
 import parsso.idman.repos.UserRepo;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,8 +25,8 @@ public class UsersControllerTest {
     @Test
     void retrieveUser() {
         String userID = "su";
-        User user = userRepo.retrieveUsers(userID);
-        Assert.assertNotNull("User is null", user);
+        user user = userRepo.retrieveUsers(userID);
+        Assert.assertNotNull("user is null", user);
     }
 
     @Test

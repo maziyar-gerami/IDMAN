@@ -1,9 +1,9 @@
-package parsso.idman.Models.Services;
+package parsso.idman.models.services;
 
 
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Models.other.Time;
+import parsso.idman.models.other.Time;
 
 @SuppressWarnings("rawtypes")
 @Getter

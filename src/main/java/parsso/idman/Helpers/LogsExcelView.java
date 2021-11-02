@@ -1,4 +1,4 @@
-package parsso.idman.Helpers;
+package parsso.idman.helpers;
 
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
-import parsso.idman.Models.Logs.Report;
-import parsso.idman.Models.other.Time;
-import parsso.idman.Utils.Convertor.DateConverter;
+import parsso.idman.models.logs.Report;
+import parsso.idman.models.other.Time;
+import parsso.idman.utils.Convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +36,7 @@ public class LogsExcelView extends AbstractXlsView {
         List<Report> reports = Report.analyze(mongoTemplate, 0, 0);
 
         // create a new Excel sheet
-        HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Logs");
+        HSSFSheet sheet = (HSSFSheet) workbook.createSheet("logs");
         sheet.setDefaultColumnWidth(30);
 
         // create style for header cells

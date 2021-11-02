@@ -1,4 +1,4 @@
-package parsso.idman.Models.License;
+package parsso.idman.models.license;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Setter
 @Getter
 public class License {

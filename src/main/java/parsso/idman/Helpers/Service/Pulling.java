@@ -1,10 +1,10 @@
-package parsso.idman.Helpers.Service;
+package parsso.idman.helpers.service;
 
 
 import com.mongodb.client.MongoClients;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.services.serviceType.MicroService;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

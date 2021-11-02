@@ -1,12 +1,13 @@
-package parsso.idman.Utils.JSON;
+package parsso.idman.utils.JSON;
 
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import parsso.idman.Models.Logs.Setting;
+import parsso.idman.models.logs.Setting;
 
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public class JSONencoder {
 
     public JSONencoder(List<Setting> settings) {

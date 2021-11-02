@@ -1,10 +1,9 @@
-package parsso.idman.Utils.Convertor;
+package parsso.idman.utils.Convertor;
 
 
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.other.Time;
+import parsso.idman.helpers.Variables;
 
 import java.time.ZoneId;
 
@@ -111,33 +110,6 @@ public class DateConverter {
         this.day = jDay;
     }
 
-    public String[] convertDate(String s) {
-        String[] strings = new String[2];
-        StringBuilder stringBuilder = new StringBuilder();
-        int y, m, d;
-        String[] temp = s.split("-");
-
-        y = Integer.parseInt(temp[0]);
-        m = Integer.parseInt(temp[1]);
-        d = Integer.parseInt(temp[2]);
-        if (y < 2010) {
-            persianToGregorian(y, m, d);
-            y = getYear();
-            m = getMonth();
-            d = getDay();
-        }
-
-        stringBuilder.append(MonthToString(m));
-        stringBuilder.append(" ");
-        if (d / 10 == 0)
-            stringBuilder.append("0");
-        stringBuilder.append(d);
-
-        strings[0] = String.valueOf(stringBuilder);
-        strings[1] = String.valueOf(y);
-        return strings;
-    }
-
     public String MonthToString(int n) {
         switch (n) {
             case 1:
@@ -186,14 +158,6 @@ public class DateConverter {
         this.month = gMonth;
         this.day = gDay;
     }
-
-    public Time persianToGregorianTime(int year, int month, int day) {
-        int jd = Jal2JD(year, month, day);
-        JD2JG(jd);
-        return new Time(gYear, gMonth, gDay);
-
-    }
-
 
 }
 

@@ -1,11 +1,11 @@
-package parsso.idman.Models.Services.ServicesSubModel;
+package parsso.idman.models.services.servicesSubModel;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Models.Services.Schedule;
+import parsso.idman.models.services.Schedule;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.User;
+package parsso.idman.helpers.user;
 
 
 import lombok.SneakyThrows;
@@ -8,15 +8,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Users.User;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;
 import javax.naming.directory.*;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -38,7 +37,7 @@ public class BuildAttributes {
     private String BASE_DN;
 
 
-    public Attributes build(User p) throws ParseException {
+    public Attributes build(User p) {
 
         BasicAttribute ocattr = new BasicAttribute("objectclass");
         ocattr.add("top");
@@ -85,25 +84,7 @@ public class BuildAttributes {
         if (p.isLocked())
             attrs.put("pwdAccountLockedTime", p.isEnabled());
 
-        if (p.getEndTime() != null) {
-
-            try {
-                if (p.getEndTime().length() == 13)
-                    attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN,p.getEndTime()));
-                if (p.getEndTime().length() == 10)
-                    attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN, p.getEndTime()));
-                if (p.getEndTime().contains("."))
-                    attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN,p.getEndTime()));
-
-
-            } catch (Exception e) {
-                attrs.put("pwdChangedTime", TimeHelper.setEndTime(ldapTemplate,BASE_DN,p.getEndTime()));
-            }
-
-        }
-
         attrs.put("pwdAttribute", "userPassword");
-
 
         return attrs;
     }
@@ -136,7 +117,7 @@ public class BuildAttributes {
                 context.setAttributeValue("displayName", displayName);
             }
 
-        //attribute (Mobile) *
+        //attribute (mobile) *
         if (p.getMobile() != null)
             if (!p.getMobile().equals("")) {
                 String mobile = new String(p.getMobile().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);

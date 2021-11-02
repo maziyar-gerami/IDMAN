@@ -1,4 +1,4 @@
-package parsso.idman.Models.Logs;
+package parsso.idman.models.logs;
 
 
 import lombok.Getter;
@@ -7,9 +7,9 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.other.Time;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.other.Time;
 
 import java.util.Date;
 import java.util.List;

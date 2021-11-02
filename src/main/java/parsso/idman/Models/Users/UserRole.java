@@ -1,4 +1,4 @@
-package parsso.idman.Models.Users;
+package parsso.idman.models.users;
 
 
 import lombok.Getter;

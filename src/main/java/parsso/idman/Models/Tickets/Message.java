@@ -1,13 +1,13 @@
-package parsso.idman.Models.Tickets;
+package parsso.idman.models.tickets;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.other.Time;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.models.users.User;
+import parsso.idman.models.other.Time;
 
 import java.util.Date;
 

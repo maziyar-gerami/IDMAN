@@ -1,14 +1,14 @@
-package parsso.idman.Models.Services.ServiceType;
+package parsso.idman.models.services.serviceType;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServicesSubModel.ExpirationPolicy;
-import parsso.idman.Models.Services.ServicesSubModel.Property;
-import parsso.idman.Models.Services.ServicesSubModel.ProxyPolicy;
-import parsso.idman.Models.Services.ServicesSubModel.UsernameAttributeProvider;
+import parsso.idman.models.services.Service;
+import parsso.idman.models.services.servicesSubModel.ExpirationPolicy;
+import parsso.idman.models.services.servicesSubModel.Property;
+import parsso.idman.models.services.servicesSubModel.ProxyPolicy;
+import parsso.idman.models.services.servicesSubModel.UsernameAttributeProvider;
 
 import java.util.LinkedList;
 

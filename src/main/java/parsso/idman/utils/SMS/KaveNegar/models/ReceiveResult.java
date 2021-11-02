@@ -1,4 +1,4 @@
-package parsso.idman.Utils.SMS.KaveNegar.models;
+package parsso.idman.utils.SMS.KaveNegar.models;
 
 
 import com.google.gson.JsonObject;

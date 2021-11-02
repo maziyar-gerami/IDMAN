@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.repoImpls;
 
 
 import net.minidev.json.JSONObject;
@@ -16,14 +16,14 @@ import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.User.BuildDnUser;
-import parsso.idman.Helpers.User.ExpirePassword;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Groups.Group;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.user.BuildDnUser;
+import parsso.idman.helpers.user.ExpirePassword;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.groups.Group;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.users.User;
+import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.LogsRepo;
 import parsso.idman.repos.ServiceRepo;
@@ -174,7 +174,7 @@ public class GroupRepoImpl implements GroupRepo {
     }
 
     public Name buildDn(String id) {
-        return LdapNameBuilder.newInstance("ou=" + "Groups" + "," + BASE_DN).add("ou", id).build();
+        return LdapNameBuilder.newInstance("ou=" + "groups" + "," + BASE_DN).add("ou", id).build();
     }
 
     @Override
@@ -185,7 +185,7 @@ public class GroupRepoImpl implements GroupRepo {
         final AndFilter filter = new AndFilter();
         filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
-        return ldapTemplate.search("ou=Groups," + BASE_DN, filter.encode(),
+        return ldapTemplate.search("ou=groups," + BASE_DN, filter.encode(),
                 new OUAttributeMapper());
     }
 
@@ -247,6 +247,9 @@ public class GroupRepoImpl implements GroupRepo {
                                     (new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
                             if (usersExtraInfo != null) usersExtraInfo.getMemberOf().remove(id);
                             Objects.requireNonNull(usersExtraInfo).getMemberOf().add(ou.getId());
+                            List<String> temp = usersExtraInfo.getMemberOf();
+                            temp.add(ou.getId());
+                            usersExtraInfo.setMemberOf(temp);
 
                             mongoTemplate.remove
                                     (new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
@@ -257,9 +260,9 @@ public class GroupRepoImpl implements GroupRepo {
                     }
                 }
 
-                List<parsso.idman.Models.Services.Service> services = serviceRepo.listServicesWithGroups(id);
+                List<parsso.idman.models.services.Service> services = serviceRepo.listServicesWithGroups(id);
                 if (services != null)
-                    for (parsso.idman.Models.Services.Service service : services) {
+                    for (parsso.idman.models.services.Service service : services) {
 
                         //remove old id and add new id
                         //noinspection unchecked
@@ -286,7 +289,7 @@ public class GroupRepoImpl implements GroupRepo {
             } catch (IOException ioException) {
 
                 ioException.printStackTrace();
-                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "Group", "update", Variables.RESULT_FAILED, "ioException"));
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_GROUP, id, "group", "update", Variables.RESULT_FAILED, "ioException"));
                 return HttpStatus.BAD_REQUEST;
             }
 
@@ -318,7 +321,7 @@ public class GroupRepoImpl implements GroupRepo {
             group.setId(null != attributes.get("ou") ? attributes.get("ou").get().toString() : null);
             group.setName(null != attributes.get("name") ? attributes.get("name").get().toString() : null);
             group.setDescription(null != attributes.get("description") ? attributes.get("description").get().toString() : null);
-            group.setUsersCount(mongoTemplate.count(new Query(Criteria.where("memberOf").is(group.getId())), Variables.col_usersExtraInfo));
+            group.setUsersCount(mongoTemplate.count(new Query(Criteria.where("memberOf").is(attributes.get("ou").get().toString())), Variables.col_usersExtraInfo));
             return group;
         }
     }

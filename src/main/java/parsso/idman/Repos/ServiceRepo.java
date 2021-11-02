@@ -5,9 +5,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServiceType.MicroService;
-import parsso.idman.Models.Users.User;
+import parsso.idman.models.services.Service;
+import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.users.User;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

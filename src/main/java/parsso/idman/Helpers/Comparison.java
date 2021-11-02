@@ -1,11 +1,11 @@
-package parsso.idman.Helpers;
+package parsso.idman.helpers;
 
 
 import org.json.simple.JSONArray;
 import org.springframework.stereotype.Service;
-import parsso.idman.Models.Services.ServicesSubModel.AccessStrategy;
-import parsso.idman.Models.Users.Inconsistency;
-import parsso.idman.Models.Users.UsersGroups;
+import parsso.idman.models.services.servicesSubModel.AccessStrategy;
+import parsso.idman.models.users.Inconsistency;
+import parsso.idman.models.users.UsersGroups;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

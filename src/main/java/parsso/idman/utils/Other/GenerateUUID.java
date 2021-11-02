@@ -1,4 +1,4 @@
-package parsso.idman.Utils.Other;
+package parsso.idman.utils.Other;
 
 
 import java.io.BufferedReader;

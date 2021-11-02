@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Models.Tickets.ListTickets;
-import parsso.idman.Models.Tickets.Ticket;
-import parsso.idman.Models.Users.User;
+import parsso.idman.models.tickets.ListTickets;
+import parsso.idman.models.tickets.Ticket;
+import parsso.idman.models.users.User;
 import parsso.idman.repos.TicketRepo;
 import parsso.idman.repos.UserRepo;
 

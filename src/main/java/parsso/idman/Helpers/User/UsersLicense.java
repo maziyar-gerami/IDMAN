@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.User;
+package parsso.idman.helpers.user;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -7,13 +7,14 @@ import lombok.Setter;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Component
 public class UsersLicense {
     @Autowired
@@ -23,7 +24,7 @@ public class UsersLicense {
 
     public List<UsersExtraInfo> licensedUsers(long serviceId) {
         List<UsersExtraInfo> users = new LinkedList<>();
-        parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
+        parsso.idman.models.services.Service service = serviceRepo.retrieveService(serviceId);
 
         if (service == null)
             return users;
@@ -46,7 +47,7 @@ public class UsersLicense {
 
     public List<UsersExtraInfo> unLicensedUsers(long serviceId) {
         List<UsersExtraInfo> uids = new LinkedList<>();
-        parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
+        parsso.idman.models.services.Service service = serviceRepo.retrieveService(serviceId);
 
         if (service == null)
             return null;

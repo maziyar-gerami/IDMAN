@@ -1,4 +1,4 @@
-package parsso.idman.Models.other;
+package parsso.idman.models.other;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;

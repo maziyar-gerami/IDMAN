@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.User;
+package parsso.idman.helpers.user;
 
 
 import lombok.SneakyThrows;
@@ -10,13 +10,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.users.User;
+import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.UserRepo;
 
-import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import java.util.LinkedList;
 import java.util.List;
@@ -97,6 +96,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
 
         return user;
     }
+
 
 
 }

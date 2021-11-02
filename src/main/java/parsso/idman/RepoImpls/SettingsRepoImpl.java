@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.repoImpls;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,13 +7,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.Communicate.InstantMessage;
-import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Logs.Setting;
-import parsso.idman.Models.Users.User;
+import parsso.idman.helpers.communicate.InstantMessage;
+import parsso.idman.helpers.reloadConfigs.PasswordSettings;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.logs.Setting;
+import parsso.idman.models.users.User;
 import parsso.idman.repos.ConfigRepo;
 import parsso.idman.repos.EmailService;
 import parsso.idman.repos.SettingsRepo;

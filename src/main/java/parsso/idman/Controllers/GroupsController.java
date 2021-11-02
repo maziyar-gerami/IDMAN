@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.Models.Groups.Group;
-import parsso.idman.Models.Users.User;
-import parsso.idman.Models.Users.UsersExtraInfo;
+import parsso.idman.models.groups.Group;
+import parsso.idman.models.users.User;
+import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.UserRepo;
 
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 @RequestMapping("/api/groups")
 @RestController
 public class GroupsController {
@@ -63,7 +64,7 @@ public class GroupsController {
 
     @PutMapping
     public ResponseEntity<HttpStatus> rebind(HttpServletRequest request, @RequestParam(value = "id") String ouID, @RequestBody Group ou){
-        return new ResponseEntity<>(groupRepo.update("maziyar",ouID, ou));
+        return new ResponseEntity<>(groupRepo.update(request.getUserPrincipal().getName(),ouID, ou));
     }
 
     @PutMapping("/password/expire")

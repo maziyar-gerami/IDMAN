@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function () {
         returnText: "بازگشت",
         inputEnglishFilterText: " (تنها حروف انگلیسی و اعداد مجاز می باشند)",
         inputPersianFilterText: " (تنها حروف فارسی و اعداد مجاز می باشند)",
-        dynamicOTPPassword: "رمز پویا (یکبار مصرف)",
+        otpText: "رمز یکبار مصرف (Google Authenticator)",
         accessReport: "گزارش های دسترسی سرویس",
         searchText: "جستجو...",
         allowedUsersReportSearch: "",
@@ -338,6 +338,7 @@ document.addEventListener('DOMContentLoaded', function () {
         toText: "تا: ",
         dayBasedText: "بر اساس روز",
         urlBasedText: "بر اساس آدرس",
+        smsText: "رمز پیامکی (SMS)",
       },
       created: function () {
         this.setDateNav();
@@ -2286,7 +2287,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.inviteToMeetingText = "Invite To Meeting";
             this.copyText = "Copy";
             this.returnText = "Return";
-            this.dynamicOTPPassword = "Dynamic Password (OTP)";
+            this.otpText = "One Time Password (Google Authenticator)";
             this.accessReport = "Service Access Reports";
             this.searchText = "Search...";
             this.displayNameFaText = "Full Name";
@@ -2319,6 +2320,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.toText = "To: ";
             this.dayBasedText = "Day Based";
             this.urlBasedText = "URL Based";
+            this.smsText = "SMS";
           }else {
             window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
@@ -2434,7 +2436,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.inviteToMeetingText = "دعوت به جلسه";
             this.copyText = "کپی";
             this.returnText = "بازگشت";
-            this.dynamicOTPPassword = "رمز پویا (یکبار مصرف)";
+            this.otpText = "رمز یکبار مصرف (Google Authenticator)";
             this.accessReport = "گزارش های دسترسی سرویس";
             this.searchText = "جستجو...";
             this.displayNameFaText = "نام کامل";
@@ -2467,6 +2469,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.toText = "تا: ";
             this.dayBasedText = "بر اساس روز";
             this.urlBasedText = "بر اساس آدرس";
+            this.smsText = "رمز پیامکی (SMS)";
           }
         },
         div: function (a, b) {

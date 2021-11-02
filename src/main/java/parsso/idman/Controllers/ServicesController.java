@@ -10,11 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.models.services.Service;
+import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 
@@ -27,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 @RestController
 public class ServicesController {
     private final UserRepo userRepo;
@@ -44,7 +44,7 @@ public class ServicesController {
 
     @GetMapping("/api/services/user")
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) {
-        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
+        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers("maziyar")), HttpStatus.OK);
     }
 
     @GetMapping("/api/services/main")
@@ -79,7 +79,6 @@ public class ServicesController {
                     service.getAccessStrategy().setAtClass("org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
                     service.getAccessStrategy().setEndpointUrl(baseUrl+"/api/serviceCheck/"+id);
                     service.getAccessStrategy().setAcceptableResponseCodes("200");
-
 
                     String jsonInString = new Gson().toJson(service);
                     JSONParser parser = new JSONParser();

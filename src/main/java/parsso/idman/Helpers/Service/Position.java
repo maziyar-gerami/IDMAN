@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.Service;
+package parsso.idman.helpers.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,14 +7,14 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Services.ServiceType.MicroService;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.services.serviceType.MicroService;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("SameReturnValue")
+@SuppressWarnings({"SameReturnValue", "unchecked"})
 @Service
 public class Position {
     final String collection = Variables.col_servicesExtraInfo;

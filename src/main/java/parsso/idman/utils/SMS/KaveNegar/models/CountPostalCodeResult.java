@@ -1,8 +1,12 @@
-package parsso.idman.Utils.SMS.KaveNegar.models;
+package parsso.idman.utils.SMS.KaveNegar.models;
 
 
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class CountPostalCodeResult {
     private final String section;
     private final Long value;
@@ -12,12 +16,5 @@ public class CountPostalCodeResult {
         this.value = json.get("value").getAsLong();
     }
 
-    public String getSection() {
-        return section;
-    }
-
-    public long getValue() {
-        return value;
-    }
 
 }

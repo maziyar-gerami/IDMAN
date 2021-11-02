@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.Service;
+package parsso.idman.helpers.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,14 +12,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import parsso.idman.Helpers.Comparison;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServiceType.CasService;
-import parsso.idman.Models.Services.ServicesSubModel.*;
-import parsso.idman.Models.Users.UsersGroups;
+import parsso.idman.helpers.Comparison;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.services.Service;
+import parsso.idman.models.services.serviceType.CasService;
+import parsso.idman.models.services.servicesSubModel.*;
+import parsso.idman.models.users.UsersGroups;
 import parsso.idman.repos.ServiceRepo;
 
 import java.io.File;
@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 @Component
 public class CasServiceHelper {
     @Value("${services.folder.path}")
@@ -42,7 +43,7 @@ public class CasServiceHelper {
 
     public CasService buildCasService(JSONObject jo) {
 
-        CasService service = new parsso.idman.Models.Services.ServiceType.CasService();
+        CasService service = new parsso.idman.models.services.serviceType.CasService();
         if (jo.get("id") != null)
             service.setId(Long.parseLong(jo.get("id").toString()));
 

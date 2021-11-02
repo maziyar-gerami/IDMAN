@@ -1,4 +1,4 @@
-package parsso.idman.Utils.SMS.KaveNegar.enums;
+package parsso.idman.utils.SMS.KaveNegar.enums;
 
 
 public enum MessageType {

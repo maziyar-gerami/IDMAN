@@ -3,7 +3,7 @@ package parsso.idman.repos;
 
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
-import parsso.idman.Models.other.PublicMessage;
+import parsso.idman.models.other.PublicMessage;
 
 import java.util.List;
 

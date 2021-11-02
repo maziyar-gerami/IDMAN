@@ -1,4 +1,4 @@
-package parsso.idman.Models.other;
+package parsso.idman.models.other;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
-import parsso.idman.Helpers.TimeHelper;
+import parsso.idman.helpers.TimeHelper;
 
 import java.util.UUID;
 

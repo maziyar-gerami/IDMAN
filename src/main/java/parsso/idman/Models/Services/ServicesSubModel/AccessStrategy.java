@@ -1,4 +1,4 @@
-package parsso.idman.Models.Services.ServicesSubModel;
+package parsso.idman.models.services.servicesSubModel;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,13 +8,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Utils.Convertor.DateConverter;
+import parsso.idman.helpers.Variables;
+import parsso.idman.utils.Convertor.DateConverter;
 
 import java.time.ZoneId;
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("ALL")
 @Setter
 @Getter
 

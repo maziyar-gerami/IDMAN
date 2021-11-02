@@ -1,4 +1,4 @@
-package parsso.idman.Models.Users;
+package parsso.idman.models.users;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,14 +10,15 @@ import org.bson.types.ObjectId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import parsso.idman.Helpers.TimeHelper;
-import parsso.idman.Models.License.License;
-import parsso.idman.Models.other.SkyRoom;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.models.license.License;
+import parsso.idman.models.other.SkyRoom;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Getter
 @Setter
 public class User implements UserDetails, Comparable {
@@ -117,7 +118,7 @@ public class User implements UserDetails, Comparable {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "user{" +
                 "userId='" + userId + '\'' +
                 '}';
     }

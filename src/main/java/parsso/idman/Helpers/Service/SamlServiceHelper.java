@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.Service;
+package parsso.idman.helpers.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,13 +12,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import parsso.idman.Helpers.Comparison;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Services.Service;
-import parsso.idman.Models.Services.ServiceType.SamlService;
-import parsso.idman.Models.Services.ServicesSubModel.*;
+import parsso.idman.helpers.Comparison;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.services.Service;
+import parsso.idman.models.services.serviceType.SamlService;
+import parsso.idman.models.services.servicesSubModel.*;
 import parsso.idman.repos.ServiceRepo;
 
 import java.io.File;
@@ -28,9 +28,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 @Component
 public class SamlServiceHelper {
-    final String model = "Service";
+    final String model = "service";
     @Value("${services.folder.path}")
     String path;
     @Autowired

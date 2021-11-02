@@ -3,8 +3,8 @@ package parsso.idman.repos;
 
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
-import parsso.idman.Models.Groups.Group;
-import parsso.idman.Models.Users.User;
+import parsso.idman.models.groups.Group;
+import parsso.idman.models.users.User;
 
 import java.util.List;
 

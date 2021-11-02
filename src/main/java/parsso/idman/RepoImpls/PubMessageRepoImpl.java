@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.repoImpls;
 
 
 import net.minidev.json.JSONObject;
@@ -8,10 +8,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.other.PublicMessage;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.other.PublicMessage;
 import parsso.idman.repos.PubMessageRepo;
 
 import java.util.ArrayList;
@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("ALL")
 @Service
 public class PubMessageRepoImpl implements PubMessageRepo {
     final String model = "PublicMessage";

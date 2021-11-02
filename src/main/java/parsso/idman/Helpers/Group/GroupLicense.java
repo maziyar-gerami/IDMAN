@@ -1,4 +1,4 @@
-package parsso.idman.Helpers.Group;
+package parsso.idman.helpers.group;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -7,13 +7,14 @@ import lombok.Setter;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import parsso.idman.Models.Groups.Group;
+import parsso.idman.models.groups.Group;
 import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.ServiceRepo;
 
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Component
 public class GroupLicense {
     @Autowired
@@ -24,7 +25,7 @@ public class GroupLicense {
     public List<Group> licensedGroups(long serviceId) {
         List<Group> groups = new LinkedList<>();
 
-        parsso.idman.Models.Services.Service service = serviceRepo.retrieveService(serviceId);
+        parsso.idman.models.services.Service service = serviceRepo.retrieveService(serviceId);
         JSONArray jsonArray = (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1);
         for (Object name : jsonArray)
             try {

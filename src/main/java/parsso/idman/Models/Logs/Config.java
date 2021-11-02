@@ -1,9 +1,9 @@
-package parsso.idman.Models.Logs;
+package parsso.idman.models.logs;
 
 
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.Models.other.Time;
+import parsso.idman.models.other.Time;
 
 import java.util.List;
 

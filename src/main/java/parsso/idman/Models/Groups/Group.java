@@ -1,4 +1,4 @@
-package parsso.idman.Models.Groups;
+package parsso.idman.models.groups;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
-import parsso.idman.Models.License.License;
+import parsso.idman.models.license.License;
 
 import java.util.List;
 
@@ -32,6 +32,4 @@ public class Group {
         List<String> add;
         List<String> remove;
     }
-
-
 }

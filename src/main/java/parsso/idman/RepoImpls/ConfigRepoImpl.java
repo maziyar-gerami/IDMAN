@@ -1,4 +1,4 @@
-package parsso.idman.RepoImpls;
+package parsso.idman.repoImpls;
 
 
 import org.json.simple.JSONArray;
@@ -10,16 +10,16 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import parsso.idman.Helpers.Communicate.InstantMessage;
-import parsso.idman.Helpers.ReloadConfigs.PasswordSettings;
-import parsso.idman.Helpers.UniformLogger;
-import parsso.idman.Helpers.Variables;
-import parsso.idman.Models.Logs.Config;
-import parsso.idman.Models.Logs.ReportMessage;
-import parsso.idman.Models.Logs.Setting;
-import parsso.idman.Models.other.Time;
-import parsso.idman.Utils.Convertor.DateConverter;
-import parsso.idman.Utils.JSON.JSONencoder;
+import parsso.idman.helpers.communicate.InstantMessage;
+import parsso.idman.helpers.reloadConfigs.PasswordSettings;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.Config;
+import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.logs.Setting;
+import parsso.idman.models.other.Time;
+import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.utils.JSON.JSONencoder;
 import parsso.idman.repos.ConfigRepo;
 import parsso.idman.repos.UserRepo;
 
