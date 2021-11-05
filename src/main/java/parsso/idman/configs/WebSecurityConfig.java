@@ -68,7 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
 
-
+/*
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources
@@ -166,6 +166,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .anyRequest().authenticated()
                 .and()
+
+ */
 
 
 
