@@ -8,7 +8,6 @@ import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +22,7 @@ public interface UserRepo {
 
     byte[] showProfilePic(User user);
 
-    void uploadProfilePic(MultipartFile file, String name);
+    boolean uploadProfilePic(MultipartFile file, String name);
 
     List<UsersExtraInfo> retrieveUsersMain(int page, int number);
 

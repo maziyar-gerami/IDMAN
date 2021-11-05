@@ -235,8 +235,9 @@ public class UsersController {
 
     @PostMapping("/api/user/photo")
     public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
-        userRepo.uploadProfilePic(file, request.getUserPrincipal().getName());
-        return new RedirectView("/dashboard");
+        if (userRepo.uploadProfilePic(file, request.getUserPrincipal().getName()))
+            return new RedirectView("/dashboard");
+        return new RedirectView("errorpage");
     }
 
     @PutMapping("/api/user/password")
