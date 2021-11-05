@@ -137,7 +137,6 @@ public class UserRepoImpl implements UserRepo {
         }
 
 
-
         try {
             if (user == null || user.getUserId() == null) {
 
@@ -161,6 +160,34 @@ public class UserRepoImpl implements UserRepo {
                     //create user in ldap
                     Name dn = buildDnUser.buildDn(p.getUserId());
                     ldapTemplate.bind(dn, null, buildAttributes.build(p));
+
+                    /*try {
+
+                        String s = "ldapmodify -D cn="+p.getUserId()+","+BASE_DN+"-W -e relax -f change_timestamp.ldif";
+
+                        StringBuilder stringBuilder = new StringBuilder();
+                        stringBuilder.append();
+
+                        try {
+                            FileWriter myWriter = new FileWriter("D:\\app\\"+p.getUserId());
+                            myWriter.write(s);
+                            myWriter.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+                        Process process = Runtime.getRuntime().exec(s);
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+
+
+                     */
+
+
 
 
                     if (p.getStatus() != null)
@@ -271,7 +298,6 @@ public class UserRepoImpl implements UserRepo {
 
         try {
 
-            ldapTemplate.modifyAttributes(context);
 
             mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
 
@@ -449,7 +475,7 @@ public class UserRepoImpl implements UserRepo {
                 return media;
             }
         }
-        return media;
+        return null;
     }
 
     @Override
@@ -469,8 +495,8 @@ public class UserRepoImpl implements UserRepo {
 
         userUpdate.setPhoto(s);
         if (update(userUpdate.getUserId(), userUpdate.getUserId(), userUpdate) != null) {
-            if (oldPic.delete()) {
-            }
+            oldPic.delete();
+
 
         }
     }
@@ -710,6 +736,7 @@ public class UserRepoImpl implements UserRepo {
         boolean accessRole;
         try {
             if (user.getUsersExtraInfo() == null) {
+                //noinspection ConstantConditions
                 Objects.requireNonNull(user.getUsersExtraInfo());
             }
             accessRole = true;
@@ -748,7 +775,6 @@ public class UserRepoImpl implements UserRepo {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
         }
     }
 

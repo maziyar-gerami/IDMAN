@@ -17,7 +17,7 @@ import java.util.List;
 public interface UserRepo {
     List<String> remove(String doerID, JSONObject jsonObject);
 
-    HttpStatus changePassword(String uId, String newPassword, String token) throws NamingException;
+    HttpStatus changePassword(String uId, String newPassword, String token);
 
     String showProfilePic(HttpServletResponse response, User user);
 

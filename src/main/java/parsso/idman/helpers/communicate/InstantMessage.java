@@ -12,11 +12,11 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.users.User;
-import parsso.idman.utils.Captcha.Models.CAPTCHA;
-import parsso.idman.utils.SMS.KaveNegar.KavenegarApi;
-import parsso.idman.utils.SMS.KaveNegar.excepctions.ApiException;
-import parsso.idman.utils.SMS.KaveNegar.excepctions.HttpException;
-import parsso.idman.utils.SMS.Magfa.Texts;
+import parsso.idman.utils.captcha.Models.CAPTCHA;
+import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
+import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
+import parsso.idman.utils.sms.kaveNegar.excepctions.HttpException;
+import parsso.idman.utils.sms.magfa.Texts;
 import parsso.idman.repos.MagfaSMSSendRepo;
 import parsso.idman.repos.UserRepo;
 

@@ -5,7 +5,7 @@ import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.other.Time;
-import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.utils.convertor.DateConverter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,8 +36,6 @@ public class TimeHelper {
     }
 
     public static String getExportEndTime(String input) {
-
-        Instant instant = Instant.now(); //can be LocalDateTime
 
         String Y = input.substring(0, 4);
         String M = input.substring(4, 6);
@@ -203,7 +201,6 @@ public class TimeHelper {
 
         Instant instant = Instant.now(); //can be LocalDateTime
         ZoneId systemZone = ZoneId.of(Variables.ZONE); // my timezone
-        ZoneOffset currentOffsetForMyZone = systemZone.getRules().getOffset(instant);
 
         SimpleDateFormat f = new SimpleDateFormat("yyyyMMddhhmmss.SSS");
 

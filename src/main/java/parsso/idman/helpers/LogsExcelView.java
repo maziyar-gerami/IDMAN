@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.other.Time;
-import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.utils.convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

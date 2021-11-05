@@ -18,8 +18,8 @@ import parsso.idman.models.logs.Config;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.logs.Setting;
 import parsso.idman.models.other.Time;
-import parsso.idman.utils.Convertor.DateConverter;
-import parsso.idman.utils.JSON.JSONencoder;
+import parsso.idman.utils.convertor.DateConverter;
+import parsso.idman.utils.json.JSONencoder;
 import parsso.idman.repos.ConfigRepo;
 import parsso.idman.repos.UserRepo;
 

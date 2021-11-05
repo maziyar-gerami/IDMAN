@@ -242,7 +242,7 @@ public class UsersController {
 
     @PutMapping("/api/user/password")
     public ResponseEntity<Integer> changePassword(HttpServletRequest request,
-                                                  @RequestBody JSONObject jsonObject) throws NamingException {
+                                                  @RequestBody JSONObject jsonObject) {
         //String oldPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");

@@ -19,9 +19,9 @@ import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.mobile.repos.ServicesRepo;
 import parsso.idman.models.users.User;
-import parsso.idman.utils.SMS.KaveNegar.KavenegarApi;
-import parsso.idman.utils.SMS.KaveNegar.excepctions.ApiException;
-import parsso.idman.utils.SMS.KaveNegar.excepctions.HttpException;
+import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
+import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
+import parsso.idman.utils.sms.kaveNegar.excepctions.HttpException;
 import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;

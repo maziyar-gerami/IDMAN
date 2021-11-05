@@ -3,7 +3,7 @@ package parsso.idman.models.other;
 
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.utils.convertor.DateConverter;
 
 import java.util.Calendar;
 

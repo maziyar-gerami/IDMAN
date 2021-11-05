@@ -9,7 +9,7 @@ import lombok.Setter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import parsso.idman.helpers.Variables;
-import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.utils.convertor.DateConverter;
 
 import java.time.ZoneId;
 import java.util.Map;

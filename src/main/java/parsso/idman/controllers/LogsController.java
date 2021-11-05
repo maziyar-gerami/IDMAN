@@ -110,6 +110,7 @@ public class LogsController {
         return new ResponseEntity<>(reportsRepo.accessManaging(page, nRows, _id, date, doerId, instanceName), HttpStatus.OK);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @GetMapping("/export")
     public ModelAndView downloadExcelAudit(@RequestParam("type") String type) {
         // return a view which will be resolved by an excel view resolver

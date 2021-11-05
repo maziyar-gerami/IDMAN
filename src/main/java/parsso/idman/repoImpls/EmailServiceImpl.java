@@ -21,7 +21,7 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.users.User;
-import parsso.idman.utils.Captcha.Models.CAPTCHA;
+import parsso.idman.utils.captcha.Models.CAPTCHA;
 import parsso.idman.repos.EmailService;
 import parsso.idman.repos.UserRepo;
 
