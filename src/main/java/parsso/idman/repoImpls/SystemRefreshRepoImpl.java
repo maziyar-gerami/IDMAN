@@ -100,7 +100,8 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                 } else {
 
-                    Objects.requireNonNull(userExtraInfo).setUserId(user.getUserId());
+                    userExtraInfo = new UsersExtraInfo();
+                    userExtraInfo.setUserId(user.getUserId());
                     userExtraInfo = new UsersExtraInfo();
                     userExtraInfo.setQrToken(UUID.randomUUID().toString());
                 }
