@@ -480,7 +480,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     @CachePut(cacheNames = "currentPic", key = "#file")
-    public void uploadProfilePic(MultipartFile file, String name) {
+    public boolean uploadProfilePic(MultipartFile file, String name) {
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
 
@@ -495,10 +495,9 @@ public class UserRepoImpl implements UserRepo {
 
         userUpdate.setPhoto(s);
         if (update(userUpdate.getUserId(), userUpdate.getUserId(), userUpdate) != null) {
-            oldPic.delete();
-
-
+            return oldPic.delete();
         }
+        return false;
     }
 
     @Override
@@ -915,7 +914,6 @@ public class UserRepoImpl implements UserRepo {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException {
         List<String> result = null;
@@ -990,9 +988,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public Boolean retrieveUsersDevice(String userName) {
-        if (mongoTemplate.count(new Query(Criteria.where("username").is(userName)), Variables.col_GoogleAuthDevice)>0)
-            return true;
-        return false;
+        return mongoTemplate.count(new Query(Criteria.where("username").is(userName)), Variables.col_GoogleAuthDevice) > 0;
     }
 }
 

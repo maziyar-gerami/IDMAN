@@ -12,7 +12,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.users.User;
-import parsso.idman.utils.captcha.Models.CAPTCHA;
+import parsso.idman.utils.captcha.models.CAPTCHA;
 import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
 import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
 import parsso.idman.utils.sms.kaveNegar.excepctions.HttpException;
@@ -95,7 +95,7 @@ public class InstantMessage {
         if (!(answer.equalsIgnoreCase(captcha.getPhrase())))
             mongoTemplate.remove(query, collection);
 
-        User user = new User();
+        User user;
 
         List<JSONObject> checked = checkMobile(mobile);
 
