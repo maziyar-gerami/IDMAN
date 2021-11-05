@@ -25,24 +25,34 @@ import java.util.UUID;
 @Service
 public class Token {
     public static final String collection = Variables.col_usersExtraInfo;
-    @Autowired
     BuildAttributes buildAttributes;
-    @Autowired
     LdapTemplate ldapTemplate;
-    @Autowired
     InstantMessage instantMessage;
-    @Autowired
     BuildDnUser buildDnUser;
-    @Autowired
     MongoTemplate mongoTemplate;
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
     @Value("${token.valid.email}")
     private int EMAIL_VALID_TIME;
     @Value("${token.valid.SMS}")
     private int SMS_VALID_TIME;
     @Value("${sms.validation.digits}")
     private int SMS_VALIDATION_DIGITS;
+
+    public Token(UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
+
+    @Autowired
+    public Token(UserRepo userRepo, MongoTemplate mongoTemplate,BuildDnUser buildDnUser, InstantMessage instantMessage,
+                 LdapTemplate ldapTemplate, BuildAttributes buildAttributes) {
+        this.userRepo = userRepo;
+        this.mongoTemplate = mongoTemplate;
+        this.buildDnUser = buildDnUser;
+        this.instantMessage = instantMessage;
+        this.ldapTemplate = ldapTemplate;
+        this.buildAttributes = buildAttributes;
+    }
+
 
     public HttpStatus checkToken(String userId, String token) {
         // return OK or code 200: token is valid and time is ok

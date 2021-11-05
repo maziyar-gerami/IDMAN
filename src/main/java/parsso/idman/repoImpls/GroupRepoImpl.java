@@ -42,24 +42,34 @@ import java.util.Objects;
 
 @Service
 public class GroupRepoImpl implements GroupRepo {
-    @Autowired
     BuildDnUser buildDnUser;
-    @Autowired
     MongoTemplate mongoTemplate;
-    @Autowired
     UniformLogger uniformLogger;
-    @Autowired
     ExpirePassword expirePassword;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-    @Autowired
     private LdapTemplate ldapTemplate;
-    @Autowired
     private UserRepo userRepo;
-    @Autowired
     private ServiceRepo serviceRepo;
-    @Autowired
     private LogsRepo.TranscriptRepo transcriptRepo;
+
+
+    @Autowired
+    public GroupRepoImpl(LogsRepo.TranscriptRepo transcriptRepo, ServiceRepo serviceRepo,UserRepo userRepo,LdapTemplate ldapTemplate,
+                         ExpirePassword expirePassword,UniformLogger uniformLogger,MongoTemplate mongoTemplate,BuildDnUser buildDnUser) {
+        this.transcriptRepo = transcriptRepo;
+        this.serviceRepo = serviceRepo;
+        this.userRepo = userRepo;
+        this.expirePassword = expirePassword;
+        this.uniformLogger = uniformLogger;
+        this.mongoTemplate = mongoTemplate;
+        this.buildDnUser = buildDnUser;
+
+
+
+
+
+    }
 
     @Override
     public HttpStatus remove(String doerID, JSONObject jsonObject) {

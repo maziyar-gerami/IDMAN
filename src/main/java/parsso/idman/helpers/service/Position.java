@@ -1,7 +1,6 @@
 package parsso.idman.helpers.service;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -18,8 +17,12 @@ import java.util.Objects;
 @Service
 public class Position {
     final String collection = Variables.col_servicesExtraInfo;
-    @Autowired
+    final
     MongoTemplate mongoTemplate;
+
+    public Position(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public int lastPosition() {
         List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);

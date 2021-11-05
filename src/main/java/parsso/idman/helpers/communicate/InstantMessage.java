@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.models.users.User;
 import parsso.idman.utils.captcha.models.CAPTCHA;
 import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
@@ -26,9 +27,7 @@ import java.util.List;
 @Configuration
 public class InstantMessage {
     private final String collection = Variables.col_captchas;
-    @Autowired
     MongoTemplate mongoTemplate;
-    @Autowired
     private UserRepo userRepo;
     @Value("${token.valid.SMS}")
     private String SMS_VALID_TIME;
@@ -42,14 +41,24 @@ public class InstantMessage {
     private String BASE_DN;
     @Value("${SMS.SDK}")
     private String SMS_sdk;
-    @Autowired
     private LdapTemplate ldapTemplate;
-    @Autowired
     private Token tokenClass;
-    @Autowired
     private parsso.idman.helpers.user.UserAttributeMapper userAttributeMapper;
-    @Autowired
     private MagfaSMSSendRepo magfaSMSSendRepo;
+
+    public InstantMessage() {
+    }
+
+    @Autowired
+    public InstantMessage(UserAttributeMapper userAttributeMapper,MagfaSMSSendRepo magfaSMSSendRepo,Token tokenClass,
+                          LdapTemplate ldapTemplate,UserRepo userRepo,MongoTemplate mongoTemplate) {
+        this.userAttributeMapper = userAttributeMapper;
+        this.magfaSMSSendRepo = magfaSMSSendRepo;
+        this.tokenClass = tokenClass;
+        this.ldapTemplate = ldapTemplate;
+        this.userRepo = userRepo;
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public int sendMessage(String mobile, String cid, String answer) {
 

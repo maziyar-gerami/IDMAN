@@ -61,32 +61,19 @@ public class UserRepoImpl implements UserRepo {
     String profileAccessiblity;
     @Value("${skyroom.api.key}")
     String skyRoomApiKey;
-    @Autowired
     ExcelAnalyzer excelAnalyzer;
-    @Autowired
     UniformLogger uniformLogger;
-    @Autowired
     SkyroomRepo skyroomRepo;
-    @Autowired
     GroupRepo groupRepo;
-    @Autowired
     SystemRefresh systemRefresh;
-    @Autowired
-    GroupsChecks groupsChecks;
-    @Autowired
     Operations operations;
-    @Autowired
     FilesStorageService storageService;
-    @Autowired
     ExpirePassword expirePassword;
-    @Autowired
     LogsRepo.TranscriptRepo transcriptRepo;
     @Value("${base.url}")
     private String BASE_URL;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-    @Value("${get.users.time.interval}")
-    private int apiHours;
     @Value("${user.profile.access}")
     private String access;
     @Value("${default.user.password}")
@@ -95,24 +82,43 @@ public class UserRepoImpl implements UserRepo {
     private String uploadedFilesPath;
     @Value("${skyroom.enable}")
     private String skyroomEnable;
+    private final LdapTemplate ldapTemplate;
+    private final BuildAttributes buildAttributes;
+    private final Token tokenClass;
+    private final MongoTemplate mongoTemplate;
+    private final UserAttributeMapper userAttributeMapper;
+    private final SimpleUserAttributeMapper simpleUserAttributeMapper;
+    private final BuildDnUser buildDnUser;
+    private final ImportUsers importUsers;
+    private final EmailService emailService;
+
     @Autowired
-    private LdapTemplate ldapTemplate;
-    @Autowired
-    private BuildAttributes buildAttributes;
-    @Autowired
-    private Token tokenClass;
-    @Autowired
-    private MongoTemplate mongoTemplate;
-    @Autowired
-    private UserAttributeMapper userAttributeMapper;
-    @Autowired
-    private SimpleUserAttributeMapper simpleUserAttributeMapper;
-    @Autowired
-    private BuildDnUser buildDnUser;
-    @Autowired
-    private ImportUsers importUsers;
-    @Autowired
-    private EmailService emailService;
+    public UserRepoImpl(ImportUsers importUsers, EmailService emailService, BuildDnUser buildDnUser,
+                        SimpleUserAttributeMapper simpleUserAttributeMapper, UserAttributeMapper userAttributeMapper,
+                        MongoTemplate mongoTemplate, Token tokenClass, BuildAttributes buildAttributes, LdapTemplate ldapTemplate,
+                        ExpirePassword expirePassword, FilesStorageService storageService, LogsRepo.TranscriptRepo transcriptRepo,
+                        Operations operations, SystemRefresh systemRefresh,GroupRepo groupRepo, SkyroomRepo skyroomRepo,
+                        UniformLogger uniformLogger,ExcelAnalyzer excelAnalyzer) {
+        this.importUsers = importUsers;
+        this.emailService = emailService;
+        this.buildDnUser = buildDnUser;
+        this.simpleUserAttributeMapper = simpleUserAttributeMapper;
+        this.userAttributeMapper = userAttributeMapper;
+        this.mongoTemplate = mongoTemplate;
+        this.tokenClass = tokenClass;
+        this.buildAttributes = buildAttributes;
+        this.ldapTemplate = ldapTemplate;
+        this.expirePassword = expirePassword;
+        this.storageService = storageService;
+        this.transcriptRepo = transcriptRepo;
+        this.operations = operations;
+        this.systemRefresh = systemRefresh;
+        this.groupRepo = groupRepo;
+        this.skyroomRepo = skyroomRepo;
+        this.uniformLogger = uniformLogger;
+        this.excelAnalyzer = excelAnalyzer;
+
+    }
 
     @Override
     public JSONObject create(String doerID, User p) {
@@ -155,7 +161,7 @@ public class UserRepoImpl implements UserRepo {
                     return jsonObject;
                 }
 
-                if (groupsChecks.checkGroup(p.getMemberOf())) {
+                if (new GroupsChecks(groupRepo).checkGroup(p.getMemberOf())) {
 
                     //create user in ldap
                     Name dn = buildDnUser.buildDn(p.getUserId());
@@ -206,7 +212,7 @@ public class UserRepoImpl implements UserRepo {
                             Variables.RESULT_FAILED, "group not exist"));
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("userId", p.getUserId());
-                    jsonObject.put("invalidGroups", groupsChecks.invalidGroups(p.getMemberOf()));
+                    jsonObject.put("invalidGroups", new GroupsChecks(groupRepo).checkGroup(p.getMemberOf()));
                     return jsonObject;
                 }
             } else {

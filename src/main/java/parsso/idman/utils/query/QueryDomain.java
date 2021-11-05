@@ -1,7 +1,6 @@
 package parsso.idman.utils.query;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -13,8 +12,12 @@ import java.net.UnknownHostException;
 @Service
 public class QueryDomain {
     final String collection = "IDMAN_DNS";
-    @Autowired
+    final
     MongoTemplate mongoTemplate;
+
+    public QueryDomain(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     private static String ipToDomain(String ip) throws UnknownHostException {
 

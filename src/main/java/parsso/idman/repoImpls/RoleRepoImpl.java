@@ -23,10 +23,15 @@ import java.util.Objects;
 public class RoleRepoImpl implements RolesRepo {
     final String collection = Variables.col_usersExtraInfo;
     final String model = "Role";
-    @Autowired
     UniformLogger uniformLogger;
-    @Autowired
     MongoTemplate mongoTemplate;
+
+    public RoleRepoImpl(MongoTemplate mongoTemplate,UniformLogger uniformLogger) {
+        this.mongoTemplate = mongoTemplate;
+        this.uniformLogger = uniformLogger;
+
+    }
+
 
     @Override
     public List<UserRole> retrieve() {

@@ -26,23 +26,31 @@ import java.util.Objects;
 @Service
 public class DashboardData {
     final ZoneId zoneId = ZoneId.of(Variables.ZONE);
-    @Autowired
     UserRepo userRepo;
-    @Autowired
     LogsRepo.EventRepo eventRepo;
-    @Autowired
     ServiceRepo serviceRepo;
-    @Autowired
     MongoTemplate mongoTemplate;
-    @Autowired
     UserAttributeMapper userAttributeMapper;
-    @Autowired
     SimpleUserAttributeMapper simpleUserAttributeMapper;
-    @Autowired
+    final
     LdapTemplate ldapTemplate;
     Dashboard.Users fUsers;
     Dashboard.Services fServices;
     Dashboard.Logins fLogins;
+
+
+    @Autowired
+    public DashboardData(SimpleUserAttributeMapper simpleUserAttributeMapper, LdapTemplate ldapTemplate,UserAttributeMapper userAttributeMapper,
+                         MongoTemplate mongoTemplate,ServiceRepo serviceRepo,LogsRepo.EventRepo eventRepo,UserRepo userRepo ) {
+        this.simpleUserAttributeMapper = simpleUserAttributeMapper;
+        this.ldapTemplate = ldapTemplate;
+        this.userAttributeMapper = userAttributeMapper;
+        this.mongoTemplate = mongoTemplate;
+        this.serviceRepo = serviceRepo;
+        this.eventRepo = eventRepo;
+        this.userRepo = userRepo;
+    }
+
 
     public Dashboard retrieveDashboardData() throws IOException {
 

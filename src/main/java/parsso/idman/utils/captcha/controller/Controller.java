@@ -1,7 +1,6 @@
 package parsso.idman.utils.captcha.controller;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +11,16 @@ import parsso.idman.utils.captcha.repoImp.CaptchaRepoImp;
 
 @RestController
 public class Controller {
-    @Autowired
+    final
     CaptchaRepoImp captchaRepoImp;
     @Value("${captcha.length}")
     private String captchaLength;
     @Value("${captcha.alphabet.rate}")
     private String captchaAlphabetRate;
+
+    public Controller(CaptchaRepoImp captchaRepoImp) {
+        this.captchaRepoImp = captchaRepoImp;
+    }
 
     @GetMapping("/api/captcha/request")
     private ResponseEntity<CAPTCHAimage> requestCaptcha() {

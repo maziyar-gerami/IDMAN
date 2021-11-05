@@ -21,14 +21,19 @@ import java.util.List;
 
 @Service
 public class ExpirePassword {
-    @Autowired
     LdapTemplate ldapTemplate;
-    @Autowired
     MongoTemplate mongoTemplate;
-    @Autowired
     BuildDnUser buildDnUser;
-    @Autowired
     UniformLogger uniformLogger;
+
+    @Autowired
+    public ExpirePassword(BuildDnUser buildDnUser, MongoTemplate mongoTemplate, LdapTemplate ldapTemplate,UniformLogger uniformLogger) {
+        this.buildDnUser = buildDnUser;
+        this.mongoTemplate = mongoTemplate;
+        this.ldapTemplate = ldapTemplate;
+        this.uniformLogger = uniformLogger;
+    }
+
 
     public List<String> expire(String doer, List<UsersExtraInfo> users) {
 

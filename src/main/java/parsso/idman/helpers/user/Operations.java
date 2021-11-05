@@ -24,20 +24,26 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.UUID;
 
-@SuppressWarnings("unchecked")
 @Service
 public class Operations {
     private final String model = "users";
-    @Autowired
     BuildDnUser buildDnUser;
-    @Autowired
     UserRepo userRepo;
-    @Autowired
     LdapTemplate ldapTemplate;
-    @Autowired
     UniformLogger uniformLogger;
     @Value("${qr.devices.path}")
     private String qrDevicesPath;
+
+    public Operations(UniformLogger uniformLogger) {
+        this.uniformLogger = uniformLogger;
+    }
+
+    @Autowired
+    public Operations(LdapTemplate ldapTemplate,UserRepo userRepo, BuildDnUser buildDnUser) {
+        this.ldapTemplate = ldapTemplate;
+        this.userRepo = userRepo;
+        this.buildDnUser = buildDnUser;
+    }
 
     public HttpStatus enable(String doer, String uid) {
 

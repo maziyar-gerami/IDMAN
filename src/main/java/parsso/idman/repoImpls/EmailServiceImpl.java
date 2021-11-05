@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("ALL")
+@SuppressWarnings("rawtypes")
 @Service
 public class EmailServiceImpl implements EmailService {
     private final String collection = Variables.col_captchas;
