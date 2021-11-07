@@ -30,7 +30,7 @@ import parsso.idman.models.services.servicesSubModel.ExtraInfo;
 import parsso.idman.models.services.SimpleTime;
 import parsso.idman.models.users.User;
 import parsso.idman.models.other.Time;
-import parsso.idman.utils.Other.GenerateUUID;
+import parsso.idman.utils.other.GenerateUUID;
 import parsso.idman.repos.FilesStorageService;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;

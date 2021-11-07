@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
-import parsso.idman.utils.SMS.Magfa.Classes.*;
+import parsso.idman.utils.sms.magfa.classes.*;
 import parsso.idman.repos.MagfaSMSSendRepo;
 
 import javax.xml.ws.BindingProvider;

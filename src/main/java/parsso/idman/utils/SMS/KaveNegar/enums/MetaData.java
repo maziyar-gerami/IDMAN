@@ -1,4 +1,4 @@
-package parsso.idman.utils.SMS.KaveNegar.enums;
+package parsso.idman.utils.sms.kaveNegar.enums;
 
 
 public enum MetaData {

@@ -27,7 +27,6 @@ import parsso.idman.repos.EmailService;
 import parsso.idman.repos.SkyroomRepo;
 import parsso.idman.repos.UserRepo;
 
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -77,8 +76,7 @@ public class UsersController {
     @PutMapping("/api/users/password/expire")
     public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
                                                        @RequestBody JSONObject jsonObject) {
-        Principal principal = request.getUserPrincipal();
-        List<String> preventedUsers = userRepo.expirePassword(principal.getName(), jsonObject);
+        List<String> preventedUsers = userRepo.expirePassword(request.getUserPrincipal().getName(), jsonObject);
 
         if (preventedUsers == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -236,13 +234,14 @@ public class UsersController {
 
     @PostMapping("/api/user/photo")
     public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
-        userRepo.uploadProfilePic(file, request.getUserPrincipal().getName());
-        return new RedirectView("/dashboard");
+        if (userRepo.uploadProfilePic(file, request.getUserPrincipal().getName()))
+            return new RedirectView("/dashboard");
+        return new RedirectView("errorpage");
     }
 
     @PutMapping("/api/user/password")
     public ResponseEntity<Integer> changePassword(HttpServletRequest request,
-                                                  @RequestBody JSONObject jsonObject) throws NamingException {
+                                                  @RequestBody JSONObject jsonObject) {
         //String oldPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");

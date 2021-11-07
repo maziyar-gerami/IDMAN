@@ -1,4 +1,4 @@
-package parsso.idman.utils.Convertor;
+package parsso.idman.utils.convertor;
 
 
 import lombok.Getter;

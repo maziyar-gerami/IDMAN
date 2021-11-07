@@ -1,4 +1,4 @@
-package parsso.idman.utils.SMS.Magfa.Classes;
+package parsso.idman.utils.sms.magfa.classes;
 
 
 import javax.xml.namespace.QName;
@@ -57,6 +57,7 @@ public class MagfaSoapServer_Service
         super(wsdlLocation, serviceName, features);
     }
 
+    @SuppressWarnings("SameReturnValue")
     private static URL __getWsdlLocation() {
         if (MAGFASOAPSERVER_EXCEPTION != null) {
             throw MAGFASOAPSERVER_EXCEPTION;

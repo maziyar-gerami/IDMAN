@@ -59,6 +59,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
         }
     }
 
+
     @Override
     public void saveProfilePhoto(MultipartFile file, String name) {
 

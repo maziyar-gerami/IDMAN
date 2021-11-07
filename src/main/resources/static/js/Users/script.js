@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s79: "بله",
             s80: "ممیزی ها",
             s81: "/audits",
-            s82: "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.",
+            s82: "رمز عبور جدید نباید با رمز عبور های قدیمی یکسان باشند.",
             s83: "غیرقابل حذف",
             s84: "کاربران زیر غیرقابل حذف می باشند.",
             s85: "کاربری یافت نشد",
@@ -974,15 +974,15 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             editPass: function (id) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var check = confirm(this.s26);
-                var vm = this;
-                if (check == true) {
+                let check = confirm(this.s26);
+                let vm = this;
+                if (check === true) {
                     axios({
-                        method: 'put',
-                        url: url + '/api/users/u/' + id,  //
-                        headers: {'Content-Type': 'application/json'},
+                        method: "put",
+                        url: url + "/api/users/u/" + id,  //
+                        headers: {"Content-Type": "application/json"},
                         data: JSON.stringify({
-                            userPassword: document.getElementById('newPassword').value
+                            userPassword: document.getElementById("newPassword").value
                         }).replace(/\\\\/g, "\\")
                     })
                     .then((res) => {
@@ -1634,7 +1634,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s78 = "No";
                     this.s79 = "Yes";
                     this.s80 = "Audits";
-                    this.s82 = "New Password Should Not be Same as Old Password.";
+                    this.s82 = "New Password Should Not be the Same as Old Passwords.";
                     this.s83 = "Indelible";
                     this.s84 = "Users Listed Below Are Indelible.";
                     this.s85 = "No User Found";
@@ -1784,7 +1784,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s78 = "خیر";
                     this.s79 = "بله";
                     this.s80 = "ممیزی ها";
-                    this.s82 = "رمز عبور جدید و رمز عبور قدیمی نباید یکسان باشند.";
+                    this.s82 = "رمز عبور جدید نباید با رمز عبور های قدیمی یکسان باشند.";
                     this.s83 = "غیرقابل حذف";
                     this.s84 = "کاربران زیر غیرقابل حذف می باشند.";
                     this.s85 = "کاربری یافت نشد";

@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
@@ -42,7 +41,7 @@ public class ExpirePassword {
                 ModificationItem[] modificationItems;
                 modificationItems = new ModificationItem[1];
 
-                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdEndTime", TimeHelper.getCurrentTimeStampOffset()));
+                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdReset","TRUE"));
 
                 try {
                     ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
@@ -54,7 +53,7 @@ public class ExpirePassword {
 
                 } catch (Exception e) {
                     try {
-                        modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime", TimeHelper.getCurrentTimeStampOffset()));
+                        modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdReset", "TRUE"));
                         ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
                         mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
                         mongoTemplate.save(user, Variables.col_usersExtraInfo);

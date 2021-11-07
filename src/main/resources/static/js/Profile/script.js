@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function () {
             duplicatePasswords: false,
             incorrectPassword: false,
             incorrectToken: false,
-            pwdInHistory: "5",
             s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
             s1: "",
             s2: "خروج",
@@ -96,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s40: "./dashboard",
             s41: "ممیزی ها",
             s42: "/audits",
-            s43: "رمز عبور جدید و " + "5" + " رمز عبور آخر نباید یکسان باشند.",
+            s43: "رمز عبور جدید نباید با رمز عبور های قدیمی یکسان باشند.",
             s44: "رمز عبور فعلی اشتباه است.",
             s45: "کد تایید اشتباه است.",
             rolesText: "نقش ها",
@@ -308,9 +307,9 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             editPass: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                if(document.getElementById('token').value != ""){
+                if(document.getElementById("token").value !== ""){
                     let check = confirm(this.s24);
-                    if (check == true) {
+                    if (check === true) {
                         axios({
                             method: "put",
                             url: url + "/api/user/password",   //
@@ -325,7 +324,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         }).catch((error) => {
                             if(error.response) {
                                 if(error.response.status === 302) {
-                                    vm.pwdInHistory = String(error.data);
                                     vm.duplicatePasswords = true;
                                     setTimeout(function(){ vm.duplicatePasswords = false; }, 5000);
                                 }else if(error.response.status === 403) {
@@ -496,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s38 = "Please Click On The Link Below To Download The App.";
                     this.s39 = "Go Back";
                     this.s41 = "Audits";
-                    this.s43 = "New Password Should Not be Same as the Last " + this.pwdInHistory + " Passwords.";
+                    this.s43 = "New Password Should Not be the Same as Old Passwords.";
                     this.s44 = "Current Password is Incorrect.";
                     this.s45 = "Verification Code is Incorrect.";
                     this.rolesText = "Roles";
@@ -581,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s38 = "لطفا برای دریافت برنامه موبایل بر روی لینک زیر کلیک کنید.";
                     this.s39 = "بازگشت";
                     this.s41 = "ممیزی ها";
-                    this.s43 = "رمز عبور جدید و " + this.pwdInHistory + " رمز عبور آخر نباید یکسان باشند.";
+                    this.s43 = "رمز عبور جدید نباید با رمز عبور های قدیمی یکسان باشند.";
                     this.s44 = "رمز عبور فعلی اشتباه است.";
                     this.s45 = "کد تایید اشتباه است.";
                     this.rolesText = "نقش ها";

@@ -1,4 +1,4 @@
-package parsso.idman.utils.SMS.KaveNegar.utils;
+package parsso.idman.utils.sms.kaveNegar.utils;
 
 
 import java.util.List;

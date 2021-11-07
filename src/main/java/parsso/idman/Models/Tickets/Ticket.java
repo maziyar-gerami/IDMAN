@@ -44,7 +44,6 @@ public class Ticket {
     List<Message> messages;
 
     public Ticket() {
-
     }
 
     public Ticket(String from, String subject, List<Message> messages) {

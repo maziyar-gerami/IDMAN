@@ -1,4 +1,4 @@
-package parsso.idman.utils.SMS.KaveNegar.excepctions;
+package parsso.idman.utils.sms.kaveNegar.excepctions;
 
 
 public class HttpException extends BaseException {

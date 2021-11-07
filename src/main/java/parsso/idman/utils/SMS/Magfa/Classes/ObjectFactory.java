@@ -1,4 +1,4 @@
-package parsso.idman.utils.SMS.Magfa.Classes;
+package parsso.idman.utils.sms.magfa.classes;
 
 
 import javax.xml.bind.annotation.XmlRegistry;

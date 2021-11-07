@@ -1,8 +1,8 @@
-package parsso.idman.utils.SMS.KaveNegar.models;
+package parsso.idman.utils.sms.kaveNegar.models;
 
 
 import com.google.gson.JsonObject;
-import parsso.idman.utils.SMS.KaveNegar.enums.MessageStatus;
+import parsso.idman.utils.sms.kaveNegar.enums.MessageStatus;
 
 public class StatusResult {
     int messageId;

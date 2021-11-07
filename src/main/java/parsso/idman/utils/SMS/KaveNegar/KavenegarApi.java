@@ -1,4 +1,4 @@
-package parsso.idman.utils.SMS.KaveNegar;
+package parsso.idman.utils.sms.kaveNegar;
 
 
 import com.google.gson.*;
@@ -10,13 +10,13 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import parsso.idman.utils.SMS.KaveNegar.enums.MessageType;
-import parsso.idman.utils.SMS.KaveNegar.excepctions.ApiException;
-import parsso.idman.utils.SMS.KaveNegar.excepctions.BaseException;
-import parsso.idman.utils.SMS.KaveNegar.excepctions.HttpException;
-import parsso.idman.utils.SMS.KaveNegar.models.*;
-import parsso.idman.utils.SMS.KaveNegar.utils.PairValue;
-import parsso.idman.utils.SMS.KaveNegar.utils.StringUtils;
+import parsso.idman.utils.sms.kaveNegar.enums.MessageType;
+import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
+import parsso.idman.utils.sms.kaveNegar.excepctions.BaseException;
+import parsso.idman.utils.sms.kaveNegar.excepctions.HttpException;
+import parsso.idman.utils.sms.kaveNegar.models.*;
+import parsso.idman.utils.sms.kaveNegar.utils.PairValue;
+import parsso.idman.utils.sms.kaveNegar.utils.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -12,7 +12,7 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.other.Time;
-import parsso.idman.utils.Convertor.DateConverter;
+import parsso.idman.utils.convertor.DateConverter;
 import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;

@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
+import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class Notifs {
@@ -73,7 +74,7 @@ public class Notifs {
 
         } catch (Exception ignored) {
         }
-        int count = Integer.parseInt(json.get("count").toString());
+        int count = Integer.parseInt(Objects.requireNonNull(json).get("count").toString());
         LinkedList<Notification> notifications;
         try {
             //TODO: Correct it

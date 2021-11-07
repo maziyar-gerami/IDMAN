@@ -1,4 +1,4 @@
-package parsso.idman.utils.SMS.Magfa;
+package parsso.idman.utils.sms.magfa;
 
 
 import lombok.Getter;

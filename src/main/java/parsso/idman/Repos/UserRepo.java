@@ -8,7 +8,6 @@ import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
@@ -17,13 +16,13 @@ import java.util.List;
 public interface UserRepo {
     List<String> remove(String doerID, JSONObject jsonObject);
 
-    HttpStatus changePassword(String uId, String newPassword, String token) throws NamingException;
+    HttpStatus changePassword(String uId, String newPassword, String token);
 
     String showProfilePic(HttpServletResponse response, User user);
 
     byte[] showProfilePic(User user);
 
-    void uploadProfilePic(MultipartFile file, String name);
+    boolean uploadProfilePic(MultipartFile file, String name);
 
     List<UsersExtraInfo> retrieveUsersMain(int page, int number);
 

@@ -1,7 +1,7 @@
-package parsso.idman.utils.SMS.KaveNegar.excepctions;
+package parsso.idman.utils.sms.kaveNegar.excepctions;
 
 
-import parsso.idman.utils.SMS.KaveNegar.enums.MetaData;
+import parsso.idman.utils.sms.kaveNegar.enums.MetaData;
 
 public class ApiException extends BaseException {
     final int code;

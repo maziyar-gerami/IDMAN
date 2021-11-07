@@ -1,4 +1,4 @@
-package parsso.idman.utils.FilesStorageService;
+package parsso.idman.utils.filesStorageService;
 
 
 import org.springframework.http.HttpStatus;

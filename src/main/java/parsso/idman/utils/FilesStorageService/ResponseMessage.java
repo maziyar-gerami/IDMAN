@@ -1,4 +1,4 @@
-package parsso.idman.utils.FilesStorageService;
+package parsso.idman.utils.filesStorageService;
 
 
 public class ResponseMessage {
