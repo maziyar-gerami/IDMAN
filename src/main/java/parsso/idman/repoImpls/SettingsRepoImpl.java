@@ -25,35 +25,29 @@ import java.util.List;
 
 @Service
 public class SettingsRepoImpl implements SettingsRepo {
+    @Value("${interval.check.pass.hours}")
+    private static long intervalCheckPassTime;
     final int millis = 3600000;
+    @Autowired
     PasswordSettings passwordSettings;
+    @Autowired
     UserRepo userRepo;
+    @Autowired
     InstantMessage instantMessage;
+    @Autowired
     ConfigRepo configRepo;
+    @Autowired
     EmailService emailService;
+    @Autowired
     MongoTemplate mongoTemplate;
-    final
+    @Autowired
     UniformLogger uniformLogger;
 
+    private SettingsRepo settingsRepo;
     @Value("${max.pwd.lifetime.hours}")
     private long maxPwdLifetime;
     @Value("${expire.pwd.message.hours}")
     private long expirePwdMessageTime;
-
-
-
-    @Autowired
-    public SettingsRepoImpl(MongoTemplate mongoTemplate, UniformLogger uniformLogger,EmailService emailService,
-                            ConfigRepo configRepo , InstantMessage instantMessage, UserRepo userRepo, PasswordSettings passwordSettings) {
-        this.mongoTemplate = mongoTemplate;
-        this.uniformLogger = uniformLogger;
-        this.emailService = emailService;
-        this.configRepo = configRepo;
-        this.instantMessage = instantMessage;
-        this.userRepo = userRepo;
-        this.passwordSettings = passwordSettings;
-    }
-
 
     @Override
     public Setting retrieve(String settingName) {

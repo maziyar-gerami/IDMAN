@@ -22,22 +22,14 @@ import java.util.List;
 
 @Service
 public class UserAttributeMapper implements AttributesMapper<User> {
+    @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
     LdapTemplate ldapTemplate;
+    @Autowired
     UserRepo userRepo;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-
-    public UserAttributeMapper(UserRepo userRepo) {
-        this.userRepo = userRepo;
-    }
-
-    @Autowired
-    public UserAttributeMapper(LdapTemplate ldapTemplate,MongoTemplate mongoTemplate) {
-        this.ldapTemplate = ldapTemplate;
-        this.mongoTemplate = mongoTemplate;
-
-    }
 
     @SneakyThrows
     @Override

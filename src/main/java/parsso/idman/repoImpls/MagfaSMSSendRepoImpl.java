@@ -1,6 +1,7 @@
 package parsso.idman.repoImpls;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
@@ -15,16 +16,12 @@ import java.util.*;
 
 @Service
 public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
-    final
+    @Autowired
     UniformLogger uniformLogger;
     @Value("${SMS.Magfa.username}")
     String username;
     @Value("${SMS.Magfa.password}")
     String password;
-
-    public MagfaSMSSendRepoImpl(UniformLogger uniformLogger) {
-        this.uniformLogger = uniformLogger;
-    }
 
     @Override
     public void SendMessage(String message, String PhoneNumber, Long id) {

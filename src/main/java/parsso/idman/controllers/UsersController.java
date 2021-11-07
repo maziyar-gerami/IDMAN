@@ -27,6 +27,7 @@ import parsso.idman.repos.EmailService;
 import parsso.idman.repos.SkyroomRepo;
 import parsso.idman.repos.UserRepo;
 
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -76,8 +77,7 @@ public class UsersController {
     @PutMapping("/api/users/password/expire")
     public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
                                                        @RequestBody JSONObject jsonObject) {
-        Principal principal = request.getUserPrincipal();
-        List<String> preventedUsers = userRepo.expirePassword(principal.getName(), jsonObject);
+        List<String> preventedUsers = userRepo.expirePassword(request.getUserPrincipal().getName(), jsonObject);
 
         if (preventedUsers == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

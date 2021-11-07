@@ -36,29 +36,24 @@ import java.util.*;
 @SuppressWarnings("DuplicatedCode")
 @Service
 public class ConfigRepoImpl implements ConfigRepo {
+    @Autowired
     PasswordSettings passwordSettings;
+    @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
     InstantMessage instantMessage;
+    @Autowired
     UserRepo userRepo;
+    @Autowired
     UniformLogger uniformLogger;
-    private final ApplicationContext appContext;
+    @Autowired
+    private ApplicationContext appContext;
     @Value("${external.config}")
     private String pathToProperties;
     @Value("${external.config.backup}")
     private String backUpOfProperties;
     @Value("${backup.path}")
     private String backUpPath;
-
-    @Autowired
-    public ConfigRepoImpl(UniformLogger uniformLogger, UserRepo userRepo,ApplicationContext appContext,
-                          InstantMessage instantMessage, MongoTemplate mongoTemplate,PasswordSettings passwordSettings) {
-        this.uniformLogger = uniformLogger;
-        this.userRepo = userRepo;
-        this.appContext = appContext;
-        this.instantMessage = instantMessage;
-        this.mongoTemplate = mongoTemplate;
-        this.passwordSettings = passwordSettings;
-    }
 
     public static List<Setting> parser(Scanner reader, String system) {
 
@@ -157,7 +152,7 @@ public class ConfigRepoImpl implements ConfigRepo {
     }
 
     @Override
-    public boolean updateSettings(String doerID, List<Setting> settings) {
+    public void updateSettings(String doerID, List<Setting> settings) {
 
         StringBuilder file_properties = new StringBuilder();
 
@@ -199,8 +194,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 
             File newFile = new File(pathToProperties);
 
-            if(newFile.createNewFile())
-                return false;
+            newFile.createNewFile();
 
             FileWriter fw = new FileWriter(newFile);
 
@@ -212,8 +206,6 @@ public class ConfigRepoImpl implements ConfigRepo {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-        return true;
 
     }
 

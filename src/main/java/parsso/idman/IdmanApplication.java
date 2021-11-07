@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator;
 import org.jasig.cas.client.validation.TicketValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -57,7 +58,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private static String mongoUri;
     @Resource
     FilesStorageService storageService;
-    final
+    @Autowired
     CasUserDetailService casUserDetailService;
     @Value("${cas.url.logout.path}")
     private String casLogout;
@@ -65,10 +66,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private String ticketValidator;
     @Value("${base.url}")
     private String baseurl;
-
-    public IdmanApplication(CasUserDetailService casUserDetailService) {
-        this.casUserDetailService = casUserDetailService;
-    }
 
     //@Autowired
     //private static SAtoSU sAtoSU;
@@ -192,13 +189,11 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Service
     @Getter
     public static class Pullings {
-        final
+        @Autowired
         UserRepoImpl userRepo;
 
 
-        public Pullings(UserRepoImpl userRepo) {
-            this.userRepo = userRepo;
-        }
+
     }
 
 

@@ -29,15 +29,10 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     String apiKey;
     @Value("${skyroom.enable}")
     String skyroomEnable;
-    UserRepo userRepo;
-    UniformLogger uniformLogger;
-
     @Autowired
-    public SkyroomRepoImpl(UniformLogger uniformLogger,UserRepo userRepo) {
-        this.userRepo = userRepo;
-        this.uniformLogger = uniformLogger;
-
-    }
+    UserRepo userRepo;
+    @Autowired
+    UniformLogger uniformLogger;
 
     public SkyRoom Run(User user) throws IOException {
 

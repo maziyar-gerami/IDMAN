@@ -1,19 +1,18 @@
 package parsso.idman.helpers.group;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import parsso.idman.models.groups.Group;
 import parsso.idman.repos.GroupRepo;
 
 import java.util.LinkedList;
 import java.util.List;
 
+@Service
 public class GroupsChecks {
-    final
+    @Autowired
     GroupRepo groupRepo;
-
-    public GroupsChecks(GroupRepo groupRepo) {
-        this.groupRepo = groupRepo;
-    }
 
     public boolean checkGroup(List<String> groups) {
         if (groups.size() == 1 && groups.get(0).equals(""))

@@ -13,7 +13,7 @@ public interface ConfigRepo {
 
     String retrieveSetting() throws IOException;
 
-    boolean updateSettings(String doerID, List<Setting> settings);
+    void updateSettings(String doerID, List<Setting> settings);
 
     HttpStatus backupConfig();
 

@@ -41,11 +41,9 @@ public class ConfigsController {
 
     @PutMapping("/api/configs")
     public ResponseEntity<String> updateSettings(HttpServletRequest request, @RequestBody List<Setting> settings) {
-        if(configRepo.updateSettings(request.getUserPrincipal().getName(), settings)) {
-            passwordSettings.update(settings);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }else
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
+        passwordSettings.update(settings);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/api/configs/backup")

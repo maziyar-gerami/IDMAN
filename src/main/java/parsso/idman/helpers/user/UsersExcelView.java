@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.models.users.User;
@@ -19,12 +20,8 @@ import java.util.Map;
 
 @Service
 public class UsersExcelView extends AbstractXlsView {
-    final
+    @Autowired
     UserRepo userRepo;
-
-    public UsersExcelView(UserRepo userRepo) {
-        this.userRepo = userRepo;
-    }
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {

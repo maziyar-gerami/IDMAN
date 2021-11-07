@@ -3,6 +3,7 @@ package parsso.idman.helpers.user;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
@@ -22,23 +23,18 @@ import java.time.ZoneOffset;
 @Service
 public class BuildAttributes {
     final ZoneId zoneId = ZoneId.of(Variables.ZONE);
-    MongoTemplate mongoTemplate;
-    BuildDnUser buildDnUser;
-    private final UserRepo userRepo;
-    private final LdapTemplate ldapTemplate;
-    private final Operations operations;
-
-
     @Autowired
-    public BuildAttributes(LdapTemplate ldapTemplate, UserRepo userRepo, BuildDnUser buildDnUser,MongoTemplate mongoTemplate,
-                           Operations operations) {
-        this.ldapTemplate = ldapTemplate;
-        this.userRepo = userRepo;
-        this.buildDnUser = buildDnUser;
-        this.mongoTemplate = mongoTemplate;
-        this.operations = operations;
-
-    }
+    MongoTemplate mongoTemplate;
+    @Autowired
+    BuildDnUser buildDnUser;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private LdapTemplate ldapTemplate;
+    @Autowired
+    private Operations operations;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
 
 
     public Attributes build(User p) {

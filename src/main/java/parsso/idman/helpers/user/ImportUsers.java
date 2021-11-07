@@ -35,20 +35,12 @@ import java.util.Objects;
 @SuppressWarnings("SameReturnValue")
 @Service
 public class ImportUsers {
+    @Autowired
     private UserRepo userRepo;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-    LdapTemplate ldapTemplate;
-
-    public ImportUsers() {
-    }
-
     @Autowired
-    public ImportUsers(LdapTemplate ldapTemplate,UserRepo userRepo) {
-        this.userRepo = userRepo;
-        this.ldapTemplate = ldapTemplate;
-
-    }
+    LdapTemplate ldapTemplate;
 
     public JSONObject excelSheetAnalyze(String doerId, Sheet sheet, int[] sequence, boolean hasHeader) {
         JSONArray jsonArray = new JSONArray();

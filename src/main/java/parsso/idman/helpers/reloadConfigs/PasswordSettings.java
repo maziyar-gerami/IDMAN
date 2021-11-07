@@ -2,6 +2,7 @@ package parsso.idman.helpers.reloadConfigs;
 
 
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
@@ -18,7 +19,7 @@ import java.util.List;
 @Getter
 @Service
 public class PasswordSettings {
-    final
+    @Autowired
     LdapTemplate ldapTemplate;
     @Value("${pwd.min.lentgh}")
     String pwd_min_lentgh;
@@ -38,10 +39,6 @@ public class PasswordSettings {
     String pwd_failure_count_interval;
     @Value("${pwd.check.quality}")
     String pwd_check_quality;
-
-    public PasswordSettings(LdapTemplate ldapTemplate) {
-        this.ldapTemplate = ldapTemplate;
-    }
 
     private Name buidDn() {
         return LdapNameBuilder.newInstance("ads-pwdId=default,ou=passwordPolicies,ads-interceptorId=authenticationInterceptor,ou=interceptors,ads-directoryServiceId=default,ou=config").build();

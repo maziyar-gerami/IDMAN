@@ -15,17 +15,10 @@ import java.util.List;
 
 @Service
 public class UniformLogger {
-    MongoTemplate mongoTemplate;
-    ServiceRepo serviceRepo;
-
-    public UniformLogger() {
-    }
-
     @Autowired
-    public UniformLogger(ServiceRepo serviceRepo,MongoTemplate mongoTemplate) {
-        this.serviceRepo = serviceRepo;
-        this.mongoTemplate = mongoTemplate;
-    }
+    MongoTemplate mongoTemplate;
+    @Autowired
+    ServiceRepo serviceRepo;
 
     public void warn(String doerId, ReportMessage reportMessage) {
         Logger logger = LogManager.getLogger(doerId);

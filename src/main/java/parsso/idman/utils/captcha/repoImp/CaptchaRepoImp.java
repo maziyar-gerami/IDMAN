@@ -28,6 +28,7 @@ import java.util.Random;
 @Getter
 @Service
 public class CaptchaRepoImp implements CAPTCHARepo {
+    @Autowired
     MongoTemplate mongoTemplate;
     private int len;
     private double alphabetRate;
@@ -55,11 +56,6 @@ public class CaptchaRepoImp implements CAPTCHARepo {
     public CaptchaRepoImp(int len) {
         this.alphabetRate = 0.5;
         this.len = len;
-    }
-
-    @Autowired
-    public CaptchaRepoImp(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
     }
 
     public CAPTCHAimage createCaptcha(int len, double alphabetRate) {

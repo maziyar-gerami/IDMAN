@@ -37,36 +37,25 @@ import java.util.UUID;
 
 @Service
 public class SystemRefreshRepoImpl implements SystemRefresh {
+    @Autowired
     ServiceRepo serviceRepo;
+    @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
     UniformLogger uniformLogger;
+    @Autowired
     LdapTemplate ldapTemplate;
+    @Autowired
     UserRepo userRepo;
+    @Autowired
     UserAttributeMapper userAttributeMapper;
+    @Autowired
     SimpleUserAttributeMapper simpleUserAttributeMapper;
+    @Autowired
     DashboardData dashboardData;
     String model = "Refresh";
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-
-    public SystemRefreshRepoImpl(DashboardData dashboardData) {
-        this.dashboardData = dashboardData;
-    }
-
-    @Autowired
-    public SystemRefreshRepoImpl(SimpleUserAttributeMapper simpleUserAttributeMapper,UserAttributeMapper userAttributeMapper,
-                                 UserRepo userRepo, LdapTemplate ldapTemplate, UniformLogger uniformLogger, MongoTemplate mongoTemplate,ServiceRepo serviceRepo) {
-        this.simpleUserAttributeMapper = simpleUserAttributeMapper;
-        this.userAttributeMapper = userAttributeMapper;
-        this.userRepo = userRepo;
-        this.ldapTemplate = ldapTemplate;
-        this.uniformLogger = uniformLogger;
-        this.mongoTemplate = mongoTemplate;
-        this.serviceRepo = serviceRepo;
-
-
-    }
-
 
     @Override
     public HttpStatus userRefresh(String doer) {
