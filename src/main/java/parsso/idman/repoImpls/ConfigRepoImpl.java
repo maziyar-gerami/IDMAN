@@ -226,8 +226,7 @@ public class ConfigRepoImpl implements ConfigRepo {
         Path copied = Paths.get(pathToProperties);
         String s = backUpPath + date + "_application.properties";
 
-        if(new File(backUpPath).mkdirs())
-            return HttpStatus.FORBIDDEN;
+        new File(backUpPath).mkdirs();
 
         Path originalPath = Paths.get(s);
         try {

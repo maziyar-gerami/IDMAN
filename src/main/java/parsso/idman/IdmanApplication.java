@@ -79,7 +79,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
 
         val runnable = new Runnable() {
-            @SuppressWarnings("BusyWait")
             @SneakyThrows
             @Override
             public void run() {
