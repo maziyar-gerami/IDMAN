@@ -67,8 +67,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Value("${base.url}")
     private String baseurl;
 
-    //@Autowired
-    //private static SAtoSU sAtoSU;
+    private static SAtoSU sAtoSU;
 
     public static void main(String[] args) {
 
@@ -104,6 +103,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         //refresh(context);
         Thread thread = new Thread(runnable);
         Thread sathread = new Thread(SUrunnable);
+        sathread.start();
         thread.start();
 
     }

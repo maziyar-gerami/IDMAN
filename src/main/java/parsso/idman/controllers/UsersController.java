@@ -27,7 +27,6 @@ import parsso.idman.repos.EmailService;
 import parsso.idman.repos.SkyroomRepo;
 import parsso.idman.repos.UserRepo;
 
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
