@@ -75,6 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/fonts/**").permitAll()
                 .antMatchers("/images/**").permitAll()
+                .antMatchers("/public/Parsso-User-Guide.pdf").permitAll()
 
                 //pages
                 .antMatchers("/resetpassword").permitAll()

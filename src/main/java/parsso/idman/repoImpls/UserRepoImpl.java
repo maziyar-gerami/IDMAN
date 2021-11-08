@@ -161,35 +161,6 @@ public class UserRepoImpl implements UserRepo {
                     Name dn = buildDnUser.buildDn(p.getUserId());
                     ldapTemplate.bind(dn, null, buildAttributes.build(p));
 
-                    /*try {
-
-                        String s = "ldapmodify -D cn="+p.getUserId()+","+BASE_DN+"-W -e relax -f change_timestamp.ldif";
-
-                        StringBuilder stringBuilder = new StringBuilder();
-                        stringBuilder.append();
-
-                        try {
-                            FileWriter myWriter = new FileWriter("D:\\app\\"+p.getUserId());
-                            myWriter.write(s);
-                            myWriter.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-
-
-
-                        Process process = Runtime.getRuntime().exec(s);
-
-                    }catch (Exception e){
-                        e.printStackTrace();
-
-
-                     */
-
-
-
-
                     if (p.getStatus() != null)
                         if (p.getStatus().equals("disable"))
                             operations.disable(doerID, p.getUserId());
@@ -219,15 +190,6 @@ public class UserRepoImpl implements UserRepo {
             uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.getUserId(), "", Variables.ACTION_CREATE, Variables.RESULT_FAILED, "Unknown reason"));
             return null;
         }
-    }
-
-    private DirContext authenticateAsAdmin() {
-        DirContext ctx = null;
-        try {
-            ctx = ldapTemplate.getContextSource().getContext("cn=admin,dc=sso,dc=iooc,dc=local", "09189975223");
-        } catch (Exception ignored) {
-        }
-        return ctx;
     }
 
 
@@ -297,12 +259,9 @@ public class UserRepoImpl implements UserRepo {
             p.setPasswordChangedTime(user.getPasswordChangedTime());
 
         try {
-
-
+            ldapTemplate.modifyAttributes(context);
             mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
-
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
-
         }catch (org.springframework.ldap.InvalidAttributeValueException e){
             uniformLogger.warn(p.getUserId(), new ReportMessage(Variables.MODEL_USER, p.getUserId(), Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
             return HttpStatus.FOUND;
