@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.dashboardData.Dashboard;
 import parsso.idman.models.logs.Event;
+import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.utils.convertor.DateUtils;
 import parsso.idman.repos.LogsRepo;
@@ -44,7 +45,7 @@ public class DashboardData {
     Dashboard.Services fServices;
     Dashboard.Logins fLogins;
 
-    public Dashboard retrieveDashboardData() throws IOException {
+    public Dashboard retrieveDashboardData() throws IOException, InterruptedException {
 
         Thread thread = new Thread(() -> {
             try {
@@ -53,6 +54,7 @@ public class DashboardData {
                 e.printStackTrace();
             }
         });
+
 
         thread.start();
 
@@ -65,7 +67,8 @@ public class DashboardData {
 
         Thread userData = new Thread(() -> {
             //________users data____________
-            int nUsers = userRepo.retrieveUsersLDAPSize();
+            //int nUsers = userRepo.retrieveUsersLDAPSize();
+            int nUsers = (int) mongoTemplate.count(new Query(), UsersExtraInfo.class,Variables.col_usersExtraInfo);
 
             int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
             int nLocked = (int) mongoTemplate.count(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
