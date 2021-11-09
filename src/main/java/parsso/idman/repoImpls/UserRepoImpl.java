@@ -642,6 +642,7 @@ public class UserRepoImpl implements UserRepo {
     @Override
     @Cacheable(value = "currentUser", key = "userId")
     public User retrieveUsers(String userId) {
+        userId = userId.toLowerCase();
 
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});

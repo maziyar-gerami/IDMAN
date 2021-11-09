@@ -44,7 +44,7 @@ public class ServicesController {
 
     @GetMapping("/api/services/user")
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) {
-        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers("maziyar")), HttpStatus.OK);
+        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
     }
 
     @GetMapping("/api/services/main")
@@ -121,7 +121,7 @@ public class ServicesController {
 
     @GetMapping("/api/serviceCheck/{id}")
     public ResponseEntity<HttpStatus> serviceAccess(@PathVariable("id") long id) {
-        return new ResponseEntity<>(serviceRepo.serviceAccess(id) ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(serviceRepo.serviceAccess(id)==true ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/api/services/metadata")
