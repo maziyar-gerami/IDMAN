@@ -863,7 +863,11 @@ public class UserRepoImpl implements UserRepo {
                 uniformLogger.info(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
                         Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
 
-            } catch (Exception e) {
+            }catch (org.springframework.ldap.InvalidAttributeValueException e){
+                uniformLogger.warn(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
+                return HttpStatus.FOUND;
+            }
+            catch (Exception e) {
                 e.printStackTrace();
                 uniformLogger.warn(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
                         Variables.ACTION_RESET, Variables.RESULT_FAILED, "writing to ldap"));

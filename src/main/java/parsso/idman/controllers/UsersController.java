@@ -144,8 +144,13 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/u/{uId}")
-    public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) {
-        return new ResponseEntity<>(userRepo.update(request.getUserPrincipal().getName(), uid, user));
+    public ResponseEntity<JSONObject> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) {
+        JSONObject objectResult = new JSONObject();
+        String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
+        Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
+        int pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
+        objectResult.put("pwdInHistory", pwdin);
+        return new ResponseEntity<>(objectResult, userRepo.update(request.getUserPrincipal().getName(), uid, user));
     }
 
     @DeleteMapping("/api/users")
@@ -240,9 +245,10 @@ public class UsersController {
     }
 
     @PutMapping("/api/user/password")
-    public ResponseEntity<Integer> changePassword(HttpServletRequest request,
+    public ResponseEntity<JSONObject> changePassword(HttpServletRequest request,
                                                   @RequestBody JSONObject jsonObject) {
         //String oldPassword = jsonObject.getAsString("currentPassword");
+        JSONObject objectResult = new JSONObject();
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");
         if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
@@ -257,7 +263,8 @@ public class UsersController {
                 String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
                 Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
                 pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
-                return new ResponseEntity<>(pwdin, httpStatus);
+                objectResult.put("pwdInHistory", pwdin);
+                return new ResponseEntity<>(objectResult, httpStatus);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -267,8 +274,9 @@ public class UsersController {
             pwdin = Integer.parseInt(pwdInHistory);
         } catch (Exception ignored) {
         }
-        return new ResponseEntity<>(pwdin, httpStatus);
+        objectResult.put("pwdInHistory", pwdin);
 
+        return new ResponseEntity<>(objectResult, httpStatus);
     }
 
     @GetMapping("/api/user/password/request")
@@ -352,9 +360,14 @@ public class UsersController {
     }
 
     @PutMapping("/api/public/resetPass/{uid}/{token}")
-    public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
+    public ResponseEntity<JSONObject> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
                                                      @PathVariable("uid") String uid) {
-        return new ResponseEntity<>(userRepo.resetPassword(uid, newPassword, token));
+        JSONObject objectResult = new JSONObject();
+        String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
+        Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
+        int pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
+        objectResult.put("pwdInHistory", pwdin);
+        return new ResponseEntity<>(objectResult,userRepo.resetPassword(uid, newPassword, token));
     }
 
     @GetMapping("/api/public/checkMail/{email}")
