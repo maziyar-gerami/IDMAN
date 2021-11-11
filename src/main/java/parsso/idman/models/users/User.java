@@ -54,7 +54,7 @@ public class User implements UserDetails, Comparable {
     @JsonProperty
     private String status;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String endTime;
+    private String expiredTime;
     @JsonIgnore
     private String exportEndTime;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -72,7 +72,14 @@ public class User implements UserDetails, Comparable {
     }
 
     public String getExportEndTime() {
-        return TimeHelper.getExportEndTime(getEndTime());
+        return TimeHelper.getExportEndTime(getExpiredTime());
+    }
+
+    public String getExpiredTime(){
+
+        if (this.expiredTime ==null || this.expiredTime.equals("null"))
+            return null;
+        return this.expiredTime;
     }
 
     public String getExportMemberOf() {

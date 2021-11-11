@@ -84,7 +84,7 @@ public class ImportUsers {
 
             if ((row.getCell(sequence[11]) != null) && !(row.getCell(sequence[11]).toString().equals("")))
                 try {
-                    user.setEndTime(TimeHelper.setEndTime(ldapTemplate,BASE_DN, formatter.formatCellValue(row.getCell(sequence[11]))));
+                    user.setExpiredTime(TimeHelper.setEndTime(ldapTemplate,BASE_DN, formatter.formatCellValue(row.getCell(sequence[11]))));
                 } catch (Exception ignored) {
 
                 }

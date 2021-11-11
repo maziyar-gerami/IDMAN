@@ -32,6 +32,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.group.GroupsChecks;
 import parsso.idman.helpers.TimeHelper;
@@ -95,6 +96,8 @@ public class UserRepoImpl implements UserRepo {
     private String uploadedFilesPath;
     @Value("${skyroom.enable}")
     private String skyroomEnable;
+    @Value("${password.change.notification}")
+    private String passChangeNotification;
     @Autowired
     private LdapTemplate ldapTemplate;
     @Autowired
@@ -113,6 +116,8 @@ public class UserRepoImpl implements UserRepo {
     private ImportUsers importUsers;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    InstantMessage instantMessage;
 
     @Override
     public JSONObject create(String doerID, User p) {
@@ -214,9 +219,9 @@ public class UserRepoImpl implements UserRepo {
         DirContextOperations context;
 
         //remove current pwdEndTime
-        if (p.getEndTime() == null ||
-                p.getEndTime().equals("")
-                        && user.getEndTime() != null)
+        if (p.getExpiredTime() == null ||
+                p.getExpiredTime().equals("")
+                        && user.getExpiredTime() != null)
             removeCurrentEndTime(p.getUserId());
 
         context = buildAttributes.buildAttributes(doerID, usid, p, dn);
@@ -377,6 +382,9 @@ public class UserRepoImpl implements UserRepo {
                 try {
                     ldapTemplate.modifyAttributes(contextUser);
                     uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
+                    if (passChangeNotification.equals("on"))
+                        instantMessage.sendPasswordChangeNotif(user);
+
                     return HttpStatus.OK;
                 } catch (org.springframework.ldap.InvalidAttributeValueException e){
                     uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
@@ -725,7 +733,7 @@ public class UserRepoImpl implements UserRepo {
 
         User user = retrieveUsers(uid);
 
-        if (user.getEndTime() != null) {
+        if (user.getExpiredTime() != null) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
 
             try {

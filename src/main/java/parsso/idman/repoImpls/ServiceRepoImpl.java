@@ -22,12 +22,9 @@ import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
-import parsso.idman.models.services.Period;
-import parsso.idman.models.services.Schedule;
-import parsso.idman.models.services.Service;
+import parsso.idman.models.services.*;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.services.servicesSubModel.ExtraInfo;
-import parsso.idman.models.services.SimpleTime;
 import parsso.idman.models.users.User;
 import parsso.idman.models.other.Time;
 import parsso.idman.utils.other.GenerateUUID;
@@ -126,6 +123,8 @@ public class ServiceRepoImpl implements ServiceRepo {
                 MicroService fMicro = new MicroService(service, microService);
 
                 try {
+                    ServiceGist s = new Notifs().getNotifications(user.getUserId(),
+                            service.getExtraInfo().getNotificationApiURL(), service.getExtraInfo().getNotificationApiKey());
                     fMicro.setNotification(new Notifs().getNotifications(user.getUserId(),
                             service.getExtraInfo().getNotificationApiURL(), service.getExtraInfo().getNotificationApiKey()));
                 } catch (Exception ignored) {

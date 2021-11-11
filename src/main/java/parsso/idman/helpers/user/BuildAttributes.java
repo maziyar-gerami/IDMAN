@@ -216,28 +216,28 @@ public class BuildAttributes {
 
         //EndTime
 
-        if (p.getEndTime() != null && !p.getEndTime().equals(old.getEndTime()) && p.getEndTime().charAt(0) != ('-')) {
-            if (p.getEndTime() != null && !p.getEndTime().equals("")) {
-                if (p.getEndTime().length() == 10)
-                    context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getEndTime()) * 1000));
+        if (p.getExpiredTime() != null && !p.getExpiredTime().equals(old.getExpiredTime()) && p.getExpiredTime().charAt(0) != ('-')) {
+            if (p.getExpiredTime() != null && !p.getExpiredTime().equals("")) {
+                if (p.getExpiredTime().length() == 10)
+                    context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getExpiredTime()) * 1000));
                 else
                     try {
-                        context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getEndTime())));
+                        context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getExpiredTime())));
                     } catch (NumberFormatException e) {
-                        if (p.getEndTime().contains("+"))
-                            context.setAttributeValue("pwdEndTime", p.getEndTime());
+                        if (p.getExpiredTime().contains("+"))
+                            context.setAttributeValue("pwdEndTime", p.getExpiredTime());
                         else
-                            context.setAttributeValue("pwdEndTime", p.getEndTime() + currentOffsetForMyZone.toString().replaceAll(":", ""));
+                            context.setAttributeValue("pwdEndTime", p.getExpiredTime() + currentOffsetForMyZone.toString().replaceAll(":", ""));
 
                     }
 
-            } else if (p.getEndTime() != null && p.getEndTime().equals(""))
-                context.removeAttributeValue("pwdEndTime", old.getEndTime());
+            } else if (p.getExpiredTime() != null && p.getExpiredTime().equals(""))
+                context.removeAttributeValue("pwdEndTime", old.getExpiredTime());
 
             ModificationItem[] modificationItems;
             modificationItems = new ModificationItem[1];
 
-            if (p.getEndTime() != null && old.getEndTime() != null) {
+            if (p.getExpiredTime() != null && old.getExpiredTime() != null) {
 
                 modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
                 ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);

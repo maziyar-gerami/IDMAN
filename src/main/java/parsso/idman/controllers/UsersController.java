@@ -76,7 +76,7 @@ public class UsersController {
     @PutMapping("/api/users/password/expire")
     public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
                                                        @RequestBody JSONObject jsonObject) {
-        List<String> preventedUsers = userRepo.expirePassword(request.getUserPrincipal().getName(), jsonObject);
+        List<String> preventedUsers = userRepo.expirePassword("request.getUserPrincipal().getName()", jsonObject);
 
         if (preventedUsers == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
