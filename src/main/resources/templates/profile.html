@@ -192,9 +192,9 @@
                                     <li class="nav-item">
                                         <a class="nav-link" @click.prevent="setActive('password')" :class="{ active: isActive('password') }" href="#password">{{U16}}</a>
                                     </li>
-                                    <li class="nav-item">
+                                    <!--<li class="nav-item">
                                         <a class="nav-link" @click.prevent="setActive('application')" :class="{ active: isActive('application') }" href="#application">{{s30}}</a>
-                                    </li>
+                                    </li>-->
                                 </ul>
                                 <div class="tab-content py-3" id="myTabContent" style="background-color: white; padding: 2%; font-size: 15px;">
                                     <div class="tab-pane fade" :class="{ 'active show': isActive('password') }" id="password">
@@ -297,7 +297,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" :class="{ 'active show': isActive('application') }" id="application">
+                                    <!--<div class="tab-pane fade" :class="{ 'active show': isActive('application') }" id="application">
                                         <h6>{{s31}}</h6>
                                         <img id="qr" v-bind:src="QR" class="img-responsive center-block" alt="qrCode" width="30%">
                                         <h6 class="mt-5 mb-3">{{s38}}</h6>
@@ -308,7 +308,7 @@
                                                 </span>
                                             </button>
                                         </form>
-                                    </div>
+                                    </div>-->
                                 </div>
                             </div>
                         </div>

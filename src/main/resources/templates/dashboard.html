@@ -59,9 +59,9 @@
                 <a v-for="n in notificationList" :href="n.url" target="_blank" style="text-decoration: none;">
                     <li class="notificationBoxItem m-2 p-1">
                         <h6>{{n.title}}</h6>
-                        <div :style="isRtl ? 'text-align: left;' : 'text-align: right;'">
+                        <!--<div :style="isRtl ? 'text-align: left;' : 'text-align: right;'">
                             <p style="font-size: 0.75rem;color: #666666;" class="m-0">{{n.time.hours}}:{{n.time.minutes}} | {{n.time.year}}/{{n.time.month}}/{{n.time.day}}</p>
-                        </div>
+                        </div>-->
                     </li>
                 </a>
             </div>

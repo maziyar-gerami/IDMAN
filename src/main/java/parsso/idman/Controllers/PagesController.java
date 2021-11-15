@@ -166,4 +166,9 @@ public class PagesController implements ErrorController {
         return "newpassword";
     }
 
+    @GetMapping("/changepassword")
+    public String changePassword() {
+        return "changepassword";
+    }
+
 }

@@ -859,13 +859,13 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
 
-                        if(typeof res.data.endTime !== 'undefined'){
+                        /*if(typeof res.data.endTime !== 'undefined'){
                             let seTime = res.data.endTime;
                             persianDate.toCalendar('gregorian');
                             let dayWrapper = new persianDate([seTime.substring(0,4), seTime.substring(4,6), seTime.substring(6,8),
                               seTime.substring(8,10), seTime.substring(10,12), seTime.substring(12,14), seTime.substring(15,18)]);
                             document.getElementById("endTime").value = dayWrapper.toCalendar('persian').format("dddd DD MMMM YYYY  HH:mm  a");
-                        }
+                        }*/
 
                         if(typeof res.data.memberOf !== 'undefined'){
                             for(let i = 0; i < res.data.memberOf.length; ++i){
@@ -908,7 +908,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         unDeletableVar = false;
                     }
 
-                    let endTimeFinal = null;
+                    /*let endTimeFinal = null;
                     if(document.getElementById("endTime").value != ""){
                         let dateEndTemp = document.getElementById("endTime").value.split("  ");
                         let dateEnd = dateEndTemp[0].split(" ");
@@ -921,7 +921,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         timeEnd[1] = parseInt(this.FaNumToEnNum(timeEnd[1]));
 
                         endTimeFinal = new persianDate([dateEnd[dateEnd.length-1], dateEnd[dateEnd.length-2], dateEnd[dateEnd.length-3], timeEnd[0], timeEnd[1]]).unix();
-                    }
+                    }*/
 
                     if (check == true) {
                         let statusValue;
@@ -963,7 +963,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 description: document.getElementById('editInfo.descriptionUpdate').value,
                                 cStatus: statusValue,
                                 unDeletable: unDeletableVar,
-                                endTime: endTimeFinal
+                                /*endTime: endTimeFinal*/
                             }).replace(/\\\\/g, "\\")
                         })
                         .then((res) => {
@@ -1057,8 +1057,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         unDeletableVar = false;
                     }
 
-                    let endTimeFinal = null;
-                    if(document.getElementById("endTimeCreate").value != ""){
+                    /*let endTimeFinal = null;
+                    if(document.getElementById("endTimeendTimeCreate").value != ""){
                         let dateEndTemp = document.getElementById("endTimeCreate").value.split("  ");
                         let dateEnd = dateEndTemp[0].split(" ");
                         dateEnd[dateEnd.length-1] = parseInt(this.FaNumToEnNum(dateEnd[dateEnd.length-1]));
@@ -1070,7 +1070,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         timeEnd[1] = parseInt(this.FaNumToEnNum(timeEnd[1]));
 
                         endTimeFinal = new persianDate([dateEnd[dateEnd.length-1], dateEnd[dateEnd.length-2], dateEnd[dateEnd.length-3], timeEnd[0], timeEnd[1]]).unix();
-                    }
+                    }*/
 
                     if(check==true) {
                         axios({
@@ -1090,7 +1090,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     description: document.getElementById('editInfo.descriptionCreate').value,
                                     status: document.getElementById('statusCreate').value,
                                     unDeletable: unDeletableVar,
-                                    endTime: endTimeFinal
+                                    /*endTime: endTimeFinal*/
                                 }
                             ).replace(/\\\\/g, "\\")
                         })

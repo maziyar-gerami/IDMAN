@@ -79,6 +79,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //pages
                 .antMatchers("/resetpassword").permitAll()
                 .antMatchers("/newpassword**").permitAll()
+                .antMatchers("/changepassword").permitAll()
                 .antMatchers("/login/cas").permitAll()
                 .antMatchers("/403").permitAll()
                 .antMatchers("/error").permitAll()

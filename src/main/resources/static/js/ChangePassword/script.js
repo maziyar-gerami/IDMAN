@@ -1,11 +1,6 @@
-document.addEventListener('DOMContentLoaded', function () {
-    var router = new VueRouter({
-        mode: 'history',
-        routes: []
-    });
+document.addEventListener("DOMContentLoaded", function () {
     new Vue({
-        router,
-        el: '#app',
+        el: "#app",
         data: {
             dateNav: "",
             dateNavEn: "",
@@ -23,13 +18,15 @@ document.addEventListener('DOMContentLoaded', function () {
             has_lowerUPPERcase: false,
             has_specialchar: false,
             has_char: false,
+            userId: "",
+            currentPassword: "",
 			password: "",
 			checkPassword: "",
             passwordVisible: true,
             isRtl: true,
             submitted: false,
             btnDisable: true,
-            duplicatePasswords: false,
+            notAllowed: false,
             placeholder: "text-align: right;",
             margin: "margin-right: 30px;",
             marg: "margin-left: auto;",
@@ -38,27 +35,16 @@ document.addEventListener('DOMContentLoaded', function () {
             rtl: "direction: rtl;",
             eye: "right: 3%;",
             s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
-            s1: "نام کاربری و رمز عبور خود را وارد کنید",
-            s2: "نام کاربری",
-            s3: "رمز عبور",
-            s4: "ورود",
-            s5: "اطلاعات کاربری نادرست است",
-            s6: "رمز عبور جدید",
-            s7: "تکرار رمز عبور جدید",
+            s1: "شناسه کاربری",
+            s2: "گذرواژه فعلی",
+            s6: "گذرواژه جدید",
+            s7: "تکرار گذرواژه جدید",
             s8: "تایید",
-            s9: "رمز عبور های وارد شده یکسان نمی باشند",
-            s10: ":آدرس ایمیلی که با آن ثبت نام کرده اید را وارد نمایید",
-            s11: "ارسال ایمیل باز نشانی",
-            s12: "بازنشانی رمز عبور",
-            s13: ":رمز عبور شما باید شامل موارد زیر باشد",
-            s14: ":جهت تکمیل فرآیند بازنشانی رمز عبور خود، با رعایت نکات زیر، رمز عبور جدید خود را وارد نمایید",
-            s15: "شما اجازه دسترسی به این صفحه را ندارید",
+            s9: "گذرواژه های وارد شده یکسان نمی باشند.",
+            s13: "گذرواژه شما باید شامل موارد زیر باشد:",
+            s14: "کاربر عزیز، جهت تغییر گذرواژه خود، با رعایت نکات زیر، گذرواژه جدید خود را وارد نمایید:",
             s16: "بازگشت",
-            s17: "",
-            s18: " عزیز",
-            s19: "،",
-            s20: "متاسفانه درخواست شما با مشکل مواجه شده است",
-            s21: "رمز عبور جدید نباید با رمز عبور های قدیمی یکسان باشند.",
+            s21: "شما مجاز به انجام این عمل نیستید.",
         },
         created: function () {
             this.setDateNav();
@@ -79,16 +65,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 persianDate.toLocale("fa");
                 this.dateNavText = this.dateNav;
             },
-            getName: function () {
-                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                const redirectedUrl = new URL(location.href);
-                let vm = this;
-                axios.get(url + "/api/public/getName/" + redirectedUrl.searchParams.get('uid') + "/" + redirectedUrl.searchParams.get('token')) //
-                    .then((res) => {
-                    vm.userInfo = res.data;
-                    vm.s17 = vm.userInfo.displayName;
-                });
-            },
             passwordCheck: function () {
                 this.has_number    = /[0-9]+/.test(this.password);
                 this.has_lowerUPPERcase = /[a-zA-Z]/.test(this.password);
@@ -105,28 +81,29 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             resetPasswords: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                const redirectedUrl = new URL(location.href); 
-                const formData = new FormData();
-                formData.append("newPassword", this.password);
                 let vm = this;
                 axios({
                     method: "put",
-                    url: url + "/api/public/resetPass/" + redirectedUrl.searchParams.get("uid") + "/" + redirectedUrl.searchParams.get("token"),  //
+                    url: url + "/api/public/changePassword",
                     headers: {"Content-Type": "application/json"},
-                    data: formData
+                    params: {
+                        userId: vm.userId,
+                        currentPassword: vm.currentPassword,
+                        newPassword: vm.password
+                    }
                 }).then((res) => {
                     location.replace(url);
                 }).catch((error) => {
                     if (error.response) {
-                        if(error.response.status === 302){
-                            vm.duplicatePasswords = true;
-                            setTimeout(function(){ vm.duplicatePasswords = false; }, 5000);
+                        if(error.response.status === 401 || error.response.status === 403 || error.response.status === 404){
+                            vm.notAllowed = true;
+                            setTimeout(function(){ vm.notAllowed = false; }, 5000);
                         }
                     }
                 });
             },
             changeLang: function () {
-                if (this.lang == "EN") {
+                if (this.lang === "EN") {
                     window.localStorage.setItem("lang", "EN");
                     this.placeholder = "text-align: left;"
                     this.isRtl = false;
@@ -138,27 +115,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.eye = "left: 3%;";
                     this.dateNavText = this.dateNavEn;
                     this.s0 = "IOOC Centralized Authentication";
-                    this.s1 = "Enter Your Username and Password";
-                    this.s2 = "Username";
-                    this.s3 = "Password";
-                    this.s4 = "Sign in";
-                    this.s5 = "Invalid Username and Password";
+                    this.s1 = "UserId";
+                    this.s2 = "Current Password";
                     this.s6 = "New Password";
                     this.s7 = "Repeat New Password";
                     this.s8 = "Submit";
-                    this.s9 = "Passwords Don't Match";
-                    this.s10 = "Enter your email address that register with:";
-                    this.s11 = "Send emial";
-                    this.s12 = "Reset Password";
+                    this.s9 = "Passwords Don't Match.";
                     this.s13 = "Your Password Must Meet All Of The Following Criteria:";
-                    this.s14 = "For Resetting Your Password, Enter Your New Password By Following The Tips Below:";
-                    this.s15 = "You Don't Have Permission To Access This Page";
+                    this.s14 = "Dear User, To Reset Your Password, Enter Your New Password By Following The Tips Below:";
                     this.s16 = "Return";
-                    this.s17 = this.userInfo.firstName + " " + this.userInfo.lastName;
-                    this.s18 = ",";
-                    this.s19 = "Dear ";
-                    this.s20 = "Sorry, There Was a Problem With Your Request";
-                    this.s21 = "New Password Should Not be the Same as Old Passwords.";
+                    this.s21 = "You Are Not Allowed to Do This Process.";
                     this.rules[0].message = "- One Lowercase or Uppercase English Letter Required.";
                     this.rules[1].message = "- One special Character or Persian Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
@@ -176,27 +142,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.eye = "right: 3%;";
                     this.dateNavText = this.dateNav;
                     this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
-                    this.s1 = "نام کاربری و رمز عبور خود را وارد کنید";
-                    this.s2 = "نام کاربری";
-                    this.s3 = "رمز عبور";
-                    this.s4 = "ورود";
-                    this.s5 = "اطلاعات کاربری نادرست است";
-                    this.s6 = "رمز عبور جدید";
-                    this.s7 = "تکرار رمز عبور جدید";
+                    this.s1 = "شناسه کاربری";
+                    this.s2 = "گذرواژه فعلی";
+                    this.s6 = "گذرواژه جدید";
+                    this.s7 = "تکرار گذرواژه جدید";
                     this.s8 = "تایید";
-                    this.s9 = "رمز عبور های وارد شده یکسان نمی باشند";
-                    this.s10 = ":آدرس ایمیلی که با آن ثبت نام کرده اید را وارد نمایید"
-                    this.s11 = "ارسال ایمیل";
-                    this.s12 = "بازنشانی رمز عبور";
-                    this.s13 = ":رمز عبور شما باید شامل موارد زیر باشد";
-                    this.s14 = ":جهت تکمیل فرآیند بازنشانی رمز عبور خود، با رعایت نکات زیر، رمز عبور جدید خود را وارد نمایید";
-                    this.s15 = "شما اجازه دسترسی به این صفحه را ندارید";
+                    this.s9 = "گذرواژه های وارد شده یکسان نمی باشند";
+                    this.s13 = "گذرواژه شما باید شامل موارد زیر باشد:";
+                    this.s14 = "کاربر عزیز، جهت تغییر گذرواژه خود، با رعایت نکات زیر، گذرواژه جدید خود را وارد نمایید:";
                     this.s16 = "بازگشت";
-                    this.s17 = this.userInfo.displayName;
-                    this.s18 = " عزیز";
-                    this.s19 = "،";
-                    this.s20 = "متاسفانه درخواست شما با مشکل مواجه شده است";
-                    this.s21 = "رمز عبور جدید نباید با رمز عبور های قدیمی یکسان باشند.";
+                    this.s21 = "شما مجاز به انجام این عمل نیستید.";
                     this.rules[0].message = "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ";
                     this.rules[1].message = "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ";
                     this.rules[2].message = "حداقل ۸ کاراکتر باشد. ";
@@ -207,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         computed: {
             infoError () {
-                if (typeof this.$route.query.error !== 'undefined') {
+                if (typeof this.$route.query.error !== "undefined") {
                     return true
                 }
             },
@@ -219,19 +174,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             passwordsFilled () {
-                return (this.password !== '' && this.checkPassword !== '')
+                return (this.password !== "" && this.checkPassword !== "")
             },
             setActive () {
-                if(this.password !== '' && this.checkPassword !== ''){
-                    let errors = []
-                    for (let condition of this.rules) {
-                        if (!condition.regex.test(this.password)) {
-                            errors.push(condition.message)
+                if(this.userId !== "" && this.currentPassword !== ""){
+                    if(this.password !== "" && this.checkPassword !== ""){
+                        let errors = []
+                        for (let condition of this.rules) {
+                            if (!condition.regex.test(this.password)) {
+                                errors.push(condition.message)
+                            }
                         }
-                    }
-                    if(errors.length === 0){
-                        if(this.password === this.checkPassword){
-                            return false
+                        if(errors.length === 0){
+                            return this.password !== this.checkPassword;
                         }else{
                             return true
                         }
