@@ -280,8 +280,7 @@ public class UsersController {
 
 
     @PutMapping("/api/public/changePassword")
-    public ResponseEntity<JSONObject> changePasswordWithoutToken(HttpServletRequest request,
-                                                     @RequestBody JSONObject jsonObject) {
+    public ResponseEntity<JSONObject> changePasswordWithoutToken(                                                     @RequestBody JSONObject jsonObject) {
         String currentPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
         String userId = jsonObject.getAsString("userId");

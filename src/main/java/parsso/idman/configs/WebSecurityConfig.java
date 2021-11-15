@@ -61,7 +61,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .addFilterBefore(logoutFilter, LogoutFilter.class)
 
-
                 .authorizeRequests().antMatchers("/dashboard", "/login")
                 .authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
@@ -79,6 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //pages
                 .antMatchers("/resetpassword").permitAll()
+                .antMatchers("/changepassword").permitAll()
                 .antMatchers("/newpassword**").permitAll()
                 .antMatchers("/login/cas").permitAll()
                 .antMatchers("/403").permitAll()
