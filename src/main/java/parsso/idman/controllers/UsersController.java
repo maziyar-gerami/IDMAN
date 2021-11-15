@@ -49,6 +49,8 @@ public class UsersController {
     private final Pwd.PwdAttributeMapper pwdAttributeMapper;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
+    @Value("${password.change.notification}")
+    private String passChangeNotification;
 
     @Autowired
     public UsersController(UserRepo userRepo, EmailService emailService, Operations operations, UsersExcelView excelView,
@@ -286,6 +288,9 @@ public class UsersController {
         String userId = jsonObject.getAsString("userId");
         HttpStatus httpStatus = userRepo.changePasswordPublic(userId,currentPassword,newPassword);
 
+        if (passChangeNotification.equals("on"))
+            instantMessage.sendPasswordChangeNotif(userRepo.retrieveUsers(userId));
+
         return new ResponseEntity<>(httpStatus);
 
     }
@@ -378,6 +383,8 @@ public class UsersController {
         Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
         int pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
         objectResult.put("pwdInHistory", pwdin);
+        if (passChangeNotification.equals("on"))
+            instantMessage.sendPasswordChangeNotif(userRepo.retrieveUsers(uid));
         return new ResponseEntity<>(objectResult,userRepo.resetPassword(uid, newPassword, token));
     }
 
