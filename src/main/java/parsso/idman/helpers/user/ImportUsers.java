@@ -82,13 +82,6 @@ public class ImportUsers {
             user.setEmployeeNumber(formatter.formatCellValue(row.getCell(sequence[9])));
             user.setUserPassword(formatter.formatCellValue(row.getCell(sequence[10])));
 
-            if ((row.getCell(sequence[11]) != null) && !(row.getCell(sequence[11]).toString().equals("")))
-                try {
-                    user.setExpiredTime(TimeHelper.setEndTime(ldapTemplate,BASE_DN, formatter.formatCellValue(row.getCell(sequence[11]))));
-                } catch (Exception ignored) {
-
-                }
-
             if (!user.getUserId().equals("")) {
 
                 if (user.getUserId() == null || user.getUserId().equals("")) {
