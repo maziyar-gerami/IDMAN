@@ -86,11 +86,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     method: "put",
                     url: url + "/api/public/changePassword",
                     headers: {"Content-Type": "application/json"},
-                    params: {
+                    data: JSON.stringify({
                         userId: vm.userId,
                         currentPassword: vm.currentPassword,
                         newPassword: vm.password
-                    }
+                        }
+                    ).replace(/\\\\/g, "\\")
                 }).then((res) => {
                     location.replace(url);
                 }).catch((error) => {
