@@ -544,7 +544,11 @@ public class UserRepoImpl implements UserRepo {
 
         for (UserLoggedIn userLoggedIn:usersLoggedIn ) {
             UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userLoggedIn.getUserId())),UsersExtraInfo.class,Variables.col_usersExtraInfo);
-            usersExtraInfo.setLoggedIn(userLoggedIn.isLoggedIn());
+            try {
+                usersExtraInfo.setLoggedIn(userLoggedIn.isLoggedIn());
+            }catch (NullPointerException e){
+                continue;
+            }
             try {
                 mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
                 uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, userLoggedIn.getUserId(), Variables.ATTR_LOGGEDIN, Variables.ACTION_SET, Variables.RESULT_SUCCESS, "SET: "+usersExtraInfo.isLoggedIn()));
