@@ -44,7 +44,7 @@ public class ServicesController {
 
     @GetMapping("/api/services/user")
     public ResponseEntity<List<MicroService>> ListUserServices(HttpServletRequest request) {
-        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers("maziyar")), HttpStatus.OK);
+        return new ResponseEntity<>(serviceRepo.listUserServices(userRepo.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
     }
 
     @GetMapping("/api/services/main")
@@ -70,25 +70,6 @@ public class ServicesController {
         long id = serviceRepo.createService(request.getUserPrincipal().getName(), jsonObject, system);
         if (id == 0)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        else{
-            if (jsonObject.get("extraInfo")!=null){
-                LinkedHashMap extra = (LinkedHashMap) jsonObject.get("extraInfo");
-                if(extra.get("dailyAccess")!=null){
-                    Service service = serviceRepo.retrieveService(id);
-
-                    service.getAccessStrategy().setAtClass("org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
-                    service.getAccessStrategy().setEndpointUrl(baseUrl+"/api/serviceCheck/"+id);
-                    service.getAccessStrategy().setAcceptableResponseCodes("200");
-
-                    String jsonInString = new Gson().toJson(service);
-                    JSONParser parser = new JSONParser();
-                    JSONObject jsonObjectExtraInfo = (JSONObject) parser.parse(jsonInString);
-
-                    serviceRepo.updateService("System",id,jsonObjectExtraInfo,system);
-
-                }
-            }
-        }
 
         return new ResponseEntity<>(HttpStatus.OK);
 
@@ -97,31 +78,12 @@ public class ServicesController {
     @PutMapping("/api/service/{id}/{system}")
     public ResponseEntity<String> updateService(HttpServletRequest request, @PathVariable("id") long id,
                                                 @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws ParseException {
-        if (jsonObject.get("extraInfo")!=null){
-            LinkedHashMap extra = (LinkedHashMap) jsonObject.get("extraInfo");
-            if(extra.get("dailyAccess")!=null){
-                Service service = serviceRepo.retrieveService(id);
-
-                service.getAccessStrategy().setAtClass("org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
-                service.getAccessStrategy().setEndpointUrl(baseUrl+"/api/serviceCheck/"+id);
-                service.getAccessStrategy().setAcceptableResponseCodes("200");
-
-
-                String jsonInString = new Gson().toJson(service);
-                JSONParser parser = new JSONParser();
-                JSONObject jsonObjectExtraInfo = (JSONObject) parser.parse(jsonInString);
-
-                serviceRepo.updateService("System",id,jsonObjectExtraInfo,system);
-
-            }
-        }
-
         return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
     }
 
     @GetMapping("/api/serviceCheck/{id}")
     public ResponseEntity<HttpStatus> serviceAccess(@PathVariable("id") long id) {
-        return new ResponseEntity<>(serviceRepo.serviceAccess(id) ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(serviceRepo.serviceAccess(id)==true ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/api/services/metadata")

@@ -3,6 +3,7 @@ package parsso.idman.helpers.user;
 
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.stereotype.Service;
+import parsso.idman.models.users.UserLoggedIn;
 import parsso.idman.models.users.UsersExtraInfo;
 
 import javax.naming.NamingException;
@@ -39,4 +40,28 @@ public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInf
 
         return user;
     }
+
+    @Service
+    public static class LoggedInUserAttributeMapper implements AttributesMapper<UserLoggedIn> {
+        @Override
+        public UserLoggedIn mapFromAttributes(Attributes attributes) throws NamingException {
+            UserLoggedIn user = new UserLoggedIn();
+
+            if (attributes == null || attributes.get("uid") == null)
+                return null;
+
+            user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
+
+            int nPass=0;
+            try {
+                nPass = attributes.get("pwdHistory").size();
+            } catch (Exception e) {
+            }
+
+            user.setLoggedIn(nPass > 0);
+
+            return user;
+        }
+    }
+
 }

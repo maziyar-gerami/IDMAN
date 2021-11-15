@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
+import parsso.idman.helpers.TimeHelper;
+import parsso.idman.models.other.Time;
 
 import java.util.Date;
 import java.util.List;
@@ -39,6 +41,17 @@ public class UsersExtraInfo {
     private List<String> memberOf;
     private String status;
     private long passwordChangedTime;
+    @JsonIgnore
+    private long endTimeEpoch;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Time expiredTime;
+    private boolean loggedIn;
+
+    public Time getExpiredTime() {
+        if (endTimeEpoch != 0)
+            return TimeHelper.longToPersianTime(endTimeEpoch);
+        return null;
+    }
 
 
     public UsersExtraInfo() {

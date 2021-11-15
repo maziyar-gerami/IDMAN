@@ -49,6 +49,8 @@ public class UsersController {
     private final Pwd.PwdAttributeMapper pwdAttributeMapper;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
+    @Value("${password.change.notification}")
+    private String passChangeNotification;
 
     @Autowired
     public UsersController(UserRepo userRepo, EmailService emailService, Operations operations, UsersExcelView excelView,
@@ -76,7 +78,7 @@ public class UsersController {
     @PutMapping("/api/users/password/expire")
     public ResponseEntity<List<String>> expirePassword(HttpServletRequest request,
                                                        @RequestBody JSONObject jsonObject) {
-        List<String> preventedUsers = userRepo.expirePassword(request.getUserPrincipal().getName(), jsonObject);
+        List<String> preventedUsers = userRepo.expirePassword("request.getUserPrincipal().getName()", jsonObject);
 
         if (preventedUsers == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -116,7 +118,6 @@ public class UsersController {
         return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
 
-
     @GetMapping("/api/users/group/{groupId}")
     public ResponseEntity<ListUsers> retrieveUsersMainWithGroupId(@PathVariable(name = "groupId") String groupId,
                                                                   @RequestParam(name = "page", defaultValue = "1") int page,
@@ -144,8 +145,13 @@ public class UsersController {
     }
 
     @PutMapping("/api/users/u/{uId}")
-    public ResponseEntity<HttpStatus> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) {
-        return new ResponseEntity<>(userRepo.update(request.getUserPrincipal().getName(), uid, user));
+    public ResponseEntity<JSONObject> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) {
+        JSONObject objectResult = new JSONObject();
+        String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
+        Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
+        int pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
+        objectResult.put("pwdInHistory", pwdin);
+        return new ResponseEntity<>(objectResult, userRepo.update(request.getUserPrincipal().getName(), uid, user));
     }
 
     @DeleteMapping("/api/users")
@@ -240,9 +246,10 @@ public class UsersController {
     }
 
     @PutMapping("/api/user/password")
-    public ResponseEntity<Integer> changePassword(HttpServletRequest request,
+    public ResponseEntity<JSONObject> changePassword(HttpServletRequest request,
                                                   @RequestBody JSONObject jsonObject) {
         //String oldPassword = jsonObject.getAsString("currentPassword");
+        JSONObject objectResult = new JSONObject();
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");
         if (jsonObject.getAsString("token") != null) token = jsonObject.getAsString("token");
@@ -257,7 +264,8 @@ public class UsersController {
                 String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
                 Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
                 pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
-                return new ResponseEntity<>(pwdin, httpStatus);
+                objectResult.put("pwdInHistory", pwdin);
+                return new ResponseEntity<>(objectResult, httpStatus);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -267,7 +275,23 @@ public class UsersController {
             pwdin = Integer.parseInt(pwdInHistory);
         } catch (Exception ignored) {
         }
-        return new ResponseEntity<>(pwdin, httpStatus);
+        objectResult.put("pwdInHistory", pwdin);
+
+        return new ResponseEntity<>(objectResult, httpStatus);
+    }
+
+
+    @PutMapping("/api/public/changePassword")
+    public ResponseEntity<JSONObject> changePasswordWithoutToken(                                                     @RequestBody JSONObject jsonObject) {
+        String currentPassword = jsonObject.getAsString("currentPassword");
+        String newPassword = jsonObject.getAsString("newPassword");
+        String userId = jsonObject.getAsString("userId");
+        HttpStatus httpStatus = userRepo.changePasswordPublic(userId,currentPassword,newPassword);
+
+        if (passChangeNotification.equals("on"))
+            instantMessage.sendPasswordChangeNotif(userRepo.retrieveUsers(userId));
+
+        return new ResponseEntity<>(httpStatus);
 
     }
 
@@ -314,7 +338,10 @@ public class UsersController {
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("time", time);
-            jsonObject.put("userId", userRepo.getByMobile(mobile));
+            if(uid.equals(""))
+                jsonObject.put("userId", userRepo.getByMobile(mobile));
+            else
+                jsonObject.put("userId", uid);
 
             return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         } else if (time == -1)
@@ -349,9 +376,16 @@ public class UsersController {
     }
 
     @PutMapping("/api/public/resetPass/{uid}/{token}")
-    public ResponseEntity<HttpStatus> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
+    public ResponseEntity<JSONObject> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
                                                      @PathVariable("uid") String uid) {
-        return new ResponseEntity<>(userRepo.resetPassword(uid, newPassword, token));
+        JSONObject objectResult = new JSONObject();
+        String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
+        Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
+        int pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
+        objectResult.put("pwdInHistory", pwdin);
+        if (passChangeNotification.equals("on"))
+            instantMessage.sendPasswordChangeNotif(userRepo.retrieveUsers(uid));
+        return new ResponseEntity<>(objectResult,userRepo.resetPassword(uid, newPassword, token));
     }
 
     @GetMapping("/api/public/checkMail/{email}")

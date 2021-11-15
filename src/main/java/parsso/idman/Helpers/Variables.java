@@ -13,6 +13,7 @@ public class Variables {
     public static final String ACTION_DISBLAE = "Disable";
     public static final String ACTION_UNLOCK = "Unlock";
     public static final String ATTR_DEVICEID = "DeviceID";
+    public static final String ATTR_LOGGEDIN = "Logged-In";
     public static final String ATTR_PASSWORD = "Password";
     public static final String ACTION_RESET = "Reset";
     public static final String ACTION_CLOSE = "Close";
@@ -46,6 +47,7 @@ public class Variables {
     public static final String ACTION_UPDATE = "Update";
     public static final String ACTION_INSERT = "Insert";
     public static final String ACTION_DELETE = "Delete";
+    public static final String ACTION_SET = "Set";
     public static final String ACTION_RETRIEVE = "Retrieve";
     public static final String MODEL_USER = "user";
     public static final String MODEL_SERVICE = "service";

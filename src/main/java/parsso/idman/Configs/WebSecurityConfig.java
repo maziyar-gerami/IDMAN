@@ -61,7 +61,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .addFilterBefore(logoutFilter, LogoutFilter.class)
 
-
                 .authorizeRequests().antMatchers("/dashboard", "/login")
                 .authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
@@ -75,11 +74,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/fonts/**").permitAll()
                 .antMatchers("/images/**").permitAll()
+                .antMatchers("/public/Parsso-User-Guide.pdf").permitAll()
 
                 //pages
                 .antMatchers("/resetpassword").permitAll()
-                .antMatchers("/newpassword**").permitAll()
                 .antMatchers("/changepassword").permitAll()
+                .antMatchers("/newpassword**").permitAll()
                 .antMatchers("/login/cas").permitAll()
                 .antMatchers("/403").permitAll()
                 .antMatchers("/error").permitAll()

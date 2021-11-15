@@ -15,6 +15,7 @@ import parsso.idman.models.users.UsersExtraInfo;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class ExpirePassword {
                 try {
                     ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
                     mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
+                    user.setEndTimeEpoch(new Date().getTime());
                     mongoTemplate.save(user, Variables.col_usersExtraInfo);
 
                     uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), Variables.ATTR_PASSWORD,
@@ -56,6 +58,7 @@ public class ExpirePassword {
                         modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdReset", "TRUE"));
                         ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId()), modificationItems);
                         mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
+                        user.setEndTimeEpoch(new Date().getTime());
                         mongoTemplate.save(user, Variables.col_usersExtraInfo);
 
                         uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(),

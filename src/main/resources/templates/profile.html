@@ -239,16 +239,16 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <div class="matches" v-bind:style="notSamePasswords ? 'visibility: visible;' : 'visibility: hidden;' ">
+                                                <div class="matches" v-bind:style="notSamePasswords ? 'visibility: visible;' : 'visibility: hidden;'">
                                                     <p class="error" style="font-size: .8rem;">{{s21}}</p>
                                                 </div>
-                                                <div v-if="duplicatePasswords" class="matches">
+                                                <div class="matches" v-bind:style="duplicatePasswords ? 'display: block;' : 'display: none;'">
                                                     <p class="error" style="font-size: .8rem;">{{s43}}</p>
                                                 </div>
-                                                <div v-if="incorrectPassword" class="matches">
+                                                <div class="matches" v-bind:style="incorrectPassword ? 'display: block;' : 'display: none;'">
                                                     <p class="error" style="font-size: .8rem;">{{s44}}</p>
                                                 </div>
-                                                <div v-if="incorrectToken" class="matches">
+                                                <div class="matches" v-bind:style="incorrectToken ? 'display: block;' : 'display: none;'">
                                                     <p class="error" style="font-size: .8rem;">{{s45}}</p>
                                                 </div> <br>
                                                 <button v-on:click="backDashboard()" class="btn btn-danger">{{s39}}</button>

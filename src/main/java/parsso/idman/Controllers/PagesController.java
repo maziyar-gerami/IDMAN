@@ -6,11 +6,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import parsso.idman.helpers.user.DashboardData;
 import parsso.idman.models.dashboardData.Dashboard;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("SameReturnValue")
 @Controller
@@ -131,16 +139,30 @@ public class PagesController implements ErrorController {
         return "redirect:/login/cas";
     }
 
+    @GetMapping("/changepassword")
+    public String changepassword() {
+        return "changepassword";
+    }
+
     @GetMapping("/logout")
-    public String logout(){
+    public String logout(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            SecurityContextLogoutHandler logoutHandler) {
+        Authentication auth = SecurityContextHolder
+                .getContext().getAuthentication();
+        logoutHandler.logout(request, response, auth);
+        new CookieClearingLogoutHandler(
+                AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY)
+                .logout(request, response, auth);
         return "redirect:" + casLogout;
     }
+
 
     //************************************* APIs ****************************************
 
     @GetMapping("/api/dashboard")
-    public ResponseEntity<Dashboard> retrieveDashboardData() {
-
+    public ResponseEntity<Dashboard> retrieveDashboardData() throws InterruptedException {
         return new ResponseEntity<>(dashboardData.retrieveDashboardData(), HttpStatus.OK);
     }
 
@@ -164,11 +186,6 @@ public class PagesController implements ErrorController {
     @GetMapping("/newpassword")
     public String resetPassword() {
         return "newpassword";
-    }
-
-    @GetMapping("/changepassword")
-    public String changePassword() {
-        return "changepassword";
     }
 
 }

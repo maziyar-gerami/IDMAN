@@ -16,10 +16,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Objects;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","rawTypes"})
 public class Notifs {
     public ServiceGist getNotifications(String userId, String notificationApiURL, String notificationApiKey) throws IOException {
         URL url;
@@ -75,12 +75,12 @@ public class Notifs {
         } catch (Exception ignored) {
         }
         int count = Integer.parseInt(Objects.requireNonNull(json).get("count").toString());
-        LinkedList<Notification> notifications;
+        ArrayList<Notification> notifications;
         try {
-            //TODO: Correct it
-            notifications = (LinkedList<Notification>) json.get("notifications");
+            notifications = (ArrayList) json.get("notifications");
         } catch (Exception e) {
-            notifications = new LinkedList<>();
+            e.printStackTrace();
+            notifications = new ArrayList<>();
         }
 
         return new ServiceGist(count, notifications, new Return(200, Variables.MSG_FA_CODE_200));

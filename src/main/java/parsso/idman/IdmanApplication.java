@@ -67,8 +67,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     @Value("${base.url}")
     private String baseurl;
 
-    private static SAtoSU sAtoSU;
-
     public static void main(String[] args) {
 
 
@@ -96,6 +94,14 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
             }
         };
 
+        val loggeInUses = new Runnable(){
+
+            @Override
+            public void run() {
+                context.getBean(UserRepo.class).setIfLoggedIn();
+            }
+        };
+
         // in old days, we need to check the log level to increase performance
 
         // with Java 8, we can do this, no need to check the log level
@@ -103,6 +109,8 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         //refresh(context);
         Thread thread = new Thread(runnable);
         Thread sathread = new Thread(SUrunnable);
+        Thread logeInUsers = new Thread(loggeInUses);
+        logeInUsers.start();
         sathread.start();
         thread.start();
 
@@ -184,41 +192,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         singleSignOutFilter.setLogoutCallbackPath("/exit/cas");
         singleSignOutFilter.setIgnoreInitConfiguration(true);
         return singleSignOutFilter;
-    }
-
-    @Service
-    @Getter
-    public static class Pullings {
-        @Autowired
-        UserRepoImpl userRepo;
-
-
-
-    }
-
-
-    @Service
-    public static class SAtoSU {
-
-        static MongoTemplate mongoTemplate;
-
-        public SAtoSU(ConfigurableApplicationContext context) {
-            Boolean users = context.getBean(UserRepo.class).SAtoSU();
-
-        }
-
-        public static void start() {
-            System.out.println("started");
-            List<UsersExtraInfo> SaUsers = mongoTemplate.find(new Query(Criteria.where("role").is("SUPERADMIN")), UsersExtraInfo.class, "UsersExtraInfo");
-            for (UsersExtraInfo user : SaUsers){
-                user.setRole("SUPERUSER");
-                mongoTemplate.save(user);
-        }
-            System.out.println("finished");
-
-
-    }
-
     }
 
 }
