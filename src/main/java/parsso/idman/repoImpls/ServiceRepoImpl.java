@@ -318,6 +318,14 @@ public class ServiceRepoImpl implements ServiceRepo {
     public long createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException {
 
         ExtraInfo extraInfo = new ExtraInfo();
+        ArrayList<LinkedHashMap> dailyAccess = null;
+
+        try {
+            LinkedHashMap jsonObject1 = (LinkedHashMap) jsonObject.get("extraInfo");
+            dailyAccess = (ArrayList<LinkedHashMap>) jsonObject1.get("dailyAccess");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         long id = 0;
         JSONObject jsonExtraInfo = new JSONObject();
 
@@ -327,6 +335,8 @@ public class ServiceRepoImpl implements ServiceRepo {
         if (baseUrl.contains("localhost"))
             extraInfo.setUUID(GenerateUUID.getUUID());
 
+
+
         if (system.equalsIgnoreCase("cas"))
             id = casServiceHelper.create(doerID, jsonObject);
 
@@ -335,6 +345,21 @@ public class ServiceRepoImpl implements ServiceRepo {
 
         else if (system.equalsIgnoreCase("OAuth"))
             id = oAuthServiceHelper.create(doerID, jsonObject);
+
+        if(dailyAccess !=null){
+
+            extraInfo.setDailyAccess((List<Schedule>) jsonExtraInfo.get("dailyAccess"));
+
+            LinkedHashMap jsonObjectTemp = (LinkedHashMap) jsonObject.get("accessStrategy");
+            jsonObject.remove("accessStrategy");
+            jsonObjectTemp.remove("@class");
+            jsonObjectTemp.put("@class", "org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
+            jsonObjectTemp.put("endPointUrl" , baseUrl+"/api/serviceCheck/"+id);
+            jsonObjectTemp.put("acceptableResponseCodes", "200");
+            jsonObject.put("accessStrategy",jsonObjectTemp);
+            updateService("System", id,jsonObject,system);
+
+        }
 
 
         String jsonString = new Gson().toJson(jsonObject.get("extraInfo"), Map.class);
@@ -392,7 +417,7 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
     @Override
-    public HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) {
+    public HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) throws ParseException {
 
         JSONObject JsonExtraInfo = null;
 
@@ -423,8 +448,19 @@ public class ServiceRepoImpl implements ServiceRepo {
             }
             extraInfo.setNotificationApiKey((String) JsonExtraInfo.get("notificationApiKey"));
 
-            extraInfo.setDailyAccess((List<Schedule>) JsonExtraInfo.get("dailyAccess"));
+            if(JsonExtraInfo.get("dailyAccess")!=null){
 
+                extraInfo.setDailyAccess((List<Schedule>) JsonExtraInfo.get("dailyAccess"));
+
+                LinkedHashMap jsonObjectTemp = (LinkedHashMap) jsonObject.get("accessStrategy");
+                jsonObject.remove("accessStrategy");
+                jsonObjectTemp.remove("@class");
+                jsonObjectTemp.put("@class", "org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
+                jsonObjectTemp.put("endPointUrl" , baseUrl+"/api/serviceCheck/"+id);
+                jsonObjectTemp.put("acceptableResponseCodes", "200");
+                jsonObject.put("accessStrategy",jsonObjectTemp);
+
+            }
 
             try {
                 extraInfo.setPosition(Objects.requireNonNull(oldExtraInfo).getPosition());

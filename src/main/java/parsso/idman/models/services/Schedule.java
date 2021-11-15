@@ -10,5 +10,4 @@ public class Schedule {
     int weekDay;
     Period period;
 
-
 }

@@ -116,7 +116,6 @@ public class UsersController {
         return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName, userStatus), HttpStatus.OK);
     }
 
-
     @GetMapping("/api/users/group/{groupId}")
     public ResponseEntity<ListUsers> retrieveUsersMainWithGroupId(@PathVariable(name = "groupId") String groupId,
                                                                   @RequestParam(name = "page", defaultValue = "1") int page,
@@ -277,6 +276,19 @@ public class UsersController {
         objectResult.put("pwdInHistory", pwdin);
 
         return new ResponseEntity<>(objectResult, httpStatus);
+    }
+
+
+    @PutMapping("/api/public/changePassword")
+    public ResponseEntity<JSONObject> changePasswordWithoutToken(HttpServletRequest request,
+                                                     @RequestBody JSONObject jsonObject) {
+        String currentPassword = jsonObject.getAsString("currentPassword");
+        String newPassword = jsonObject.getAsString("newPassword");
+        String userId = jsonObject.getAsString("userId");
+        HttpStatus httpStatus = userRepo.changePasswordPublic(userId,currentPassword,newPassword);
+
+        return new ResponseEntity<>(httpStatus);
+
     }
 
     @GetMapping("/api/user/password/request")

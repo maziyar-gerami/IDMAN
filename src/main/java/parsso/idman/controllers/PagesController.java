@@ -139,6 +139,11 @@ public class PagesController implements ErrorController {
         return "redirect:/login/cas";
     }
 
+    @GetMapping("/changepassword")
+    public String changepassword() {
+        return "changepassword";
+    }
+
     @GetMapping("/logout")
     public String logout(
             HttpServletRequest request,

@@ -172,6 +172,7 @@ public class User implements UserDetails, Comparable {
     public int compareTo(Object second) {
         return Long.compare(((User) second).timeStamp, this.timeStamp);
     }
+
 }
 
 

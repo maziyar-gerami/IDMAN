@@ -45,6 +45,8 @@ public interface UserRepo {
 
     List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
 
+    void setIfLoggedIn();
+
     String getByMobile(String mobile);
 
     ListUsers retrieveUsersMain(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus);
@@ -74,4 +76,6 @@ public interface UserRepo {
     Boolean SAtoSU();
 
     Boolean retrieveUsersDevice(String userName);
+
+    HttpStatus changePasswordPublic(String userId, String currentPassword, String newPassword);
 }

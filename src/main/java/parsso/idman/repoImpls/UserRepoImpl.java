@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextOperations;
@@ -42,6 +43,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.User;
+import parsso.idman.models.users.UserLoggedIn;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.*;
 
@@ -110,6 +112,9 @@ public class UserRepoImpl implements UserRepo {
     private UserAttributeMapper userAttributeMapper;
     @Autowired
     private SimpleUserAttributeMapper simpleUserAttributeMapper;
+    @Autowired
+    private SimpleUserAttributeMapper.LoggedInUserAttributeMapper loggedInUserAttributeMapper;
+
     @Autowired
     private BuildDnUser buildDnUser;
     @Autowired
@@ -489,6 +494,79 @@ public class UserRepoImpl implements UserRepo {
             orFilter.or(new EqualsFilter("uid", usersExtraInfo.getUserId()));
 
         return ldapTemplate.search("ou=People," + BASE_DN, orFilter.encode(), searchControls, new SimpleUserAttributeMapper());
+
+    }
+    @Override
+    public HttpStatus changePasswordPublic(String userId, String currentPassword, String newPassword) {
+
+        User user = retrieveUsers(userId);
+
+        AndFilter andFilter = new AndFilter();
+        andFilter.and(new EqualsFilter("objectclass", "person"));
+        andFilter.and(new EqualsFilter("uid", userId));
+
+
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userId)) ,UsersExtraInfo.class,Variables.col_usersExtraInfo);
+        if (usersExtraInfo==null)
+            return HttpStatus.NOT_FOUND;
+
+        if (ldapTemplate.authenticate("ou=People," + BASE_DN, andFilter.toString(), currentPassword)) {
+            DirContextOperations contextUser;
+
+            if (usersExtraInfo.isLoggedIn())
+                return HttpStatus.FORBIDDEN;
+
+            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
+            contextUser.setAttributeValue("userPassword", newPassword);
+            try {
+                ldapTemplate.modifyAttributes(contextUser);
+            }catch (org.springframework.ldap.InvalidAttributeValueException e){
+                return HttpStatus.FOUND;
+            }
+
+        } else {
+            return  HttpStatus.UNAUTHORIZED;
+        }
+
+        return HttpStatus.OK;
+    }
+
+    @Override
+    public void setIfLoggedIn() {
+        SearchControls searchControls = new SearchControls();
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+        String[] array = {"uid","pwdHistory"};
+        searchControls.setReturningAttributes(array);
+        
+        EqualsFilter equalsFilter = new EqualsFilter("objectclass","person");
+        
+        List<UserLoggedIn> usersLoggedIn = ldapTemplate.search("ou=People," + BASE_DN, equalsFilter.encode(), searchControls, loggedInUserAttributeMapper);
+
+        for (UserLoggedIn userLoggedIn:usersLoggedIn ) {
+            UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userLoggedIn.getUserId())),UsersExtraInfo.class,Variables.col_usersExtraInfo);
+            usersExtraInfo.setLoggedIn(userLoggedIn.isLoggedIn());
+            try {
+                mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
+                uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, userLoggedIn.getUserId(), Variables.ATTR_LOGGEDIN, Variables.ACTION_SET, Variables.RESULT_SUCCESS, "SET: "+usersExtraInfo.isLoggedIn()));
+
+                ModificationItem[] modificationItems;
+                modificationItems = new ModificationItem[1];
+                if (usersExtraInfo.isLoggedIn())
+                modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdReset","FALSE"));
+                else
+                    modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdReset","TRUE"));
+
+                try {
+                    ldapTemplate.modifyAttributes(buildDnUser.buildDn(userLoggedIn.getUserId()), modificationItems);
+                }catch (Exception e){
+
+                }
+
+            }catch (Exception e){
+                uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, userLoggedIn.getUserId(), Variables.ATTR_LOGGEDIN, Variables.ACTION_SET, Variables.RESULT_FAILED, "Writing to DB"));
+            }
+
+        }
 
     }
 

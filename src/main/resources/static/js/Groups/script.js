@@ -978,6 +978,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
+            a: function () {
+
+            },
             changeLang: function () {
                 if(this.lang == "EN"){
                     window.localStorage.setItem("lang", "EN");

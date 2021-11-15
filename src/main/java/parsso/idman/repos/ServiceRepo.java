@@ -34,7 +34,7 @@ public interface ServiceRepo {
 
     long createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
 
-    HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system);
+    HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) throws ParseException;
 
     HttpStatus increasePosition(String id);
 

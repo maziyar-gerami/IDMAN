@@ -45,6 +45,7 @@ public class UsersExtraInfo {
     private long endTimeEpoch;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Time expiredTime;
+    private boolean loggedIn;
 
     public Time getExpiredTime() {
         if (endTimeEpoch != 0)
