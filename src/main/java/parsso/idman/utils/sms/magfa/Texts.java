@@ -25,8 +25,8 @@ public class Texts {
         String p4 = " تغییر یافت.";
         Time time =  TimeHelper.longToPersianTime(new Date().getTime());
         this.mainMessage = user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')) + p1 +"\n" +
-                p2 +time.getDay()+"-"+time.getMonth()+ "-"+time.getYear() + p3 +
-        time.getHours()+":"+time.getMinutes() + p4;
+                p2 +String.format("%02d",time.getDay())+"-"+String.format("%02d",time.getMonth())+ "-"+time.getYear() + p3 +
+                String.format("%02d",time.getHours())+":"+String.format("%02d",time.getMinutes()) + p4;
     }
 
 

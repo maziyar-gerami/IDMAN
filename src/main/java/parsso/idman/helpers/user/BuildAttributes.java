@@ -86,6 +86,8 @@ public class BuildAttributes {
 
         attrs.put("pwdAttribute", "userPassword");
 
+        attrs.put("pwdReset", "TRUE");
+
         return attrs;
     }
 

@@ -383,8 +383,7 @@ public class UsersController {
         Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
         int pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
         objectResult.put("pwdInHistory", pwdin);
-        if (passChangeNotification.equals("on"))
-            instantMessage.sendPasswordChangeNotif(userRepo.retrieveUsers(uid));
+
         return new ResponseEntity<>(objectResult,userRepo.resetPassword(uid, newPassword, token));
     }
 

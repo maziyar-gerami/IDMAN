@@ -545,6 +545,7 @@ public class UserRepoImpl implements UserRepo {
         for (UserLoggedIn userLoggedIn:usersLoggedIn ) {
             UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userLoggedIn.getUserId())),UsersExtraInfo.class,Variables.col_usersExtraInfo);
             try {
+                assert usersExtraInfo != null;
                 usersExtraInfo.setLoggedIn(userLoggedIn.isLoggedIn());
             }catch (NullPointerException e){
                 continue;
@@ -562,7 +563,7 @@ public class UserRepoImpl implements UserRepo {
 
                 try {
                     ldapTemplate.modifyAttributes(buildDnUser.buildDn(userLoggedIn.getUserId()), modificationItems);
-                }catch (Exception e){
+                }catch (Exception ignore){
 
                 }
 
@@ -952,6 +953,9 @@ public class UserRepoImpl implements UserRepo {
 
                 uniformLogger.info(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
                         Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
+
+                if (passChangeNotification.equals("on"))
+                    instantMessage.sendPasswordChangeNotif(user);
 
             }catch (org.springframework.ldap.InvalidAttributeValueException e){
                 uniformLogger.warn(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
