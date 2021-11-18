@@ -258,20 +258,23 @@ public class UserRepoImpl implements UserRepo {
         if (p.getUserPassword() != null && !p.getUserPassword().equals("")) {
             context.setAttributeValue("userPassword", p.getUserPassword());
             p.setPasswordChangedTime(Long.parseLong(TimeHelper.epochToDateLdapFormat(new Date().getTime()).substring(0, 14)));
+
+            try {
+                ldapTemplate.modifyAttributes(context);
+                mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
+            }catch (org.springframework.ldap.InvalidAttributeValueException e){
+                uniformLogger.warn(p.getUserId(), new ReportMessage(Variables.MODEL_USER, p.getUserId(), Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
+                return HttpStatus.FOUND;
+            } catch (Exception e) {
+                e.printStackTrace();
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Writing to DB"));
+            }
+
         } else
             p.setPasswordChangedTime(user.getPasswordChangedTime());
 
-        try {
-            ldapTemplate.modifyAttributes(context);
-            mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
-            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
-        }catch (org.springframework.ldap.InvalidAttributeValueException e){
-            uniformLogger.warn(p.getUserId(), new ReportMessage(Variables.MODEL_USER, p.getUserId(), Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
-            return HttpStatus.FOUND;
-        } catch (Exception e) {
-            e.printStackTrace();
-            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Writing to DB"));
-        }
+
 
         return HttpStatus.OK;
     }
@@ -535,6 +538,8 @@ public class UserRepoImpl implements UserRepo {
         
         List<UserLoggedIn> usersLoggedIn = ldapTemplate.search("ou=People," + BASE_DN, equalsFilter.encode(), searchControls, new SimpleUserAttributeMapper.LoggedInUserAttributeMapper());
 
+        int i=0;
+        char[] animationChars = new char[]{'|', '/', '-', '\\'};
         for (UserLoggedIn userLoggedIn:usersLoggedIn ) {
             UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userLoggedIn.getUserId())),UsersExtraInfo.class,Variables.col_usersExtraInfo);
             try {
@@ -545,7 +550,7 @@ public class UserRepoImpl implements UserRepo {
             }
             try {
                 mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
-                uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, userLoggedIn.getUserId(), Variables.ATTR_LOGGEDIN, Variables.ACTION_SET, Variables.RESULT_SUCCESS, "SET: "+usersExtraInfo.isLoggedIn()));
+                //uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, userLoggedIn.getUserId(), Variables.ATTR_LOGGEDIN, Variables.ACTION_SET, Variables.RESULT_SUCCESS, "SET: "+usersExtraInfo.isLoggedIn()));
 
                 ModificationItem[] modificationItems;
                 modificationItems = new ModificationItem[1];
@@ -563,10 +568,12 @@ public class UserRepoImpl implements UserRepo {
             }catch (Exception e){
                 uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, userLoggedIn.getUserId(), Variables.ATTR_LOGGEDIN, Variables.ACTION_SET, Variables.RESULT_FAILED, "Writing to DB"));
             }
+            i = ++i/usersLoggedIn.size();
+            System.out.print("Processing: " + i + "% " + animationChars[i % 4] + "\r");
+
 
         }
 
-        uniformLogger.info("System",new ReportMessage(Variables.ACTION_ADD,Variables.RESULT_SUCCESS,"SuperAdmin to SuperUser"));
 
 
     }
