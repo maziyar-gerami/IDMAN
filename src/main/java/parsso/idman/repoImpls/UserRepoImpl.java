@@ -538,7 +538,7 @@ public class UserRepoImpl implements UserRepo {
         
         List<UserLoggedIn> usersLoggedIn = ldapTemplate.search("ou=People," + BASE_DN, equalsFilter.encode(), searchControls, new SimpleUserAttributeMapper.LoggedInUserAttributeMapper());
 
-        int i=0;
+        int c=0;
         char[] animationChars = new char[]{'|', '/', '-', '\\'};
         for (UserLoggedIn userLoggedIn:usersLoggedIn ) {
             UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userLoggedIn.getUserId())),UsersExtraInfo.class,Variables.col_usersExtraInfo);
@@ -568,7 +568,8 @@ public class UserRepoImpl implements UserRepo {
             }catch (Exception e){
                 uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, userLoggedIn.getUserId(), Variables.ATTR_LOGGEDIN, Variables.ACTION_SET, Variables.RESULT_FAILED, "Writing to DB"));
             }
-            i = ++i/usersLoggedIn.size();
+            int i =(++c*100/usersLoggedIn.size());
+
             System.out.print("Processing: " + i + "% " + animationChars[i % 4] + "\r");
 
 
