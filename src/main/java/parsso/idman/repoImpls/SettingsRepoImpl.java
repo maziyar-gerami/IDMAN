@@ -43,6 +43,7 @@ public class SettingsRepoImpl implements SettingsRepo {
     @Autowired
     UniformLogger uniformLogger;
 
+    @SuppressWarnings("unused")
     private SettingsRepo settingsRepo;
     @Value("${max.pwd.lifetime.hours}")
     private long maxPwdLifetime;

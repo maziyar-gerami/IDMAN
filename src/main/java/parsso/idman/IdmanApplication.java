@@ -73,6 +73,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
         logger.warn("Started!");
     }
 
+    @SuppressWarnings("unused")
     private static void pulling(ConfigurableApplicationContext context) throws ParseException {
 
         long deadline = maxPwdLifetime * 24 * millis;

@@ -10,6 +10,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class JSONencoder {
 
+    @SuppressWarnings("unused")
     public JSONencoder(List<Setting> settings) {
     }
 

@@ -27,6 +27,7 @@ import java.util.UUID;
 @SuppressWarnings("unchecked")
 @Service
 public class Operations {
+    @SuppressWarnings("unused")
     private final String model = "users";
     @Autowired
     BuildDnUser buildDnUser;

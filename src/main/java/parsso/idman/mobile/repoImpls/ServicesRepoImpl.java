@@ -78,6 +78,7 @@ public class ServicesRepoImpl implements ServicesRepo {
         return "SMS Sent!";
     }
 
+    @SuppressWarnings("unused")
     public Name buildDn(String userId) {
         return LdapNameBuilder.newInstance(BASE_DN).add("ou", "People").add("uid", userId).build();
     }

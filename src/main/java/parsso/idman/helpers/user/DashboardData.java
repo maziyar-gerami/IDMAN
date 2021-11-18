@@ -45,7 +45,7 @@ public class DashboardData {
     Dashboard.Services fServices;
     Dashboard.Logins fLogins;
 
-    public Dashboard retrieveDashboardData() throws IOException, InterruptedException {
+    public Dashboard retrieveDashboardData() throws IOException {
 
         Thread thread = new Thread(() -> {
             try {

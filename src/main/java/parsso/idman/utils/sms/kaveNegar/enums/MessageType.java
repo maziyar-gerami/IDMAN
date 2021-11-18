@@ -12,6 +12,7 @@ public enum MessageType {
         this.value = type;
     }
 
+    @SuppressWarnings("unused")
     public static MessageType valueOf(int type) {
         for (MessageType code : MessageType.values()) {
             if (type == code.getValue()) {

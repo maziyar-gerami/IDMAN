@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@SuppressWarnings("SameReturnValue")
+@SuppressWarnings("ALL")
 public interface UserRepo {
     List<String> remove(String doerID, JSONObject jsonObject);
 
@@ -45,6 +45,7 @@ public interface UserRepo {
 
     List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
 
+    @SuppressWarnings("unused")
     void setIfLoggedIn();
 
     String getByMobile(String mobile);
@@ -73,6 +74,7 @@ public interface UserRepo {
 
     int retrieveUsersLDAPSize();
 
+    @SuppressWarnings("unused")
     Boolean SAtoSU();
 
     Boolean retrieveUsersDevice(String userName);

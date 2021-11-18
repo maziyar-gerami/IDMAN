@@ -43,10 +43,12 @@ public class PublicMessage {
         this.body = body;
     }
 
+    @SuppressWarnings("unused")
     public Time getCreateTime() {
         return TimeHelper.longToPersianTime(getCreateDate());
     }
 
+    @SuppressWarnings("unused")
     public Time getUpdateTime() {
         if (updateDate != null)
             return TimeHelper.longToPersianTime(updateDate);

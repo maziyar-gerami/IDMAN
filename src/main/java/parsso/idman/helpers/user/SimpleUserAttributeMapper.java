@@ -55,7 +55,7 @@ public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInf
             int nPass=0;
             try {
                 nPass = attributes.get("pwdHistory").size();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
             user.setLoggedIn(nPass > 0);

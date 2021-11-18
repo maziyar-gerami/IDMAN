@@ -7,6 +7,7 @@ import parsso.idman.models.logs.Setting;
 @Service
 public interface SettingsRepo {
 
+    @SuppressWarnings("unused")
     Setting retrieve(String settingName);
 
     void emailNotification();

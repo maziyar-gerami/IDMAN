@@ -53,6 +53,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     SimpleUserAttributeMapper simpleUserAttributeMapper;
     @Autowired
     DashboardData dashboardData;
+    @SuppressWarnings("unused")
     String model = "Refresh";
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
@@ -100,8 +101,8 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                 } else {
 
-                    Objects.requireNonNull(userExtraInfo).setUserId(user.getUserId());
                     userExtraInfo = new UsersExtraInfo();
+                    userExtraInfo.setUserId(user.getUserId());
                     userExtraInfo.setQrToken(UUID.randomUUID().toString());
                 }
 

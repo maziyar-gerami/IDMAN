@@ -226,6 +226,7 @@ public class ReportMessage {
         int pages;
         List<ReportMessage> reportMessageList;
 
+        @SuppressWarnings("unused")
         ListReportMessage() {
 
         }

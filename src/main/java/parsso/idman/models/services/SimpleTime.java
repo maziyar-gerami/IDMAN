@@ -12,6 +12,7 @@ public class SimpleTime implements Comparable {
     int hour;
     int minute;
 
+    @SuppressWarnings("unused")
     public SimpleTime() {
 
     }

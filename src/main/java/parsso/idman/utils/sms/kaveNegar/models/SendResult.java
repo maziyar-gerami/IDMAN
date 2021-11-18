@@ -24,34 +24,42 @@ public class SendResult {
         this.sender = json.get("sender").getAsString();
     }
 
+    @SuppressWarnings("unused")
     public long getMessageId() {
         return messageId;
     }
 
+    @SuppressWarnings("unused")
     public String getMessage() {
         return message;
     }
 
+    @SuppressWarnings("unused")
     public int getStatus() {
         return status;
     }
 
+    @SuppressWarnings("unused")
     public String getStatusText() {
         return statusText;
     }
 
+    @SuppressWarnings("unused")
     public String getSender() {
         return sender;
     }
 
+    @SuppressWarnings("unused")
     public String getReceptor() {
         return receptor;
     }
 
+    @SuppressWarnings("unused")
     public long getDate() {
         return date;
     }
 
+    @SuppressWarnings("unused")
     public int getCost() {
         return cost;
     }

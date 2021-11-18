@@ -77,7 +77,7 @@ public class Notifs {
         int count = Integer.parseInt(Objects.requireNonNull(json).get("count").toString());
         ArrayList<Notification> notifications;
         try {
-            notifications = (ArrayList) json.get("notifications");
+            notifications = (ArrayList<Notification>) json.get("notifications");
         } catch (Exception e) {
             e.printStackTrace();
             notifications = new ArrayList<>();

@@ -9,6 +9,7 @@ public class HttpException extends BaseException {
         this.code = code;
     }
 
+    @SuppressWarnings("unused")
     public int getCode() {
         return code;
     }
