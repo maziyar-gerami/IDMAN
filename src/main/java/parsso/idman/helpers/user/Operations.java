@@ -39,10 +39,12 @@ public class Operations {
     UniformLogger uniformLogger;
     @Value("${qr.devices.path}")
     private String qrDevicesPath;
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
 
     public HttpStatus enable(String doer, String uid) {
 
-        Name dn = buildDnUser.buildDn(uid);
+        Name dn = buildDnUser.buildDn(uid,BASE_DN);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
@@ -73,7 +75,7 @@ public class Operations {
 
     public HttpStatus disable(String doerID, String uid) {
 
-        Name dn = buildDnUser.buildDn(uid);
+        Name dn = buildDnUser.buildDn(uid,BASE_DN);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
@@ -102,7 +104,7 @@ public class Operations {
 
     public HttpStatus unlock(String doerID, String uid) {
 
-        Name dn = buildDnUser.buildDn(uid);
+        Name dn = buildDnUser.buildDn(uid,BASE_DN);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
