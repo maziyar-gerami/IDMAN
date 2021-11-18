@@ -88,8 +88,6 @@ public class UserRepoImpl implements UserRepo {
     private String BASE_URL;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-    @Value("${get.users.time.interval}")
-    private int apiHours;
     @Value("${user.profile.access}")
     private String access;
     @Value("${default.user.password}")
