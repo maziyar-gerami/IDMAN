@@ -11,12 +11,11 @@ import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.dashboardData.Dashboard;
 import parsso.idman.models.logs.Event;
-import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.utils.convertor.DateUtils;
 import parsso.idman.repos.LogsRepo;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
+import parsso.idman.utils.convertor.DateUtils;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;

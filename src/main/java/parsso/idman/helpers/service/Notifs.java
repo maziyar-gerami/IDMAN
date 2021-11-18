@@ -4,9 +4,9 @@ package parsso.idman.helpers.service;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import parsso.idman.helpers.Variables;
-import parsso.idman.models.services.ServiceGist;
 import parsso.idman.models.other.Notification;
 import parsso.idman.models.other.Return;
+import parsso.idman.models.services.ServiceGist;
 
 import java.io.BufferedReader;
 import java.io.IOException;

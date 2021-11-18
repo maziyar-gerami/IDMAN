@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.helpers.TimeHelper;
-import parsso.idman.models.users.User;
 import parsso.idman.models.other.Time;
+import parsso.idman.models.users.User;
 
 import java.util.Date;
 

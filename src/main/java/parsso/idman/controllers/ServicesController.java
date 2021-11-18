@@ -29,8 +29,6 @@ public class ServicesController {
     private final ServiceRepo serviceRepo;
     @Value("${metadata.file.path}")
     private String metadataPath;
-    @Value("${base.url}")
-    private String baseUrl;
 
     @Autowired
     public ServicesController(@Qualifier("userRepoImpl") UserRepo userRepo, @Qualifier("serviceRepoImpl") ServiceRepo serviceRepo) {

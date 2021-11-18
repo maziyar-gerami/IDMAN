@@ -1,9 +1,6 @@
 package parsso.idman;
 
 
-import lombok.Getter;
-import lombok.SneakyThrows;
-import lombok.val;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.session.SingleSignOutFilter;
@@ -17,9 +14,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
@@ -27,12 +21,9 @@ import org.springframework.security.cas.authentication.CasAuthenticationProvider
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.stereotype.Service;
+import parsso.idman.configs.CasUserDetailService;
 import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.models.users.User;
-import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repoImpls.UserRepoImpl;
-import parsso.idman.configs.CasUserDetailService;
 import parsso.idman.repos.FilesStorageService;
 import parsso.idman.repos.UserRepo;
 
