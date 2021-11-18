@@ -47,6 +47,7 @@ import parsso.idman.models.users.UserLoggedIn;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.*;
 
+import javax.annotation.PostConstruct;
 import javax.naming.Name;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
@@ -573,6 +574,9 @@ public class UserRepoImpl implements UserRepo {
 
         }
 
+        uniformLogger.info("System",new ReportMessage(Variables.ACTION_ADD,Variables.RESULT_SUCCESS,"SuperAdmin to SuperUser"));
+
+
     }
 
     @Override
@@ -1041,7 +1045,35 @@ public class UserRepoImpl implements UserRepo {
             usersExtraInfo.setRole("SUPERUSER");
             mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
         }
+        uniformLogger.info("System",new ReportMessage("Convert",Variables.RESULT_SUCCESS,"SuperAdmin to SuperUser"));
         return true;
+    }
+
+    @PostConstruct
+    public void postConstruct(){
+
+
+        val SUrunnable = new Runnable(){
+
+            @Override
+            public void run() {
+                SAtoSU();
+            }
+        };
+
+        val loggeInUses = new Runnable(){
+
+            @Override
+            public void run() {
+                setIfLoggedIn();
+            }
+        };
+
+
+        Thread sathread = new Thread(SUrunnable);
+        Thread logeInUsers = new Thread(loggeInUses);
+        logeInUsers.start();
+        sathread.start();
     }
 
     @Override

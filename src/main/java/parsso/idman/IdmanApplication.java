@@ -69,51 +69,8 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
     public static void main(String[] args) {
 
-
-        ConfigurableApplicationContext context = SpringApplication.run(IdmanApplication.class, args);
-
-        val runnable = new Runnable() {
-            @SneakyThrows
-            @Override
-            public void run() {
-                while (true) {
-                    Thread.sleep(intervalCheckPassTime * millis);
-                    //pulling(context);
-                }
-            }
-        };
-
+        SpringApplication.run(IdmanApplication.class, args);
         logger.warn("Started!");
-
-
-        val SUrunnable = new Runnable(){
-
-            @Override
-            public void run() {
-                context.getBean(UserRepo.class).SAtoSU();
-            }
-        };
-
-        val loggeInUses = new Runnable(){
-
-            @Override
-            public void run() {
-                context.getBean(UserRepo.class).setIfLoggedIn();
-            }
-        };
-
-        // in old days, we need to check the log level to increase performance
-
-        // with Java 8, we can do this, no need to check the log level
-
-        //refresh(context);
-        Thread thread = new Thread(runnable);
-        Thread sathread = new Thread(SUrunnable);
-        Thread logeInUsers = new Thread(loggeInUses);
-        logeInUsers.start();
-        sathread.start();
-        thread.start();
-
     }
 
     private static void pulling(ConfigurableApplicationContext context) throws ParseException {

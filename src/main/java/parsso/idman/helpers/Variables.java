@@ -48,6 +48,7 @@ public class Variables {
     public static final String ACTION_INSERT = "Insert";
     public static final String ACTION_DELETE = "Delete";
     public static final String ACTION_SET = "Set";
+    public static final String ACTION_ADD = "Add";
     public static final String ACTION_RETRIEVE = "Retrieve";
     public static final String MODEL_USER = "user";
     public static final String MODEL_SERVICE = "service";
