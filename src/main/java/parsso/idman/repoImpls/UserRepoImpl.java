@@ -106,7 +106,8 @@ public class UserRepoImpl implements UserRepo {
     private Token tokenClass;
     @Autowired
     private MongoTemplate mongoTemplate;
-
+    @Autowired
+    UserAttributeMapper userAttributeMapper;
     @Autowired
     private BuildDnUser buildDnUser;
     @Autowired
@@ -646,8 +647,8 @@ public class UserRepoImpl implements UserRepo {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         if (tokenClass.checkToken(uid, token) == HttpStatus.OK)
-            return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", uid).encode(), searchControls,
-                    new UserAttributeMapper()).get(0);
+            return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", uid).encode(), searchControls,userAttributeMapper
+                    ).get(0);
         return null;
     }
 
@@ -660,8 +661,8 @@ public class UserRepoImpl implements UserRepo {
         final AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("objectclass", "person"));
 
-        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, andFilter.toString(), searchControls,
-                new UserAttributeMapper());
+        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, andFilter.toString(), searchControls,userAttributeMapper
+                );
         List<User> relatedPeople = new LinkedList<>();
 
         for (User user : people) {
@@ -685,8 +686,8 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("objectclass", "person"));
         andFilter.and(new EqualsFilter("ou", ou));
 
-        List<User> users = ldapTemplate.search("ou=People," + BASE_DN, andFilter.toString(), searchControls,
-                new UserAttributeMapper());
+        List<User> users = ldapTemplate.search("ou=People," + BASE_DN, andFilter.toString(), searchControls,userAttributeMapper
+                );
 
         for (User user : users)
             user.setUsersExtraInfo(mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
@@ -736,7 +737,7 @@ public class UserRepoImpl implements UserRepo {
 
         User user = new User();
         UsersExtraInfo usersExtraInfo;
-        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, new UserAttributeMapper());
+        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, userAttributeMapper);
 
         if (people.size() != 0) {
             user = people.get(0);

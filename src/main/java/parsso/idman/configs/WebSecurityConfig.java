@@ -105,14 +105,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //APIs
                 .antMatchers("/api/groups/user").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/events/user/**").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/audits/user/**").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/reports/user/**").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/services/user").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/user/**").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/reports/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/audits/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/events/user").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/reports/user").hasAnyRole("USER","ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/audits/user").hasAnyRole("USER","ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/events/user").hasAnyRole("USER","ADMIN", "SUPPORTER", "SUPERUSER")
 
 
                 //****************** SUPERUSER & ADMIN & SUPPORTER Objects************************
@@ -130,9 +127,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/services").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/groups/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/dashboard").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/reports/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/audits/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/events/users/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/reports/users**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/audits/users**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/events/users**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/transcripts/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
 
 
