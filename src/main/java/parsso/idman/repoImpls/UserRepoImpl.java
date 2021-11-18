@@ -108,12 +108,6 @@ public class UserRepoImpl implements UserRepo {
     private Token tokenClass;
     @Autowired
     private MongoTemplate mongoTemplate;
-    @Autowired
-    private UserAttributeMapper userAttributeMapper;
-    @Autowired
-    private SimpleUserAttributeMapper simpleUserAttributeMapper;
-    @Autowired
-    private SimpleUserAttributeMapper.LoggedInUserAttributeMapper loggedInUserAttributeMapper;
 
     @Autowired
     private BuildDnUser buildDnUser;
@@ -168,7 +162,7 @@ public class UserRepoImpl implements UserRepo {
                 if (groupsChecks.checkGroup(p.getMemberOf())) {
 
                     //create user in ldap
-                    Name dn = buildDnUser.buildDn(p.getUserId());
+                    Name dn = buildDnUser.buildDn(p.getUserId(),BASE_DN);
                     ldapTemplate.bind(dn, null, buildAttributes.build(p));
 
                     if (p.getStatus() != null)
@@ -213,7 +207,7 @@ public class UserRepoImpl implements UserRepo {
     public HttpStatus update(String doerID, String usid, User p) {
 
         p.setUserId(usid.trim());
-        Name dn = buildDnUser.buildDn(p.getUserId());
+        Name dn = buildDnUser.buildDn(p.getUserId(),BASE_DN);
 
         User user = retrieveUsers(p.getUserId());
 
@@ -314,7 +308,7 @@ public class UserRepoImpl implements UserRepo {
                     undeletables.add(user.getUserId());
                     continue;
                 }
-                Name dn = buildDnUser.buildDn(user.getUserId());
+                Name dn = buildDnUser.buildDn(user.getUserId(),BASE_DN);
                 Query query = new Query(new Criteria("userId").is(user.getUserId()));
 
                 try {
@@ -381,7 +375,7 @@ public class UserRepoImpl implements UserRepo {
             if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
 
                 DirContextOperations contextUser;
-                contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
+                contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(),BASE_DN));
                 contextUser.setAttributeValue("userPassword", newPassword);
 
                 try {
@@ -516,7 +510,7 @@ public class UserRepoImpl implements UserRepo {
             if (usersExtraInfo.isLoggedIn())
                 return HttpStatus.FORBIDDEN;
 
-            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
+            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(),BASE_DN));
             contextUser.setAttributeValue("userPassword", newPassword);
             try {
                 ldapTemplate.modifyAttributes(contextUser);
@@ -540,7 +534,7 @@ public class UserRepoImpl implements UserRepo {
         
         EqualsFilter equalsFilter = new EqualsFilter("objectclass","person");
         
-        List<UserLoggedIn> usersLoggedIn = ldapTemplate.search("ou=People," + BASE_DN, equalsFilter.encode(), searchControls, loggedInUserAttributeMapper);
+        List<UserLoggedIn> usersLoggedIn = ldapTemplate.search("ou=People," + BASE_DN, equalsFilter.encode(), searchControls, new SimpleUserAttributeMapper.LoggedInUserAttributeMapper());
 
         for (UserLoggedIn userLoggedIn:usersLoggedIn ) {
             UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userLoggedIn.getUserId())),UsersExtraInfo.class,Variables.col_usersExtraInfo);
@@ -562,7 +556,7 @@ public class UserRepoImpl implements UserRepo {
                     modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdReset","TRUE"));
 
                 try {
-                    ldapTemplate.modifyAttributes(buildDnUser.buildDn(userLoggedIn.getUserId()), modificationItems);
+                    ldapTemplate.modifyAttributes(buildDnUser.buildDn(userLoggedIn.getUserId(),BASE_DN), modificationItems);
                 }catch (Exception ignore){
 
                 }
@@ -655,7 +649,7 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         if (tokenClass.checkToken(uid, token) == HttpStatus.OK)
             return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", uid).encode(), searchControls,
-                    userAttributeMapper).get(0);
+                    new UserAttributeMapper()).get(0);
         return null;
     }
 
@@ -669,7 +663,7 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("objectclass", "person"));
 
         List<User> people = ldapTemplate.search("ou=People," + BASE_DN, andFilter.toString(), searchControls,
-                userAttributeMapper);
+                new UserAttributeMapper());
         List<User> relatedPeople = new LinkedList<>();
 
         for (User user : people) {
@@ -694,7 +688,7 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("ou", ou));
 
         List<User> users = ldapTemplate.search("ou=People," + BASE_DN, andFilter.toString(), searchControls,
-                userAttributeMapper);
+                new UserAttributeMapper());
 
         for (User user : users)
             user.setUsersExtraInfo(mongoTemplate.findOne(new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo));
@@ -709,7 +703,7 @@ public class UserRepoImpl implements UserRepo {
 
             for (User user : getUsersOfOu(old_ou)) {
 
-                DirContextOperations context = buildAttributes.buildAttributes(doerID, user.getUserId(), user, buildDnUser.buildDn(user.getUserId()));
+                DirContextOperations context = buildAttributes.buildAttributes(doerID, user.getUserId(), user, buildDnUser.buildDn(user.getUserId(),BASE_DN));
 
                 context.removeAttributeValue("ou", old_ou);
                 context.addAttributeValue("ou", new_ou);
@@ -744,7 +738,7 @@ public class UserRepoImpl implements UserRepo {
 
         User user = new User();
         UsersExtraInfo usersExtraInfo;
-        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, userAttributeMapper);
+        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, new UserAttributeMapper());
 
         if (people.size() != 0) {
             user = people.get(0);
@@ -807,12 +801,12 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-        return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("ou", groupId).encode(), searchControls, simpleUserAttributeMapper);
+        return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("ou", groupId).encode(), searchControls, new SimpleUserAttributeMapper());
     }
 
     public void removeCurrentEndTime(String uid) {
 
-        Name dn = buildDnUser.buildDn(uid);
+        Name dn = buildDnUser.buildDn(uid,BASE_DN);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
@@ -947,7 +941,7 @@ public class UserRepoImpl implements UserRepo {
         if (httpStatus == HttpStatus.OK) {
             DirContextOperations contextUser;
 
-            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
+            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(),BASE_DN));
             contextUser.setAttributeValue("userPassword", pass);
 
             try {
@@ -1033,7 +1027,7 @@ public class UserRepoImpl implements UserRepo {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-        return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("objectClass", "person").encode(), searchControls, simpleUserAttributeMapper).size();
+        return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("objectClass", "person").encode(), searchControls, new SimpleUserAttributeMapper()).size();
 
     }
 
