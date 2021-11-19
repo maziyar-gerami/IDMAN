@@ -550,8 +550,6 @@ public class UserRepoImpl implements UserRepo {
             }
             try {
                 mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
-                //uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, userLoggedIn.getUserId(), Variables.ATTR_LOGGEDIN, Variables.ACTION_SET, Variables.RESULT_SUCCESS, "SET: "+usersExtraInfo.isLoggedIn()));
-
                 ModificationItem[] modificationItems;
                 modificationItems = new ModificationItem[1];
                 if (usersExtraInfo.isLoggedIn())
@@ -572,11 +570,8 @@ public class UserRepoImpl implements UserRepo {
 
             System.out.print("Processing: " + i + "% " + animationChars[i % 4] + "\r");
 
-
         }
         System.out.println("Processing: Done!");
-
-
 
     }
 
