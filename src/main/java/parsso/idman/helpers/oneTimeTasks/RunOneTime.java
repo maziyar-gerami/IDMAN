@@ -22,15 +22,17 @@ public class RunOneTime {
         this.BASE_DN = BASE_DN;
     }
 
+
     public void postConstruct(){
 
         val SUrunnable = new Runnable(){
 
             @Override
             public void run() {
-                new SAtoSU(mongoTemplate).run();
+                new SAtoSU(mongoTemplate, uniformLogger).run();
             }
         };
+
 
         val loggeInUses = new Runnable(){
 
@@ -44,7 +46,9 @@ public class RunOneTime {
         Thread logeInUsers = new Thread(loggeInUses);
         logeInUsers.start();
         sathread.start();
-        uniformLogger.info("System",new ReportMessage("Convert", Variables.RESULT_SUCCESS,"SuperAdmin to SuperUser"));
+
+        System.out.println(Variables.PARSSO_IDMAN);
+
 
     }
 

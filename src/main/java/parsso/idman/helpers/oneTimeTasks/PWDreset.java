@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import parsso.idman.helpers.UniformLogger;
@@ -11,6 +12,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.helpers.user.SimpleUserAttributeMapper;
 import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.other.OneTime;
 import parsso.idman.models.users.UserLoggedIn;
 import parsso.idman.models.users.UsersExtraInfo;
 
@@ -18,6 +20,7 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
+import java.util.Date;
 import java.util.List;
 
 public class PWDreset {
@@ -38,6 +41,19 @@ public class PWDreset {
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         String[] array = {"uid","pwdHistory"};
         searchControls.setReturningAttributes(array);
+
+        OneTime oneTime;
+        Query query = new Query(Criteria.where("_id").is("PWDreset"));
+        try {
+            oneTime = mongoTemplate.findOne(query, OneTime.class,Variables.col_OneTime);
+        }catch (NullPointerException e){
+            oneTime = new OneTime("PWDreset",false, 0L);
+        }
+
+        if (oneTime== null)
+            oneTime= new OneTime("PWDreset");
+        if(oneTime.isRun())
+            return;
 
         EqualsFilter equalsFilter = new EqualsFilter("objectclass","person");
 
@@ -76,6 +92,11 @@ public class PWDreset {
             System.out.print("Processing: " + i + "% " + animationChars[i % 4] + "\r");
 
         }
+
+
+        OneTime oneTime1 = new OneTime("PWDreset",true,new Date().getTime());
+        mongoTemplate.save(oneTime1,Variables.col_OneTime);
+
         System.out.println("Processing: Done!");
     }
 }
