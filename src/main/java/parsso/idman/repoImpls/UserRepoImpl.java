@@ -38,6 +38,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.group.GroupsChecks;
+import parsso.idman.helpers.oneTimeTasks.RunOneTime;
 import parsso.idman.helpers.user.*;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.ListUsers;
@@ -1048,28 +1049,7 @@ public class UserRepoImpl implements UserRepo {
     @PostConstruct
     public void postConstruct(){
 
-
-        val SUrunnable = new Runnable(){
-
-            @Override
-            public void run() {
-                SAtoSU();
-            }
-        };
-
-        val loggeInUses = new Runnable(){
-
-            @Override
-            public void run() {
-                setIfLoggedIn();
-            }
-        };
-
-
-        Thread sathread = new Thread(SUrunnable);
-        Thread logeInUsers = new Thread(loggeInUses);
-        logeInUsers.start();
-        sathread.start();
+        new RunOneTime(ldapTemplate, mongoTemplate, uniformLogger,BASE_DN).postConstruct();
     }
 
     @Override
