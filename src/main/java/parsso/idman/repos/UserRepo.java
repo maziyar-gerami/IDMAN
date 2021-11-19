@@ -54,7 +54,7 @@ public interface UserRepo {
 
     int sendEmail(String email, String uid, String cid, String answer);
 
-    HttpStatus resetPassword(String userId, String oldPass, String token);
+    HttpStatus resetPassword(String userId, String oldPass, String token, int pwdin);
 
     String createUrl(String userId, String token);
 

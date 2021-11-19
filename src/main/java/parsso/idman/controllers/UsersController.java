@@ -384,7 +384,7 @@ public class UsersController {
         int pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
         objectResult.put("pwdInHistory", pwdin);
 
-        return new ResponseEntity<>(objectResult,userRepo.resetPassword(uid, newPassword, token));
+        return new ResponseEntity<>(objectResult,userRepo.resetPassword(uid, newPassword, token,pwdin));
     }
 
     @GetMapping("/api/public/checkMail/{email}")

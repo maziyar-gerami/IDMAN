@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.DirContextOperations;
@@ -918,7 +919,7 @@ public class UserRepoImpl implements UserRepo {
         return BASE_URL + /*"" +*/  "/api/public/validateEmailToken/" + userId + "/" + token;
     }
 
-    public HttpStatus resetPassword(String userId, String pass, String token) {
+    public HttpStatus resetPassword(String userId, String pass, String token, int pwdin) {
 
         User user;
         try {
@@ -960,6 +961,11 @@ public class UserRepoImpl implements UserRepo {
 
             }catch (org.springframework.ldap.InvalidAttributeValueException e){
                 uniformLogger.warn(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
+                UsersExtraInfo usersExtraInfo = user.getUsersExtraInfo();
+                long extraTime = Long.parseLong(usersExtraInfo.getResetPassToken())+((pwdin/2) * 60000L);
+                Update update = new Update();
+                update.set("resetPassToken",extraTime);
+                mongoTemplate.upsert(new Query(Criteria.where("userId").is(userId)),update,Variables.col_usersExtraInfo);
                 return HttpStatus.FOUND;
             }
             catch (Exception e) {
