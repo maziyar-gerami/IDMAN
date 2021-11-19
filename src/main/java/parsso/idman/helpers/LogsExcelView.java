@@ -3,13 +3,16 @@ package parsso.idman.helpers;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
+import org.springframework.web.servlet.view.document.AbstractXlsxView;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.other.Time;
 import parsso.idman.utils.convertor.DateConverter;
@@ -20,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class LogsExcelView extends AbstractXlsView {
+public class LogsExcelView extends AbstractXlsxView {
     final MongoTemplate mongoTemplate;
 
     @Autowired
@@ -36,7 +39,7 @@ public class LogsExcelView extends AbstractXlsView {
         List<Report> reports = Report.analyze(mongoTemplate, 0, 0);
 
         // create a new Excel sheet
-        HSSFSheet sheet = (HSSFSheet) workbook.createSheet("logs");
+        Sheet sheet = workbook.createSheet("logs");
         sheet.setDefaultColumnWidth(30);
 
         // create style for header cells
@@ -46,7 +49,7 @@ public class LogsExcelView extends AbstractXlsView {
         style.setFont(font);
 
         // create header row
-        HSSFRow header = sheet.createRow(0);
+        Row header = sheet.createRow(0);
 
         header.createCell(0).setCellValue("Functor userID");
         header.getCell(0).setCellStyle(style);
@@ -69,7 +72,7 @@ public class LogsExcelView extends AbstractXlsView {
 
         for (Report report : reports) {
             dateConverter.gregorianToPersian(report.getDateTime().getYear(), report.getDateTime().getMonth(), report.getDateTime().getDay());
-            HSSFRow aRow = sheet.createRow(rowCount++);
+            Row aRow = sheet.createRow(rowCount++);
             Time time = TimeHelper.longToPersianTime(report.getMillis());
             aRow.createCell(0).setCellValue(report.getLoggerName());
             aRow.createCell(1).setCellValue(report.getMessage());
