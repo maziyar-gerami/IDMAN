@@ -146,7 +146,7 @@ public class AccessStrategy {
 
             accessStrategy.setAtClass("org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
 
-            accessStrategy.setEndpointUrl(jsonObject.get("endPointUrl").toString());
+            accessStrategy.setEndpointUrl(jsonObject.get("endpointUrl").toString());
 
             accessStrategy.setAcceptableResponseCodes(jsonObject.get("acceptableResponseCodes").toString());
         }
