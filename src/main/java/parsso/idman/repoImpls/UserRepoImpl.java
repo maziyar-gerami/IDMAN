@@ -261,22 +261,21 @@ public class UserRepoImpl implements UserRepo {
             context.setAttributeValue("userPassword", p.getUserPassword());
             p.setPasswordChangedTime(Long.parseLong(TimeHelper.epochToDateLdapFormat(new Date().getTime()).substring(0, 14)));
 
-            try {
-                ldapTemplate.modifyAttributes(context);
-                mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
-                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
-            }catch (org.springframework.ldap.InvalidAttributeValueException e){
-                uniformLogger.warn(p.getUserId(), new ReportMessage(Variables.MODEL_USER, p.getUserId(), Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
-                return HttpStatus.FOUND;
-            } catch (Exception e) {
-                e.printStackTrace();
-                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Writing to DB"));
-            }
 
         } else
             p.setPasswordChangedTime(user.getPasswordChangedTime());
 
-
+        try {
+            ldapTemplate.modifyAttributes(context);
+            mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
+        }catch (org.springframework.ldap.InvalidAttributeValueException e){
+            uniformLogger.warn(p.getUserId(), new ReportMessage(Variables.MODEL_USER, p.getUserId(), Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
+            return HttpStatus.FOUND;
+        } catch (Exception e) {
+            e.printStackTrace();
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Writing to DB"));
+        }
 
         return HttpStatus.OK;
     }
