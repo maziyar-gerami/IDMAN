@@ -96,7 +96,9 @@ public class AuditsExcelView extends AbstractXlsxView {
             cal.setTime(audit.getWhenActionWasPerformed());
 
             ZonedDateTime eventDate = OffsetDateTime.ofInstant(audit.getWhenActionWasPerformed().toInstant(), ZoneId.of(Variables.ZONE)).atZoneSameInstant(ZoneId.of(Variables.ZONE));
-            Time time = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
+            DateConverter date = new DateConverter();
+            date.gregorianToPersian(eventDate.getYear(),eventDate.getMonthValue(),eventDate.getDayOfMonth());
+            Time time = new Time(date.getYear(), date.getMonth(), date.getDay(),
                     eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
 
             aRow.createCell(4).setCellValue(time.getYear() + "/" + time.getMonth() + "/" + time.getDay());
