@@ -142,7 +142,7 @@ public class AccessStrategy {
 
         }
 
-        if (jsonObject.get("endPointUrl") != null && jsonObject.get("acceptableResponseCodes") != (null)) {
+        if (jsonObject.get("endpointUrl") != null && jsonObject.get("acceptableResponseCodes") != (null)) {
 
             accessStrategy.setAtClass("org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
 
