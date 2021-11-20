@@ -3,17 +3,17 @@ package parsso.idman.helpers.excelView;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
+import org.springframework.web.servlet.view.document.AbstractXlsxView;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Audit;
 import parsso.idman.models.other.Time;
 import parsso.idman.repos.LogsRepo;
+import parsso.idman.utils.convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 @Service
-public class AuditsExcelView extends AbstractXlsView {
+public class AuditsExcelView extends AbstractXlsxView {
     @SuppressWarnings("unused")
     final LogsRepo.AuditRepo auditRepo;
     final MongoTemplate mongoTemplate;
@@ -44,7 +44,7 @@ public class AuditsExcelView extends AbstractXlsView {
         List<Audit> audits = Audit.analyze(mongoTemplate, 0, 0);
 
         // create a new Excel sheet
-        HSSFSheet sheet = (HSSFSheet) workbook.createSheet("Audits");
+        Sheet sheet = workbook.createSheet("Audits");
         sheet.setDefaultColumnWidth(30);
 
         // create style for header cells
@@ -54,7 +54,7 @@ public class AuditsExcelView extends AbstractXlsView {
         style.setFont(font);
 
         // create header row
-        HSSFRow header = sheet.createRow(0);
+        Row header = sheet.createRow(0);
 
         header.createCell(0).setCellValue("Principal");
         header.getCell(0).setCellStyle(style);
@@ -83,8 +83,10 @@ public class AuditsExcelView extends AbstractXlsView {
         // create data rows
         int rowCount = 1;
 
+        DateConverter dateConverter = new DateConverter();
+
         for (Audit audit : audits) {
-            HSSFRow aRow = sheet.createRow(rowCount++);
+            Row aRow = sheet.createRow(rowCount++);
             aRow.createCell(0).setCellValue(audit.getPrincipal());
             aRow.createCell(1).setCellValue(audit.getResourceOperatedUpon());
             aRow.createCell(2).setCellValue(audit.getActionPerformed());
@@ -102,8 +104,6 @@ public class AuditsExcelView extends AbstractXlsView {
             aRow.createCell(6).setCellValue(audit.getClientIpAddress());
             aRow.createCell(7).setCellValue(audit.getClientIpAddress());
 
-            if (rowCount == 65536)
-                break;
         }
 
     }

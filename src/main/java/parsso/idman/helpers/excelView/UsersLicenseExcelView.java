@@ -3,24 +3,23 @@ package parsso.idman.helpers.excelView;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
+import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @SuppressWarnings("ALL")
-public class UsersLicenseExcelView extends AbstractXlsView {
+public class UsersLicenseExcelView extends AbstractXlsxView {
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
         // create a new Excel sheet
-        HSSFSheet sheetLicensed = (HSSFSheet) workbook.createSheet("Licensed");
-        HSSFSheet sheetUnlicensed = (HSSFSheet) workbook.createSheet("UnLicensed");
+        Sheet sheetLicensed = (Sheet) workbook.createSheet("Licensed");
+        Sheet sheetUnlicensed = (Sheet) workbook.createSheet("UnLicensed");
         sheetLicensed.setDefaultColumnWidth(30);
         sheetUnlicensed.setDefaultColumnWidth(30);
 
@@ -31,7 +30,7 @@ public class UsersLicenseExcelView extends AbstractXlsView {
         style.setFont(font);
 
         // create licensedHeader row
-        HSSFRow licensedHeader = sheetLicensed.createRow(0);
+        Row licensedHeader = sheetLicensed.createRow(0);
 
         licensedHeader.createCell(0).setCellValue("userId");
         licensedHeader.getCell(0).setCellStyle(style);
@@ -40,14 +39,13 @@ public class UsersLicenseExcelView extends AbstractXlsView {
         licensedHeader.getCell(1).setCellStyle(style);
 
 
-        HSSFRow header = sheetUnlicensed.createRow(0);
+        Row header = sheetUnlicensed.createRow(0);
 
         header.createCell(0).setCellValue("userId");
         header.getCell(0).setCellStyle(style);
 
         header.createCell(1).setCellValue("Display Name");
         header.getCell(1).setCellStyle(style);
-
 
     }
 }

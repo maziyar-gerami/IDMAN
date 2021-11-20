@@ -1,4 +1,4 @@
-package parsso.idman.helpers;
+package parsso.idman.helpers.excelView;
 
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
+import parsso.idman.helpers.TimeHelper;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.other.Time;
 import parsso.idman.utils.convertor.DateConverter;
@@ -71,7 +72,6 @@ public class LogsExcelView extends AbstractXlsxView {
         DateConverter dateConverter = new DateConverter();
 
         for (Report report : reports) {
-            dateConverter.gregorianToPersian(report.getDateTime().getYear(), report.getDateTime().getMonth(), report.getDateTime().getDay());
             Row aRow = sheet.createRow(rowCount++);
             Time time = TimeHelper.longToPersianTime(report.getMillis());
             aRow.createCell(0).setCellValue(report.getLoggerName());
