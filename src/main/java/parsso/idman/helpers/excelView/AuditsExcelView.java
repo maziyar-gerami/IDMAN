@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
+import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Audit;
 import parsso.idman.models.other.Time;
@@ -20,10 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 @Service
 public class AuditsExcelView extends AbstractXlsxView {
@@ -83,9 +81,15 @@ public class AuditsExcelView extends AbstractXlsxView {
         // create data rows
         int rowCount = 1;
 
-        DateConverter dateConverter = new DateConverter();
+        long current = new Date().getTime();
+        long limit = current-2628000000000l;
 
         for (Audit audit : audits) {
+
+            //TODO: remove this limitation
+            if(Long.parseLong((audit.get_id().toString()).substring(0, 8), 16) * 1000 <limit)
+                return;
+
             Row aRow = sheet.createRow(rowCount++);
             aRow.createCell(0).setCellValue(audit.getPrincipal());
             aRow.createCell(1).setCellValue(audit.getResourceOperatedUpon());

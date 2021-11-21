@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +75,13 @@ public class EventsExcelView extends AbstractXlsxView {
         // create data rows
         int rowCount = 1;
 
+        long current = new Date().getTime();
+        long limit = current-2628000000000l;
+
         for (Event event : events) {
+            //TODO: remove this limitation
+            if(Long.parseLong(event.get_id())<limit)
+                return;
             Row aRow = sheet.createRow(rowCount++);
             aRow.createCell(0).setCellValue(event.getType());
             aRow.createCell(1).setCellValue(event.getPrincipalId());

@@ -20,6 +20,7 @@ import parsso.idman.utils.convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +72,14 @@ public class LogsExcelView extends AbstractXlsxView {
         int rowCount = 1;
         DateConverter dateConverter = new DateConverter();
 
+        long current = new Date().getTime();
+        long limit = current-2628000000000l;
+
         for (Report report : reports) {
+            //TODO: remove this limitation
+            if(report.getMillis()<limit)
+                return;
+
             Row aRow = sheet.createRow(rowCount++);
             Time time = TimeHelper.longToPersianTime(report.getMillis());
             aRow.createCell(0).setCellValue(report.getLoggerName());
