@@ -76,7 +76,7 @@ public class Variables {
     static final String email_stringLink = "لینک بازنشانی رمز عبور: ";
     static final String logo = "https://blog.pars-sso.ir/wp-content/uploads/2021/02/magit-logo.png";
     public static final String col_GoogleAuthDevice= "MongoDbGoogleAuthenticatorRepository";
-    public static long LOGS_LIMIT = 10000;
+    public static long LOGS_LIMIT = 1000;
 
     public static String template(User user, String url) {
 
