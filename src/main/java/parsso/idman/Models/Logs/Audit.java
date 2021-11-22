@@ -14,6 +14,7 @@ import parsso.idman.models.other.Time;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("unused")
 @Setter
 @Getter
 public class Audit {
@@ -36,6 +37,7 @@ public class Audit {
         return TimeHelper.longToPersianTime(whenActionWasPerformed.getTime());
     }
 
+    @SuppressWarnings("unused")
     @Setter
     @Getter
     public static class ListAudits {

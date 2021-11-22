@@ -82,10 +82,12 @@ public class Ticket {
         return oldTicket;
     }
 
+    @SuppressWarnings("unused")
     public Time getCreationDateTime() {
         return TimeHelper.longToPersianTime(this.creationTime);
     }
 
+    @SuppressWarnings("unused")
     public Time getModifiedDateTime() {
         if (this.modifiedTime != null)
             return TimeHelper.longToPersianTime(this.modifiedTime);
@@ -105,6 +107,7 @@ public class Ticket {
         return from.toLowerCase();
     }
 
+    @SuppressWarnings("unused")
     public void setFrom(String from) {
         this.from = from.toLowerCase();
     }

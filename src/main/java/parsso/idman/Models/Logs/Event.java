@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
+import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.events.ActionInfo;
 import parsso.idman.helpers.events.AgentInfo;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.models.other.Time;
 import ua_parser.Client;
 import ua_parser.Parser;
@@ -123,6 +123,7 @@ public class Event implements Serializable {
             this.eventList = relativeEvents;
         }
 
+        @SuppressWarnings("unused")
         public ListEvents() {
 
         }

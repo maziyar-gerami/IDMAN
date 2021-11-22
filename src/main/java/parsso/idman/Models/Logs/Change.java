@@ -12,6 +12,7 @@ public class Change {
     private Object from;
     private Object to;
 
+    @SuppressWarnings("unused")
     public Change() {
 
         this.attribute = null;
@@ -19,6 +20,7 @@ public class Change {
         this.to = null;
     }
 
+    @SuppressWarnings("unused")
     public Change(Object from, Object to) {
         this.from = from;
         this.to = to;

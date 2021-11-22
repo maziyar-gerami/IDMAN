@@ -23,6 +23,7 @@ public class QueryDomain {
 
     }
 
+    @SuppressWarnings("unused")
     public String matchIPwithService(String ip) throws UnknownHostException {
         String host = ipToDomain(ip);
         Query query = new Query(Criteria.where("host").is(host));

@@ -71,6 +71,7 @@ public class Report {
             this.reportsList = relativeEvents;
         }
 
+        @SuppressWarnings("unused")
         public ListReports() {
 
         }
@@ -82,6 +83,7 @@ public class Report {
         }
     }
 
+    @SuppressWarnings("unused")
     @Setter
     @Getter
     private class Source {

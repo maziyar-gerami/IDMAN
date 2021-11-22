@@ -1,30 +1,30 @@
-package parsso.idman.helpers.events;
+package parsso.idman.helpers.excelView;
 
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
+import org.springframework.web.servlet.view.document.AbstractXlsxView;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.other.Time;
-import parsso.idman.utils.convertor.DateConverter;
 import parsso.idman.repos.LogsRepo;
+import parsso.idman.utils.convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class EventsExcelView extends AbstractXlsView {
+public class EventsExcelView extends AbstractXlsxView {
     final ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @Autowired
     LogsRepo.EventRepo eventRepo;
@@ -36,7 +36,7 @@ public class EventsExcelView extends AbstractXlsView {
         List<Event> events = eventRepo.analyze(0, 0);
 
         // create a new Excel sheet
-        HSSFSheet sheet = (HSSFSheet) workbook.createSheet("events");
+        Sheet sheet = workbook.createSheet("events");
         sheet.setDefaultColumnWidth(30);
 
         // create style for header cells
@@ -46,7 +46,7 @@ public class EventsExcelView extends AbstractXlsView {
         style.setFont(font);
 
         // create header row
-        HSSFRow header = sheet.createRow(0);
+        Row header = sheet.createRow(0);
 
         header.createCell(0).setCellValue("type");
         header.getCell(0).setCellStyle(style);
@@ -76,7 +76,10 @@ public class EventsExcelView extends AbstractXlsView {
         int rowCount = 1;
 
         for (Event event : events) {
-            HSSFRow aRow = sheet.createRow(rowCount++);
+            //TODO: remove this limitation
+            if(rowCount>Variables.LOGS_LIMIT)
+                return;
+            Row aRow = sheet.createRow(rowCount++);
             aRow.createCell(0).setCellValue(event.getType());
             aRow.createCell(1).setCellValue(event.getPrincipalId());
             aRow.createCell(2).setCellValue(event.getApplication());

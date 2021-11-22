@@ -7,10 +7,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.group.GroupLicense;
 import parsso.idman.helpers.service.ExtractLicensedAndUnlicensed;
 import parsso.idman.helpers.user.UsersLicense;
-import parsso.idman.helpers.Variables;
 import parsso.idman.models.license.License;
 import parsso.idman.models.services.Service;
 import parsso.idman.models.services.serviceType.MicroService;
@@ -29,7 +29,9 @@ public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
     final ServiceRepo serviceRepo;
 
     final MongoTemplate mongoTemplate;
+    @SuppressWarnings("unused")
     final UsersLicense usersLicense;
+    @SuppressWarnings("unused")
     final parsso.idman.helpers.group.GroupLicense groupLicense;
     final ExtractLicensedAndUnlicensed extract;
 

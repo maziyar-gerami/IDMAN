@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.helpers.TimeHelper;
-import parsso.idman.models.users.User;
 import parsso.idman.models.other.Time;
+import parsso.idman.models.users.User;
 
 import java.util.Date;
 
@@ -33,6 +33,7 @@ public class Message {
     @JsonIgnore
     private long reOpenLong;
 
+    @SuppressWarnings("unused")
     public Message() {
 
     }
@@ -70,14 +71,17 @@ public class Message {
         }
     }
 
+    @SuppressWarnings("unused")
     public Time getCreationTime() {
         return TimeHelper.longToPersianTime(creationLong);
     }
 
+    @SuppressWarnings("unused")
     public Time getCloseTime() {
         return TimeHelper.longToPersianTime(closeLong);
     }
 
+    @SuppressWarnings("unused")
     public Time getReOpenTime() {
         return TimeHelper.longToPersianTime(reOpenLong);
     }

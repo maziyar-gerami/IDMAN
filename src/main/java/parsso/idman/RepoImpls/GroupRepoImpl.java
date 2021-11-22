@@ -17,9 +17,9 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.helpers.user.ExpirePassword;
-import parsso.idman.helpers.Variables;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.User;
@@ -87,7 +87,7 @@ public class GroupRepoImpl implements GroupRepo {
                 if (user != null && user.getMemberOf() != null)
                     for (String groupN : user.getMemberOf()) {
                         if (groupN.equalsIgnoreCase(group.getId())) {
-                            context = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
+                            context = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(),BASE_DN));
                             context.removeAttributeValue("ou", group.getId());
                             try {
                                 ldapTemplate.modifyAttributes(context);
@@ -239,7 +239,7 @@ public class GroupRepoImpl implements GroupRepo {
                 for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(id)) {
                     for (String group : user.getMemberOf()) {
                         if (group.equalsIgnoreCase(id)) {
-                            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId()));
+                            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(),BASE_DN));
                             contextUser.removeAttributeValue("ou", id);
                             contextUser.addAttributeValue("ou", ou.getId());
                             ldapTemplate.modifyAttributes(contextUser);

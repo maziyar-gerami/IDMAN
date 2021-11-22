@@ -18,11 +18,11 @@ import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.user.ImportUsers;
 import parsso.idman.helpers.user.Operations;
 import parsso.idman.helpers.user.UsersExcelView;
+import parsso.idman.models.other.SkyRoom;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.Pwd;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.models.other.SkyRoom;
 import parsso.idman.repos.EmailService;
 import parsso.idman.repos.SkyroomRepo;
 import parsso.idman.repos.UserRepo;
@@ -383,9 +383,8 @@ public class UsersController {
         Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
         int pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
         objectResult.put("pwdInHistory", pwdin);
-        if (passChangeNotification.equals("on"))
-            instantMessage.sendPasswordChangeNotif(userRepo.retrieveUsers(uid));
-        return new ResponseEntity<>(objectResult,userRepo.resetPassword(uid, newPassword, token));
+
+        return new ResponseEntity<>(objectResult,userRepo.resetPassword(uid, newPassword, token,pwdin));
     }
 
     @GetMapping("/api/public/checkMail/{email}")

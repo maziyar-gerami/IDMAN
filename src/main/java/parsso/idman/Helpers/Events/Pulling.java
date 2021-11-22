@@ -9,8 +9,11 @@ import parsso.idman.repos.ServiceRepo;
 
 @Service
 public class Pulling {
+    @SuppressWarnings("unused")
     final LogsRepo.EventRepo eventRepo;
+    @SuppressWarnings("unused")
     final ServiceRepo serviceRepo;
+    @SuppressWarnings("unused")
     final MongoTemplate mongoTemplate;
 
     @Autowired

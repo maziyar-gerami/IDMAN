@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Pulling {
+    @SuppressWarnings("unused")
     public static void pullServices() throws UnknownHostException {
 
         String collection = Variables.col_services;

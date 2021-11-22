@@ -19,9 +19,11 @@ public class Time {
     private int seconds;
     private int milliSeconds;
 
+    @SuppressWarnings("unused")
     public Time() {
     }
 
+    @SuppressWarnings("unused")
     public Time(Calendar cal) {
         year = cal.get(Calendar.YEAR);
         month = cal.get(Calendar.MONTH);
@@ -53,6 +55,7 @@ public class Time {
         this.day = dateConverter.getDay();
     }
 
+    @SuppressWarnings("unused")
     public Time(DateConverter dateConverter, Calendar myCal) {
         this.year = dateConverter.getYear();
         this.month = dateConverter.getMonth();

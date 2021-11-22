@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "deliveryResult", propOrder = {
         "status",
@@ -18,14 +19,17 @@ public class DeliveryResult {
     @XmlElement(required = true)
     protected List<DeliveryStatus> dlrs;
 
+    @SuppressWarnings("unused")
     public int getStatus() {
         return status;
     }
 
+    @SuppressWarnings("unused")
     public void setStatus(int value) {
         this.status = value;
     }
 
+    @SuppressWarnings("unused")
     public List<DeliveryStatus> getDlrs() {
         if (dlrs == null) {
             dlrs = new ArrayList<>();

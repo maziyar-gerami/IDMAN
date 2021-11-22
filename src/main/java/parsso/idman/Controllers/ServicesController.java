@@ -1,10 +1,8 @@
 package parsso.idman.controllers;
 
 
-import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,19 +20,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.annotation.XmlElement;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("rawtypes")
 @RestController
 public class ServicesController {
     private final UserRepo userRepo;
     private final ServiceRepo serviceRepo;
     @Value("${metadata.file.path}")
     private String metadataPath;
-    @Value("${base.url}")
-    private String baseUrl;
 
     @Autowired
     public ServicesController(@Qualifier("userRepoImpl") UserRepo userRepo, @Qualifier("serviceRepoImpl") ServiceRepo serviceRepo) {
@@ -77,13 +71,13 @@ public class ServicesController {
 
     @PutMapping("/api/service/{id}/{system}")
     public ResponseEntity<String> updateService(HttpServletRequest request, @PathVariable("id") long id,
-                                                @RequestBody JSONObject jsonObject, @PathVariable("system") String system) throws ParseException {
+                                                @RequestBody JSONObject jsonObject, @PathVariable("system") String system) {
         return new ResponseEntity<>(serviceRepo.updateService(request.getUserPrincipal().getName(), id, jsonObject, system));
     }
 
     @GetMapping("/api/serviceCheck/{id}")
     public ResponseEntity<HttpStatus> serviceAccess(@PathVariable("id") long id) {
-        return new ResponseEntity<>(serviceRepo.serviceAccess(id)==true ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(serviceRepo.serviceAccess(id) ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/api/services/metadata")

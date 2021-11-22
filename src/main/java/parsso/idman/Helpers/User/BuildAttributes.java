@@ -86,6 +86,8 @@ public class BuildAttributes {
 
         attrs.put("pwdAttribute", "userPassword");
 
+        attrs.put("pwdReset", "TRUE");
+
         return attrs;
     }
 
@@ -240,7 +242,7 @@ public class BuildAttributes {
             if (p.getExpiredTime() != null && old.getExpiredTime() != null) {
 
                 modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
-                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId()), modificationItems);
+                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId(),BASE_DN), modificationItems);
 
             }
 

@@ -26,6 +26,7 @@ public class Group {
     public Group() {
     }
 
+    @SuppressWarnings("unused")
     @Setter
     @Getter
     public static class GroupUsers {

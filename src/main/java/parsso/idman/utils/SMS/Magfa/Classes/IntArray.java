@@ -17,6 +17,7 @@ public class IntArray {
     @XmlElement(nillable = true)
     protected List<Integer> item;
 
+    @SuppressWarnings("unused")
     public List<Integer> getItem() {
         if (item == null) {
             item = new ArrayList<>();

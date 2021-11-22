@@ -8,10 +8,12 @@ public class ResponseMessage {
         this.message = message;
     }
 
+    @SuppressWarnings("unused")
     public String getMessage() {
         return message;
     }
 
+    @SuppressWarnings("unused")
     public void setMessage(String message) {
         this.message = message;
     }

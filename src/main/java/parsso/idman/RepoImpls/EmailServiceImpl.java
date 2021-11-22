@@ -16,14 +16,14 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
-import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.UniformLogger;
-import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.communicate.Token;
+import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.models.users.User;
-import parsso.idman.utils.captcha.models.CAPTCHA;
 import parsso.idman.repos.EmailService;
 import parsso.idman.repos.UserRepo;
+import parsso.idman.utils.captcha.models.CAPTCHA;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;

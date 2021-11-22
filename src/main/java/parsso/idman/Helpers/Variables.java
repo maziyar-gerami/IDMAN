@@ -5,6 +5,7 @@ import parsso.idman.models.users.User;
 
 public class Variables {
     public static final String col_casEvent = "MongoDbCasEventRepository";
+    public static final String col_OneTime = "IDMAN_OneTime";
     public static final String ACTION_EXPIREPASSWORD = "Expire Password";
     public static final String ACTION_REPLACE = "Replace";
     public static final String DOER_SYSTEM = "SYSTEM";
@@ -48,6 +49,7 @@ public class Variables {
     public static final String ACTION_INSERT = "Insert";
     public static final String ACTION_DELETE = "Delete";
     public static final String ACTION_SET = "Set";
+    public static final String ACTION_ADD = "Add";
     public static final String ACTION_RETRIEVE = "Retrieve";
     public static final String MODEL_USER = "user";
     public static final String MODEL_SERVICE = "service";
@@ -74,6 +76,7 @@ public class Variables {
     static final String email_stringLink = "لینک بازنشانی رمز عبور: ";
     static final String logo = "https://blog.pars-sso.ir/wp-content/uploads/2021/02/magit-logo.png";
     public static final String col_GoogleAuthDevice= "MongoDbGoogleAuthenticatorRepository";
+    public static long LOGS_LIMIT = 1000;
 
     public static String template(User user, String url) {
 
@@ -86,6 +89,27 @@ public class Variables {
                         "<p style=\"text-align:right;\" dir=\"rtl\">" + email_end + "</p>" +
                         "<img style=\"vertical-align:middle;\" src=\"" + logo + "\"" + "alt= \"Parsso\">";
     }
+
+    public static String PARSSO_IDMAN=
+                    " ███████████   █████████  ███████████    █████████  █████████     ███████   \n" +
+                    "░░███░░░░░███ ███░░░░░███░░███░░░░░███  ███░░░░░██████░░░░░███  ███░░░░░███ \n" +
+                    " ░███    ░███░███    ░███ ░███    ░███ ░███    ░░░░███    ░░░  ███     ░░███\n" +
+                    " ░██████████ ░███████████ ░██████████  ░░█████████░░█████████ ░███      ░███\n" +
+                    " ░███░░░░░░  ░███░░░░░███ ░███░░░░░███  ░░░░░░░░███░░░░░░░░███░███      ░███\n" +
+                    " ░███        ░███    ░███ ░███    ░███  ███    ░██████    ░███░░███     ███ \n" +
+                    " █████       █████   ██████████   █████░░█████████░░█████████  ░░░███████░  \n" +
+                    "░░░░░       ░░░░░   ░░░░░░░░░░   ░░░░░  ░░░░░░░░░  ░░░░░░░░░     ░░░░░░░    \n" +
+                    " ███████████████  ██████   ██████ █████████  ██████   █████                 \n" +
+                    "░░███░░███░░░░███░░██████ ██████ ███░░░░░███░░██████ ░░███                  \n" +
+                    " ░███ ░███   ░░███░███░█████░███░███    ░███ ░███░███ ░███                  \n" +
+                    " ░███ ░███    ░███░███░░███ ░███░███████████ ░███░░███░███                  \n" +
+                    " ░███ ░███    ░███░███ ░░░  ░███░███░░░░░███ ░███ ░░██████                  \n" +
+                    " ░███ ░███    ███ ░███      ░███░███    ░███ ░███  ░░█████                  \n" +
+                    " ███████████████  █████     █████████   ██████████  ░░█████                 \n" +
+                    "░░░░░░░░░░░░░░░  ░░░░░     ░░░░░░░░░   ░░░░░░░░░░    ░░░░░                  \n" +
+                    "                                                                            \n" +
+                    "                                                                            \n" +
+                    "                                                                            ";
 
 }
 

@@ -10,9 +10,9 @@ import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
 import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.Variables;
+import parsso.idman.models.other.Time;
 import parsso.idman.models.services.Service;
 import parsso.idman.models.users.UsersGroups;
-import parsso.idman.models.other.Time;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -226,6 +226,7 @@ public class ReportMessage {
         int pages;
         List<ReportMessage> reportMessageList;
 
+        @SuppressWarnings("unused")
         ListReportMessage() {
 
         }

@@ -19,10 +19,10 @@ import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.mobile.repos.ServicesRepo;
 import parsso.idman.models.users.User;
+import parsso.idman.repos.UserRepo;
 import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
 import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
 import parsso.idman.utils.sms.kaveNegar.excepctions.HttpException;
-import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;
 import java.io.ByteArrayOutputStream;
@@ -78,6 +78,7 @@ public class ServicesRepoImpl implements ServicesRepo {
         return "SMS Sent!";
     }
 
+    @SuppressWarnings("unused")
     public Name buildDn(String userId) {
         return LdapNameBuilder.newInstance(BASE_DN).add("ou", "People").add("uid", userId).build();
     }

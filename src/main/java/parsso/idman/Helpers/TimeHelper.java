@@ -55,6 +55,7 @@ public class TimeHelper {
                 + String.format("%02d", time.getMinutes());
     }
 
+    @SuppressWarnings("unused")
     public static String getCurrentTimeStampOffset() {
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMddHHmmss.SSS");
         Date now = new Date();
@@ -97,6 +98,7 @@ public class TimeHelper {
 
     }
 
+    @SuppressWarnings("unused")
     public static String setEndTime(LdapTemplate ldapTemplate , String BASE_DN , String input) {
         //if is jalali
         if (Integer.parseInt(input.substring(0, 4)) < 2000) {
@@ -197,6 +199,7 @@ public class TimeHelper {
         return timeObject.getYear() + timeObject.getMonth() + timeObject.getDay() + time;
     }
 
+    @SuppressWarnings("unused")
     public static long convertDateToEpoch(String seTime) {
 
         Instant instant = Instant.now(); //can be LocalDateTime

@@ -4,9 +4,9 @@ package parsso.idman.helpers.service;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import parsso.idman.helpers.Variables;
-import parsso.idman.models.services.ServiceGist;
 import parsso.idman.models.other.Notification;
 import parsso.idman.models.other.Return;
+import parsso.idman.models.services.ServiceGist;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -77,7 +77,7 @@ public class Notifs {
         int count = Integer.parseInt(Objects.requireNonNull(json).get("count").toString());
         ArrayList<Notification> notifications;
         try {
-            notifications = (ArrayList) json.get("notifications");
+            notifications = (ArrayList<Notification>) json.get("notifications");
         } catch (Exception e) {
             e.printStackTrace();
             notifications = new ArrayList<>();

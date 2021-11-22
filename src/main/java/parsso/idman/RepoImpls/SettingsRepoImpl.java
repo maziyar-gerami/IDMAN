@@ -7,10 +7,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import parsso.idman.helpers.communicate.InstantMessage;
-import parsso.idman.helpers.reloadConfigs.PasswordSettings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.communicate.InstantMessage;
+import parsso.idman.helpers.reloadConfigs.PasswordSettings;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.logs.Setting;
 import parsso.idman.models.users.User;
@@ -43,6 +43,7 @@ public class SettingsRepoImpl implements SettingsRepo {
     @Autowired
     UniformLogger uniformLogger;
 
+    @SuppressWarnings("unused")
     private SettingsRepo settingsRepo;
     @Value("${max.pwd.lifetime.hours}")
     private long maxPwdLifetime;

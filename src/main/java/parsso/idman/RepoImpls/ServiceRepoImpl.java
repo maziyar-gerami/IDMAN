@@ -17,20 +17,20 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.helpers.service.*;
 import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.service.*;
 import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.other.Time;
 import parsso.idman.models.services.*;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.services.servicesSubModel.ExtraInfo;
 import parsso.idman.models.users.User;
-import parsso.idman.models.other.Time;
-import parsso.idman.utils.other.GenerateUUID;
 import parsso.idman.repos.FilesStorageService;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
+import parsso.idman.utils.other.GenerateUUID;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -417,7 +417,7 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
     @Override
-    public HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) throws ParseException {
+    public HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) {
 
         JSONObject JsonExtraInfo = null;
 

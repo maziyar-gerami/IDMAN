@@ -15,10 +15,10 @@ import org.springframework.ldap.filter.NotFilter;
 import org.springframework.ldap.filter.PresentFilter;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.DashboardData;
 import parsso.idman.helpers.user.SimpleUserAttributeMapper;
 import parsso.idman.helpers.user.UserAttributeMapper;
-import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.users.User;
@@ -53,6 +53,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     SimpleUserAttributeMapper simpleUserAttributeMapper;
     @Autowired
     DashboardData dashboardData;
+    @SuppressWarnings("unused")
     String model = "Refresh";
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
@@ -100,8 +101,8 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
                 } else {
 
-                    Objects.requireNonNull(userExtraInfo).setUserId(user.getUserId());
                     userExtraInfo = new UsersExtraInfo();
+                    userExtraInfo.setUserId(user.getUserId());
                     userExtraInfo.setQrToken(UUID.randomUUID().toString());
                 }
 
