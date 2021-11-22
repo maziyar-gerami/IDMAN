@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 import parsso.idman.helpers.TimeHelper;
+import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.other.Time;
 import parsso.idman.utils.convertor.DateConverter;
@@ -72,12 +73,9 @@ public class LogsExcelView extends AbstractXlsxView {
         int rowCount = 1;
         DateConverter dateConverter = new DateConverter();
 
-        long current = new Date().getTime();
-        long limit = current-2628000000000l;
-
         for (Report report : reports) {
             //TODO: remove this limitation
-            if(report.getMillis()<limit)
+            if(rowCount< Variables.LOGS_LIMIT)
                 return;
 
             Row aRow = sheet.createRow(rowCount++);

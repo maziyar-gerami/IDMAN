@@ -75,12 +75,9 @@ public class EventsExcelView extends AbstractXlsxView {
         // create data rows
         int rowCount = 1;
 
-        long current = new Date().getTime();
-        long limit = current-2628000000000l;
-
         for (Event event : events) {
             //TODO: remove this limitation
-            if(Long.parseLong(event.get_id())<limit)
+            if(rowCount<Variables.LOGS_LIMIT)
                 return;
             Row aRow = sheet.createRow(rowCount++);
             aRow.createCell(0).setCellValue(event.getType());

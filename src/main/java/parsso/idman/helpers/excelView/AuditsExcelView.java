@@ -81,13 +81,10 @@ public class AuditsExcelView extends AbstractXlsxView {
         // create data rows
         int rowCount = 1;
 
-        long current = new Date().getTime();
-        long limit = current-2628000000000l;
-
         for (Audit audit : audits) {
 
             //TODO: remove this limitation
-            if(Long.parseLong((audit.get_id().toString()).substring(0, 8), 16) * 1000 <limit)
+            if(rowCount<Variables.LOGS_LIMIT)
                 return;
 
             Row aRow = sheet.createRow(rowCount++);
