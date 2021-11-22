@@ -77,7 +77,7 @@ public class EventsExcelView extends AbstractXlsxView {
 
         for (Event event : events) {
             //TODO: remove this limitation
-            if(rowCount<Variables.LOGS_LIMIT)
+            if(rowCount>Variables.LOGS_LIMIT)
                 return;
             Row aRow = sheet.createRow(rowCount++);
             aRow.createCell(0).setCellValue(event.getType());

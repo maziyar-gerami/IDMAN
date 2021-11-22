@@ -75,7 +75,7 @@ public class LogsExcelView extends AbstractXlsxView {
 
         for (Report report : reports) {
             //TODO: remove this limitation
-            if(rowCount< Variables.LOGS_LIMIT)
+            if(rowCount> Variables.LOGS_LIMIT)
                 return;
 
             Row aRow = sheet.createRow(rowCount++);

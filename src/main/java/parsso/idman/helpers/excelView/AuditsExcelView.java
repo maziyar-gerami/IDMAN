@@ -84,7 +84,7 @@ public class AuditsExcelView extends AbstractXlsxView {
         for (Audit audit : audits) {
 
             //TODO: remove this limitation
-            if(rowCount<Variables.LOGS_LIMIT)
+            if(rowCount>Variables.LOGS_LIMIT)
                 return;
 
             Row aRow = sheet.createRow(rowCount++);

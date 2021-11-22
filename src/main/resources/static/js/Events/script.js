@@ -255,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", "events.xls");
+            link.setAttribute("download", "events.xlsx");
             document.body.appendChild(link);
             link.click();
           }).catch((error) => {
