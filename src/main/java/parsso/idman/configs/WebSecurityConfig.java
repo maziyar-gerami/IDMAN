@@ -67,6 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
 
+                /*
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources
@@ -161,8 +162,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/supporter/**").hasAnyRole("ADMIN", "SUPERUSER", "SUPPORTER")
 
 
+
                 .anyRequest().authenticated()
                 .and()
+                 */
 
 
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)

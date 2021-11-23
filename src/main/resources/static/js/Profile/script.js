@@ -215,8 +215,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.location.href = this.s40;
             },
             getUserInfo: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
                 axios.get(url + "/api/user") //
                     .then((res) => {
                         vm.userInfo = res.data;
@@ -245,8 +245,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
             },
             getUserPic: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
                 axios.get(url + "/api/user/photo") //
                     .then((res) => {
                         if(res.data == "Problem" || res.data == "NotExist"){
@@ -266,12 +266,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
             },
             getQR: function () {
-                var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 this.QR = url + this.QR;
             },
             editUser: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                var vm = this;
+                let vm = this;
                 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 const mobileRegex = /^09\d{9}$/;
 
@@ -307,6 +307,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             editPass: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
                 if(document.getElementById("token").value !== ""){
                     let check = confirm(this.s24);
                     if (check === true) {
