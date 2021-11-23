@@ -747,10 +747,9 @@
                                                 <div>    
                                                     <label>{{s45}}</label>
                                                     <div class="form-group">
-                                                        <input :class='{valid:passwordValidation.valid}' @input="passwordCheck" :type="show === true ? 'text' : 'password'" class="form-control"
+                                                        <input class="form-control" @input="passwordCheck" :type="show === true ? 'text' : 'password'"
                                                         name="newPasswordIdman" id="newPassword" v-model="password" v-bind:placeholder="s46" v-bind:style="placeholder"
                                                         required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید" autocomplete="off">
-    
                                                         <div class="strength" :class="'level_' + strengthLevel"></div>
                                                         <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="show" @click="show = !show"></i>
                                                         <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="show = !show"></i>
@@ -762,7 +761,7 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <transition name="hint" appear>
-                                                            <div v-if='!submitted' class='hints'>
+                                                            <div v-if="!submitted" class="hints">
                                                                 <p style="box-sizing: unset;">{{s48}}</p> <br>
                                                                 <p :class="{'passed' :has_number }" v-bind:style="font"><i :class="has_number ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
                                                                 <p :class="{'passed' :has_lowerUPPERcase }" v-bind:style="font"><i :class="has_lowerUPPERcase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
@@ -893,7 +892,7 @@
                                         <div>    
                                             <label>{{s45}}</label>
                                             <div class="form-group">
-                                                <input :class='{valid:passwordValidationCreate.valid}' @input="passwordCheckCreate" :type="showCreate === true ? 'text' : 'password'" class="form-control"
+                                                <input class="form-control" @input="passwordCheckCreate" :type="showCreate === true ? 'text' : 'password'"
                                                 name="passwordCreateIdman" id="newPasswordCreate" v-model="passwordCreate" v-bind:placeholder="s46" v-bind:style="placeholder"
                                                 required data-toggle="tooltip" data-placement="top" title="لطفا این قسمت را تکمیل کنید" autocomplete="off">
 
@@ -908,7 +907,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <transition name="hint" appear>
-                                                    <div v-if='!submittedCreate' class='hints'>
+                                                    <div v-if="!submittedCreate" class="hints">
                                                         <p style="box-sizing: unset;">{{s48}}</p> <br>
                                                         <p :class="{'passed' :has_numberCreate }" v-bind:style="font"><i :class="has_numberCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
                                                         <p :class="{'passed' :has_lowerUPPERcaseCreate }" v-bind:style="font"><i :class="has_lowerUPPERcaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
