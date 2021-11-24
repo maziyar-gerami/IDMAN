@@ -9,14 +9,12 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.helpers.TimeHelper;
-import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.events.ActionInfo;
 import parsso.idman.helpers.events.AgentInfo;
 import parsso.idman.models.other.Time;
 import ua_parser.Client;
 import ua_parser.Parser;
 
-import javax.mail.MessagingException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
@@ -51,13 +49,7 @@ public class Event implements Serializable {
     String application;
     @JsonIgnore
     String _class;
-    Time set_up;
-    @JsonIgnore
-    String time;
-    @JsonIgnore
-    String date;
-
-
+    Time time;
 
     public String getType() {
         ActionInfo actionHelper = new ActionInfo(type);
@@ -91,7 +83,7 @@ public class Event implements Serializable {
 
     }
 
-    public Time getSet_up() {
+    public Time getTime() {
         return TimeHelper.longToPersianTime(Long.valueOf(_id));
     }
 

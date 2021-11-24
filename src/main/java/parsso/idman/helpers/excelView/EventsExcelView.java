@@ -1,9 +1,12 @@
 package parsso.idman.helpers.excelView;
 
 
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.view.document.AbstractXlsView;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Event;
@@ -16,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -84,12 +88,12 @@ public class EventsExcelView extends AbstractXlsxView {
             ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
             Time time = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
                     eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
-            event.setSet_up(time);
+            event.setTime(time);
 
             DateConverter dateConverter = new DateConverter();
             dateConverter.gregorianToPersian(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth());
             aRow.createCell(4).setCellValue(dateConverter.getYear() + "/" + dateConverter.getMonth() + "/" + dateConverter.getDay());
-            aRow.createCell(5).setCellValue(event.getSet_up().getHours() + ":" + event.getSet_up().getMinutes() + ":" + event.getSet_up().getSeconds());
+            aRow.createCell(5).setCellValue(event.getTime().getHours() + ":" + event.getTime().getMinutes() + ":" + event.getTime().getSeconds());
             aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
             aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
 

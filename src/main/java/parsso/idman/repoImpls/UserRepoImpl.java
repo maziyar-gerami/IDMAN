@@ -46,7 +46,6 @@ import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UserLoggedIn;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.postConstruct.LogsTime;
 import parsso.idman.repos.*;
 
 import javax.annotation.PostConstruct;
@@ -570,10 +569,10 @@ public class UserRepoImpl implements UserRepo {
             }
             int i =(++c*100/usersLoggedIn.size());
 
-            System.out.print("Setting pwdReset: " + i + "% " + animationChars[i % 4] + "\r");
+            System.out.print("Processing: " + i + "% " + animationChars[i % 4] + "\r");
 
         }
-        System.out.println("Setting pwdReset: Done!");
+        System.out.println("Processing: Done!");
 
     }
 
@@ -1056,7 +1055,6 @@ public class UserRepoImpl implements UserRepo {
     public void postConstruct(){
 
         new RunOneTime(ldapTemplate, mongoTemplate, uniformLogger,BASE_DN).postConstruct();
-        new LogsTime(mongoTemplate).run();
     }
 
     @Override
