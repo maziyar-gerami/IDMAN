@@ -26,14 +26,16 @@ public class Audit {
     private Date whenActionWasPerformed;
     private String clientIpAddress;
     private String serverIpAddress;
-    private Time time;
+    private Time set_up;
+    private String date;
+    private String time;
 
     public static List<Audit> analyze(MongoTemplate mongoTemplate, int skip, int limit) {
         Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
         return mongoTemplate.find(query, Audit.class, Variables.col_audit);
     }
 
-    public Time getTime() {
+    public Time getSet_up() {
         return TimeHelper.longToPersianTime(whenActionWasPerformed.getTime());
     }
 

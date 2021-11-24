@@ -69,7 +69,7 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
             ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(ZoneId.of(Variables.ZONE));
             Time time1 = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
                     eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
-            event.setTime(time1);
+            event.setSet_up(time1);
         }
         return le;
     }
