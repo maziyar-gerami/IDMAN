@@ -1,37 +1,35 @@
 package parsso.idman.helpers.excelView;
 
 
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.view.document.AbstractXlsView;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Event;
-import parsso.idman.models.other.Time;
 import parsso.idman.repos.LogsRepo;
-import parsso.idman.utils.convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class EventsExcelView extends AbstractXlsxView {
-    final ZoneId zoneId = ZoneId.of(Variables.ZONE);
-    @Autowired
     LogsRepo.EventRepo eventRepo;
-    @Autowired
     MongoTemplate mongoTemplate;
+
+    @Autowired
+    EventsExcelView(LogsRepo.EventRepo eventRepo, MongoTemplate mongoTemplate)
+    {
+        this.eventRepo = eventRepo;
+        this.mongoTemplate = mongoTemplate;
+
+    }
+
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
@@ -79,9 +77,9 @@ public class EventsExcelView extends AbstractXlsxView {
         // create data rows
         int rowCount = 1;
 
-        for (int page=0; page<Math.ceil(count/Variables.PER_BATCH_COUNT); page++) {
+        for (int page=0; page<Math.ceil((float) count/Variables.PER_BATCH_COUNT)+1; page++) {
 
-            int skip = page==0?0 : (int) ((page - 1) * count);
+            int skip = (page == 1) ? 0 : (int) ((page - 1) * count);
 
             List<Event> events = eventRepo.analyze(skip, Variables.PER_BATCH_COUNT);
 
@@ -97,7 +95,6 @@ public class EventsExcelView extends AbstractXlsxView {
                 aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
 
             }
-
         }
     }
 }
