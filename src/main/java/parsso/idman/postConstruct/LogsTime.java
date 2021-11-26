@@ -46,6 +46,9 @@ public class LogsTime {
         Query query = new Query(Criteria.where("stringDate").exists(false));
         List<Event> events = mongoTemplate.find(query,Event.class, Variables.col_casEvent);
 
+        int c=0;
+        char[] animationChars = new char[]{'|', '/', '-', '\\'};
+
         for (Event event:events) {
             long _id = Long.parseLong(event.get_id());
             LogTime logTime = new LogTime(_id);
@@ -54,6 +57,10 @@ public class LogsTime {
             event1.setStringDate(event.getStringDate());
             Update update =createUpdate(Long.parseLong(event.get_id()));
             mongoTemplate.upsert(new Query(Criteria.where("_id").is(_id)),update, Variables.col_casEvent);
+
+            int i =(++c*100/events.size());
+
+            System.out.print("Processing events: " + i + "% " + animationChars[i % 4] + "\r");
         }
 
     }
@@ -61,6 +68,9 @@ public class LogsTime {
     public void audits(){
         Query query = new Query(Criteria.where("stringDate").exists(false));
         List<Audit> audits = mongoTemplate.find(query,Audit.class, Variables.col_audit);
+
+        int c=0;
+        char[] animationChars = new char[]{'|', '/', '-', '\\'};
 
         for (Audit audit:audits) {
             long t = Long.parseLong(audit.get_id().toString().substring(0, 8), 16) * 1000;
@@ -70,6 +80,10 @@ public class LogsTime {
             audit1.setStringDate(audit1.getStringDate());
             Update update =createUpdate(t);
             mongoTemplate.upsert(new Query(Criteria.where("_id").is(audit.get_id())), update, Variables.col_audit);
+
+            int i =(++c*100/audits.size());
+
+            System.out.print("\nProcessing audits: " + i + "% " + animationChars[i % 4] + "\r");
         }
 
     }
