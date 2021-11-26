@@ -5,6 +5,8 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
@@ -28,12 +30,14 @@ public class EventsExcelView extends AbstractXlsxView {
     final ZoneId zoneId = ZoneId.of(Variables.ZONE);
     @Autowired
     LogsRepo.EventRepo eventRepo;
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
+        long count = mongoTemplate.count(new Query(), Variables.col_casEvent);
         // get data model which is passed by the Spring container
-        List<Event> events = eventRepo.analyze(0, 0);
 
         // create a new Excel sheet
         Sheet sheet = workbook.createSheet("events");
@@ -75,18 +79,25 @@ public class EventsExcelView extends AbstractXlsxView {
         // create data rows
         int rowCount = 1;
 
-        for (Event event : events) {
-            Row aRow = sheet.createRow(rowCount++);
-            aRow.createCell(0).setCellValue(event.getType());
-            aRow.createCell(1).setCellValue(event.getPrincipalId());
-            aRow.createCell(2).setCellValue(event.getApplication());
-            aRow.createCell(3).setCellValue(event.getClientIP());
-            aRow.createCell(4).setCellValue(event.getStringDate());
-            aRow.createCell(5).setCellValue(event.getStringTime());
-            aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
-            aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
+        for (int page=0; page<Math.ceil(count/Variables.PER_BATCH_COUNT); page++) {
+
+            int skip = page==0?0 : (int) ((page - 1) * count);
+
+            List<Event> events = eventRepo.analyze(skip, Variables.PER_BATCH_COUNT);
+
+            for (Event event : events) {
+                Row aRow = sheet.createRow(rowCount++);
+                aRow.createCell(0).setCellValue(event.getType());
+                aRow.createCell(1).setCellValue(event.getPrincipalId());
+                aRow.createCell(2).setCellValue(event.getApplication());
+                aRow.createCell(3).setCellValue(event.getClientIP());
+                aRow.createCell(4).setCellValue(event.getStringDate());
+                aRow.createCell(5).setCellValue(event.getStringTime());
+                aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
+                aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
+
+            }
 
         }
-
     }
 }
