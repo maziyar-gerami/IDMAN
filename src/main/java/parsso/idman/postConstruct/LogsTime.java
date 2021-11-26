@@ -1,11 +1,9 @@
 package parsso.idman.postConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Service;
 import parsso.idman.helpers.LogTime;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Audit;
@@ -45,24 +43,33 @@ public class LogsTime {
     }
 
     public void events(){
-        Query query = new Query(Criteria.where("date").exists(false));
+        Query query = new Query(Criteria.where("stringDate").exists(false));
         List<Event> events = mongoTemplate.find(query,Event.class, Variables.col_casEvent);
 
-        for (Event event:events)
-            mongoTemplate.upsert(new Query(Criteria.where("_id").is(Long.parseLong(event.get_id()))),
-                    createUpdate((Long.parseLong(event.get_id()))), Variables.col_casEvent);
+        for (Event event:events) {
+            long _id = Long.parseLong(event.get_id());
+            LogTime logTime = new LogTime(_id);
+            Event event1 = Event.setStringDateAndTime(event,logTime.getDate(),logTime.getTime());
+            event1.setStringTime(event1.getStringTime());
+            event1.setStringDate(event.getStringDate());
+            Update update =createUpdate(Long.parseLong(event.get_id()));
+            mongoTemplate.upsert(new Query(Criteria.where("_id").is(_id)),update, Variables.col_casEvent);
+        }
 
     }
 
-
-
     public void audits(){
-        Query query = new Query(Criteria.where("date").exists(false));
+        Query query = new Query(Criteria.where("stringDate").exists(false));
         List<Audit> audits = mongoTemplate.find(query,Audit.class, Variables.col_audit);
 
         for (Audit audit:audits) {
             long t = Long.parseLong(audit.get_id().toString().substring(0, 8), 16) * 1000;
-            mongoTemplate.updateFirst(new Query(Criteria.where("_id").is(audit.get_id())),createUpdate(t),Variables.col_audit);
+            LogTime logTime = new LogTime(t);
+            Audit audit1 = Audit.setStringDateAndTime(audit,logTime.getDate(),logTime.getTime());
+            audit1.setStringTime(audit1.getStringTime());
+            audit1.setStringDate(audit1.getStringDate());
+            Update update =createUpdate(t);
+            mongoTemplate.upsert(new Query(Criteria.where("_id").is(audit.get_id())), update, Variables.col_audit);
         }
 
     }
@@ -70,8 +77,8 @@ public class LogsTime {
     private Update createUpdate(Long millis){
         LogTime logTime = new LogTime(millis);
         Update update = new Update();
-        update.set("date", logTime.getDate());
-        update.set("time", logTime.getTime());
+        update.set("dateString", logTime.getDate());
+        update.set("timeString", logTime.getTime());
         return update;
     }
 }

@@ -46,6 +46,7 @@ import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UserLoggedIn;
 import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.postConstruct.LogsTime;
 import parsso.idman.repos.*;
 
 import javax.annotation.PostConstruct;
@@ -1054,6 +1055,7 @@ public class UserRepoImpl implements UserRepo {
     @PostConstruct
     public void postConstruct(){
 
+        new LogsTime(mongoTemplate).run();
         new RunOneTime(ldapTemplate, mongoTemplate, uniformLogger,BASE_DN).postConstruct();
     }
 

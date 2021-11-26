@@ -23,6 +23,8 @@ public class Audit {
     private String resourceOperatedUpon;
     private String actionPerformed;
     private String applicationCode;
+    private String stringDate;
+    private String stringTime;
     private Date whenActionWasPerformed;
     private String clientIpAddress;
     private String serverIpAddress;
@@ -31,6 +33,12 @@ public class Audit {
     public static List<Audit> analyze(MongoTemplate mongoTemplate, int skip, int limit) {
         Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
         return mongoTemplate.find(query, Audit.class, Variables.col_audit);
+    }
+
+    public static Audit setStringDateAndTime(Audit audit, String date, String time) {
+        audit.setStringDate(date);
+        audit.setStringTime(time);
+        return audit;
     }
 
     public Time getTime() {

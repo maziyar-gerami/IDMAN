@@ -80,30 +80,15 @@ public class AuditsExcelView extends AbstractXlsxView {
 
         // create data rows
         int rowCount = 1;
-
         for (Audit audit : audits) {
-
-            //TODO: remove this limitation
-            if(rowCount>Variables.LOGS_LIMIT)
-                return;
 
             Row aRow = sheet.createRow(rowCount++);
             aRow.createCell(0).setCellValue(audit.getPrincipal());
             aRow.createCell(1).setCellValue(audit.getResourceOperatedUpon());
             aRow.createCell(2).setCellValue(audit.getActionPerformed());
             aRow.createCell(3).setCellValue(audit.getApplicationCode());
-
-            Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-            cal.setTime(audit.getWhenActionWasPerformed());
-
-            ZonedDateTime eventDate = OffsetDateTime.ofInstant(audit.getWhenActionWasPerformed().toInstant(), ZoneId.of(Variables.ZONE)).atZoneSameInstant(ZoneId.of(Variables.ZONE));
-            DateConverter date = new DateConverter();
-            date.gregorianToPersian(eventDate.getYear(),eventDate.getMonthValue(),eventDate.getDayOfMonth());
-            Time time = new Time(date.getYear(), date.getMonth(), date.getDay(),
-                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
-
-            aRow.createCell(4).setCellValue(time.getYear() + "/" + time.getMonth() + "/" + time.getDay());
-            aRow.createCell(5).setCellValue(time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds());
+            aRow.createCell(4).setCellValue(audit.getStringDate());
+            aRow.createCell(5).setCellValue(audit.getStringTime());
             aRow.createCell(6).setCellValue(audit.getClientIpAddress());
             aRow.createCell(7).setCellValue(audit.getClientIpAddress());
 

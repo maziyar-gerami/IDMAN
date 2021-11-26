@@ -49,7 +49,12 @@ public class Event implements Serializable {
     String application;
     @JsonIgnore
     String _class;
+    @JsonIgnore
     Time time;
+    String stringTime;
+    String stringDate;
+
+
 
     public String getType() {
         ActionInfo actionHelper = new ActionInfo(type);
@@ -85,6 +90,12 @@ public class Event implements Serializable {
 
     public Time getTime() {
         return TimeHelper.longToPersianTime(Long.valueOf(_id));
+    }
+
+    public static Event setStringDateAndTime(Event event, String date, String time){
+        event.setStringDate(date);
+        event.setStringTime(time);
+        return event;
     }
 
     public AgentInfo getAgentInfo() {
@@ -134,6 +145,8 @@ public class Event implements Serializable {
             this.eventList = events;
 
         }
+
+
     }
 
 }

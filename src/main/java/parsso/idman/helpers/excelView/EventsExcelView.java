@@ -76,24 +76,13 @@ public class EventsExcelView extends AbstractXlsxView {
         int rowCount = 1;
 
         for (Event event : events) {
-            //TODO: remove this limitation
-            if(rowCount>Variables.LOGS_LIMIT)
-                return;
             Row aRow = sheet.createRow(rowCount++);
             aRow.createCell(0).setCellValue(event.getType());
             aRow.createCell(1).setCellValue(event.getPrincipalId());
             aRow.createCell(2).setCellValue(event.getApplication());
             aRow.createCell(3).setCellValue(event.getClientIP());
-
-            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
-            Time time = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
-                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
-            event.setTime(time);
-
-            DateConverter dateConverter = new DateConverter();
-            dateConverter.gregorianToPersian(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth());
-            aRow.createCell(4).setCellValue(dateConverter.getYear() + "/" + dateConverter.getMonth() + "/" + dateConverter.getDay());
-            aRow.createCell(5).setCellValue(event.getTime().getHours() + ":" + event.getTime().getMinutes() + ":" + event.getTime().getSeconds());
+            aRow.createCell(4).setCellValue(event.getStringDate());
+            aRow.createCell(5).setCellValue(event.getStringTime());
             aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
             aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
 

@@ -47,8 +47,12 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
 
     @Override
     public HttpStatus deleteByDeviceName(String name) {
+        Devices device = mongoTemplate.findOne(new Query(Criteria.where("name").is(name)),Devices.class,Variables.col_devices);
+        if (device==null)
+            return HttpStatus.FORBIDDEN;
+
         try {
-            mongoTemplate.remove(new Query(Criteria.where("name").is(name)));
+            mongoTemplate.remove(new Query(Criteria.where("name").is(name)),Devices.class,Variables.col_devices);
         }catch (Exception e){
             return HttpStatus.FORBIDDEN;
         }
@@ -57,8 +61,29 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
 
     @Override
     public HttpStatus deleteByUsername(String username) {
+
+        Devices device = mongoTemplate.findOne(new Query(Criteria.where("username").is(username)),Devices.class,Variables.col_devices);
+        if (device==null)
+            return HttpStatus.FORBIDDEN;
+
         try {
-            mongoTemplate.remove(new Query(Criteria.where("username").is(username)));
+            mongoTemplate.findAndRemove(new Query(Criteria.where("username").is(username)),Devices.class,Variables.col_devices);
+        }catch (Exception e){
+            return HttpStatus.FORBIDDEN;
+        }
+        return HttpStatus.OK;
+    }
+
+    @Override
+    public HttpStatus deleteByUsernameAndDeviceName(String username, String deviceName) {
+        Query query = new Query(Criteria.where("username").is(username).and("name").is(deviceName));
+
+        Devices device = mongoTemplate.findOne(query,Devices.class,Variables.col_devices);
+        if (device==null)
+            return HttpStatus.FORBIDDEN;
+
+        try {
+            mongoTemplate.findAndRemove(query,Devices.class,Variables.col_devices);
         }catch (Exception e){
             return HttpStatus.FORBIDDEN;
         }

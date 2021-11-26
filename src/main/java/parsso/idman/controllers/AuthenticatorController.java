@@ -31,7 +31,7 @@ public class AuthenticatorController {
         if (username.equals("")&& deviceName.equals(""))
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         else if (!username.equals("") && !deviceName.equals(""))
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(authenticatorRepo.deleteByUsernameAndDeviceName(username, deviceName));
         else if (!username.equals(""))
             return new ResponseEntity<>(authenticatorRepo.deleteByUsername(username));
         else
