@@ -1059,7 +1059,6 @@ public class UserRepoImpl implements UserRepo {
 
         new LogsTime(mongoTemplate).run();
         new RunOneTime(ldapTemplate, mongoTemplate, uniformLogger,BASE_DN).postConstruct();
-        create();
 
     }
 
@@ -1068,17 +1067,5 @@ public class UserRepoImpl implements UserRepo {
         return mongoTemplate.count(new Query(Criteria.where("username").is(userName)), Variables.col_GoogleAuthDevice) > 0;
     }
 
-    void create(){
-        for (int i=0; i<100; i++){
-
-            List <Event> events = mongoTemplate.findAll(Event.class,Variables.col_casEvent);
-            for (Event event:events) {
-                event.set_id(null);
-                mongoTemplate.insert(event,Variables.col_casEvent);
-            }
-        }
-
-
-    }
 }
 
