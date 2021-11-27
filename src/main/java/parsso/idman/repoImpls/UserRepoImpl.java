@@ -1070,11 +1070,6 @@ public class UserRepoImpl implements UserRepo {
 
     void create(){
         for (int i=0; i<100; i++){
-            List <Audit> audits = mongoTemplate.findAll(Audit.class,Variables.col_audit);
-            for (Audit audit:audits) {
-                audit.set_id(null);
-                mongoTemplate.insert(audit,Variables.col_audit);
-            }
 
             List <Event> events = mongoTemplate.findAll(Event.class,Variables.col_casEvent);
             for (Event event:events) {
