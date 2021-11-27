@@ -41,6 +41,8 @@ import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.group.GroupsChecks;
 import parsso.idman.helpers.oneTimeTasks.RunOneTime;
 import parsso.idman.helpers.user.*;
+import parsso.idman.models.logs.Audit;
+import parsso.idman.models.logs.Event;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.User;
@@ -1057,11 +1059,31 @@ public class UserRepoImpl implements UserRepo {
 
         new LogsTime(mongoTemplate).run();
         new RunOneTime(ldapTemplate, mongoTemplate, uniformLogger,BASE_DN).postConstruct();
+        create();
+
     }
 
     @Override
     public Boolean retrieveUsersDevice(String userName) {
         return mongoTemplate.count(new Query(Criteria.where("username").is(userName)), Variables.col_GoogleAuthDevice) > 0;
+    }
+
+    void create(){
+        for (int i=0; i<100; i++){
+            List <Audit> audits = mongoTemplate.findAll(Audit.class,Variables.col_audit);
+            for (Audit audit:audits) {
+                audit.set_id(null);
+                mongoTemplate.insert(audit,Variables.col_audit);
+            }
+
+            List <Event> events = mongoTemplate.findAll(Event.class,Variables.col_casEvent);
+            for (Event event:events) {
+                event.set_id(null);
+                mongoTemplate.insert(event,Variables.col_casEvent);
+            }
+        }
+
+
     }
 }
 
