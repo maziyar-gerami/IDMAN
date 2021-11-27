@@ -53,8 +53,8 @@ public class LogsTime {
             long _id = Long.parseLong(event.get_id());
             LogTime logTime = new LogTime(_id);
             Event event1 = Event.setStringDateAndTime(event,logTime.getDate(),logTime.getTime());
-            event1.setStringTime(event1.getStringTime());
-            event1.setStringDate(event.getStringDate());
+            event1.setTimeString(event1.getTimeString());
+            event1.setDateString(event.getDateString());
             Update update =createUpdate(Long.parseLong(event.get_id()));
             mongoTemplate.upsert(new Query(Criteria.where("_id").is(_id)),update, Variables.col_casEvent);
 
@@ -76,8 +76,8 @@ public class LogsTime {
             long t = Long.parseLong(audit.get_id().toString().substring(0, 8), 16) * 1000;
             LogTime logTime = new LogTime(t);
             Audit audit1 = Audit.setStringDateAndTime(audit,logTime.getDate(),logTime.getTime());
-            audit1.setStringTime(audit1.getStringTime());
-            audit1.setStringDate(audit1.getStringDate());
+            audit1.setTimeString(audit1.getTimeString());
+            audit1.setDateString(audit1.getDateString());
             Update update =createUpdate(t);
             mongoTemplate.upsert(new Query(Criteria.where("_id").is(audit.get_id())), update, Variables.col_audit);
 

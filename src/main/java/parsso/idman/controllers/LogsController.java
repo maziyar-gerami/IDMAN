@@ -63,6 +63,9 @@ public class LogsController {
                                                            @RequestParam(name = "date", defaultValue = "") String date,
                                                            @RequestParam(name = "page") String page,
                                                            @RequestParam(name = "count") String count) {
+        Event.ListEvents listEvents = eventRepo.retrieve(userID, date, !page.equals("") ? Integer.parseInt(page) : 0,
+                !count.equals("") ? Integer.parseInt(count) : 0);
+
         return new ResponseEntity<>(eventRepo.retrieve(userID, date, !page.equals("") ? Integer.parseInt(page) : 0,
                 !count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);
     }

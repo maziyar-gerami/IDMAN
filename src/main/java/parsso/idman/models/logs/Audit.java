@@ -23,8 +23,8 @@ public class Audit {
     private String resourceOperatedUpon;
     private String actionPerformed;
     private String applicationCode;
-    private String stringDate;
-    private String stringTime;
+    private String dateString;
+    private String timeString;
     private Date whenActionWasPerformed;
     private String clientIpAddress;
     private String serverIpAddress;
@@ -36,8 +36,8 @@ public class Audit {
     }
 
     public static Audit setStringDateAndTime(Audit audit, String date, String time) {
-        audit.setStringDate(date);
-        audit.setStringTime(time);
+        audit.setDateString(date);
+        audit.setTimeString(time);
         return audit;
     }
 

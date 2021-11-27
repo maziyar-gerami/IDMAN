@@ -51,8 +51,8 @@ public class Event implements Serializable {
     String _class;
     @JsonIgnore
     Time time;
-    String stringTime;
-    String stringDate;
+    String timeString;
+    String dateString;
 
 
 
@@ -93,8 +93,8 @@ public class Event implements Serializable {
     }
 
     public static Event setStringDateAndTime(Event event, String date, String time){
-        event.setStringDate(date);
-        event.setStringTime(time);
+        event.setDateString(date);
+        event.setTimeString(time);
         return event;
     }
 

@@ -13,7 +13,6 @@ import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
@@ -89,8 +88,8 @@ public class EventsExcelView extends AbstractXlsxView {
                 aRow.createCell(1).setCellValue(event.getPrincipalId());
                 aRow.createCell(2).setCellValue(event.getApplication());
                 aRow.createCell(3).setCellValue(event.getClientIP());
-                aRow.createCell(4).setCellValue(event.getStringDate());
-                aRow.createCell(5).setCellValue(event.getStringTime());
+                aRow.createCell(4).setCellValue(event.getDateString());
+                aRow.createCell(5).setCellValue(event.getTimeString());
                 aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
                 aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
 
