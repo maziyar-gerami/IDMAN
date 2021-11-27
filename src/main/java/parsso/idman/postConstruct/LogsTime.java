@@ -27,7 +27,7 @@ public class LogsTime {
                 e.printStackTrace();
             }
         });
-        events.start();
+        //events.start();
 
         Thread audits = new Thread(()->{
             try {
@@ -36,7 +36,7 @@ public class LogsTime {
                 e.printStackTrace();
             }
         });
-        audits.start();
+        //audits.start();
 
 
 
