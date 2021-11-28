@@ -78,7 +78,7 @@ public class AuditsExcelView extends AbstractXlsxView {
 
         for (int page = 0; page <= Math.ceil( (float)count/Variables.PER_BATCH_COUNT); page++) {
 
-            if (page==100)
+            if (page==250)
                 return;
 
             int skip = (page == 0) ? 0 : ((page - 1) * Variables.PER_BATCH_COUNT);
