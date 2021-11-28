@@ -37,7 +37,7 @@ public class AuditsExcelView extends AbstractXlsxView {
         Sheet sheet = workbook.createSheet("Audits");
         sheet.setDefaultColumnWidth(30);
 
-        long count = mongoTemplate.count(new Query(), Variables.col_casEvent);
+        long count = mongoTemplate.count(new Query(), Variables.col_audit);
 
 
         // create style for header cells
@@ -76,7 +76,7 @@ public class AuditsExcelView extends AbstractXlsxView {
         // create data rows
         int rowCount = 1;
 
-        for (int page = 0; page <= Math.ceil( Variables.PER_BATCH_COUNT/(float)count); page++) {
+        for (int page = 0; page <= Math.ceil( (float)count/Variables.PER_BATCH_COUNT); page++) {
 
             int skip = (page == 0) ? 0 : (int) ((page - 1) * count);
 
