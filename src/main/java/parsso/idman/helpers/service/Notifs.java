@@ -33,12 +33,11 @@ public class Notifs {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
 
-        con.setRequestProperty("Content-Type", "application/json; utf-8");
+        con.setRequestProperty("Content-Type", "*/*");
 
-        con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Accept", "*/*");
 
         con.setDoOutput(true);
-
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("api_key", notificationApiKey);
@@ -49,7 +48,7 @@ public class Notifs {
             os.write(input, 0, input.length);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ServiceGist(new Return(503, Variables.MSG_FA_CODE_503));
+            return new ServiceGist(new Return(503, e.toString()));
         }
 
 
