@@ -78,6 +78,9 @@ public class AuditsExcelView extends AbstractXlsxView {
 
         for (int page = 0; page <= Math.ceil( (float)count/Variables.PER_BATCH_COUNT); page++) {
 
+            if (page==4)
+                return;
+
             int skip = (page == 0) ? 0 : ((page - 1) * Variables.PER_BATCH_COUNT);
 
             List<Audit> audits = Audit.analyze(mongoTemplate, skip, Variables.PER_BATCH_COUNT);

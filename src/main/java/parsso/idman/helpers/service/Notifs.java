@@ -48,6 +48,7 @@ public class Notifs {
             byte[] input = jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ServiceGist(new Return(503, Variables.MSG_FA_CODE_503));
         }
 
