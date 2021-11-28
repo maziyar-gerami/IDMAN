@@ -78,7 +78,7 @@ public class EventsExcelView extends AbstractXlsxView {
 
         for (int page=0; page <= Math.ceil( Variables.PER_BATCH_COUNT/(float)count); page++) {
 
-            int skip = (page == 1) ? 0 : (int) ((page - 1) * count);
+            int skip = (page == 1) ? 0 :((page - 1) * Variables.PER_BATCH_COUNT);
 
             List<Event> events = eventRepo.analyze(skip, Variables.PER_BATCH_COUNT);
 
