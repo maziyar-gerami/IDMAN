@@ -76,7 +76,7 @@ public class EventsExcelView extends AbstractXlsxView {
         // create data rows
         int rowCount = 1;
 
-        for (int page=0; page<Math.ceil((float) count/Variables.PER_BATCH_COUNT)+1; page++) {
+        for (int page=0; page <= Math.ceil( Variables.PER_BATCH_COUNT/(float)count); page++) {
 
             int skip = (page == 1) ? 0 : (int) ((page - 1) * count);
 
