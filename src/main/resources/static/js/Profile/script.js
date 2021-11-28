@@ -12,10 +12,10 @@ document.addEventListener('DOMContentLoaded', function () {
             dateNavEn: "",
             dateNavText: "",
             rules: [
-                { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ", regex:/[a-zA-Z]+/, fa:false},
-                { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ",  regex:/[!@#\$%\^\&*\)\(+=\[\]._-]+/, fa:true},
-				{ message:"حداقل ۸ کاراکتر باشد. ", regex:/.{8,}/, fa:false},
-				{ message:"حداقل شامل یک عدد باشد. ", regex:/[0-9]+/, fa:false}
+                { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. "},
+                { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. "},
+				{ message:"حداقل ۸ کاراکتر باشد. "},
+				{ message:"حداقل شامل یک عدد باشد. "}
             ],
             show: false,
             showR: false,
@@ -628,27 +628,26 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         computed: {
-            notSamePasswords () {
-                if (this.passwordsFilled) {
-                    return (this.password !== this.checkPassword)
-                } else {
-                    return false
-                }
+            notSamePasswords: function() {
+                return this.password !== this.checkPassword;
             },
-            passwordsFilled () {
-                return (this.password !== '' && this.checkPassword !== '')
-            },
-            setActivee () {
-                if(this.password !== '' && this.checkPassword !== ''){
-                    let errors = []
-                    for (let condition of this.rules) {
-                        if (!condition.regex.test(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }
-                    if(errors.length === 0){
-                        if(this.password === this.checkPassword){
-                            return false
+            isActiveUserPassUpdate: function() {
+                if(this.password !== "" && this.checkPassword !== ""){
+                    if(/[0-9]+/.test(this.password)){
+                        if(/[a-zA-Z]/.test(this.password)){
+                            if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                                if(/.{8,}/.test(this.password)){
+                                    if(this.password === this.checkPassword){
+                                        return false
+                                    }else{
+                                        return true
+                                    }
+                                }else{
+                                    return true
+                                }
+                            }else{
+                                return true
+                            }
                         }else{
                             return true
                         }
@@ -659,43 +658,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     return true
                 }
             },
-            passwordValidation () {
-                let errors = []
-                for (let condition of this.rules) {
-                    if(condition.fa){
-                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }else{
-                        if (!condition.regex.test(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }
+            strengthLevel: function() {
+                let checks = 0;
+                if(/[0-9]+/.test(this.password)){
+                    checks += 1;
                 }
-                if (errors.length === 0) {
-                    return { valid:true, errors }
-                } else {
-                    return { valid:false, errors }
+                if(/[a-zA-Z]/.test(this.password)){
+                    checks += 1;
                 }
-            },
-            strengthLevel() {
-                let errors = []
-                for (let condition of this.rules) {
-                    if(condition.fa){
-                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }else{
-                        if (!condition.regex.test(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }
+                if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                    checks += 1;
                 }
-                if(errors.length === 0) return 4;
-                if(errors.length === 1) return 3;
-                if(errors.length === 2) return 2;
-                if(errors.length === 3) return 1;
-                if(errors.length === 4) return 0;
+                if(/.{8,}/.test(this.password)){
+                    checks += 1;
+                }
+                return checks;
             }
         }
     })

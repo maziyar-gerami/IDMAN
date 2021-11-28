@@ -72,10 +72,10 @@ document.addEventListener('DOMContentLoaded', function () {
             eye: "right: 1%;",
             font: "font-size: 0.74em; text-align: right;",
             rules: [
-                { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ", regex:/[a-zA-Z]+/, fa:false},
-                { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ",  regex:/[!@#\$%\^\&*\)\(+=\[\]._-]+/, fa:true},
-				{ message:"حداقل ۸ کاراکتر باشد. ", regex:/.{8,}/, fa:false},
-				{ message:"حداقل شامل یک عدد باشد. ", regex:/[0-9]+/, fa:false}
+                { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. "},
+                { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. "},
+				{ message:"حداقل ۸ کاراکتر باشد. "},
+				{ message:"حداقل شامل یک عدد باشد. "}
             ],
             show: false,
             showR: false,
@@ -1011,7 +1011,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute("download", "users.xlsx");
+                    link.setAttribute("download", "users.xls");
                     document.body.appendChild(link);
                     link.click();
                 }).catch((error) => {
@@ -1855,34 +1855,31 @@ document.addEventListener('DOMContentLoaded', function () {
             userCreateExists () {
                 return this.userFound;
             },
-            sortedUsers:function() {
+            sortedUsers: function() {
                 this.usersPage = this.users;
                 return this.usersPage;
             },
-            notSamePasswords () {
-                if (this.passwordsFilled) {
-                    return (this.password !== this.checkPassword)
-                }else {
-                    return false;
-                }
+
+            notSamePasswords: function() {
+                return this.password !== this.checkPassword;
             },
-            duplicatePasswordsComputed () {
-                return this.duplicatePasswords;
-            },
-            passwordsFilled () {
-                return (this.password !== '' && this.checkPassword !== '')
-            },
-            isActiveUserPassUpdate () {
-                if(this.password !== '' && this.checkPassword !== ''){
-                    let errors = []
-                    for (let condition of this.rules) {
-                        if (!condition.regex.test(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }
-                    if(errors.length === 0){
-                        if(this.password === this.checkPassword){
-                            return false
+            isActiveUserPassUpdate: function() {
+                if(this.password !== "" && this.checkPassword !== ""){
+                    if(/[0-9]+/.test(this.password)){
+                        if(/[a-zA-Z]/.test(this.password)){
+                            if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                                if(/.{8,}/.test(this.password)){
+                                    if(this.password === this.checkPassword){
+                                        return false
+                                    }else{
+                                        return true
+                                    }
+                                }else{
+                                    return true
+                                }
+                            }else{
+                                return true
+                            }
                         }else{
                             return true
                         }
@@ -1893,65 +1890,42 @@ document.addEventListener('DOMContentLoaded', function () {
                     return true
                 }
             },
-            passwordValidation () {
-                let errors = []
-                for (let condition of this.rules) {
-                    if(condition.fa){
-                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }else{
-                        if (!condition.regex.test(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }
+            strengthLevel: function() {
+                let checks = 0;
+                if(/[0-9]+/.test(this.password)){
+                    checks += 1;
                 }
-                if (errors.length === 0) {
-                    return { valid:true, errors }
-                } else {
-                    return { valid:false, errors }
+                if(/[a-zA-Z]/.test(this.password)){
+                    checks += 1;
                 }
-            },
-            strengthLevel() {
-                let errors = []
-                for (let condition of this.rules) {
-                    if(condition.fa){
-                        if (!condition.regex.test(this.password) && !this.persianTextCheck(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }else{
-                        if (!condition.regex.test(this.password)) {
-                            errors.push(condition.message)
-                        }
-                    }
+                if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                    checks += 1;
                 }
-                if(errors.length === 0) return 4;
-                if(errors.length === 1) return 3;
-                if(errors.length === 2) return 2;
-                if(errors.length === 3) return 1;
-                if(errors.length === 4) return 0;
-            },
-            notSamePasswordsCreate () {
-                if (this.passwordsFilledCreate) {
-                    return (this.passwordCreate !== this.checkPasswordCreate)
-                } else {
-                    return false
+                if(/.{8,}/.test(this.password)){
+                    checks += 1;
                 }
+                return checks;
             },
-            passwordsFilledCreate () {
-                return (this.passwordCreate !== '' && this.checkPasswordCreate !== '')
+            notSamePasswordsCreate: function() {
+                return this.passwordCreate !== this.checkPasswordCreate;
             },
-            isActiveUserPassCreate () {
-                if(this.passwordCreate !== '' && this.checkPasswordCreate !== ''){
-                    let errors = []
-                    for (let condition of this.rules) {
-                        if (!condition.regex.test(this.passwordCreate)) {
-                            errors.push(condition.message)
-                        }
-                    }
-                    if(errors.length === 0){
-                        if(this.passwordCreate === this.checkPasswordCreate){
-                            return false
+            isActiveUserPassCreate: function() {
+                if(this.passwordCreate !== "" && this.checkPasswordCreate !== ""){
+                    if(/[0-9]+/.test(this.passwordCreate)){
+                        if(/[a-zA-Z]/.test(this.passwordCreate)){
+                            if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.passwordCreate) || this.persianTextCheck(this.passwordCreate)){
+                                if(/.{8,}/.test(this.passwordCreate)){
+                                    if(this.passwordCreate === this.checkPasswordCreate){
+                                        return false
+                                    }else{
+                                        return true
+                                    }
+                                }else{
+                                    return true
+                                }
+                            }else{
+                                return true
+                            }
                         }else{
                             return true
                         }
@@ -1962,44 +1936,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     return true
                 }
             },
-            passwordValidationCreate () {
-                let errors = []
-                for (let condition of this.rules) {
-                    if(condition.fa){
-                        if (!condition.regex.test(this.passwordCreate) && !this.persianTextCheck(this.passwordCreate)) {
-                            errors.push(condition.message)
-                        }
-                    }else{
-                        if (!condition.regex.test(this.passwordCreate)) {
-                            errors.push(condition.message)
-                        }
-                    }
+            strengthLevelCreate: function() {
+                let checks = 0;
+                if(/[0-9]+/.test(this.passwordCreate)){
+                    checks += 1;
                 }
-                if (errors.length === 0) {
-                    return { valid:true, errors }
-                } else {
-                    return { valid:false, errors }
+                if(/[a-zA-Z]/.test(this.passwordCreate)){
+                    checks += 1;
                 }
+                if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.passwordCreate) || this.persianTextCheck(this.passwordCreate)){
+                    checks += 1;
+                }
+                if(/.{8,}/.test(this.passwordCreate)){
+                    checks += 1;
+                }
+                return checks;
             },
-            strengthLevelCreate() {
-                let errors = []
-                for (let condition of this.rules) {
-                    if(condition.fa){
-                        if (!condition.regex.test(this.passwordCreate) && !this.persianTextCheck(this.passwordCreate)) {
-                            errors.push(condition.message)
-                        }
-                    }else{
-                        if (!condition.regex.test(this.passwordCreate)) {
-                            errors.push(condition.message)
-                        }
-                    }
-                }
-                if(errors.length === 0) return 4;
-                if(errors.length === 1) return 3;
-                if(errors.length === 2) return 2;
-                if(errors.length === 3) return 1;
-                if(errors.length === 4) return 0;
-            },
+
             allowedServicesReportListResult(){
                 if(this.allowedServicesReportSearch){
                     let buffer = [];
@@ -2032,8 +1985,8 @@ document.addEventListener('DOMContentLoaded', function () {
             },
         },
         watch : {
-            paginationCurrentPage : function () {
-                if(this.paginationCurrentPage != this.currentPage){
+            paginationCurrentPage: function () {
+                if(this.paginationCurrentPage !== this.currentPage){
                     this.currentPage = this.paginationCurrentPage;
                     this.filter("paginationCurrentPage");
                 }
