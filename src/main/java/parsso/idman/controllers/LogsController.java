@@ -2,6 +2,7 @@ package parsso.idman.controllers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import parsso.idman.models.logs.Audit;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.postConstruct.LogsTime;
 import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,15 +32,17 @@ public class LogsController {
     final EventsExcelView eventsExcelView;
     final AuditsExcelView auditsExcelView;
     final LogsExcelView logsExcelView;
+    final MongoTemplate mongoTemplate;
 
     @Autowired
-    public LogsController(LogsRepo.AuditRepo auditRepo, LogsRepo.EventRepo eventRepo, LogsRepo.ReportRepo reportsRepo, EventsExcelView eventsExcelView, AuditsExcelView auditsExcelView, LogsExcelView reportExcelView, LogsExcelView logsExcelView) {
+    public LogsController(LogsRepo.AuditRepo auditRepo, MongoTemplate mongoTemplate, LogsRepo.EventRepo eventRepo, LogsRepo.ReportRepo reportsRepo, EventsExcelView eventsExcelView, AuditsExcelView auditsExcelView, LogsExcelView reportExcelView, LogsExcelView logsExcelView) {
         this.auditRepo = auditRepo;
         this.eventRepo = eventRepo;
         this.reportsRepo = reportsRepo;
         this.eventsExcelView = eventsExcelView;
         this.auditsExcelView = auditsExcelView;
         this.logsExcelView = logsExcelView;
+        this.mongoTemplate = mongoTemplate;
     }
 
 
@@ -55,6 +59,7 @@ public class LogsController {
                                                           @RequestParam(name = "date", defaultValue = "") String date,
                                                           @RequestParam(name = "page") String page,
                                                           @RequestParam(name = "count") String count) {
+        new LogsTime(mongoTemplate).run();
         return new ResponseEntity<>(auditRepo.retrieve(request.getUserPrincipal().getName(), date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
     }
 
@@ -63,8 +68,8 @@ public class LogsController {
                                                            @RequestParam(name = "date", defaultValue = "") String date,
                                                            @RequestParam(name = "page") String page,
                                                            @RequestParam(name = "count") String count) {
-        Event.ListEvents listEvents = eventRepo.retrieve(userID, date, !page.equals("") ? Integer.parseInt(page) : 0,
-                !count.equals("") ? Integer.parseInt(count) : 0);
+
+        new LogsTime(mongoTemplate).run();
 
         return new ResponseEntity<>(eventRepo.retrieve(userID, date, !page.equals("") ? Integer.parseInt(page) : 0,
                 !count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);
@@ -75,6 +80,7 @@ public class LogsController {
                                                           @RequestParam(name = "date", defaultValue = "") String date,
                                                           @RequestParam(name = "page") String page,
                                                           @RequestParam(name = "count") String count) {
+        new LogsTime(mongoTemplate).run();
         return new ResponseEntity<>(eventRepo.retrieve(request.getUserPrincipal().getName(), date, !page.equals("") ? Integer.parseInt(page) : 0,
                 !count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);
 
@@ -117,6 +123,8 @@ public class LogsController {
     @GetMapping("/export")
     public ModelAndView downloadExcelAudit(@RequestParam("type") String type) {
         // return a view which will be resolved by an excel view resolver
+        new LogsTime(mongoTemplate).run();
+
         switch (type) {
             case "audits":
                 return new ModelAndView(auditsExcelView, "listAudits", null);

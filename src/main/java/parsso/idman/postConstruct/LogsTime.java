@@ -19,26 +19,39 @@ public class LogsTime {
     }
 
     public void run(){
+        EventThread eventThread = new EventThread();
+        eventThread.run();
 
-        Thread events = new Thread(()->{
+        AuditThread auditThread = new AuditThread();
+        auditThread.run();
+
+    }
+
+    public class EventThread implements Runnable{
+
+        @Override
+        public void run() {
             try {
                 events();
             }catch (Exception e){
                 e.printStackTrace();
             }
-        });
-        events.start();
+        }
+    }
 
-        Thread audits = new Thread(()->{
+    public class AuditThread implements Runnable{
+
+        @Override
+        public void run() {
             try {
                 audits();
             }catch (Exception e){
                 e.printStackTrace();
             }
-        });
-        audits.start();
-
+        }
     }
+
+
 
     public void events(){
         Query query = new Query(Criteria.where("dateString").exists(false));
