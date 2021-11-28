@@ -27,7 +27,7 @@ public class LogsTime {
                 e.printStackTrace();
             }
         });
-        //events.start();
+        events.start();
 
         Thread audits = new Thread(()->{
             try {
@@ -36,14 +36,12 @@ public class LogsTime {
                 e.printStackTrace();
             }
         });
-        //audits.start();
-
-
+        audits.start();
 
     }
 
     public void events(){
-        Query query = new Query(Criteria.where("stringDate").exists(false));
+        Query query = new Query(Criteria.where("dateString").exists(false));
         List<Event> events = mongoTemplate.find(query,Event.class, Variables.col_casEvent);
 
         int c=0;
@@ -66,7 +64,7 @@ public class LogsTime {
     }
 
     public void audits(){
-        Query query = new Query(Criteria.where("stringDate").exists(false));
+        Query query = new Query(Criteria.where("dateString").exists(false));
         List<Audit> audits = mongoTemplate.find(query,Audit.class, Variables.col_audit);
 
         int c=0;
@@ -83,7 +81,7 @@ public class LogsTime {
 
             int i =(++c*100/audits.size());
 
-            System.out.print("\nProcessing audits: " + i + "% " + animationChars[i % 4] + "\r");
+            System.out.print("Processing audits: " + i + "% " + animationChars[i % 4] + "\r");
         }
 
     }

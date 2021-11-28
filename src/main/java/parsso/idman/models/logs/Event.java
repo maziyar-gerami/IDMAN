@@ -49,7 +49,6 @@ public class Event implements Serializable {
     String application;
     @JsonIgnore
     String _class;
-    @JsonIgnore
     Time time;
     String timeString;
     String dateString;
