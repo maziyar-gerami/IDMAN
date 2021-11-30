@@ -20,10 +20,10 @@ public class LogsTime {
 
     public void run(){
         EventThread eventThread = new EventThread();
-        eventThread.run();
+        //eventThread.run();
 
         AuditThread auditThread = new AuditThread();
-        auditThread.run();
+        //auditThread.run();
 
     }
 
