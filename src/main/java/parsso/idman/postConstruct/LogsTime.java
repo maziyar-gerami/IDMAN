@@ -20,10 +20,10 @@ public class LogsTime {
 
     public void run(){
         EventThread eventThread = new EventThread();
-        //eventThread.run();
+        eventThread.run();
 
         AuditThread auditThread = new AuditThread();
-        //auditThread.run();
+        auditThread.run();
 
     }
 
@@ -58,7 +58,7 @@ public class LogsTime {
 
         char[] animationChars = new char[]{'|', '/', '-', '\\'};
 
-        long count = mongoTemplate.count(new Query(), Variables.col_casEvent);
+        long count = mongoTemplate.count(query, Variables.col_casEvent);
 
         for (int page = 0; page <= Math.ceil( (float)count/Variables.PER_BATCH_COUNT); page++) {
 
@@ -90,7 +90,7 @@ public class LogsTime {
     public void audits(){
         Query query = new Query(Criteria.where("dateString").exists(false));
 
-        long count = mongoTemplate.count(new Query(), Variables.col_audit);
+        long count = mongoTemplate.count(query, Variables.col_audit);
 
         for (int page = 0; page <= Math.ceil( (float)count/Variables.PER_BATCH_COUNT); page++) {
 
