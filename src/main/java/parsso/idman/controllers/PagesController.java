@@ -162,7 +162,7 @@ public class PagesController implements ErrorController {
     //************************************* APIs ****************************************
 
     @GetMapping("/api/dashboard")
-    public ResponseEntity<Dashboard> retrieveDashboardData() throws InterruptedException {
+    public ResponseEntity<Dashboard> retrieveDashboardData() {
         return new ResponseEntity<>(dashboardData.retrieveDashboardData(), HttpStatus.OK);
     }
 

@@ -1,6 +1,5 @@
 package parsso.idman.models.other;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.helpers.TimeHelper;

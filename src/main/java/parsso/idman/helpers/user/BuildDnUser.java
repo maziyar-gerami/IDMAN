@@ -1,7 +1,6 @@
 package parsso.idman.helpers.user;
 
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 

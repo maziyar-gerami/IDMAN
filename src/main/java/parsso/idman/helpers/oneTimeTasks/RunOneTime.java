@@ -1,13 +1,10 @@
 package parsso.idman.helpers.oneTimeTasks;
 
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
-import parsso.idman.models.logs.ReportMessage;
 
 public class RunOneTime {
     UniformLogger uniformLogger;

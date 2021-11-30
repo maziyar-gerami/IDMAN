@@ -288,7 +288,7 @@ public class UsersController {
         String userId = jsonObject.getAsString("userId");
         HttpStatus httpStatus = userRepo.changePasswordPublic(userId,currentPassword,newPassword);
 
-        if (passChangeNotification.equals("on"))
+        if (passChangeNotification.equals("on") && httpStatus == HttpStatus.OK)
             instantMessage.sendPasswordChangeNotif(userRepo.retrieveUsers(userId));
 
         return new ResponseEntity<>(httpStatus);

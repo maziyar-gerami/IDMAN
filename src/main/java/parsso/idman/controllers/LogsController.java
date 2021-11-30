@@ -59,9 +59,7 @@ public class LogsController {
                                                           @RequestParam(name = "date", defaultValue = "") String date,
                                                           @RequestParam(name = "page") String page,
                                                           @RequestParam(name = "count") String count) {
-        Thread lt = new Thread(() -> {
-            new LogsTime(mongoTemplate).run();
-        });
+        Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
         lt.start();
 
         return new ResponseEntity<>(auditRepo.retrieve(request.getUserPrincipal().getName(), date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
@@ -73,9 +71,7 @@ public class LogsController {
                                                            @RequestParam(name = "page") String page,
                                                            @RequestParam(name = "count") String count) {
 
-        Thread lt = new Thread(() -> {
-            new LogsTime(mongoTemplate).run();
-        });
+        Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
         lt.start();
 
         return new ResponseEntity<>(eventRepo.retrieve(userID, date, !page.equals("") ? Integer.parseInt(page) : 0,
@@ -87,9 +83,7 @@ public class LogsController {
                                                           @RequestParam(name = "date", defaultValue = "") String date,
                                                           @RequestParam(name = "page") String page,
                                                           @RequestParam(name = "count") String count) {
-        Thread lt = new Thread(() -> {
-            new LogsTime(mongoTemplate).run();
-        });
+        Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
         lt.start();
         return new ResponseEntity<>(eventRepo.retrieve(request.getUserPrincipal().getName(), date, !page.equals("") ? Integer.parseInt(page) : 0,
                 !count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);

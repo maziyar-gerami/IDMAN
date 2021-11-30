@@ -41,8 +41,6 @@ import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.group.GroupsChecks;
 import parsso.idman.helpers.oneTimeTasks.RunOneTime;
 import parsso.idman.helpers.user.*;
-import parsso.idman.models.logs.Audit;
-import parsso.idman.models.logs.Event;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.User;
@@ -522,10 +520,12 @@ public class UserRepoImpl implements UserRepo {
                 ldapTemplate.modifyAttributes(contextUser);
             }catch (org.springframework.ldap.InvalidAttributeValueException e){
                 return HttpStatus.FOUND;
+            }catch (Exception e){
+                return HttpStatus.EXPECTATION_FAILED;
             }
 
         } else {
-            return  HttpStatus.UNAUTHORIZED;
+            return  HttpStatus.NOT_FOUND;
         }
 
         return HttpStatus.OK;
@@ -974,6 +974,7 @@ public class UserRepoImpl implements UserRepo {
                 e.printStackTrace();
                 uniformLogger.warn(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
                         Variables.ACTION_RESET, Variables.RESULT_FAILED, "writing to ldap"));
+
             }
             return HttpStatus.OK;
         } else {

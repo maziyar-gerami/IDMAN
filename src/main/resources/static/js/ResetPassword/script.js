@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
             s0: "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
             s1: "",
             s2: "خروج",
-            s3: "بازنشانی رمز عبور",
+            s3: "بازنشانی گذرواژه",
             s4: "سرویس ها",
             s5: "گروه ها",
             s6: "رویداد ها",
@@ -79,34 +79,34 @@ document.addEventListener('DOMContentLoaded', function () {
             s20: "داشبورد",
             s21: "./groups",
             s22: "./profile",
-            s23: "لطفا جهت بازنشانی رمز عبور، آدرس ایمیل خود را وارد کنید:",
+            s23: "لطفا جهت بازنشانی گذرواژه، آدرس ایمیل خود را وارد کنید:",
             s24: "ارسال موفقیت آمیز بود.",
             s25: "لطفا به mailbox خود مراجعه نموده و طبق راهنما، باقی مراحل را انجام دهید.",
             s26: "بازگشت به صفحه ورود",
             s27: "اطلاعات شما در پایگاه داده ما وجود ندارد.",
             s28: "لطفا با دقت بیشتری نسبت به ورود اطلاعات خود اقدام نمایید.",
-            s29: "لطفا جهت تکمیل مراحل، شناسه کاربری خود را وارد نمایید:",
-            s30: "لطفا جهت بازنشانی رمز عبور، شماره موبایل خود را وارد کنید:",
+            s29: "لطفا جهت تکمیل مراحل، شماره پرسنلی خود را وارد نمایید:",
+            s30: "لطفا جهت بازنشانی گذرواژه، شماره موبایل خود را وارد کنید:",
             s31: "لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.",
-            s32: "اطلاعات شما در پایگاه داده ما وجود ندارد.",
+            s32: "اطلاعات شما در پایگاه داده ما وجود ندارد. لطفا با دقت بیشتری نسبت به ورود اطلاعات خود اقدام نمایید.",
             s33: "لطفا با دقت بیشتری نسبت به ورود اطلاعات خود اقدام نمایید.",
             s34: "شماره موبایل",
-            s35: "شما در حال انتقال به صفحه بازنشانی رمز عبور هستید...",
-            s36: "شناسه کاربری",
+            s35: "شما در حال انتقال به صفحه بازنشانی گذرواژه هستید...",
+            s36: "شماره پرسنلی",
             s37: "آدرس ایمیل خود را وارد کنید",
             s38: "فرمت آدرس ایمیل را به درستی وارد کنید",
-            s39: "کد وارد شده منقضی شده است، لطفا دوباره تلاش کنید.",
-            s40: "کد وارد شده اشتباه است.",
-            s41: "شناسه کاربری خود را وارد کنید",
+            s39: "کد پیامکی وارد شده منقضی شده است، لطفا دوباره تلاش کنید.",
+            s40: "کد پیامکی وارد شده اشتباه است، لطفا دوباره تلاش کنید.",
+            s41: "شماره پرسنلی خود را وارد کنید",
             s42: "شماره موبایل خود را وارد کنید",
             s43: "کد پیامک شده خود را وارد کنید",
             s44: "جواب کد امنیتی نمی تواند خالی باشد.",
-            s45: "جواب کد امنیتی اشتباه است، دوباره تلاش کنید.",
+            s45: "کد امنیتی وارد شده اشتباه است، لطفا دوباره تلاش کنید.",
             s46: "کد امنیتی",
             mobileFormatErrorText: "فرمت شماره تلفن را به درستی وارد کنید",
             tryAgainText: "تلاش دوباره",
             personnelNumberText: "شماره پرسنلی",
-            enterPersonnelNumberText: "لطفا جهت بازنشانی رمز عبور، شماره پرسنلی خود را وارد کنید:",
+            enterPersonnelNumberText: "لطفا جهت بازنشانی گذرواژه، شماره پرسنلی خود را وارد کنید:",
             emptyPersonnelNumberText: "شماره پرسنلی خود را وارد کنید",
             codeNot6DigitsText: "کد وارد شده 6 رقم نمی باشد.",
         },
@@ -274,15 +274,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                         vm.ErrorS = false;
                                         vm.ErrorSMSCode = false;
                                     }else if(error.response.status === 403){
-                                        alert(vm.s45);
                                         vm.getCaptcha();
+                                        alert(vm.s45);
                                     }else if(error.response.status === 404){
-                                        vm.sendS = false;
-                                        vm.sendUS = false;
-                                        vm.checkSMSCode = false;
-                                        vm.SuccessS = false;
-                                        vm.ErrorS = true;
-                                        vm.ErrorSMSCode = false;
+                                        vm.mobile = "";
+                                        vm.getCaptcha();
+                                        alert(vm.s32);
                                     }
                                 }
                             });
@@ -319,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         vm.ErrorS = false;
                         vm.ErrorSMSCode = false;
                     }).catch((error) => {
-                        if (error.response) {
+                        if(error.response){
                             vm.loader = false;
                             if(error.response.status === 403){
                                 vm.mobile = "";
@@ -330,15 +327,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                 vm.SuccessS = false;
                                 vm.ErrorS = false;
                                 vm.ErrorSMSCode = false;
-                                alert(vm.s45);
                                 vm.getCaptcha();
+                                alert(vm.s45);
                             }else if(error.response.status === 404){
-                                vm.sendS = false;
-                                vm.sendUS = false;
-                                vm.checkSMSCode = false;
-                                vm.SuccessS = false;
-                                vm.ErrorS = true;
-                                vm.ErrorSMSCode = false;
+                                vm.usernameS = "";
+                                alert(vm.s32);
                             }
                         }
                     });
@@ -349,7 +342,6 @@ document.addEventListener('DOMContentLoaded', function () {
             checkSMS: function (code) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
-
                 code = document.getElementById("digit-1-1").value.trim() + document.getElementById("digit-2-1").value.trim() +
                     document.getElementById("digit-3-1").value.trim() + document.getElementById("digit-4-1").value.trim() +
                     document.getElementById("digit-5-1").value.trim() + document.getElementById("digit-6-1").value.trim();
@@ -359,29 +351,24 @@ document.addEventListener('DOMContentLoaded', function () {
                         axios.get(url + "/api/public/validateMessageToken/" + vm.usernameSMSCheck + "/" + code) //
                             .then((res) => {
                                 vm.loader = false;
-                                vm.sendS = false;
-                                vm.sendUS = false;
-                                vm.checkSMSCode = false;
-                                vm.SuccessS = true;
-                                vm.ErrorS = false;
-                                vm.ErrorSMSCode = false;
                                 window.location.replace(url + "/newpassword?uid=" + vm.usernameSMSCheck + "&token=" + code);
                             })
                             .catch((error) => {
-                                if (error.response) {
+                                if(error.response){
                                     vm.loader = false;
-                                    vm.sendS = false;
-                                    vm.sendUS = false;
-                                    vm.checkSMSCode = false;
-                                    vm.SuccessS = false;
-                                    vm.ErrorS = false;
-                                    vm.ErrorSMSCode = true;
-                                    if (error.response.status === 403) {
-                                        vm.ErrorSMSCode403 = true;
-                                        vm.ErrorSMSCode408 = false;
-                                    } else if (error.response.status === 408) {
-                                        vm.ErrorSMSCode403 = false;
-                                        vm.ErrorSMSCode408 = true;
+                                    if(error.response.status === 403 || error.response.status === 408){
+                                        document.getElementById("digit-1-1").value = "";
+                                        document.getElementById("digit-2-1").value = "";
+                                        document.getElementById("digit-3-1").value = "";
+                                        document.getElementById("digit-4-1").value = "";
+                                        document.getElementById("digit-5-1").value = "";
+                                        document.getElementById("digit-6-1").value = "";
+                                        if(error.response.status === 403){
+                                            alert(vm.s40);
+                                        } else if(error.response.status === 408){
+                                            vm.tryAgain("sms");
+                                            alert(vm.s39);
+                                        }
                                     }
                                 }
                             });
@@ -408,12 +395,13 @@ document.addEventListener('DOMContentLoaded', function () {
                             }).catch((error) => {
                                 if (error.response) {
                                     vm.loader = false;
-                                    if(error.response.status === 404){
+                                    if(error.response.status === 403){
+                                        vm.getCaptcha();
+                                        alert(vm.s45);
+                                    }else if(error.response.status === 404){
                                         vm.userId = "";
-                                        vm.sendUserId = false;
-                                        vm.SuccessUserId = false;
-                                        vm.ErrorUserId = true;
-                                        vm.ErrorUserIdSMSCode = false;
+                                        vm.getCaptcha();
+                                        alert(vm.s32);
                                     }
                                 }
                             });
@@ -427,7 +415,6 @@ document.addEventListener('DOMContentLoaded', function () {
             checkUIDSMS: function (code) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
-
                 code = document.getElementById("digit-1").value.trim() + document.getElementById("digit-2").value.trim() +
                     document.getElementById("digit-3").value.trim() + document.getElementById("digit-4").value.trim() +
                     document.getElementById("digit-5").value.trim() + document.getElementById("digit-6").value.trim();
@@ -440,18 +427,21 @@ document.addEventListener('DOMContentLoaded', function () {
                                 window.location.replace(url + "/newpassword?uid=" + vm.userId + "&token=" + code);
                             })
                             .catch((error) => {
-                                if (error.response) {
+                                if (error.response){
                                     vm.loader = false;
-                                    vm.sendUserId = false;
-                                    vm.SuccessUserId = false;
-                                    vm.ErrorUserId = false;
-                                    vm.ErrorUserIdSMSCode = true;
-                                    if (error.response.status === 403) {
-                                        vm.ErrorUserIdSMSCode403 = true;
-                                        vm.ErrorUserIdSMSCode408 = false;
-                                    } else if (error.response.status === 408) {
-                                        vm.ErrorUserIdSMSCode403 = false;
-                                        vm.ErrorUserIdSMSCode408 = true;
+                                    if(error.response.status === 403 || error.response.status === 408){
+                                        document.getElementById("digit-1").value = "";
+                                        document.getElementById("digit-2").value = "";
+                                        document.getElementById("digit-3").value = "";
+                                        document.getElementById("digit-4").value = "";
+                                        document.getElementById("digit-5").value = "";
+                                        document.getElementById("digit-6").value = "";
+                                        if(error.response.status === 403){
+                                            alert(vm.s40);
+                                        } else if(error.response.status === 408){
+                                            vm.tryAgain("userId");
+                                            alert(vm.s39);
+                                        }
                                     }
                                 }
                             });
@@ -524,15 +514,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s29 = "Please Enter Your ID To Complete The Process:";
                     this.s30 = "Please Enter Your Mobile Number To Reset Your Password:";
                     this.s31 = "Please Go To Your SMS Inbox And Enter The Code We Sent You.";
-                    this.s32 = "There Is No Such Information In Our Database.";
+                    this.s32 = "There Is No Such Information In Our Database. Please Enter Your Information More Carefully.";
                     this.s33 = "Please Enter Your Information More Carefully.";
                     this.s34 = "Mobile Number";
                     this.s35 = "We Are Redirecting You To Password Reset Page...";
-                    this.s36= "ID";
+                    this.s36 = "ID";
                     this.s37 = "Enter Your Email Address";
                     this.s38 = "Enter Email Address Format Correctly";
+                    this.s39 = "The Entered Security Code Has Expired, Please Try Again.";
+                    this.s40 = "The Entered SMS Code Is Incorrect, Please Try Again.";
                     this.s44 = "Security Code Answer Cannot Be Empty.";
-                    this.s45 = "Security Code Answer Is Incorrect, Try Again.";
+                    this.s45 = "The Entered Security Code Is Incorrect, Please Try Again.";
                     this.s46 = "Security Code";
                     this.mobileFormatErrorText = "Enter Phone Number Format Correctly";
                     this.tryAgainText = "Try Again";
@@ -550,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
                     this.s1 = this.name;
                     this.s2 = "خروج";
-                    this.s3 = "بازنشانی رمز عبور";
+                    this.s3 = "بازنشانی گذرواژه";
                     this.s4 = "سرویس ها";
                     this.s5 = "گروه ها";
                     this.s6 = "رویداد ها";
@@ -564,29 +556,31 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.s18 = "تایید";
                     this.s19 = "ایمیل";
                     this.s20 = "داشبورد";
-                    this.s23 = "لطفا جهت بازنشانی رمز عبور، آدرس ایمیل خود را وارد کنید:";
+                    this.s23 = "لطفا جهت بازنشانی گذرواژه، آدرس ایمیل خود را وارد کنید:";
                     this.s24 = "ارسال موفقیت آمیز بود.";
                     this.s25 = "لطفا به mailbox خود مراجعه نموده و طبق راهنما، باقی مراحل را انجام دهید.";
                     this.s26 = "بازگشت به صفحه ورود";
                     this.s27 = "اطلاعات شما در پایگاه داده ما وجود ندارد.";
                     this.s28 = "لطفا با دقت بیشتری نسبت به ورود اطلاعات خود اقدام نمایید.";
-                    this.s29 = "لطفا جهت تکمیل مراحل، شناسه کاربری خود را وارد نمایید:";
-                    this.s30 = "لطفا جهت بازنشانی رمز عبور، شماره موبایل خود را وارد کنید:";
+                    this.s29 = "لطفا جهت تکمیل مراحل، شماره پرسنلی خود را وارد نمایید:";
+                    this.s30 = "لطفا جهت بازنشانی گذرواژه، شماره موبایل خود را وارد کنید:";
                     this.s31 = "لطفا به لیست پیامک های دریافتی خود مراجعه نموده و کد ارسال شده را وارد نمایید.";
-                    this.s32 = "اطلاعات شما در پایگاه داده ما وجود ندارد.";
+                    this.s32 = "اطلاعات شما در پایگاه داده ما وجود ندارد. لطفا با دقت بیشتری نسبت به ورود اطلاعات خود اقدام نمایید.";
                     this.s33 = "لطفا با دقت بیشتری نسبت به ورود اطلاعات خود اقدام نمایید.";
                     this.s34 = "شماره موبایل";
-                    this.s35 = "شما در حال انتقال به صفحه بازنشانی رمز عبور هستید...";
-                    this.s36 = "شناسه کاربری";
+                    this.s35 = "شما در حال انتقال به صفحه بازنشانی گذرواژه هستید...";
+                    this.s36 = "شماره پرسنلی";
                     this.s37 = "آدرس ایمیل خود را وارد کنید";
                     this.s38 = "فرمت آدرس ایمیل را به درستی وارد کنید";
+                    this.s39 = "کد پیامکی وارد شده منقضی شده است، لطفا دوباره تلاش کنید.";
+                    this.s40 = "کد پیامکی وارد شده اشتباه است، لطفا دوباره تلاش کنید.";
                     this.s44 = "جواب کد امنیتی نمی تواند خالی باشد.";
-                    this.s45 = "جواب کد امنیتی اشتباه است، دوباره تلاش کنید.";
+                    this.s45 = "کد امنیتی وارد شده اشتباه است، لطفا دوباره تلاش کنید.";
                     this.s46 = "کد امنیتی";
                     this.mobileFormatErrorText = "فرمت شماره تلفن را به درستی وارد کنید";
                     this.tryAgainText = "تلاش دوباره";
                     this.personnelNumberText = "شماره پرسنلی";
-                    this.enterPersonnelNumberText = "لطفا جهت بازنشانی رمز عبور، شماره پرسنلی خود را وارد کنید:";
+                    this.enterPersonnelNumberText = "لطفا جهت بازنشانی گذرواژه، شماره پرسنلی خود را وارد کنید:";
                     this.emptyPersonnelNumberText = "شماره پرسنلی خود را وارد کنید";
                     this.codeNot6DigitsText = "کد وارد شده 6 رقم نمی باشد.";
                 }
