@@ -50,6 +50,10 @@ public class Event implements Serializable {
     @JsonIgnore
     String _class;
     Time time;
+    String timeString;
+    String dateString;
+
+
 
     public String getType() {
         ActionInfo actionHelper = new ActionInfo(type);
@@ -85,6 +89,12 @@ public class Event implements Serializable {
 
     public Time getTime() {
         return TimeHelper.longToPersianTime(Long.valueOf(_id));
+    }
+
+    public static Event setStringDateAndTime(Event event, String date, String time){
+        event.setDateString(date);
+        event.setTimeString(time);
+        return event;
     }
 
     public AgentInfo getAgentInfo() {
@@ -134,6 +144,8 @@ public class Event implements Serializable {
             this.eventList = events;
 
         }
+
+
     }
 
 }

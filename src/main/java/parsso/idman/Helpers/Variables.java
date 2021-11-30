@@ -32,6 +32,7 @@ public class Variables {
     public static final String STATUS_CHANGE = "Change";
     public static final String ACTION_REMOVE = "Remove";
     public static final String col_captchas = "IDMAN_Captchas";
+    public static final String col_devices = "MongoDbGoogleAuthenticatorRepository";
     public static final String col_extraInfo = "IDMAN_ExtraInfo";
     public static final String col_properties = "IDMAN_Properties";
     public static final String col_publicMessage = "IDMAN_PublicMessage";
@@ -76,7 +77,7 @@ public class Variables {
     static final String email_stringLink = "لینک بازنشانی رمز عبور: ";
     static final String logo = "https://blog.pars-sso.ir/wp-content/uploads/2021/02/magit-logo.png";
     public static final String col_GoogleAuthDevice= "MongoDbGoogleAuthenticatorRepository";
-    public static long LOGS_LIMIT = 1000;
+    public static final int PER_BATCH_COUNT = 1000;
 
     public static String template(User user, String url) {
 

@@ -1,27 +1,17 @@
 package parsso.idman.helpers.excelView;
 
 
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.streaming.SXSSFRow;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.view.document.AbstractXlsView;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 import parsso.idman.helpers.TimeHelper;
-import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.other.Time;
-import parsso.idman.utils.convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -71,12 +61,8 @@ public class LogsExcelView extends AbstractXlsxView {
 
         // create data rows
         int rowCount = 1;
-        DateConverter dateConverter = new DateConverter();
 
         for (Report report : reports) {
-            //TODO: remove this limitation
-            if(rowCount> Variables.LOGS_LIMIT)
-                return;
 
             Row aRow = sheet.createRow(rowCount++);
             Time time = TimeHelper.longToPersianTime(report.getMillis());

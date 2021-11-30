@@ -41,11 +41,14 @@ import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.group.GroupsChecks;
 import parsso.idman.helpers.oneTimeTasks.RunOneTime;
 import parsso.idman.helpers.user.*;
+import parsso.idman.models.logs.Audit;
+import parsso.idman.models.logs.Event;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UserLoggedIn;
 import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.postConstruct.LogsTime;
 import parsso.idman.repos.*;
 
 import javax.annotation.PostConstruct;
@@ -1054,12 +1057,15 @@ public class UserRepoImpl implements UserRepo {
     @PostConstruct
     public void postConstruct(){
 
+        new LogsTime(mongoTemplate).run();
         new RunOneTime(ldapTemplate, mongoTemplate, uniformLogger,BASE_DN).postConstruct();
+
     }
 
     @Override
     public Boolean retrieveUsersDevice(String userName) {
         return mongoTemplate.count(new Query(Criteria.where("username").is(userName)), Variables.col_GoogleAuthDevice) > 0;
     }
+
 }
 

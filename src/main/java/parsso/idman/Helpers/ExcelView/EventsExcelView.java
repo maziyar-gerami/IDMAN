@@ -1,39 +1,40 @@
 package parsso.idman.helpers.excelView;
 
 
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.view.document.AbstractXlsView;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Event;
-import parsso.idman.models.other.Time;
 import parsso.idman.repos.LogsRepo;
-import parsso.idman.utils.convertor.DateConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class EventsExcelView extends AbstractXlsxView {
-    final ZoneId zoneId = ZoneId.of(Variables.ZONE);
-    @Autowired
     LogsRepo.EventRepo eventRepo;
+    MongoTemplate mongoTemplate;
+
+    @Autowired
+    EventsExcelView(LogsRepo.EventRepo eventRepo, MongoTemplate mongoTemplate)
+    {
+        this.eventRepo = eventRepo;
+        this.mongoTemplate = mongoTemplate;
+
+    }
+
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
+        long count = mongoTemplate.count(new Query(), Variables.col_casEvent);
         // get data model which is passed by the Spring container
-        List<Event> events = eventRepo.analyze(0, 0);
 
         // create a new Excel sheet
         Sheet sheet = workbook.createSheet("events");
@@ -75,29 +76,26 @@ public class EventsExcelView extends AbstractXlsxView {
         // create data rows
         int rowCount = 1;
 
-        for (Event event : events) {
-            //TODO: remove this limitation
-            if(rowCount>Variables.LOGS_LIMIT)
+        for (int page=0; page <= Math.ceil( Variables.PER_BATCH_COUNT/(float)count); page++) {
+
+            if (page==100)
                 return;
-            Row aRow = sheet.createRow(rowCount++);
-            aRow.createCell(0).setCellValue(event.getType());
-            aRow.createCell(1).setCellValue(event.getPrincipalId());
-            aRow.createCell(2).setCellValue(event.getApplication());
-            aRow.createCell(3).setCellValue(event.getClientIP());
+            int skip = (page == 1) ? 0 :((page - 1) * Variables.PER_BATCH_COUNT);
 
-            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(zoneId);
-            Time time = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
-                    eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
-            event.setTime(time);
+            List<Event> events = eventRepo.analyze(skip, Variables.PER_BATCH_COUNT);
 
-            DateConverter dateConverter = new DateConverter();
-            dateConverter.gregorianToPersian(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth());
-            aRow.createCell(4).setCellValue(dateConverter.getYear() + "/" + dateConverter.getMonth() + "/" + dateConverter.getDay());
-            aRow.createCell(5).setCellValue(event.getTime().getHours() + ":" + event.getTime().getMinutes() + ":" + event.getTime().getSeconds());
-            aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
-            aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
+            for (Event event : events) {
+                Row aRow = sheet.createRow(rowCount++);
+                aRow.createCell(0).setCellValue(event.getType());
+                aRow.createCell(1).setCellValue(event.getPrincipalId());
+                aRow.createCell(2).setCellValue(event.getApplication());
+                aRow.createCell(3).setCellValue(event.getClientIP());
+                aRow.createCell(4).setCellValue(event.getDateString());
+                aRow.createCell(5).setCellValue(event.getTimeString());
+                aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
+                aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
 
+            }
         }
-
     }
 }

@@ -24,7 +24,13 @@ public class Texts {
         String p3 = " ساعت ";
         String p4 = " تغییر یافت.";
         Time time =  TimeHelper.longToPersianTime(new Date().getTime());
-        this.mainMessage = user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')) + p1 +"\n" +
+        String username;
+        try {
+            username =user.getDisplayName().substring(0, user.getDisplayName().indexOf(' '));
+        }catch (Exception e){
+            username = user.getDisplayName();
+        }
+        this.mainMessage = username + p1 +"\n" +
                 p2 +String.format("%02d",time.getDay())+"-"+String.format("%02d",time.getMonth())+ "-"+time.getYear() + p3 +
                 String.format("%02d",time.getHours())+":"+String.format("%02d",time.getMinutes()) + p4;
     }
