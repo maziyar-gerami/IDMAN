@@ -518,6 +518,8 @@ public class UserRepoImpl implements UserRepo {
             contextUser.setAttributeValue("userPassword", newPassword);
             try {
                 ldapTemplate.modifyAttributes(contextUser);
+                usersExtraInfo.setLoggedIn(true);
+                mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
             }catch (org.springframework.ldap.InvalidAttributeValueException e){
                 return HttpStatus.FOUND;
             }catch (Exception e){

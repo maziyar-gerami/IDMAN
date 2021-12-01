@@ -28,6 +28,7 @@ import java.util.Collections;
 
 @EnableWebSecurity
 @PropertySource(value = "file:${external.config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${external.cas}", ignoreResourceNotFound = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final SingleSignOutFilter singleSignOutFilter;
     private final LogoutFilter logoutFilter;
@@ -164,6 +165,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .anyRequest().authenticated()
                 .and()
+
 
 
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)

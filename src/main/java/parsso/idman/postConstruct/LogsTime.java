@@ -20,10 +20,10 @@ public class LogsTime {
 
     public void run(){
         EventThread eventThread = new EventThread();
-        //eventThread.run();
+        eventThread.run();
 
         AuditThread auditThread = new AuditThread();
-        //auditThread.run();
+        auditThread.run();
 
     }
 
@@ -62,8 +62,6 @@ public class LogsTime {
 
         for (int page = 0; page <= Math.ceil( (float)count/Variables.PER_BATCH_COUNT); page++) {
 
-            if (page == 100)
-                return;
 
             int skip = (page == 0) ? 0 : ((page - 1) * Variables.PER_BATCH_COUNT);
 
@@ -93,9 +91,6 @@ public class LogsTime {
         long count = mongoTemplate.count(query, Variables.col_audit);
 
         for (int page = 0; page <= Math.ceil( (float)count/Variables.PER_BATCH_COUNT); page++) {
-
-            if (page == 100)
-                return;
 
             int skip = (page == 0) ? 0 : ((page - 1) * Variables.PER_BATCH_COUNT);
 

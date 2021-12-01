@@ -51,6 +51,9 @@ public class UsersController {
     private String BASE_DN;
     @Value("${password.change.notification}")
     private String passChangeNotification;
+    @Value("${cas.authn.passwordless.tokens.expireInSeconds}")
+    private String counter;
+
 
     @Autowired
     public UsersController(UserRepo userRepo, EmailService emailService, Operations operations, UsersExcelView excelView,
@@ -408,6 +411,11 @@ public class UsersController {
     @GetMapping("/api/public/googleAuth/registered/{uid}")
     public ResponseEntity<Boolean> getName(@PathVariable("uid") String uid) {
         return new ResponseEntity<>(userRepo.retrieveUsersDevice(uid), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/public/counter")
+    public ResponseEntity<Integer> getCounter() {
+        return new ResponseEntity<>(Integer.parseInt(counter), HttpStatus.OK);
     }
 
     @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
