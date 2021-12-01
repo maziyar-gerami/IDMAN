@@ -440,8 +440,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
             extraInfo.setUrl(Objects.requireNonNull(JsonExtraInfo).get("url") != null ? JsonExtraInfo.get("url").toString() : Objects.requireNonNull(oldExtraInfo).getUrl());
 
-
-                extraInfo.setNotificationApiURL((String) JsonExtraInfo.get("notificationApiURL"));
+            extraInfo.setNotificationApiURL((String) JsonExtraInfo.get("notificationApiURL"));
 
             extraInfo.setNotificationApiKey((String) JsonExtraInfo.get("notificationApiKey"));
 
