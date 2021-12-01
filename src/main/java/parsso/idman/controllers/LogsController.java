@@ -127,7 +127,8 @@ public class LogsController {
     @GetMapping("/export")
     public ModelAndView downloadExcelAudit(@RequestParam("type") String type) {
         // return a view which will be resolved by an excel view resolver
-        new LogsTime(mongoTemplate).run();
+        Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
+        lt.start();
 
         switch (type) {
             case "audits":

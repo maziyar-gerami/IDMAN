@@ -1059,8 +1059,9 @@ public class UserRepoImpl implements UserRepo {
 
     @PostConstruct
     public void postConstruct(){
+        Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
+        lt.start();
 
-        new LogsTime(mongoTemplate).run();
         new RunOneTime(ldapTemplate, mongoTemplate, uniformLogger,BASE_DN).postConstruct();
 
     }
