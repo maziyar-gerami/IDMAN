@@ -46,9 +46,10 @@ public class Notifs {
 
         try (OutputStream os = con.getOutputStream()) {
             byte[] input = jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8);
+            String string = new String(input);
+            System.out.println(string);
             os.write(input, 0, input.length);
         } catch (Exception e) {
-            e.printStackTrace();
             return new ServiceGist(new Return(503, e.toString()));
         }
 

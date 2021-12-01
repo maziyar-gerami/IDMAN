@@ -108,7 +108,7 @@ public class LogsTime {
                 Update update = createUpdate(t);
                 mongoTemplate.upsert(new Query(Criteria.where("_id").is(audit.get_id())), update, Variables.col_audit);
             }
-            double i =  (page * 100 / Math.ceil( (float)count/Variables.PER_BATCH_COUNT));
+            double i =  page * 100 / (Math.ceil( (float)count/Variables.PER_BATCH_COUNT));
             i = Math.round(i*Math.pow(10,1))/Math.pow(10,1);
             System.out.print("Processing audits: " + i + "% " + animationChars[(int)i % 4] + "\r");
             Runtime.getRuntime().freeMemory();
