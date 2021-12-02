@@ -18,6 +18,7 @@ import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.user.ImportUsers;
 import parsso.idman.helpers.user.Operations;
 import parsso.idman.helpers.user.UsersExcelView;
+import parsso.idman.models.other.Response;
 import parsso.idman.models.other.SkyRoom;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.Pwd;
@@ -414,10 +415,10 @@ public class UsersController {
     }
 
     @GetMapping("/api/public/counter")
-    public ResponseEntity<JSONObject> getCounter() {
+    public ResponseEntity<Response> getCounter(@RequestParam(name = "lang",defaultValue="fa") String lang) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("counter",counter);
-        return new ResponseEntity<>(jsonObject, HttpStatus.OK);
+        return new ResponseEntity<>(new Response(jsonObject,lang), HttpStatus.OK);
     }
 
     @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
