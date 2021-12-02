@@ -11,9 +11,9 @@ public class Response {
     Result result;
     Object data;
 
-    public Response(JSONObject jsonObject, String lang) {
-        result = new Result(lang);
-        data = jsonObject;
+    public Response(Object data, String lang) {
+        this.result = new Result(lang);
+        this.data = data;
     }
 
     @Setter

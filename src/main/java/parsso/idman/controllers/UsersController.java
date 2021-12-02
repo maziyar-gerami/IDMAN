@@ -421,6 +421,13 @@ public class UsersController {
         return new ResponseEntity<>(new Response(jsonObject,lang), HttpStatus.OK);
     }
 
+    @GetMapping("/api/public/authenticate")
+    public ResponseEntity<Response> logIn(@RequestParam("userId") String userId,@RequestParam("password") String password,@RequestParam(name = "lang",defaultValue="fa") String lang) {
+        int result = userRepo.authenticate(userId,password);
+        return new ResponseEntity<>(new Response(result,lang), HttpStatus.OK);
+    }
+
+
     @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
     public RedirectView resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token, RedirectAttributes attributes) {
         HttpStatus httpStatus = tokenClass.checkToken(uId, token);

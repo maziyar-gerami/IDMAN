@@ -80,4 +80,6 @@ public interface UserRepo {
     Boolean retrieveUsersDevice(String userName);
 
     HttpStatus changePasswordPublic(String userId, String currentPassword, String newPassword);
+
+    int authenticate(String userId, String password);
 }

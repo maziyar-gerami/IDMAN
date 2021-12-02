@@ -534,6 +534,21 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
+    public int authenticate(String userId, String password) {
+        AndFilter andFilter = new AndFilter();
+        andFilter.and(new EqualsFilter("objectclass", "person"));
+        andFilter.and(new EqualsFilter("uid", userId));
+
+        if (ldapTemplate.authenticate("ou=People," + BASE_DN, andFilter.toString(), password)) {
+            if (retrieveUsers(userId).getUsersExtraInfo().isLoggedIn())
+                return 1;
+            else
+                return 2;
+        }else
+            return 0;
+        }
+
+    @Override
     public void setIfLoggedIn() {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
