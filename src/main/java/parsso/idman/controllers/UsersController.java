@@ -414,8 +414,10 @@ public class UsersController {
     }
 
     @GetMapping("/api/public/counter")
-    public ResponseEntity<Integer> getCounter() {
-        return new ResponseEntity<>(Integer.parseInt(counter), HttpStatus.OK);
+    public ResponseEntity<JSONObject> getCounter() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("counter",counter);
+        return new ResponseEntity<>(jsonObject, HttpStatus.OK);
     }
 
     @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
