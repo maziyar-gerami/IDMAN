@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
             duplicatePasswordsText: "گذرواژه جدید نباید با گذرواژه های قدیمی یکسان باشند، لطفا دوباره تلاش کنید.",
             expiredSMSCodeText: "کد پیامکی منقضی شده است، لطفا به صفحه قبل بازگشته و دوباره تلاش کنید.",
             changeUserPasswordText: "تغییر گذرواژه کاربر",
+            passwordChangeSuccessful: "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد...",
         },
         created: function () {
             this.setDateNav();
@@ -70,38 +71,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
-            let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-            axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
-                .then((res1) => {
-                    let loginPage = document.createElement("html");
-                    loginPage.innerHTML = res1.data;
-                    console.log(loginPage);
-                    let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
-                    /*console.log(execution);
-                    document.getElementById("loginFormExecution").value = execution;
-                    document.getElementById("loginFormUsername").value = "su";
-                    document.getElementById("loginFormPassword").value = "Mellon";
-                    document.getElementById("loginForm").submit();*/
-                    let bodyFormData = new FormData();
-                    bodyFormData.append("username", "su");
-                    bodyFormData.append("password", "Mellon");
-                    bodyFormData.append("execution", execution);
-                    bodyFormData.append("geolocation", "");
-                    bodyFormData.append("_eventId", "submit");
-                    axios({
-                        method: "post",
-                        url: url + "/cas/login",
-                        headers: {"Content-Type": "multipart/form-data"},
-                        data: bodyFormData
-                    }).then((res) => {
-                        console.log(111);
-                    }).catch((error) => {
-                        console.log(222);
-                    });
-                }).catch((error) => {
-                    console.log(error);
-                    alert("ERROR: cant get login form");
-            });
         },
         methods: {
             setDateNav: function () {
@@ -147,35 +116,39 @@ document.addEventListener('DOMContentLoaded', function () {
                 const formData = new FormData();
                 formData.append("newPassword", this.password);
                 let vm = this;
+                console.log(this.passwordChangeSuccessful);
                 axios({
                     method: "put",
                     url: url + "/api/public/resetPass/" + redirectedUrl.searchParams.get("uid") + "/" + redirectedUrl.searchParams.get("token"),  //
                     headers: {"Content-Type": "application/json"},
                     data: formData
                 }).then((res0) => {
+                    let costumeTimer = window.setInterval(function() {}, 2000);
+                    clearInterval(costumeTimer);
                     axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
                         .then((res1) => {
-                            console.log(res1.data);
-                            /*axios({
+                            let loginPage = document.createElement("html");
+                            loginPage.innerHTML = res1.data;
+                            let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
+                            let bodyFormData = new FormData();
+                            bodyFormData.append("username", redirectedUrl.searchParams.get("uid"));
+                            bodyFormData.append("password", vm.password);
+                            bodyFormData.append("execution", execution);
+                            bodyFormData.append("geolocation", "");
+                            bodyFormData.append("_eventId", "submit");
+                            axios({
                                 method: "post",
-                                url: url + "/api/public/changePassword",
-                                headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                                data: {
-                                    username: redirectedUrl.searchParams.get("uid"),
-                                    password: vm.password,
-                                    execution: "Williams",
-                                    geolocation: "",
-                                    _eventId: "submit",
-                                }
-                            }).then((res) => {
-
+                                url: url + "/cas/login",
+                                headers: {"Content-Type": "multipart/form-data"},
+                                data: bodyFormData
+                            }).then((res2) => {
+                                location.replace(url);
                             }).catch((error) => {
-
-                            });*/
+                                console.log(error);
+                            });
                         }).catch((error) => {
-                            alert("ERROR: cant get login form");
-                    });
-                    //location.replace(url);
+                            console.log(error);
+                        });
                 }).catch((error) => {
                     if (error.response) {
                         if(error.response.status === 302){
@@ -226,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.duplicatePasswordsText = "The new password should not be the same as the old ones, please try again.";
                     this.expiredSMSCodeText = "SMS code has expired, please go back to the previous page and try again.";
                     this.changeUserPasswordText = "Change User Password";
+                    this.passwordChangeSuccessful = "Your password has been successfully changed, loading dashboard ...";
                 }else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
@@ -265,6 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.duplicatePasswordsText = "گذرواژه جدید نباید با گذرواژه های قدیمی یکسان باشند، لطفا دوباره تلاش کنید.";
                     this.expiredSMSCodeText = "کد پیامکی منقضی شده است، لطفا به صفحه قبل بازگشته و دوباره تلاش کنید.";
                     this.changeUserPasswordText = "تغییر گذرواژه کاربر";
+                    this.passwordChangeSuccessful = "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد...";
                 }
             } 
         },
