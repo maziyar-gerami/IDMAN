@@ -123,8 +123,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     headers: {"Content-Type": "application/json"},
                     data: formData
                 }).then((res0) => {
-                    let costumeTimer = window.setInterval(function() {}, 2000);
-                    clearInterval(costumeTimer);
+                    let index = 0;
+                    let costumeTimer = window.setInterval(function() {
+                        if(index == 1){
+                            clearInterval(costumeTimer);
+                        }
+                        ++index;
+                    }, 2000);
                     axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
                         .then((res1) => {
                             let loginPage = document.createElement("html");
