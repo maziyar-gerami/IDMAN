@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         vm.passwordChangeSuccessful = true;
                         let index = 0;
                         let customTimer = window.setInterval(function() {
-                            if(index == 1){
+                            if(index === 1){
                                 clearInterval(customTimer);
                             }
                             ++index;

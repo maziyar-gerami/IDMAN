@@ -87,14 +87,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 const redirectedUrl = new URL(window.location.href);
                 let vm = this;
-                if(typeof redirectedUrl.searchParams.get("uid") !== "undefined" && typeof redirectedUrl.searchParams.get("token") !== "undefined"){
-                    if(redirectedUrl.searchParams.get("uid") !== null && redirectedUrl.searchParams.get("token") !== null){
-                        axios.get(url + "/api/public/getName/" + redirectedUrl.searchParams.get("uid") + "/" + redirectedUrl.searchParams.get("token")) //
-                            .then((res) => {
-                                vm.userInfo = res.data;
-                                vm.s17 = vm.userInfo.displayName;
-                            });
-                    }
+                if(typeof redirectedUrl.searchParams.get("i") !== "undefined" && redirectedUrl.searchParams.get("i") !== null){
+                    let tempInfo = decodeURIComponent(escape(window.atob(redirectedUrl.searchParams.get("i")))).split(" - ");
+                    axios.get(url + "/api/public/getName/" + tempInfo[0] + "/" + tempInfo[1]) //
+                        .then((res) => {
+                            vm.userInfo = res.data;
+                            vm.s17 = vm.userInfo.displayName;
+                        });
                 }
             },
             passwordCheck: function () {
@@ -117,53 +116,56 @@ document.addEventListener('DOMContentLoaded', function () {
                 const redirectedUrl = new URL(window.location.href);
                 const formData = new FormData();
                 formData.append("newPassword", this.password);
-                axios({
-                    method: "put",
-                    url: url + "/api/public/resetPass/" + redirectedUrl.searchParams.get("uid") + "/" + redirectedUrl.searchParams.get("token"),  //
-                    headers: {"Content-Type": "application/json"},
-                    data: formData
-                }).then((res0) => {
-                    vm.passwordChangeSuccessful = true;
-                    let index = 0;
-                    let customTimer = window.setInterval(function() {
-                        if(index == 1){
-                            clearInterval(customTimer);
-                        }
-                        ++index;
-                    }, 2000);
-                    axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
-                        .then((res1) => {
-                            let loginPage = document.createElement("html");
-                            loginPage.innerHTML = res1.data;
-                            let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
-                            let bodyFormData = new FormData();
-                            bodyFormData.append("username", redirectedUrl.searchParams.get("uid"));
-                            bodyFormData.append("password", vm.password);
-                            bodyFormData.append("execution", execution);
-                            bodyFormData.append("geolocation", "");
-                            bodyFormData.append("_eventId", "submit");
-                            axios({
-                                method: "post",
-                                url: url + "/cas/login",
-                                headers: {"Content-Type": "multipart/form-data"},
-                                data: bodyFormData
-                            }).then((res2) => {
-                                location.replace(url);
+                if(typeof redirectedUrl.searchParams.get("i") !== "undefined" && redirectedUrl.searchParams.get("i") !== null){
+                    let tempInfo = decodeURIComponent(escape(window.atob(redirectedUrl.searchParams.get("i")))).split(" - ");
+                    axios({
+                        method: "put",
+                        url: url + "/api/public/resetPass/" + tempInfo[0] + "/" + tempInfo[1],  //
+                        headers: {"Content-Type": "application/json"},
+                        data: formData
+                    }).then((res0) => {
+                        vm.passwordChangeSuccessful = true;
+                        let index = 0;
+                        let customTimer = window.setInterval(function() {
+                            if(index === 1){
+                                clearInterval(customTimer);
+                            }
+                            ++index;
+                        }, 2000);
+                        axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
+                            .then((res1) => {
+                                let loginPage = document.createElement("html");
+                                loginPage.innerHTML = res1.data;
+                                let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
+                                let bodyFormData = new FormData();
+                                bodyFormData.append("username", redirectedUrl.searchParams.get("uid"));
+                                bodyFormData.append("password", vm.password);
+                                bodyFormData.append("execution", execution);
+                                bodyFormData.append("geolocation", "");
+                                bodyFormData.append("_eventId", "submit");
+                                axios({
+                                    method: "post",
+                                    url: url + "/cas/login",
+                                    headers: {"Content-Type": "multipart/form-data"},
+                                    data: bodyFormData
+                                }).then((res2) => {
+                                    location.replace(url);
+                                }).catch((error) => {
+                                    console.log(error);
+                                });
                             }).catch((error) => {
-                                console.log(error);
-                            });
-                        }).catch((error) => {
                             console.log(error);
                         });
-                }).catch((error) => {
-                    if (error.response) {
-                        if(error.response.status === 302){
-                            alert(vm.duplicatePasswordsText);
-                        } else if(error.response.status === 403){
-                            alert(vm.expiredSMSCodeText);
+                    }).catch((error) => {
+                        if (error.response) {
+                            if(error.response.status === 302){
+                                alert(vm.duplicatePasswordsText);
+                            } else if(error.response.status === 403){
+                                alert(vm.expiredSMSCodeText);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             },
             changeLang: function () {
                 if (this.lang == "EN") {

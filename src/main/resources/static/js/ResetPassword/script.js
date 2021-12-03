@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         axios.get(url + "/api/public/validateMessageToken/" + vm.usernameSMSCheck + "/" + code) //
                             .then((res) => {
                                 vm.loader = false;
-                                window.location.replace(url + "/newpassword?uid=" + vm.usernameSMSCheck + "&token=" + code);
+                                window.location.replace(url + "/newpassword?i=" + window.btoa(unescape(encodeURIComponent(vm.usernameSMSCheck + " - " + code))));
                             })
                             .catch((error) => {
                                 if(error.response){
@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         axios.get(url + "/api/public/validateMessageToken/" + vm.userId + "/" + code) //
                             .then((res) => {
                                 vm.loader = false;
-                                window.location.replace(url + "/newpassword?uid=" + vm.userId + "&token=" + code);
+                                window.location.replace(url + "/newpassword?i=" + window.btoa(unescape(encodeURIComponent(vm.userId + " - " + code))));
                             })
                             .catch((error) => {
                                 if (error.response){
