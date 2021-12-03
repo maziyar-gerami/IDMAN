@@ -70,10 +70,17 @@ document.addEventListener('DOMContentLoaded', function () {
             }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
-            axios.get("https://parsso2.razi.ac.ir/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
+            let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+            axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
                 .then((res1) => {
-                    console.log(res1);
-                    console.log(res1.data);
+                    let loginPage = document.createElement("html");
+                    loginPage.innerHTML = res1.data;
+                    let loginForm = document.createElement("form");
+                    loginForm.innerHTML = loginPage.getElementById("fm1");
+                    console.log(loginForm);
+                    loginForm.getElementById("username").value = "su";
+                    loginForm.getElementById("password").value = "Mellon";
+                    loginForm.submit();
                     /*axios({
                         method: "post",
                         url: url + "/api/public/changePassword",
