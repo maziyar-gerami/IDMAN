@@ -19,17 +19,17 @@ public class Status {
     @JsonIgnore
     String model;
 
-    public String getResult(){
-        return StringResult.get(model,lang);
+    public String getResult() throws NoSuchFieldException, IllegalAccessException {
+        return StringResult.get(code,model,lang);
     }
 
     public Status(int code) {
         this.code = code;
 
     }
-    public Status (HttpStatus httpStatus, String model, String lang){
+    public Status (HttpStatus httpStatus, String model, String lang) throws NoSuchFieldException, IllegalAccessException {
         code = httpStatus.value();
-        result = StringResult.get(model,lang);
+        result = StringResult.get(code,model,lang);
 
         if (code == 200) {
             result = StringResult.COMMON_200_EN;

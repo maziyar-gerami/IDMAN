@@ -38,6 +38,14 @@ public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInf
 
         user.setMemberOf(ls);
 
+        int nPass=0;
+        try {
+            nPass = attributes.get("pwdHistory").size();
+        } catch (Exception ignored) {
+        }
+
+        user.setLoggedIn(nPass > 0);
+
         return user;
     }
 
