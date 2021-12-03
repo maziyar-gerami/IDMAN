@@ -75,12 +75,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then((res1) => {
                     let loginPage = document.createElement("html");
                     loginPage.innerHTML = res1.data;
-                    let loginForm = document.createElement("form");
-                    loginForm.innerHTML = loginPage.getElementsByTagName("form")[0];
-                    console.log(loginForm);
-                    loginForm.getElementsByTagName("input")[0].value = "su";
-                    loginForm.getElementsByTagName("input")[1].value = "Mellon";
-                    loginForm.submit();
+                    console.log(loginPage);
+                    let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
+                    console.log(execution);
+                    document.getElementById("loginFormExecution").value = execution;
+                    document.getElementById("loginFormUsername").value = "su";
+                    document.getElementById("loginFormPassword").value = "Mellon";
+                    document.getElementById("loginForm").submit();
                     /*axios({
                         method: "post",
                         url: url + "/api/public/changePassword",
