@@ -8,11 +8,11 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Response {
-    Status result;
+    Status status;
     Object data;
 
     public Response(Object data, String lang) {
-        this.result = new Status();
+        this.status = new Status();
         this.data = data;
     }
 
