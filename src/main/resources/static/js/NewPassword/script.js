@@ -70,8 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
-            let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-            axios.get("https://parsso2.razi.ac.ir/cas/login?service=" + url + "%2Flogin%2Fcas") //
+            axios.get("https://parsso2.razi.ac.ir/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
                 .then((res1) => {
                     console.log(res1);
                     console.log(res1.data);
