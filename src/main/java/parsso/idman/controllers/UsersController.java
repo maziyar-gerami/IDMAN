@@ -36,6 +36,7 @@ import java.security.Principal;
 import java.util.List;
 
 @Controller
+@ControllerAdvice
 public class UsersController {
     final ImportUsers importUsers;
     final Operations operations;
@@ -420,13 +421,13 @@ public class UsersController {
     public ResponseEntity<Response> getCounter(@RequestParam(name = "lang",defaultValue="fa") String lang) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("counter",counter);
-        return new ResponseEntity<>(new Response(HttpStatus.OK,jsonObject,model,lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(jsonObject,lang), HttpStatus.OK);
     }
 
     @GetMapping("/api/public/authenticate")
-    public ResponseEntity<Response> logIn(@RequestParam("userId") String userId,@RequestParam("password") String password,@RequestParam(name = "lang",defaultValue="fa") String lang) {
+    public ResponseEntity<Response> logIn(@RequestParam("userId") String userId,@RequestParam("password") String password,@RequestParam(name = "lang",defaultValue="fa") String lang) throws Exception {
         int result = userRepo.authenticate(userId,password);
-        return new ResponseEntity<>(new Response(HttpStatus.OK,result,model,lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(result,lang), HttpStatus.OK);
     }
 
 

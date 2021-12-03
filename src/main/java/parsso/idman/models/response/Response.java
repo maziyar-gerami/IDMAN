@@ -1,31 +1,33 @@
 package parsso.idman.models.response;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
+import parsso.idman.models.other.StringResult;
 
 
 @Setter
 @Getter
 public class Response {
-    @JsonIgnore
-    String lang;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     Status status;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     Object data;
-    @JsonIgnore
-    String model;
 
-    public Response(HttpStatus httpStatus,Object data,String model, String lang) {
-        this.status = new Status(httpStatus,model,lang);
+    public Response(Object data, String lang) {
+        this.status = new Status(lang);
         this.data = data;
     }
 
-    public Response(HttpStatus httpStatus,String model, String lang) {
-        this.status = new Status(httpStatus,model,lang);
+    @Setter
+    @Getter
+    private static class Status {
+        int code;
+        String result;
+
+        public Status(String lang) {
+            code = 200;
+            if (lang.equals("fa"))
+                this.result = StringResult.COMMON_200_FA;
+            else
+                result = StringResult.COMMON_200_EN;
+        }
     }
 }
