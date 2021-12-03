@@ -77,24 +77,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     loginPage.innerHTML = res1.data;
                     console.log(loginPage);
                     let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
-                    console.log(execution);
+                    /*console.log(execution);
                     document.getElementById("loginFormExecution").value = execution;
                     document.getElementById("loginFormUsername").value = "su";
                     document.getElementById("loginFormPassword").value = "Mellon";
-                    document.getElementById("loginForm").submit();
-                    /*axios({
+                    document.getElementById("loginForm").submit();*/
+                    let bodyFormData = new FormData();
+                    bodyFormData.append("username", "su");
+                    bodyFormData.append("password", "Mellon");
+                    bodyFormData.append("execution", execution);
+                    bodyFormData.append("geolocation", "");
+                    bodyFormData.append("_eventId", "submit");
+                    axios({
                         method: "post",
                         url: url + "/cas/login",
-                        data: {
-                            username: "su",
-                            password: "Mellon",
-                            execution: execution,
-                            geolocation: "",
-                            _eventId: "submit",
-                        }
+                        headers: {"Content-Type": "multipart/form-data"},
+                        data: bodyFormData
                     }).then((res) => {
+                        console.log(111);
                     }).catch((error) => {
-                    });*/
+                        console.log(222);
+                    });
                 }).catch((error) => {
                     console.log(error);
                     alert("ERROR: cant get login form");
