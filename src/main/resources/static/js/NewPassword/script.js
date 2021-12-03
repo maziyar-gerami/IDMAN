@@ -117,11 +117,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 const redirectedUrl = new URL(location.href);
                 let vm = this;
-                axios.get(url + "/api/public/getName/" + redirectedUrl.searchParams.get('uid') + "/" + redirectedUrl.searchParams.get('token')) //
-                    .then((res) => {
-                    vm.userInfo = res.data;
-                    vm.s17 = vm.userInfo.displayName;
-                });
+                if(typeof redirectedUrl.searchParams.get("uid") !== "undefined" && typeof redirectedUrl.searchParams.get("token") !== "undefined"){
+                    if(redirectedUrl.searchParams.get("uid") !== null && redirectedUrl.searchParams.get("token") !== null){
+                        axios.get(url + "/api/public/getName/" + redirectedUrl.searchParams.get("uid") + "/" + redirectedUrl.searchParams.get("token")) //
+                            .then((res) => {
+                                vm.userInfo = res.data;
+                                vm.s17 = vm.userInfo.displayName;
+                            });
+                    }
+                }
             },
             passwordCheck: function () {
                 this.has_number    = /[0-9]+/.test(this.password);
