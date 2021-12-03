@@ -77,12 +77,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     loginPage.innerHTML = res1.data;
                     console.log(loginPage);
                     let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
-                    /*console.log(execution);
+                    console.log(execution);
                     document.getElementById("loginFormExecution").value = execution;
                     document.getElementById("loginFormUsername").value = "su";
                     document.getElementById("loginFormPassword").value = "Mellon";
-                    document.getElementById("loginForm").submit();*/
-                    axios({
+                    document.getElementById("loginForm").submit();
+                    /*axios({
                         method: "post",
                         url: url + "/cas/login",
                         data: {
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }).then((res) => {
                     }).catch((error) => {
-                    });
+                    });*/
                 }).catch((error) => {
                     console.log(error);
                     alert("ERROR: cant get login form");
