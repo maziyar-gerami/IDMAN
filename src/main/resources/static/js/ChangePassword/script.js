@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
             submitted: false,
             btnDisable: true,
             notAllowed: false,
+            passwordChangeSuccessful: false,
             placeholder: "text-align: right;",
             margin: "margin-right: 30px;",
             marg: "margin-left: auto;",
@@ -54,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
             incorrectInfoText: "اطلاعات وارد شده اشتباه است، لطفا دوباره تلاش کنید.",
             doubleUseText: "شما پیش از این با موفقیت وارد سامانه شده اید، این امکان تنها برای کاربران جدید می باشد.",
             passwordChangeInterruptedText: "در فرآیند تغییر گذرواژه مشکلی پیش آمده است، لطفا دوباره تلاش کنید.",
+            passwordChangeSuccessfulText: "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد",
         },
         created: function () {
             this.setDateNav();
@@ -101,8 +103,39 @@ document.addEventListener("DOMContentLoaded", function () {
                         newPassword: vm.password
                         }
                     ).replace(/\\\\/g, "\\")
-                }).then((res) => {
-                    location.replace(url);
+                }).then((res0) => {
+                    vm.passwordChangeSuccessful = true;
+                    let index = 0;
+                    let customTimer = window.setInterval(function() {
+                        if(index == 1){
+                            clearInterval(customTimer);
+                        }
+                        ++index;
+                    }, 2000);
+                    axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
+                        .then((res1) => {
+                            let loginPage = document.createElement("html");
+                            loginPage.innerHTML = res1.data;
+                            let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
+                            let bodyFormData = new FormData();
+                            bodyFormData.append("username", vm.userId);
+                            bodyFormData.append("password", vm.password);
+                            bodyFormData.append("execution", execution);
+                            bodyFormData.append("geolocation", "");
+                            bodyFormData.append("_eventId", "submit");
+                            axios({
+                                method: "post",
+                                url: url + "/cas/login",
+                                headers: {"Content-Type": "multipart/form-data"},
+                                data: bodyFormData
+                            }).then((res2) => {
+                                location.replace(url);
+                            }).catch((error) => {
+                                console.log(error);
+                            });
+                        }).catch((error) => {
+                        console.log(error);
+                    });
                 }).catch((error) => {
                     if (error.response) {
                         if(error.response.status === 302){
@@ -153,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     this.incorrectInfoText = "The entered information is incorrect, please try again.";
                     this.doubleUseText = "You have already successfully logged in, this is only possible for new users.";
                     this.passwordChangeInterruptedText = "There was a problem with the password change process, please try again.";
+                    this.passwordChangeSuccessfulText = "Your password has been successfully changed, loading dashboard";
                 }else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
@@ -188,6 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     this.incorrectInfoText = "اطلاعات وارد شده اشتباه است، لطفا دوباره تلاش کنید.";
                     this.doubleUseText = "شما پیش از این با موفقیت وارد سامانه شده اید، این امکان تنها برای کاربران جدید می باشد.";
                     this.passwordChangeInterruptedText = "در فرآیند تغییر گذرواژه مشکلی پیش آمده است، لطفا دوباره تلاش کنید.";
+                    this.passwordChangeSuccessfulText = "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد";
                 }
             } 
         },

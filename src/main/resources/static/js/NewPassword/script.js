@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
             duplicatePasswordsText: "گذرواژه جدید نباید با گذرواژه های قدیمی یکسان باشند، لطفا دوباره تلاش کنید.",
             expiredSMSCodeText: "کد پیامکی منقضی شده است، لطفا به صفحه قبل بازگشته و دوباره تلاش کنید.",
             changeUserPasswordText: "تغییر گذرواژه کاربر",
-            passwordChangeSuccessfulText: "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد...",
+            passwordChangeSuccessfulText: "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد",
         },
         created: function () {
             this.setDateNav();
@@ -113,10 +113,10 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             resetPasswords: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
                 const redirectedUrl = new URL(location.href); 
                 const formData = new FormData();
                 formData.append("newPassword", this.password);
-                let vm = this;
                 axios({
                     method: "put",
                     url: url + "/api/public/resetPass/" + redirectedUrl.searchParams.get("uid") + "/" + redirectedUrl.searchParams.get("token"),  //
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.duplicatePasswordsText = "The new password should not be the same as the old ones, please try again.";
                     this.expiredSMSCodeText = "SMS code has expired, please go back to the previous page and try again.";
                     this.changeUserPasswordText = "Change User Password";
-                    this.passwordChangeSuccessfulText = "Your password has been successfully changed, loading dashboard ...";
+                    this.passwordChangeSuccessfulText = "Your password has been successfully changed, loading dashboard";
                 }else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.duplicatePasswordsText = "گذرواژه جدید نباید با گذرواژه های قدیمی یکسان باشند، لطفا دوباره تلاش کنید.";
                     this.expiredSMSCodeText = "کد پیامکی منقضی شده است، لطفا به صفحه قبل بازگشته و دوباره تلاش کنید.";
                     this.changeUserPasswordText = "تغییر گذرواژه کاربر";
-                    this.passwordChangeSuccessfulText = "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد...";
+                    this.passwordChangeSuccessfulText = "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد";
                 }
             } 
         },
