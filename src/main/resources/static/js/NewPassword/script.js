@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             _eventId: "submit",
                         }
                     }).then((res) => {
-                        location.replace(url);
                     }).catch((error) => {
                     });
                 }).catch((error) => {
