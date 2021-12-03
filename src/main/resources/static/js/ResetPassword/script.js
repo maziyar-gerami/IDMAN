@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
             enterPersonnelNumberText: "لطفا جهت بازنشانی گذرواژه، شماره پرسنلی خود را وارد کنید:",
             emptyPersonnelNumberText: "شماره پرسنلی خود را وارد کنید",
             codeNot6DigitsText: "کد وارد شده 6 رقم نمی باشد.",
+            smsText: "پیامک",
         },
         created: function () {
             this.setDateNav();
@@ -532,6 +533,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.enterPersonnelNumberText = "Please Enter Your Personnel Number To Reset Your Password:";
                     this.emptyPersonnelNumberText = "Please Enter Your Personnel Number";
                     this.codeNot6DigitsText = "Entered Code is Not 6 Digits.";
+                    this.smsText = "SMS";
                 } else{
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
@@ -583,6 +585,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.enterPersonnelNumberText = "لطفا جهت بازنشانی گذرواژه، شماره پرسنلی خود را وارد کنید:";
                     this.emptyPersonnelNumberText = "شماره پرسنلی خود را وارد کنید";
                     this.codeNot6DigitsText = "کد وارد شده 6 رقم نمی باشد.";
+                    this.smsText = "پیامک";
                 }
             }
         }

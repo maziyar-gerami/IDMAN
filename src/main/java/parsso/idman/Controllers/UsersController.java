@@ -18,6 +18,7 @@ import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.user.ImportUsers;
 import parsso.idman.helpers.user.Operations;
 import parsso.idman.helpers.user.UsersExcelView;
+import parsso.idman.models.other.Response;
 import parsso.idman.models.other.SkyRoom;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.Pwd;
@@ -51,6 +52,9 @@ public class UsersController {
     private String BASE_DN;
     @Value("${password.change.notification}")
     private String passChangeNotification;
+    @Value("${cas.authn.passwordless.tokens.expireInSeconds}")
+    private String counter;
+
 
     @Autowired
     public UsersController(UserRepo userRepo, EmailService emailService, Operations operations, UsersExcelView excelView,
@@ -288,7 +292,7 @@ public class UsersController {
         String userId = jsonObject.getAsString("userId");
         HttpStatus httpStatus = userRepo.changePasswordPublic(userId,currentPassword,newPassword);
 
-        if (passChangeNotification.equals("on"))
+        if (passChangeNotification.equals("on") && httpStatus == HttpStatus.OK)
             instantMessage.sendPasswordChangeNotif(userRepo.retrieveUsers(userId));
 
         return new ResponseEntity<>(httpStatus);
@@ -409,6 +413,20 @@ public class UsersController {
     public ResponseEntity<Boolean> getName(@PathVariable("uid") String uid) {
         return new ResponseEntity<>(userRepo.retrieveUsersDevice(uid), HttpStatus.OK);
     }
+
+    @GetMapping("/api/public/counter")
+    public ResponseEntity<Response> getCounter(@RequestParam(name = "lang",defaultValue="fa") String lang) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("counter",counter);
+        return new ResponseEntity<>(new Response(jsonObject,lang), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/public/authenticate")
+    public ResponseEntity<Response> logIn(@RequestParam("userId") String userId,@RequestParam("password") String password,@RequestParam(name = "lang",defaultValue="fa") String lang) {
+        int result = userRepo.authenticate(userId,password);
+        return new ResponseEntity<>(new Response(result,lang), HttpStatus.OK);
+    }
+
 
     @GetMapping("/api/public/validateEmailToken/{uId}/{token}")
     public RedirectView resetPass(@PathVariable("uId") String uId, @PathVariable("token") String token, RedirectAttributes attributes) {

@@ -41,8 +41,6 @@ import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.group.GroupsChecks;
 import parsso.idman.helpers.oneTimeTasks.RunOneTime;
 import parsso.idman.helpers.user.*;
-import parsso.idman.models.logs.Audit;
-import parsso.idman.models.logs.Event;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.User;
@@ -506,7 +504,7 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("uid", userId));
 
 
-        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userId)) ,UsersExtraInfo.class,Variables.col_usersExtraInfo);
+        UsersExtraInfo usersExtraInfo = retrieveUserMain(userId);
         if (usersExtraInfo==null)
             return HttpStatus.NOT_FOUND;
 
@@ -520,16 +518,35 @@ public class UserRepoImpl implements UserRepo {
             contextUser.setAttributeValue("userPassword", newPassword);
             try {
                 ldapTemplate.modifyAttributes(contextUser);
+                usersExtraInfo.setLoggedIn(true);
+                mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
             }catch (org.springframework.ldap.InvalidAttributeValueException e){
                 return HttpStatus.FOUND;
+            }catch (Exception e){
+                return HttpStatus.EXPECTATION_FAILED;
             }
 
         } else {
-            return  HttpStatus.UNAUTHORIZED;
+            return  HttpStatus.NOT_FOUND;
         }
 
         return HttpStatus.OK;
     }
+
+    @Override
+    public int authenticate(String userId, String password) {
+        AndFilter andFilter = new AndFilter();
+        andFilter.and(new EqualsFilter("objectclass", "person"));
+        andFilter.and(new EqualsFilter("uid", userId));
+
+        if (ldapTemplate.authenticate("ou=People," + BASE_DN, andFilter.toString(), password)) {
+            if (retrieveUserMain(userId).isLoggedIn())
+                return 1;
+            else
+                return 2;
+        }else
+            return 0;
+        }
 
     @Override
     public void setIfLoggedIn() {
@@ -545,7 +562,7 @@ public class UserRepoImpl implements UserRepo {
         int c=0;
         char[] animationChars = new char[]{'|', '/', '-', '\\'};
         for (UserLoggedIn userLoggedIn:usersLoggedIn ) {
-            UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userLoggedIn.getUserId())),UsersExtraInfo.class,Variables.col_usersExtraInfo);
+            UsersExtraInfo usersExtraInfo = retrieveUserMain(userLoggedIn.getUserId());
             try {
                 assert usersExtraInfo != null;
                 usersExtraInfo.setLoggedIn(userLoggedIn.isLoggedIn());
@@ -784,6 +801,16 @@ public class UserRepoImpl implements UserRepo {
         return user;
     }
 
+    @Override
+    public UsersExtraInfo retrieveUserMain(String userId) {
+
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+
+        return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, new SimpleUserAttributeMapper()).get(0);
+    }
+
     private Boolean skyRoomAccess(User user) {
         boolean isEnable = skyroomEnable.equalsIgnoreCase("true");
 
@@ -974,6 +1001,7 @@ public class UserRepoImpl implements UserRepo {
                 e.printStackTrace();
                 uniformLogger.warn(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
                         Variables.ACTION_RESET, Variables.RESULT_FAILED, "writing to ldap"));
+
             }
             return HttpStatus.OK;
         } else {
@@ -1056,8 +1084,9 @@ public class UserRepoImpl implements UserRepo {
 
     @PostConstruct
     public void postConstruct(){
+        Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
+        lt.start();
 
-        new LogsTime(mongoTemplate).run();
         new RunOneTime(ldapTemplate, mongoTemplate, uniformLogger,BASE_DN).postConstruct();
 
     }

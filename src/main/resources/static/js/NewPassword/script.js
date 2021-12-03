@@ -70,6 +70,31 @@ document.addEventListener('DOMContentLoaded', function () {
             }else if(window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
+            let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+            axios.get("https://parsso2.razi.ac.ir/cas/login?service=" + url + "%2Flogin%2Fcas") //
+                .then((res1) => {
+                    console.log(res1);
+                    console.log(res1.data);
+                    /*axios({
+                        method: "post",
+                        url: url + "/api/public/changePassword",
+                        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                        data: {
+                            username: redirectedUrl.searchParams.get("uid"),
+                            password: vm.password,
+                            execution: "Williams",
+                            geolocation: "",
+                            _eventId: "submit",
+                        }
+                    }).then((res) => {
+
+                    }).catch((error) => {
+
+                    });*/
+                }).catch((error) => {
+                    console.log(error);
+                    alert("ERROR: cant get login form");
+            });
         },
         methods: {
             setDateNav: function () {
@@ -116,8 +141,30 @@ document.addEventListener('DOMContentLoaded', function () {
                     url: url + "/api/public/resetPass/" + redirectedUrl.searchParams.get("uid") + "/" + redirectedUrl.searchParams.get("token"),  //
                     headers: {"Content-Type": "application/json"},
                     data: formData
-                }).then((res) => {
-                    location.replace(url);
+                }).then((res0) => {
+                    axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
+                        .then((res1) => {
+                            console.log(res1.data);
+                            /*axios({
+                                method: "post",
+                                url: url + "/api/public/changePassword",
+                                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                                data: {
+                                    username: redirectedUrl.searchParams.get("uid"),
+                                    password: vm.password,
+                                    execution: "Williams",
+                                    geolocation: "",
+                                    _eventId: "submit",
+                                }
+                            }).then((res) => {
+
+                            }).catch((error) => {
+
+                            });*/
+                        }).catch((error) => {
+                            alert("ERROR: cant get login form");
+                    });
+                    //location.replace(url);
                 }).catch((error) => {
                     if (error.response) {
                         if(error.response.status === 302){
