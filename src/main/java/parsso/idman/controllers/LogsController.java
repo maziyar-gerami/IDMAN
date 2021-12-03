@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import parsso.idman.helpers.excelView.LogsExcelView;
-import parsso.idman.helpers.excelView.EventsExcelView;
+import parsso.idman.helpers.events.EventsExcelView;
 import parsso.idman.helpers.excelView.AuditsExcelView;
 import parsso.idman.models.logs.Audit;
 import parsso.idman.models.logs.Event;
