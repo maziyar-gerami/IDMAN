@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 loginPage.innerHTML = res1.data;
                                 let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
                                 let bodyFormData = new FormData();
-                                bodyFormData.append("username", redirectedUrl.searchParams.get("uid"));
+                                bodyFormData.append("username", tempInfo[0]);
                                 bodyFormData.append("password", vm.password);
                                 bodyFormData.append("execution", execution);
                                 bodyFormData.append("geolocation", "");
