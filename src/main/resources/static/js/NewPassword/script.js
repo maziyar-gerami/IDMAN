@@ -76,10 +76,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     let loginPage = document.createElement("html");
                     loginPage.innerHTML = res1.data;
                     let loginForm = document.createElement("form");
-                    loginForm.innerHTML = loginPage.getElementById("fm1");
+                    loginForm.innerHTML = loginPage.getElementsByTagName("form")[0];
                     console.log(loginForm);
-                    loginForm.getElementById("username").value = "su";
-                    loginForm.getElementById("password").value = "Mellon";
+                    loginForm.getElementsByTagName("input")[0].value = "su";
+                    loginForm.getElementsByTagName("input")[1].value = "Mellon";
                     loginForm.submit();
                     /*axios({
                         method: "post",
