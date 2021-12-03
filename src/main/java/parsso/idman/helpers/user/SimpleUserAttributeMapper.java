@@ -59,7 +59,6 @@ public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInf
             }
 
             user.setLoggedIn(nPass > 0);
-
             return user;
         }
     }

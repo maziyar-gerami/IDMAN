@@ -43,6 +43,8 @@ public interface UserRepo {
 
     User retrieveUsersWithLicensed(String userId);
 
+    UsersExtraInfo retrieveUserMain(String userId);
+
     List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
 
     @SuppressWarnings("unused")

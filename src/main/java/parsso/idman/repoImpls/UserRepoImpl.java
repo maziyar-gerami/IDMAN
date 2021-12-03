@@ -504,7 +504,7 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("uid", userId));
 
 
-        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userId)) ,UsersExtraInfo.class,Variables.col_usersExtraInfo);
+        UsersExtraInfo usersExtraInfo = retrieveUserMain(userId);
         if (usersExtraInfo==null)
             return HttpStatus.NOT_FOUND;
 
@@ -540,7 +540,7 @@ public class UserRepoImpl implements UserRepo {
         andFilter.and(new EqualsFilter("uid", userId));
 
         if (ldapTemplate.authenticate("ou=People," + BASE_DN, andFilter.toString(), password)) {
-            if (retrieveUsers(userId).getUsersExtraInfo().isLoggedIn())
+            if (retrieveUserMain(userId).isLoggedIn())
                 return 1;
             else
                 return 2;
@@ -562,7 +562,7 @@ public class UserRepoImpl implements UserRepo {
         int c=0;
         char[] animationChars = new char[]{'|', '/', '-', '\\'};
         for (UserLoggedIn userLoggedIn:usersLoggedIn ) {
-            UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userLoggedIn.getUserId())),UsersExtraInfo.class,Variables.col_usersExtraInfo);
+            UsersExtraInfo usersExtraInfo = retrieveUserMain(userLoggedIn.getUserId());
             try {
                 assert usersExtraInfo != null;
                 usersExtraInfo.setLoggedIn(userLoggedIn.isLoggedIn());
@@ -799,6 +799,16 @@ public class UserRepoImpl implements UserRepo {
         user.setServices(transcriptRepo.servicesOfUser(userId));
 
         return user;
+    }
+
+    @Override
+    public UsersExtraInfo retrieveUserMain(String userId) {
+
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+
+        return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, new SimpleUserAttributeMapper()).get(0);
     }
 
     private Boolean skyRoomAccess(User user) {
