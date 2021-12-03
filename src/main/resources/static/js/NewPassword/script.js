@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             getName: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                const redirectedUrl = new URL(location.href);
+                const redirectedUrl = new URL(window.location.href);
                 let vm = this;
                 if(typeof redirectedUrl.searchParams.get("uid") !== "undefined" && typeof redirectedUrl.searchParams.get("token") !== "undefined"){
                     if(redirectedUrl.searchParams.get("uid") !== null && redirectedUrl.searchParams.get("token") !== null){
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
             resetPasswords: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
-                const redirectedUrl = new URL(location.href); 
+                const redirectedUrl = new URL(window.location.href);
                 const formData = new FormData();
                 formData.append("newPassword", this.password);
                 axios({

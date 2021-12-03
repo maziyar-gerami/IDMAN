@@ -93,62 +93,68 @@ document.addEventListener("DOMContentLoaded", function () {
             resetPasswords: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
-                axios({
-                    method: "put",
-                    url: url + "/api/public/changePassword",
-                    headers: {"Content-Type": "application/json"},
-                    data: JSON.stringify({
-                        userId: vm.userId,
-                        currentPassword: vm.currentPassword,
-                        newPassword: vm.password
-                        }
-                    ).replace(/\\\\/g, "\\")
-                }).then((res0) => {
-                    vm.passwordChangeSuccessful = true;
-                    let index = 0;
-                    let customTimer = window.setInterval(function() {
-                        if(index == 1){
-                            clearInterval(customTimer);
-                        }
-                        ++index;
-                    }, 2000);
-                    axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
-                        .then((res1) => {
-                            let loginPage = document.createElement("html");
-                            loginPage.innerHTML = res1.data;
-                            let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
-                            let bodyFormData = new FormData();
-                            bodyFormData.append("username", vm.userId);
-                            bodyFormData.append("password", vm.password);
-                            bodyFormData.append("execution", execution);
-                            bodyFormData.append("geolocation", "");
-                            bodyFormData.append("_eventId", "submit");
-                            axios({
-                                method: "post",
-                                url: url + "/cas/login",
-                                headers: {"Content-Type": "multipart/form-data"},
-                                data: bodyFormData
-                            }).then((res2) => {
-                                location.replace(url);
+                const redirectedUrl = new URL(window.location.href);
+                if(typeof redirectedUrl.searchParams.get("i") !== "undefined" && redirectedUrl.searchParams.get("i") !== null){
+                    let tempInfo = decodeURIComponent(escape(window.atob(redirectedUrl.searchParams.get("i")))).split(" - ");
+                    axios({
+                        method: "put",
+                        url: url + "/api/public/changePassword",
+                        headers: {"Content-Type": "application/json"},
+                        data: JSON.stringify({
+                                userId: tempInfo[0],
+                                currentPassword: tempInfo[1],
+                                newPassword: vm.password
+                            }
+                        ).replace(/\\\\/g, "\\")
+                    }).then((res0) => {
+                        vm.passwordChangeSuccessful = true;
+                        let index = 0;
+                        let customTimer = window.setInterval(function() {
+                            if(index == 1){
+                                clearInterval(customTimer);
+                            }
+                            ++index;
+                        }, 2000);
+                        axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
+                            .then((res1) => {
+                                let loginPage = document.createElement("html");
+                                loginPage.innerHTML = res1.data;
+                                let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
+                                let bodyFormData = new FormData();
+                                bodyFormData.append("username", vm.userId);
+                                bodyFormData.append("password", vm.password);
+                                bodyFormData.append("execution", execution);
+                                bodyFormData.append("geolocation", "");
+                                bodyFormData.append("_eventId", "submit");
+                                axios({
+                                    method: "post",
+                                    url: url + "/cas/login",
+                                    headers: {"Content-Type": "multipart/form-data"},
+                                    data: bodyFormData
+                                }).then((res2) => {
+                                    location.replace(url);
+                                }).catch((error) => {
+                                    console.log(error);
+                                });
                             }).catch((error) => {
-                                console.log(error);
-                            });
-                        }).catch((error) => {
-                        console.log(error);
-                    });
-                }).catch((error) => {
-                    if (error.response) {
-                        if(error.response.status === 302){
-                            alert(vm.duplicatePasswordsText);
-                        } else if(error.response.status === 403){
-                            alert(vm.doubleUseText);
-                        } else if(error.response.status === 404){
-                            alert(vm.incorrectInfoText);
-                        } else if(error.response.status === 417){
-                            alert(vm.passwordChangeInterruptedText);
+                            console.log(error);
+                        });
+                    }).catch((error) => {
+                        if (error.response) {
+                            if(error.response.status === 302){
+                                alert(vm.duplicatePasswordsText);
+                            } else if(error.response.status === 403){
+                                alert(vm.doubleUseText);
+                            } else if(error.response.status === 404){
+                                alert(vm.incorrectInfoText);
+                            } else if(error.response.status === 417){
+                                alert(vm.passwordChangeInterruptedText);
+                            }
                         }
-                    }
-                });
+                    });
+                }else {
+                    alert(vm.passwordChangeInterruptedText);
+                }
             },
             changeLang: function () {
                 if (this.lang === "EN") {
