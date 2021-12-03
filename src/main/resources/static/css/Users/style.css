@@ -111,6 +111,14 @@ html,body {
     border-radius: .25rem;
     text-align: center;
   }
+  .successMessage {
+    color: #007bff;
+    position: relative;
+    padding: .35rem 1.25rem;
+    border: 1px solid #007bff88;
+    border-radius: .25rem;
+    text-align: center;
+  }
   .alertError {
     color: #f1ee09;
     position: relative;
