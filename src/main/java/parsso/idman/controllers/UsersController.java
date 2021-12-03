@@ -13,12 +13,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.user.ImportUsers;
 import parsso.idman.helpers.user.Operations;
 import parsso.idman.helpers.user.UsersExcelView;
-import parsso.idman.models.other.Response;
+import parsso.idman.models.response.Response;
 import parsso.idman.models.other.SkyRoom;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.Pwd;
@@ -54,6 +55,7 @@ public class UsersController {
     private String passChangeNotification;
     @Value("${cas.authn.passwordless.tokens.expireInSeconds}")
     private String counter;
+    String model = Variables.MODEL_USER;
 
 
     @Autowired
@@ -418,13 +420,13 @@ public class UsersController {
     public ResponseEntity<Response> getCounter(@RequestParam(name = "lang",defaultValue="fa") String lang) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("counter",counter);
-        return new ResponseEntity<>(new Response(jsonObject,lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(HttpStatus.OK,jsonObject,model,lang), HttpStatus.OK);
     }
 
     @GetMapping("/api/public/authenticate")
     public ResponseEntity<Response> logIn(@RequestParam("userId") String userId,@RequestParam("password") String password,@RequestParam(name = "lang",defaultValue="fa") String lang) {
         int result = userRepo.authenticate(userId,password);
-        return new ResponseEntity<>(new Response(result,lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(HttpStatus.OK,result,model,lang), HttpStatus.OK);
     }
 
 
