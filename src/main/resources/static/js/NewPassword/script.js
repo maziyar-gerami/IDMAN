@@ -77,27 +77,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     loginPage.innerHTML = res1.data;
                     console.log(loginPage);
                     let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
-                    console.log(execution);
+                    /*console.log(execution);
                     document.getElementById("loginFormExecution").value = execution;
                     document.getElementById("loginFormUsername").value = "su";
                     document.getElementById("loginFormPassword").value = "Mellon";
-                    document.getElementById("loginForm").submit();
-                    /*axios({
+                    document.getElementById("loginForm").submit();*/
+                    axios({
                         method: "post",
-                        url: url + "/api/public/changePassword",
-                        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                        url: url + "/cas/login",
                         data: {
-                            username: redirectedUrl.searchParams.get("uid"),
-                            password: vm.password,
-                            execution: "Williams",
+                            username: "su",
+                            password: "Mellon",
+                            execution: execution,
                             geolocation: "",
                             _eventId: "submit",
                         }
                     }).then((res) => {
-
+                        location.replace(url);
                     }).catch((error) => {
-
-                    });*/
+                    });
                 }).catch((error) => {
                     console.log(error);
                     alert("ERROR: cant get login form");
