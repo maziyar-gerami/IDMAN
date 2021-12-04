@@ -29,8 +29,8 @@ public class TokenManagementRepoImpl implements TokenManagementRepo {
     }
 
     @Override
-    public HttpStatus delete(String userName, String token) {
-        Query query = new Query(Criteria.where("username").is(userName).andOperator(Criteria.where("token").is(token)));
+    public HttpStatus delete(String username, String token) {
+        Query query = new Query(Criteria.where("username").is(username).andOperator(Criteria.where("token").is(token)));
         try {
             mongoTemplate.remove(query, Variables.col_Token);
             return HttpStatus.OK;
@@ -40,8 +40,8 @@ public class TokenManagementRepoImpl implements TokenManagementRepo {
     }
 
     @Override
-    public HttpStatus delete(String userName) {
-        Query query = new Query(Criteria.where("username").is(userName));
+    public HttpStatus delete(String username) {
+        Query query = new Query(Criteria.where("username").is(username));
         try {
             mongoTemplate.remove(query, Variables.col_Token);
             return HttpStatus.OK;
@@ -51,7 +51,7 @@ public class TokenManagementRepoImpl implements TokenManagementRepo {
     }
 
     @Override
-    public HttpStatus create(String userName, String token) {
+    public HttpStatus create(String username, String token) {
         if (!mongoTemplate.collectionExists(Variables.col_Token)) {
             try {
                 mongoTemplate.createCollection(Variables.col_Token);
@@ -59,7 +59,7 @@ public class TokenManagementRepoImpl implements TokenManagementRepo {
                 return HttpStatus.FORBIDDEN;
             }
         }
-        Token tokenTemp = new Token(userName,token);
+        Token tokenTemp = new Token(username,token);
         try {
             mongoTemplate.save(tokenTemp, Variables.col_Token);
             return HttpStatus.CREATED;

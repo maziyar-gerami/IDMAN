@@ -11,8 +11,8 @@ public class Token {
     String username;
     String token;
 
-    public Token(String userName, String token) {
-        this.username = userName;
+    public Token(String username, String token) {
+        this.username = username;
         this.token = token;
     }
 }

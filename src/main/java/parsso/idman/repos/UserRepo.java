@@ -79,7 +79,7 @@ public interface UserRepo {
     @SuppressWarnings("unused")
     Boolean SAtoSU();
 
-    Boolean retrieveUsersDevice(String userName);
+    Boolean retrieveUsersDevice(String username);
 
     HttpStatus changePasswordPublic(String userId, String currentPassword, String newPassword);
 
