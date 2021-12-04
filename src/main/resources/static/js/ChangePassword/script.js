@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
             btnDisable: true,
             notAllowed: false,
             passwordChangeSuccessful: false,
+            getUsernamePassword: false,
             placeholder: "text-align: right;",
             margin: "margin-right: 30px;",
             marg: "margin-left: auto;",
@@ -58,6 +59,10 @@ document.addEventListener("DOMContentLoaded", function () {
             passwordChangeSuccessfulText: "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد",
         },
         created: function () {
+            const redirectedUrl = new URL(window.location.href);
+            if(typeof redirectedUrl.searchParams.get("i") === "undefined" || redirectedUrl.searchParams.get("i") === null){
+                this.getUsernamePassword = true;
+            }
             this.setDateNav();
             this.getName();
             if(window.localStorage.getItem("lang") === null){

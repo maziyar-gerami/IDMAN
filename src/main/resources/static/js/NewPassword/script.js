@@ -65,6 +65,10 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordChangeSuccessfulText: "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد",
         },
         created: function () {
+            const redirectedUrl = new URL(window.location.href);
+            if(typeof redirectedUrl.searchParams.get("i") === "undefined" || redirectedUrl.searchParams.get("i") === null){
+                window.location.replace("/resetpassword");
+            }
             this.setDateNav();
             this.getName();
             if(window.localStorage.getItem("lang") === null){
@@ -149,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     headers: {"Content-Type": "multipart/form-data"},
                                     data: bodyFormData
                                 }).then((res2) => {
-                                    location.replace(url);
+                                    window.location.replace(url);
                                 }).catch((error) => {
                                     console.log(error);
                                 });

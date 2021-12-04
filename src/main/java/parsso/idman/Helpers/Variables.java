@@ -69,6 +69,7 @@ public class Variables {
     public static final String MSG_FA_CODE_405 = "فرمت آدرس API صحیح نیست.";
     public static final String MSG_FA_CODE_503 = "آدرس API صحیح نیست و یا متد آن به درستی تعیین نشده است.";
     public static final String MODEL_SETTINGS = "Settings";
+    public static final String MODEL_TOKEN = "Token";
     static final String email_body = "شما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید." +
             "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +
             "در غیر این صورت با کلیک بر روی  لینک زیر نسبت به بازنشانی و تغییر رمز عبور خود اقدام نمایید.\n";
@@ -78,6 +79,7 @@ public class Variables {
     static final String logo = "https://blog.pars-sso.ir/wp-content/uploads/2021/02/magit-logo.png";
     public static final String col_GoogleAuthDevice= "MongoDbGoogleAuthenticatorRepository";
     public static final int PER_BATCH_COUNT = 1000;
+    public static String col_Token = "Tokens";
 
     public static String template(User user, String url) {
 
