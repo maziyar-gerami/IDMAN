@@ -24,7 +24,8 @@ public class TokenManagementRepoImpl implements TokenManagementRepo {
     }
     @Override
     public String retrieve(String userId) {
-        return mongoTemplate.findOne(new Query(Criteria.where("username").is(userId)),String.class,Variables.col_Token);
+        List<Token> tokens = mongoTemplate.find(new Query(Criteria.where("username").is(userId)),Token.class,Variables.col_Token);
+        return tokens.get(0).getToken();
     }
 
     @Override
