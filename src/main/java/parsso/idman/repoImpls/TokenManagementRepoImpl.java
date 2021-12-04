@@ -10,6 +10,10 @@ import parsso.idman.models.other.Token;
 import parsso.idman.repos.TokenManagementRepo;
 import org.springframework.data.mongodb.core.query.Query;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 
 @Service
 public class TokenManagementRepoImpl implements TokenManagementRepo {
@@ -20,7 +24,7 @@ public class TokenManagementRepoImpl implements TokenManagementRepo {
     }
     @Override
     public String retrieve(String userId) {
-        return null;
+        return mongoTemplate.findOne(new Query(Criteria.where("username").is(userId)),String.class,Variables.MODEL_TOKEN);
     }
 
     @Override
@@ -61,5 +65,11 @@ public class TokenManagementRepoImpl implements TokenManagementRepo {
         }catch (Exception e){
             return HttpStatus.BAD_REQUEST;
         }
+    }
+
+    @Override
+    public boolean valid(String userId, String token) {
+        Query query = new Query(Criteria.where("username").is(userId).andOperator(Criteria.where("token").is(token)));
+        return mongoTemplate.count(query,Variables.col_Token)>0;
     }
 }

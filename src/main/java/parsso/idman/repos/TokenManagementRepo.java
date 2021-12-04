@@ -8,4 +8,5 @@ public interface TokenManagementRepo {
     HttpStatus delete(String userName);
     HttpStatus create(String userName, String token);
 
+    boolean valid(String userId, String token);
 }

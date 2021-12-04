@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.helpers.Variables;
+import parsso.idman.models.response.Response;
 import parsso.idman.repos.TokenManagementRepo;
 
 @RestController
@@ -28,9 +29,13 @@ public class TokenManagementController {
 
 
     @PostMapping
-    ResponseEntity<HttpStatus> create(@RequestParam("username") String userId, @RequestParam("token") String token,@RequestParam(value = "lang",defaultValue = "fa") String lang){
+    ResponseEntity<HttpStatus> create(@RequestParam("username") String userId, @RequestParam("token") String token){
         return new ResponseEntity<>(tokenManagement.create(userId,token));
     }
 
+    @GetMapping("/valid")
+    ResponseEntity<Response> retrieve(@RequestParam("username") String userId, @RequestParam("token") String token,@RequestParam(value = "lang",defaultValue = "fa") String lang){
+        return new ResponseEntity<>(new Response(tokenManagement.valid(userId,token),lang), HttpStatus.OK);
+    }
 
 }
