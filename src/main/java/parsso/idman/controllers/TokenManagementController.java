@@ -9,7 +9,7 @@ import parsso.idman.models.response.Response;
 import parsso.idman.repos.TokenManagementRepo;
 
 @RestController
-@RequestMapping("/api/public/tokenManagment")
+@RequestMapping("/api/public/tokenManagement")
 public class TokenManagementController {
 
     TokenManagementRepo tokenManagement;
