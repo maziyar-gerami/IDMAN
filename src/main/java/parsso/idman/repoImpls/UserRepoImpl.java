@@ -966,11 +966,7 @@ public class UserRepoImpl implements UserRepo {
             e.printStackTrace();
         }
 
-        HttpStatus httpStatus;
-        if (token.equals("ParssoIdman"))
-            httpStatus = HttpStatus.OK;
-        else
-            httpStatus = tokenClass.checkToken(userId, token);
+        HttpStatus httpStatus = tokenClass.checkToken(userId, token);
 
         if (httpStatus == HttpStatus.OK) {
             DirContextOperations contextUser;
