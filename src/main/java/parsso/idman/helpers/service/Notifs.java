@@ -26,7 +26,6 @@ public class Notifs {
         try {
             url = new URL(notificationApiURL);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
             return new ServiceGist(new Return(405, Variables.MSG_FA_CODE_405));
         }
 
