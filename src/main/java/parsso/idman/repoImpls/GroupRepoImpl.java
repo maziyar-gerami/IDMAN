@@ -42,26 +42,23 @@ import java.util.Objects;
 
 @Service
 public class GroupRepoImpl implements GroupRepo {
-    final BuildDnUser buildDnUser;
-    final MongoTemplate mongoTemplate;
-    final UniformLogger uniformLogger;
-    final ExpirePassword expirePassword;
-    private final LdapTemplate ldapTemplate;
-    private final UserRepo userRepo;
-    private final ServiceRepo serviceRepo;
-    private final LogsRepo.TranscriptRepo transcriptRepo;
-
     @Autowired
-    public GroupRepoImpl(BuildDnUser buildDnUser, MongoTemplate mongoTemplate, UniformLogger uniformLogger, ExpirePassword expirePassword, LdapTemplate ldapTemplate, UserRepo userRepo, ServiceRepo serviceRepo, LogsRepo.TranscriptRepo transcriptRepo) {
-        this.buildDnUser = buildDnUser;
-        this.mongoTemplate = mongoTemplate;
-        this.uniformLogger = uniformLogger;
-        this.expirePassword = expirePassword;
-        this.ldapTemplate = ldapTemplate;
-        this.userRepo = userRepo;
-        this.serviceRepo = serviceRepo;
-        this.transcriptRepo = transcriptRepo;
-    }
+    BuildDnUser buildDnUser;
+    @Autowired
+    MongoTemplate mongoTemplate;
+    @Autowired
+    UniformLogger uniformLogger;
+    @Autowired
+    ExpirePassword expirePassword;
+    @Autowired
+    LdapTemplate ldapTemplate;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private ServiceRepo serviceRepo;
+    @Autowired
+    private LogsRepo.TranscriptRepo transcriptRepo;
+
 
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
