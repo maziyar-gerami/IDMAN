@@ -424,8 +424,17 @@ public class UsersController {
         return new ResponseEntity<>(new Response(jsonObject,lang), HttpStatus.OK);
     }
 
-    @GetMapping("/api/public/authenticate")
-    public ResponseEntity<Response> logIn(@RequestParam("userId") String userId,@RequestParam("password") String password,@RequestParam(name = "lang",defaultValue="fa") String lang) throws Exception {
+    @PostMapping("/api/public/authenticate")
+    public ResponseEntity<Response> logIn(@RequestBody JSONObject jsonObject,@RequestParam(name = "lang",defaultValue="fa") String lang) throws Exception {
+        String password;
+        String userId;
+        try {
+             userId = jsonObject.getAsString("userId");
+             password = jsonObject.getAsString("password");
+        }catch (Exception e){
+            return new ResponseEntity<>(new Response(lang,model,400), HttpStatus.OK);
+        }
+
         int result = userRepo.authenticate(userId,password);
         return new ResponseEntity<>(new Response(result,lang), HttpStatus.OK);
     }
