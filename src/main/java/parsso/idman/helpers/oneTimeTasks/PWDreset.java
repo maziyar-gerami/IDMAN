@@ -22,10 +22,10 @@ import java.util.Date;
 import java.util.List;
 
 public class PWDreset {
-    MongoTemplate mongoTemplate;
-    LdapTemplate ldapTemplate;
-    String BASE_DN;
-    UniformLogger uniformLogger;
+    final MongoTemplate mongoTemplate;
+    final LdapTemplate ldapTemplate;
+    final String BASE_DN;
+    final UniformLogger uniformLogger;
     public PWDreset(LdapTemplate ldapTemplate,
                     MongoTemplate mongoTemplate, UniformLogger uniformLogger, String BASE_DN) {
         this.ldapTemplate = ldapTemplate;

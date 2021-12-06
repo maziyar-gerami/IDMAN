@@ -466,12 +466,12 @@ public class InstantMessage {
 
     }
 
-    public int sendPasswordChangeNotif(User user) {
-        if (SMS_sdk.equalsIgnoreCase("KaveNegar"))
-            return sendMessagePasswordNotifKaveNegar(user);
-        else if (SMS_sdk.equalsIgnoreCase("Magfa"))
-            return sendMessagePasswordNotifMagfa(user);
-        return 0;
+    public void sendPasswordChangeNotif(User user) {
+        if (SMS_sdk.equalsIgnoreCase("KaveNegar")) {
+            sendMessagePasswordNotifKaveNegar(user);
+        } else if (SMS_sdk.equalsIgnoreCase("Magfa")) {
+            sendMessagePasswordNotifMagfa(user);
+        }
     }
 
     private int sendMessagePasswordNotifMagfa(User user) {

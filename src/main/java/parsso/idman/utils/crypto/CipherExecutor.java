@@ -20,6 +20,7 @@ import java.util.Map;
  * @param <O> the type parameter for the output
  * @since 4.1
  */
+@SuppressWarnings("SameReturnValue")
 public interface CipherExecutor<I, O> {
     Logger LOGGER = LoggerFactory.getLogger(CipherExecutor.class);
 

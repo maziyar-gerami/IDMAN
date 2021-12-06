@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 public class AuthenticatorRepoImpl implements AuthenticatorRepo {
-    MongoTemplate mongoTemplate;
+    final MongoTemplate mongoTemplate;
 
     @Autowired
     AuthenticatorRepoImpl(MongoTemplate mongoTemplate){

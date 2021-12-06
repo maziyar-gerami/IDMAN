@@ -7,10 +7,10 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 
 public class RunOneTime {
-    UniformLogger uniformLogger;
-    LdapTemplate ldapTemplate;
-    MongoTemplate mongoTemplate;
-    String BASE_DN;
+    final UniformLogger uniformLogger;
+    final LdapTemplate ldapTemplate;
+    final MongoTemplate mongoTemplate;
+    final String BASE_DN;
 
     public  RunOneTime(LdapTemplate ldapTemplate,MongoTemplate mongoTemplate, UniformLogger uniformLogger, String BASE_DN){
         this.ldapTemplate = ldapTemplate;

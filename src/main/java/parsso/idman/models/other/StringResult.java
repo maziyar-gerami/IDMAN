@@ -2,10 +2,6 @@ package parsso.idman.models.other;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.val;
-import parsso.idman.helpers.Variables;
-
-import java.util.Locale;
 
 @Setter
 @Getter

@@ -12,7 +12,7 @@ import parsso.idman.models.logs.Event;
 import java.util.List;
 
 public class LogsTime {
-    MongoTemplate mongoTemplate;
+    final MongoTemplate mongoTemplate;
 
     public LogsTime(MongoTemplate mongoTemplate){
         this.mongoTemplate = mongoTemplate;

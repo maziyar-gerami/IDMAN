@@ -56,7 +56,7 @@ public class UsersController {
     private String passChangeNotification;
     @Value("${cas.authn.passwordless.tokens.expireInSeconds}")
     private String counter;
-    String model = Variables.MODEL_USER;
+    final String model = Variables.MODEL_USER;
 
 
     @Autowired

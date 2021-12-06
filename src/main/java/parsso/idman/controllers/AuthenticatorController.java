@@ -11,7 +11,7 @@ import parsso.idman.repos.AuthenticatorRepo;
 @RestController
 @RequestMapping("/api/googleAuth")
 public class AuthenticatorController {
-    AuthenticatorRepo authenticatorRepo;
+    final AuthenticatorRepo authenticatorRepo;
 
     @Autowired
     public AuthenticatorController(AuthenticatorRepo authenticatorRepo){

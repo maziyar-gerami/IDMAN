@@ -26,20 +26,24 @@ import java.util.Objects;
 @Service
 public class DashboardData {
     final ZoneId zoneId = ZoneId.of(Variables.ZONE);
+    final UserRepo userRepo;
+    final LogsRepo.EventRepo eventRepo;
+    final ServiceRepo serviceRepo;
+    final MongoTemplate mongoTemplate;
+    final UserAttributeMapper userAttributeMapper;
+    final SimpleUserAttributeMapper simpleUserAttributeMapper;
+    final LdapTemplate ldapTemplate;
     @Autowired
-    UserRepo userRepo;
-    @Autowired
-    LogsRepo.EventRepo eventRepo;
-    @Autowired
-    ServiceRepo serviceRepo;
-    @Autowired
-    MongoTemplate mongoTemplate;
-    @Autowired
-    UserAttributeMapper userAttributeMapper;
-    @Autowired
-    SimpleUserAttributeMapper simpleUserAttributeMapper;
-    @Autowired
-    LdapTemplate ldapTemplate;
+    public DashboardData(UserRepo userRepo, LogsRepo.EventRepo eventRepo, ServiceRepo serviceRepo, MongoTemplate mongoTemplate, UserAttributeMapper userAttributeMapper, SimpleUserAttributeMapper simpleUserAttributeMapper, LdapTemplate ldapTemplate) {
+        this.userRepo = userRepo;
+        this.eventRepo = eventRepo;
+        this.serviceRepo = serviceRepo;
+        this.mongoTemplate = mongoTemplate;
+        this.userAttributeMapper = userAttributeMapper;
+        this.simpleUserAttributeMapper = simpleUserAttributeMapper;
+        this.ldapTemplate = ldapTemplate;
+    }
+
     Dashboard.Users fUsers;
     Dashboard.Services fServices;
     Dashboard.Logins fLogins;

@@ -6,9 +6,6 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Variables;
 import parsso.idman.utils.captcha.models.CAPTCHA;
@@ -137,31 +134,6 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         }
 
         return phrase.toString();
-    }
-
-    public HttpStatus validateCaptcha(CAPTCHA captcha) {
-
-        if (captcha.getId().equals("1"))
-            return HttpStatus.OK;
-
-        Query query = new Query(Criteria.where("_id").is(captcha.getId()));
-
-        CAPTCHA actualCaptcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
-
-        if (actualCaptcha != null) {
-            Thread thread = new Thread(() -> mongoTemplate.remove(query, collection));
-            thread.start();
-
-            if (captcha.getPhrase().equalsIgnoreCase(actualCaptcha.getPhrase())) {
-
-                return HttpStatus.OK;
-            } else {
-                return HttpStatus.BAD_REQUEST;
-
-            }
-        } else
-            return HttpStatus.BAD_REQUEST;
-
     }
 
     private int[] createOrganization(int len, Double alphabetRate) {

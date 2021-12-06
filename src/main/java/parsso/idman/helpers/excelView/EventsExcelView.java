@@ -18,8 +18,8 @@ import java.util.Map;
 
 @Service
 public class EventsExcelView extends AbstractXlsxView {
-    LogsRepo.EventRepo eventRepo;
-    MongoTemplate mongoTemplate;
+    final LogsRepo.EventRepo eventRepo;
+    final MongoTemplate mongoTemplate;
 
     @Autowired
     EventsExcelView(LogsRepo.EventRepo eventRepo, MongoTemplate mongoTemplate)
