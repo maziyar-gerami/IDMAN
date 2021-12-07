@@ -246,10 +246,10 @@ public class UsersController {
     }
 
     @PostMapping("/api/user/photo")
-    public RedirectView uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+    public ResponseEntity<Response> uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(name = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         if (userRepo.uploadProfilePic(file, request.getUserPrincipal().getName()))
-            return new RedirectView("/dashboard");
-        return new RedirectView("errorpage");
+            return new ResponseEntity<>(new Response(true,lang),HttpStatus.OK);
+        return new ResponseEntity<>(new Response(lang,model,false,400),HttpStatus.OK);
     }
 
     @DeleteMapping("/api/user/photo")
@@ -257,7 +257,6 @@ public class UsersController {
         parsso.idman.models.users.User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
         if(userRepo.deleteProfilePic(user))
             return new ResponseEntity<>(new Response(true,lang),HttpStatus.OK);
-
         return new ResponseEntity<>(new Response(lang,model,false,400),HttpStatus.OK);
     }
 
