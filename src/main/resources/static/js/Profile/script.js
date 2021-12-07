@@ -128,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
             profilePictureDeletedSuccessfully: "عکس پروفایل با موفقیت حذف شد.",
             profilePictureChangeUnsuccessful: "تغییر عکس پروفایل ناموفق بود.",
             profilePictureDeleteUnsuccessful: "عکس پروفایلی از پیش وجود ندارد.",
+            profilePictureChangeLoader: false,
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -274,6 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
             changeUserPic: function (action) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
+                this.profilePictureChangeLoader = true;
                 if(action === "edit"){
                     let bodyFormData = new FormData();
                     bodyFormData.append("file", document.getElementById("editProfilePicture").files[0]);
@@ -283,13 +285,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         headers: {"Content-Type": "multipart/form-data"},
                         data: bodyFormData
                     }).then((res) => {
+                        vm.profilePictureChangeLoader = false;
+                        vm.getUserPic();
                         if(res.data.data){
                             alert(vm.profilePictureChangedSuccessfully);
                         }else{
                             alert(vm.profilePictureChangeUnsuccessful);
                         }
-                        vm.getUserPic();
                     }).catch((error) => {
+                        vm.profilePictureChangeLoader = false;
                         alert(vm.profilePictureChangeUnsuccessful);
                     });
                 }else if(action === "delete"){
@@ -297,13 +301,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         method: "delete",
                         url: url + "/api/user/photo"
                     }).then((res) => {
+                        vm.profilePictureChangeLoader = false;
+                        vm.getUserPic();
                         if(res.data.data){
                             alert(vm.profilePictureDeletedSuccessfully);
                         }else{
                             alert(vm.profilePictureDeleteUnsuccessful);
                         }
-                        vm.getUserPic();
                     }).catch((error) => {
+                        vm.profilePictureChangeLoader = false;
                         alert(vm.profilePictureDeleteUnsuccessful);
                     });
                 }

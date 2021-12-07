@@ -179,7 +179,7 @@
 
                             <div class="userpic mb-3" style="width: 130px;height: 130px;">
                                 <img v-bind:src="userPicture" class="img-responsive avatar w-100 h-100" alt="Picture">
-                                <a href="/api/user/photo" target="_blank"></a>
+                                <a v-bind:href="userPicture" target="_blank"></a>
                             </div>
 
                             <div class="text-center mb-3">
