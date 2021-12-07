@@ -254,7 +254,7 @@ public class UsersController {
 
     @DeleteMapping("/api/user/photo")
     public ResponseEntity<Response> deleteImage(HttpServletRequest request,String lang) {
-        parsso.idman.models.users.User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
+        parsso.idman.models.users.User user = userRepo.retrieveUsers("request.getUserPrincipal().getName()");
             return new ResponseEntity<>(new Response(userRepo.deleteProfilePic(user),lang),HttpStatus.OK);
     }
 
