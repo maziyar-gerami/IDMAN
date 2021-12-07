@@ -1,5 +1,6 @@
 package parsso.idman.models.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.models.other.StringResult;
@@ -20,11 +21,22 @@ public class Response {
         this.data = data;
     }
 
+    public Response(String lang, String model, int code) throws NoSuchFieldException, IllegalAccessException {
+        status = new Status(code,model,lang);
+
+    }
+
+    public Response(String lang, String model, Object b, int code) throws NoSuchFieldException, IllegalAccessException {
+        this.data = b;
+        status = new Status(code,model,lang);
+    }
+
     @Setter
     @Getter
     private static class Status {
         int code;
         String result;
+        @JsonIgnore
         String model;
 
         public Status(String lang) {
@@ -42,5 +54,10 @@ public class Response {
 
         }
 
+        public Status(int code,String model, String lang) throws NoSuchFieldException, IllegalAccessException {
+            this.code= code;
+            this.model = model;
+            this.result = StringResult.get(code,model,lang);
+        }
     }
 }

@@ -56,7 +56,7 @@ public class UsersController {
     private String passChangeNotification;
     @Value("${cas.authn.passwordless.tokens.expireInSeconds}")
     private String counter;
-    String model = Variables.MODEL_USER;
+    final String model = Variables.MODEL_USER;
 
 
     @Autowired
@@ -252,6 +252,15 @@ public class UsersController {
         return new RedirectView("errorpage");
     }
 
+    @DeleteMapping("/api/user/photo")
+    public ResponseEntity<Response> deleteImage(HttpServletRequest request,@RequestParam(name = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+        parsso.idman.models.users.User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
+        if(userRepo.deleteProfilePic(user))
+            return new ResponseEntity<>(new Response(true,lang),HttpStatus.OK);
+
+        return new ResponseEntity<>(new Response(lang,model,false,400),HttpStatus.OK);
+    }
+
     @PutMapping("/api/user/password")
     public ResponseEntity<JSONObject> changePassword(HttpServletRequest request,
                                                   @RequestBody JSONObject jsonObject) {
@@ -424,8 +433,17 @@ public class UsersController {
         return new ResponseEntity<>(new Response(jsonObject,lang), HttpStatus.OK);
     }
 
-    @GetMapping("/api/public/authenticate")
-    public ResponseEntity<Response> logIn(@RequestParam("userId") String userId,@RequestParam("password") String password,@RequestParam(name = "lang",defaultValue="fa") String lang) throws Exception {
+    @PostMapping("/api/public/authenticate")
+    public ResponseEntity<Response> logIn(@RequestBody JSONObject jsonObject,@RequestParam(name = "lang",defaultValue="fa") String lang) throws Exception {
+        String password;
+        String userId;
+        try {
+             userId = jsonObject.getAsString("userId");
+             password = jsonObject.getAsString("password");
+        }catch (Exception e){
+            return new ResponseEntity<>(new Response(lang,model,400), HttpStatus.OK);
+        }
+
         int result = userRepo.authenticate(userId,password);
         return new ResponseEntity<>(new Response(result,lang), HttpStatus.OK);
     }

@@ -14,8 +14,8 @@ import java.util.List;
 
 public class SAtoSU {
 
-    MongoTemplate mongoTemplate;
-    UniformLogger uniformLogger;
+    final MongoTemplate mongoTemplate;
+    final UniformLogger uniformLogger;
 
     SAtoSU(MongoTemplate mongoTemplate,UniformLogger uniformLogger){
         this.mongoTemplate = mongoTemplate;

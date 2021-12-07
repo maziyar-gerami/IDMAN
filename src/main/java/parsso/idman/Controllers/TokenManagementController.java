@@ -12,7 +12,7 @@ import parsso.idman.repos.TokenManagementRepo;
 @RequestMapping("/api/public/tokenManagement")
 public class TokenManagementController {
 
-    TokenManagementRepo tokenManagement;
+    final TokenManagementRepo tokenManagement;
     String model = Variables.MODEL_TOKEN;
 
     @Autowired

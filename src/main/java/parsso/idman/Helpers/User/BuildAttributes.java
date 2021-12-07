@@ -23,16 +23,19 @@ import java.time.ZoneOffset;
 @Service
 public class BuildAttributes {
     final ZoneId zoneId = ZoneId.of(Variables.ZONE);
+    final MongoTemplate mongoTemplate;
+    final BuildDnUser buildDnUser;
+    private final UserRepo userRepo;
+    private final LdapTemplate ldapTemplate;
+    private final Operations operations;
     @Autowired
-    MongoTemplate mongoTemplate;
-    @Autowired
-    BuildDnUser buildDnUser;
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private LdapTemplate ldapTemplate;
-    @Autowired
-    private Operations operations;
+    BuildAttributes(MongoTemplate mongoTemplate, BuildDnUser buildDnUser, UserRepo userRepo, LdapTemplate ldapTemplate,Operations operations){
+        this.mongoTemplate = mongoTemplate;
+        this.buildDnUser = buildDnUser;
+        this.userRepo = userRepo;
+        this.ldapTemplate = ldapTemplate;
+        this.operations=operations;
+    }
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
 

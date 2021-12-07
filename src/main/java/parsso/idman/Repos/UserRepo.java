@@ -84,4 +84,6 @@ public interface UserRepo {
     HttpStatus changePasswordPublic(String userId, String currentPassword, String newPassword);
 
     int authenticate(String userId, String password);
+
+    boolean deleteProfilePic(User user);
 }

@@ -50,16 +50,18 @@ public class GroupRepoImpl implements GroupRepo {
     UniformLogger uniformLogger;
     @Autowired
     ExpirePassword expirePassword;
-    @Value("${spring.ldap.base.dn}")
-    private String BASE_DN;
     @Autowired
-    private LdapTemplate ldapTemplate;
+    LdapTemplate ldapTemplate;
     @Autowired
     private UserRepo userRepo;
     @Autowired
     private ServiceRepo serviceRepo;
     @Autowired
     private LogsRepo.TranscriptRepo transcriptRepo;
+
+
+    @Value("${spring.ldap.base.dn}")
+    private String BASE_DN;
 
     @Override
     public HttpStatus remove(String doerID, JSONObject jsonObject) {

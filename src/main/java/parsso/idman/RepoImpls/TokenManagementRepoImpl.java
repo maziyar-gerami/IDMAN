@@ -10,14 +10,12 @@ import parsso.idman.models.other.Token;
 import parsso.idman.repos.TokenManagementRepo;
 import org.springframework.data.mongodb.core.query.Query;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 
 @Service
 public class TokenManagementRepoImpl implements TokenManagementRepo {
-    MongoTemplate mongoTemplate;
+    final MongoTemplate mongoTemplate;
     @Autowired
     TokenManagementRepoImpl(MongoTemplate mongoTemplate){
         this.mongoTemplate=mongoTemplate;

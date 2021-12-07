@@ -396,14 +396,15 @@
                                                                             <th style="border: none;">#</th>
                                                                             <th style="border: none;">
                                                                                 <i class="fa fa-filter fa-fw" aria-hidden="true"
-                                                                                style="cursor: pointer;" v-on:click="changeActiveFilter('Name')"></i>Name</th>
-                                                                            <th style="border: none;">Action</th>
-                                                                            <th style="border: none;">Access Change</th>
-                                                                            <th style="border: none;">Entity</th>
-                                                                            <th style="border: none;">Result</th>
+                                                                                style="cursor: pointer;" v-on:click="changeActiveFilter('Name')"></i>{{nameText}}</th>
+                                                                            <th style="border: none;">{{persianNameText}}</th>
+                                                                            <th style="border: none;">{{actionText}}</th>
+                                                                            <th style="border: none;">{{accessChangeText}}</th>
+                                                                            <th style="border: none;">{{entityText}}</th>
+                                                                            <th style="border: none;">{{resultText}}</th>
                                                                             <th style="border: none;">
                                                                                 <i class="fa fa-filter fa-fw" aria-hidden="true"
-                                                                                style="cursor: pointer;" v-on:click="changeActiveFilter('DoerId')"></i>Doer ID</th>
+                                                                                style="cursor: pointer;" v-on:click="changeActiveFilter('DoerId')"></i>{{doerText}}</th>
                                                                             <th style="border: none;">
                                                                                 <i class="fa fa-filter fa-fw" aria-hidden="true"
                                                                                 style="cursor: pointer;" v-on:click="changeActiveFilter('Date')"></i>{{date}}</th>
@@ -414,6 +415,7 @@
                                                                                 data-placement="top" :title="transcript.instance">
                                                                                 <td>{{transcript.recordNumber}}</td>
                                                                                 <td>{{transcript.instanceName}}</td>
+                                                                                <td>{{transcript.instanceDescription}}</td>
                                                                                 <td>{{transcript.action}}</td>
                                                                                 <td>{{transcript.accessChange}}</td>
                                                                                 <td>{{transcript.type}}:{{transcript.item}}</td>

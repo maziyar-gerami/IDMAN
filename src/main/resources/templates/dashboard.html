@@ -112,6 +112,11 @@
                                     </a>
                                 </div>
 
+                                <!--<div class="userpic mb-3" style="width: 130px;height: 130px;">
+                                    <img v-bind:src="userPicture" class="img-responsive avatar  w-100 h-100" alt="Avatar">
+                                    <a href="/api/user/photo" target="_blank"></a>
+                                </div>-->
+
                                 <div class="text-center mb-3">
                                     <div>
                                         <strong>{{s1}}</strong>
@@ -236,9 +241,9 @@
                                     <li class="nav-item">
                                         <a class="nav-link" @click.prevent="setActive('services')" :class="{ active: isActive('services') }" href="#services">{{s4}}</a>
                                     </li>
-                                    <li class="nav-item">
+                                    <!--<li class="nav-item">
                                         <a class="nav-link" @click.prevent="setActive('groups')" :class="{ active: isActive('groups') }" href="#groups">{{s5}}</a>
-                                    </li>
+                                    </li>-->
                                 </ul>
                                 <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
                                     <div class="tab-pane fade pr-3 pl-3" :class="{ 'active show': isActive('services') }" id="services">
@@ -285,7 +290,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" :class="{ 'active show': isActive('groups') }" id="groups">
+                                    <!--<div class="tab-pane fade" :class="{ 'active show': isActive('groups') }" id="groups">
                                         <table class="table table-responsive">
                                             <tr>
                                                 <th style="border: none;">{{s17}}</th>
@@ -300,7 +305,7 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-                                    </div>
+                                    </div>-->
                                 </div>
                             </div>
                         </div>

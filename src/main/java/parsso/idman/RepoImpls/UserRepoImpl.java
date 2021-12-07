@@ -465,7 +465,8 @@ public class UserRepoImpl implements UserRepo {
 
         userUpdate.setPhoto(s);
         if (update(userUpdate.getUserId(), userUpdate.getUserId(), userUpdate) != null) {
-            return oldPic.delete();
+            oldPic.delete();
+            return true;
         }
         return false;
     }
@@ -547,6 +548,15 @@ public class UserRepoImpl implements UserRepo {
         }else
             return 0;
         }
+
+    @Override
+    public boolean deleteProfilePic(User user) {
+
+        File oldPic = new File(uploadedFilesPath + user.getPhoto());
+        user.getUsersExtraInfo().setPhotoName(null);
+        update(user.getUserId(),user.getUserId(),user);
+        return oldPic.delete();
+    }
 
     @Override
     public void setIfLoggedIn() {
@@ -966,11 +976,7 @@ public class UserRepoImpl implements UserRepo {
             e.printStackTrace();
         }
 
-        HttpStatus httpStatus;
-        if (token.equals("ParssoIdman"))
-            httpStatus = HttpStatus.OK;
-        else
-            httpStatus = tokenClass.checkToken(userId, token);
+        HttpStatus httpStatus = tokenClass.checkToken(userId, token);
 
         if (httpStatus == HttpStatus.OK) {
             DirContextOperations contextUser;

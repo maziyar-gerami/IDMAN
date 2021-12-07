@@ -79,7 +79,7 @@ public class Variables {
     static final String logo = "https://blog.pars-sso.ir/wp-content/uploads/2021/02/magit-logo.png";
     public static final String col_GoogleAuthDevice= "MongoDbGoogleAuthenticatorRepository";
     public static final int PER_BATCH_COUNT = 1000;
-    public static String col_Token = "Tokens";
+    public static final String col_Token = "Tokens";
 
     public static String template(User user, String url) {
 
@@ -93,7 +93,7 @@ public class Variables {
                         "<img style=\"vertical-align:middle;\" src=\"" + logo + "\"" + "alt= \"Parsso\">";
     }
 
-    public static String PARSSO_IDMAN=
+    public static final String PARSSO_IDMAN=
                     " ███████████   █████████  ███████████    █████████  █████████     ███████   \n" +
                     "░░███░░░░░███ ███░░░░░███░░███░░░░░███  ███░░░░░██████░░░░░███  ███░░░░░███ \n" +
                     " ░███    ░███░███    ░███ ░███    ░███ ░███    ░░░░███    ░░░  ███     ░░███\n" +
