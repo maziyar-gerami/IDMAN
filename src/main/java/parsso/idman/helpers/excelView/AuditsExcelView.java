@@ -3,6 +3,7 @@ package parsso.idman.helpers.excelView;
 
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,8 @@ public class AuditsExcelView extends AbstractXlsxView {
     }
 
     @Override
-    protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
+    @Cacheable("audits")
+    public void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
 
         // get data model which is passed by the Spring container
 
@@ -78,8 +80,8 @@ public class AuditsExcelView extends AbstractXlsxView {
 
         for (int page = 0; page <= Math.ceil( (float)count/Variables.PER_BATCH_COUNT); page++) {
 
-            if (page==100)
-                return;
+            //if (page==100)
+                //return;
 
             int skip = (page == 0) ? 0 : ((page - 1) * Variables.PER_BATCH_COUNT);
 
@@ -98,7 +100,6 @@ public class AuditsExcelView extends AbstractXlsxView {
                 aRow.createCell(7).setCellValue(audit.getClientIpAddress());
 
             }
-
         }
     }
 }
