@@ -254,7 +254,7 @@ public class UsersController {
 
     @DeleteMapping("/api/user/photo")
     public ResponseEntity<Response> deleteImage(HttpServletRequest request,@RequestParam(name = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
-        parsso.idman.models.users.User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
+        parsso.idman.models.users.User user = userRepo.retrieveUsers("maziyar");
         if(userRepo.deleteProfilePic(user))
             return new ResponseEntity<>(new Response(true,lang),HttpStatus.OK);
 
