@@ -465,7 +465,8 @@ public class UserRepoImpl implements UserRepo {
 
         userUpdate.setPhoto(s);
         if (update(userUpdate.getUserId(), userUpdate.getUserId(), userUpdate) != null) {
-            return oldPic.delete();
+            oldPic.delete();
+            return true;
         }
         return false;
     }
