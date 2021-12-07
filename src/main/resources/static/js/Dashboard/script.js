@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
       this.getDashboardInfo();
       this.getServices();
       this.getUserPic();
-      this.getGroups();
+      //this.getGroups();
       if(window.localStorage.getItem("lang") === null){
           window.localStorage.setItem("lang", "FA");
       }else if(window.localStorage.getItem("lang") === "EN") {
