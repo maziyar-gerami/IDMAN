@@ -252,6 +252,14 @@ public class UsersController {
         return new RedirectView("errorpage");
     }
 
+    @DeleteMapping("/api/user/photo")
+    public RedirectView deleteImage(HttpServletRequest request) {
+        parsso.idman.models.users.User user = userRepo.retrieveUsers("maziyar");
+        if (userRepo.deleteProfilePic(user))
+            return new RedirectView("/dashboard");
+        return new RedirectView("errorpage");
+    }
+
     @PutMapping("/api/user/password")
     public ResponseEntity<JSONObject> changePassword(HttpServletRequest request,
                                                   @RequestBody JSONObject jsonObject) {

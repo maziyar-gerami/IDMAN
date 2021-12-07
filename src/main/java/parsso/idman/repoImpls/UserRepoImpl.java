@@ -549,6 +549,15 @@ public class UserRepoImpl implements UserRepo {
         }
 
     @Override
+    public boolean deleteProfilePic(User user) {
+
+        File oldPic = new File(uploadedFilesPath + user.getPhoto());
+        user.getUsersExtraInfo().setPhotoName(null);
+        update(user.getUserId(),user.getUserId(),user);
+        return oldPic.delete();
+    }
+
+    @Override
     public void setIfLoggedIn() {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
