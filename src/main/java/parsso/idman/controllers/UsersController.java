@@ -253,11 +253,9 @@ public class UsersController {
     }
 
     @DeleteMapping("/api/user/photo")
-    public RedirectView deleteImage(HttpServletRequest request) {
-        parsso.idman.models.users.User user = userRepo.retrieveUsers("maziyar");
-        if (userRepo.deleteProfilePic(user))
-            return new RedirectView("/dashboard");
-        return new RedirectView("errorpage");
+    public ResponseEntity<Response> deleteImage(HttpServletRequest request,String lang) {
+        parsso.idman.models.users.User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
+            return new ResponseEntity<>(new Response(userRepo.deleteProfilePic(user),lang),HttpStatus.OK);
     }
 
     @PutMapping("/api/user/password")
