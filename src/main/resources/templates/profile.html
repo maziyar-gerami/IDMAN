@@ -198,7 +198,8 @@
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="show = !show"></i>
                                             </div>
                                             <div class="form-group">
-                                                <input v-bind:value="userInfo.userPassword" class="form-control" :type="showR === true ? 'text' : 'password'" v-model='checkPassword' v-bind:placeholder="s18" v-bind:style="placeholder" autocomplete="off">
+                                                <input v-bind:value="userInfo.userPassword" class="form-control" :type="showR === true ? 'text' : 'password'" v-model="checkPassword"
+                                                v-bind:placeholder="s18" v-bind:style="placeholder" onpaste="return false;" ondrop="return false;" autocomplete="off">
                                                 <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showR" @click="showR = !showR"></i>
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showR = !showR"></i>
                                             </div>

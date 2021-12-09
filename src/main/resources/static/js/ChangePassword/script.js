@@ -64,7 +64,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 this.getUsernamePassword = true;
             }
             this.setDateNav();
-            this.getName();
             if(window.localStorage.getItem("lang") === null){
                 window.localStorage.setItem("lang", "FA");
             }else if(window.localStorage.getItem("lang") === "EN") {
