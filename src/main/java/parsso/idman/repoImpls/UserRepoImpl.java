@@ -205,7 +205,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    @CachePut(cacheNames = "currentPic", key = "usid")
+    @Cacheable("userPhoto")
     public HttpStatus update(String doerID, String usid, User p) {
 
         p.setUserId(usid.trim());
@@ -449,7 +449,6 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    @CachePut(cacheNames = "currentPic", key = "#file")
     public boolean uploadProfilePic(MultipartFile file, String name) {
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
@@ -520,6 +519,7 @@ public class UserRepoImpl implements UserRepo {
             try {
                 ldapTemplate.modifyAttributes(contextUser);
                 usersExtraInfo.setLoggedIn(true);
+                mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())),Variables.col_usersExtraInfo);
                 mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
             }catch (org.springframework.ldap.InvalidAttributeValueException e){
                 return HttpStatus.FOUND;

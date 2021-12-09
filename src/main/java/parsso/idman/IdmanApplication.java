@@ -37,6 +37,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 @SpringBootApplication
 @EnableScheduling
+@EnableCaching
 public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
     private static final int millis = 3600000;
     @Value("${max.pwd.lifetime.hours}")
@@ -44,10 +45,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     private static final Logger logger = LogManager.getLogger("System");
     @Value("${expire.pwd.message.hours}")
     private static long expirePwdMessageTime;
-    @Value("${interval.check.pass.hours}")
-    private static long intervalCheckPassTime;
-    @Value("${mongo.uri}")
-    private static String mongoUri;
     @Resource
     FilesStorageService storageService;
     @Autowired

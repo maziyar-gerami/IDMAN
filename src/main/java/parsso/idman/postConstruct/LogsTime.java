@@ -82,6 +82,7 @@ public class LogsTime {
             System.out.print("Processing events: " + i + "% " + animationChars[(int)i % 4] + "\r");
             Runtime.getRuntime().freeMemory();
         }
+        System.out.println("Processing events: Done!");
 
     }
 
@@ -113,6 +114,7 @@ public class LogsTime {
             System.out.print("Processing audits: " + i + "% " + animationChars[(int)i % 4] + "\r");
             Runtime.getRuntime().freeMemory();
         }
+        System.out.println("Processing audits: Done!");
 
     }
 
