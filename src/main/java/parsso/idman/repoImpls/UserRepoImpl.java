@@ -517,10 +517,15 @@ public class UserRepoImpl implements UserRepo {
             contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(),BASE_DN));
             contextUser.setAttributeValue("userPassword", newPassword);
             try {
+                System.out.println("try");
                 ldapTemplate.modifyAttributes(contextUser);
+                System.out.println("modified");
                 usersExtraInfo.setLoggedIn(true);
-                mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())),Variables.col_usersExtraInfo);
+                System.out.println("setLoggedn");
+                mongoTemplate.remove(new Query(Criteria.where("userId").is(userId)),Variables.col_usersExtraInfo);
+                System.out.println(userId +" removed");
                 mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
+                System.out.println(userId + " saved");
             }catch (org.springframework.ldap.InvalidAttributeValueException e){
                 return HttpStatus.FOUND;
             }catch (Exception e){
