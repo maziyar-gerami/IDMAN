@@ -517,15 +517,10 @@ public class UserRepoImpl implements UserRepo {
             contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(),BASE_DN));
             contextUser.setAttributeValue("userPassword", newPassword);
             try {
-                System.out.println("try");
                 ldapTemplate.modifyAttributes(contextUser);
-                System.out.println("modified");
                 usersExtraInfo.setLoggedIn(true);
-                System.out.println("setLoggedn");
                 mongoTemplate.remove(new Query(Criteria.where("userId").is(userId)),Variables.col_usersExtraInfo);
-                System.out.println(userId +" removed");
                 mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
-                System.out.println(userId + " saved");
             }catch (org.springframework.ldap.InvalidAttributeValueException e){
                 return HttpStatus.FOUND;
             }catch (Exception e){
@@ -767,7 +762,6 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    @Cacheable(value = "currentUser", key = "userId")
     public User retrieveUsers(String userId) {
         userId = userId.toLowerCase();
 
@@ -796,7 +790,7 @@ public class UserRepoImpl implements UserRepo {
 
         if (user.getRole() == null)
             user = setRole(user);
-        if (user.getRole().equals("USER") && profileAccessiblity.equalsIgnoreCase("FALSE"))
+        else if (user.getRole().equals("USER") && profileAccessiblity.equalsIgnoreCase("FALSE"))
             user.setProfileInaccessibility(true);
 
 
