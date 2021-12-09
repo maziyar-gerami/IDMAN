@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     headers: {"Content-Type": "multipart/form-data"},
                                     data: bodyFormData
                                 }).then((res2) => {
-                                    location.replace(url);
+                                    location.replace(url + "/cas/login?service=" + tempInfo[2]);
                                 }).catch((error) => {
                                     console.log(error);
                                 });
