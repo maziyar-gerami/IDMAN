@@ -19,10 +19,11 @@ public class Texts {
     }
 
     public void passwordChangeNotification(User user) {
-        String p1 = " عزیز";
+        String p1 = "هشدار";
         String p2 = "گذرواژه شما در تاریخ ";
         String p3 = " ساعت ";
         String p4 = " تغییر یافت.";
+        String p5 = "فاوای فلات قاره";
         Time time =  TimeHelper.longToPersianTime(new Date().getTime());
         String username;
         try {
@@ -32,7 +33,7 @@ public class Texts {
         }
         this.mainMessage = username + p1 +"\n" +
                 p2 +String.format("%02d",time.getDay())+"-"+String.format("%02d",time.getMonth())+ "-"+time.getYear() + p3 +
-                String.format("%02d",time.getHours())+":"+String.format("%02d",time.getMinutes()) + p4;
+                String.format("%02d",time.getHours())+":"+String.format("%02d",time.getMinutes()) + p4+"\n"+p5;
     }
 
 

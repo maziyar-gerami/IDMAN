@@ -37,7 +37,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 @SpringBootApplication
 @EnableScheduling
-@EnableCaching
+//@EnableCaching
 public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
     private static final int millis = 3600000;
     @Value("${max.pwd.lifetime.hours}")
