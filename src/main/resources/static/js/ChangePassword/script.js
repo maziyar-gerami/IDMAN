@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if(this.password !== "" && this.checkPassword !== ""){
                     if(/[0-9]+/.test(this.password)){
                         if(/[a-zA-Z]/.test(this.password)){
-                            if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                            /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){*/
                                 if(/.{8,}/.test(this.password)){
                                     if(this.password === this.checkPassword){
                                         return false
@@ -261,9 +261,9 @@ document.addEventListener("DOMContentLoaded", function () {
                                 }else{
                                     return true
                                 }
-                            }else{
+                            /*}else{
                                 return true
-                            }
+                            }*/
                         }else{
                             return true
                         }
@@ -282,9 +282,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if(/[a-zA-Z]/.test(this.password)){
                     checks += 1;
                 }
-                if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
                     checks += 1;
-                }
+                }*/
                 if(/.{8,}/.test(this.password)){
                     checks += 1;
                 }
