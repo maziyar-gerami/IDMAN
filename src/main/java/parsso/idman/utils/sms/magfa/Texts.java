@@ -31,7 +31,7 @@ public class Texts {
         }catch (Exception e){
             username = user.getDisplayName();
         }
-        this.mainMessage = username + p1 +"\n" +
+        this.mainMessage = p1 +"\n" +
                 p2 +String.format("%02d",time.getDay())+"-"+String.format("%02d",time.getMonth())+ "-"+time.getYear() + p3 +
                 String.format("%02d",time.getHours())+":"+String.format("%02d",time.getMinutes()) + p4+"\n"+p5;
     }
