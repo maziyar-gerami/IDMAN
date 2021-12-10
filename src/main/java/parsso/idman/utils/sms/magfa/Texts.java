@@ -13,9 +13,11 @@ public class Texts {
     public String mainMessage;
 
     public void authorizeMessage(String mainCode) {
-        String p1 = "سلام. لطفا از کد ";
-        String p2 = " جهت احراز هویت و ورود به پارسو استفاده نمایید.";
-        this.mainMessage = p1 + mainCode + p2;
+        String p1 = "کاربر گرامی";
+        String p2 = "کد پیامکی شما ";
+        String p3 = " می باشد.";
+        String p4 = "فاوای فلات قاره";
+        this.mainMessage = p1 +"\n"+p2+ mainCode + p3+"\n"+p4;
     }
 
     public void passwordChangeNotification(User user) {
@@ -25,12 +27,7 @@ public class Texts {
         String p4 = " تغییر یافت.";
         String p5 = "فاوای فلات قاره";
         Time time =  TimeHelper.longToPersianTime(new Date().getTime());
-        String username;
-        try {
-            username =user.getDisplayName().substring(0, user.getDisplayName().indexOf(' '));
-        }catch (Exception e){
-            username = user.getDisplayName();
-        }
+
         this.mainMessage = p1 +"\n" +
                 p2 +String.format("%02d",time.getDay())+"-"+String.format("%02d",time.getMonth())+ "-"+time.getYear() + p3 +
                 String.format("%02d",time.getHours())+":"+String.format("%02d",time.getMinutes()) + p4+"\n"+p5;
