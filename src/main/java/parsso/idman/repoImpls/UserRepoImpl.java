@@ -213,10 +213,12 @@ public class UserRepoImpl implements UserRepo {
 
         User user = retrieveUsers(p.getUserId());
 
-        if (!retrieveUsers(usid).getRole().equals("USER") &&
-                user.getRole().equals("USER") && access.equalsIgnoreCase("false"))
-            return HttpStatus.FORBIDDEN;
-
+        try {
+            if (!retrieveUsers(doerID).getRole().equals("USER") && !retrieveUsers(doerID).getRole().equals("PRESENTER")
+                    && !retrieveUsers(usid).getRole().equals("USER") &&
+                    user.getRole().equals("USER") && access.equalsIgnoreCase("false"))
+                return HttpStatus.FORBIDDEN;
+        }catch (Exception ignored){}
         DirContextOperations context;
 
         //remove current pwdEndTime
