@@ -39,10 +39,20 @@ public class RunOneTime {
             }
         };
 
+        val duplicatedUsers = new Runnable(){
+
+            @Override
+            public void run() {
+                new RemoveDuplicateExtraInfo(mongoTemplate).run();
+            }
+        };
+
         Thread sathread = new Thread(SUrunnable);
         Thread logeInUsers = new Thread(loggeInUses);
+        Thread duplicated = new Thread(duplicatedUsers);
         logeInUsers.start();
         sathread.start();
+        duplicated.start();
 
         System.out.println(Variables.PARSSO_IDMAN);
 
