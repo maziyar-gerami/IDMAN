@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
-import parsso.idman.helpers.TimeHelper;
 
 import java.util.UUID;
 
@@ -45,13 +44,13 @@ public class PublicMessage {
 
     @SuppressWarnings("unused")
     public Time getCreateTime() {
-        return TimeHelper.longToPersianTime(getCreateDate());
+        return new Time().longToPersianTime(getCreateDate());
     }
 
     @SuppressWarnings("unused")
     public Time getUpdateTime() {
         if (updateDate != null)
-            return TimeHelper.longToPersianTime(updateDate);
+            return new Time().longToPersianTime(updateDate);
 
         return null;
     }

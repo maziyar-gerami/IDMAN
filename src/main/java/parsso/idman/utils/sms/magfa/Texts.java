@@ -2,7 +2,6 @@ package parsso.idman.utils.sms.magfa;
 
 
 import lombok.Getter;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.models.other.Time;
 import parsso.idman.models.users.User;
 
@@ -26,7 +25,7 @@ public class Texts {
         String p3 = " ساعت ";
         String p4 = " تغییر یافت.";
         String p5 = "فاوای فلات قاره";
-        Time time =  TimeHelper.longToPersianTime(new Date().getTime());
+        Time time =  new Time().longToPersianTime(new Date().getTime());
 
         this.mainMessage = p1 +"\n" +
                 p2 +String.format("%02d",time.getDay())+"-"+String.format("%02d",time.getMonth())+ "-"+time.getYear() + p3 +

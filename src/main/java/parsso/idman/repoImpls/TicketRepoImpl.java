@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
@@ -301,7 +300,7 @@ public class TicketRepoImpl implements TicketRepo {
                     Integer.parseInt(date.substring(2, 4)),
                     Integer.parseInt(date.substring(0, 2)));
             long[] range;
-            range = TimeHelper.specificDateToEpochRange(time, zoneId);
+            range = new Time().specificDateToEpochRange(time, zoneId);
 
             query = new Query(Criteria.where("creationTime").gte(range[0]).lte(range[1]));
 

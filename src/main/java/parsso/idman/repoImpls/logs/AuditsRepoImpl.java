@@ -7,10 +7,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Audit;
 import parsso.idman.models.logs.Event;
+import parsso.idman.models.other.Time;
 import parsso.idman.repos.LogsRepo;
 
 import java.time.ZoneId;
@@ -32,9 +32,9 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
             query.addCriteria(Criteria.where("principal").is(userId));
 
         if (!date.equals("")) {
-            long[] range = TimeHelper.specificDateToEpochRange(TimeHelper.stringInputToTime(date), ZoneId.of(Variables.ZONE));
+            long[] range = new Time().specificDateToEpochRange(new Time().stringInputToTime(date), ZoneId.of(Variables.ZONE));
             query.addCriteria(Criteria.where("whenActionWasPerformed")
-                    .gte(TimeHelper.convertEpochToDate(range[0])).lte(TimeHelper.convertEpochToDate(range[1])));
+                    .gte(new Time().convertEpochToDate(range[0])).lte(new Time().convertEpochToDate(range[1])));
         }
 
 

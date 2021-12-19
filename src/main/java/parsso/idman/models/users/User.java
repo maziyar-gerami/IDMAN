@@ -10,9 +10,9 @@ import org.bson.types.ObjectId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.models.license.License;
 import parsso.idman.models.other.SkyRoom;
+import parsso.idman.models.other.Time;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,7 +72,7 @@ public class User implements UserDetails, Comparable {
     }
 
     public String getExportEndTime() {
-        return TimeHelper.getExportEndTime(getExpiredTime());
+        return new Time().getExportEndTime(getExpiredTime());
     }
 
     public String getExpiredTime(){

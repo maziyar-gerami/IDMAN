@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.other.Time;
 
@@ -65,7 +64,7 @@ public class LogsExcelView extends AbstractXlsxView {
         for (Report report : reports) {
 
             Row aRow = sheet.createRow(rowCount++);
-            Time time = TimeHelper.longToPersianTime(report.getMillis());
+            Time time = new Time().longToPersianTime(report.getMillis());
             aRow.createCell(0).setCellValue(report.getLoggerName());
             aRow.createCell(1).setCellValue(report.getMessage());
             aRow.createCell(2).setCellValue(time.getYear() + "/" + time.getMonth() + "/" + time.getDay());

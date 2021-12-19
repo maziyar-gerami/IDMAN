@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.other.Time;
@@ -34,7 +33,7 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
             query.addCriteria(Criteria.where("principalId").is(userId));
 
         if (!date.equals("")) {
-            long[] range = TimeHelper.specificDateToEpochRange(TimeHelper.stringInputToTime(date), ZoneId.of(Variables.ZONE));
+            long[] range = new Time().specificDateToEpochRange(new Time().stringInputToTime(date), ZoneId.of(Variables.ZONE));
             query.addCriteria(Criteria.where("_id")
                     .gte(range[0]).lte(range[1]));
         }

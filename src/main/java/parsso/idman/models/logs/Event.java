@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.events.ActionInfo;
 import parsso.idman.helpers.events.AgentInfo;
 import parsso.idman.models.other.Time;
@@ -88,7 +87,7 @@ public class Event implements Serializable {
     }
 
     public Time getTime() {
-        return TimeHelper.longToPersianTime(Long.valueOf(_id));
+        return new Time().longToPersianTime(Long.valueOf(_id));
     }
 
     public static Event setStringDateAndTime(Event event, String date, String time){

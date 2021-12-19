@@ -17,7 +17,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.service.*;
@@ -525,7 +524,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         ExtraInfo extraInfo = mongoTemplate.findOne
                 (new Query(Criteria.where("_id").is(id)), ExtraInfo.class, Variables.col_servicesExtraInfo);
 
-        Time time = TimeHelper.longToPersianTime(new Date().getTime());
+        Time time = new Time().longToPersianTime(new Date().getTime());
         SimpleTime simpleTime = new SimpleTime(time);
         List<Schedule> dailyAccess;
         try {

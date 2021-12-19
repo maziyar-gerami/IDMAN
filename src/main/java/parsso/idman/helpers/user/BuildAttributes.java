@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.Variables;
+import parsso.idman.models.other.Time;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 
@@ -224,10 +224,10 @@ public class BuildAttributes {
         if (p.getExpiredTime() != null && !p.getExpiredTime().equals(old.getExpiredTime()) && p.getExpiredTime().charAt(0) != ('-')) {
             if (p.getExpiredTime() != null && !p.getExpiredTime().equals("")) {
                 if (p.getExpiredTime().length() == 10)
-                    context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getExpiredTime()) * 1000));
+                    context.setAttributeValue("pwdEndTime", new Time().epochToDateLdapFormat(Long.parseLong(p.getExpiredTime()) * 1000));
                 else
                     try {
-                        context.setAttributeValue("pwdEndTime", TimeHelper.epochToDateLdapFormat(Long.parseLong(p.getExpiredTime())));
+                        context.setAttributeValue("pwdEndTime", new Time().epochToDateLdapFormat(Long.parseLong(p.getExpiredTime())));
                     } catch (NumberFormatException e) {
                         if (p.getExpiredTime().contains("+"))
                             context.setAttributeValue("pwdEndTime", p.getExpiredTime());

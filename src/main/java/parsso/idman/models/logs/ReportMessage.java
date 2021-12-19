@@ -8,7 +8,6 @@ import lombok.Setter;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Time;
 import parsso.idman.models.services.Service;
@@ -58,7 +57,7 @@ public class ReportMessage {
         this.action = action;
         this.description = description;
         this.millis = new Date().getTime();
-        time = TimeHelper.longToPersianTime(millis);
+        time = new Time().longToPersianTime(millis);
     }
 
     public ReportMessage(String model, Object instance, String attribute, String action, String result, Object to, String description) {
@@ -70,7 +69,7 @@ public class ReportMessage {
         this.to = to;
         this.description = description;
         this.millis = new Date().getTime();
-        time = TimeHelper.longToPersianTime(millis);
+        time = new Time().longToPersianTime(millis);
     }
 
     public ReportMessage(String model, Object instance, String attribute, String action, String result, String type, String item, String description) {
@@ -83,7 +82,7 @@ public class ReportMessage {
         this.item = item;
         this.description = description;
         this.millis = new Date().getTime();
-        time = TimeHelper.longToPersianTime(millis);
+        time = new Time().longToPersianTime(millis);
     }
 
     public ReportMessage(String model, long instance, String attribute, String action, String result,
@@ -111,7 +110,7 @@ public class ReportMessage {
         this.setDifference(difference(from, to));
         this.description = description;
         this.millis = new Date().getTime();
-        time = TimeHelper.longToPersianTime(millis);
+        time = new Time().longToPersianTime(millis);
     }
 
     public ReportMessage(String action, String result, String description) {
@@ -120,7 +119,7 @@ public class ReportMessage {
         this.result = result;
         this.description = description;
         this.millis = new Date().getTime();
-        time = TimeHelper.longToPersianTime(millis);
+        time = new Time().longToPersianTime(millis);
     }
 
     public ReportMessage(Change ch, ReportMessage reportMessage) {
@@ -135,7 +134,7 @@ public class ReportMessage {
         this.action = reportMessage.getAction();
 
         this.description = reportMessage.description;
-        time = TimeHelper.longToPersianTime(millis);
+        time = new Time().longToPersianTime(millis);
 
         this.from = ch.getFrom();
         this.to = ch.getTo();
@@ -156,7 +155,7 @@ public class ReportMessage {
 
         this.description = reportMessage.description;
         this.millis = reportMessage.getMillis();
-        time = TimeHelper.longToPersianTime(millis);
+        time = new Time().longToPersianTime(millis);
 
     }
 
@@ -166,7 +165,7 @@ public class ReportMessage {
         this.result = result;
         this.action = action;
         this.millis = new Date().getTime();
-        time = TimeHelper.longToPersianTime(millis);
+        time = new Time().longToPersianTime(millis);
     }
 
     @SuppressWarnings("DuplicatedCode")

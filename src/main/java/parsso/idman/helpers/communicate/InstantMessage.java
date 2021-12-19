@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Time;
 import parsso.idman.models.users.User;
@@ -501,7 +500,7 @@ public class InstantMessage {
             Texts texts = new Texts();
             texts.passwordChangeNotification(user);
             KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-            Time time = TimeHelper.longToPersianTime(new Date().getTime());
+            Time time = new Time().longToPersianTime(new Date().getTime());
             String d = time.getYear()+"-"+time.getMonth()+"-"+time.getDay();
             String h = time.getHours()+":"+time.getMinutes();
             String dh = d+" ساعت "+h;

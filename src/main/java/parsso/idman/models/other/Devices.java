@@ -2,7 +2,6 @@ package parsso.idman.models.other;
 
 import lombok.Getter;
 import lombok.Setter;
-import parsso.idman.helpers.TimeHelper;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class Devices {
     Time time;
 
     public Time getTime() {
-        return TimeHelper.longToPersianTime(_id);
+        return new Time().longToPersianTime(_id);
     }
 
     @Getter

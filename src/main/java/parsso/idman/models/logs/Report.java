@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Time;
 
@@ -46,11 +45,11 @@ public class Report {
     public static List<Report> analyze(MongoTemplate mongoTemplate, int skip, int limit) {
         Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "millis"));
         List<Report> le = mongoTemplate.find(query, Report.class, Variables.col_Log);
-        return TimeHelper.reportSetDate(le);
+        return new Time().reportSetDate(le);
     }
 
     public Time getDateTime() {
-        return TimeHelper.longToPersianTime(date.getTime());
+        return new Time().longToPersianTime(date.getTime());
     }
 
     public String getDetails() {

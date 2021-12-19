@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.logs.ReportMessage;
@@ -34,7 +33,7 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
             query.addCriteria(Criteria.where("loggerName").is(userId));
 
         if (!date.equals("")) {
-            long[] range = TimeHelper.specificDateToEpochRange(TimeHelper.stringInputToTime(date), ZoneId.of(Variables.ZONE));
+            long[] range = new Time().specificDateToEpochRange(new Time().stringInputToTime(date), ZoneId.of(Variables.ZONE));
             query.addCriteria(Criteria.where("millis")
                     .gte(range[0]).lte(range[1]));
         }
@@ -77,7 +76,7 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
             Time time = new Time(Integer.parseInt(date.substring(4)),
                     Integer.parseInt(date.substring(2, 4)),
                     Integer.parseInt(date.substring(0, 2)));
-            long[] range = TimeHelper.specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
+            long[] range = new Time().specificDateToEpochRange(time, ZoneId.of(Variables.ZONE));
             query.addCriteria(Criteria.where("millis").gte(range[0]).lte(range[1]));
         }
         if (page != 0 && nRows != 0) {

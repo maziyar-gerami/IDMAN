@@ -33,7 +33,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.InstantMessage;
@@ -42,6 +41,7 @@ import parsso.idman.helpers.group.GroupsChecks;
 import parsso.idman.helpers.oneTimeTasks.RunOneTime;
 import parsso.idman.helpers.user.*;
 import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.other.Time;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UserLoggedIn;
@@ -262,7 +262,7 @@ public class UserRepoImpl implements UserRepo {
 
         if (p.getUserPassword() != null && !p.getUserPassword().equals("")) {
             context.setAttributeValue("userPassword", p.getUserPassword());
-            p.setPasswordChangedTime(Long.parseLong(TimeHelper.epochToDateLdapFormat(new Date().getTime()).substring(0, 14)));
+            p.setPasswordChangedTime(Long.parseLong(new Time().epochToDateLdapFormat(new Date().getTime()).substring(0, 14)));
 
 
         } else

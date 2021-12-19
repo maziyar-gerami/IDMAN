@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.models.other.Time;
 
 import java.util.Date;
@@ -84,13 +83,13 @@ public class Ticket {
 
     @SuppressWarnings("unused")
     public Time getCreationDateTime() {
-        return TimeHelper.longToPersianTime(this.creationTime);
+        return new Time().longToPersianTime(this.creationTime);
     }
 
     @SuppressWarnings("unused")
     public Time getModifiedDateTime() {
         if (this.modifiedTime != null)
-            return TimeHelper.longToPersianTime(this.modifiedTime);
+            return new Time().longToPersianTime(this.modifiedTime);
         else
             return null;
     }

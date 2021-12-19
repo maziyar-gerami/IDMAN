@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.models.other.Time;
 
 import java.util.Date;
@@ -49,7 +48,7 @@ public class UsersExtraInfo {
 
     public Time getExpiredTime() {
         if (endTimeEpoch != 0)
-            return TimeHelper.longToPersianTime(endTimeEpoch);
+            return new Time().longToPersianTime(endTimeEpoch);
         return null;
     }
 

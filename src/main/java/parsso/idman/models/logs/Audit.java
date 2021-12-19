@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import parsso.idman.helpers.TimeHelper;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Time;
 
@@ -42,7 +41,7 @@ public class Audit {
     }
 
     public Time getTime() {
-        return TimeHelper.longToPersianTime(whenActionWasPerformed.getTime());
+        return new Time().longToPersianTime(whenActionWasPerformed.getTime());
     }
 
     @SuppressWarnings("unused")
