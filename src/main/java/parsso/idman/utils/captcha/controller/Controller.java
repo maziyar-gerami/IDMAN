@@ -16,13 +16,12 @@ public class Controller {
     CaptchaRepoImp captchaRepoImp;
     @Value("${captcha.length}")
     private String captchaLength;
-    @Value("${captcha.alphabet.rate}")
-    private String captchaAlphabetRate;
+
 
     @GetMapping("/api/captcha/request")
     private ResponseEntity<CAPTCHAimage> requestCaptcha() {
 
-        CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.parseInt(captchaLength), Double.parseDouble(captchaAlphabetRate));
+        CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.parseInt(captchaLength));
         if (captchaImage != null)
             return new ResponseEntity<>(captchaImage, HttpStatus.OK);
         else

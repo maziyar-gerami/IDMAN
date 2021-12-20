@@ -55,8 +55,8 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         this.len = len;
     }
 
-    public CAPTCHAimage createCaptcha(int len, double alphabetRate) {
-        int[] organization = createOrganization(len, alphabetRate);
+    public CAPTCHAimage createCaptcha(int len) {
+        int[] organization = createOrganization(len);
         String phrase = createPhrase(organization);
         CAPTCHA captcha = new CAPTCHA(phrase);
 
@@ -136,8 +136,8 @@ public class CaptchaRepoImp implements CAPTCHARepo {
         return phrase.toString();
     }
 
-    private int[] createOrganization(int len, Double alphabetRate) {
-        int nAlphabet = (int) Math.ceil(alphabetRate * len);
+    private int[] createOrganization(int len) {
+        int nAlphabet = (int) Math.ceil(0.5 * len);
         int rAlphabet = nAlphabet;
         int rNumbers = len - nAlphabet;
         int[] org = new int[len];
