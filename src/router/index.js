@@ -1,101 +1,86 @@
 import { createRouter, createWebHistory } from "vue-router"
-import AccessReports from "../views/AccessReports.vue"
-import Audits from "../views/Audits.vue"
-import ChangePassword from "../views/ChangePassword.vue"
 import Dashboard from "../views/Dashboard.vue"
-import Error from "../views/Error.vue"
-import Events from "../views/Events.vue"
-import Groups from "../views/Groups.vue"
-import Notifications from "../views/Notifications.vue"
-import Profile from "../views/Profile.vue"
-import Reports from "../views/Reports.vue"
-import ResetPassword from "../views/ResetPassword.vue"
-import Roles from "../views/Roles.vue"
-import Services from "../views/Services.vue"
-import Settings from "../views/Settings.vue"
-import Ticketing from "../views/Ticketing.vue"
-import Users from "../views/Users.vue"
 
 const routes = [
-  {
-    path: "/accessreports",
-    name: "AccessReports",
-    component: AccessReports
-  },
-  {
-    path: "/audits",
-    name: "Audits",
-    component: Audits
-  },
-  {
-    path: "/changepassword",
-    name: "ChangePassword",
-    component: ChangePassword
-  },
   {
     path: "/",
     name: "Dashboard",
     component: Dashboard
   },
   {
+    path: "/accessreports",
+    name: "AccessReports",
+    component: () => import("../views/AccessReports.vue")
+  },
+  {
+    path: "/audits",
+    name: "Audits",
+    component: () => import("../views/Audits.vue")
+  },
+  {
+    path: "/changepassword",
+    name: "ChangePassword",
+    component: () => import("../views/ChangePassword.vue")
+  },
+  {
     path: "/error",
     name: "Error",
-    component: Error
+    component: () => import("../views/Error.vue")
   },
   {
     path: "/events",
     name: "Events",
-    component: Events
+    component: () => import("../views/Events.vue")
   },
   {
     path: "/groups",
     name: "Groups",
-    component: Groups
+    component: () => import("../views/Groups.vue")
   },
   {
     path: "/notifications",
     name: "Notifications",
-    component: Notifications
+    component: () => import("../views/Notifications.vue")
   },
   {
     path: "/profile",
     name: "Profile",
-    component: Profile
+    component: () => import("../views/Profile.vue")
   },
   {
     path: "/reports",
     name: "Reports",
-    component: Reports
+    component: () => import("../views/Reports.vue")
   },
   {
     path: "/resetpassword",
     name: "ResetPassword",
-    component: ResetPassword
+    component: () => import("../views/ResetPassword.vue")
   },
   {
     path: "/roles",
     name: "Roles",
-    component: Roles
+    component: () => import("../views/Roles.vue")
   },
   {
     path: "/services",
     name: "Services",
-    component: Services
+    component: () => import("../views/Services.vue")
   },
   {
     path: "/settings",
     name: "Settings",
-    component: Settings
+    component: () => import("../views/Settings.vue")
   },
   {
     path: "/ticketing",
     name: "Ticketing",
-    component: Ticketing
+    component: () => import("../views/Ticketing.vue")
   },
   {
     path: "/users",
     name: "Users",
-    component: Users
+    component: () => import("../views/Users.vue")
   }
 ]
 
