@@ -1,0 +1,12 @@
+{
+    "appNameFa": "پارسو",
+    "appNameEn": "Parsso",
+    "clientNameFa": "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
+    "clientNameEn": "IOOC Centralized Authentication",
+    "defaultTheme": "lara-light-blue",
+    "defaultLanguage": {
+        "lang": "Fa",
+        "dir": "rtl"
+    },
+    "version": "0.1.0"
+}

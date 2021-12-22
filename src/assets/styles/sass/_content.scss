@@ -1,10 +1,19 @@
-.layout-main-container {
+.layout-main-container[dir="ltr"] {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     justify-content: space-between;
     padding: 7rem 2rem 2rem 4rem;
     transition: margin-left $transitionDuration;
+}
+
+.layout-main-container[dir="rtl"] {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: space-between;
+    padding: 7rem 4rem 2rem 2rem;
+    transition: margin-right $transitionDuration;
 }
 
 .layout-main {

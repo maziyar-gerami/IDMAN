@@ -1,0 +1,12 @@
+{
+    "Fa": {
+        "HelloWorld": {
+            "firstText": "برای راهنمایی و دستور العمل های نحوه پیکربندی/سفارشی کردن این پروژه،مستندات vue-cli را بررسی کنید"
+        }
+    },
+    "En": {
+        "HelloWorld": {
+            "firstText": "For a guide and recipes on how to configure / customize this project,check out the vue-cli documentation"
+        }
+    }
+}

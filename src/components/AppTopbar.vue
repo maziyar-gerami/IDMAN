@@ -1,7 +1,7 @@
 <template>
-  <div class="layout-topbar">
+  <div class="layout-topbar" :dir="$direction">
     <router-link to="/" class="layout-topbar-logo">
-      <span>SAKAI</span>
+      <span>{{ clientName }}</span>
     </router-link>
     <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle">
       <i class="pi pi-bars"></i>
@@ -37,6 +37,11 @@
 
 <script>
 export default {
+  data () {
+    return {
+      clientName: this.$clientNameFa
+    }
+  },
   methods: {
     onMenuToggle (event) {
       this.$emit("menu-toggle", event)

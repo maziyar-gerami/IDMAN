@@ -1,5 +1,5 @@
 @media (min-width: 992px) {
-    .layout-wrapper {
+    .layout-wrapper[dir="ltr"] {
         &.layout-overlay {
             .layout-main-container {
                 margin-left: 0;
@@ -44,10 +44,56 @@
             display: none;
         }
     }
+
+    .layout-wrapper[dir="rtl"] {
+        &.layout-overlay {
+            .layout-main-container {
+                margin-right: 0;
+                padding-right: 2rem;
+            }
+
+            .layout-sidebar {
+                transform: translateX(100%);
+                right: 0;
+                top: 0;
+                height: 100vh;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+
+            &.layout-overlay-sidebar-active {
+                .layout-sidebar {
+                    transform: translateX(0);
+                }
+            }
+        }
+
+        &.layout-static {
+            .layout-main-container {
+                margin-right: 300px;
+            }
+
+            &.layout-static-sidebar-inactive {
+                .layout-sidebar {
+                    transform: translateX(100%);
+                    right: 0;
+                }
+
+                .layout-main-container {
+                    margin-right: 0;
+                    padding-right: 2rem;
+                }
+            }
+        }
+
+        .layout-mask {
+            display: none;
+        }
+    }
 }
 
 @media (max-width: 991px) {
-    .layout-wrapper {
+    .layout-wrapper[dir="ltr"] {
         .layout-main-container {
             margin-left: 0;
             padding-left: 2rem;
@@ -60,6 +106,42 @@
             height: 100vh;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
+        }
+
+        .layout-mask {
+            z-index: 998;
+            background-color: var(--maskbg);
+
+            &.layout-mask-enter-from,
+            &.layout-mask-leave-to {
+                background-color: transparent;
+            }
+        }
+
+        &.layout-mobile-sidebar-active {
+            .layout-sidebar {
+                transform: translateX(0);
+            }
+
+            .layout-mask {
+                display: block;
+            }
+        }
+    }
+
+    .layout-wrapper[dir="rtl"] {
+        .layout-main-container {
+            margin-right: 0;
+            padding-right: 2rem;
+        }
+
+        .layout-sidebar {
+            transform: translateX(100%);
+            right: 0;
+            top: 0;
+            height: 100vh;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
         }
 
         .layout-mask {
