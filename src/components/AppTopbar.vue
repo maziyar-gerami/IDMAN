@@ -1,7 +1,7 @@
 <template>
-  <div class="layout-topbar" :dir="$direction">
+  <div class="layout-topbar" :dir="direction">
     <router-link to="/" class="layout-topbar-logo">
-      <span>{{ clientName }}</span>
+      <span>{{ $t("App.clientName") }}</span>
     </router-link>
     <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle">
       <i class="pi pi-bars"></i>
@@ -37,6 +37,7 @@
 
 <script>
 export default {
+  name: "AppTopbar",
   data () {
     return {
       clientName: this.$clientNameFa
@@ -53,6 +54,14 @@ export default {
   computed: {
     darkTheme () {
       return this.$appState.darkTheme
+    },
+    direction () {
+      for (const language in this.$languages) {
+        if (this.$i18n.locale === language) {
+          return this.$languages[language]
+        }
+      }
+      return "rtl"
     }
   }
 }

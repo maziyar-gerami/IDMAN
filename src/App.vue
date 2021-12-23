@@ -1,12 +1,12 @@
 <template>
-  <div :class="containerClass" @click="onWrapperClick" :dir="$direction">
-    <AppTopBar @menu-toggle="onMenuToggle" />
-    <div class="layout-sidebar" @click="onSidebarClick" :dir="$direction">
-        <AppMenu :model="menu" @menuitem-click="onMenuItemClick" />
+  <div :class="containerClass" @click="onWrapperClick" :dir="direction">
+    <AppTopBar @menu-toggle="onMenuToggle" @click="aaaaa" />
+    <div class="layout-sidebar" @click="onSidebarClick" :dir="direction">
+        <AppMenu :model="translationObject.menu" @menuitem-click="onMenuItemClick" />
     </div>
 
-    <div class="layout-main-container" :dir="$direction">
-        <div class="layout-main" :dir="$direction">
+    <div class="layout-main-container" :dir="direction">
+        <div class="layout-main" :dir="direction">
             <router-view />
         </div>
         <!-- <AppFooter /> -->
@@ -31,59 +31,7 @@ export default {
       layoutMode: "static",
       staticMenuInactive: false,
       overlayMenuActive: false,
-      mobileMenuActive: false,
-      menu: [
-        {
-          label: "",
-          items: [
-            {
-              label: "Dashboard", icon: "pi pi-fw pi-id-card", to: "/"
-            },
-            {
-              label: "Users", icon: "pi pi-fw pi-check-square", to: "/users"
-            },
-            {
-              label: "Groups", icon: "pi pi-fw pi-bookmark", to: "/groups"
-            },
-            {
-              label: "Services", icon: "pi pi-fw pi-exclamation-circle", to: "/services"
-            },
-            {
-              label: "Roles", icon: "pi pi-fw pi-tablet", to: "/roles"
-            },
-            {
-              label: "Ticketing", icon: "pi pi-fw pi-table", to: "/ticketing"
-            },
-            {
-              label: "Notifications", icon: "pi pi-fw pi-list", to: "/notifications"
-            },
-            {
-              label: "Reports",
-              icon: "pi pi-fw pi-share-alt",
-              items: [
-                {
-                  label: "Audits", icon: "pi pi-fw pi-share-alt", to: "/audits"
-                },
-                {
-                  label: "Events", icon: "pi pi-fw pi-share-alt", to: "/events"
-                },
-                {
-                  label: "Reports", icon: "pi pi-fw pi-share-alt", to: "/reports"
-                },
-                {
-                  label: "Access Reports", icon: "pi pi-fw pi-share-alt", to: "/accessreports"
-                }
-              ]
-            },
-            {
-              label: "Profile", icon: "pi pi-fw pi-chart-bar", to: "/profile"
-            },
-            {
-              label: "Settings", icon: "pi pi-fw pi-circle-off", to: "/settings"
-            }
-          ]
-        }
-      ]
+      mobileMenuActive: false
     }
   },
   watch: {
@@ -93,6 +41,9 @@ export default {
     } */
   },
   methods: {
+    aaaaa () {
+      console.log(this.$direction)
+    },
     onWrapperClick () {
       if (!this.menuClick) {
         this.overlayMenuActive = false
@@ -172,6 +123,70 @@ export default {
     },
     logo () {
       return (this.$appState.darkTheme) ? "images/logo-white.svg" : "images/logo-dark.svg"
+    },
+    direction () {
+      for (const language in this.$languages) {
+        if (this.$i18n.locale === language) {
+          return this.$languages[language]
+        }
+      }
+      return "rtl"
+    },
+    translationObject () {
+      return {
+        menu: [
+          {
+            label: "",
+            items: [
+              {
+                label: this.$t("App.dashboard"), icon: "pi pi-fw pi-chart-bar", to: "/"
+              },
+              {
+                label: this.$t("App.users"), icon: "pi pi-fw pi-user", to: "/users"
+              },
+              {
+                label: this.$t("App.groups"), icon: "pi pi-fw pi-users", to: "/groups"
+              },
+              {
+                label: this.$t("App.services"), icon: "pi pi-fw pi-sitemap", to: "/services"
+              },
+              {
+                label: this.$t("App.roles"), icon: "pi pi-fw pi-tags", to: "/roles"
+              },
+              {
+                label: this.$t("App.ticketing"), icon: "pi pi-fw pi-ticket", to: "/ticketing"
+              },
+              {
+                label: this.$t("App.notifications"), icon: "pi pi-fw pi-bell", to: "/notifications"
+              },
+              {
+                label: this.$t("App.reports"),
+                icon: "pi pi-fw pi-credit-card",
+                items: [
+                  {
+                    label: this.$t("App.audits"), icon: "pi pi-fw pi-search", to: "/audits"
+                  },
+                  {
+                    label: this.$t("App.events"), icon: "pi pi-fw pi-calendar", to: "/events"
+                  },
+                  {
+                    label: this.$t("App.reports"), icon: "pi pi-fw pi-file", to: "/reports"
+                  },
+                  {
+                    label: this.$t("App.accessReports"), icon: "pi pi-fw pi-list", to: "/accessreports"
+                  }
+                ]
+              },
+              {
+                label: this.$t("App.profile"), icon: "pi pi-fw pi-id-card", to: "/profile"
+              },
+              {
+                label: this.$t("App.settings"), icon: "pi pi-fw pi-cog", to: "/settings"
+              }
+            ]
+          }
+        ]
+      }
     }
   },
   beforeCreate () {

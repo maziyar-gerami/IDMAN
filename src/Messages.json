@@ -1,10 +1,40 @@
 {
     "Fa": {
+        "App": {
+            "dashboard": "داشبورد",
+            "users": "کاربران",
+            "groups": "گروه ها",
+            "services": "سرویس ها",
+            "roles": "نقش ها",
+            "ticketing": "پشتیبانی",
+            "notifications": "اعلان ها",
+            "reports": "گزارش ها",
+            "audits": "ممیزی ها",
+            "events": "رویداد ها",
+            "accessReports": "گزارش های دسترسی",
+            "profile": "پروفایل",
+            "settings": "تنظیمات"
+        },
         "HelloWorld": {
             "firstText": "برای راهنمایی و دستور العمل های نحوه پیکربندی/سفارشی کردن این پروژه،مستندات vue-cli را بررسی کنید"
         }
     },
     "En": {
+        "App": {
+            "dashboard": "Dashboard",
+            "users": "Users",
+            "groups": "Groups",
+            "services": "Services",
+            "roles": "Roles",
+            "ticketing": "Ticketing",
+            "notifications": "Notifications",
+            "reports": "Reports",
+            "audits": "Audits",
+            "events": "Events",
+            "accessReports": "Access Reports",
+            "profile": "Profile",
+            "settings": "Settings"
+        },
         "HelloWorld": {
             "firstText": "For a guide and recipes on how to configure / customize this project,check out the vue-cli documentation"
         }

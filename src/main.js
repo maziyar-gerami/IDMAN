@@ -14,12 +14,17 @@ import { createI18n } from "vue-i18n"
 import PrimeVue from "primevue/config"
 import Ripple from "primevue/ripple"
 import StyleClass from "primevue/styleclass"
+import Avatar from "primevue/avatar"
+import axios from "axios"
+import VueAxios from "vue-axios"
 
 router.beforeEach(function (to, from, next) {
   window.scrollTo(0, 0)
   next()
 })
 
+ParssoMessages.Fa.App.clientName = ParssoConfigs.clientNameFa
+ParssoMessages.En.App.clientName = ParssoConfigs.clientNameEn
 export const i18n = createI18n({
   locale: "Fa",
   messages: ParssoMessages
@@ -31,16 +36,18 @@ app.config.globalProperties.$appNameFa = ParssoConfigs.appNameFa
 app.config.globalProperties.$appNameEn = ParssoConfigs.appNameEn
 app.config.globalProperties.$clientNameFa = ParssoConfigs.clientNameFa
 app.config.globalProperties.$clientNameEn = ParssoConfigs.clientNameEn
-app.config.globalProperties.$language = ParssoConfigs.defaultLanguage.lang
-app.config.globalProperties.$direction = ParssoConfigs.defaultLanguage.dir
+app.config.globalProperties.$languages = ParssoConfigs.languages
 app.config.globalProperties.$version = ParssoConfigs.version
 app.config.globalProperties.$appState = reactive({ theme: ParssoConfigs.defaultTheme, darkTheme: false })
 
 app.use(router)
 app.use(i18n)
 app.use(PrimeVue, { ripple: true, inputStyle: "outlined" })
+app.use(VueAxios, axios)
 
 app.directive("ripple", Ripple)
 app.directive("styleclass", StyleClass)
+
+app.component("AppAvatar", Avatar)
 
 app.mount("#app")

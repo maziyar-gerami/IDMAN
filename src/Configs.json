@@ -4,9 +4,9 @@
     "clientNameFa": "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
     "clientNameEn": "IOOC Centralized Authentication",
     "defaultTheme": "lara-light-blue",
-    "defaultLanguage": {
-        "lang": "Fa",
-        "dir": "rtl"
+    "languages": {
+        "Fa": "rtl",
+        "En": "ltr"
     },
     "version": "0.1.0"
 }
