@@ -30,8 +30,6 @@ public class Token {
     @Autowired
     LdapTemplate ldapTemplate;
     @Autowired
-    InstantMessage instantMessage;
-    @Autowired
     BuildDnUser buildDnUser;
     @Autowired
     MongoTemplate mongoTemplate;
@@ -160,9 +158,5 @@ public class Token {
         }
 
         return true;
-    }
-
-    public int requestToken(User user) {
-        return instantMessage.sendMessage(user);
     }
 }

@@ -15,9 +15,9 @@ import java.util.Map;
  * Responsible to define operation that deal with encryption, signing
  * and verification of a value.
  *
- * @author Misagh Moayyed
  * @param <I> the type parameter for the input
  * @param <O> the type parameter for the output
+ * @author Misagh Moayyed
  * @since 4.1
  */
 @SuppressWarnings("SameReturnValue")

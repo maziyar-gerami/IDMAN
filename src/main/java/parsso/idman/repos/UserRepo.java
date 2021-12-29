@@ -60,8 +60,6 @@ public interface UserRepo {
 
     String createUrl(String userId, String token);
 
-    int requestToken(User user);
-
     JSONObject massUpdate(String doerID, List<User> users);
 
     ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);

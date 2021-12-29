@@ -17,7 +17,7 @@ public class StorageController {
     private final FilesStorageService storageService;
 
     @Autowired
-    public StorageController(FilesStorageService storageService){
+    public StorageController(FilesStorageService storageService) {
         this.storageService = storageService;
     }
 

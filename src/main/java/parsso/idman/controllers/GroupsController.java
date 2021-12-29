@@ -33,7 +33,7 @@ public class GroupsController {
     @GetMapping("/user")
     public ResponseEntity<List<Group>> retrieveUserOU(HttpServletRequest request) {
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
-        if(user==null){
+        if (user == null) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         List<Group> groups = groupRepo.retrieveCurrentUserGroup(user);
@@ -63,14 +63,14 @@ public class GroupsController {
     }
 
     @PutMapping
-    public ResponseEntity<HttpStatus> rebind(HttpServletRequest request, @RequestParam(value = "id") String ouID, @RequestBody Group ou){
-        return new ResponseEntity<>(groupRepo.update(request.getUserPrincipal().getName(),ouID, ou));
+    public ResponseEntity<HttpStatus> rebind(HttpServletRequest request, @RequestParam(value = "id") String ouID, @RequestBody Group ou) {
+        return new ResponseEntity<>(groupRepo.update(request.getUserPrincipal().getName(), ouID, ou));
     }
 
     @PutMapping("/password/expire")
     public ResponseEntity<?> expireUsersGroupPassword(HttpServletRequest request,
-                                                   @RequestBody JSONObject jsonObject,
-                                                   @RequestParam(value = "id", defaultValue = "") String id) {
+                                                      @RequestBody JSONObject jsonObject,
+                                                      @RequestParam(value = "id", defaultValue = "") String id) {
 
         String userId = request.getUserPrincipal().getName();
 

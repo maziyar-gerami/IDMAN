@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
 
-@SuppressWarnings({"unchecked","rawTypes"})
+@SuppressWarnings({"unchecked", "rawTypes"})
 public class Notifs {
     public ServiceGist getNotifications(String userId, String notificationApiURL, String notificationApiKey) throws IOException {
         URL url;

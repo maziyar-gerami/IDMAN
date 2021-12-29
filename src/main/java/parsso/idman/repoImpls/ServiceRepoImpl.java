@@ -322,7 +322,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         try {
             LinkedHashMap jsonObject1 = (LinkedHashMap) jsonObject.get("extraInfo");
             dailyAccess = (ArrayList<LinkedHashMap>) jsonObject1.get("dailyAccess");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         long id = 0;
@@ -335,7 +335,6 @@ public class ServiceRepoImpl implements ServiceRepo {
             extraInfo.setUUID(GenerateUUID.getUUID());
 
 
-
         if (system.equalsIgnoreCase("cas"))
             id = casServiceHelper.create(doerID, jsonObject);
 
@@ -345,7 +344,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         else if (system.equalsIgnoreCase("OAuth"))
             id = oAuthServiceHelper.create(doerID, jsonObject);
 
-        if(dailyAccess !=null){
+        if (dailyAccess != null) {
 
             extraInfo.setDailyAccess((List<Schedule>) jsonExtraInfo.get("dailyAccess"));
 
@@ -353,10 +352,10 @@ public class ServiceRepoImpl implements ServiceRepo {
             jsonObject.remove("accessStrategy");
             jsonObjectTemp.remove("@class");
             jsonObjectTemp.put("@class", "org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
-            jsonObjectTemp.put("endPointUrl" , baseUrl+"/api/serviceCheck/"+id);
+            jsonObjectTemp.put("endPointUrl", baseUrl + "/api/serviceCheck/" + id);
             jsonObjectTemp.put("acceptableResponseCodes", "200");
-            jsonObject.put("accessStrategy",jsonObjectTemp);
-            updateService("System", id,jsonObject,system);
+            jsonObject.put("accessStrategy", jsonObjectTemp);
+            updateService("System", id, jsonObject, system);
 
         }
 
@@ -443,7 +442,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
             extraInfo.setNotificationApiKey((String) JsonExtraInfo.get("notificationApiKey"));
 
-            if(JsonExtraInfo.get("dailyAccess")!=null){
+            if (JsonExtraInfo.get("dailyAccess") != null) {
 
                 extraInfo.setDailyAccess((List<Schedule>) JsonExtraInfo.get("dailyAccess"));
 
@@ -451,9 +450,9 @@ public class ServiceRepoImpl implements ServiceRepo {
                 jsonObject.remove("accessStrategy");
                 jsonObjectTemp.remove("@class");
                 jsonObjectTemp.put("@class", "org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
-                jsonObjectTemp.put("endPointUrl" , baseUrl+"/api/serviceCheck/"+id);
+                jsonObjectTemp.put("endPointUrl", baseUrl + "/api/serviceCheck/" + id);
                 jsonObjectTemp.put("acceptableResponseCodes", "200");
-                jsonObject.put("accessStrategy",jsonObjectTemp);
+                jsonObject.put("accessStrategy", jsonObjectTemp);
 
             }
 

@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import parsso.idman.helpers.excelView.LogsExcelView;
-import parsso.idman.helpers.excelView.EventsExcelView;
 import parsso.idman.helpers.excelView.AuditsExcelView;
+import parsso.idman.helpers.excelView.EventsExcelView;
+import parsso.idman.helpers.excelView.LogsExcelView;
 import parsso.idman.models.logs.Audit;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.logs.Report;
@@ -95,9 +95,9 @@ public class LogsController {
                                                               @RequestParam(name = "date", defaultValue = "") String date,
                                                               @RequestParam(name = "page") String page,
                                                               @RequestParam(name = "count") String count) {
-        Report.ListReports s1 = reportsRepo.retrieve(userID, date, Integer.parseInt(page),Integer.parseInt(count));
+        Report.ListReports s1 = reportsRepo.retrieve(userID, date, Integer.parseInt(page), Integer.parseInt(count));
 
-        return new ResponseEntity<>(s1,HttpStatus.OK);
+        return new ResponseEntity<>(s1, HttpStatus.OK);
 
     }
 

@@ -20,26 +20,27 @@ public class Status {
     String model;
 
     public String getResult() throws NoSuchFieldException, IllegalAccessException {
-        return StringResult.get(code,model,lang);
+        return StringResult.get(code, model, lang);
     }
 
     public Status(int code) {
         this.code = code;
 
     }
-    public Status (HttpStatus httpStatus, String model, String lang) throws NoSuchFieldException, IllegalAccessException {
+
+    public Status(HttpStatus httpStatus, String model, String lang) throws NoSuchFieldException, IllegalAccessException {
         code = httpStatus.value();
-        result = StringResult.get(code,model,lang);
+        result = StringResult.get(code, model, lang);
 
         if (code == 200) {
             result = StringResult.COMMON_200_EN;
-        } else if (code ==201){
+        } else if (code == 201) {
 
-        } else if (code ==202){
+        } else if (code == 202) {
 
-        } else if (code ==203){
+        } else if (code == 203) {
 
-        }else  if (code == 204){
+        } else if (code == 204) {
 
         }
     }

@@ -75,9 +75,9 @@ public class User implements UserDetails, Comparable {
         return new Time().getExportEndTime(getExpiredTime());
     }
 
-    public String getExpiredTime(){
+    public String getExpiredTime() {
 
-        if (this.expiredTime ==null || this.expiredTime.equals("null"))
+        if (this.expiredTime == null || this.expiredTime.equals("null"))
             return null;
         return this.expiredTime;
     }

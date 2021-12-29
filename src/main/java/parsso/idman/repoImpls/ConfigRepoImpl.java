@@ -167,7 +167,7 @@ public class ConfigRepoImpl implements ConfigRepo {
 
             }
 
-            int index=file_properties.indexOf(setting.getGroupEN()) + setting.getGroupEN().length();
+            int index = file_properties.indexOf(setting.getGroupEN()) + setting.getGroupEN().length();
 
 
             String temp = "";

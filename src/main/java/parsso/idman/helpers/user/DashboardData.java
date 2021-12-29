@@ -33,6 +33,7 @@ public class DashboardData {
     final UserAttributeMapper userAttributeMapper;
     final SimpleUserAttributeMapper simpleUserAttributeMapper;
     final LdapTemplate ldapTemplate;
+
     @Autowired
     public DashboardData(UserRepo userRepo, LogsRepo.EventRepo eventRepo, ServiceRepo serviceRepo, MongoTemplate mongoTemplate, UserAttributeMapper userAttributeMapper, SimpleUserAttributeMapper simpleUserAttributeMapper, LdapTemplate ldapTemplate) {
         this.userRepo = userRepo;

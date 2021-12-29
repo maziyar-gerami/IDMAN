@@ -22,8 +22,7 @@ public class EventsExcelView extends AbstractXlsxView {
     final MongoTemplate mongoTemplate;
 
     @Autowired
-    EventsExcelView(LogsRepo.EventRepo eventRepo, MongoTemplate mongoTemplate)
-    {
+    EventsExcelView(LogsRepo.EventRepo eventRepo, MongoTemplate mongoTemplate) {
         this.eventRepo = eventRepo;
         this.mongoTemplate = mongoTemplate;
 
@@ -76,11 +75,11 @@ public class EventsExcelView extends AbstractXlsxView {
         // create data rows
         int rowCount = 1;
 
-        for (int page=0; page <= Math.ceil( Variables.PER_BATCH_COUNT/(float)count); page++) {
+        for (int page = 0; page <= Math.ceil(Variables.PER_BATCH_COUNT / (float) count); page++) {
 
-            if (page==100)
+            if (page == 100)
                 return;
-            int skip = (page == 1) ? 0 :((page - 1) * Variables.PER_BATCH_COUNT);
+            int skip = (page == 1) ? 0 : ((page - 1) * Variables.PER_BATCH_COUNT);
 
             List<Event> events = eventRepo.analyze(skip, Variables.PER_BATCH_COUNT);
 

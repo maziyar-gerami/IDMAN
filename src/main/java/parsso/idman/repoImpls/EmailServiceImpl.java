@@ -187,7 +187,8 @@ public class EmailServiceImpl implements EmailService {
         try {
             text = user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')) + start + day + middle + end;
             sendHtmlMessage(user, subject, text);
-        }catch (StringIndexOutOfBoundsException ignored){}
+        } catch (StringIndexOutOfBoundsException ignored) {
+        }
     }
 
     @Override

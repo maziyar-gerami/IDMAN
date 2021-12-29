@@ -70,6 +70,18 @@ public class Variables {
     public static final String MSG_FA_CODE_503 = "آدرس API صحیح نیست و یا متد آن به درستی تعیین نشده است.";
     public static final String MODEL_SETTINGS = "Settings";
     public static final String MODEL_TOKEN = "Token";
+
+    public static final String SMS_MAGFA_USERNAME = "SMS.Magfa.username";
+    public static final String SMS_MAGFA_PASSWORD = "SMS.Magfa.password";
+    public static final String SKYROOM_API_KEY = "skyroom.api.key";
+    public static final String USER_PROFILE_ACCESS = "user.profile.access";
+    public static final String DEFAULT_USER_PASSWORD = "default.user.password";
+    public static final String CAPTCHA_LENGTH = "captcha.length";
+    public static final String SKYROOM_ENABLE = "skyroom.enable";
+    public static final String SMS_SDK = "SMS.SDK";
+    public static final String TOKEN_VALID_SMS = "token.valid.SMS";
+    public static final String KAVENEGAR_API_KEY = "kavenegar.sms.api.key";
+
     static final String email_body = "شما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید." +
             "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +
             "در غیر این صورت با کلیک بر روی  لینک زیر نسبت به بازنشانی و تغییر رمز عبور خود اقدام نمایید.\n";
@@ -77,7 +89,7 @@ public class Variables {
     static final String email_stringUid = "نام کاربری: ";
     static final String email_stringLink = "لینک بازنشانی رمز عبور: ";
     static final String logo = "https://blog.pars-sso.ir/wp-content/uploads/2021/02/magit-logo.png";
-    public static final String col_GoogleAuthDevice= "MongoDbGoogleAuthenticatorRepository";
+    public static final String col_GoogleAuthDevice = "MongoDbGoogleAuthenticatorRepository";
     public static final int PER_BATCH_COUNT = 1000;
     public static final String col_Token = "Tokens";
 
@@ -93,8 +105,8 @@ public class Variables {
                         "<img style=\"vertical-align:middle;\" src=\"" + logo + "\"" + "alt= \"Parsso\">";
     }
 
-    public static final String PARSSO_IDMAN=
-                    " ███████████   █████████  ███████████    █████████  █████████     ███████   \n" +
+    public static final String PARSSO_IDMAN =
+            " ███████████   █████████  ███████████    █████████  █████████     ███████   \n" +
                     "░░███░░░░░███ ███░░░░░███░░███░░░░░███  ███░░░░░██████░░░░░███  ███░░░░░███ \n" +
                     " ░███    ░███░███    ░███ ░███    ░███ ░███    ░░░░███    ░░░  ███     ░░███\n" +
                     " ░██████████ ░███████████ ░██████████  ░░█████████░░█████████ ░███      ░███\n" +
@@ -109,10 +121,7 @@ public class Variables {
                     " ░███ ░███    ░███░███ ░░░  ░███░███░░░░░███ ░███ ░░██████                  \n" +
                     " ░███ ░███    ███ ░███      ░███░███    ░███ ░███  ░░█████                  \n" +
                     " ███████████████  █████     █████████   ██████████  ░░█████                 \n" +
-                    "░░░░░░░░░░░░░░░  ░░░░░     ░░░░░░░░░   ░░░░░░░░░░    ░░░░░                  \n" +
-                    "                                                                            \n" +
-                    "                                                                            \n" +
-                    "                                                                            ";
+                    "░░░░░░░░░░░░░░░  ░░░░░     ░░░░░░░░░   ░░░░░░░░░░    ░░░░░                  ";
 
 }
 

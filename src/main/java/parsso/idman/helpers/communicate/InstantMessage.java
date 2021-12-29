@@ -50,8 +50,6 @@ public class InstantMessage {
     private Token tokenClass;
     @Autowired
     private parsso.idman.helpers.user.UserAttributeMapper userAttributeMapper;
-    @Autowired
-    private MagfaSMSSendRepo magfaSMSSendRepo;
 
     public int sendMessage(String mobile, String cid, String answer) {
 
@@ -193,7 +191,7 @@ public class InstantMessage {
 
                 Texts texts = new Texts();
                 texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS)));
-                magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
+                new MagfaSMS(mongoTemplate,texts.getMainMessage()).SendMessage(user.getMobile(), 1L);
 
                 mongoTemplate.remove(query, collection);
                 return Integer.parseInt(SMS_VALID_TIME);
@@ -239,7 +237,7 @@ public class InstantMessage {
 
                 Texts texts = new Texts();
                 texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS)));
-                magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
+                new MagfaSMS(mongoTemplate,texts.getMainMessage()).SendMessage( user.getMobile(), 1L);
 
                 mongoTemplate.remove(query, collection);
                 return Integer.parseInt(SMS_VALID_TIME);
@@ -288,7 +286,7 @@ public class InstantMessage {
                 try {
                     Texts texts = new Texts();
                     texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS)));
-                    magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
+                    new MagfaSMS(mongoTemplate,texts.getMainMessage()).SendMessage(user.getMobile(), 1L);
 
                     return Integer.parseInt(SMS_VALID_TIME);
 
@@ -416,7 +414,7 @@ public class InstantMessage {
                         try {
                             Texts texts = new Texts();
                             texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(SMS_VALIDATION_DIGITS)));
-                            magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
+                            new MagfaSMS(mongoTemplate,texts.getMainMessage()).SendMessage(user.getMobile(), 1L);
                             mongoTemplate.remove(query, collection);
                             return Integer.parseInt(SMS_VALID_TIME);
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
@@ -477,7 +475,7 @@ public class InstantMessage {
         try {
             Texts texts = new Texts();
             texts.passwordChangeNotification(user);
-            magfaSMSSendRepo.SendMessage(texts.getMainMessage(), user.getMobile(), 1L);
+            new MagfaSMS(mongoTemplate,texts.getMainMessage()).SendMessage(user.getMobile(), 1L);
             return Integer.parseInt(SMS_VALID_TIME);
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
@@ -500,7 +498,7 @@ public class InstantMessage {
             Texts texts = new Texts();
             texts.passwordChangeNotification(user);
             KavenegarApi api = new KavenegarApi(SMS_API_KEY);
-            Time time = new Time().longToPersianTime(new Date().getTime());
+            Time time = Time.longToPersianTime(new Date().getTime());
             String d = time.getYear()+"-"+time.getMonth()+"-"+time.getDay();
             String h = time.getHours()+":"+time.getMinutes();
             String dh = d+" ساعت "+h;

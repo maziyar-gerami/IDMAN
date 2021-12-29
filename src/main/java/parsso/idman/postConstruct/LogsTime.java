@@ -14,11 +14,11 @@ import java.util.List;
 public class LogsTime {
     final MongoTemplate mongoTemplate;
 
-    public LogsTime(MongoTemplate mongoTemplate){
+    public LogsTime(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public void run(){
+    public void run() {
         EventThread eventThread = new EventThread();
         eventThread.run();
 
@@ -27,40 +27,39 @@ public class LogsTime {
 
     }
 
-    public class EventThread implements Runnable{
+    public class EventThread implements Runnable {
 
         @Override
         public void run() {
             try {
                 events();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public class AuditThread implements Runnable{
+    public class AuditThread implements Runnable {
 
         @Override
         public void run() {
             try {
                 audits();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
 
-
-    public void events(){
+    public void events() {
         Query query = new Query(Criteria.where("dateString").exists(false));
 
         char[] animationChars = new char[]{'|', '/', '-', '\\'};
 
         long count = mongoTemplate.count(query, Variables.col_casEvent);
 
-        for (int page = 0; page <= Math.ceil( (float)count/Variables.PER_BATCH_COUNT); page++) {
+        for (int page = 0; page <= Math.ceil((float) count / Variables.PER_BATCH_COUNT); page++) {
 
 
             int skip = (page == 0) ? 0 : ((page - 1) * Variables.PER_BATCH_COUNT);
@@ -77,21 +76,21 @@ public class LogsTime {
                 mongoTemplate.upsert(new Query(Criteria.where("_id").is(_id)), update, Variables.col_casEvent);
 
             }
-            double i =  (page * 100 / Math.ceil( (float)count/Variables.PER_BATCH_COUNT));
-            i = Math.round(i*Math.pow(10,1))/Math.pow(10,1);
-            System.out.print("Processing events: " + i + "% " + animationChars[(int)i % 4] + "\r");
+            double i = (page * 100 / Math.ceil((float) count / Variables.PER_BATCH_COUNT));
+            i = Math.round(i * Math.pow(10, 1)) / Math.pow(10, 1);
+            System.out.print("Processing events: " + i + "% " + animationChars[(int) i % 4] + "\r");
             Runtime.getRuntime().freeMemory();
         }
         System.out.println("Processing events: Done!");
 
     }
 
-    public void audits(){
+    public void audits() {
         Query query = new Query(Criteria.where("dateString").exists(false));
 
         long count = mongoTemplate.count(query, Variables.col_audit);
 
-        for (int page = 0; page <= Math.ceil( (float)count/Variables.PER_BATCH_COUNT); page++) {
+        for (int page = 0; page <= Math.ceil((float) count / Variables.PER_BATCH_COUNT); page++) {
 
             int skip = (page == 0) ? 0 : ((page - 1) * Variables.PER_BATCH_COUNT);
 
@@ -109,16 +108,16 @@ public class LogsTime {
                 Update update = createUpdate(t);
                 mongoTemplate.upsert(new Query(Criteria.where("_id").is(audit.get_id())), update, Variables.col_audit);
             }
-            double i =  page * 100 / (Math.ceil( (float)count/Variables.PER_BATCH_COUNT));
-            i = Math.round(i*Math.pow(10,1))/Math.pow(10,1);
-            System.out.print("Processing audits: " + i + "% " + animationChars[(int)i % 4] + "\r");
+            double i = page * 100 / (Math.ceil((float) count / Variables.PER_BATCH_COUNT));
+            i = Math.round(i * Math.pow(10, 1)) / Math.pow(10, 1);
+            System.out.print("Processing audits: " + i + "% " + animationChars[(int) i % 4] + "\r");
             Runtime.getRuntime().freeMemory();
         }
         System.out.println("Processing audits: Done!");
 
     }
 
-    private Update createUpdate(Long millis){
+    private Update createUpdate(Long millis) {
         LogTime logTime = new LogTime(millis);
         Update update = new Update();
         update.set("dateString", logTime.getDate());

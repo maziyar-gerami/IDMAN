@@ -82,7 +82,6 @@ public class UniformLogger {
                                 reportMessageList.add(new ReportMessage(ch, reportMessage));
 
 
-
                     if (reportMessage.getUsersGroups() != null) {
                         reportMessage.setInstanceName(serviceRepo.retrieveService(Long.parseLong(reportMessage.getInstance().toString())).getName());
                         for (String s : reportMessage.getUsersGroups().getUsers().getAdd())
@@ -94,7 +93,7 @@ public class UniformLogger {
                         for (String s : reportMessage.getUsersGroups().getGroups().getAdd())
                             reportMessageList.add(new ReportMessage(Variables.MODEL_GROUP, s, Variables.ACCESS_ADD, reportMessage));
 
-                        for (String s :  reportMessage.getUsersGroups().getGroups().getRemove())
+                        for (String s : reportMessage.getUsersGroups().getGroups().getRemove())
                             reportMessageList.add(new ReportMessage(Variables.MODEL_GROUP, s, Variables.ACCESS_REM, reportMessage));
 
                     }

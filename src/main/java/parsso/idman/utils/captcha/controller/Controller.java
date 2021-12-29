@@ -2,26 +2,32 @@ package parsso.idman.utils.captcha.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.Setting;
 import parsso.idman.utils.captcha.models.CAPTCHAimage;
+import parsso.idman.utils.captcha.repo.CAPTCHARepo;
 import parsso.idman.utils.captcha.repoImp.CaptchaRepoImp;
 
 @RestController
 public class Controller {
-    @Autowired
-    CaptchaRepoImp captchaRepoImp;
-    @Value("${captcha.length}")
-    private String captchaLength;
+    final CAPTCHARepo captchaRepo;
+    final MongoTemplate mongoTemplate;
 
+    @Autowired
+    Controller(CaptchaRepoImp captchaRepoImp, MongoTemplate mongoTemplate) {
+        this.captchaRepo = captchaRepoImp;
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @GetMapping("/api/captcha/request")
     private ResponseEntity<CAPTCHAimage> requestCaptcha() {
 
-        CAPTCHAimage captchaImage = captchaRepoImp.createCaptcha(Integer.parseInt(captchaLength));
+        CAPTCHAimage captchaImage = captchaRepo.createCaptcha(Integer.parseInt(new Setting(mongoTemplate).retrieve(Variables.CAPTCHA_LENGTH).getValue()));
         if (captchaImage != null)
             return new ResponseEntity<>(captchaImage, HttpStatus.OK);
         else

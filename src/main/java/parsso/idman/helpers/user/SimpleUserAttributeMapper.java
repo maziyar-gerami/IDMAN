@@ -38,7 +38,7 @@ public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInf
 
         user.setMemberOf(ls);
 
-        int nPass=0;
+        int nPass = 0;
         try {
             nPass = attributes.get("pwdHistory").size();
         } catch (Exception ignored) {
@@ -60,7 +60,7 @@ public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInf
 
             user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
 
-            int nPass=0;
+            int nPass = 0;
             try {
                 nPass = attributes.get("pwdHistory").size();
             } catch (Exception ignored) {

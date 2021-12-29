@@ -89,7 +89,7 @@ public class GroupRepoImpl implements GroupRepo {
                 if (user != null && user.getMemberOf() != null)
                     for (String groupN : user.getMemberOf()) {
                         if (groupN.equalsIgnoreCase(group.getId())) {
-                            context = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(),BASE_DN));
+                            context = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(), BASE_DN));
                             context.removeAttributeValue("ou", group.getId());
                             try {
                                 ldapTemplate.modifyAttributes(context);
@@ -241,7 +241,7 @@ public class GroupRepoImpl implements GroupRepo {
                 for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(id)) {
                     for (String group : user.getMemberOf()) {
                         if (group.equalsIgnoreCase(id)) {
-                            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(),BASE_DN));
+                            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(), BASE_DN));
                             contextUser.removeAttributeValue("ou", id);
                             contextUser.addAttributeValue("ou", ou.getId());
                             ldapTemplate.modifyAttributes(contextUser);

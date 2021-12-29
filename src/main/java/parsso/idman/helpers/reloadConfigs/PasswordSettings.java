@@ -43,7 +43,7 @@ public class PasswordSettings {
     private String BASE_DN;
 
     private Name buidDn() {
-        return LdapNameBuilder.newInstance("cn=DefaultPPolicy,ou=Policies,"+ BASE_DN).build();
+        return LdapNameBuilder.newInstance("cn=DefaultPPolicy,ou=Policies," + BASE_DN).build();
     }
 
     public void update(List<Setting> settings) {

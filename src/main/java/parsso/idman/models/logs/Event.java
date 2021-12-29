@@ -53,7 +53,6 @@ public class Event implements Serializable {
     String dateString;
 
 
-
     public String getType() {
         ActionInfo actionHelper = new ActionInfo(type);
         return actionHelper.getAction();
@@ -87,10 +86,10 @@ public class Event implements Serializable {
     }
 
     public Time getTime() {
-        return new Time().longToPersianTime(Long.valueOf(_id));
+        return  Time.longToPersianTime(Long.valueOf(_id));
     }
 
-    public static Event setStringDateAndTime(Event event, String date, String time){
+    public static Event setStringDateAndTime(Event event, String date, String time) {
         event.setDateString(date);
         event.setTimeString(time);
         return event;

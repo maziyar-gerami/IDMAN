@@ -12,7 +12,7 @@ public class RunOneTime {
     final MongoTemplate mongoTemplate;
     final String BASE_DN;
 
-    public  RunOneTime(LdapTemplate ldapTemplate,MongoTemplate mongoTemplate, UniformLogger uniformLogger, String BASE_DN){
+    public RunOneTime(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger, String BASE_DN) {
         this.ldapTemplate = ldapTemplate;
         this.mongoTemplate = mongoTemplate;
         this.uniformLogger = uniformLogger;
@@ -20,9 +20,9 @@ public class RunOneTime {
     }
 
 
-    public void postConstruct(){
+    public void postConstruct() {
 
-        val SUrunnable = new Runnable(){
+        val SUrunnable = new Runnable() {
 
             @Override
             public void run() {
@@ -31,15 +31,15 @@ public class RunOneTime {
         };
 
 
-        val loggeInUses = new Runnable(){
+        val loggeInUses = new Runnable() {
 
             @Override
             public void run() {
-                new PWDreset(ldapTemplate,mongoTemplate,uniformLogger,BASE_DN).run();
+                new PWDreset(ldapTemplate, mongoTemplate, uniformLogger, BASE_DN).run();
             }
         };
 
-        val duplicatedUsers = new Runnable(){
+        val duplicatedUsers = new Runnable() {
 
             @Override
             public void run() {

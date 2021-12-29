@@ -3,6 +3,7 @@ package parsso.idman.controllers;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,9 @@ import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.user.ImportUsers;
 import parsso.idman.helpers.user.Operations;
 import parsso.idman.helpers.user.UsersExcelView;
-import parsso.idman.models.response.Response;
+import parsso.idman.models.other.Notification;
 import parsso.idman.models.other.SkyRoom;
+import parsso.idman.models.response.Response;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.Pwd;
 import parsso.idman.models.users.User;
@@ -52,16 +54,19 @@ public class UsersController {
     private final Pwd.PwdAttributeMapper pwdAttributeMapper;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
+    @Value("${base.url}")
+    private String BASE_URL;
     @Value("${password.change.notification}")
     private String passChangeNotification;
     @Value("${cas.authn.passwordless.tokens.expireInSeconds}")
     private String counter;
     final String model = Variables.MODEL_USER;
+    private final MongoTemplate mongoTemplate;
 
 
     @Autowired
     public UsersController(UserRepo userRepo, EmailService emailService, Operations operations, UsersExcelView excelView,
-                           ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage, SkyroomRepo skyroomRepo, LdapTemplate ldapTemplate, Pwd.PwdAttributeMapper pwdAttributeMapper) {
+                           ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage, SkyroomRepo skyroomRepo, LdapTemplate ldapTemplate, Pwd.PwdAttributeMapper pwdAttributeMapper, MongoTemplate mongoTemplate) {
         this.userRepo = userRepo;
         this.emailService = emailService;
         this.operations = operations;
@@ -72,6 +77,7 @@ public class UsersController {
         this.skyroomRepo = skyroomRepo;
         this.ldapTemplate = ldapTemplate;
         this.pwdAttributeMapper = pwdAttributeMapper;
+        this.mongoTemplate = mongoTemplate;
     }
 
 
@@ -246,23 +252,23 @@ public class UsersController {
     }
 
     @PostMapping("/api/user/photo")
-    public ResponseEntity<Response> uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(name = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(name = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         if (userRepo.uploadProfilePic(file, request.getUserPrincipal().getName()))
-            return new ResponseEntity<>(new Response(true,lang),HttpStatus.OK);
-        return new ResponseEntity<>(new Response(lang,model,false,400),HttpStatus.OK);
+            return new ResponseEntity<>(new Response(true, lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(lang, model, false, 400), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/user/photo")
-    public ResponseEntity<Response> deleteImage(HttpServletRequest request,@RequestParam(name = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> deleteImage(HttpServletRequest request, @RequestParam(name = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         parsso.idman.models.users.User user = userRepo.retrieveUsers(request.getUserPrincipal().getName());
-        if(userRepo.deleteProfilePic(user))
-            return new ResponseEntity<>(new Response(true,lang),HttpStatus.OK);
-        return new ResponseEntity<>(new Response(lang,model,false,400),HttpStatus.OK);
+        if (userRepo.deleteProfilePic(user))
+            return new ResponseEntity<>(new Response(true, lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(lang, model, false, 400), HttpStatus.OK);
     }
 
     @PutMapping("/api/user/password")
     public ResponseEntity<JSONObject> changePassword(HttpServletRequest request,
-                                                  @RequestBody JSONObject jsonObject) {
+                                                     @RequestBody JSONObject jsonObject) {
         //String oldPassword = jsonObject.getAsString("currentPassword");
         JSONObject objectResult = new JSONObject();
         String newPassword = jsonObject.getAsString("newPassword");
@@ -297,14 +303,14 @@ public class UsersController {
 
 
     @PutMapping("/api/public/changePassword")
-    public ResponseEntity<JSONObject> changePasswordWithoutToken(                                                     @RequestBody JSONObject jsonObject) {
+    public ResponseEntity<JSONObject> changePasswordWithoutToken(@RequestBody JSONObject jsonObject) {
         String currentPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
         String userId = jsonObject.getAsString("userId");
-        HttpStatus httpStatus = userRepo.changePasswordPublic(userId,currentPassword,newPassword);
+        HttpStatus httpStatus = userRepo.changePasswordPublic(userId, currentPassword, newPassword);
 
         if (passChangeNotification.equals("on") && httpStatus == HttpStatus.OK)
-            instantMessage.sendPasswordChangeNotif(userRepo.retrieveUsers(userId));
+            new Notification(mongoTemplate).sendPasswordChangeNotify(userRepo.retrieveUsers(userId),BASE_URL);
 
         return new ResponseEntity<>(httpStatus);
 
@@ -314,7 +320,7 @@ public class UsersController {
     public ResponseEntity<Integer> requestSMS(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
         parsso.idman.models.users.User user = userRepo.retrieveUsers(principal.getName());
-        int status = userRepo.requestToken(user);
+        int status = instantMessage.sendMessage(user);
 
         if (status > 0)
             return new ResponseEntity<>(status, HttpStatus.OK);
@@ -353,7 +359,7 @@ public class UsersController {
         if (time > 0) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("time", time);
-            if(uid.equals(""))
+            if (uid.equals(""))
                 jsonObject.put("userId", userRepo.getByMobile(mobile));
             else
                 jsonObject.put("userId", uid);
@@ -399,7 +405,7 @@ public class UsersController {
         int pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
         objectResult.put("pwdInHistory", pwdin);
 
-        return new ResponseEntity<>(objectResult,userRepo.resetPassword(uid, newPassword, token,pwdin));
+        return new ResponseEntity<>(objectResult, userRepo.resetPassword(uid, newPassword, token, pwdin));
     }
 
     @GetMapping("/api/public/checkMail/{email}")
@@ -426,25 +432,25 @@ public class UsersController {
     }
 
     @GetMapping("/api/public/counter")
-    public ResponseEntity<Response> getCounter(@RequestParam(name = "lang",defaultValue="fa") String lang) {
+    public ResponseEntity<Response> getCounter(@RequestParam(name = "lang", defaultValue = "fa") String lang) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("counter",counter);
-        return new ResponseEntity<>(new Response(jsonObject,lang), HttpStatus.OK);
+        jsonObject.put("counter", counter);
+        return new ResponseEntity<>(new Response(jsonObject, lang), HttpStatus.OK);
     }
 
     @PostMapping("/api/public/authenticate")
-    public ResponseEntity<Response> logIn(@RequestBody JSONObject jsonObject,@RequestParam(name = "lang",defaultValue="fa") String lang) throws Exception {
+    public ResponseEntity<Response> logIn(@RequestBody JSONObject jsonObject, @RequestParam(name = "lang", defaultValue = "fa") String lang) throws Exception {
         String password;
         String userId;
         try {
-             userId = jsonObject.getAsString("userId");
-             password = jsonObject.getAsString("password");
-        }catch (Exception e){
-            return new ResponseEntity<>(new Response(lang,model,400), HttpStatus.OK);
+            userId = jsonObject.getAsString("userId");
+            password = jsonObject.getAsString("password");
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Response(lang, model, 400), HttpStatus.OK);
         }
 
-        int result = userRepo.authenticate(userId,password);
-        return new ResponseEntity<>(new Response(result,lang), HttpStatus.OK);
+        int result = userRepo.authenticate(userId, password);
+        return new ResponseEntity<>(new Response(result, lang), HttpStatus.OK);
     }
 
 

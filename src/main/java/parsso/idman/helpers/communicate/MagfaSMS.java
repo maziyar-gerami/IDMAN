@@ -1,11 +1,8 @@
-package parsso.idman.repoImpls;
+package parsso.idman.helpers.communicate;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import parsso.idman.helpers.UniformLogger;
-import parsso.idman.repos.MagfaSMSSendRepo;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.Setting;
 import parsso.idman.utils.sms.magfa.classes.*;
 
 import javax.xml.ws.BindingProvider;
@@ -14,17 +11,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
-@Service
-public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
-    @Autowired
-    UniformLogger uniformLogger;
-    @Value("${SMS.Magfa.username}")
-    String username;
-    @Value("${SMS.Magfa.password}")
-    String password;
+public class MagfaSMS {
+    MongoTemplate mongoTemplate;
+    String message;
 
-    @Override
-    public void SendMessage(String message, String PhoneNumber, Long id) {
+    public MagfaSMS(MongoTemplate mongoTemplate, String message) {
+        this.mongoTemplate = mongoTemplate;
+        this.message = message;
+    }
+    public MagfaSMS(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    public void SendMessage(String PhoneNumber, Long id) {
         MagfaSoapServer service = null;
         try {
             URL url = new URL("https://sms.magfa.com/api/soap/sms/v2/server?wsdl");
@@ -34,8 +33,8 @@ public class MagfaSMSSendRepoImpl implements MagfaSMSSendRepo {
         }
         String domain = "magfa";
         BindingProvider prov = (BindingProvider) service;
-        Objects.requireNonNull(prov).getRequestContext().put(BindingProvider.USERNAME_PROPERTY, username + "/" + domain);
-        prov.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
+        Objects.requireNonNull(prov).getRequestContext().put(BindingProvider.USERNAME_PROPERTY, new Setting(mongoTemplate).retrieve(Variables.SMS_MAGFA_USERNAME).getValue() + "/" + domain);
+        prov.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, new Setting(mongoTemplate).retrieve(Variables.SMS_MAGFA_PASSWORD).getValue());
         HashMap<Object, Object> httpHeaders = new HashMap<>();
         httpHeaders.put("Content-Encoding", Collections.singletonList("gzip"));//this indicates you're sending a compressed request
         httpHeaders.put("Accept-Encoding", Collections.singletonList("gzip")); //this says you're willing to accept a compressed response

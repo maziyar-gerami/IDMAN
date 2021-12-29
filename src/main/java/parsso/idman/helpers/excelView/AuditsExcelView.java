@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Audit;
-
 import parsso.idman.repos.LogsRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AuditsExcelView extends AbstractXlsxView {
@@ -78,9 +78,9 @@ public class AuditsExcelView extends AbstractXlsxView {
         // create data rows
         int rowCount = 1;
 
-        for (int page = 0; page <= Math.ceil( (float)count/Variables.PER_BATCH_COUNT); page++) {
+        for (int page = 0; page <= Math.ceil((float) count / Variables.PER_BATCH_COUNT); page++) {
 
-            if (page==100)
+            if (page == 100)
                 return;
 
             int skip = (page == 0) ? 0 : ((page - 1) * Variables.PER_BATCH_COUNT);

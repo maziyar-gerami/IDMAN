@@ -3,12 +3,12 @@ package parsso.idman.repoImpls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Token;
 import parsso.idman.repos.TokenManagementRepo;
-import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
 
@@ -16,15 +16,17 @@ import java.util.List;
 @Service
 public class TokenManagementRepoImpl implements TokenManagementRepo {
     final MongoTemplate mongoTemplate;
+
     @Autowired
-    TokenManagementRepoImpl(MongoTemplate mongoTemplate){
-        this.mongoTemplate=mongoTemplate;
+    TokenManagementRepoImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
     }
+
     @Override
     public String retrieve(String userId) {
-        List<Token> tokens = mongoTemplate.find(new Query(Criteria.where("username").is(userId)),Token.class,Variables.col_Token);
+        List<Token> tokens = mongoTemplate.find(new Query(Criteria.where("username").is(userId)), Token.class, Variables.col_Token);
 
-        return tokens.get(tokens.size()-1).getToken();
+        return tokens.get(tokens.size() - 1).getToken();
     }
 
     @Override
@@ -33,7 +35,7 @@ public class TokenManagementRepoImpl implements TokenManagementRepo {
         try {
             mongoTemplate.remove(query, Variables.col_Token);
             return HttpStatus.OK;
-        }catch (Exception e){
+        } catch (Exception e) {
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -44,7 +46,7 @@ public class TokenManagementRepoImpl implements TokenManagementRepo {
         try {
             mongoTemplate.remove(query, Variables.col_Token);
             return HttpStatus.OK;
-        }catch (Exception e){
+        } catch (Exception e) {
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -54,15 +56,15 @@ public class TokenManagementRepoImpl implements TokenManagementRepo {
         if (!mongoTemplate.collectionExists(Variables.col_Token)) {
             try {
                 mongoTemplate.createCollection(Variables.col_Token);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return HttpStatus.FORBIDDEN;
             }
         }
-        Token tokenTemp = new Token(username,token);
+        Token tokenTemp = new Token(username, token);
         try {
             mongoTemplate.save(tokenTemp, Variables.col_Token);
             return HttpStatus.CREATED;
-        }catch (Exception e){
+        } catch (Exception e) {
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -70,6 +72,6 @@ public class TokenManagementRepoImpl implements TokenManagementRepo {
     @Override
     public boolean valid(String userId, String token) {
         Query query = new Query(Criteria.where("username").is(userId).andOperator(Criteria.where("token").is(token)));
-        return mongoTemplate.count(query,Variables.col_Token)>0;
+        return mongoTemplate.count(query, Variables.col_Token) > 0;
     }
 }

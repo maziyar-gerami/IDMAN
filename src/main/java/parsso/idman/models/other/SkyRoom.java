@@ -14,8 +14,8 @@ public class SkyRoom {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     String students;
 
-    public SkyRoom(String skyroomEnable, String role, String presenter, String students) {
-        if (!(role.equalsIgnoreCase("USER")) && Boolean.parseBoolean(skyroomEnable)) {
+    public SkyRoom(Boolean skyroomEnable, String role, String presenter, String students) {
+        if (!(role.equalsIgnoreCase("USER")) && skyroomEnable) {
             this.enable = true;
             this.presenter = presenter;
             this.students = students;

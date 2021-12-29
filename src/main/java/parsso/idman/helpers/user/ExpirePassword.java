@@ -45,10 +45,10 @@ public class ExpirePassword {
                 ModificationItem[] modificationItems;
                 modificationItems = new ModificationItem[1];
 
-                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdReset","TRUE"));
+                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdReset", "TRUE"));
 
                 try {
-                    ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId(),BASE_DN), modificationItems);
+                    ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId(), BASE_DN), modificationItems);
                     mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
                     user.setEndTimeEpoch(new Date().getTime());
                     mongoTemplate.save(user, Variables.col_usersExtraInfo);
@@ -59,7 +59,7 @@ public class ExpirePassword {
                 } catch (Exception e) {
                     try {
                         modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdReset", "TRUE"));
-                        ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId(),BASE_DN), modificationItems);
+                        ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId(), BASE_DN), modificationItems);
                         mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
                         user.setEndTimeEpoch(new Date().getTime());
                         mongoTemplate.save(user, Variables.col_usersExtraInfo);

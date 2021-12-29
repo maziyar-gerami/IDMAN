@@ -17,26 +17,26 @@ public class SAtoSU {
     final MongoTemplate mongoTemplate;
     final UniformLogger uniformLogger;
 
-    SAtoSU(MongoTemplate mongoTemplate,UniformLogger uniformLogger){
+    SAtoSU(MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
         this.mongoTemplate = mongoTemplate;
         this.uniformLogger = uniformLogger;
     }
 
-    public void run(){
+    public void run() {
         OneTime oneTime;
         Query query = new Query(Criteria.where("_id").is("SAtoSU"));
         try {
-            oneTime = mongoTemplate.findOne(query, OneTime.class,Variables.col_OneTime);
-        }catch (NullPointerException e){
-            oneTime = new OneTime("SAtoSU",false, 0L);
+            oneTime = mongoTemplate.findOne(query, OneTime.class, Variables.col_OneTime);
+        } catch (NullPointerException e) {
+            oneTime = new OneTime("SAtoSU", false, 0L);
         }
 
-        if (oneTime== null)
-            oneTime= new OneTime("SAtoSU");
-        if(oneTime.isRun())
+        if (oneTime == null)
+            oneTime = new OneTime("SAtoSU");
+        if (oneTime.isRun())
             return;
-        List<UsersExtraInfo> usersExtraInfos =  mongoTemplate.find(new Query(Criteria.where("role").is("SUPERADMIN")),UsersExtraInfo.class, Variables.col_usersExtraInfo);
-        for (UsersExtraInfo usersExtraInfo :usersExtraInfos){
+        List<UsersExtraInfo> usersExtraInfos = mongoTemplate.find(new Query(Criteria.where("role").is("SUPERADMIN")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+        for (UsersExtraInfo usersExtraInfo : usersExtraInfos) {
             usersExtraInfo.setRole("SUPERUSER");
             mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
         }
@@ -44,10 +44,10 @@ public class SAtoSU {
         if (!mongoTemplate.getCollectionNames().contains(Variables.col_OneTime))
             mongoTemplate.createCollection(Variables.col_OneTime);
 
-        uniformLogger.info("System",new ReportMessage("Convert", Variables.RESULT_SUCCESS,"SuperAdmin to SuperUser"));
+        uniformLogger.info("System", new ReportMessage("Convert", Variables.RESULT_SUCCESS, "SuperAdmin to SuperUser"));
 
-        OneTime oneTime1 = new OneTime("SAtoSU",true,new Date().getTime());
-        mongoTemplate.save(oneTime1,Variables.col_OneTime);
+        OneTime oneTime1 = new OneTime("SAtoSU", true, new Date().getTime());
+        mongoTemplate.save(oneTime1, Variables.col_OneTime);
 
     }
 }

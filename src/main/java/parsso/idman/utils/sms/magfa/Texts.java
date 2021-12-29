@@ -16,7 +16,7 @@ public class Texts {
         String p2 = "کد پیامکی شما ";
         String p3 = " می باشد.";
         String p4 = "فاوای فلات قاره";
-        this.mainMessage = p1 +"\n"+p2+ mainCode + p3+"\n"+p4;
+        this.mainMessage = p1 + "\n" + p2 + mainCode + p3 + "\n" + p4;
     }
 
     public void passwordChangeNotification(User user) {
@@ -25,11 +25,11 @@ public class Texts {
         String p3 = " ساعت ";
         String p4 = " تغییر یافت.";
         String p5 = "فاوای فلات قاره";
-        Time time =  new Time().longToPersianTime(new Date().getTime());
+        Time time = Time.longToPersianTime(new Date().getTime());
 
-        this.mainMessage = p1 +"\n" +
-                p2 +String.format("%02d",time.getDay())+"-"+String.format("%02d",time.getMonth())+ "-"+time.getYear() + p3 +
-                String.format("%02d",time.getHours())+":"+String.format("%02d",time.getMinutes()) + p4+"\n"+p5;
+        this.mainMessage = p1 + "\n" +
+                p2 + String.format("%02d", time.getDay()) + "-" + String.format("%02d", time.getMonth()) + "-" + time.getYear() + p3 +
+                String.format("%02d", time.getHours()) + ":" + String.format("%02d", time.getMinutes()) + p4 + "\n" + p5;
     }
 
 

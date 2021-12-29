@@ -71,7 +71,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
         PublicMessage oldMessage;
         try {
             oldMessage = showAllPubicMessages(message.getMessageId()).get(0);
-        } catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException e) {
             return HttpStatus.BAD_REQUEST;
         }
 

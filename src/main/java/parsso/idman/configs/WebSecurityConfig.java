@@ -68,7 +68,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
 
-
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources
@@ -109,9 +108,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/groups/user").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/services/user").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/user/**").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/reports/user").hasAnyRole("USER","ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/audits/user").hasAnyRole("USER","ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/events/user").hasAnyRole("USER","ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/reports/user").hasAnyRole("USER", "ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/audits/user").hasAnyRole("USER", "ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/events/user").hasAnyRole("USER", "ADMIN", "SUPPORTER", "SUPERUSER")
 
 
                 //****************** SUPERUSER & ADMIN & SUPPORTER Objects************************
@@ -165,7 +164,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .anyRequest().authenticated()
                 .and()
-
 
 
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)

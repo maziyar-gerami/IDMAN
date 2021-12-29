@@ -8,7 +8,8 @@ import java.util.List;
 @Setter
 @Getter
 public class Devices {
-    public Devices(){}
+    public Devices() {
+    }
 
     long _id;
     String username;
@@ -16,7 +17,7 @@ public class Devices {
     Time time;
 
     public Time getTime() {
-        return new Time().longToPersianTime(_id);
+        return Time.longToPersianTime(_id);
     }
 
     @Getter
@@ -26,7 +27,8 @@ public class Devices {
         int pages;
         long size;
 
-        public DeviceList(){}
+        public DeviceList() {
+        }
 
         public DeviceList(List<Devices> devicesList, long size, int pages) {
             this.devices = devicesList;

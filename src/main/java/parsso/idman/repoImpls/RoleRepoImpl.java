@@ -34,7 +34,7 @@ public class RoleRepoImpl implements RolesRepo {
         try {
             return mongoTemplate.find(query, UserRole.class, collection);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }

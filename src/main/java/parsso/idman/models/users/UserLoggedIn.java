@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class UserLoggedIn{
+public class UserLoggedIn {
     String userId;
     boolean loggedIn;
 }

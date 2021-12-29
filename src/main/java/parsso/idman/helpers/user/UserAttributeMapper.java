@@ -97,5 +97,4 @@ public class UserAttributeMapper implements AttributesMapper<User> {
     }
 
 
-
 }

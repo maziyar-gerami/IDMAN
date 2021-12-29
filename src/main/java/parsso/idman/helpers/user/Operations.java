@@ -44,7 +44,7 @@ public class Operations {
 
     public HttpStatus enable(String doer, String uid) {
 
-        Name dn = buildDnUser.buildDn(uid,BASE_DN);
+        Name dn = buildDnUser.buildDn(uid, BASE_DN);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
@@ -75,7 +75,7 @@ public class Operations {
 
     public HttpStatus disable(String doerID, String uid) {
 
-        Name dn = buildDnUser.buildDn(uid,BASE_DN);
+        Name dn = buildDnUser.buildDn(uid, BASE_DN);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
@@ -104,7 +104,7 @@ public class Operations {
 
     public HttpStatus unlock(String doerID, String uid) {
 
-        Name dn = buildDnUser.buildDn(uid,BASE_DN);
+        Name dn = buildDnUser.buildDn(uid, BASE_DN);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];

@@ -14,13 +14,14 @@ public class RemoveDuplicateExtraInfo {
     public RemoveDuplicateExtraInfo(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
-    public void run(){
-        int c=0;
+
+    public void run() {
+        int c = 0;
         char[] animationChars = new char[]{'|', '/', '-', '\\'};
-        List<UsersExtraInfo> usersExtraInfoList = mongoTemplate.find(new Query(),UsersExtraInfo.class, Variables.col_usersExtraInfo);
-        for (UsersExtraInfo usersExtraInfo: usersExtraInfoList) {
+        List<UsersExtraInfo> usersExtraInfoList = mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+        for (UsersExtraInfo usersExtraInfo : usersExtraInfoList) {
             Query query = new Query(Criteria.where("userId").is(usersExtraInfo.getUserId()));
-            if(mongoTemplate.count(query,UsersExtraInfo.class,Variables.col_usersExtraInfo)>0) {
+            if (mongoTemplate.count(query, UsersExtraInfo.class, Variables.col_usersExtraInfo) > 0) {
                 mongoTemplate.remove(query, Variables.col_usersExtraInfo);
                 mongoTemplate.save(usersExtraInfo);
             }

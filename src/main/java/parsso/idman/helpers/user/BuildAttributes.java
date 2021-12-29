@@ -28,14 +28,16 @@ public class BuildAttributes {
     private final UserRepo userRepo;
     private final LdapTemplate ldapTemplate;
     private final Operations operations;
+
     @Autowired
-    BuildAttributes(MongoTemplate mongoTemplate, BuildDnUser buildDnUser, UserRepo userRepo, LdapTemplate ldapTemplate,Operations operations){
+    BuildAttributes(MongoTemplate mongoTemplate, BuildDnUser buildDnUser, UserRepo userRepo, LdapTemplate ldapTemplate, Operations operations) {
         this.mongoTemplate = mongoTemplate;
         this.buildDnUser = buildDnUser;
         this.userRepo = userRepo;
         this.ldapTemplate = ldapTemplate;
-        this.operations=operations;
+        this.operations = operations;
     }
+
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
 
@@ -245,7 +247,7 @@ public class BuildAttributes {
             if (p.getExpiredTime() != null && old.getExpiredTime() != null) {
 
                 modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
-                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId(),BASE_DN), modificationItems);
+                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId(), BASE_DN), modificationItems);
 
             }
 

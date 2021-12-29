@@ -14,8 +14,8 @@ public class LogTime {
     String time;
 
     public LogTime(long millis) {
-        this.t = new Time().longToPersianTime(millis);
-        this.date = t.getYear()+"/"+t.getMonth()+"/"+t.getDay();
-        this.time = t.getHours()+":"+t.getMinutes()+":"+t.getSeconds();
+        this.t = Time.longToPersianTime(millis);
+        this.date = t.getYear() + "/" + t.getMonth() + "/" + t.getDay();
+        this.time = t.getHours() + ":" + t.getMinutes() + ":" + t.getSeconds();
     }
 }

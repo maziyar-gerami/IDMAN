@@ -57,7 +57,7 @@ public class ReportMessage {
         this.action = action;
         this.description = description;
         this.millis = new Date().getTime();
-        time = new Time().longToPersianTime(millis);
+        time = Time.longToPersianTime(millis);
     }
 
     public ReportMessage(String model, Object instance, String attribute, String action, String result, Object to, String description) {
@@ -69,7 +69,7 @@ public class ReportMessage {
         this.to = to;
         this.description = description;
         this.millis = new Date().getTime();
-        time = new Time().longToPersianTime(millis);
+        time = Time.longToPersianTime(millis);
     }
 
     public ReportMessage(String model, Object instance, String attribute, String action, String result, String type, String item, String description) {
@@ -82,7 +82,7 @@ public class ReportMessage {
         this.item = item;
         this.description = description;
         this.millis = new Date().getTime();
-        time = new Time().longToPersianTime(millis);
+        time = Time.longToPersianTime(millis);
     }
 
     public ReportMessage(String model, long instance, String attribute, String action, String result,
@@ -110,7 +110,7 @@ public class ReportMessage {
         this.setDifference(difference(from, to));
         this.description = description;
         this.millis = new Date().getTime();
-        time = new Time().longToPersianTime(millis);
+        time = Time.longToPersianTime(millis);
     }
 
     public ReportMessage(String action, String result, String description) {
@@ -119,7 +119,7 @@ public class ReportMessage {
         this.result = result;
         this.description = description;
         this.millis = new Date().getTime();
-        time = new Time().longToPersianTime(millis);
+        time = Time.longToPersianTime(millis);
     }
 
     public ReportMessage(Change ch, ReportMessage reportMessage) {
@@ -134,7 +134,7 @@ public class ReportMessage {
         this.action = reportMessage.getAction();
 
         this.description = reportMessage.description;
-        time = new Time().longToPersianTime(millis);
+        time = Time.longToPersianTime(millis);
 
         this.from = ch.getFrom();
         this.to = ch.getTo();
@@ -155,17 +155,17 @@ public class ReportMessage {
 
         this.description = reportMessage.description;
         this.millis = reportMessage.getMillis();
-        time = new Time().longToPersianTime(millis);
+        time = Time.longToPersianTime(millis);
 
     }
 
-    public ReportMessage(String model,String instance ,String action, String result) {
+    public ReportMessage(String model, String instance, String action, String result) {
         this.model = model;
         this.instance = instance;
         this.result = result;
         this.action = action;
         this.millis = new Date().getTime();
-        time = new Time().longToPersianTime(millis);
+        time = Time.longToPersianTime(millis);
     }
 
     @SuppressWarnings("DuplicatedCode")
