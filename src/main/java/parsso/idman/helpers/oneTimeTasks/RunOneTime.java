@@ -5,17 +5,20 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
+import parsso.idman.repos.UserRepo;
 
 public class RunOneTime {
     final UniformLogger uniformLogger;
     final LdapTemplate ldapTemplate;
     final MongoTemplate mongoTemplate;
+    UserRepo userRepo;
     final String BASE_DN;
 
-    public RunOneTime(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger, String BASE_DN) {
+    public RunOneTime(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,UserRepo userRepo, UniformLogger uniformLogger, String BASE_DN) {
         this.ldapTemplate = ldapTemplate;
         this.mongoTemplate = mongoTemplate;
         this.uniformLogger = uniformLogger;
+        this.userRepo = userRepo;
         this.BASE_DN = BASE_DN;
     }
 
@@ -47,12 +50,22 @@ public class RunOneTime {
             }
         };
 
+        val displayNameFix = new Runnable() {
+
+            @Override
+            public void run() {
+                new DisplayName(mongoTemplate,userRepo).run();
+            }
+        };
+
         Thread sathread = new Thread(SUrunnable);
         Thread logeInUsers = new Thread(loggeInUses);
         Thread duplicated = new Thread(duplicatedUsers);
+        Thread nameFix = new Thread(displayNameFix);
         logeInUsers.start();
         sathread.start();
         duplicated.start();
+        nameFix.start();
 
         System.out.println(Variables.PARSSO_IDMAN);
 
