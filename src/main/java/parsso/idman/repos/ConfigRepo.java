@@ -3,12 +3,12 @@ package parsso.idman.repos;
 
 import org.springframework.http.HttpStatus;
 import parsso.idman.models.logs.Config;
-import parsso.idman.models.logs.Setting;
+import parsso.idman.models.other.Setting;
 
 import java.io.IOException;
 import java.util.List;
 
-@SuppressWarnings("SameReturnValue")
+
 public interface ConfigRepo {
 
     String retrieveSetting() throws IOException;

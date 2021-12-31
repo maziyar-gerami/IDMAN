@@ -58,14 +58,24 @@ public class RunOneTime {
             }
         };
 
+        val userIdFix = new Runnable() {
+
+            @Override
+            public void run() {
+                //new UserID(mongoTemplate).run();
+            }
+        };
+
         Thread sathread = new Thread(SUrunnable);
         Thread logeInUsers = new Thread(loggeInUses);
         Thread duplicated = new Thread(duplicatedUsers);
         Thread nameFix = new Thread(displayNameFix);
+        Thread userId = new Thread(userIdFix);
         logeInUsers.start();
         sathread.start();
         duplicated.start();
         nameFix.start();
+        userId.start();
 
         System.out.println(Variables.PARSSO_IDMAN);
 

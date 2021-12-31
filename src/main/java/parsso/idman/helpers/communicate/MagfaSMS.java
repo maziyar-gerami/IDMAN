@@ -1,8 +1,8 @@
 package parsso.idman.helpers.communicate;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
-import parsso.idman.models.logs.Setting;
 import parsso.idman.utils.sms.magfa.classes.*;
 
 import javax.xml.ws.BindingProvider;
@@ -33,8 +33,8 @@ public class MagfaSMS {
         }
         String domain = "magfa";
         BindingProvider prov = (BindingProvider) service;
-        Objects.requireNonNull(prov).getRequestContext().put(BindingProvider.USERNAME_PROPERTY, new Setting(mongoTemplate).retrieve(Variables.SMS_MAGFA_USERNAME).getValue() + "/" + domain);
-        prov.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, new Setting(mongoTemplate).retrieve(Variables.SMS_MAGFA_PASSWORD).getValue());
+        Objects.requireNonNull(prov).getRequestContext().put(BindingProvider.USERNAME_PROPERTY, new Settings(mongoTemplate).retrieve(Variables.SMS_MAGFA_USERNAME).getValue() + "/" + domain);
+        prov.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, new Settings(mongoTemplate).retrieve(Variables.SMS_MAGFA_PASSWORD).getValue());
         HashMap<Object, Object> httpHeaders = new HashMap<>();
         httpHeaders.put("Content-Encoding", Collections.singletonList("gzip"));//this indicates you're sending a compressed request
         httpHeaders.put("Accept-Encoding", Collections.singletonList("gzip")); //this says you're willing to accept a compressed response

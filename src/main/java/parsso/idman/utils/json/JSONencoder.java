@@ -3,7 +3,7 @@ package parsso.idman.utils.json;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import parsso.idman.models.logs.Setting;
+import parsso.idman.models.other.Setting;
 
 import java.util.List;
 
@@ -22,15 +22,15 @@ public class JSONencoder {
 
         for (Setting setting : settings) {
 
-            if (setting.getName() != null) {
+            if (setting.get_id() != null) {
 
                 jsonObject = new JSONObject();
 
-                jsonObject.put("name", setting.getName());
+                jsonObject.put("_id", setting.get_id());
                 jsonObject.put("value", setting.getValue());
-                jsonObject.put("description", setting.getDescription());
+                jsonObject.put("descriptionEN", setting.getDescriptionEN());
+                jsonObject.put("descriptionFA", setting.getDescriptionFA());
                 jsonObject.put("group", setting.getGroupEN());
-                jsonObject.put("system", setting.getSystem());
 
                 jsonArray.add(jsonObject);
             }

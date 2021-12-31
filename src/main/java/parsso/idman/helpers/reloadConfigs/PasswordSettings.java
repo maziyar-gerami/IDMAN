@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
-import parsso.idman.models.logs.Setting;
+import parsso.idman.models.other.Setting;
 
 import javax.naming.Name;
 import javax.naming.directory.Attribute;
@@ -52,7 +52,7 @@ public class PasswordSettings {
         Attribute[] attrs = new Attribute[9];
 
         for (Setting setting : settings) {
-            switch (setting.getName()) {
+            switch (setting.get_id()) {
                 case "pwd.check.quality":
                     attrs[0] = new BasicAttribute("pwdCheckQuality", setting.getValue());
                     items[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[0]);

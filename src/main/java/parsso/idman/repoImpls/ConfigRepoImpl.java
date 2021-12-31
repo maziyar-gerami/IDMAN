@@ -16,7 +16,7 @@ import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.reloadConfigs.PasswordSettings;
 import parsso.idman.models.logs.Config;
 import parsso.idman.models.logs.ReportMessage;
-import parsso.idman.models.logs.Setting;
+import parsso.idman.models.other.Setting;
 import parsso.idman.models.other.Time;
 import parsso.idman.repos.ConfigRepo;
 import parsso.idman.repos.UserRepo;
@@ -107,15 +107,14 @@ public class ConfigRepoImpl implements ConfigRepo {
 
                 value = line.substring(equalIndex + 1);
 
-                setting.setName(name);
+                setting.set_id(name);
 
                 setting.setValue(value.trim());
 
-                setting.setDescription(description);
+                setting.setDescriptionEN(description);
+                setting.setDescriptionFA(description);
 
                 setting.setGroupEN(Objects.requireNonNull(groupName).trim());
-
-                setting.setSystem(system.trim());
 
                 settings.add(setting);
 
@@ -171,8 +170,8 @@ public class ConfigRepoImpl implements ConfigRepo {
 
 
             String temp = "";
-            temp += "\n##" + setting.getDescription() + "\n";
-            temp += setting.getName() + "=" + setting.getValue();
+            temp += "\n##" + setting.getDescriptionEN() + "\n";
+            temp += setting.get_id() + "=" + setting.getValue();
 
             file_properties = new StringBuilder(file_properties.substring(0, index) + temp + file_properties.substring(index));
 

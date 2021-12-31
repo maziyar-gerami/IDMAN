@@ -6,10 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
-import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.communicate.MagfaSMS;
-import parsso.idman.models.logs.Setting;
 import parsso.idman.models.users.User;
 import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
 import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
@@ -43,7 +42,7 @@ public class Notification implements Comparable {
     }
 
     public boolean sendPasswordChangeNotify(User user,String baseUrl) {
-        String SMS_sdk = new Setting(mongoTemplate).retrieve(Variables.SMS_SDK).getValue();
+        String SMS_sdk = new Settings(mongoTemplate).retrieve(Variables.SMS_SDK).getValue();
 
         if (SMS_sdk.equalsIgnoreCase("KaveNegar")) {
             return new Notification(mongoTemplate).sendMessagePasswordNotifyKaveNegar(mongoTemplate,user,baseUrl) > 0;
@@ -58,7 +57,7 @@ public class Notification implements Comparable {
             Texts texts = new Texts();
             texts.passwordChangeNotification(user);
             new MagfaSMS(mongoTemplate).SendMessage(user.getMobile(), 1L);
-            return Integer.parseInt(new Setting(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue());
+            return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue());
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
             System.out.print("HttpException  : " + ex.getMessage());
@@ -77,13 +76,13 @@ public class Notification implements Comparable {
         try {
             Texts texts = new Texts();
             texts.passwordChangeNotification(user);
-            KavenegarApi api = new KavenegarApi(new Setting(mongoTemplate).retrieve(Variables.KAVENEGAR_API_KEY).getValue());
+            KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve(Variables.KAVENEGAR_API_KEY).getValue());
             Time time = Time.longToPersianTime(new Date().getTime());
             String d = time.getYear() + "-" + time.getMonth() + "-" + time.getDay();
             String h = time.getHours() + ":" + time.getMinutes();
             String dh = d + " ساعت " + h;
             api.verifyLookup(user.getMobile(), user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')), dh, baseurl, "changePass");
-            return Integer.parseInt(new Setting(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue() );
+            return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue() );
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
             System.out.print("HttpException  : " + ex.getMessage());

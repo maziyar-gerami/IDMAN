@@ -3,6 +3,7 @@ package parsso.idman.models.logs;
 
 import lombok.Getter;
 import lombok.Setter;
+import parsso.idman.models.other.Setting;
 import parsso.idman.models.other.Time;
 
 import java.util.List;

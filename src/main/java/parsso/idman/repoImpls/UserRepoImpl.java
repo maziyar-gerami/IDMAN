@@ -32,6 +32,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
@@ -39,7 +40,6 @@ import parsso.idman.helpers.group.GroupsChecks;
 import parsso.idman.helpers.oneTimeTasks.RunOneTime;
 import parsso.idman.helpers.user.*;
 import parsso.idman.models.logs.ReportMessage;
-import parsso.idman.models.logs.Setting;
 import parsso.idman.models.other.Notification;
 import parsso.idman.models.other.Time;
 import parsso.idman.models.users.ListUsers;
@@ -205,7 +205,7 @@ public class UserRepoImpl implements UserRepo {
         try {
             if (!retrieveUsers(doerID).getRole().equals("USER") && !retrieveUsers(doerID).getRole().equals("PRESENTER")
                     && !retrieveUsers(usid).getRole().equals("USER") &&
-                    user.getRole().equals("USER") && new Setting(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().equalsIgnoreCase("false"))
+                    user.getRole().equals("USER") && new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().equalsIgnoreCase("false"))
                 return HttpStatus.FORBIDDEN;
         } catch (Exception ignored) {
         }
@@ -277,7 +277,7 @@ public class UserRepoImpl implements UserRepo {
     public JSONObject createUserImport(String doerID, User p) {
 
         if (p.getUserPassword() == null)
-            p.setUserPassword(new Setting(mongoTemplate).retrieve(Variables.DEFAULT_USER_PASSWORD).getValue());
+            p.setUserPassword(new Settings(mongoTemplate).retrieve(Variables.DEFAULT_USER_PASSWORD).getValue());
 
         return create(doerID, p);
     }
@@ -783,7 +783,7 @@ public class UserRepoImpl implements UserRepo {
 
         if (user.getRole() == null)
             user = setRole(user);
-        else if (user.getRole().equals("USER") && new Setting(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().equalsIgnoreCase("FALSE"))
+        else if (user.getRole().equals("USER") && new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().equalsIgnoreCase("FALSE"))
             user.setProfileInaccessibility(true);
 
 
@@ -814,8 +814,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     private Boolean skyRoomAccess(User user) {
-        boolean isEnable = Boolean.parseBoolean(new Setting(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE).getValue());
-
+        boolean isEnable = Boolean.parseBoolean((new Settings(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE)).getValue());
 
         boolean accessRole;
         try {

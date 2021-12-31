@@ -22,10 +22,13 @@ public class DisplayName {
         List<User> users = userRepo.retrieveUsersFull();
         for (User user: users) {
             if ((user.getDisplayName().contains("آقای") && !user.getDisplayName().contains("آقای "))
-            || (user.getDisplayName().contains("خانم") && !user.getDisplayName().contains("خانم "))){
+            || (user.getDisplayName().contains("خانم") && !user.getDisplayName().contains("خانم "))
+            || (user.getDisplayName().contains("اقای") && !user.getDisplayName().contains("اقای "))){
                 String r = user.getDisplayName().substring(0,4) +" " +user.getDisplayName().substring(4);
                 user.setDisplayName(r);
-                user.getUsersExtraInfo().setDisplayName(r);
+                try {
+                    user.getUsersExtraInfo().setDisplayName(r);
+                }catch (NullPointerException ignored){}
 
                 userRepo.update("System",user.getUserId(),user);
             }

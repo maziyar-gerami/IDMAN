@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
-import parsso.idman.models.logs.Setting;
 import parsso.idman.utils.captcha.models.CAPTCHAimage;
 import parsso.idman.utils.captcha.repo.CAPTCHARepo;
 import parsso.idman.utils.captcha.repoImp.CaptchaRepoImp;
@@ -27,7 +27,7 @@ public class Controller {
     @GetMapping("/api/captcha/request")
     private ResponseEntity<CAPTCHAimage> requestCaptcha() {
 
-        CAPTCHAimage captchaImage = captchaRepo.createCaptcha(Integer.parseInt(new Setting(mongoTemplate).retrieve(Variables.CAPTCHA_LENGTH).getValue()));
+        CAPTCHAimage captchaImage = captchaRepo.createCaptcha(Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.CAPTCHA_LENGTH).getValue()));
         if (captchaImage != null)
             return new ResponseEntity<>(captchaImage, HttpStatus.OK);
         else
