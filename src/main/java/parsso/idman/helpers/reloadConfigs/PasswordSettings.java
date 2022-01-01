@@ -19,30 +19,15 @@ import java.util.List;
 @Getter
 @Service
 public class PasswordSettings {
+    private final LdapTemplate ldapTemplate;
     @Autowired
-    LdapTemplate ldapTemplate;
-    @Value("${pwd.min.lentgh}")
-    String pwd_min_lentgh;
-    @Value("${pwd.max.failure}")
-    String pwd_max_failure;
-    @Value("${pwd.lockout.duration}")
-    String pwd_lockout_duration;
-    @Value("${pwd.lockout}")
-    String pwd_lockout;
-    @Value("${pwd.in.history}")
-    String pwd_in_history;
-    @Value("${pwd.grace.auth.n.limit}")
-    String pwd_grace_auth_n_limit;
-    @Value("${pwd.expire.warning}")
-    String pwd_expire_warning;
-    @Value("${pwd.failure.count.interval}")
-    String pwd_failure_count_interval;
-    @Value("${pwd.check.quality}")
-    String pwd_check_quality;
+    public PasswordSettings(LdapTemplate ldapTemplate){
+        this.ldapTemplate = ldapTemplate;
+    }
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
 
-    private Name buidDn() {
+    private Name buildDn() {
         return LdapNameBuilder.newInstance("cn=DefaultPPolicy,ou=Policies," + BASE_DN).build();
     }
 
@@ -89,7 +74,7 @@ public class PasswordSettings {
                     attrs[7] = new BasicAttribute("pwdMaxFailure", setting.getValue());
                     items[7] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[7]);
                     continue;
-                case "pwd.min.lentgh":
+                case "pwd.min.length":
                     attrs[8] = new BasicAttribute("pwdMinLength", setting.getValue());
                     items[8] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[8]);
             }
@@ -97,7 +82,7 @@ public class PasswordSettings {
         }
 
         try {
-            ldapTemplate.modifyAttributes(buidDn(), items);
+            ldapTemplate.modifyAttributes(buildDn(), items);
 
         } catch (Exception e) {
             e.printStackTrace();

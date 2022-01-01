@@ -89,8 +89,6 @@ public class UserRepoImpl implements UserRepo {
     private String BASE_DN;
     @Value("${profile.photo.path}")
     private String uploadedFilesPath;
-    @Value("${password.change.notification}")
-    private String passChangeNotification;
     @Autowired
     private LdapTemplate ldapTemplate;
     @Autowired
@@ -377,7 +375,7 @@ public class UserRepoImpl implements UserRepo {
                 try {
                     ldapTemplate.modifyAttributes(contextUser);
                     uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
-                    if (passChangeNotification.equals("on"))
+                    if (new Settings(mongoTemplate).retrieve("password.change.notification").getValue().equals("on"))
                         new Notification(mongoTemplate).sendPasswordChangeNotify(user,BASE_URL);
 
                     return HttpStatus.OK;
@@ -979,7 +977,7 @@ public class UserRepoImpl implements UserRepo {
                 uniformLogger.info(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
                         Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
 
-                if (passChangeNotification.equals("on"))
+                if (new Settings(mongoTemplate).retrieve("password.change.notification").getValue().equals("on"))
                     new Notification(mongoTemplate).sendPasswordChangeNotify(user,BASE_URL);
 
             } catch (org.springframework.ldap.InvalidAttributeValueException e) {

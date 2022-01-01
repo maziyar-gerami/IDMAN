@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.communicate.Token;
@@ -56,8 +57,6 @@ public class UsersController {
     private String BASE_DN;
     @Value("${base.url}")
     private String BASE_URL;
-    @Value("${password.change.notification}")
-    private String passChangeNotification;
     @Value("${cas.authn.passwordless.tokens.expireInSeconds}")
     private String counter;
     final String model = Variables.MODEL_USER;
@@ -309,7 +308,7 @@ public class UsersController {
         String userId = jsonObject.getAsString("userId");
         HttpStatus httpStatus = userRepo.changePasswordPublic(userId, currentPassword, newPassword);
 
-        if (passChangeNotification.equals("on") && httpStatus == HttpStatus.OK)
+        if (new Settings(mongoTemplate).retrieve("password.change.notification").getValue().equals("on") && httpStatus == HttpStatus.OK)
             new Notification(mongoTemplate).sendPasswordChangeNotify(userRepo.retrieveUsers(userId),BASE_URL);
 
         return new ResponseEntity<>(httpStatus);

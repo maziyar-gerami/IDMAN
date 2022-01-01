@@ -16,6 +16,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
@@ -56,8 +57,6 @@ public class EmailServiceImpl implements EmailService {
     private JavaMailSender mailSender;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-    @Value("${token.valid.email}")
-    private String EMAIL_VALID_TIME;
     @Autowired
     private TemplateEngine templateEngine;
 
@@ -169,7 +168,7 @@ public class EmailServiceImpl implements EmailService {
             }
 
             mongoTemplate.remove(query, collection);
-            return Integer.parseInt(EMAIL_VALID_TIME);
+            return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.email").getValue());
         } else
             return 0;
     }
@@ -226,7 +225,7 @@ public class EmailServiceImpl implements EmailService {
                     }
 
                     mongoTemplate.remove(query, collection);
-                    return Integer.parseInt(EMAIL_VALID_TIME);
+                    return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.email").getValue());
 
                 }
             }

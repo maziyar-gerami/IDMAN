@@ -27,8 +27,6 @@ public class UserAttributeMapper implements AttributesMapper<User> {
     LdapTemplate ldapTemplate;
     @Autowired
     UserRepo userRepo;
-    @Value("${spring.ldap.base.dn}")
-    private String BASE_DN;
 
     @SneakyThrows
     @Override

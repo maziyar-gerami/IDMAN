@@ -1,6 +1,5 @@
 package parsso.idman.mobile.repoImpls;
 
-
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -12,10 +11,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
-import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
-import parsso.idman.helpers.communicate.InstantMessage;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.mobile.repos.ServicesRepo;
 import parsso.idman.models.users.User;
@@ -36,22 +34,10 @@ import java.util.Random;
 public class ServicesRepoImpl implements ServicesRepo {
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static final SecureRandom rnd = new SecureRandom();
-    @Value("${token.valid.email}")
-    private int EMAIL_VALID_TIME;
-    @Value("${token.valid.SMS}")
-    private int SMS_VALID_TIME;
-    @Value("${sms.api.key}")
-    private String SMS_API_KEY;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
     @Autowired
-    private LdapTemplate ldapTemplate;
-    @Value("${sms.validation.digits}")
-    private int SMS_VALIDATION_DIGITS;
-    @Autowired
     private UserRepo userRepo;
-    @Autowired
-    private InstantMessage instantMessage;
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -67,8 +53,8 @@ public class ServicesRepoImpl implements ServicesRepo {
     public String ActivationSendMessage(User user) {
         insertMobileToken1(user);
         try {
-            String message = user.getUsersExtraInfo().getMobileToken().substring(0, SMS_VALIDATION_DIGITS);
-            KavenegarApi api = new KavenegarApi(SMS_API_KEY);
+            String message = user.getUsersExtraInfo().getMobileToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue()));
+            KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve("kavenegar.sms.api.key").getValue());
             api.verifyLookup(user.getMobile(), message, "", "", "mfa");
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
             System.out.print("HttpException  : " + ex.getMessage());
@@ -84,6 +70,7 @@ public class ServicesRepoImpl implements ServicesRepo {
     }
 
     public String insertMobileToken1(User user) {
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue());
         Random rnd = new Random();
         int token = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)) + rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS - 1) - 1)));
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
@@ -99,9 +86,8 @@ public class ServicesRepoImpl implements ServicesRepo {
     }
 
     public HttpStatus verifySMS(String userId, String token) {
-        // return OK or code 200: token is valid and time is ok
-        // return requestTimeOut or error 408: token is valid but time is not ok
-        // return forbidden or error code 403: token is not valid
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue());
+
 
         User user = userRepo.retrieveUsers(userId);
 
@@ -122,14 +108,16 @@ public class ServicesRepoImpl implements ServicesRepo {
 
                 String timeStamp = mainDbToken.substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
 
-                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * EMAIL_VALID_TIME))
+                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(new Settings(mongoTemplate)
+                        .retrieve("token.valid.email").getValue())))
                     return HttpStatus.OK;
 
                 else
                     return HttpStatus.REQUEST_TIMEOUT;
             } else {
                 String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
-                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * SMS_VALID_TIME)) {
+                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(new Settings(mongoTemplate)
+                        .retrieve("token.valid.SMS").getValue()))) {
                     return HttpStatus.OK;
                 } else
                     return HttpStatus.REQUEST_TIMEOUT;

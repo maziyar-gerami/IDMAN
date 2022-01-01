@@ -1,17 +1,13 @@
 package parsso.idman.helpers.communicate;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
-import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
-import parsso.idman.helpers.user.BuildAttributes;
-import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.UserRepo;
@@ -25,32 +21,23 @@ import java.util.UUID;
 @Service
 public class Token {
     public static final String collection = Variables.col_usersExtraInfo;
+
+    private final MongoTemplate mongoTemplate;
+    private final UserRepo userRepo;
+
     @Autowired
-    BuildAttributes buildAttributes;
-    @Autowired
-    LdapTemplate ldapTemplate;
-    @Autowired
-    BuildDnUser buildDnUser;
-    @Autowired
-    MongoTemplate mongoTemplate;
-    @Autowired
-    private UserRepo userRepo;
-    @Value("${token.valid.email}")
-    private int EMAIL_VALID_TIME;
-    @Value("${token.valid.SMS}")
-    private int SMS_VALID_TIME;
-    @Value("${sms.validation.digits}")
-    private int SMS_VALIDATION_DIGITS;
+    public Token(MongoTemplate mongoTemplate, UserRepo userRepo) {
+        this.mongoTemplate = mongoTemplate;
+        this.userRepo = userRepo;
+    }
+
 
     public HttpStatus checkToken(String userId, String token) {
-        // return OK or code 200: token is valid and time is ok
-        // return requestTimeOut or error 408: token is valid but time is not ok
-        // return forbidden or error code 403: token is not valid
 
         User user = userRepo.retrieveUsers(userId);
-
         String mainDbToken = user.getUsersExtraInfo().getResetPassToken();
         String mainPartToken;
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue());
 
         if (token.length() > 30)
             mainPartToken = mainDbToken.substring(0, 36);
@@ -66,14 +53,14 @@ public class Token {
 
                 String timeStamp = user.getUsersExtraInfo().getResetPassToken().substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
 
-                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * EMAIL_VALID_TIME))
+                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Long.parseLong(new Settings().retrieve("token.valid.email").getValue())))
                     return HttpStatus.OK;
 
                 else
                     return HttpStatus.REQUEST_TIMEOUT;
             } else {
                 String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
-                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * SMS_VALID_TIME)) {
+                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.SMS").getValue()))) {
                     return HttpStatus.OK;
                 } else
                     return HttpStatus.REQUEST_TIMEOUT;
@@ -118,6 +105,7 @@ public class Token {
     }
 
     public int createRandomNum() {
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue());
         Random rnd = new Random();
         int max = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS)));
         int min = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1))) + 1;
