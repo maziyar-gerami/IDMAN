@@ -11,7 +11,7 @@ public class RunOneTime {
     final UniformLogger uniformLogger;
     final LdapTemplate ldapTemplate;
     final MongoTemplate mongoTemplate;
-    UserRepo userRepo;
+    final UserRepo userRepo;
     final String BASE_DN;
 
     public RunOneTime(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,UserRepo userRepo, UniformLogger uniformLogger, String BASE_DN) {

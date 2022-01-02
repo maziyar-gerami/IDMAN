@@ -83,13 +83,13 @@ public class Ticket {
 
     @SuppressWarnings("unused")
     public Time getCreationDateTime() {
-        return new Time().longToPersianTime(this.creationTime);
+        return Time.longToPersianTime(this.creationTime);
     }
 
     @SuppressWarnings("unused")
     public Time getModifiedDateTime() {
         if (this.modifiedTime != null)
-            return new Time().longToPersianTime(this.modifiedTime);
+            return Time.longToPersianTime(this.modifiedTime);
         else
             return null;
     }

@@ -41,7 +41,7 @@ public class Audit {
     }
 
     public Time getTime() {
-        return new Time().longToPersianTime(whenActionWasPerformed.getTime());
+        return Time.longToPersianTime(whenActionWasPerformed.getTime());
     }
 
     @SuppressWarnings("unused")

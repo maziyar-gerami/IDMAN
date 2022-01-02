@@ -55,7 +55,7 @@ public class Notification implements Comparable {
     private int sendMessagePasswordNotifyMagfa(MongoTemplate mongoTemplate,User user) {
         try {
             Texts texts = new Texts();
-            texts.passwordChangeNotification(user);
+            texts.passwordChangeNotification();
             new MagfaSMS(mongoTemplate).SendMessage(user.getMobile(), 1L);
             return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue());
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
@@ -75,7 +75,7 @@ public class Notification implements Comparable {
     private int sendMessagePasswordNotifyKaveNegar(MongoTemplate mongoTemplate,User user,String baseurl) {
         try {
             Texts texts = new Texts();
-            texts.passwordChangeNotification(user);
+            texts.passwordChangeNotification();
             KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve(Variables.KAVENEGAR_API_KEY).getValue());
             Time time = Time.longToPersianTime(new Date().getTime());
             String d = time.getYear() + "-" + time.getMonth() + "-" + time.getDay();

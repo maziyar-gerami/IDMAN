@@ -8,7 +8,7 @@ import parsso.idman.models.users.UsersExtraInfo;
 import java.util.List;
 
 public class UserID {
-    MongoTemplate mongoTemplate;
+    final MongoTemplate mongoTemplate;
     public UserID(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
@@ -16,7 +16,7 @@ public class UserID {
     public void run() {
         int count = (int) mongoTemplate.count(new Query(), Variables.col_usersExtraInfo);
         int limit = 1000;
-        int pages = (int) Math.ceil(count / limit);
+        int pages = (int) Math.ceil(count / (float)limit);
 
         int c;
 
@@ -27,8 +27,7 @@ public class UserID {
             List<UsersExtraInfo> usersExtraInfoList = mongoTemplate.find(new Query().skip(i*limit).limit(limit),UsersExtraInfo.class,Variables.col_usersExtraInfo);
             char[] animationChars = new char[]{'|', '/', '-', '\\'};
             for (UsersExtraInfo usersExtraInfo:usersExtraInfoList) {
-                UsersExtraInfo u2 = new UsersExtraInfo();
-                u2 = usersExtraInfo;
+                UsersExtraInfo u2 = usersExtraInfo;
                 u2.setUserId(null);
 
                 //u2.set_id(usersExtraInfo.getUserId());

@@ -48,7 +48,7 @@ public class UsersExtraInfo {
 
     public Time getExpiredTime() {
         if (endTimeEpoch != 0)
-            return new Time().longToPersianTime(endTimeEpoch);
+            return Time.longToPersianTime(endTimeEpoch);
         return null;
     }
 

@@ -32,7 +32,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     }
 
     UniformLogger uniformLogger;
-    MongoTemplate mongoTemplate;
+    final MongoTemplate mongoTemplate;
 
     public SkyRoom Run(User user) throws IOException {
 

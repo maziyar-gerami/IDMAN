@@ -49,7 +49,7 @@ public class Report {
     }
 
     public Time getDateTime() {
-        return new Time().longToPersianTime(date.getTime());
+        return Time.longToPersianTime(date.getTime());
     }
 
     public String getDetails() {

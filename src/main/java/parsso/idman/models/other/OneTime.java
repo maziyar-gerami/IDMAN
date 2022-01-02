@@ -16,8 +16,6 @@ public class OneTime {
         this.time = time;
     }
 
-    public OneTime() {
-    }
 
     public OneTime(String _id) {
         this._id = _id;

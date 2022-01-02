@@ -12,7 +12,7 @@ import java.net.URL;
 import java.util.*;
 
 public class MagfaSMS {
-    MongoTemplate mongoTemplate;
+    final MongoTemplate mongoTemplate;
     String message;
 
     public MagfaSMS(MongoTemplate mongoTemplate, String message) {
@@ -51,12 +51,7 @@ public class MagfaSMS {
         LongArray uids = new LongArray();
         List<Long> uidItems = uids.getItem();
         uidItems.add(id);
-        SendResult result = service.send(messages, senders, recipients, uids, new IntArray(), new StringArray(), new IntArray());
-        ArrayList<String> res = new ArrayList<>();
-        res.add(String.valueOf(result.getStatus()));
-        for (SendMessage sendMessage : result.getMessages()) {
-            res.add(sendMessage.toString());
-        }
+        service.send(messages, senders, recipients, uids, new IntArray(), new StringArray(), new IntArray());
     }
 
 }

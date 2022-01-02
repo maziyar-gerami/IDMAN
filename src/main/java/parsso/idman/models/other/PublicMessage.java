@@ -42,15 +42,13 @@ public class PublicMessage {
         this.body = body;
     }
 
-    @SuppressWarnings("unused")
     public Time getCreateTime() {
-        return new Time().longToPersianTime(getCreateDate());
+        return Time.longToPersianTime(getCreateDate());
     }
 
-    @SuppressWarnings("unused")
     public Time getUpdateTime() {
         if (updateDate != null)
-            return new Time().longToPersianTime(updateDate);
+            return  Time.longToPersianTime(updateDate);
 
         return null;
     }

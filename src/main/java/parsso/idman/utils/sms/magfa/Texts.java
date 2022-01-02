@@ -3,7 +3,6 @@ package parsso.idman.utils.sms.magfa;
 
 import lombok.Getter;
 import parsso.idman.models.other.Time;
-import parsso.idman.models.users.User;
 
 import java.util.Date;
 
@@ -19,7 +18,7 @@ public class Texts {
         this.mainMessage = p1 + "\n" + p2 + mainCode + p3 + "\n" + p4;
     }
 
-    public void passwordChangeNotification(User user) {
+    public void passwordChangeNotification() {
         String p1 = "هشدار";
         String p2 = "گذرواژه شما در تاریخ ";
         String p3 = " ساعت ";

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 
+@SuppressWarnings("ALL")
 public interface ConfigRepo {
 
     String retrieveSetting() throws IOException;

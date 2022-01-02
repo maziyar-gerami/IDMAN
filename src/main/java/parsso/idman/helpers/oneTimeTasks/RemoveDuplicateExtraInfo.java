@@ -9,7 +9,7 @@ import parsso.idman.models.users.UsersExtraInfo;
 import java.util.List;
 
 public class RemoveDuplicateExtraInfo {
-    MongoTemplate mongoTemplate;
+    final MongoTemplate mongoTemplate;
 
     public RemoveDuplicateExtraInfo(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;

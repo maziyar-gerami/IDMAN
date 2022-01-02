@@ -64,7 +64,7 @@ public class LogsExcelView extends AbstractXlsxView {
         for (Report report : reports) {
 
             Row aRow = sheet.createRow(rowCount++);
-            Time time = new Time().longToPersianTime(report.getMillis());
+            Time time =  Time.longToPersianTime(report.getMillis());
             aRow.createCell(0).setCellValue(report.getLoggerName());
             aRow.createCell(1).setCellValue(report.getMessage());
             aRow.createCell(2).setCellValue(time.getYear() + "/" + time.getMonth() + "/" + time.getDay());

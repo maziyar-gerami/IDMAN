@@ -29,7 +29,7 @@ import parsso.idman.repos.FilesStorageService;
 //@EnableCaching
 public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
     private static final Logger logger = LogManager.getLogger("System");
-    FilesStorageService storageService;
+    final FilesStorageService storageService;
     CasUserDetailService casUserDetailService;
 
     @Autowired

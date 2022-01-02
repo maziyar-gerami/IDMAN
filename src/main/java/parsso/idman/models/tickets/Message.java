@@ -72,16 +72,16 @@ public class Message {
 
     @SuppressWarnings("unused")
     public Time getCreationTime() {
-        return new Time().longToPersianTime(creationLong);
+        return Time.longToPersianTime(creationLong);
     }
 
     @SuppressWarnings("unused")
     public Time getCloseTime() {
-        return new Time().longToPersianTime(closeLong);
+        return Time.longToPersianTime(closeLong);
     }
 
     @SuppressWarnings("unused")
     public Time getReOpenTime() {
-        return new Time().longToPersianTime(reOpenLong);
+        return Time.longToPersianTime(reOpenLong);
     }
 }

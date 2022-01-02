@@ -19,6 +19,7 @@ public class CAPTCHA {
     private String phrase;
     private Date createdAt = new Date();
 
+
     public CAPTCHA(String phrase) {
         this.phrase = phrase;
         long timeStamp = new Date().getTime();
