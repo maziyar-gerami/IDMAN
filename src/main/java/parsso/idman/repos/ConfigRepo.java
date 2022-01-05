@@ -12,7 +12,7 @@ import java.util.List;
 @SuppressWarnings("ALL")
 public interface ConfigRepo {
 
-    String retrieveSetting() throws IOException;
+    List<Setting> retrieveSettings() ;
 
     void updateSettings(String doerID, List<Setting> settings);
 

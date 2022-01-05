@@ -2,18 +2,20 @@ package parsso.idman.helpers.reloadConfigs;
 
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.query.LdapQueryBuilder;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
+import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Setting;
 
 import javax.naming.Name;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
+import javax.naming.directory.*;
 import java.util.List;
 
 @Getter
@@ -26,6 +28,8 @@ public class PasswordSettings {
     }
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
+    @Autowired
+    PwdAttributeMapper pwdAttributeMapper;
 
     private Name buildDn() {
         return LdapNameBuilder.newInstance("cn=DefaultPPolicy,ou=Policies," + BASE_DN).build();
@@ -88,6 +92,12 @@ public class PasswordSettings {
             e.printStackTrace();
         }
 
+    }
+
+    public PWD retrieve(){
+        SearchControls searchControls = new SearchControls();
+        searchControls.setReturningAttributes(new String[]{"*", "+"});
+        return ldapTemplate.search(buildDn(),new EqualsFilter("objectClass","pwdPolicy").encode(),pwdAttributeMapper).get(0);
     }
 
 }

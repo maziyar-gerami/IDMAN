@@ -1,6 +1,5 @@
 package parsso.idman.models.other;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +12,6 @@ public class Setting {
     private String descriptionEN;
     private String descriptionFA;
     private String groupFA;
-    @JsonProperty("group")
     private String groupEN;
 
 }

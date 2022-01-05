@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
@@ -16,6 +17,7 @@ import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.reloadConfigs.PasswordSettings;
 import parsso.idman.models.logs.Config;
 import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Setting;
 import parsso.idman.models.other.Time;
 import parsso.idman.repos.ConfigRepo;
@@ -129,25 +131,52 @@ public class ConfigRepoImpl implements ConfigRepo {
 
 
     @Override
-    public String retrieveSetting() throws IOException {
+    public List<Setting> retrieveSettings() {
 
-        Resource resource = appContext.getResource("file:" + pathToProperties);
-        File file = resource.getFile();
-        String fullFileName = file.getName();
-        int equalIndex = fullFileName.indexOf('.');
-        String system = fullFileName.substring(0, equalIndex);
+        List<Setting> settings = mongoTemplate.find(new Query(),Setting.class,Variables.col_properties);
+        PWD pwd = passwordSettings.retrieve();
+        for (Setting setting:settings)
+            if (setting.getGroupEN().equalsIgnoreCase("Password")&&setting.getValue()==null){
+                switch (setting.get_id()){
+                    case ("pwdCheckQuality"):
+                        setting.setValue(pwd.getPwdCheckQuality());
+                        break;
 
-        Scanner myReader = new Scanner(file);
+                    case ("pwdFailureCountInterval"):
+                        setting.setValue(pwd.getPwdFailureCountInterval());
+                        break;
 
-        List<Setting> settings = parser(myReader, system);
+                    case ("pwdGraceAuthNLimit"):
+                        setting.setValue(pwd.getPwdGraceAuthNLimit());
+                        break;
 
-        JSONencoder jsonEncoder = new JSONencoder(settings);
+                    case ("pwdInHistory"):
+                        setting.setValue(pwd.getPwdInHistory());
+                        break;
 
-        JSONArray jsonArray = jsonEncoder.encode(settings);
+                    case ("pwdLockout"):
+                        setting.setValue(pwd.getPwdLockout());
+                        break;
 
-        myReader.close();
+                    case ("pwdLockoutDuration"):
+                        setting.setValue(pwd.getPwdLockoutDuration());
+                        break;
 
-        return jsonArray.toString();
+                    case ("pwdMaxAge"):
+                        setting.setValue(pwd.getPwdMaxAge());
+                        break;
+
+                    case ("pwdMaxFailure"):
+                        setting.setValue(pwd.getPwdMaxFailure());
+                        break;
+
+                    case ("pwdMinLength"):
+                        setting.setValue(pwd.getPwdMinLength());
+                        break;
+                }
+
+            }
+        return settings;
     }
 
     @Override

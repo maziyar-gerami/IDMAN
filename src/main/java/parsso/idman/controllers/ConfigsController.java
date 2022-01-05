@@ -24,9 +24,9 @@ public class ConfigsController {
         this.configRepo = configRepo;
     }
 
-    @GetMapping("/api/config")
-    public ResponseEntity<String> retrieveSettings() throws IOException {
-        return new ResponseEntity<>(configRepo.retrieveSetting(), HttpStatus.OK);
+    @GetMapping("/api/settings")
+    public ResponseEntity<List<Setting>> retrieveSettings() {
+        return new ResponseEntity<>(configRepo.retrieveSettings(), HttpStatus.OK);
     }
 
     @GetMapping("/api/configs")

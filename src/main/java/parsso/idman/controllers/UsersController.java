@@ -18,14 +18,15 @@ import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.communicate.Token;
+import parsso.idman.helpers.reloadConfigs.PwdAttributeMapper;
 import parsso.idman.helpers.user.ImportUsers;
 import parsso.idman.helpers.user.Operations;
 import parsso.idman.helpers.user.UsersExcelView;
 import parsso.idman.models.other.Notification;
+import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.SkyRoom;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.ListUsers;
-import parsso.idman.models.users.Pwd;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.EmailService;
@@ -52,7 +53,7 @@ public class UsersController {
     private final InstantMessage instantMessage;
     private final SkyroomRepo skyroomRepo;
     private final LdapTemplate ldapTemplate;
-    private final Pwd.PwdAttributeMapper pwdAttributeMapper;
+    private final PwdAttributeMapper pwdAttributeMapper;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
     @Value("${base.url}")
@@ -65,7 +66,7 @@ public class UsersController {
 
     @Autowired
     public UsersController(UserRepo userRepo, EmailService emailService, Operations operations, UsersExcelView excelView,
-                           ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage, SkyroomRepo skyroomRepo, LdapTemplate ldapTemplate, Pwd.PwdAttributeMapper pwdAttributeMapper, MongoTemplate mongoTemplate) {
+                           ImportUsers importUsers, Token tokenClass, InstantMessage instantMessage, SkyroomRepo skyroomRepo, LdapTemplate ldapTemplate, PwdAttributeMapper pwdAttributeMapper, MongoTemplate mongoTemplate) {
         this.userRepo = userRepo;
         this.emailService = emailService;
         this.operations = operations;
@@ -160,8 +161,8 @@ public class UsersController {
     public ResponseEntity<JSONObject> rebindLdapUser(HttpServletRequest request, @PathVariable("uId") String uid, @RequestBody User user) {
         JSONObject objectResult = new JSONObject();
         String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
-        Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
-        int pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
+        PWD pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
+        int pwdin = Integer.parseInt(pwd.getPwdInHistory().replaceAll("[^0-9]", ""));
         objectResult.put("pwdInHistory", pwdin);
         return new ResponseEntity<>(objectResult, userRepo.update(request.getUserPrincipal().getName(), uid, user));
     }
@@ -282,8 +283,8 @@ public class UsersController {
         if (httpStatus == HttpStatus.FOUND) {
             try {
                 String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
-                Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
-                pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
+                PWD pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
+                pwdin = Integer.parseInt(pwd.getPwdInHistory().replaceAll("[^0-9]", ""));
                 objectResult.put("pwdInHistory", pwdin);
                 return new ResponseEntity<>(objectResult, httpStatus);
             } catch (Exception e) {
@@ -400,8 +401,8 @@ public class UsersController {
                                                      @PathVariable("uid") String uid) {
         JSONObject objectResult = new JSONObject();
         String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
-        Pwd pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
-        int pwdin = Integer.parseInt(pwd.getPwdinhistory().replaceAll("[^0-9]", ""));
+        PWD pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
+        int pwdin = Integer.parseInt(pwd.getPwdInHistory().replaceAll("[^0-9]", ""));
         objectResult.put("pwdInHistory", pwdin);
 
         return new ResponseEntity<>(objectResult, userRepo.resetPassword(uid, newPassword, token, pwdin));
