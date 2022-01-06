@@ -12,8 +12,6 @@ import java.util.List;
 @SuppressWarnings("ALL")
 public interface ConfigRepo {
 
-    List<Setting> retrieveSettings() ;
-
     void updateSettings(String doerID, List<Setting> settings);
 
     HttpStatus backupConfig();

@@ -13,5 +13,8 @@ public class Setting {
     private String descriptionFA;
     private String groupFA;
     private String groupEN;
+    private String helpEN;
+    private String helpFA;
+    private Object type;
 
 }

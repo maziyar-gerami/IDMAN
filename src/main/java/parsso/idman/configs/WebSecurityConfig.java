@@ -62,9 +62,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .addFilterBefore(logoutFilter, LogoutFilter.class)
 
+
+
                 .authorizeRequests().antMatchers("/dashboard", "/login")
                 .authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
+
+
                 .and()
 
 
@@ -147,6 +151,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/refresh**").hasRole("SUPERUSER")
                 .antMatchers("/api/refresh/**").hasRole("SUPERUSER")
                 .antMatchers("/api/superuser/**").hasRole("SUPERUSER")
+                .antMatchers("/api/settings").hasRole("SUPERUSER")
 
                 //******************SUPPORTER and SUPERUSER Objects *******************
                 //pages
@@ -165,7 +170,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
 
-
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .csrf().disable()
 
@@ -177,13 +181,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .exceptionHandling().accessDeniedPage("/403")
+                                .and()
 
-                .and()
+
+
+
                 .logout()
                 .logoutUrl(casLogout)
                 .logoutSuccessUrl("/dashboard")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID");
+
     }
 
     @Override

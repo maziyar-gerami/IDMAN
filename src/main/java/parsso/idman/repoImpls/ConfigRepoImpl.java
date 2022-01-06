@@ -129,56 +129,6 @@ public class ConfigRepoImpl implements ConfigRepo {
         return settings;
     }
 
-
-    @Override
-    public List<Setting> retrieveSettings() {
-
-        List<Setting> settings = mongoTemplate.find(new Query(),Setting.class,Variables.col_properties);
-        PWD pwd = passwordSettings.retrieve();
-        for (Setting setting:settings)
-            if (setting.getGroupEN().equalsIgnoreCase("Password")&&setting.getValue()==null){
-                switch (setting.get_id()){
-                    case ("pwdCheckQuality"):
-                        setting.setValue(pwd.getPwdCheckQuality());
-                        break;
-
-                    case ("pwdFailureCountInterval"):
-                        setting.setValue(pwd.getPwdFailureCountInterval());
-                        break;
-
-                    case ("pwdGraceAuthNLimit"):
-                        setting.setValue(pwd.getPwdGraceAuthNLimit());
-                        break;
-
-                    case ("pwdInHistory"):
-                        setting.setValue(pwd.getPwdInHistory());
-                        break;
-
-                    case ("pwdLockout"):
-                        setting.setValue(pwd.getPwdLockout());
-                        break;
-
-                    case ("pwdLockoutDuration"):
-                        setting.setValue(pwd.getPwdLockoutDuration());
-                        break;
-
-                    case ("pwdMaxAge"):
-                        setting.setValue(pwd.getPwdMaxAge());
-                        break;
-
-                    case ("pwdMaxFailure"):
-                        setting.setValue(pwd.getPwdMaxFailure());
-                        break;
-
-                    case ("pwdMinLength"):
-                        setting.setValue(pwd.getPwdMinLength());
-                        break;
-                }
-
-            }
-        return settings;
-    }
-
     @Override
     public void updateSettings(String doerID, List<Setting> settings) {
 
