@@ -42,7 +42,7 @@ public class ConfigsController {
     @PutMapping("/api/configs")
     public ResponseEntity<String> updateSettings(HttpServletRequest request, @RequestBody List<Setting> settings) {
         configRepo.updateSettings(request.getUserPrincipal().getName(), settings);
-        passwordSettings.update(settings);
+        //passwordSettings.update(settings);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

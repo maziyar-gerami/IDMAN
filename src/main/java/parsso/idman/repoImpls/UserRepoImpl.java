@@ -375,7 +375,7 @@ public class UserRepoImpl implements UserRepo {
                 try {
                     ldapTemplate.modifyAttributes(contextUser);
                     uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
-                    if (new Settings(mongoTemplate).retrieve("password.change.notification").getValue().equals("on"))
+                    if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()))
                         new Notification(mongoTemplate).sendPasswordChangeNotify(user,BASE_URL);
 
                     return HttpStatus.OK;
@@ -977,7 +977,7 @@ public class UserRepoImpl implements UserRepo {
                 uniformLogger.info(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
                         Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
 
-                if (new Settings(mongoTemplate).retrieve("password.change.notification").getValue().equals("on"))
+                if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()))
                     new Notification(mongoTemplate).sendPasswordChangeNotify(user,BASE_URL);
 
             } catch (org.springframework.ldap.InvalidAttributeValueException e) {

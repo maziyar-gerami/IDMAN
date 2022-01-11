@@ -17,6 +17,10 @@ public class Response {
         this.data = data;
     }
 
+    public Response(String model, String lang) throws NoSuchFieldException, IllegalAccessException {
+        this.status = new Status(model, lang);
+    }
+
     public Response(Object data, String model, String lang) throws NoSuchFieldException, IllegalAccessException {
         this.status = new Status(model, lang);
         this.data = data;

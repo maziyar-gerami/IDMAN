@@ -52,6 +52,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
+                        /*
+
         http
 
                 .authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
@@ -61,7 +63,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .addFilterBefore(logoutFilter, LogoutFilter.class)
-
 
 
                 .authorizeRequests().antMatchers("/dashboard", "/login")
@@ -185,12 +186,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 
-
                 .logout()
                 .logoutUrl(casLogout)
                 .logoutSuccessUrl("/dashboard")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID");
+
+                         */
 
     }
 

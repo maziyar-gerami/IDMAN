@@ -12,6 +12,7 @@ import org.springframework.ldap.query.LdapQueryBuilder;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.models.other.PWD;
+import parsso.idman.models.other.Property;
 import parsso.idman.models.other.Setting;
 
 import javax.naming.Name;
@@ -35,12 +36,12 @@ public class PasswordSettings {
         return LdapNameBuilder.newInstance("cn=DefaultPPolicy,ou=Policies," + BASE_DN).build();
     }
 
-    public void update(List<Setting> settings) {
+    public boolean update(List<Property> settings) {
 
         ModificationItem[] items = new ModificationItem[9];
         Attribute[] attrs = new Attribute[9];
 
-        for (Setting setting : settings) {
+        for (Property setting : settings) {
             switch (setting.get_id()) {
                 case "pwd.check.quality":
                     attrs[0] = new BasicAttribute("pwdCheckQuality", setting.getValue());
@@ -87,11 +88,12 @@ public class PasswordSettings {
 
         try {
             ldapTemplate.modifyAttributes(buildDn(), items);
-
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
 
+        return true;
     }
 
     public PWD retrieve(){
