@@ -18,4 +18,11 @@
 
 .layout-main {
     flex: 1 1 auto;
+    height: calc(100vh - 9rem);
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.layout-main:hover {
+	overflow-y: auto;
 }

@@ -26,3 +26,12 @@ a {
 .layout-theme-light {
     background-color: #edf1f5;
 }
+
+.main-content-container {
+    height: calc(100% - 8rem);
+    overflow-y: hidden;
+}
+
+.main-content-container:hover {
+	overflow-y: auto;
+}

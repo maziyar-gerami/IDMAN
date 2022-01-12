@@ -1,7 +1,24 @@
+.parssoIcon {
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    display: inline-block;
+}
+
+.parssoIcon-En::before {
+    content: "En";
+}
+
+.parssoIcon-Fa::before {
+    content: "Fa";
+}
+
 .layout-topbar[dir="ltr"] {
     position: fixed;
     height: 5rem;
-    z-index: 997;
     left: 0;
     top: 0;
     width: 100%;
@@ -24,10 +41,6 @@
         img {
             height: 2.5rem;
             margin-right: .5rem;
-        }
-
-        &:focus {
-            @include focused();
         }
     }
 
@@ -89,7 +102,6 @@
 .layout-topbar[dir="rtl"] {
     position: fixed;
     height: 5rem;
-    z-index: 997;
     right: 0;
     top: 0;
     width: 100%;
@@ -112,10 +124,6 @@
         img {
             height: 2.5rem;
             margin-left: .5rem;
-        }
-
-        &:focus {
-            @include focused();
         }
     }
 

@@ -5,20 +5,14 @@
       {{ $t("HelloWorld.firstText") }}
       <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
     </p>
-    <SwitchLanguage />
   </div>
 </template>
 
 <script>
-import SwitchLanguage from "@/components/SwitchLanguage.vue"
-
 export default {
   name: "HelloWorld",
   props: {
     msg: String
-  },
-  components: {
-    SwitchLanguage
   }
 }
 </script>

@@ -1,12 +1,14 @@
 <template>
-  <div :class="containerClass" @click="onWrapperClick" :dir="direction">
-    <AppTopBar @menu-toggle="onMenuToggle" @click="aaaaa" />
-    <div class="layout-sidebar" @click="onSidebarClick" :dir="direction">
-        <AppMenu :model="translationObject.menu" @menuitem-click="onMenuItemClick" />
+  <div :class="containerClass" @click="onWrapperClick" :dir="$store.state.direction">
+    <AppTopBar @menu-toggle="onMenuToggle" />
+    <div class="layout-sidebar" @click="onSidebarClick" :dir="$store.state.direction">
+      <AppUserInfo v-if="$store.state.accessLevel > 0" />
+      <AppMenu :model="menuObject.menu" @menuitem-click="onMenuItemClick" />
+      <p :style="'font-family: ' + this.$store.state.farsiFont" class="varsion">{{ $store.state.version }}</p>
     </div>
 
-    <div class="layout-main-container" :dir="direction">
-        <div class="layout-main" :dir="direction">
+    <div class="layout-main-container" :dir="$store.state.direction">
+        <div class="layout-main" :dir="$store.state.direction">
             <router-view />
         </div>
         <!-- <AppFooter /> -->
@@ -22,6 +24,7 @@
 <script>
 import AppTopBar from "@/components/AppTopbar.vue"
 import AppMenu from "@/components/AppMenu.vue"
+import AppUserInfo from "@/components/AppUserInfo.vue"
 /* import AppConfig from "./AppConfig.vue"
 import AppFooter from "./AppFooter.vue" */
 
@@ -34,16 +37,18 @@ export default {
       mobileMenuActive: false
     }
   },
-  watch: {
-    /* $route () {
-      this.menuActive = false
-      this.$toast.removeAllGroups()
-    } */
+  beforeCreate () {
+    document.title = this.$store.state.appName
+    this.$store.commit("setAccessLevel")
+  },
+  beforeUpdate () {
+    if (this.mobileMenuActive) {
+      this.addClass(document.body, "body-overflow-hidden")
+    } else {
+      this.removeClass(document.body, "body-overflow-hidden")
+    }
   },
   methods: {
-    aaaaa () {
-      console.log(this.$direction)
-    },
     onWrapperClick () {
       if (!this.menuClick) {
         this.overlayMenuActive = false
@@ -124,86 +129,228 @@ export default {
     logo () {
       return (this.$appState.darkTheme) ? "images/logo-white.svg" : "images/logo-dark.svg"
     },
-    direction () {
-      for (const language in this.$languages) {
-        if (this.$i18n.locale === language) {
-          return this.$languages[language]
+    menuObject () {
+      if (this.$store.state.accessLevel === 4) {
+        return {
+          menu: [
+            {
+              label: "",
+              items: [
+                {
+                  label: this.$t("dashboard"), icon: "pi pi-fw pi-th-large", to: "/"
+                },
+                {
+                  label: this.$t("users"), icon: "pi pi-fw pi-user", to: "/users"
+                },
+                {
+                  label: this.$t("groups"), icon: "pi pi-fw pi-users", to: "/groups"
+                },
+                {
+                  label: this.$t("services"), icon: "fa fa-fw fa-server", to: "/services"
+                },
+                {
+                  label: this.$t("roles"), icon: "pi pi-fw pi-tags", to: "/roles"
+                },
+                {
+                  label: this.$t("ticketing"), icon: "pi pi-fw pi-ticket", to: "/ticketing"
+                },
+                {
+                  label: this.$t("notifications"), icon: "pi pi-fw pi-bell", to: "/notifications"
+                },
+                {
+                  label: this.$t("reports"),
+                  icon: "pi pi-fw pi-chart-bar",
+                  items: [
+                    {
+                      label: this.$t("audits"), icon: "pi pi-fw pi-search", to: "/audits"
+                    },
+                    {
+                      label: this.$t("events"), icon: "pi pi-fw pi-calendar", to: "/events"
+                    },
+                    {
+                      label: this.$t("reports"), icon: "pi pi-fw pi-file", to: "/reports"
+                    },
+                    {
+                      label: this.$t("accessReports"), icon: "pi pi-fw pi-list", to: "/accessreports"
+                    }
+                  ]
+                },
+                {
+                  label: this.$t("profile"), icon: "pi pi-fw pi-id-card", to: "/profile"
+                },
+                {
+                  label: this.$t("settings"), icon: "pi pi-fw pi-cog", to: "/settings"
+                },
+                {
+                  label: this.$t("privacy"), icon: "pi pi-fw pi-lock", to: "/privacy"
+                },
+                {
+                  label: this.$t("guide"), icon: "pi pi-fw pi-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
+                }
+              ]
+            }
+          ]
+        }
+      } else if (this.$store.state.accessLevel === 3 || this.$store.state.accessLevel === 2) {
+        return {
+          menu: [
+            {
+              label: "",
+              items: [
+                {
+                  label: this.$t("dashboard"), icon: "pi pi-fw pi-th-large", to: "/"
+                },
+                {
+                  label: this.$t("users"), icon: "pi pi-fw pi-user", to: "/users"
+                },
+                {
+                  label: this.$t("groups"), icon: "pi pi-fw pi-users", to: "/groups"
+                },
+                {
+                  label: this.$t("services"), icon: "fa fa-fw fa-server", to: "/services"
+                },
+                {
+                  label: this.$t("ticketing"), icon: "pi pi-fw pi-ticket", to: "/ticketing"
+                },
+                {
+                  label: this.$t("notifications"), icon: "pi pi-fw pi-bell", to: "/notifications"
+                },
+                {
+                  label: this.$t("reports"),
+                  icon: "pi pi-fw pi-chart-bar",
+                  items: [
+                    {
+                      label: this.$t("audits"), icon: "pi pi-fw pi-search", to: "/audits"
+                    },
+                    {
+                      label: this.$t("events"), icon: "pi pi-fw pi-calendar", to: "/events"
+                    },
+                    {
+                      label: this.$t("reports"), icon: "pi pi-fw pi-file", to: "/reports"
+                    },
+                    {
+                      label: this.$t("accessReports"), icon: "pi pi-fw pi-list", to: "/accessreports"
+                    }
+                  ]
+                },
+                {
+                  label: this.$t("profile"), icon: "pi pi-fw pi-id-card", to: "/profile"
+                },
+                {
+                  label: this.$t("privacy"), icon: "pi pi-fw pi-lock", to: "/privacy"
+                },
+                {
+                  label: this.$t("guide"), icon: "pi pi-fw pi-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
+                }
+              ]
+            }
+          ]
+        }
+      } else if (this.$store.state.accessLevel === 1) {
+        return {
+          menu: [
+            {
+              label: "",
+              items: [
+                {
+                  label: this.$t("dashboard"), icon: "pi pi-fw pi-th-large", to: "/"
+                },
+                {
+                  label: this.$t("ticketing"), icon: "pi pi-fw pi-ticket", to: "/ticketing"
+                },
+                {
+                  label: this.$t("reports"),
+                  icon: "pi pi-fw pi-chart-bar",
+                  items: [
+                    {
+                      label: this.$t("audits"), icon: "pi pi-fw pi-search", to: "/audits"
+                    },
+                    {
+                      label: this.$t("events"), icon: "pi pi-fw pi-calendar", to: "/events"
+                    },
+                    {
+                      label: this.$t("reports"), icon: "pi pi-fw pi-file", to: "/reports"
+                    }
+                  ]
+                },
+                {
+                  label: this.$t("profile"), icon: "pi pi-fw pi-id-card", to: "/profile"
+                },
+                {
+                  label: this.$t("privacy"), icon: "pi pi-fw pi-lock", to: "/privacy"
+                },
+                {
+                  label: this.$t("guide"), icon: "pi pi-fw pi-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
+                }
+              ]
+            }
+          ]
+        }
+      } else {
+        return {
+          menu: [
+            {
+              label: "",
+              items: [
+                {
+                  label: this.$t("resetPassword"), icon: "pi pi-fw pi-key", to: "/resetpassword"
+                },
+                {
+                  label: this.$t("privacy"), icon: "pi pi-fw pi-lock", to: "/privacy"
+                },
+                {
+                  label: this.$t("guide"), icon: "pi pi-fw pi-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
+                }
+              ]
+            }
+          ]
         }
       }
-      return "rtl"
-    },
-    translationObject () {
-      return {
-        menu: [
-          {
-            label: "",
-            items: [
-              {
-                label: this.$t("App.dashboard"), icon: "pi pi-fw pi-chart-bar", to: "/"
-              },
-              {
-                label: this.$t("App.users"), icon: "pi pi-fw pi-user", to: "/users"
-              },
-              {
-                label: this.$t("App.groups"), icon: "pi pi-fw pi-users", to: "/groups"
-              },
-              {
-                label: this.$t("App.services"), icon: "pi pi-fw pi-sitemap", to: "/services"
-              },
-              {
-                label: this.$t("App.roles"), icon: "pi pi-fw pi-tags", to: "/roles"
-              },
-              {
-                label: this.$t("App.ticketing"), icon: "pi pi-fw pi-ticket", to: "/ticketing"
-              },
-              {
-                label: this.$t("App.notifications"), icon: "pi pi-fw pi-bell", to: "/notifications"
-              },
-              {
-                label: this.$t("App.reports"),
-                icon: "pi pi-fw pi-credit-card",
-                items: [
-                  {
-                    label: this.$t("App.audits"), icon: "pi pi-fw pi-search", to: "/audits"
-                  },
-                  {
-                    label: this.$t("App.events"), icon: "pi pi-fw pi-calendar", to: "/events"
-                  },
-                  {
-                    label: this.$t("App.reports"), icon: "pi pi-fw pi-file", to: "/reports"
-                  },
-                  {
-                    label: this.$t("App.accessReports"), icon: "pi pi-fw pi-list", to: "/accessreports"
-                  }
-                ]
-              },
-              {
-                label: this.$t("App.profile"), icon: "pi pi-fw pi-id-card", to: "/profile"
-              },
-              {
-                label: this.$t("App.settings"), icon: "pi pi-fw pi-cog", to: "/settings"
-              }
-            ]
-          }
-        ]
-      }
-    }
-  },
-  beforeCreate () {
-    document.title = "پارسو"
-  },
-  beforeUpdate () {
-    if (this.mobileMenuActive) {
-      this.addClass(document.body, "body-overflow-hidden")
-    } else {
-      this.removeClass(document.body, "body-overflow-hidden")
     }
   },
   components: {
     AppTopBar,
-    AppMenu
+    AppMenu,
+    AppUserInfo
     /* AppConfig,
     AppFooter, */
   }
 }
 </script>
+
+<style>
+.varsion {
+  max-height: 1.5rem;
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+}
+.p-paginator {
+  direction: initial;
+}
+.p-dataview-layout-options {
+  direction: initial;
+}
+.p-paginator-page {
+  font-family: "IRANSansWeb-PersianNumbers";
+}
+.p-dropdown-label {
+  font-family: "IRANSansWeb-PersianNumbers";
+}
+.p-dropdown-item {
+  font-family: "IRANSansWeb-PersianNumbers";
+}
+.p-badge  {
+  font-family: "IRANSansWeb-PersianNumbers";
+}
+.service-notification-button {
+  font-family: "IRANSansWeb-PersianNumbers";
+}
+.iziToast-texts {
+  font-family: "IRANSansWeb-PersianNumbers";
+}
+</style>

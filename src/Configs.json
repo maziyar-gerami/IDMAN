@@ -1,12 +1,28 @@
 {
-    "appNameFa": "پارسو",
-    "appNameEn": "Parsso",
-    "clientNameFa": "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
-    "clientNameEn": "IOOC Centralized Authentication",
-    "defaultTheme": "lara-light-blue",
+    "app": {
+        "Fa": "پارسو",
+        "En": "Parsso",
+        "version": "v1.0.0",
+        "defaultTheme": "lara-light-blue"
+    },
+    "client": {
+        "Fa": "احراز هویت متمرکز شرکت نفت فلات قاره ایران",
+        "En": "IOOC Centralized Authentication"
+    },
     "languages": {
         "Fa": "rtl",
         "En": "ltr"
     },
-    "version": "0.1.0"
+    "font": {
+        "Fa": "IRANSansWeb-PersianNumbers",
+        "En": ""
+    },
+    "alignRTL": {
+        "Fa": "right",
+        "En": "left"
+    },
+    "alignLTR": {
+        "Fa": "left",
+        "En": "right"
+    }
 }

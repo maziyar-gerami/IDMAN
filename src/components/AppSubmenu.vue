@@ -17,9 +17,9 @@
               <span>{{item.label}}</span>
               <i v-if="item.items" class="pi pi-fw pi-angle-down menuitem-toggle-icon"></i>
             </a>
-              <transition name="layout-submenu-wrapper">
-                <AppSubmenu v-show="activeIndex === i" :items="visible(item) && item.items" @menuitem-click="$emit('menuitem-click', $event)"></AppSubmenu>
-              </transition>
+            <transition name="layout-submenu-wrapper">
+              <AppSubmenu v-show="activeIndex === i" :items="visible(item) && item.items" @menuitem-click="$emit('menuitem-click', $event)"></AppSubmenu>
+            </transition>
           </template>
       </li>
       <li class="p-menu-separator" :style="item.style" v-if="visible(item) && item.separator" :key="'separator' + i" role="separator"></li>

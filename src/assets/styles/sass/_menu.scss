@@ -3,8 +3,6 @@
 	width: 300px;
 	height: calc(100vh - 9rem);
 	z-index: 999;
-	overflow-y: auto;
-	user-select: none;
 	top: 7rem;
 	left: 2rem;
 	transition: transform $transitionDuration, left $transitionDuration;
@@ -19,8 +17,6 @@
 	width: 300px;
 	height: calc(100vh - 9rem);
 	z-index: 999;
-	overflow-y: auto;
-	user-select: none;
 	top: 7rem;
 	right: 2rem;
 	transition: transform $transitionDuration, right $transitionDuration;
@@ -232,4 +228,13 @@
             }
         }
     }
+}
+
+.layout-menu-container {
+    height: calc(100% - 8rem);
+    overflow-y: hidden;
+}
+
+.layout-menu-container:hover {
+	overflow-y: auto;
 }
