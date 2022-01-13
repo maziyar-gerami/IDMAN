@@ -8,11 +8,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import parsso.idman.helpers.Comparison;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
@@ -26,14 +26,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @SuppressWarnings("ALL")
 @Component
 public class SamlServiceHelper {
     final String model = "service";
-    @Value("${services.folder.path}")
-    String path;
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
@@ -194,7 +194,13 @@ public class SamlServiceHelper {
         return service;
     }
 
+    private String getServicesPath(){
+        List<Path> paths = (List<Path>)new Settings(mongoTemplate).retrieve("services.folder.path");
+        return paths.get(paths.size()-1).toString();
+    }
+
     public long create(String doerID, JSONObject jo) {
+
         SamlService service = buildSamlService(jo);
         service.setId(new Date().getTime());
         String json = null;
@@ -234,7 +240,7 @@ public class SamlServiceHelper {
                 for (InetAddress machine : machines)
                     IPaddresses.add(machine.getHostAddress());
 
-            file = new FileWriter(path + filePath + ".json");
+            file = new FileWriter(getServicesPath() + filePath + ".json");
             file.write(Objects.requireNonNull(json));
             file.close();
 
@@ -270,14 +276,14 @@ public class SamlServiceHelper {
         FileWriter file;
         try {
 
-            File oldFile = new File(path + oldService.getName() + "-" + service.getId() + ".json");
+            File oldFile = new File(getServicesPath() + oldService.getName() + "-" + service.getId() + ".json");
             oldFile.delete();
             String fileName = service.getName();
             String s1 = fileName.replaceAll("\\s+", "");
             s1 = s1.replaceAll("[-,]", "");
             String filePath = s1 + "-" + service.getId();
 
-            file = new FileWriter(path + filePath + ".json");
+            file = new FileWriter(getServicesPath() + filePath + ".json");
             file.write(Objects.requireNonNull(json));
             file.close();
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "", Variables.ACTION_UPDATE
@@ -294,7 +300,7 @@ public class SamlServiceHelper {
 
     public SamlService analyze(String file) throws IOException, ParseException {
 
-        FileReader reader = new FileReader(path + file);
+        FileReader reader = new FileReader(getServicesPath() + file);
         JSONParser jsonParser = new JSONParser();
         Object obj = jsonParser.parse(reader);
 

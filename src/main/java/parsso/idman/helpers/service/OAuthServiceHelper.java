@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import parsso.idman.helpers.Comparison;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
@@ -27,19 +28,25 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @SuppressWarnings("ALL")
 @Component
 public class OAuthServiceHelper {
-    @Value("${services.folder.path}")
-    String path;
+
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
     ServiceRepo serviceRepo;
     @Autowired
     UniformLogger uniformLogger;
+
+    private String getpath(){
+        List<Path> paths = (List<Path>)new Settings(mongoTemplate).retrieve("services.folder.path");
+        return paths.get(paths.size()-1).toString();
+    }
 
     public OAuthService buildOAuthService(JSONObject jo) {
 
@@ -261,7 +268,7 @@ public class OAuthServiceHelper {
 
     public OAuthService analyze(String file) throws IOException, ParseException {
 
-        FileReader reader = new FileReader(path + file);
+        FileReader reader = new FileReader(getpath() + file);
         JSONParser jsonParser = new JSONParser();
         Object obj = jsonParser.parse(reader);
 
@@ -291,14 +298,14 @@ public class OAuthServiceHelper {
         FileWriter file;
         try {
 
-            File oldFile = new File(path + oldService.getName() + "-" + service.getId() + ".json");
+            File oldFile = new File(getpath() + oldService.getName() + "-" + service.getId() + ".json");
             oldFile.delete();
             String fileName = service.getName();
             String s1 = fileName.replaceAll("\\s+", "");
             s1 = s1.replaceAll("[-,]", "");
             String filePath = s1 + "-" + service.getId();
 
-            file = new FileWriter(path + filePath + ".json");
+            file = new FileWriter(getpath() + filePath + ".json");
             file.write(json);
             file.close();
             UsersGroups usersGroups = new Comparison().compare(oldService.getAccessStrategy(), service.getAccessStrategy());
@@ -353,7 +360,7 @@ public class OAuthServiceHelper {
                 for (InetAddress machine : machines)
                     IPaddresses.add(machine.getHostAddress());
 
-            file = new FileWriter(path + filePath + ".json");
+            file = new FileWriter(getpath() + filePath + ".json");
             file.write(Objects.requireNonNull(json));
             file.close();
 

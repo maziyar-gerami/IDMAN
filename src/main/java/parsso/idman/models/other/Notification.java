@@ -42,7 +42,7 @@ public class Notification implements Comparable {
     }
 
     public boolean sendPasswordChangeNotify(User user,String baseUrl) {
-        String SMS_sdk = new Settings(mongoTemplate).retrieve(Variables.SMS_SDK).getValue();
+        String SMS_sdk = new Settings(mongoTemplate).retrieve(Variables.SMS_SDK).getValue().toString();
 
         if (SMS_sdk.equalsIgnoreCase("KaveNegar")) {
             return new Notification(mongoTemplate).sendMessagePasswordNotifyKaveNegar(mongoTemplate,user,baseUrl) > 0;
@@ -57,7 +57,7 @@ public class Notification implements Comparable {
             Texts texts = new Texts();
             texts.passwordChangeNotification();
             new MagfaSMS(mongoTemplate).SendMessage(user.getMobile(), 1L);
-            return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue());
+            return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString());
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
             System.out.print("HttpException  : " + ex.getMessage());
@@ -76,13 +76,13 @@ public class Notification implements Comparable {
         try {
             Texts texts = new Texts();
             texts.passwordChangeNotification();
-            KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve(Variables.KAVENEGAR_API_KEY).getValue());
+            KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve(Variables.KAVENEGAR_API_KEY).getValue().toString());
             Time time = Time.longToPersianTime(new Date().getTime());
             String d = time.getYear() + "-" + time.getMonth() + "-" + time.getDay();
             String h = time.getHours() + ":" + time.getMinutes();
             String dh = d + " ساعت " + h;
             api.verifyLookup(user.getMobile(), user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')), dh, baseurl, "changePass");
-            return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue() );
+            return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString() );
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
             System.out.print("HttpException  : " + ex.getMessage());

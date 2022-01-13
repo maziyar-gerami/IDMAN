@@ -1,6 +1,5 @@
 package parsso.idman.models.other;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,11 +11,15 @@ import java.util.List;
 public class Property {
 
     private String _id;
-    private String value;
+    private Object value;
     private String description;
     private String group;
     private Object type;
     private String help;
+
+
+    public Property() {
+    }
 
     public Property(Setting setting, String lang){
         this._id = setting.get_id();
@@ -39,9 +42,6 @@ public class Property {
 
     }
 
-    public Property() {
-
-    }
 
     public List<Property> settingsToProperty(List<Setting> settings,String lang){
         List<Property> properties = new LinkedList<>();

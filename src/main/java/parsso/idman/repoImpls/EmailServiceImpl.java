@@ -168,7 +168,7 @@ public class EmailServiceImpl implements EmailService {
             }
 
             mongoTemplate.remove(query, collection);
-            return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.email").getValue());
+            return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.email").getValue().toString());
         } else
             return 0;
     }
@@ -225,7 +225,7 @@ public class EmailServiceImpl implements EmailService {
                     }
 
                     mongoTemplate.remove(query, collection);
-                    return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.email").getValue());
+                    return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.email").getValue().toString());
 
                 }
             }

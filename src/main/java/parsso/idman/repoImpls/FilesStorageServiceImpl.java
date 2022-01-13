@@ -1,11 +1,15 @@
 package parsso.idman.repoImpls;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.helpers.Settings;
+import parsso.idman.helpers.Variables;
 import parsso.idman.repos.FilesStorageService;
 
 import java.io.IOException;
@@ -13,24 +17,24 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
     Path photoPathRoot;
     Path servicesPathRoot;
-    @Value("${profile.photo.path}")
-    private String photoPath;
-    @Value("${services.folder.path}")
-    private String servicesPath;
-    @Value("${metadata.file.path}")
-    private String metadataPath;
-    @Value("${service.icon.path}")
-    private String serviceIcon;
+    Path serviceIcon;
+    MongoTemplate mongoTemplate;
+
+    @Autowired
+    public FilesStorageServiceImpl(MongoTemplate mongoTemplate){
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @Override
     public void init() {
-        photoPathRoot = Paths.get(photoPath);
-        servicesPathRoot = Paths.get(servicesPath);
+        List<Path> paths = (List<Path>)new Settings(mongoTemplate).retrieve("profile.photo.path").getValue();
+        photoPathRoot = Paths.get(String.valueOf(paths.get(paths.size()-1)));
 
         try {
             if (Files.notExists(photoPathRoot))
@@ -38,6 +42,9 @@ public class FilesStorageServiceImpl implements FilesStorageService {
         } catch (IOException e) {
             throw new RuntimeException("Could not initialize folder for upload photo!");
         }
+
+        paths = (List<Path>)new Settings(mongoTemplate).retrieve("services.folder.path").getValue();
+        servicesPathRoot = Paths.get(String.valueOf(paths.get(paths.size()-1)));
 
         try {
             if (Files.notExists(servicesPathRoot))
@@ -50,10 +57,11 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
     @Override
     public void saveMetadata(MultipartFile file, String name) {
+        List<Path> paths = (List<Path>) new Settings().retrieve(Variables.METADATA_PATH).getValue();
+        Path metadataPath = Paths.get(String.valueOf(paths.get(paths.size()-1)));
 
         try {
-            Path pathServices = Paths.get(metadataPath);
-            Files.copy(file.getInputStream(), pathServices.resolve(name));
+            Files.copy(file.getInputStream(), metadataPath.resolve(name));
         } catch (Exception e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
         }
@@ -90,8 +98,10 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
     @Override
     public void saveIcon(MultipartFile file, String fileName) {
+        List<Path> paths = (List<Path>) new Settings(mongoTemplate).retrieve("services.icon.path");
+        serviceIcon = paths.get(paths.size()-1);
         try {
-            Path pathServices = Paths.get(serviceIcon);
+            Path pathServices = Paths.get(serviceIcon.toString());
             Files.copy(file.getInputStream(), pathServices.resolve(fileName));
         } catch (Exception e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());

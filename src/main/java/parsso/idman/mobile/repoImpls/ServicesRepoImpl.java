@@ -53,8 +53,8 @@ public class ServicesRepoImpl implements ServicesRepo {
     public String ActivationSendMessage(User user) {
         insertMobileToken1(user);
         try {
-            String message = user.getUsersExtraInfo().getMobileToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue()));
-            KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve("kavenegar.sms.api.key").getValue());
+            String message = user.getUsersExtraInfo().getMobileToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString()));
+            KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve("kavenegar.sms.api.key").getValue().toString());
             api.verifyLookup(user.getMobile(), message, "", "", "mfa");
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
             System.out.print("HttpException  : " + ex.getMessage());
@@ -70,7 +70,7 @@ public class ServicesRepoImpl implements ServicesRepo {
     }
 
     public String insertMobileToken1(User user) {
-        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue());
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString());
         Random rnd = new Random();
         int token = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)) + rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS - 1) - 1)));
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
@@ -86,7 +86,7 @@ public class ServicesRepoImpl implements ServicesRepo {
     }
 
     public HttpStatus verifySMS(String userId, String token) {
-        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue());
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString());
 
 
         User user = userRepo.retrieveUsers(userId);
@@ -109,7 +109,7 @@ public class ServicesRepoImpl implements ServicesRepo {
                 String timeStamp = mainDbToken.substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
 
                 if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(new Settings(mongoTemplate)
-                        .retrieve("token.valid.email").getValue())))
+                        .retrieve("token.valid.email").getValue().toString())))
                     return HttpStatus.OK;
 
                 else
@@ -117,7 +117,7 @@ public class ServicesRepoImpl implements ServicesRepo {
             } else {
                 String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
                 if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(new Settings(mongoTemplate)
-                        .retrieve("token.valid.SMS").getValue()))) {
+                        .retrieve("token.valid.SMS").getValue().toString()))) {
                     return HttpStatus.OK;
                 } else
                     return HttpStatus.REQUEST_TIMEOUT;

@@ -87,8 +87,6 @@ public class UserRepoImpl implements UserRepo {
     private String BASE_URL;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-    @Value("${profile.photo.path}")
-    private String uploadedFilesPath;
     @Autowired
     private LdapTemplate ldapTemplate;
     @Autowired
@@ -203,7 +201,7 @@ public class UserRepoImpl implements UserRepo {
         try {
             if (!retrieveUsers(doerID).getRole().equals("USER") && !retrieveUsers(doerID).getRole().equals("PRESENTER")
                     && !retrieveUsers(usid).getRole().equals("USER") &&
-                    user.getRole().equals("USER") && new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().equalsIgnoreCase("false"))
+                    user.getRole().equals("USER") && new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().toString().equalsIgnoreCase("false"))
                 return HttpStatus.FORBIDDEN;
         } catch (Exception ignored) {
         }
@@ -275,7 +273,7 @@ public class UserRepoImpl implements UserRepo {
     public JSONObject createUserImport(String doerID, User p) {
 
         if (p.getUserPassword() == null)
-            p.setUserPassword(new Settings(mongoTemplate).retrieve(Variables.DEFAULT_USER_PASSWORD).getValue());
+            p.setUserPassword(new Settings(mongoTemplate).retrieve(Variables.DEFAULT_USER_PASSWORD).getValue().toString());
 
         return create(doerID, p);
     }
@@ -375,7 +373,7 @@ public class UserRepoImpl implements UserRepo {
                 try {
                     ldapTemplate.modifyAttributes(contextUser);
                     uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
-                    if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()))
+                    if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue().toString()))
                         new Notification(mongoTemplate).sendPasswordChangeNotify(user,BASE_URL);
 
                     return HttpStatus.OK;
@@ -396,6 +394,8 @@ public class UserRepoImpl implements UserRepo {
     @Override
     @Cacheable(value = "currentPic", key = "user.userId")
     public String showProfilePic(HttpServletResponse response, User user) {
+        List paths = (List)new Settings(mongoTemplate).retrieve("profile.photo.path");
+        String uploadedFilesPath = paths.get(paths.size()-1).toString();
         if (user.getPhoto() == null)
             return "NotExist";
 
@@ -422,6 +422,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public byte[] showProfilePic(User user) {
+        List paths = (List)new Settings(mongoTemplate).retrieve("profile.photo.path");
+        String uploadedFilesPath = paths.get(paths.size()-1).toString();
         File file = new File(uploadedFilesPath + user.getUsersExtraInfo().getPhotoName());
         byte[] media = null;
 
@@ -441,6 +443,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public boolean uploadProfilePic(MultipartFile file, String name) {
+        List paths = (List)new Settings(mongoTemplate).retrieve("profile.photo.path");
+        String uploadedFilesPath = paths.get(paths.size()-1).toString();
 
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
 
@@ -542,6 +546,9 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public boolean deleteProfilePic(User user) {
+
+        List paths = (List)new Settings(mongoTemplate).retrieve("profile.photo.path");
+        String uploadedFilesPath = paths.get(paths.size()-1).toString();
 
         File oldPic = new File(uploadedFilesPath + user.getPhoto());
         user.getUsersExtraInfo().setPhotoName(null);
@@ -781,7 +788,8 @@ public class UserRepoImpl implements UserRepo {
 
         if (user.getRole() == null)
             user = setRole(user);
-        else if (user.getRole().equals("USER") && new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().equalsIgnoreCase("FALSE"))
+
+        if (user.getRole().equals("USER") && !Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().toString()))
             user.setProfileInaccessibility(true);
 
 
@@ -812,7 +820,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     private Boolean skyRoomAccess(User user) {
-        boolean isEnable = Boolean.parseBoolean((new Settings(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE)).getValue());
+        boolean isEnable = Boolean.parseBoolean((new Settings(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE)).getValue().toString());
 
         boolean accessRole;
         try {
@@ -977,7 +985,7 @@ public class UserRepoImpl implements UserRepo {
                 uniformLogger.info(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
                         Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
 
-                if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()))
+                if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue().toString()))
                     new Notification(mongoTemplate).sendPasswordChangeNotify(user,BASE_URL);
 
             } catch (org.springframework.ldap.InvalidAttributeValueException e) {

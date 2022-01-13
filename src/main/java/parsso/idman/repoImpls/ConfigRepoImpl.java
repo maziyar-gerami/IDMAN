@@ -1,14 +1,12 @@
 package parsso.idman.repoImpls;
 
 
-import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
@@ -17,13 +15,11 @@ import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.reloadConfigs.PasswordSettings;
 import parsso.idman.models.logs.Config;
 import parsso.idman.models.logs.ReportMessage;
-import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Setting;
 import parsso.idman.models.other.Time;
 import parsso.idman.repos.ConfigRepo;
 import parsso.idman.repos.UserRepo;
 import parsso.idman.utils.convertor.DateConverter;
-import parsso.idman.utils.json.JSONencoder;
 
 import java.io.*;
 import java.nio.file.Files;

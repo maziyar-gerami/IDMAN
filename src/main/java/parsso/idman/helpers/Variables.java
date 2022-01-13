@@ -82,6 +82,8 @@ public class Variables {
     public static final String TOKEN_VALID_SMS = "token.valid.SMS";
     public static final String KAVENEGAR_API_KEY = "kavenegar.sms.api.key";
     public static final String PASSWORD_CHANGE_NOTIFICATION = "password.change.notification";
+    public static final String METADATA_PATH = "metadata.file.path";
+    public static final String QR_DEVICES_PATH = "qr.devices.path";
 
     static final String email_body = "شما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید." +
             "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +

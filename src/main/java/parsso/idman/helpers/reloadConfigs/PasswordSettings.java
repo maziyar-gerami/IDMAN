@@ -2,18 +2,14 @@ package parsso.idman.helpers.reloadConfigs;
 
 
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
-import org.springframework.ldap.query.LdapQueryBuilder;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Property;
-import parsso.idman.models.other.Setting;
 
 import javax.naming.Name;
 import javax.naming.directory.*;
@@ -43,43 +39,45 @@ public class PasswordSettings {
 
         for (Property setting : settings) {
             switch (setting.get_id()) {
-                case "pwd.check.quality":
+                case "pwdCheckQuality":
                     attrs[0] = new BasicAttribute("pwdCheckQuality", setting.getValue());
                     items[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[0]);
                     continue;
-
-                case "pwd.expire.warning":
-
+                case "pwdExpireWarning":
                     attrs[1] = new BasicAttribute("pwdExpireWarning", setting.getValue());
                     items[1] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[1]);
                     continue;
-                case "pwd.failure.count.interval":
-
+                case "pwdFailureCountInterval":
                     attrs[2] = new BasicAttribute("pwdFailureCountInterval", setting.getValue());
                     items[2] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[2]);
                     continue;
-                case "pwd.grace.auth.n.limit":
 
+                case "pwdGraceAuthNLimit":
                     attrs[3] = new BasicAttribute("pwdGraceAuthNLimit", setting.getValue());
                     items[3] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[3]);
                     continue;
-                case "pwd.in.history":
+
+                case "pwdInHistory":
                     attrs[4] = new BasicAttribute("pwdInHistory", setting.getValue());
                     items[4] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[4]);
                     continue;
-                case "pwd.lockout":
+
+                case "pwdLockout":
                     attrs[5] = new BasicAttribute("pwdLockout", setting.getValue());
                     items[5] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[5]);
                     continue;
-                case "pwd.lockout.duration":
+
+                case "pwdLockoutDuration":
                     attrs[6] = new BasicAttribute("pwdLockoutDuration", setting.getValue());
                     items[6] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[6]);
                     continue;
-                case "pwd.max.failure":
+                case "pwdMaxFailure":
                     attrs[7] = new BasicAttribute("pwdMaxFailure", setting.getValue());
                     items[7] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[7]);
                     continue;
-                case "pwd.min.length":
+
+
+                case "pwdMinLength":
                     attrs[8] = new BasicAttribute("pwdMinLength", setting.getValue());
                     items[8] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[8]);
             }

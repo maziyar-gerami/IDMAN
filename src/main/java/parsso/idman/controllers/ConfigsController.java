@@ -7,14 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import parsso.idman.helpers.reloadConfigs.PasswordSettings;
 import parsso.idman.models.logs.Config;
-import parsso.idman.models.other.Property;
 import parsso.idman.models.other.Setting;
-import parsso.idman.models.response.Response;
 import parsso.idman.repos.ConfigRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 @RestController

@@ -52,8 +52,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-                        /*
-
         http
 
                 .authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
@@ -64,15 +62,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .addFilterBefore(logoutFilter, LogoutFilter.class)
 
-
                 .authorizeRequests().antMatchers("/dashboard", "/login")
                 .authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
-
-
                 .and()
 
 
+/*
                 .authorizeRequests()
                 //****************Public Objects*********************
                 //resources
@@ -113,9 +109,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/groups/user").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/services/user").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/user/**").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/reports/user").hasAnyRole("USER", "ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/audits/user").hasAnyRole("USER", "ADMIN", "SUPPORTER", "SUPERUSER")
-                .antMatchers("/api/logs/events/user").hasAnyRole("USER", "ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/reports/user").hasAnyRole("USER","ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/audits/user").hasAnyRole("USER","ADMIN", "SUPPORTER", "SUPERUSER")
+                .antMatchers("/api/logs/events/user").hasAnyRole("USER","ADMIN", "SUPPORTER", "SUPERUSER")
 
 
                 //****************** SUPERUSER & ADMIN & SUPPORTER Objects************************
@@ -138,7 +134,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/logs/events/users**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
                 .antMatchers("/api/transcripts/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
 
-
                 //******************SUPERUSER Objects ONLY *******************
                 //pages
                 .antMatchers("/roles").hasRole("SUPERUSER")
@@ -153,6 +148,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/refresh/**").hasRole("SUPERUSER")
                 .antMatchers("/api/superuser/**").hasRole("SUPERUSER")
                 .antMatchers("/api/settings").hasRole("SUPERUSER")
+
 
                 //******************SUPPORTER and SUPERUSER Objects *******************
                 //pages
@@ -171,6 +167,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
 
+*/
+
                 .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
                 .csrf().disable()
 
@@ -182,18 +180,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .exceptionHandling().accessDeniedPage("/403")
-                                .and()
 
-
-
+                .and()
                 .logout()
                 .logoutUrl(casLogout)
                 .logoutSuccessUrl("/dashboard")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID");
-
-                         */
-
     }
 
     @Override

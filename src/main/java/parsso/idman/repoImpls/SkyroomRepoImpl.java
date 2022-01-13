@@ -39,7 +39,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
         String RealName = user.getFirstName() + user.getLastName();
         String Classname = user.getFirstName().split("")[0] + user.getLastName().split("")[0] + (int) (Long.parseLong(user.getMobile()) % 937);
         int userId = Register(RealName, RandomPassMaker(8), user.getDisplayName());
-        Boolean skyroomEnable = Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE).getValue());
+        Boolean skyroomEnable = Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE).getValue().toString());
         SkyRoom skyRoom;
         if (userId == 0) {
             int roomId = GetRoomId(Classname);
@@ -61,11 +61,11 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     }
 
     public JSONObject Post(String json) throws IOException {
-        boolean skyroomEnable = Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE).getValue());
+        boolean skyroomEnable = Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE).getValue().toString());
         if (skyroomEnable) {
             URL url = null;
             try {
-                url = new URL(new Settings(mongoTemplate).retrieve(Variables.SKYROOM_API_KEY).getValue());
+                url = new URL(new Settings(mongoTemplate).retrieve(Variables.SKYROOM_API_KEY).getValue().toString());
             } catch (Exception e) {
                 uniformLogger.info("System", new ReportMessage("skyroom", "", "", "retrieve url", Variables.RESULT_FAILED, "malformed url"));
             }
@@ -190,7 +190,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
     }
 
     public String GetRoomGuestUrl(int room_id) throws IOException {
-        boolean skyroomEnable = Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE).getValue());
+        boolean skyroomEnable = Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE).getValue().toString());
         if (skyroomEnable) {
             JSONObject root = new JSONObject();
             root.put("action", "getRoomUrl");

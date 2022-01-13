@@ -1,6 +1,7 @@
 package parsso.idman.models.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.models.other.StringResult;
@@ -10,6 +11,7 @@ import parsso.idman.models.other.StringResult;
 @Getter
 public class Response {
     Status status;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     Object data;
 
     public Response(Object data, String lang) {

@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
@@ -22,6 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("unchecked")
@@ -37,8 +40,8 @@ public class Operations {
     LdapTemplate ldapTemplate;
     @Autowired
     UniformLogger uniformLogger;
-    @Value("${qr.devices.path}")
-    private String qrDevicesPath;
+    @Autowired
+    MongoTemplate mongoTemplate;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
 
@@ -145,6 +148,8 @@ public class Operations {
     }
 
     public String activeMobile(User user) {
+        List paths = (List) new Settings(mongoTemplate).retrieve(Variables.QR_DEVICES_PATH).getValue();
+        String qrDevicesPath = paths.get(paths.size()-1).toString();
 
         String uuid = UUID.randomUUID().toString();
 

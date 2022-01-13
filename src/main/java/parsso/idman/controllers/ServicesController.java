@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.helpers.Settings;
 import parsso.idman.models.services.Service;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.repos.ServiceRepo;
@@ -27,8 +28,6 @@ import java.util.List;
 public class ServicesController {
     private final UserRepo userRepo;
     private final ServiceRepo serviceRepo;
-    @Value("${metadata.file.path}")
-    private String metadataPath;
 
     @Autowired
     public ServicesController(@Qualifier("userRepoImpl") UserRepo userRepo, @Qualifier("serviceRepoImpl") ServiceRepo serviceRepo) {
@@ -113,6 +112,9 @@ public class ServicesController {
     )
     public @ResponseBody
     Object getMetaDataFile(@PathVariable("file") String file) throws IOException {
+
+        List paths = (List) new Settings().retrieve("metadata.file.path").getValue();
+        String metadataPath = paths.get(paths.size()-1).toString();
 
         FileInputStream in = new FileInputStream(metadataPath + file);
 

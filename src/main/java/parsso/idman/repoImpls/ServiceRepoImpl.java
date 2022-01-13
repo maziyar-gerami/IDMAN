@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.service.*;
@@ -33,6 +34,8 @@ import parsso.idman.utils.other.GenerateUUID;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @SuppressWarnings("ALL")
@@ -57,12 +60,14 @@ public class ServiceRepoImpl implements ServiceRepo {
     Position position;
     @Autowired
     UniformLogger uniformLogger;
-    @Value("${services.folder.path}")
-    private String path;
     @Value("${base.url}")
     private String baseUrl;
-    @Value("${service.icon.path}")
-    private String iconPath;
+
+
+    private String getServicesFolder(){
+        List<Path> paths = (List<Path>)new Settings(mongoTemplate).retrieve("services.folder.path");
+        return paths.get(paths.size()-1).toString();
+    }
 
     @Override
     public List<MicroService> listUserServices(User user) {
@@ -141,7 +146,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     @Override
     public List<Service> listServicesFull() {
-        File folder = new File(path); // ./services/
+        File folder = new File(getServicesFolder()); // ./services/
         String[] files = folder.list();
         List<Service> services = new LinkedList<>();
         Service service = null;
@@ -182,7 +187,7 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Override
     public List<MicroService> listServicesMain() {
 
-        File folder = new File(path); // ./services/
+        File folder = new File(getServicesFolder()); // ./services/
         String[] files = folder.list();
         List<MicroService> services = new LinkedList<>();
         Service service = null;
@@ -239,7 +244,7 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Override
     public LinkedList<String> deleteServices(String doerID, JSONObject jsonObject) {
 
-        File folder = new File(path);
+        File folder = new File(getServicesFolder());
         List<String> allFiles = Arrays.asList(Objects.requireNonNull(folder.list()));
         List selectedFiles = new LinkedList();
 
@@ -258,7 +263,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         LinkedList<String> notDeleted = null;
 
         for (Object file : selectedFiles) {
-            File serv = new File(path + file.toString());
+            File serv = new File(getServicesFolder() + file.toString());
             if (!(serv.delete()))
                 Objects.requireNonNull(notDeleted).add((String) file);
 
@@ -301,7 +306,7 @@ public class ServiceRepoImpl implements ServiceRepo {
         String jsonString = mapper.writeValueAsString(service);
 
         try {
-            FileWriter file = new FileWriter(path + filePath, false);
+            FileWriter file = new FileWriter(getServicesFolder() + filePath, false);
             file.write(jsonString);
             file.close();
             uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, sid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, service, ""));
@@ -558,6 +563,9 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Override
     public String showServicePic(HttpServletResponse response, String fileName) {
 
+        List<Path> paths = (List<Path>)new Settings(mongoTemplate).retrieve("service.icon.path");
+        String iconPath = paths.get(paths.size()-1).toString();
+
         File file = new File(iconPath + fileName);
         if (file.exists()) {
             try {
@@ -580,7 +588,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
     private Service analyze(String file) throws IOException, ParseException {
 
-        FileReader reader = new FileReader(path + file);
+        FileReader reader = new FileReader(getServicesFolder() + file);
         JSONParser jsonParser = new JSONParser();
         Object obj = jsonParser.parse(reader);
         reader.close();

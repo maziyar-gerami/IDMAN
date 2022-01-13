@@ -309,7 +309,7 @@ public class UsersController {
         String userId = jsonObject.getAsString("userId");
         HttpStatus httpStatus = userRepo.changePasswordPublic(userId, currentPassword, newPassword);
 
-        if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()) && httpStatus == HttpStatus.OK)
+        if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue().toString()) && httpStatus == HttpStatus.OK)
             new Notification(mongoTemplate).sendPasswordChangeNotify(userRepo.retrieveUsers(userId),BASE_URL);
 
         return new ResponseEntity<>(httpStatus);

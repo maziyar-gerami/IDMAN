@@ -37,7 +37,7 @@ public class Token {
         User user = userRepo.retrieveUsers(userId);
         String mainDbToken = user.getUsersExtraInfo().getResetPassToken();
         String mainPartToken;
-        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue());
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString());
 
         if (token.length() > 30)
             mainPartToken = mainDbToken.substring(0, 36);
@@ -53,14 +53,14 @@ public class Token {
 
                 String timeStamp = user.getUsersExtraInfo().getResetPassToken().substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
 
-                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Long.parseLong(new Settings().retrieve("token.valid.email").getValue())))
+                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Long.parseLong(new Settings().retrieve("token.valid.email").getValue().toString())))
                     return HttpStatus.OK;
 
                 else
                     return HttpStatus.REQUEST_TIMEOUT;
             } else {
                 String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
-                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.SMS").getValue()))) {
+                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.SMS").getValue().toString()))) {
                     return HttpStatus.OK;
                 } else
                     return HttpStatus.REQUEST_TIMEOUT;
@@ -105,7 +105,7 @@ public class Token {
     }
 
     public int createRandomNum() {
-        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue());
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString());
         Random rnd = new Random();
         int max = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS)));
         int min = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1))) + 1;
