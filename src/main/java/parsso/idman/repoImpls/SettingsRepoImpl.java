@@ -1,52 +1,95 @@
 package parsso.idman.repoImpls;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.data.mongodb.core.query.UpdateDefinition;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.reloadConfigs.PasswordSettings;
+import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Property;
 import parsso.idman.models.other.Setting;
+import parsso.idman.models.other.Time;
 import parsso.idman.repos.SettingsRepo;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SettingsRepoImpl implements SettingsRepo {
-    final PasswordSettings passwordSettings;
-    final MongoTemplate mongoTemplate;
-    final LdapTemplate ldapTemplate;
+    PasswordSettings passwordSettings;
+    MongoTemplate mongoTemplate;
+    LdapTemplate ldapTemplate;
+    UniformLogger uniformLogger;
+
+    public SettingsRepoImpl(MongoTemplate mongoTemplate){
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @Autowired
-    SettingsRepoImpl(PasswordSettings passwordSettings, MongoTemplate mongoTemplate, LdapTemplate ldapTemplate) {
+    public SettingsRepoImpl(PasswordSettings passwordSettings, MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger) {
         this.passwordSettings = passwordSettings;
         this.mongoTemplate = mongoTemplate;
         this.ldapTemplate = ldapTemplate;
+        this.uniformLogger = uniformLogger;
     }
 
 
     @Override
     public List<Setting> retrieve() {
 
+        List<Setting> settings = retrieveALL();
+        PWD pwd = passwordSettings.retrieve();
+        Setting sms_sdk = mongoTemplate.findOne(new Query(Criteria.where("_id").is("SMS.SDK")), Setting.class, Variables.col_properties);
+
+        assert sms_sdk != null;
+        if (sms_sdk.getValue().equalsIgnoreCase("magfa"))
+            settings.removeIf(s -> s.get_id().equalsIgnoreCase("kavenegar.sms.api.key"));
+
+        else if (sms_sdk.getValue().toString().equalsIgnoreCase("kavenegar")) {
+            settings.removeIf(s -> s.get_id().equalsIgnoreCase("SMS.Magfa.username"));
+            settings.removeIf(s -> s.get_id().equalsIgnoreCase("SMS.Magfa.password"));
+        }
+
+        boolean skyroom = Boolean.parseBoolean(mongoTemplate.findOne(new Query(Criteria.where("_id").is("skyroom.enable")), Setting.class, Variables.col_properties).getValue().toString());
+
+        if (!skyroom)
+            settings.removeIf(s -> s.get_id().equalsIgnoreCase("skyroom.api.key"));
+
+        if(Integer.parseInt(pwd.getPwdCheckQuality())==0) {
+            settings.removeIf(s -> s.get_id().equalsIgnoreCase("pwdMinLength"));
+        }
+
+        return settings;
+    }
+
+    @Override
+    public List<Setting> retrieveALL() {
+
         List<Setting> settings = mongoTemplate.find(new Query(), Setting.class, Variables.col_properties);
         PWD pwd = passwordSettings.retrieve();
-        List<Setting> finalSettings = new LinkedList();
         for (Setting setting : settings) {
             if (setting.getGroupEN().equalsIgnoreCase("Password") && setting.getValue() == null) {
                 switch (setting.get_id()) {
                     case ("pwdCheckQuality"):
-                        setting.setValue(pwd.getPwdCheckQuality());
+                        if(Integer.parseInt(pwd.getPwdCheckQuality())>0)
+                            setting.setValue("true");
+                        else
+                            setting.setValue("false");
                         break;
 
                     case ("pwdFailureCountInterval"):
@@ -78,45 +121,28 @@ public class SettingsRepoImpl implements SettingsRepo {
                         break;
 
                     case ("pwdMinLength"):
-                        setting.setValue(pwd.getPwdMinLength());
+                        if(Integer.parseInt(pwd.getPwdCheckQuality())>0)
+                            setting.setValue(pwd.getPwdMinLength());
+                        break;
+
+                    case ("pwdExpireWarning"):
+                            setting.setValue(pwd.getPwdExpireWarning());
                         break;
                 }
 
             }
-            /*
-            else if (setting.getGroupEN().equalsIgnoreCase("Storage"))
-                setting.setValue(((List) setting.getValue()).get(((List) setting.getValue()).size()-1).toString());
-
-             */
         }
-
-        Setting sms_sdk = mongoTemplate.findOne(new Query(Criteria.where("_id").is("SMS.SDK")), Setting.class, Variables.col_properties);
-
-        if (sms_sdk.getValue().toString().equalsIgnoreCase("magfa"))
-            settings.removeIf(s -> s.get_id().equalsIgnoreCase("kavenegar.sms.api.key"));
-
-        else if (sms_sdk.getValue().toString().equalsIgnoreCase("kavenegar")) {
-            settings.removeIf(s -> s.get_id().equalsIgnoreCase("SMS.Magfa.username"));
-            settings.removeIf(s -> s.get_id().equalsIgnoreCase("SMS.Magfa.password"));
-        }
-
-        boolean skyroom = Boolean.parseBoolean(mongoTemplate.findOne(new Query(Criteria.where("_id").is("skyroom.enable")), Setting.class, Variables.col_properties).getValue().toString());
-
-        if (!skyroom)
-            settings.removeIf(s -> s.get_id().equalsIgnoreCase("skyroom.api.key"));
-
-
 
         return settings;
     }
 
     @Override
-    public HttpStatus update(List<Property> properties) {
-        final List<Setting> allSettings = retrieve();
+    public HttpStatus update(String doer, List<Property> properties) {
         List<Property> ldapProperties = new ArrayList<>();
         List<Property> mongoProperties = new ArrayList<>();
-        List<Property> storageProperties = new ArrayList<>();
+        PWD ldapPasswords = passwordSettings.retrieve();
         for (Property property:properties) {
+            Setting storedSetting = mongoTemplate.findOne(new Query(Criteria.where("_id").is(property.get_id())),Setting.class,Variables.col_properties);
             if (property.get_id().equals("pwdCheckQuality") ||
                     property.get_id().equals("pwdFailureCountInterval") ||
                     property.get_id().equals("pwdGraceAuthNLimit") ||
@@ -125,50 +151,173 @@ public class SettingsRepoImpl implements SettingsRepo {
                     property.get_id().equals("pwdMinLength")||
                     property.get_id().equals("pwdMaxFailure") ||
                     property.get_id().equals("pwdMaxAge")||
-                    property.get_id().equals("pwdLockoutDuration")||
-                    property.get_id().equals("pwdExpireWarning"))
-                ldapProperties.add(property);
-            else if(property.get_id().equals("metadata.file.path") ||
-                    property.get_id().equals("profile.photo.path") ||
-                    property.get_id().equals("services.folder.path") ||
-                    property.get_id().equals("service.icon.path")){
-                storageProperties.add(property);
+                    property.get_id().equals("pwdExpireWarning")||
+                    property.get_id().equals("pwdLockoutDuration")) {
+                switch (property.get_id()){
+                    case "pwdCheckQuality":
+                        storedSetting.setValue(ldapPasswords.getPwdCheckQuality());
+                        break;
+
+                    case "pwdFailureCountInterval":
+                        storedSetting.setValue(ldapPasswords.getPwdFailureCountInterval());
+                        break;
+
+                    case "pwdGraceAuthNLimit":
+                        storedSetting.setValue(ldapPasswords.getPwdGraceAuthNLimit());
+                        break;
+
+                    case "pwdInHistory":
+                        storedSetting.setValue(ldapPasswords.getPwdInHistory());
+                        break;
+
+                    case "pwdExpireWarning":
+                        storedSetting.setValue(ldapPasswords.getPwdExpireWarning());
+                        break;
+
+                    case "pwdLockout":
+                        storedSetting.setValue(ldapPasswords.getPwdLockout());
+                        break;
+
+                    case "pwdMinLength":
+                        storedSetting.setValue(ldapPasswords.getPwdMinLength());
+                        break;
+
+                    case "pwdMaxFailure":
+                        storedSetting.setValue(ldapPasswords.getPwdMaxFailure());
+                        break;
+
+                    case "pwdMaxAge":
+                        storedSetting.setValue(ldapPasswords.getPwdMaxAge());
+                        break;
+
+                    case "pwdLockoutDuration":
+                        storedSetting.setValue(ldapPasswords.getPwdLockoutDuration());
+                        break;
+
+
+                }
+
+                if(property.get_id().equals("pwdCheckQuality") && property.getValue().toString().equalsIgnoreCase("true"))
+                    property.setValue("1");
+                else if(property.get_id().equals("pwdCheckQuality") && property.getValue().toString().equalsIgnoreCase("false"))
+                    property.setValue("0");
+
+                    ldapProperties.add(property);
             }
-            else
+            if (!storedSetting.getValue().equalsIgnoreCase(property.getValue().toString()))
                 mongoProperties.add(property);
         }
 
         for (Property property:mongoProperties) {
-            Update update = new Update();
-            update.set("value",property.getValue());
-            new Thread(() -> {
-                mongoTemplate.updateFirst(new Query(Criteria.where("_id").is(property.get_id())),update, Variables.col_properties);
-            }).start();
+                Update update = new Update();
+                update.set("value", property.getValue());
+                new Thread(() -> {
+                    mongoTemplate.updateFirst(new Query(Criteria.where("_id").is(property.get_id())), update, Variables.col_properties);
+                    uniformLogger.info(doer, new ReportMessage(Variables.MODEL_SETTINGS, property.get_id(), Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, property.getValue().toString(), ""));
+                }).start();
         }
-
-        /*
-        for (Property property:storageProperties) {
-            Setting s = allSettings.stream().filter(o-> o.get_id().equalsIgnoreCase(property.get_id())).collect(Collectors.toList()).get(0);
-            List values = (List) s.getValue();
-            if (!values.contains(property.getValue()))
-                values.add(s.getValue());
-
-            Update update = new Update();
-            update.set("value",values);
-
-            new Thread(() -> {
-                mongoTemplate.updateFirst(new Query(Criteria.where("_id").is(property.get_id())),update, Variables.col_properties);
-            }).start();
-        }
-
-         */
-
         try {
-            passwordSettings.update(ldapProperties);
+            passwordSettings.update(doer, ldapProperties);
         } catch (Exception e) {
             return HttpStatus.BAD_REQUEST;
         }
 
         return HttpStatus.OK;
+    }
+
+    @Override
+    public HttpStatus backup(String doerID) {
+        List<Setting> allSettings = retrieveALL();
+        JSONObject jsonObject = new JSONObject();
+        long _id = new Date().getTime();
+        jsonObject.put("_id",_id);
+        jsonObject.put("nameFA",new Time().timeToShow(_id,"FA"));
+        jsonObject.put("nameEN",new Time().timeToShow(_id,"EN"));
+        jsonObject.put("data",allSettings);
+        if(!mongoTemplate.collectionExists(Variables.col_propertiesBackup))
+            mongoTemplate.createCollection(Variables.col_propertiesBackup);
+        try {
+            mongoTemplate.save(jsonObject,Variables.col_propertiesBackup);
+            uniformLogger.info(doerID,new ReportMessage(Variables.MODEL_SETTINGS,String.valueOf(_id),Variables.ACTION_BACKUP,Variables.RESULT_SUCCESS));
+            return HttpStatus.OK;
+        }catch (Exception e){
+            uniformLogger.info(doerID,new ReportMessage(Variables.MODEL_SETTINGS,String.valueOf(_id),Variables.ACTION_BACKUP,Variables.RESULT_FAILED));
+            e.printStackTrace();
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
+    @Override
+    public Object retrieveProperties(long id) {
+        if(id == 0)
+            return mongoTemplate.findAll(ID.class,Variables.col_propertiesBackup);
+        return mongoTemplate.find(new Query(Criteria.where("_id").is(id)),Setting.class,Variables.col_propertiesBackup);
+    }
+
+    @Override
+    public HttpStatus reset(String doerId) throws IOException {
+        BackupData backup = mongoTemplate.findOne(new Query(Criteria.where("_id").is(0)),BackupData.class,Variables.col_propertiesBackup);
+        List<Setting> settings = backup.getData();
+        HttpStatus httpStatus = update(doerId,new Property().settingsToProperty(settings,"FA"));
+
+        if (httpStatus.value() == 200)
+            uniformLogger.info(doerId,new ReportMessage(Variables.MODEL_SETTINGS,"",Variables.ACTION_RESETFACTORY,Variables.RESULT_SUCCESS));
+        else
+            uniformLogger.warn(doerId,new ReportMessage(Variables.MODEL_SETTINGS,"",Variables.ACTION_RESETFACTORY,Variables.RESULT_FAILED));
+
+        return httpStatus;
+
+    }
+
+    @Override
+    public HttpStatus restore(String doerId, String id) {
+        BackupData backupData = mongoTemplate.findOne(new Query(Criteria.where("_id").is(Long.valueOf(id))),BackupData.class,Variables.col_propertiesBackup);
+        List<Setting> settings = backupData.getData();
+        HttpStatus httpStatus =  update(doerId,new Property().settingsToProperty(settings,"fa"));
+        if (httpStatus.value() == 200)
+            uniformLogger.info(doerId,new ReportMessage(Variables.MODEL_SETTINGS,id,Variables.ACTION_RESTORE,Variables.RESULT_SUCCESS));
+        else
+            uniformLogger.warn(doerId,new ReportMessage(Variables.MODEL_SETTINGS,id,Variables.ACTION_RESTORE,Variables.RESULT_FAILED));
+
+        return httpStatus;
+    }
+
+    @Override
+    public List<Backup> listBackups(String lang) {
+
+        List<Backup> backups = mongoTemplate.findAll(Backup.class,Variables.col_propertiesBackup);
+        for (Backup backup:backups ) {
+            if (lang.equalsIgnoreCase("EN"))
+                backup.setName(backup.getNameEN());
+            else
+                backup.setName(backup.getNameFA());
+        }
+        backups.removeIf(backup -> backup.get_id()==0);
+    return  backups;
+    }
+
+
+    @Setter
+    @Getter
+    private class ID{
+        private long _id;
+    }
+
+    @Setter
+    @Getter
+    public class Backup{
+        long _id;
+        String name;
+        @JsonIgnore
+        String nameFA;
+        @JsonIgnore
+        String nameEN;
+    }
+
+    @Setter
+    @Getter
+    public class BackupData{
+        long _id;
+        List<Setting> data;
     }
 }

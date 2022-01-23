@@ -33,8 +33,8 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
     @Override
     public void init() {
-        List<Path> paths = (List<Path>)new Settings(mongoTemplate).retrieve("profile.photo.path").getValue();
-        photoPathRoot = Paths.get(String.valueOf(paths.get(paths.size()-1)));
+        String path = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
+        photoPathRoot = Paths.get(path);
 
         try {
             if (Files.notExists(photoPathRoot))
@@ -43,8 +43,8 @@ public class FilesStorageServiceImpl implements FilesStorageService {
             throw new RuntimeException("Could not initialize folder for upload photo!");
         }
 
-        paths = (List<Path>)new Settings(mongoTemplate).retrieve("services.folder.path").getValue();
-        servicesPathRoot = Paths.get(String.valueOf(paths.get(paths.size()-1)));
+        path = new Settings(mongoTemplate).retrieve("services.folder.path").getValue();
+        servicesPathRoot = Paths.get(path);
 
         try {
             if (Files.notExists(servicesPathRoot))
@@ -57,8 +57,8 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
     @Override
     public void saveMetadata(MultipartFile file, String name) {
-        List<Path> paths = (List<Path>) new Settings().retrieve(Variables.METADATA_PATH).getValue();
-        Path metadataPath = Paths.get(String.valueOf(paths.get(paths.size()-1)));
+        String path = new Settings().retrieve(Variables.METADATA_PATH).getValue();
+        Path metadataPath = Paths.get(String.valueOf(path));
 
         try {
             Files.copy(file.getInputStream(), metadataPath.resolve(name));

@@ -34,8 +34,7 @@ import java.util.*;
 @SuppressWarnings("DuplicatedCode")
 @Service
 public class ConfigRepoImpl implements ConfigRepo {
-    @Autowired
-    PasswordSettings passwordSettings;
+
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired

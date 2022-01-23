@@ -65,8 +65,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 
     private String getServicesFolder(){
-        List<Path> paths = (List<Path>)new Settings(mongoTemplate).retrieve("services.folder.path");
-        return paths.get(paths.size()-1).toString();
+        return new Settings(mongoTemplate).retrieve(Variables.SERVICE_FOLDER_PATH).getValue().toString();
     }
 
     @Override
@@ -157,7 +156,7 @@ public class ServiceRepoImpl implements ServiceRepo {
                     services.add(service);
                     Collections.sort(services);
                 } catch (Exception e) {
-                    uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, Objects.requireNonNull(service).getId(),
+                    uniformLogger.warn(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                             "", Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to read service"));
                 }
         }

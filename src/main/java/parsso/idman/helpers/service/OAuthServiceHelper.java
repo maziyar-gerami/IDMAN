@@ -44,8 +44,7 @@ public class OAuthServiceHelper {
     UniformLogger uniformLogger;
 
     private String getpath(){
-        List<Path> paths = (List<Path>)new Settings(mongoTemplate).retrieve("services.folder.path");
-        return paths.get(paths.size()-1).toString();
+        return  new Settings(mongoTemplate).retrieve(Variables.SERVICE_FOLDER_PATH).getValue().toString();
     }
 
     public OAuthService buildOAuthService(JSONObject jo) {

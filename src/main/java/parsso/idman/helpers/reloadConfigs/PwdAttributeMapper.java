@@ -26,6 +26,7 @@ public class PwdAttributeMapper implements AttributesMapper<PWD> {
         pwd.setPwdMaxAge(null != attributes.get("pwdMaxAge") ? attributes.get("pwdMaxAge").get().toString() : null);
         pwd.setPwdMaxFailure(null != attributes.get("pwdMaxFailure") ? attributes.get("pwdMaxFailure").get().toString() : null);
         pwd.setPwdMinLength(null != attributes.get("pwdMinLength") ? attributes.get("pwdMinLength").get().toString() : null);
+        pwd.setPwdExpireWarning(null != attributes.get("pwdExpireWarning") ? attributes.get("pwdExpireWarning").get().toString() : null);
 
         return pwd;
     }

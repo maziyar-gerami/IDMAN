@@ -148,8 +148,7 @@ public class Operations {
     }
 
     public String activeMobile(User user) {
-        List paths = (List) new Settings(mongoTemplate).retrieve(Variables.QR_DEVICES_PATH).getValue();
-        String qrDevicesPath = paths.get(paths.size()-1).toString();
+        String qrDevicesPath = new Settings(mongoTemplate).retrieve(Variables.QR_DEVICES_PATH).getValue();
 
         String uuid = UUID.randomUUID().toString();
 

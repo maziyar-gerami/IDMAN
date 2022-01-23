@@ -66,6 +66,19 @@ public class Time {
                 + getHours() + ":" + getMinutes() + ":" + getSeconds() + "." + getMilliSeconds();
     }
 
+    public String timeToShow(long time, String lang){
+        Date date;
+        if(lang.equalsIgnoreCase("FA")) {
+            Time time1 = longToPersianTime(time);
+            return time1.getYear()+"-"+time1.getMonth()+"-"+time1.getDay() + " " +time1.getHours()+":"+time1.getMinutes()+":"+time1.getSeconds();
+        }
+        else {
+            date = convertEpochToDate(time);
+            return date.toString();
+        }
+
+    }
+
     public String toStringDate() {
 
         return String.format(("%4d"), getYear()) + "-" + String.format(("%02d"), getMonth()) + "-" + String.format(("%02d"), getDay());

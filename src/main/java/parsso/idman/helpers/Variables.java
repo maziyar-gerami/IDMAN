@@ -84,6 +84,10 @@ public class Variables {
     public static final String PASSWORD_CHANGE_NOTIFICATION = "password.change.notification";
     public static final String METADATA_PATH = "metadata.file.path";
     public static final String QR_DEVICES_PATH = "qr.devices.path";
+    public static final String SERVICE_FOLDER_PATH = "services.folder.path";
+    public static final String PROFILE_PHOTO_PATH = "profile.photo.path";
+    public static final String ACTION_BACKUP = "Backup";
+    public static final String ACTION_RESETFACTORY = "Reset Factory";
 
     static final String email_body = "شما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید." +
             "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +
@@ -95,6 +99,7 @@ public class Variables {
     public static final String col_GoogleAuthDevice = "MongoDbGoogleAuthenticatorRepository";
     public static final int PER_BATCH_COUNT = 1000;
     public static final String col_Token = "Tokens";
+    public static String col_propertiesBackup = "IDMAN_PropertiesBackup";
 
     public static String template(User user, String url) {
 

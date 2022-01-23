@@ -113,8 +113,7 @@ public class ServicesController {
     public @ResponseBody
     Object getMetaDataFile(@PathVariable("file") String file) throws IOException {
 
-        List paths = (List) new Settings().retrieve("metadata.file.path").getValue();
-        String metadataPath = paths.get(paths.size()-1).toString();
+        String metadataPath = new Settings().retrieve("metadata.file.path").getValue();
 
         FileInputStream in = new FileInputStream(metadataPath + file);
 

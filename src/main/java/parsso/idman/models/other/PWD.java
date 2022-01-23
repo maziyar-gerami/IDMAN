@@ -12,6 +12,7 @@ public class PWD{
     @Id
     String pwdCheckQuality;
     String pwdFailureCountInterval;
+    String pwdExpireWarning;
     String pwdGraceAuthNLimit;
     String pwdInHistory;
     String pwdLockout;

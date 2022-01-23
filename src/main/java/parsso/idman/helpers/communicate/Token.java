@@ -120,6 +120,8 @@ public class Token {
 
         try {
             usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
+            if(usersExtraInfo==null)
+                usersExtraInfo = new UsersExtraInfo(user);
         } catch (NullPointerException e) {
             usersExtraInfo = new UsersExtraInfo(user);
         }

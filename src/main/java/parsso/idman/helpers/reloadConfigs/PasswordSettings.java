@@ -8,6 +8,9 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
+import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Property;
 
@@ -19,23 +22,29 @@ import java.util.List;
 @Service
 public class PasswordSettings {
     private final LdapTemplate ldapTemplate;
-    @Autowired
-    public PasswordSettings(LdapTemplate ldapTemplate){
-        this.ldapTemplate = ldapTemplate;
-    }
+    final PwdAttributeMapper pwdAttributeMapper;
+    final UniformLogger uniformLogger;
+
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
+
     @Autowired
-    PwdAttributeMapper pwdAttributeMapper;
+    public PasswordSettings(PwdAttributeMapper pwdAttributeMapper, UniformLogger uniformLogger,LdapTemplate ldapTemplate) {
+        this.pwdAttributeMapper = pwdAttributeMapper;
+        this.uniformLogger = uniformLogger;
+        this.ldapTemplate = ldapTemplate;
+    }
 
     private Name buildDn() {
         return LdapNameBuilder.newInstance("cn=DefaultPPolicy,ou=Policies," + BASE_DN).build();
     }
 
-    public boolean update(List<Property> settings) {
+    public boolean update(String doer, List<Property> settings) {
 
-        ModificationItem[] items = new ModificationItem[9];
-        Attribute[] attrs = new Attribute[9];
+        ModificationItem[] items = new ModificationItem[10];
+        Attribute[] attrs = new Attribute[10];
+
+        PWD pwd = retrieve();
 
         for (Property setting : settings) {
             switch (setting.get_id()) {
@@ -76,16 +85,61 @@ public class PasswordSettings {
                     items[7] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[7]);
                     continue;
 
-
                 case "pwdMinLength":
                     attrs[8] = new BasicAttribute("pwdMinLength", setting.getValue());
                     items[8] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[8]);
+
+                case "pwdMaxAge":
+                    attrs[9] = new BasicAttribute("pwdMaxAge", setting.getValue());
+                    items[9] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[9]);
             }
 
         }
 
         try {
             ldapTemplate.modifyAttributes(buildDn(), items);
+            for (Property property:settings) {
+                switch (property.get_id()){
+                        case "pwdCheckQuality":
+                            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdCheckQuality()))
+                            continue;
+                        case "pwdExpireWarning":
+                            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdExpireWarning()))
+                            continue;
+                        case "pwdFailureCountInterval":
+                            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdFailureCountInterval()))
+                            continue;
+
+                        case "pwdGraceAuthNLimit":
+                            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdGraceAuthNLimit()))
+                            continue;
+
+                        case "pwdInHistory":
+                            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdInHistory()))
+                            continue;
+
+                        case "pwdLockout":
+                            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdLockout()))
+                            continue;
+
+                        case "pwdLockoutDuration":
+                            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdLockoutDuration()))
+                            continue;
+                        case "pwdMaxFailure":
+                            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdMaxFailure()))
+                            continue;
+
+                        case "pwdMinLength":
+                            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdMinLength()))
+                                continue;
+
+                    case "pwdMaxAge":
+                        if (property.getValue().toString().equals(pwd.getPwdMaxAge()))
+                            continue;
+
+                }
+                uniformLogger.info(doer, new ReportMessage(Variables.MODEL_SETTINGS,property.get_id(),Variables.ACTION_UPDATE,Variables.RESULT_SUCCESS,property.getValue().toString(),""));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -99,5 +153,7 @@ public class PasswordSettings {
         searchControls.setReturningAttributes(new String[]{"*", "+"});
         return ldapTemplate.search(buildDn(),new EqualsFilter("objectClass","pwdPolicy").encode(),pwdAttributeMapper).get(0);
     }
+
+
 
 }

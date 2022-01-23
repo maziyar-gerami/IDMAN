@@ -6,6 +6,7 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -37,6 +38,7 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.group.GroupsChecks;
+import parsso.idman.helpers.oneTimeTasks.PostSettings;
 import parsso.idman.helpers.oneTimeTasks.RunOneTime;
 import parsso.idman.helpers.user.*;
 import parsso.idman.models.logs.ReportMessage;
@@ -103,6 +105,8 @@ public class UserRepoImpl implements UserRepo {
     private ImportUsers importUsers;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    PostSettings postSettings;
 
 
     @Override
@@ -324,7 +328,8 @@ public class UserRepoImpl implements UserRepo {
 
         try {
             role = p.getUsersExtraInfo().getRole();
-
+            if(role == null)
+                role = "USER";
         } catch (Exception e) {
             role = "USER";
         }
@@ -394,8 +399,8 @@ public class UserRepoImpl implements UserRepo {
     @Override
     @Cacheable(value = "currentPic", key = "user.userId")
     public String showProfilePic(HttpServletResponse response, User user) {
-        List paths = (List)new Settings(mongoTemplate).retrieve("profile.photo.path");
-        String uploadedFilesPath = paths.get(paths.size()-1).toString();
+        String uploadedFilesPath = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
+
         if (user.getPhoto() == null)
             return "NotExist";
 
@@ -422,9 +427,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public byte[] showProfilePic(User user) {
-        List paths = (List)new Settings(mongoTemplate).retrieve("profile.photo.path");
-        String uploadedFilesPath = paths.get(paths.size()-1).toString();
-        File file = new File(uploadedFilesPath + user.getUsersExtraInfo().getPhotoName());
+        String uploadedFilesPath = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
+        File file = new File(uploadedFilesPath + user.getPhoto());
         byte[] media = null;
 
         if (file.exists()) {
@@ -443,25 +447,27 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public boolean uploadProfilePic(MultipartFile file, String name) {
-        List paths = (List)new Settings(mongoTemplate).retrieve("profile.photo.path");
-        String uploadedFilesPath = paths.get(paths.size()-1).toString();
-
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(System.currentTimeMillis());
-
-        String s = timeStamp + file.getOriginalFilename();
-
-        storageService.saveProfilePhoto(file, s);
-
+        String uploadedFilesPath = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
         User userUpdate = retrieveUsers(name);
 
-        //remove old pic
-        File oldPic = new File(uploadedFilesPath + userUpdate.getPhoto());
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
 
-        userUpdate.setPhoto(s);
+        File newPic = new File(uploadedFilesPath + name+"."+extension);
+        File oldPic = new File(uploadedFilesPath + userUpdate.getPhoto());
+        userUpdate.setPhoto(newPic.getName());
         if (update(userUpdate.getUserId(), userUpdate.getUserId(), userUpdate) != null) {
-            return oldPic.delete();
+            try {
+                oldPic.delete();
+            }catch (Exception ignored){}
         }
-        return false;
+
+        try {
+            storageService.saveProfilePhoto(file, newPic.getName());
+        }catch (Exception ignored){
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -1093,6 +1099,11 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public Boolean retrieveUsersDevice(String username) {
         return mongoTemplate.count(new Query(Criteria.where("username").is(username)), Variables.col_GoogleAuthDevice) > 0;
+    }
+
+    @PostConstruct
+    public void transferPropertiesToMongo() throws IOException {
+        postSettings.run(mongoTemplate);
     }
 
 }

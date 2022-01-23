@@ -38,6 +38,7 @@ public class Response {
         status = new Status(code, model, lang);
     }
 
+
     @Setter
     @Getter
     private static class Status {
