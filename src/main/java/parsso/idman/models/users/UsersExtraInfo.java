@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class UsersExtraInfo {
-    @JsonIgnore
     private ObjectId _id;
     private String userId;
     @JsonInclude(JsonInclude.Include.NON_NULL)

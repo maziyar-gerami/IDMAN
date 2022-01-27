@@ -136,9 +136,6 @@ public class DashboardData {
 
         dashboard.setId("Dashboard");
 
-        mongoTemplate.remove(new Query(Criteria.where("_id").is("id")),
-                Variables.col_extraInfo);
-
         mongoTemplate.save(dashboard, Variables.col_extraInfo);
 
     }

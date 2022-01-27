@@ -12,7 +12,6 @@ import java.util.UUID;
 @Setter
 @Getter
 public class PublicMessage {
-    @JsonIgnore
     private ObjectId _id;
     private String messageId;
     private String title;

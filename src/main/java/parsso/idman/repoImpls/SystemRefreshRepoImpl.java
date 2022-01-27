@@ -285,7 +285,6 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 simpleUser.setStatus("lock");
 
                 uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_LOCK, "", ""));
-                mongoTemplate.remove(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
                 mongoTemplate.save(simpleUser, Variables.col_usersExtraInfo);
             }
 

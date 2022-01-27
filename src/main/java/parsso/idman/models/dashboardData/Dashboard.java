@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Dashboard {
-    @JsonIgnore
     private String id;
     private Services services;
     private Logins logins;

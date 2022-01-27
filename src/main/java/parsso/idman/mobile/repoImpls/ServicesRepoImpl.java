@@ -77,8 +77,6 @@ public class ServicesRepoImpl implements ServicesRepo {
         long cTimeStamp = currentTimestamp.getTime();
         user.getUsersExtraInfo().setMobileToken(String.valueOf(token) + cTimeStamp);
 
-        Query query = new Query(Criteria.where("userId").is(user.getUserId()));
-        mongoTemplate.remove(query, Token.collection);
         mongoTemplate.save(user.getUsersExtraInfo(), Token.collection);
 
         return "mobile Token for " + user.getUserId() + " is created";

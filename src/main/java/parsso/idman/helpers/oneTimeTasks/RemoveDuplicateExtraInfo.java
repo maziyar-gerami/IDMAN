@@ -21,10 +21,9 @@ public class RemoveDuplicateExtraInfo {
         List<UsersExtraInfo> usersExtraInfoList = mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo);
         for (UsersExtraInfo usersExtraInfo : usersExtraInfoList) {
             Query query = new Query(Criteria.where("userId").is(usersExtraInfo.getUserId()));
-            if (mongoTemplate.count(query, UsersExtraInfo.class, Variables.col_usersExtraInfo) > 1) {
-                mongoTemplate.remove(query, Variables.col_usersExtraInfo);
+            if (mongoTemplate.count(query, UsersExtraInfo.class, Variables.col_usersExtraInfo) > 1)
                 mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
-            }
+
             int i = (++c * 100 / usersExtraInfoList.size());
             System.out.print("Processing duplicate users: " + i + "% " + animationChars[i % 4] + "\r");
         }

@@ -36,7 +36,6 @@ import java.util.List;
 @SuppressWarnings("ALL")
 @Service
 public class EmailServiceImpl implements EmailService {
-    private final String collection = Variables.col_captchas;
     @Value("${spring.mail.username}")
     String from;
     @Autowired
@@ -136,11 +135,11 @@ public class EmailServiceImpl implements EmailService {
     public int sendMail(String email, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
         if ((captcha) == null)
             return -1;
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query, collection);
+            mongoTemplate.remove(query, Variables.col_captchas);
             return -1;
         }
 
@@ -167,7 +166,7 @@ public class EmailServiceImpl implements EmailService {
                 return 0;
             }
 
-            mongoTemplate.remove(query, collection);
+            mongoTemplate.remove(query, Variables.col_captchas);
             return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.email").getValue().toString());
         } else
             return 0;
@@ -194,11 +193,11 @@ public class EmailServiceImpl implements EmailService {
     public int sendMail(String email, String uid, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, collection);
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
         if ((captcha) == null)
             return -1;
         if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query, collection);
+            mongoTemplate.remove(query, Variables.col_captchas);
             return -1;
         }
 
@@ -224,7 +223,7 @@ public class EmailServiceImpl implements EmailService {
                         return 0;
                     }
 
-                    mongoTemplate.remove(query, collection);
+                    mongoTemplate.remove(query, Variables.col_captchas);
                     return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.email").getValue().toString());
 
                 }

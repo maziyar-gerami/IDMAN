@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fa" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>پارسو</title>
+
+    <link href="css/Bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/Configs/style.css" rel="stylesheet">
+    <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="fonts/IranSans/font.css" rel="stylesheet">
+
+
+    <script src="js/es6-promise.min.js"></script>
+    <script src="js/es6-promise.auto.min.js"></script>
+    <script src="js/polyfill.min.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/persian-date.min.js"></script>
+    <script src="js/Configs/script.js"></script>
+    <script src="js/vue-spinners-css.min.js"></script>
+
+</head>
+<body class="h-100">
+    <div id="app">
+        <div id="overlay">
+            <div id="overlayContent" v-bind:class="{rtl: isRtl}">
+                <div v-if="overlayLoader" style="text-align: center;">
+                    <roller-loader color="#007bff"/>
+                </div>
+                <div id="overlayBody">
+                    <div class="form-group">
+                        <div class="row mt-3 mb-5 ml-0 mr-0">
+                            <button v-on:click="openMeeting" class="btn btn-primary col-12">{{enterMeetingText}}</button>
+                        </div><br>
+                        <p>{{inviteToMeetingText}}</p>
+                        <div class="row ml-0 mr-0">
+                            <input id="copyMeetingLink" v-model:value="meetingGuestLink" type="text" class="form-control col-10" v-bind:style="meetingInviteLinkStyle" readonly>
+                            <button id="copyMeetingLinkBtn" v-bind:style="meetingInviteLinkCopyStyle"
+                                    v-on:click="copyMeetingLink" class="btn btn-sm btn-success col-2">{{copyText}}</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="closeOverlay" class="btn btn-danger" v-on:click="closeOverlay">{{returnText}}</div>
+            </div>
+        </div>
+        <div v-bind:class="{rtl: isRtl}" class="h-100">
+                <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
+                    <div class="container">
+                        <div class="dropdown">
+                            <a class="navbar-brand" href="./">{{s0}}</a>
+                            <a v-bind:style="margin"><small style="color: #FFFFFF;">{{dateNavText}}</small></a>
+                        </div>
+                        <div class="dropdown">
+                            <a id="btn" class="dropbtn" v-on:click="dropdownNavbar">
+                                {{s1}}
+                                <span class="fa fa-caret-down ml-1 mr-1"></span>
+                            </a>
+                            <div id="dropdownMenu" class="dropdown-content">
+                                <a href="./logout">{{s2}}</a>
+                            </div>
+                            <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 mb-3 mb-lg-0">
+                        <div class="card">
+                            <div class="card-body p-0 pt-3">
+
+                                <div class="userpic mb-3" style="width: 130px;height: 130px;">
+                                    <img v-bind:src="userPicture" class="img-responsive avatar w-100 h-100" alt="Picture">
+                                    <a v-bind:href="userPicture" target="_blank"></a>
+                                </div>
+
+                                <div class="text-center mb-3">
+                                    <div>
+                                        <strong>{{s1}}</strong>
+                                    </div>
+                                    <div class="text-primary">
+                                        <small>{{username}}</small>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mb-3">
+                                    <a href="./logout" class="btn btn-danger btn-sm">
+                                        <i class="fa fa-power-off"></i>&nbsp;
+                                        {{s2}}
+                                    </a>
+                                </div>
+
+                                <div v-if="showMeeting" class="text-center mb-3 mt-3" v-on:click="openOverlay">
+                                    <a href="#" style="width: 100%;border-radius: 0;" class="btn btn-success">
+                                        <i class="fa fa-video-camera fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{meetingText}}</span>
+                                    </a>
+                                </div>
+
+                                <div class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s14">
+                                        <i class="fa fa-dashboard fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{s3}}</span>
+                                    </a>
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s15">
+                                        <i class="fa fa-server fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{s4}}</span>
+                                    </a>
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s16">
+                                        <i class="fa fa-user fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{s13}}</span>
+                                    </a>
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s21">
+                                        <i class="fa fa-users fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{s5}}</span>
+                                    </a>
+                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="rolesURLText">
+                                        <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{rolesText}}</span>
+                                    </a>
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                       v-bind:href="publicmessagesURLText">
+                                        <i class="fa fa-bell fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{publicmessagesText}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                       v-bind:href="ticketingURLText">
+                                        <i class="fa fa-ticket fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{ticketingText}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s27">
+                                        <i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{s6}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s33">
+                                        <i class="fa fa-history fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{s32}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2"
+                                       v-bind:href="reportsURLText">
+                                        <i class="fa fa-file fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{reportsText}}</span>
+                                    </a>
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2"
+                                       v-bind:href="transcriptsURLText">
+                                        <i class="fa fa-file-text fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{transcriptsText}}</span>
+                                    </a>
+                                    <a class="list-group-item list-group-item-action py-2 "
+                                    v-bind:href="s22">
+                                        <i class="fa fa-cogs fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{s7}}</span>
+                                    </a>
+                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
+                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
+                                    v-bind:href="s25">
+                                        <i class="fa fa-cog fa-fw" aria-hidden="true"></i>&nbsp;
+                                        <span>{{s24}}</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 page-content">
+                        <div class="card">
+                            <div class="card-body pb-0 pl-0 pr-0" style="background-color: #f8f9fa!important;">
+                                <div class="container">
+                                    <div class="ml-0 mr-0">
+                                        <h3 class="border-bottom pb-2">{{s24}}</h3>
+                                    </div>
+
+                                    <ul class="nav nav-tabs nav-justified">
+                                        <li class="nav-item">
+                                            <a class="nav-link" @click.prevent="setActiveMain('mainConfigsPSI')" :class="{ active: isActiveMain('mainConfigsPSI') }" href="#mainConfigsPSI">{{s24}}</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" @click.prevent="setActiveMain('refreshConfigsPSI')" :class="{ active: isActiveMain('refreshConfigsPSI') }" href="#refreshConfigsPSI">{{s34}}</a>
+                                        </li>
+                                    </ul>
+
+                                    <div class="tab-content py-3 mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
+                                        <div class="tab-pane fade" :class="{ 'active show': isActiveMain('mainConfigsPSI') }" id="mainConfigsPSI">
+                                            <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
+                                                <div class="col-6 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-success form-control" v-on:click="saveRestorePoint()">
+                                                        {{s28}}
+                                                    </button>
+                                                </div>
+                                                <div class="col-6 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-warning form-control" v-on:click="restoreInitialPoint()">
+                                                        {{s29}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
+                                                <div class="d-inline-flex col-12 pl-1 pr-1" style="text-align: center;">
+                                                    <select id="restorePointID" class="form-control enInput ml-1 mr-1">
+                                                        <option v-for="point in restorePoints" v-bind:id="point" v-model="point">{{point}}</option>
+                                                        <option v-if="storePointsExists" selected disabled>{{s30}}</option>
+                                                    </select>
+                                                    <button class="btn btn-success ml-1 mr-1" v-on:click="restorePoint()">
+                                                        {{s31}}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="mobileView">
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-success form-control" v-on:click="saveRestorePoint()">
+                                                        {{s28}}
+                                                    </button>
+                                                </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-warning form-control" v-on:click="restoreInitialPoint()">
+                                                        {{s29}}
+                                                    </button>
+                                                </div>
+                                                <div class="row mb-1 mt-5 pl-1 pr-1" style="text-align: center;">
+                                                    <select id="restorePointID" class="form-control enInput">
+                                                        <option v-for="point in restorePoints" v-bind:id="point" v-model="point">{{point}}</option>
+                                                        <option v-if="storePointsExists" selected disabled>{{s30}}</option>
+                                                    </select>
+                                                </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-success form-control" v-on:click="restorePoint()">
+                                                        {{s31}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div v-if="configsLoaded">
+                                                <ul class="nav nav-tabs nav-justified" style="font-size: 15px;">
+                                                    <li class="nav-item" v-for="groups in configsGroupNames" v-bind:key="groups">
+                                                        <a class="nav-link" @click.prevent="setActive(groups)" :class="{ active: isActive(groups) }" v-bind:href="'#'+ groups" style="outline: 0;"><p style="font-size: 15px;">{{groups}}</p></a>
+                                                    </li>
+                                                </ul>
+                                                <div style="overflow: auto;">
+                                                    <div class="table-wrapper">
+                                                        <div class="tab-content py-3" style="background-color: white; padding: 2%; font-size: 15px; direction: rtl;">
+                                                            <div class="tab-pane fade" v-for="group in configsGroupNames" v-bind:key="group" :class="{ 'active show': isActive(group) }" v-bind:id="group">
+                                                                <div v-for="description in configsDescription" v-if="groupSearchDescription(group,description)">
+                                                                    <h5 class="border-bottom pb-1 pt-1 mb-3 mt-5 config-head"><span>{{description}}</span></h5>
+                                                                    <div v-for="config in configsList" v-bind:key="config" class="form-group" v-if="config.description === description && config.group === group">
+                                                                        <table class="table">
+                                                                            <tbody id="body">
+                                                                                <tr>
+                                                                                    <td style="width: 50%;">
+                                                                                        <input class="form-control enInput" type="text" v-model="config.value">
+                                                                                    </td>
+                                                                                    <td style="width: 50%;">
+                                                                                        <p style="text-align: center; margin-top: 4%;">{{config.name}}</p>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button v-on:click="editConfigs()" class="btn btn-primary mt-3">{{s26}}</button>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" :class="{ 'active show': isActiveMain('refreshConfigsPSI') }" id="refreshConfigsPSI">
+                                            <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
+                                                <div class="col-4 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshServices()">
+                                                        {{s35}}
+                                                    </button>
+                                                </div>
+                                                <div class="col-4 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshUsers()">
+                                                        {{s36}}
+                                                    </button>
+                                                </div>
+                                                <div class="col-4 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshCaptchas()">
+                                                        {{s37}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="desktopView row mb-3 mt-3 ml-0 mr-0">
+                                                <div class="col-12 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshAll()">
+                                                        {{s38}}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="mobileView">
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshServices()">
+                                                        {{s35}}
+                                                    </button>
+                                                </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshUsers()">
+                                                        {{s36}}
+                                                    </button>
+                                                </div>
+                                                <div class="row mb-1 mt-1 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshCaptchas()">
+                                                        {{s37}}
+                                                    </button>
+                                                </div>
+                                                <div class="row mb-1 mt-5 pl-1 pr-1" style="text-align: center;">
+                                                    <button class="btn btn-primary form-control" v-on:click="refreshAll()">
+                                                        {{s38}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div v-if="loader" class="text-center">
+                                                <roller-loader color="#007bff"/>
+                                            </div>
+                                            <div v-if="refreshSuccess">
+                                                <p class="rounded" style="background-color:rgba(80, 233, 80, 0.637); padding: 1%;">
+                                                    {{refreshSuccessText}}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="mb-3 mt-4">
+                <div class="container">
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="btn btn-link" style="text-decoration: none;" target="_blank">{{s10}}</a>
+                        <a v-bind:href="s23" class="btn btn-link" style="text-decoration: none;" target="_blank">{{s11}}</a>
+                        <a href="public/Parsso-User-Guide.pdf" class="btn btn-link" style="text-decoration: none;" target="_blank">{{s12}}</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

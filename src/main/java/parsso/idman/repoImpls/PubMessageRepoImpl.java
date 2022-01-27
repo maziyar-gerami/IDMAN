@@ -23,7 +23,6 @@ import java.util.Objects;
 @Service
 public class PubMessageRepoImpl implements PubMessageRepo {
     final String model = "PublicMessage";
-    private final String collection = Variables.col_publicMessage;
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
@@ -32,26 +31,26 @@ public class PubMessageRepoImpl implements PubMessageRepo {
     @Override
     public List<PublicMessage> showVisiblePubicMessages() {
 
-        return mongoTemplate.find(new Query(Criteria.where("visible").is(true)), PublicMessage.class, collection);
+        return mongoTemplate.find(new Query(Criteria.where("visible").is(true)), PublicMessage.class, Variables.col_publicMessage);
     }
 
     @Override
     public List<PublicMessage> showAllPubicMessages(String id) {
         if (id.equals(""))
-            return mongoTemplate.find(new Query(new Criteria()), PublicMessage.class, collection);
+            return mongoTemplate.find(new Query(new Criteria()), PublicMessage.class, Variables.col_publicMessage);
 
-        return mongoTemplate.find(new Query(Criteria.where("messageId").is(id)), PublicMessage.class, collection);
+        return mongoTemplate.find(new Query(Criteria.where("messageId").is(id)), PublicMessage.class, Variables.col_publicMessage);
     }
 
     @Override
     public HttpStatus postPubicMessage(String doer, PublicMessage message) {
 
-        if (!mongoTemplate.collectionExists(collection))
-            mongoTemplate.createCollection(collection);
+        if (!mongoTemplate.collectionExists(Variables.col_publicMessage))
+            mongoTemplate.createCollection(Variables.col_publicMessage);
 
         try {
             PublicMessage messageToSave = new PublicMessage(message.getTitle(), message.getBody(), message.isVisible(), doer);
-            mongoTemplate.save(messageToSave, collection);
+            mongoTemplate.save(messageToSave, Variables.col_publicMessage);
             uniformLogger.info(doer, new ReportMessage(model, messageToSave.getMessageId(), "", Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
 
             return HttpStatus.OK;
@@ -81,10 +80,10 @@ public class PubMessageRepoImpl implements PubMessageRepo {
         message.setCreator(oldMessage.getCreator());
         message.setCreateDate(oldMessage.getCreateDate());
 
-        PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("messageId").is(message.getMessageId())), PublicMessage.class, collection);
+        PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("messageId").is(message.getMessageId())), PublicMessage.class, Variables.col_publicMessage);
         message.set_id(Objects.requireNonNull(publicMessage).get_id());
         try {
-            mongoTemplate.save(message, collection);
+            mongoTemplate.save(message, Variables.col_publicMessage);
             uniformLogger.info(doer, new ReportMessage(model, message.getMessageId(), "", "update", Variables.RESULT_SUCCESS, ""));
 
             return HttpStatus.OK;
@@ -104,7 +103,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
         if (!iterator.hasNext()) {
             try {
 
-                mongoTemplate.remove(new Query(), collection);
+                mongoTemplate.remove(new Query(), Variables.col_publicMessage);
                 uniformLogger.info(doer, new ReportMessage(model, "All", "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 
             } catch (Exception e) {
@@ -119,7 +118,7 @@ public class PubMessageRepoImpl implements PubMessageRepo {
             String next = iterator.next();
 
             try {
-                mongoTemplate.remove(new Query(Criteria.where("messageId").is(next)), collection);
+                mongoTemplate.remove(new Query(Criteria.where("messageId").is(next)), Variables.col_publicMessage);
                 uniformLogger.info(doer, new ReportMessage(model, next, "", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 
             } catch (Exception e) {

@@ -15,7 +15,6 @@ import java.util.Random;
 @Setter
 @Getter
 public class Ticket {
-    @JsonIgnore
     ObjectId _id;
     String ID;
     String from;

@@ -122,7 +122,6 @@ public class TicketRepoImpl implements TicketRepo {
             ticketToSave.setTo(ticket.getTo());
 
         try {
-            mongoTemplate.remove(new Query(Criteria.where("ID").is(ticketID)), collection);
             mongoTemplate.save(ticketToSave, collection);
             uniformLogger.info(userid, new ReportMessage(model, ticketToSave.getID(), "", "reply", Variables.RESULT_SUCCESS, ""));
         } catch (Exception e) {
@@ -231,7 +230,6 @@ public class TicketRepoImpl implements TicketRepo {
             ticket.setMessages(messages);
 
             try {
-                mongoTemplate.remove(query, collection);
                 mongoTemplate.save(ticket, collection);
                 uniformLogger.info(doer, new ReportMessage(model, ticket.getID(), Variables.ATTR_STATUS, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
 
@@ -320,7 +318,6 @@ public class TicketRepoImpl implements TicketRepo {
         Ticket oldTicket = mongoTemplate.findOne(query, Ticket.class, collection);
         Ticket ticketToSave = Ticket.ticketUpdate(oldTicket, newTicket);
         try {
-            mongoTemplate.remove(query, collection);
             mongoTemplate.save(ticketToSave, collection);
             uniformLogger.info(userId, new ReportMessage(model, ticketId, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ticketToSave, ""));
             return HttpStatus.OK;

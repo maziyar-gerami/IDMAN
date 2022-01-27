@@ -49,7 +49,6 @@ public class ExpirePassword {
 
                 try {
                     ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId(), BASE_DN), modificationItems);
-                    mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
                     user.setEndTimeEpoch(new Date().getTime());
                     mongoTemplate.save(user, Variables.col_usersExtraInfo);
 
@@ -60,7 +59,6 @@ public class ExpirePassword {
                     try {
                         modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdReset", "TRUE"));
                         ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.getUserId(), BASE_DN), modificationItems);
-                        mongoTemplate.remove(new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
                         user.setEndTimeEpoch(new Date().getTime());
                         mongoTemplate.save(user, Variables.col_usersExtraInfo);
 

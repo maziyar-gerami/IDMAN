@@ -520,7 +520,6 @@ public class UserRepoImpl implements UserRepo {
             try {
                 ldapTemplate.modifyAttributes(contextUser);
                 usersExtraInfo.setLoggedIn(true);
-                mongoTemplate.remove(new Query(Criteria.where("userId").is(userId)), Variables.col_usersExtraInfo);
                 mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
             } catch (org.springframework.ldap.InvalidAttributeValueException e) {
                 return HttpStatus.FOUND;

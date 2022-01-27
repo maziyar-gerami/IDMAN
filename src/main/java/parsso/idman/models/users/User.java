@@ -23,7 +23,6 @@ import java.util.List;
 @Setter
 public class User implements UserDetails, Comparable {
     private static final String PREFIX = "ROLE_";
-    @JsonIgnore
     ObjectId _id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     SkyRoom skyRoom;

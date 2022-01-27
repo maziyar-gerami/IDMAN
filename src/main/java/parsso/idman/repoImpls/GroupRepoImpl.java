@@ -101,9 +101,6 @@ public class GroupRepoImpl implements GroupRepo {
                                     e.printStackTrace();
                                 }
 
-                                mongoTemplate.remove
-                                        (new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
-
                                 mongoTemplate.save
                                         (Objects.requireNonNull(simpleUser), Variables.col_usersExtraInfo);
 
@@ -252,9 +249,6 @@ public class GroupRepoImpl implements GroupRepo {
                             List<String> temp = usersExtraInfo.getMemberOf();
                             temp.add(ou.getId());
                             usersExtraInfo.setMemberOf(temp);
-
-                            mongoTemplate.remove
-                                    (new Query(Criteria.where("userId").is(user.getUserId())), Variables.col_usersExtraInfo);
 
                             mongoTemplate.save
                                     (usersExtraInfo, Variables.col_usersExtraInfo);
