@@ -127,8 +127,9 @@ public class UsersController {
                                                        @RequestParam(name = "groupFilter", defaultValue = "") String groupFilter,
                                                        @RequestParam(name = "searchUid", defaultValue = "") String searchUid,
                                                        @RequestParam(name = "userStatus", defaultValue = "") String userStatus,
+                                                       @RequestParam(name = "mobile", defaultValue = "") String mobile,
                                                        @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName) {
-        return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName, userStatus), HttpStatus.OK);
+        return new ResponseEntity<>(userRepo.retrieveUsersMain(page, n, sortType, groupFilter, searchUid, searchDisplayName,mobile, userStatus), HttpStatus.OK);
     }
 
     @GetMapping("/api/users/group/{groupId}")
@@ -309,7 +310,7 @@ public class UsersController {
         String userId = jsonObject.getAsString("userId");
         HttpStatus httpStatus = userRepo.changePasswordPublic(userId, currentPassword, newPassword);
 
-        if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue().toString()) && httpStatus == HttpStatus.OK)
+        if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()) && httpStatus == HttpStatus.OK)
             new Notification(mongoTemplate).sendPasswordChangeNotify(userRepo.retrieveUsers(userId),BASE_URL);
 
         return new ResponseEntity<>(httpStatus);

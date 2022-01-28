@@ -39,6 +39,7 @@ public class UsersExtraInfo {
     private List<String> memberOf;
     private String status;
     private long passwordChangedTime;
+    private String mobile;
     @JsonIgnore
     private long endTimeEpoch;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -85,7 +86,7 @@ public class UsersExtraInfo {
         this.passwordChangedTime = user.getPasswordChangedTime();
         this.status = user.getStatus();
         this.timeStamp = user.getTimeStamp();
-
+        this.mobile = user.getMobile();
         this.qrToken = UUID.randomUUID().toString();
         this.creationTimeStamp = new Date().getTime();
         this.photoName = photoName;

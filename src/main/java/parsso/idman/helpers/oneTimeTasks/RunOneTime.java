@@ -62,6 +62,14 @@ public class RunOneTime {
             }
         };
 
+        val addMobileToMongo = new Runnable() {
+
+            @Override
+            public void run() {
+                new MongoMobile(mongoTemplate,userRepo).run();
+            }
+        };
+
         val userIdFix = new Runnable() {
 
             @Override
@@ -76,11 +84,13 @@ public class RunOneTime {
         Thread duplicated = new Thread(duplicatedUsers);
         Thread nameFix = new Thread(displayNameFix);
         Thread userId = new Thread(userIdFix);
+        Thread  addMobile = new Thread(addMobileToMongo);
         logeInUsers.start();
         sathread.start();
         duplicated.start();
         nameFix.start();
         userId.start();
+        addMobile.start();
 
         System.out.println(Variables.PARSSO_IDMAN);
 

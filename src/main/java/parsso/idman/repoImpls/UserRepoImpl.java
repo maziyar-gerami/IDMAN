@@ -188,9 +188,9 @@ public class UserRepoImpl implements UserRepo {
     }
 
 
-    public int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
+    public int retrieveUsersSize(String groupFilter, String searchUid, String searchDisplayName,String mobile, String userStatus) {
 
-        return (int) mongoTemplate.count(queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus), Variables.col_usersExtraInfo);
+        return (int) mongoTemplate.count(queryBuilder(groupFilter, searchUid, searchDisplayName, mobile, userStatus), Variables.col_usersExtraInfo);
     }
 
     @Override
@@ -205,7 +205,7 @@ public class UserRepoImpl implements UserRepo {
         try {
             if (!retrieveUsers(doerID).getRole().equals("USER") && !retrieveUsers(doerID).getRole().equals("PRESENTER")
                     && !retrieveUsers(usid).getRole().equals("USER") &&
-                    user.getRole().equals("USER") && new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().toString().equalsIgnoreCase("false"))
+                    user.getRole().equals("USER") && new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().equalsIgnoreCase("false"))
                 return HttpStatus.FORBIDDEN;
         } catch (Exception ignored) {
         }
@@ -248,6 +248,9 @@ public class UserRepoImpl implements UserRepo {
         if (p.isUnDeletable())
             usersExtraInfo.setUnDeletable(true);
 
+        if (p.getMobile()!=null)
+            usersExtraInfo.setMobile(p.getMobile());
+
         usersExtraInfo.setTimeStamp(new Date().getTime());
 
         if (p.getUserPassword() != null && !p.getUserPassword().equals("")) {
@@ -277,7 +280,7 @@ public class UserRepoImpl implements UserRepo {
     public JSONObject createUserImport(String doerID, User p) {
 
         if (p.getUserPassword() == null)
-            p.setUserPassword(new Settings(mongoTemplate).retrieve(Variables.DEFAULT_USER_PASSWORD).getValue().toString());
+            p.setUserPassword(new Settings(mongoTemplate).retrieve(Variables.DEFAULT_USER_PASSWORD).getValue());
 
         return create(doerID, p);
     }
@@ -378,7 +381,7 @@ public class UserRepoImpl implements UserRepo {
                 try {
                     ldapTemplate.modifyAttributes(contextUser);
                     uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
-                    if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue().toString()))
+                    if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()))
                         new Notification(mongoTemplate).sendPasswordChangeNotify(user,BASE_URL);
 
                     return HttpStatus.OK;
@@ -630,13 +633,13 @@ public class UserRepoImpl implements UserRepo {
     }
 
     @Override
-    public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
+    public ListUsers retrieveUsersMain(int page, int nCount, String sortType, String groupFilter, String searchUid, String searchDisplayName,String mobile, String userStatus) {
 
         new Thread(() -> systemRefresh.refreshLockedUsers()).start();
 
         int skip = (page - 1) * nCount;
 
-        Query query = queryBuilder(groupFilter, searchUid, searchDisplayName, userStatus);
+        Query query = queryBuilder(groupFilter, searchUid, searchDisplayName, mobile, userStatus);
 
         switch (sortType) {
             case "":
@@ -659,21 +662,21 @@ public class UserRepoImpl implements UserRepo {
         List<UsersExtraInfo> userList = mongoTemplate.find(query.skip(skip).limit(nCount),
                 UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
-        int size = retrieveUsersSize(groupFilter, searchUid, searchDisplayName, userStatus);
+        int size = retrieveUsersSize(groupFilter, searchUid, searchDisplayName,mobile, userStatus);
 
         return new ListUsers(size, userList, (int) Math.ceil((double) size / (double) nCount));
     }
 
-    private Query queryBuilder(String groupFilter, String searchUid, String searchDisplayName, String userStatus) {
+    private Query queryBuilder(String groupFilter, String searchUid, String searchDisplayName, String mobile, String userStatus) {
         Query query = new Query();
         if (!searchUid.equals(""))
             query.addCriteria(Criteria.where("userId").regex(searchUid));
         if (!searchDisplayName.equals(""))
             query.addCriteria(Criteria.where("displayName").regex(searchDisplayName));
-        if (!userStatus.equals("")) {
+        if (!userStatus.equals(""))
             query.addCriteria(Criteria.where("status").is(userStatus));
-
-        }
+        if (!userStatus.equals(""))
+            query.addCriteria(Criteria.where("mobile").regex(mobile));
         if (!groupFilter.equals(""))
             query.addCriteria(Criteria.where("memberOf").all(groupFilter));
         return query;
@@ -794,7 +797,7 @@ public class UserRepoImpl implements UserRepo {
         if (user.getRole() == null)
             user = setRole(user);
 
-        if (user.getRole().equals("USER") && !Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().toString()))
+        if (user.getRole().equals("USER") && !Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue()))
             user.setProfileInaccessibility(true);
 
 
@@ -825,7 +828,7 @@ public class UserRepoImpl implements UserRepo {
     }
 
     private Boolean skyRoomAccess(User user) {
-        boolean isEnable = Boolean.parseBoolean((new Settings(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE)).getValue().toString());
+        boolean isEnable = Boolean.parseBoolean((new Settings(mongoTemplate).retrieve(Variables.SKYROOM_ENABLE)).getValue());
 
         boolean accessRole;
         try {
@@ -990,7 +993,7 @@ public class UserRepoImpl implements UserRepo {
                 uniformLogger.info(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
                         Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
 
-                if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue().toString()))
+                if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()))
                     new Notification(mongoTemplate).sendPasswordChangeNotify(user,BASE_URL);
 
             } catch (org.springframework.ldap.InvalidAttributeValueException e) {
