@@ -37,7 +37,7 @@ public class Token {
         User user = userRepo.retrieveUsers(userId);
         String mainDbToken = user.getUsersExtraInfo().getResetPassToken();
         String mainPartToken;
-        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString());
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString());
 
         if (token.length() > 30)
             mainPartToken = mainDbToken.substring(0, 36);
@@ -60,7 +60,7 @@ public class Token {
                     return HttpStatus.REQUEST_TIMEOUT;
             } else {
                 String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
-                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.SMS").getValue().toString()))) {
+                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString()))) {
                     return HttpStatus.OK;
                 } else
                     return HttpStatus.REQUEST_TIMEOUT;
@@ -105,7 +105,7 @@ public class Token {
     }
 
     public int createRandomNum() {
-        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString());
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString());
         Random rnd = new Random();
         int max = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS)));
         int min = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1))) + 1;

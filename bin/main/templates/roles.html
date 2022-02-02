@@ -71,20 +71,10 @@
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
                             <div class="card-body p-0 pt-3">
-                                <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
-                                    <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
-                                </form>
-                                <div class="userpic mb-3">
-                                    <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
-                                    <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <i class="fa fa-photo"></i>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </a>
+
+                                <div class="userpic mb-3" style="width: 130px;height: 130px;">
+                                    <img v-bind:src="userPicture" class="img-responsive avatar w-100 h-100" alt="Picture">
+                                    <a v-bind:href="userPicture" target="_blank"></a>
                                 </div>
 
                                 <div class="text-center mb-3">

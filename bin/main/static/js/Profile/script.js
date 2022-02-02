@@ -122,6 +122,13 @@ document.addEventListener('DOMContentLoaded', function () {
             inviteToMeetingText: "دعوت به جلسه",
             copyText: "کپی",
             returnText: "بازگشت",
+            changePictureText: "تغییر عکس",
+            deletePictureText: "حذف عکس",
+            profilePictureChangedSuccessfully: "عکس پروفایل با موفقیت تغییر یافت.",
+            profilePictureDeletedSuccessfully: "عکس پروفایل با موفقیت حذف شد.",
+            profilePictureChangeUnsuccessful: "تغییر عکس پروفایل ناموفق بود.",
+            profilePictureDeleteUnsuccessful: "عکس پروفایلی از پیش وجود ندارد.",
+            profilePictureChangeLoader: false,
             U0: "رمز عبور",
             U1: "کاربران",
             U2: "شناسه",
@@ -264,6 +271,48 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
                     });
+            },
+            changeUserPic: function (action) {
+                let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+                let vm = this;
+                this.profilePictureChangeLoader = true;
+                if(action === "edit"){
+                    let bodyFormData = new FormData();
+                    bodyFormData.append("file", document.getElementById("editProfilePicture").files[0]);
+                    axios({
+                        method: "post",
+                        url: url + "/api/user/photo",
+                        headers: {"Content-Type": "multipart/form-data"},
+                        data: bodyFormData
+                    }).then((res) => {
+                        vm.profilePictureChangeLoader = false;
+                        vm.getUserPic();
+                        if(res.data.data){
+                            alert(vm.profilePictureChangedSuccessfully);
+                        }else{
+                            alert(vm.profilePictureChangeUnsuccessful);
+                        }
+                    }).catch((error) => {
+                        vm.profilePictureChangeLoader = false;
+                        alert(vm.profilePictureChangeUnsuccessful);
+                    });
+                }else if(action === "delete"){
+                    axios({
+                        method: "delete",
+                        url: url + "/api/user/photo"
+                    }).then((res) => {
+                        vm.profilePictureChangeLoader = false;
+                        vm.getUserPic();
+                        if(res.data.data){
+                            alert(vm.profilePictureDeletedSuccessfully);
+                        }else{
+                            alert(vm.profilePictureDeleteUnsuccessful);
+                        }
+                    }).catch((error) => {
+                        vm.profilePictureChangeLoader = false;
+                        alert(vm.profilePictureDeleteUnsuccessful);
+                    });
+                }
             },
             getQR: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -514,6 +563,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.inviteToMeetingText = "Invite To Meeting";
                     this.copyText = "Copy";
                     this.returnText = "Return";
+                    this.changePictureText = "Change Picture";
+                    this.deletePictureText = "Delete Picture";
+                    this.profilePictureChangedSuccessfully = "Profile Picture Changed Successfully.";
+                    this.profilePictureDeletedSuccessfully = "Profile Picture Deleted Successfully.";
+                    this.profilePictureChangeUnsuccessful = "Profile Picture Change Was Unsuccessful.";
+                    this.profilePictureDeleteUnsuccessful = "Profile Picture Delete Was Unsuccessful.";
                     this.U0 = "Password";
                     this.U1 = "Users";
                     this.U2 = "ID";
@@ -599,6 +654,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.inviteToMeetingText = "دعوت به جلسه";
                     this.copyText = "کپی";
                     this.returnText = "بازگشت";
+                    this.changePictureText = "تغییر عکس";
+                    this.deletePictureText = "حذف عکس";
+                    this.profilePictureChangedSuccessfully = "عکس پروفایل با موفقیت تغییر یافت.";
+                    this.profilePictureDeletedSuccessfully = "عکس پروفایل با موفقیت حذف شد.";
+                    this.profilePictureChangeUnsuccessful = "تغییر عکس پروفایل ناموفق بود.";
+                    this.profilePictureDeleteUnsuccessful = "عکس پروفایلی از پیش وجود ندارد.";
                     this.U0= "رمز عبور";
                     this.U1= "کاربران";
                     this.U2= "شناسه";
@@ -635,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(this.password !== "" && this.checkPassword !== ""){
                     if(/[0-9]+/.test(this.password)){
                         if(/[a-zA-Z]/.test(this.password)){
-                            if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                            /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){*/
                                 if(/.{8,}/.test(this.password)){
                                     if(this.password === this.checkPassword){
                                         return false
@@ -645,9 +706,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                 }else{
                                     return true
                                 }
-                            }else{
+                            /*}else{
                                 return true
-                            }
+                            }*/
                         }else{
                             return true
                         }
@@ -666,9 +727,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(/[a-zA-Z]/.test(this.password)){
                     checks += 1;
                 }
-                if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
                     checks += 1;
-                }
+                }*/
                 if(/.{8,}/.test(this.password)){
                     checks += 1;
                 }

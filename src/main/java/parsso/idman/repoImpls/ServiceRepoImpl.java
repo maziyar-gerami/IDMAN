@@ -562,8 +562,7 @@ public class ServiceRepoImpl implements ServiceRepo {
     @Override
     public String showServicePic(HttpServletResponse response, String fileName) {
 
-        List<Path> paths = (List<Path>)new Settings(mongoTemplate).retrieve("service.icon.path");
-        String iconPath = paths.get(paths.size()-1).toString();
+        String iconPath = new Settings(mongoTemplate).retrieve(Variables.SERVICES_ICON_PATH).getValue();
 
         File file = new File(iconPath + fileName);
         if (file.exists()) {

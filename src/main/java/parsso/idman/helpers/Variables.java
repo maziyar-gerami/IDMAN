@@ -87,7 +87,10 @@ public class Variables {
     public static final String SERVICE_FOLDER_PATH = "services.folder.path";
     public static final String PROFILE_PHOTO_PATH = "profile.photo.path";
     public static final String ACTION_BACKUP = "Backup";
-    public static final String ACTION_RESETFACTORY = "Reset Factory";
+    public static final String ACTION_RESET_FACTORY = "Reset Factory";
+    public static final String SMS_VALIDATION_DIGITS = "sms.validation.digits";
+    public static final String SERVICES_ICON_PATH = "services.icon.path";
+    public static final String TOKEN_VALID_EMAIL = "token.valid.email";
 
     static final String email_body = "شما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید." +
             "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +

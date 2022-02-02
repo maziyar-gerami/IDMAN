@@ -555,7 +555,7 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public boolean deleteProfilePic(User user) {
 
-        List paths = (List)new Settings(mongoTemplate).retrieve("profile.photo.path");
+        List paths = (List)new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH);
         String uploadedFilesPath = paths.get(paths.size()-1).toString();
 
         File oldPic = new File(uploadedFilesPath + user.getPhoto());

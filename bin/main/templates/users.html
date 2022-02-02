@@ -176,22 +176,10 @@
                 <div class="col-lg-3 mb-3 mb-lg-0">
                     <div class="card">
                         <div class="card-body p-0 pt-3">
-                            <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form"
-                                  class="d-none" enctype="multipart/form-data">
-                                <input type="file" id="upload-image" name="file"
-                                       onchange="document.getElementById('upload-form').submit()">
-                            </form>
-                            <div class="userpic mb-3">
-                                <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
-                                <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()"><!--  -->
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <i class="fa fa-photo"></i>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </a>
+
+                            <div class="userpic mb-3" style="width: 130px;height: 130px;">
+                                <img v-bind:src="userPicture" class="img-responsive avatar w-100 h-100" alt="Picture">
+                                <a v-bind:href="userPicture" target="_blank"></a>
                             </div>
 
                             <div class="text-center mb-3">
@@ -755,7 +743,8 @@
                                                         <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="show = !show"></i>
                                                     </div>
                                                     <div class="form-group">
-                                                        <input class="form-control" :type="showR === true ? 'text' : 'password'" v-model="checkPassword" v-bind:placeholder="s47" v-bind:style="placeholder" autocomplete="off"> 
+                                                        <input class="form-control" :type="showR === true ? 'text' : 'password'" v-model="checkPassword"
+                                                        v-bind:placeholder="s47" v-bind:style="placeholder" autocomplete="off">
                                                         <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showR" @click="showR = !showR"></i>
                                                         <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showR = !showR"></i>
                                                     </div>
@@ -765,7 +754,7 @@
                                                                 <p style="box-sizing: unset;">{{s48}}</p> <br>
                                                                 <p :class="{'passed' :has_number }" v-bind:style="font"><i :class="has_number ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
                                                                 <p :class="{'passed' :has_lowerUPPERcase }" v-bind:style="font"><i :class="has_lowerUPPERcase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
-                                                                <p :class="{'passed' :has_specialchar }" v-bind:style="font"><i :class="has_specialchar ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
+                                                                <!--<p :class="{'passed' :has_specialchar }" v-bind:style="font"><i :class="has_specialchar ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>-->
                                                                 <p :class="{'passed' :has_char }" v-bind:style="font"><i :class="has_char ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[2].message}}</p>
                                                             </div>
                                                         </transition>
@@ -901,7 +890,8 @@
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showCreate = !showCreate"></i>
                                             </div>
                                             <div class="form-group">
-                                                <input class="form-control" :type="showRCreate === true ? 'text' : 'password'" v-model='checkPasswordCreate' v-bind:placeholder="s47" v-bind:style="placeholder" autocomplete="off"> 
+                                                <input class="form-control" :type="showRCreate === true ? 'text' : 'password'" v-model='checkPasswordCreate' v-bind:placeholder="s47"
+                                                v-bind:style="placeholder" autocomplete="off">
                                                 <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showRCreate" @click="showRCreate = !showRCreate"></i>
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showRCreate = !showRCreate"></i>
                                             </div>
@@ -911,7 +901,7 @@
                                                         <p style="box-sizing: unset;">{{s48}}</p> <br>
                                                         <p :class="{'passed' :has_numberCreate }" v-bind:style="font"><i :class="has_numberCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
                                                         <p :class="{'passed' :has_lowerUPPERcaseCreate }" v-bind:style="font"><i :class="has_lowerUPPERcaseCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
-                                                        <p :class="{'passed' :has_specialcharCreate }" v-bind:style="font"><i :class="has_specialcharCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
+                                                        <!--<p :class="{'passed' :has_specialcharCreate }" v-bind:style="font"><i :class="has_specialcharCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>-->
                                                         <p :class="{'passed' :has_charCreate }" v-bind:style="font"><i :class="has_charCreate ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[2].message}}</p>
                                                     </div>
                                                 </transition>

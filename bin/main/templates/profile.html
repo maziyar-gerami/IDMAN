@@ -71,20 +71,10 @@
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
                             <div class="card-body p-0 pt-3">
-                                <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
-                                    <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
-                                </form>
-                                <div class="userpic mb-3">
-                                    <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
-                                    <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()"><!--  -->
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <i class="fa fa-photo"></i>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </a>
+
+                                <div class="userpic mb-3" style="width: 130px;height: 130px;">
+                                    <img v-bind:src="userPicture" class="img-responsive avatar w-100 h-100" alt="Picture">
+                                    <a v-bind:href="userPicture" target="_blank"></a>
                                 </div>
 
                                 <div class="text-center mb-3">
@@ -208,7 +198,8 @@
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="show = !show"></i>
                                             </div>
                                             <div class="form-group">
-                                                <input v-bind:value="userInfo.userPassword" class="form-control" :type="showR === true ? 'text' : 'password'" v-model='checkPassword' v-bind:placeholder="s18" v-bind:style="placeholder" autocomplete="off">
+                                                <input v-bind:value="userInfo.userPassword" class="form-control" :type="showR === true ? 'text' : 'password'" v-model="checkPassword"
+                                                v-bind:placeholder="s18" v-bind:style="placeholder" onpaste="return false;" ondrop="return false;" autocomplete="off">
                                                 <i class="fa fa-eye show-icon" v-bind:style="eye" v-if="showR" @click="showR = !showR"></i>
                                                 <i class="fa fa-eye-slash hide-icon" v-bind:style="eye" v-else  @click="showR = !showR"></i>
                                             </div>
@@ -218,7 +209,7 @@
                                                         <p style="box-sizing: unset;">{{s19}}</p> <br>
                                                         <p :class="{'passed' :has_number }" v-bind:style="font"><i :class="has_number ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[3].message}}</p>
                                                         <p :class="{'passed' :has_lowerUPPERcase }" v-bind:style="font"><i :class="has_lowerUPPERcase ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[0].message}}</p>
-                                                        <p :class="{'passed' :has_specialchar }" v-bind:style="font"><i :class="has_specialchar ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>
+                                                        <!--<p :class="{'passed' :has_specialchar }" v-bind:style="font"><i :class="has_specialchar ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[1].message}}</p>-->
                                                         <p :class="{'passed' :has_char }" v-bind:style="font"><i :class="has_char ? 'fa fa-check' : 'fa fa-times'"></i>{{rules[2].message}}</p>
                                                     </div>
                                                 </transition>
@@ -255,6 +246,29 @@
                                             </div>
                                     </div>
                                     <div class="tab-pane fade" :class="{ 'active show': isActive('info') }" id="info">
+                                        <div class="row justify-content-center align-items-center mb-3">
+                                            <div class="col-md-3">
+                                                <div v-if="profilePictureChangeLoader" style="text-align: center;">
+                                                    <roller-loader color="#007bff"/>
+                                                </div>
+                                                <div v-else class="userpic mb-3" style="width: 130px;height: 130px;">
+                                                    <img v-bind:src="userPicture" class="img-responsive avatar w-100 h-100" alt="Picture">
+                                                    <a href="/api/user/photo" target="_blank"></a>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <form class="d-none">
+                                                        <input id="editProfilePicture" type="file" name="file" v-on:change="changeUserPic('edit')">
+                                                    </form>
+                                                    <button v-on:click="document.getElementById('editProfilePicture').click()" class="btn btn-sm btn-primary">{{changePictureText}}</button>
+                                                </div>
+                                                <div class="form-group">
+                                                    <button v-on:click="changeUserPic('delete')" class="btn btn-sm btn-danger">{{deletePictureText}}</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7"></div>
+                                        </div>
                                         <div>
                                             <div class="form-group">
                                                 <label>{{U3}}<span style="color: red;"> *</span><small style="font-size: 70%;">{{inputEnglishFilterText}}</small></label>

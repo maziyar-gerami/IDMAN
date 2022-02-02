@@ -110,11 +110,11 @@ public class InstantMessage {
     private int keveNegar_insertTokenAndSend(String mobile, Query query, User user) {
         try {
 
-            String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString()));
-            KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve("kavenegar.sms.api.key").getValue().toString());
+            String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString()));
+            KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve(Variables.KAVENEGAR_API_KEY).getValue().toString());
             api.verifyLookup(mobile, message, "", "", "mfa");
             mongoTemplate.remove(query, Variables.col_captchas);
-            return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.SMS").getValue().toString());
+            return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString());
 
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
@@ -144,11 +144,11 @@ public class InstantMessage {
             try {
 
                 String receptor = user.getMobile();
-                String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString()));
-                KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve("kavenegar.sms.api.key").getValue().toString());
+                String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString()));
+                KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve(Variables.KAVENEGAR_API_KEY).getValue().toString());
                 api.verifyLookup(receptor, message, "", "", "mfa");
                 mongoTemplate.remove(query, Variables.col_captchas);
-                return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.SMS").getValue().toString());
+                return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString());
 
             } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
@@ -185,11 +185,11 @@ public class InstantMessage {
             try {
 
                 Texts texts = new Texts();
-                texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString())));
+                texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString())));
                 new MagfaSMS(mongoTemplate,texts.getMainMessage()).SendMessage(user.getMobile(), 1L);
 
                 mongoTemplate.remove(query, Variables.col_captchas);
-                return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.SMS").getValue().toString());
+                return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString());
 
             } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
                 System.out.print("HttpException  : " + ex.getMessage());
@@ -231,11 +231,11 @@ public class InstantMessage {
             try {
 
                 Texts texts = new Texts();
-                texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString())));
+                texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString())));
                 new MagfaSMS(mongoTemplate,texts.getMainMessage()).SendMessage( user.getMobile(), 1L);
 
                 mongoTemplate.remove(query, Variables.col_captchas);
-                return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.SMS").getValue().toString());
+                return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString());
 
             } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
                 System.out.print("HttpException  : " + ex.getMessage());
@@ -255,10 +255,10 @@ public class InstantMessage {
             if (tokenClass.insertMobileToken(user)) {
                 try {
                     String receptor = user.getMobile();
-                    String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString()));
-                    KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve("kavenegar.sms.api.key").getValue().toString());
+                    String message = user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString()));
+                    KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve(Variables.KAVENEGAR_API_KEY).getValue().toString());
                     api.verifyLookup(receptor, message, "", "", "mfa");
-                    return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.SMS").getValue().toString());
+                    return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString());
 
                 } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
                     System.out.print("HttpException  : " + ex.getMessage());
@@ -280,10 +280,10 @@ public class InstantMessage {
             if (tokenClass.insertMobileToken(user)) {
                 try {
                     Texts texts = new Texts();
-                    texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString())));
+                    texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString())));
                     new MagfaSMS(mongoTemplate,texts.getMainMessage()).SendMessage(user.getMobile(), 1L);
 
-                    return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.SMS").getValue().toString());
+                    return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString());
 
                 } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
                     System.out.print("HttpException  : " + ex.getMessage());
@@ -377,10 +377,10 @@ public class InstantMessage {
 
                         try {
                             Texts texts = new Texts();
-                            texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString())));
+                            texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString())));
                             new MagfaSMS(mongoTemplate,texts.getMainMessage()).SendMessage(user.getMobile(), 1L);
                             mongoTemplate.remove(query, Variables.col_captchas);
-                            return Integer.parseInt(new Settings(mongoTemplate).retrieve("token.valid.SMS").getValue().toString());
+                            return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString());
                         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
                             System.out.print("HttpException  : " + ex.getMessage());
@@ -408,6 +408,6 @@ public class InstantMessage {
     }
 
     private String SMS_SDK(){
-        return new Settings(mongoTemplate).retrieve("SMS.SDK").getValue().toString();
+        return new Settings(mongoTemplate).retrieve(Variables.SMS_SDK).getValue().toString();
     }
 }

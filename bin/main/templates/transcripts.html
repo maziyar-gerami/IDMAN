@@ -169,20 +169,10 @@
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
                             <div class="card-body p-0 pt-3">
-                                <form id="upload-form" method="POST" action="/api/user/photo" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
-                                    <input type="file" id="upload-image" name="file" onchange="document.getElementById('upload-form').submit()">
-                                </form>
-                                <div class="userpic mb-3">
-                                    <img v-bind:src="userPicture" class="img-responsive avatar" alt="Avatar">
-                                    <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()"><!--  -->
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <i class="fa fa-photo"></i>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </a>
+
+                                <div class="userpic mb-3" style="width: 130px;height: 130px;">
+                                    <img v-bind:src="userPicture" class="img-responsive avatar w-100 h-100" alt="Picture">
+                                    <a v-bind:href="userPicture" target="_blank"></a>
                                 </div>
 
                                 <div class="text-center mb-3">
@@ -396,14 +386,15 @@
                                                                             <th style="border: none;">#</th>
                                                                             <th style="border: none;">
                                                                                 <i class="fa fa-filter fa-fw" aria-hidden="true"
-                                                                                style="cursor: pointer;" v-on:click="changeActiveFilter('Name')"></i>Name</th>
-                                                                            <th style="border: none;">Action</th>
-                                                                            <th style="border: none;">Access Change</th>
-                                                                            <th style="border: none;">Entity</th>
-                                                                            <th style="border: none;">Result</th>
+                                                                                style="cursor: pointer;" v-on:click="changeActiveFilter('Name')"></i>{{nameText}}</th>
+                                                                            <!--<th style="border: none;">{{persianNameText}}</th>-->
+                                                                            <th style="border: none;">{{actionText}}</th>
+                                                                            <th style="border: none;">{{accessChangeText}}</th>
+                                                                            <th style="border: none;">{{entityText}}</th>
+                                                                            <th style="border: none;">{{resultText}}</th>
                                                                             <th style="border: none;">
                                                                                 <i class="fa fa-filter fa-fw" aria-hidden="true"
-                                                                                style="cursor: pointer;" v-on:click="changeActiveFilter('DoerId')"></i>Doer ID</th>
+                                                                                style="cursor: pointer;" v-on:click="changeActiveFilter('DoerId')"></i>{{doerText}}</th>
                                                                             <th style="border: none;">
                                                                                 <i class="fa fa-filter fa-fw" aria-hidden="true"
                                                                                 style="cursor: pointer;" v-on:click="changeActiveFilter('Date')"></i>{{date}}</th>
@@ -414,6 +405,7 @@
                                                                                 data-placement="top" :title="transcript.instance">
                                                                                 <td>{{transcript.recordNumber}}</td>
                                                                                 <td>{{transcript.instanceName}}</td>
+                                                                                <!--<td>{{transcript.instanceDescription}}</td>-->
                                                                                 <td>{{transcript.action}}</td>
                                                                                 <td>{{transcript.accessChange}}</td>
                                                                                 <td>{{transcript.type}}:{{transcript.item}}</td>

@@ -107,6 +107,13 @@ document.addEventListener("DOMContentLoaded", function () {
       deleteAllFiltersText: "حذف تمام فیلتر ها",
       deleteFilterText: "حذف فیلتر",
       recordsOnPageText: " رکورد در صفحه",
+      nameText: "نام",
+      persianNameText: "نام فارسی",
+      actionText: "عمل",
+      accessChangeText: "تغییر دسترسی",
+      entityText: "موجودیت",
+      resultText: "نتیجه",
+      doerText: "عامل",
     },
     created: function () {
       this.setDateNav();
@@ -384,6 +391,13 @@ document.addEventListener("DOMContentLoaded", function () {
           this.deleteAllFiltersText = "Delete All Filters";
           this.deleteFilterText = "Delete Filter";
           this.recordsOnPageText = " Records On Page";
+          this.nameText = "Name";
+          this.persianNameText = "Persian Name";
+          this.actionText = "Action";
+          this.accessChangeText = "Access Change";
+          this.entityText = "Entity";
+          this.resultText = "Result";
+          this.doerText = "Doer";
         }else {
             window.localStorage.setItem("lang", "FA");
             this.margin = "margin-right: 30px;";
@@ -427,6 +441,13 @@ document.addEventListener("DOMContentLoaded", function () {
             this.deleteAllFiltersText = "حذف تمام فیلتر ها";
             this.deleteFilterText = "حذف فیلتر";
             this.recordsOnPageText = " رکورد در صفحه";
+            this.nameText = "نام";
+            this.persianNameText = "نام فارسی";
+            this.actionText = "عمل";
+            this.accessChangeText = "تغییر دسترسی";
+            this.entityText = "موجودیت";
+            this.resultText = "نتیجه";
+            this.doerText = "عامل";
         }
       },
     },

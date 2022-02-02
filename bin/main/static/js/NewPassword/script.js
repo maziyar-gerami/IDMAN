@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
             submitted: false,
             btnDisable: true,
             duplicatePasswords: false,
+            passwordChangeSuccessful: false,
             placeholder: "text-align: right;",
             margin: "margin-right: 30px;",
             marg: "margin-left: auto;",
@@ -61,8 +62,13 @@ document.addEventListener('DOMContentLoaded', function () {
             duplicatePasswordsText: "گذرواژه جدید نباید با گذرواژه های قدیمی یکسان باشند، لطفا دوباره تلاش کنید.",
             expiredSMSCodeText: "کد پیامکی منقضی شده است، لطفا به صفحه قبل بازگشته و دوباره تلاش کنید.",
             changeUserPasswordText: "تغییر گذرواژه کاربر",
+            passwordChangeSuccessfulText: "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد",
         },
         created: function () {
+            const redirectedUrl = new URL(window.location.href);
+            if(typeof redirectedUrl.searchParams.get("i") === "undefined" || redirectedUrl.searchParams.get("i") === null){
+                window.location.replace("/resetpassword");
+            }
             this.setDateNav();
             this.getName();
             if(window.localStorage.getItem("lang") === null){
@@ -83,13 +89,16 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             getName: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                const redirectedUrl = new URL(location.href);
+                const redirectedUrl = new URL(window.location.href);
                 let vm = this;
-                axios.get(url + "/api/public/getName/" + redirectedUrl.searchParams.get('uid') + "/" + redirectedUrl.searchParams.get('token')) //
-                    .then((res) => {
-                    vm.userInfo = res.data;
-                    vm.s17 = vm.userInfo.displayName;
-                });
+                if(typeof redirectedUrl.searchParams.get("i") !== "undefined" && redirectedUrl.searchParams.get("i") !== null){
+                    let tempInfo = decodeURIComponent(escape(window.atob(redirectedUrl.searchParams.get("i")))).split(" - ");
+                    axios.get(url + "/api/public/getName/" + tempInfo[0] + "/" + tempInfo[1]) //
+                        .then((res) => {
+                            vm.userInfo = res.data;
+                            vm.s17 = vm.userInfo.displayName;
+                        });
+                }
             },
             passwordCheck: function () {
                 this.has_number    = /[0-9]+/.test(this.password);
@@ -107,26 +116,60 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             resetPasswords: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-                const redirectedUrl = new URL(location.href); 
+                let vm = this;
+                const redirectedUrl = new URL(window.location.href);
                 const formData = new FormData();
                 formData.append("newPassword", this.password);
-                let vm = this;
-                axios({
-                    method: "put",
-                    url: url + "/api/public/resetPass/" + redirectedUrl.searchParams.get("uid") + "/" + redirectedUrl.searchParams.get("token"),  //
-                    headers: {"Content-Type": "application/json"},
-                    data: formData
-                }).then((res) => {
-                    location.replace(url);
-                }).catch((error) => {
-                    if (error.response) {
-                        if(error.response.status === 302){
-                            alert(vm.duplicatePasswordsText);
-                        } else if(error.response.status === 403){
-                            alert(vm.expiredSMSCodeText);
+                if(typeof redirectedUrl.searchParams.get("i") !== "undefined" && redirectedUrl.searchParams.get("i") !== null){
+                    let tempInfo = decodeURIComponent(escape(window.atob(redirectedUrl.searchParams.get("i")))).split(" - ");
+                    axios({
+                        method: "put",
+                        url: url + "/api/public/resetPass/" + tempInfo[0] + "/" + tempInfo[1],  //
+                        headers: {"Content-Type": "application/json"},
+                        data: formData
+                    }).then((res0) => {
+                        vm.passwordChangeSuccessful = true;
+                        let index = 0;
+                        let customTimer = window.setInterval(function() {
+                            if(index === 1){
+                                clearInterval(customTimer);
+                            }
+                            ++index;
+                        }, 2000);
+                        axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
+                            .then((res1) => {
+                                let loginPage = document.createElement("html");
+                                loginPage.innerHTML = res1.data;
+                                let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
+                                let bodyFormData = new FormData();
+                                bodyFormData.append("username", tempInfo[0]);
+                                bodyFormData.append("password", vm.password);
+                                bodyFormData.append("execution", execution);
+                                bodyFormData.append("geolocation", "");
+                                bodyFormData.append("_eventId", "submit");
+                                axios({
+                                    method: "post",
+                                    url: url + "/cas/login",
+                                    headers: {"Content-Type": "multipart/form-data"},
+                                    data: bodyFormData
+                                }).then((res2) => {
+                                    window.location.replace(url);
+                                }).catch((error) => {
+                                    console.log(error);
+                                });
+                            }).catch((error) => {
+                            console.log(error);
+                        });
+                    }).catch((error) => {
+                        if (error.response) {
+                            if(error.response.status === 302){
+                                alert(vm.duplicatePasswordsText);
+                            } else if(error.response.status === 403){
+                                alert(vm.expiredSMSCodeText);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             },
             changeLang: function () {
                 if (this.lang == "EN") {
@@ -168,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.duplicatePasswordsText = "The new password should not be the same as the old ones, please try again.";
                     this.expiredSMSCodeText = "SMS code has expired, please go back to the previous page and try again.";
                     this.changeUserPasswordText = "Change User Password";
+                    this.passwordChangeSuccessfulText = "Your password has been successfully changed, loading dashboard";
                 }else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
@@ -207,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.duplicatePasswordsText = "گذرواژه جدید نباید با گذرواژه های قدیمی یکسان باشند، لطفا دوباره تلاش کنید.";
                     this.expiredSMSCodeText = "کد پیامکی منقضی شده است، لطفا به صفحه قبل بازگشته و دوباره تلاش کنید.";
                     this.changeUserPasswordText = "تغییر گذرواژه کاربر";
+                    this.passwordChangeSuccessfulText = "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد";
                 }
             } 
         },
@@ -224,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(this.password !== "" && this.checkPassword !== ""){
                     if(/[0-9]+/.test(this.password)){
                         if(/[a-zA-Z]/.test(this.password)){
-                            if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                            /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){*/
                                 if(/.{8,}/.test(this.password)){
                                     if(this.password === this.checkPassword){
                                         return false
@@ -234,9 +279,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                 }else{
                                     return true
                                 }
-                            }else{
+                            /*}else{
                                 return true
-                            }
+                            }*/
                         }else{
                             return true
                         }
@@ -255,9 +300,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(/[a-zA-Z]/.test(this.password)){
                     checks += 1;
                 }
-                if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
                     checks += 1;
-                }
+                }*/
                 if(/.{8,}/.test(this.password)){
                     checks += 1;
                 }

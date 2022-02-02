@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Settings;
+import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.mobile.repos.ServicesRepo;
 import parsso.idman.models.users.User;
@@ -53,8 +54,8 @@ public class ServicesRepoImpl implements ServicesRepo {
     public String ActivationSendMessage(User user) {
         insertMobileToken1(user);
         try {
-            String message = user.getUsersExtraInfo().getMobileToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString()));
-            KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve("kavenegar.sms.api.key").getValue().toString());
+            String message = user.getUsersExtraInfo().getMobileToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString()));
+            KavenegarApi api = new KavenegarApi(new Settings(mongoTemplate).retrieve(Variables.KAVENEGAR_API_KEY).getValue().toString());
             api.verifyLookup(user.getMobile(), message, "", "", "mfa");
         } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
             System.out.print("HttpException  : " + ex.getMessage());
@@ -70,7 +71,7 @@ public class ServicesRepoImpl implements ServicesRepo {
     }
 
     public String insertMobileToken1(User user) {
-        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString());
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString());
         Random rnd = new Random();
         int token = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1)) + rnd.nextInt((int) (Math.pow(10, SMS_VALIDATION_DIGITS - 1) - 1)));
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
@@ -84,7 +85,7 @@ public class ServicesRepoImpl implements ServicesRepo {
     }
 
     public HttpStatus verifySMS(String userId, String token) {
-        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve("sms.validation.digits").getValue().toString());
+        int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString());
 
 
         User user = userRepo.retrieveUsers(userId);

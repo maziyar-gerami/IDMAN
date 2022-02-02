@@ -1,7 +1,6 @@
 package parsso.idman.repoImpls;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
@@ -24,7 +23,6 @@ import parsso.idman.models.other.Time;
 import parsso.idman.repos.SettingsRepo;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -261,9 +259,9 @@ public class SettingsRepoImpl implements SettingsRepo {
         HttpStatus httpStatus = update(doerId,new Property().settingsToProperty(settings,"FA"));
 
         if (httpStatus.value() == 200)
-            uniformLogger.info(doerId,new ReportMessage(Variables.MODEL_SETTINGS,"",Variables.ACTION_RESETFACTORY,Variables.RESULT_SUCCESS));
+            uniformLogger.info(doerId,new ReportMessage(Variables.MODEL_SETTINGS,"",Variables.ACTION_RESET_FACTORY,Variables.RESULT_SUCCESS));
         else
-            uniformLogger.warn(doerId,new ReportMessage(Variables.MODEL_SETTINGS,"",Variables.ACTION_RESETFACTORY,Variables.RESULT_FAILED));
+            uniformLogger.warn(doerId,new ReportMessage(Variables.MODEL_SETTINGS,"",Variables.ACTION_RESET_FACTORY,Variables.RESULT_FAILED));
 
         return httpStatus;
 

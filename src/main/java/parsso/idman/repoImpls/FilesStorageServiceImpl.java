@@ -23,7 +23,7 @@ import java.util.List;
 public class FilesStorageServiceImpl implements FilesStorageService {
     Path photoPathRoot;
     Path servicesPathRoot;
-    Path serviceIcon;
+    String serviceIcon;
     MongoTemplate mongoTemplate;
 
     @Autowired
@@ -43,7 +43,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
             throw new RuntimeException("Could not initialize folder for upload photo!");
         }
 
-        path = new Settings(mongoTemplate).retrieve("services.folder.path").getValue();
+        path = new Settings(mongoTemplate).retrieve(Variables.SERVICE_FOLDER_PATH).getValue();
         servicesPathRoot = Paths.get(path);
 
         try {
@@ -98,8 +98,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
     @Override
     public void saveIcon(MultipartFile file, String fileName) {
-        List<Path> paths = (List<Path>) new Settings(mongoTemplate).retrieve("services.icon.path");
-        serviceIcon = paths.get(paths.size()-1);
+        serviceIcon = new Settings(mongoTemplate).retrieve(Variables.SERVICES_ICON_PATH).getValue();
         try {
             Path pathServices = Paths.get(serviceIcon.toString());
             Files.copy(file.getInputStream(), pathServices.resolve(fileName));

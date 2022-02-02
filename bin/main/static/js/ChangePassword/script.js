@@ -27,6 +27,8 @@ document.addEventListener("DOMContentLoaded", function () {
             submitted: false,
             btnDisable: true,
             notAllowed: false,
+            passwordChangeSuccessful: false,
+            getUsernamePassword: false,
             placeholder: "text-align: right;",
             margin: "margin-right: 30px;",
             marg: "margin-left: auto;",
@@ -54,10 +56,14 @@ document.addEventListener("DOMContentLoaded", function () {
             incorrectInfoText: "اطلاعات وارد شده اشتباه است، لطفا دوباره تلاش کنید.",
             doubleUseText: "شما پیش از این با موفقیت وارد سامانه شده اید، این امکان تنها برای کاربران جدید می باشد.",
             passwordChangeInterruptedText: "در فرآیند تغییر گذرواژه مشکلی پیش آمده است، لطفا دوباره تلاش کنید.",
+            passwordChangeSuccessfulText: "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد",
         },
         created: function () {
+            const redirectedUrl = new URL(window.location.href);
+            if(typeof redirectedUrl.searchParams.get("i") === "undefined" || redirectedUrl.searchParams.get("i") === null){
+                this.getUsernamePassword = true;
+            }
             this.setDateNav();
-            this.getName();
             if(window.localStorage.getItem("lang") === null){
                 window.localStorage.setItem("lang", "FA");
             }else if(window.localStorage.getItem("lang") === "EN") {
@@ -91,31 +97,68 @@ document.addEventListener("DOMContentLoaded", function () {
             resetPasswords: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
-                axios({
-                    method: "put",
-                    url: url + "/api/public/changePassword",
-                    headers: {"Content-Type": "application/json"},
-                    data: JSON.stringify({
-                        userId: vm.userId,
-                        currentPassword: vm.currentPassword,
-                        newPassword: vm.password
+                const redirectedUrl = new URL(window.location.href);
+                if(typeof redirectedUrl.searchParams.get("i") !== "undefined" && redirectedUrl.searchParams.get("i") !== null){
+                    let tempInfo = decodeURIComponent(escape(window.atob(redirectedUrl.searchParams.get("i")))).split(" - ");
+                    axios({
+                        method: "put",
+                        url: url + "/api/public/changePassword",
+                        headers: {"Content-Type": "application/json"},
+                        data: JSON.stringify({
+                                userId: tempInfo[0],
+                                currentPassword: tempInfo[1],
+                                newPassword: vm.password
+                            }
+                        ).replace(/\\\\/g, "\\")
+                    }).then((res0) => {
+                        vm.passwordChangeSuccessful = true;
+                        let index = 0;
+                        let customTimer = window.setInterval(function() {
+                            if(index === 1){
+                                clearInterval(customTimer);
+                            }
+                            ++index;
+                        }, 2000);
+                        axios.get(url + "/cas/login?service=" + window.location.protocol + "//" + window.location.hostname + "/login/cas") //
+                            .then((res1) => {
+                                let loginPage = document.createElement("html");
+                                loginPage.innerHTML = res1.data;
+                                let execution = loginPage.getElementsByTagName("form")[0].getElementsByTagName("input")[2].value;
+                                let bodyFormData = new FormData();
+                                bodyFormData.append("username", tempInfo[0]);
+                                bodyFormData.append("password", vm.password);
+                                bodyFormData.append("execution", execution);
+                                bodyFormData.append("geolocation", "");
+                                bodyFormData.append("_eventId", "submit");
+                                axios({
+                                    method: "post",
+                                    url: url + "/cas/login",
+                                    headers: {"Content-Type": "multipart/form-data"},
+                                    data: bodyFormData
+                                }).then((res2) => {
+                                    location.replace(url + "/cas/login?service=" + tempInfo[2]);
+                                }).catch((error) => {
+                                    console.log(error);
+                                });
+                            }).catch((error) => {
+                            console.log(error);
+                        });
+                    }).catch((error) => {
+                        if (error.response) {
+                            if(error.response.status === 302){
+                                alert(vm.duplicatePasswordsText);
+                            } else if(error.response.status === 403){
+                                alert(vm.doubleUseText);
+                            } else if(error.response.status === 404){
+                                alert(vm.incorrectInfoText);
+                            } else if(error.response.status === 417){
+                                alert(vm.passwordChangeInterruptedText);
+                            }
                         }
-                    ).replace(/\\\\/g, "\\")
-                }).then((res) => {
-                    location.replace(url);
-                }).catch((error) => {
-                    if (error.response) {
-                        if(error.response.status === 302){
-                            alert(vm.duplicatePasswordsText);
-                        } else if(error.response.status === 403){
-                            alert(vm.doubleUseText);
-                        } else if(error.response.status === 404){
-                            alert(vm.incorrectInfoText);
-                        } else if(error.response.status === 417){
-                            alert(vm.passwordChangeInterruptedText);
-                        }
-                    }
-                });
+                    });
+                }else {
+                    alert(vm.passwordChangeInterruptedText);
+                }
             },
             changeLang: function () {
                 if (this.lang === "EN") {
@@ -153,6 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     this.incorrectInfoText = "The entered information is incorrect, please try again.";
                     this.doubleUseText = "You have already successfully logged in, this is only possible for new users.";
                     this.passwordChangeInterruptedText = "There was a problem with the password change process, please try again.";
+                    this.passwordChangeSuccessfulText = "Your password has been successfully changed, loading dashboard";
                 }else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
@@ -188,6 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     this.incorrectInfoText = "اطلاعات وارد شده اشتباه است، لطفا دوباره تلاش کنید.";
                     this.doubleUseText = "شما پیش از این با موفقیت وارد سامانه شده اید، این امکان تنها برای کاربران جدید می باشد.";
                     this.passwordChangeInterruptedText = "در فرآیند تغییر گذرواژه مشکلی پیش آمده است، لطفا دوباره تلاش کنید.";
+                    this.passwordChangeSuccessfulText = "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد";
                 }
             } 
         },
@@ -205,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if(this.password !== "" && this.checkPassword !== ""){
                     if(/[0-9]+/.test(this.password)){
                         if(/[a-zA-Z]/.test(this.password)){
-                            if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                            /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){*/
                                 if(/.{8,}/.test(this.password)){
                                     if(this.password === this.checkPassword){
                                         return false
@@ -215,9 +260,9 @@ document.addEventListener("DOMContentLoaded", function () {
                                 }else{
                                     return true
                                 }
-                            }else{
+                            /*}else{
                                 return true
-                            }
+                            }*/
                         }else{
                             return true
                         }
@@ -236,9 +281,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if(/[a-zA-Z]/.test(this.password)){
                     checks += 1;
                 }
-                if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
+                /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
                     checks += 1;
-                }
+                }*/
                 if(/.{8,}/.test(this.password)){
                     checks += 1;
                 }

@@ -47,7 +47,11 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
     public static void main(String[] args) {
 
-        SpringApplication.run(IdmanApplication.class, args);
+        try {
+            SpringApplication.run(IdmanApplication.class, args);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         logger.warn("Started!");
     }
 
