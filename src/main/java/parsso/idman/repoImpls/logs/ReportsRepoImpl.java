@@ -47,12 +47,10 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
         return new Report.ListReports(reports, size, (int) Math.ceil(size / (float) n));
     }
 
-    @SuppressWarnings("unused")
     private int getSkip(int p, int n) {
         return (p - 1) * n;
     }
 
-    @SuppressWarnings("unused")
     private Report.ListReports getListReports(int n, int skip, Query query) {
         long size = mongoTemplate.find(query, Report.class, Variables.col_Log).size();
 

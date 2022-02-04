@@ -45,6 +45,19 @@ public class UsersExtraInfo {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Time expiredTime;
     private boolean loggedIn;
+    @JsonIgnore
+    private int nPassChanged;
+    @JsonIgnore
+    private ChangePassword changePassword;
+
+    public int getnPassChanged() {
+        try{
+            return nPassChanged;
+        }catch(Exception e){
+            return 0;
+        }
+    }
+
 
     public Time getExpiredTime() {
         if (endTimeEpoch != 0)
@@ -99,4 +112,8 @@ public class UsersExtraInfo {
             return memberOf.stream().distinct().collect(Collectors.toList());
         return null;
     }
+
+    
 }
+
+

@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Service
 public class AuditsExcelView extends AbstractXlsxView {
-    @SuppressWarnings("unused")
+    
     final LogsRepo.AuditRepo auditRepo;
     final MongoTemplate mongoTemplate;
 

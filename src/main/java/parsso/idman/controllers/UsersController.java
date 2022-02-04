@@ -268,9 +268,8 @@ public class UsersController {
     }
 
     @PutMapping("/api/user/password")
-    public ResponseEntity<JSONObject> changePassword(HttpServletRequest request,
-                                                     @RequestBody JSONObject jsonObject) {
-        //String oldPassword = jsonObject.getAsString("currentPassword");
+    public ResponseEntity<Response> changePassword(HttpServletRequest request, @RequestParam(value = "lang", defaultValue = "fa") String lang,
+                                                     @RequestBody JSONObject jsonObject) throws NoSuchFieldException, IllegalAccessException {
         JSONObject objectResult = new JSONObject();
         String newPassword = jsonObject.getAsString("newPassword");
         String token = jsonObject.getAsString("token");
@@ -287,7 +286,6 @@ public class UsersController {
                 PWD pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
                 pwdin = Integer.parseInt(pwd.getPwdInHistory().replaceAll("[^0-9]", ""));
                 objectResult.put("pwdInHistory", pwdin);
-                return new ResponseEntity<>(objectResult, httpStatus);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -299,12 +297,16 @@ public class UsersController {
         }
         objectResult.put("pwdInHistory", pwdin);
 
-        return new ResponseEntity<>(objectResult, httpStatus);
+        if(httpStatus == HttpStatus.OK)
+            return new ResponseEntity<>(new Response(objectResult,Variables.MODEL_USER, lang),HttpStatus.OK);
+
+        return new ResponseEntity<>(new Response(lang,Variables.MODEL_USER, objectResult,httpStatus.value()),HttpStatus.OK);
+
     }
 
 
     @PutMapping("/api/public/changePassword")
-    public ResponseEntity<JSONObject> changePasswordWithoutToken(@RequestBody JSONObject jsonObject) {
+    public ResponseEntity<Response> changePasswordWithoutToken(@RequestBody JSONObject jsonObject, @RequestParam(value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         String currentPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
         String userId = jsonObject.getAsString("userId");
@@ -313,7 +315,11 @@ public class UsersController {
         if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()) && httpStatus == HttpStatus.OK)
             new Notification(mongoTemplate).sendPasswordChangeNotify(userRepo.retrieveUsers(userId),BASE_URL);
 
-        return new ResponseEntity<>(httpStatus);
+
+        if(httpStatus == HttpStatus.OK)
+            return new ResponseEntity<>(new Response(Variables.MODEL_USER, lang),HttpStatus.OK);
+
+        return new ResponseEntity<>(new Response(lang,Variables.MODEL_USER,httpStatus.value()),HttpStatus.OK);
 
     }
 
@@ -398,15 +404,22 @@ public class UsersController {
     }
 
     @PutMapping("/api/public/resetPass/{uid}/{token}")
-    public ResponseEntity<JSONObject> rebindLdapUser(@RequestParam("newPassword") String newPassword, @PathVariable("token") String token,
-                                                     @PathVariable("uid") String uid) {
+    public ResponseEntity<Response> rebindLdapUser(@RequestParam("newPassword") String newPassword,
+    @RequestParam(value = "lang", defaultValue = "fa")  String lang, @PathVariable("token") String token,
+                                                     @PathVariable("uid") String uid) throws NoSuchFieldException, IllegalAccessException {
         JSONObject objectResult = new JSONObject();
         String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
         PWD pwd = this.ldapTemplate.lookup(dn, pwdAttributeMapper);
         int pwdin = Integer.parseInt(pwd.getPwdInHistory().replaceAll("[^0-9]", ""));
         objectResult.put("pwdInHistory", pwdin);
 
-        return new ResponseEntity<>(objectResult, userRepo.resetPassword(uid, newPassword, token, pwdin));
+        HttpStatus httpStatus = userRepo.resetPassword(uid, newPassword, token, pwdin);
+
+        if(httpStatus == HttpStatus.OK)
+            return new ResponseEntity<>(new Response(Variables.MODEL_USER, lang),HttpStatus.OK);
+
+        return new ResponseEntity<>(new Response(lang,Variables.MODEL_USER,httpStatus.value()),HttpStatus.OK);
+
     }
 
     @GetMapping("/api/public/checkMail/{email}")

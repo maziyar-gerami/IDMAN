@@ -11,7 +11,6 @@ public class ApiException extends BaseException {
         this.code = code;
     }
 
-    @SuppressWarnings("unused")
     public MetaData getCode() {
         return MetaData.valueOf(code);
     }

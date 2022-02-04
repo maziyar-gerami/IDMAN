@@ -16,7 +16,6 @@ public class Time {
     int seconds;
     int milliSeconds;
 
-    @SuppressWarnings("unused")
     public Time(int year, int month, int day, int hours, int minutes, int seconds) {
         this.year = year;
         this.month = month;

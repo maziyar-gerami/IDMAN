@@ -39,6 +39,9 @@ public class Response {
     }
 
 
+    
+
+
     @Setter
     @Getter
     private static class Status {

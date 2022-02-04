@@ -18,27 +18,22 @@ public class ReceiveResult {
         this.receptor = (json.get("receptor").getAsString());
     }
 
-    @SuppressWarnings("unused")
     public Long getMessageId() {
         return messageId;
     }
 
-    @SuppressWarnings("unused")
     public String getMessage() {
         return message;
     }
 
-    @SuppressWarnings("unused")
     public String getSender() {
         return sender;
     }
 
-    @SuppressWarnings("unused")
     public String getReceptor() {
         return receptor;
     }
 
-    @SuppressWarnings("unused")
     public Long getDate() {
         return date;
     }

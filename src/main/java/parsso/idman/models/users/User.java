@@ -64,11 +64,7 @@ public class User implements UserDetails, Comparable {
     private boolean profileInaccessibility;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private License services;
-
-    public User() {
-        locked = false;
-        enabled = true;
-    }
+    
 
     public String getExportEndTime() {
         return new Time().getExportEndTime(getExpiredTime());

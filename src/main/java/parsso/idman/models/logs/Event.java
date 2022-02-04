@@ -131,7 +131,6 @@ public class Event implements Serializable {
             this.eventList = relativeEvents;
         }
 
-        @SuppressWarnings("unused")
         public ListEvents() {
 
         }

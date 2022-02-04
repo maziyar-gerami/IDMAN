@@ -79,10 +79,10 @@ public class UsersLicense {
     private static class Users {
         @JsonInclude(JsonInclude.Include.NON_NULL)
 
-        List licensed;
+        List<Object> licensed;
         @JsonInclude(JsonInclude.Include.NON_NULL)
 
-        List unLicensed;
+        List<Object> unLicensed;
 
         Users(List licensed, List unLicensed) {
             this.licensed = licensed;

@@ -53,7 +53,6 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     SimpleUserAttributeMapper simpleUserAttributeMapper;
     @Autowired
     DashboardData dashboardData;
-    @SuppressWarnings("unused")
     String model = "Refresh";
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;

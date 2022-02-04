@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.InstantMessage;
-import parsso.idman.helpers.reloadConfigs.PasswordSettings;
 import parsso.idman.models.logs.Config;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.Setting;

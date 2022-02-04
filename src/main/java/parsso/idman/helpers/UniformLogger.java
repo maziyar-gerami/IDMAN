@@ -44,7 +44,6 @@ public class UniformLogger {
         logger.error(reportMessage.toString());
     }
 
-    @SuppressWarnings("unused")
     public void warn(String doerId, ReportMessage reportMessage, Object from, Object to) {
         Logger logger = LogManager.getLogger(doerId);
         reportMessage.setLevel(Variables.LEVEL_WARN);
@@ -53,7 +52,6 @@ public class UniformLogger {
         logger.warn(reportMessage.toString());
     }
 
-    @SuppressWarnings("unused")
     public void info(String doerId, ReportMessage reportMessage, Object from, Object to) {
         Logger logger = LogManager.getLogger(doerId);
         reportMessage.setLevel(Variables.LEVEL_INFO);
@@ -62,7 +60,6 @@ public class UniformLogger {
         logger.info(reportMessage.toString());
     }
 
-    @SuppressWarnings("unused")
     public void error(String doerId, ReportMessage reportMessage, Object from, Object to) {
         Logger logger = LogManager.getLogger(doerId);
         reportMessage.setLevel(Variables.LEVEL_ERROR);

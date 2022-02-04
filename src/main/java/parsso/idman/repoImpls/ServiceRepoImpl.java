@@ -34,8 +34,6 @@ import parsso.idman.utils.other.GenerateUUID;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @SuppressWarnings("ALL")

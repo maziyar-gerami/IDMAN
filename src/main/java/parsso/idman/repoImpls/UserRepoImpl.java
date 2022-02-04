@@ -44,6 +44,7 @@ import parsso.idman.helpers.user.*;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.Notification;
 import parsso.idman.models.other.Time;
+import parsso.idman.models.users.ChangePassword;
 import parsso.idman.models.users.ListUsers;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UserLoggedIn;
@@ -59,7 +60,8 @@ import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 @SuppressWarnings("unchecked")
@@ -363,7 +365,10 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public HttpStatus changePassword(String uId, String newPassword, String token) {
 
+
         User user = retrieveUsers(uId);
+        if (!accessChangePassword(user))
+            return HttpStatus.NOT_ACCEPTABLE;
 
         AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("objectclass", "person"));
@@ -371,6 +376,7 @@ public class UserRepoImpl implements UserRepo {
 
         //Checking previous password, disabled
         //if (ldapTemplate.authenticate("ou=People," + BASE_DN, andFilter.toString(), oldPassword)) {
+
         if (token != null) {
             if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
 
@@ -379,6 +385,8 @@ public class UserRepoImpl implements UserRepo {
                 contextUser.setAttributeValue("userPassword", newPassword);
 
                 try {
+                    if (!increaseSameDayPasswordChanges(user))
+                        return HttpStatus.TOO_MANY_REQUESTS;
                     ldapTemplate.modifyAttributes(contextUser);
                     uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
                     if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()))
@@ -503,10 +511,11 @@ public class UserRepoImpl implements UserRepo {
 
         User user = retrieveUsers(userId);
 
+        
+
         AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("objectclass", "person"));
         andFilter.and(new EqualsFilter("uid", userId));
-
 
         UsersExtraInfo usersExtraInfo = retrieveUserMain(userId);
         if (usersExtraInfo == null)
@@ -521,6 +530,8 @@ public class UserRepoImpl implements UserRepo {
             contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(), BASE_DN));
             contextUser.setAttributeValue("userPassword", newPassword);
             try {
+                if (!increaseSameDayPasswordChanges(retrieveUsers(userId)))
+                    return HttpStatus.TOO_MANY_REQUESTS;
                 ldapTemplate.modifyAttributes(contextUser);
                 usersExtraInfo.setLoggedIn(true);
                 mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
@@ -963,6 +974,7 @@ public class UserRepoImpl implements UserRepo {
     public HttpStatus resetPassword(String userId, String pass, String token, int pwdin) {
 
         User user;
+
         try {
             user = retrieveUsers(userId);
 
@@ -978,6 +990,9 @@ public class UserRepoImpl implements UserRepo {
             e.printStackTrace();
         }
 
+        if (!accessChangePassword(user))
+            return HttpStatus.NOT_ACCEPTABLE;
+
         HttpStatus httpStatus = tokenClass.checkToken(userId, token);
 
         if (httpStatus == HttpStatus.OK) {
@@ -987,14 +1002,18 @@ public class UserRepoImpl implements UserRepo {
             contextUser.setAttributeValue("userPassword", pass);
 
             try {
+                if (!increaseSameDayPasswordChanges(retrieveUsers(userId)))
+                            return HttpStatus.TOO_MANY_REQUESTS;
                 removeCurrentEndTime(userId);
                 ldapTemplate.modifyAttributes(contextUser);
 
                 uniformLogger.info(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
                         Variables.ACTION_RESET, Variables.RESULT_SUCCESS, ""));
 
+                    
                 if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()))
                     new Notification(mongoTemplate).sendPasswordChangeNotify(user,BASE_URL);
+                    
 
             } catch (org.springframework.ldap.InvalidAttributeValueException e) {
                 uniformLogger.warn(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
@@ -1107,6 +1126,42 @@ public class UserRepoImpl implements UserRepo {
     public void transferPropertiesToMongo() throws IOException {
         postSettings.run(mongoTemplate);
     }
+
+    private boolean accessChangePassword(User user){
+        if (new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_LIMIT).equals("on")
+            && user.getUsersExtraInfo().getnPassChanged() <= Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_LIMIT_NUMBER).getValue()))
+            return true;
+            return false;
+    }
+
+    private boolean sameDayPasswordChanges(long last, long current){
+        Date lastDateChange = new Date(last);
+        Date currentDate = new Date(current);
+
+        LocalDate localDateLastChange = lastDateChange.toInstant().atZone(ZoneId.of(Variables.ZONE)).toLocalDate();
+
+        LocalDate localDateCurrentChange = currentDate.toInstant().atZone(ZoneId.of(Variables.ZONE)).toLocalDate();
+
+        if (localDateCurrentChange.isEqual(localDateLastChange))
+            return true;
+        
+        return false;
+    }
+
+    private boolean increaseSameDayPasswordChanges(User user) {
+        UsersExtraInfo usersExtraInfo = user.getUsersExtraInfo();
+        if(sameDayPasswordChanges(user.getUsersExtraInfo().getChangePassword().getTime(),System.currentTimeMillis())){
+            usersExtraInfo.setChangePassword(new ChangePassword(usersExtraInfo.getChangePassword().getTime(),usersExtraInfo.getChangePassword().getN()+1));
+            if(usersExtraInfo.getChangePassword().getN()>=Integer.valueOf(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_LIMIT_NUMBER).getValue())){
+                return false;
+            }
+        }else{
+            usersExtraInfo.setChangePassword(new ChangePassword(System.currentTimeMillis(),1));
+        }
+        mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
+        return true;
+    }
+    
 
 }
 

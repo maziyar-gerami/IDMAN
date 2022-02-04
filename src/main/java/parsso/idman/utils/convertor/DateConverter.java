@@ -109,8 +109,6 @@ public class DateConverter {
         this.month = jMonth;
         this.day = jDay;
     }
-
-    @SuppressWarnings("unused")
     public String MonthToString(int n) {
         switch (n) {
             case 1:

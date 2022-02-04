@@ -9,7 +9,6 @@ public class StatusResult {
     MessageStatus status;
     String statusText;
 
-    @SuppressWarnings("unused")
     protected StatusResult() {
 
     }
@@ -20,17 +19,14 @@ public class StatusResult {
         this.statusText = json.get("statustext").getAsString();
     }
 
-    @SuppressWarnings("unused")
     public int getMessageId() {
         return messageId;
     }
 
-    @SuppressWarnings("unused")
     public MessageStatus getStatus() {
         return status;
     }
 
-    @SuppressWarnings("unused")
     public String getStatusText() {
         return statusText;
     }

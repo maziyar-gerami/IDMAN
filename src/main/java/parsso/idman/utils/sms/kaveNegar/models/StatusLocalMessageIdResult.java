@@ -11,7 +11,6 @@ public class StatusLocalMessageIdResult extends StatusResult {
         this.localId = json.get("localid").getAsLong();
     }
 
-    @SuppressWarnings("unused")
     public long getLocalId() {
         return localId;
     }

@@ -29,9 +29,7 @@ public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
     final ServiceRepo serviceRepo;
 
     final MongoTemplate mongoTemplate;
-    @SuppressWarnings("unused")
     final UsersLicense usersLicense;
-    @SuppressWarnings("unused")
     final parsso.idman.helpers.group.GroupLicense groupLicense;
     final ExtractLicensedAndUnlicensed extract;
 

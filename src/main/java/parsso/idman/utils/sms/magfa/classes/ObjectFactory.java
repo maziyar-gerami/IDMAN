@@ -24,7 +24,6 @@ public class ObjectFactory {
         return new CustomerReturnIncomingFormat();
     }
 
-    @SuppressWarnings("unused")
     public MessagesResult createMessagesResult() {
         return new MessagesResult();
     }
@@ -49,12 +48,10 @@ public class ObjectFactory {
         return new DatedCustomerReturnIncomingFormat();
     }
 
-    @SuppressWarnings("unused")
     public MessageIdResult createMessageIdResult() {
         return new MessageIdResult();
     }
 
-    @SuppressWarnings("unused")
     public DeliveryStatus createDeliveryStatus() {
         return new DeliveryStatus();
     }

@@ -28,12 +28,10 @@ public class MagfaSoapServer_Service
     }
 
 
-    @SuppressWarnings("unused")
     public MagfaSoapServer_Service() {
         super(__getWsdlLocation(), MAGFASOAPSERVER_QNAME);
     }
 
-    @SuppressWarnings("unused")
     public MagfaSoapServer_Service(WebServiceFeature... features) {
         super(__getWsdlLocation(), MAGFASOAPSERVER_QNAME, features);
     }
@@ -42,17 +40,14 @@ public class MagfaSoapServer_Service
         super(wsdlLocation, MAGFASOAPSERVER_QNAME);
     }
 
-    @SuppressWarnings("unused")
     public MagfaSoapServer_Service(URL wsdlLocation, WebServiceFeature... features) {
         super(wsdlLocation, MAGFASOAPSERVER_QNAME, features);
     }
 
-    @SuppressWarnings("unused")
     public MagfaSoapServer_Service(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
     }
 
-    @SuppressWarnings("unused")
     public MagfaSoapServer_Service(URL wsdlLocation, QName serviceName, WebServiceFeature... features) {
         super(wsdlLocation, serviceName, features);
     }

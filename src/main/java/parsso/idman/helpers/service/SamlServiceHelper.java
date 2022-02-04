@@ -26,8 +26,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @SuppressWarnings("ALL")
@@ -147,7 +145,7 @@ public class SamlServiceHelper {
         //contacts
         if (jo.get("contacts") != null) {
 
-            ArrayList arrayList = (ArrayList) jo.get("contacts");
+            ArrayList<Object> arrayList = (ArrayList) jo.get("contacts");
 
             if (arrayList != null) {
 
@@ -155,7 +153,7 @@ public class SamlServiceHelper {
 
                 List<Contact> contacts = new LinkedList<>();
 
-                ArrayList temp1 = (ArrayList) arrayList.get(1);
+                ArrayList<Object> temp1 = (ArrayList) arrayList.get(1);
                 for (Object o : temp1) {
 
                     JSONObject jsonObject1 = null;

@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 @Setter
 @Getter
 public class Inconsistency {

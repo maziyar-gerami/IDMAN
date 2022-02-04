@@ -1,14 +1,10 @@
 package parsso.idman.helpers.oneTimeTasks;
 
-import lombok.SneakyThrows;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
-import parsso.idman.repoImpls.SettingsRepoImpl;
-import parsso.idman.repos.SettingsRepo;
 import parsso.idman.repos.UserRepo;
 
 public class RunOneTime {

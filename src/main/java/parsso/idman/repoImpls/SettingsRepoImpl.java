@@ -3,6 +3,7 @@ package parsso.idman.repoImpls;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -52,18 +53,23 @@ public class SettingsRepoImpl implements SettingsRepo {
 
         List<Setting> settings = retrieveALL();
         PWD pwd = passwordSettings.retrieve();
-        Setting sms_sdk = mongoTemplate.findOne(new Query(Criteria.where("_id").is("SMS.SDK")), Setting.class, Variables.col_properties);
+        Setting sms_sdk = mongoTemplate.findOne(new Query(Criteria.where("_id").is(Variables.SMS_SDK)), Setting.class, Variables.col_properties);
 
         assert sms_sdk != null;
         if (sms_sdk.getValue().equalsIgnoreCase("magfa"))
-            settings.removeIf(s -> s.get_id().equalsIgnoreCase("kavenegar.sms.api.key"));
+            settings.removeIf(s -> s.get_id().equalsIgnoreCase(Variables.KAVENEGAR_API_KEY));
 
         else if (sms_sdk.getValue().toString().equalsIgnoreCase("kavenegar")) {
-            settings.removeIf(s -> s.get_id().equalsIgnoreCase("SMS.Magfa.username"));
-            settings.removeIf(s -> s.get_id().equalsIgnoreCase("SMS.Magfa.password"));
+            settings.removeIf(s -> s.get_id().equalsIgnoreCase(Variables.SMS_MAGFA_USERNAME));
+            settings.removeIf(s -> s.get_id().equalsIgnoreCase(Variables.SMS_MAGFA_PASSWORD));
         }
 
-        boolean skyroom = Boolean.parseBoolean(mongoTemplate.findOne(new Query(Criteria.where("_id").is("skyroom.enable")), Setting.class, Variables.col_properties).getValue().toString());
+        Setting passwordLimit = mongoTemplate.findOne(new Query(Criteria.where("_id").is(Variables.PASSWORD_CHANGE_LIMIT)), Setting.class, Variables.col_properties);
+
+        if(passwordLimit.getValue().equals("off"))
+            settings.removeIf(s -> s.get_id().equalsIgnoreCase(Variables.PASSWORD_CHANGE_LIMIT_NUMBER));
+
+        boolean skyroom = Boolean.parseBoolean(mongoTemplate.findOne(new Query(Criteria.where("_id").is(Variables.SKYROOM_ENABLE)), Setting.class, Variables.col_properties).getValue().toString());
 
         if (!skyroom)
             settings.removeIf(s -> s.get_id().equalsIgnoreCase("skyroom.api.key"));

@@ -5,8 +5,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import parsso.idman.models.other.Setting;
 
-import java.util.List;
-
 public class Settings {
     MongoTemplate mongoTemplate;
     public Settings(MongoTemplate mongoTemplate) {

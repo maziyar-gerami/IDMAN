@@ -28,7 +28,6 @@ public class Time {
     private int seconds;
     private int milliSeconds;
 
-    @SuppressWarnings("unused")
     public Time() {
     }
 

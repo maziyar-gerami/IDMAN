@@ -22,7 +22,6 @@ public class SendResult {
         return status;
     }
 
-    @SuppressWarnings("unused")
     public void setStatus(int value) {
         this.status = value;
     }

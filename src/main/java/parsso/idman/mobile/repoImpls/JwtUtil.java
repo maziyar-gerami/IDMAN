@@ -51,13 +51,11 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
-    @SuppressWarnings("unused")
     public Boolean validateToken(String token, User user) {
         final String username = extractUsrname(token);
         return (username.equals(user.getUserId()) && !isTokenExpired(token));
     }
 
-    @SuppressWarnings("unused")
     public String externFromCookie(String s) {
         String temp;
         if (s.contains("Authorization=Bearer"))

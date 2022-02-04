@@ -47,7 +47,6 @@ public interface UserRepo {
 
     List<UsersExtraInfo> retrieveGroupsUsers(String groupId);
 
-    @SuppressWarnings("unused")
     void setIfLoggedIn();
 
     String getByMobile(String mobile);
@@ -74,7 +73,6 @@ public interface UserRepo {
 
     int retrieveUsersLDAPSize();
 
-    @SuppressWarnings("unused")
     Boolean SAtoSU();
 
     Boolean retrieveUsersDevice(String username);

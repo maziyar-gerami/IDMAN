@@ -15,6 +15,9 @@ public class StringResult {
     public static String USER_400_FA = "مشکل در پارامترهای ارسالی";
     public static String USER_400_EN = "Parameter Problem";
 
+    public static String USER_423_FA = "تعداد تغییرات گذرواژه در یک روز بیش از حد مجاز است.";
+    public static String USER_423_EN = "Password change limit exceed";
+
     public static String TOKEN_202_EN = "Token Delete Successful";
     public static String TOKEN_202_FA = "پاک کردن توکن با موفقیت انجام شد.";
 

@@ -24,13 +24,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("unchecked")
 @Service
 public class Operations {
-    @SuppressWarnings("unused")
     private final String model = "users";
     @Autowired
     BuildDnUser buildDnUser;
