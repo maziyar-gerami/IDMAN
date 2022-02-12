@@ -8,8 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Devices;
+import parsso.idman.models.other.OneTime;
 import parsso.idman.repos.AuthenticatorRepo;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,11 +36,14 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
         if (!deviceName.equals(""))
             query.addCriteria(Criteria.where("name").regex(".*" + deviceName + ".*", "i"));
 
+
+        long size = mongoTemplate.count(query, Variables.col_devices);
+
         if (page != 0 && count != 0) {
             query.skip(skip).limit(count);
         }
         List<Devices> devicesList = mongoTemplate.find(query, Devices.class, Variables.col_devices);
-        long size = mongoTemplate.count(new Query(), Variables.col_devices);
+
         int pages;
         if (count != 0)
             pages = (int) Math.ceil(size / (float) count);
@@ -54,9 +61,9 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
         try {
             mongoTemplate.remove(new Query(Criteria.where("name").is(name)), Devices.class, Variables.col_devices);
         } catch (Exception e) {
-            return HttpStatus.FORBIDDEN;
+            return HttpStatus.BAD_REQUEST;
         }
-        return HttpStatus.OK;
+        return HttpStatus.NO_CONTENT;
     }
 
     @Override
@@ -69,9 +76,9 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
         try {
             mongoTemplate.findAndRemove(new Query(Criteria.where("username").is(username)), Devices.class, Variables.col_devices);
         } catch (Exception e) {
-            return HttpStatus.FORBIDDEN;
+            return HttpStatus.BAD_REQUEST;
         }
-        return HttpStatus.OK;
+        return HttpStatus.NO_CONTENT;
     }
 
     @Override
@@ -85,8 +92,16 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
         try {
             mongoTemplate.findAndRemove(query, Devices.class, Variables.col_devices);
         } catch (Exception e) {
-            return HttpStatus.FORBIDDEN;
+            return HttpStatus.BAD_REQUEST;
         }
-        return HttpStatus.OK;
+        return HttpStatus.NO_CONTENT;
     }
+
+
+    @Override
+    public Boolean retrieveUsersDevice(String username) {
+        return mongoTemplate.count(new Query(Criteria.where("username").is(username)), Variables.col_GoogleAuthDevice) > 0;
+    }
+
+
 }

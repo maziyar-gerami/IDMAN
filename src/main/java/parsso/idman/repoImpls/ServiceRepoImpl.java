@@ -99,7 +99,7 @@ public class ServiceRepoImpl implements ServiceRepo {
 
 
             try {
-                if (((List<String>) (((JSONArray) (Objects.requireNonNull(service.getAccessStrategy()).getRequiredAttributes().get("uid"))).get(1))).contains(user.getUserId()))
+                if (((List<String>) (((JSONArray) (Objects.requireNonNull(service.getAccessStrategy()).getRequiredAttributes().get("uid"))).get(1))).contains(user.get_id()))
                     relatedList.add(service);
             } catch (NullPointerException ignored) {
 
@@ -113,7 +113,8 @@ public class ServiceRepoImpl implements ServiceRepo {
         for (Service service : relatedList) {
             Query query = new Query(Criteria.where("_id").is(service.getId()));
             try {
-                microService = mongoTemplate.findOne(query, MicroService.class, collection);
+                JSONObject jsonObject = mongoTemplate.findOne(query, JSONObject.class, collection);
+                microService = new MicroService((Long) jsonObject.get("_id"),jsonObject.get("url").toString(),Integer.parseInt(jsonObject.get("position").toString()));
             } catch (Exception e) {
                 e.printStackTrace();
                 microService = new MicroService(service.getId(), service.getServiceId());
@@ -124,9 +125,9 @@ public class ServiceRepoImpl implements ServiceRepo {
                 MicroService fMicro = new MicroService(service, microService);
 
                 try {
-                    ServiceGist s = new Notifs().getNotifications(user.getUserId(),
+                    ServiceGist s = new Notifs().getNotifications(user.get_id().toString(),
                             service.getExtraInfo().getNotificationApiURL(), service.getExtraInfo().getNotificationApiKey());
-                    fMicro.setNotification(new Notifs().getNotifications(user.getUserId(),
+                    fMicro.setNotification(new Notifs().getNotifications(user.get_id().toString(),
                             service.getExtraInfo().getNotificationApiURL(), service.getExtraInfo().getNotificationApiKey()));
                 } catch (Exception ignored) {
                 }

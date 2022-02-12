@@ -77,7 +77,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
             try {
 
-                Query queryMongo = new Query(new Criteria("userId").regex(user.getUserId(), "i"));
+                Query queryMongo = new Query(new Criteria("userId").regex(user.get_id().toString(), "i"));
 
                 userExtraInfo = mongoTemplate.findOne(queryMongo, UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
@@ -87,7 +87,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                         userExtraInfo.setQrToken(UUID.randomUUID().toString());
 
                     String photoName = ldapTemplate.search(
-                            "ou=People," + BASE_DN, new EqualsFilter("uid", user.getUserId()).encode(), searchControls,
+                            "ou=People," + BASE_DN, new EqualsFilter("uid", user.get_id().toString()).encode(), searchControls,
                             (AttributesMapper<String>) attrs -> {
                                 if (attrs.get("photoName") != null)
                                     return attrs.get("photoName").get().toString();
@@ -101,14 +101,14 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 } else {
 
                     userExtraInfo = new UsersExtraInfo();
-                    userExtraInfo.setUserId(user.getUserId());
+                    userExtraInfo.setUserId(user.get_id().toString());
                     userExtraInfo.setQrToken(UUID.randomUUID().toString());
                 }
 
                 if (userExtraInfo.getRole() == null)
                     userExtraInfo.setRole("USER");
 
-                else if (userExtraInfo.getUserId() != null && userExtraInfo.getUserId().equalsIgnoreCase("su"))
+                else if (userExtraInfo.get_id() != null && userExtraInfo.get_id().toString().equalsIgnoreCase("su"))
                     userExtraInfo.setRole("SUPERUSER");
 
                 else if (userExtraInfo.getRole() != null)
@@ -117,7 +117,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
                 userExtraInfo.setUnDeletable(userExtraInfo.isUnDeletable());
 
             } catch (Exception e) {
-                userExtraInfo = new UsersExtraInfo(user.getUserId());
+                userExtraInfo = new UsersExtraInfo(user.get_id().toString());
             }
 
             userExtraInfo.setDisplayName(user.getDisplayName());
@@ -133,10 +133,10 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             try {
 
                 mongoTemplate.save(userExtraInfo, Variables.col_usersExtraInfo);
-                uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, "Step 1: creating documents"));
+                uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.get_id(), "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, "Step 1: creating documents"));
             } catch (Exception e) {
                 e.printStackTrace();
-                uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, "writing to mongo"));
+                uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.get_id(), "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, "writing to mongo"));
             }
 
 
@@ -155,10 +155,10 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         //2. cleanUp mongo
         List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, Variables.col_usersExtraInfo);
         for (UsersExtraInfo usersExtraInfo : usersMongo) {
-            List<UsersExtraInfo> usersExtraInfoList = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", usersExtraInfo.getUserId()).encode(), searchControls, simpleUserAttributeMapper);
+            List<UsersExtraInfo> usersExtraInfoList = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", usersExtraInfo.get_id().toString()).encode(), searchControls, simpleUserAttributeMapper);
             if (usersExtraInfoList.size() == 0) {
-                mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
-                uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, usersExtraInfo.getUserId(), "MongoDB Document", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, "Step 2: removing extra document"));
+                mongoTemplate.findAndRemove(new Query(new Criteria("userId").is(usersExtraInfo.get_id())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+                uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, usersExtraInfo.get_id(), "MongoDB Document", Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, "Step 2: removing extra document"));
             }
         }
 
@@ -278,29 +278,30 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         } catch (Exception ignored) {
         }
         for (User user : users) {
-            Query query = new Query(Criteria.where("userId").is(user.getUserId()));
+            Query query = new Query(Criteria.where("_id").is(user.get_id()));
             UsersExtraInfo simpleUser = mongoTemplate.findOne(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
-            if (!Objects.requireNonNull(simpleUser).getStatus().equalsIgnoreCase("lock")) {
-                simpleUser.setStatus("lock");
-
-                uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.ACTION_LOCK, "", ""));
-                mongoTemplate.save(simpleUser, Variables.col_usersExtraInfo);
-            }
+            try {
+                if (!Objects.requireNonNull(simpleUser).getStatus().equalsIgnoreCase("lock")) {
+                    simpleUser.setStatus("lock");
+                    uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, user.get_id(), "", Variables.ACTION_LOCK, "", ""));
+                    mongoTemplate.save(simpleUser, Variables.col_usersExtraInfo);
+                }
+            }catch (Exception ignored){}
 
         }
 
         List<UsersExtraInfo> simpleUsers = mongoTemplate.find(new Query(Criteria.where("status").is("lock")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
         for (UsersExtraInfo simple : simpleUsers) {
-            Query query = new Query(Criteria.where("userId").is(simple.getUserId()));
+            Query query = new Query(Criteria.where("_id").is(simple.get_id()));
 
-            if (ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", simple.getUserId()).encode(), searchControls, userAttributeMapper).size() == 0) {
+            if (ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", simple.get_id().toString()).encode(), searchControls, userAttributeMapper).size() == 0) {
 
                 simple.setStatus("enable");
 
                 mongoTemplate.remove(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
                 mongoTemplate.save(simple, Variables.col_usersExtraInfo);
 
-                uniformLogger.info(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_USER, simple.getUserId(), "", Variables.ACTION_UNLOCK, Variables.RESULT_SUCCESS, "due to time pass"));
+                uniformLogger.info(Variables.DOER_SYSTEM, new ReportMessage(Variables.MODEL_USER, simple.get_id(), "", Variables.ACTION_UNLOCK, Variables.RESULT_SUCCESS, "due to time pass"));
 
 
             }

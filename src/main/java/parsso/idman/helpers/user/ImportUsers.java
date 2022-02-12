@@ -81,9 +81,9 @@ public class ImportUsers {
             user.setEmployeeNumber(formatter.formatCellValue(row.getCell(sequence[9])));
             user.setUserPassword(formatter.formatCellValue(row.getCell(sequence[10])));
 
-            if (!user.getUserId().equals("")) {
+            if (!user.get_id().equals("")) {
 
-                if (user.getUserId() == null || user.getUserId().equals("")) {
+                if (user.get_id() == null || user.get_id().equals("")) {
                     if (user.getDisplayName() == null || user.getDisplayName().equals(""))
                         continue;
 
@@ -133,7 +133,7 @@ public class ImportUsers {
 
         List<String> conflicts = new LinkedList<>();
 
-        if (oldUser.getUserId().equals(newUser.getUserId())) conflicts.add("userId");
+        if (oldUser.get_id().equals(newUser.get_id())) conflicts.add("userId");
         if (oldUser.getFirstName().equals(newUser.getFirstName())) conflicts.add("firsName");
         if (oldUser.getLastName().equals(newUser.getLastName())) conflicts.add("lastName");
         if (oldUser.getDisplayName().equals(newUser.getDisplayName())) conflicts.add("displayName");

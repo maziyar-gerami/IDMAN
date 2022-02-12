@@ -41,7 +41,7 @@ public class JwtUtil {
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, user.getUserId());
+        return createToken(claims, user.get_id().toString());
     }
 
     @SuppressWarnings("deprecation")
@@ -53,7 +53,7 @@ public class JwtUtil {
 
     public Boolean validateToken(String token, User user) {
         final String username = extractUsrname(token);
-        return (username.equals(user.getUserId()) && !isTokenExpired(token));
+        return (username.equals(user.get_id()) && !isTokenExpired(token));
     }
 
     public String externFromCookie(String s) {

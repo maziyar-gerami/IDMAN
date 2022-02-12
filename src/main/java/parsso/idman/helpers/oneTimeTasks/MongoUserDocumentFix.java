@@ -1,0 +1,95 @@
+package parsso.idman.helpers.oneTimeTasks;
+
+import com.google.gson.JsonObject;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.filter.EqualsFilter;
+import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.user.UserAttributeMapper;
+import parsso.idman.models.other.OneTime;
+import parsso.idman.models.users.User;
+import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.repos.UserRepo;
+
+import javax.naming.directory.SearchControls;
+import java.util.Date;
+import java.util.List;
+
+public class MongoUserDocumentFix {
+    final MongoTemplate mongoTemplate;
+    final UserRepo userRepo;
+    final LdapTemplate ldapTemplate;
+    final String BASE_DN;
+    final UserAttributeMapper userAttributeMapper;
+
+    MongoUserDocumentFix(MongoTemplate mongoTemplate, UserRepo userRepo, LdapTemplate ldapTemplate, String BASE_DN, UserAttributeMapper userAttributeMapper) {
+        this.mongoTemplate = mongoTemplate;
+        this.userRepo = userRepo;
+        this.ldapTemplate = ldapTemplate;
+        this.BASE_DN = BASE_DN;
+        this.userAttributeMapper = userAttributeMapper;
+    }
+
+    public void run() {
+        long count = mongoTemplate.count(new Query(), Variables.col_usersExtraInfo);
+        int number = 50;
+        int it = (int) (Math.floor(count/ number) + 1);
+        char[] animationChars = new char[]{'|', '/', '-', '\\'};
+        String mobile;
+        /*
+        for (int i = 0; i < it; i++) {
+            int skip = i * number;
+            List<UsersExtraInfo> usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(number), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+
+            for (UsersExtraInfo usersExtraInfo : usersExtraInfos) {
+
+                SearchControls searchControls = new SearchControls();
+                searchControls.setReturningAttributes(new String[]{"*", "+"});
+                searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+
+                List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", usersExtraInfo.getUserId()).encode(), searchControls, userAttributeMapper);
+
+                Update update = new Update();
+                update.set("mobile", people.get(0).getMobile());
+
+                mongoTemplate.updateFirst(new Query(Criteria.where("userId").is(usersExtraInfo.getUserId())), update, Variables.col_usersExtraInfo);
+            }
+            System.out.print("Adding mobile's user Mongo: " + i/it*100 + "% " + animationChars[i % 4] + "\r");
+        }
+         */
+
+        System.out.print("Adding mobile's user Mongo: Done!");
+
+        int c=0;
+            List<UsersExtraInfo> usersExtraInfos = mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+            for (UsersExtraInfo usersExtraInfo : usersExtraInfos) {
+                String userId = usersExtraInfo.getUserId();
+
+                usersExtraInfo.setUserId(null);
+
+                usersExtraInfo.set_id(userId);
+                try {
+                    mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
+                    mongoTemplate.remove(new Query(Criteria.where("userId").is(userId)), Variables.col_usersExtraInfo);
+
+                }catch (InvalidDataAccessApiUsageException in){
+                    continue;
+                }
+                c = (int) ((c++) *100/count);
+                System.out.print("Fixing user Mongo: " + c + "% " + animationChars[c % 4] + "\r");
+
+            }
+
+
+
+        OneTime oneTime1 = new OneTime(Variables.MOBILE_TO_MONGO, true, new Date().getTime());
+        mongoTemplate.save(oneTime1, Variables.col_OneTime);
+
+        System.out.println("Fixing user Mongo: Done!");
+
+    }
+}

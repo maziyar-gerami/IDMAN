@@ -61,7 +61,7 @@ public class PWDreset {
         int c = 0;
         char[] animationChars = new char[]{'|', '/', '-', '\\'};
         for (UserLoggedIn userLoggedIn : usersLoggedIn) {
-            UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userLoggedIn.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+            UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("_id").is(userLoggedIn.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
             try {
                 assert usersExtraInfo != null;
                 usersExtraInfo.setLoggedIn(userLoggedIn.isLoggedIn());
@@ -93,7 +93,7 @@ public class PWDreset {
         }
 
 
-        OneTime oneTime1 = new OneTime("PWDreset", true, new Date().getTime());
+        OneTime oneTime1 = new OneTime(Variables.PWD_RESET, true, new Date().getTime());
         mongoTemplate.save(oneTime1, Variables.col_OneTime);
 
         System.out.println("Processing: Done!");

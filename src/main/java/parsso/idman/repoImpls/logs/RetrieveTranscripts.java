@@ -68,7 +68,7 @@ public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 
         List<Service> allServices = serviceRepo.listServicesFull();
 
-        UsersExtraInfo user = mongoTemplate.findOne(new Query(Criteria.where("userId").is(userId)), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+        UsersExtraInfo user = mongoTemplate.findOne(new Query(Criteria.where("_id").is(userId)), UsersExtraInfo.class, Variables.col_usersExtraInfo);
 
         List<String> memberOf;
         try {

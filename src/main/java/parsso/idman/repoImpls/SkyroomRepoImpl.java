@@ -47,7 +47,7 @@ public class SkyroomRepoImpl implements SkyroomRepo {
 
             skyRoom = new SkyRoom(skyroomEnable, user.getUsersExtraInfo().getRole()
                     , CreateLoginUrl(roomId, String.valueOf(userId), RealName), GetRoomGuestUrl(roomId));
-            uniformLogger.info("System", new ReportMessage("Skyroom", "", "", "created", Variables.RESULT_SUCCESS, "for user \"" + user.getUserId() + "\""));
+            uniformLogger.info("System", new ReportMessage("Skyroom", "", "", "created", Variables.RESULT_SUCCESS, "for user \"" + user.get_id() + "\""));
             return skyRoom;
         }
         int roomId = CreateRoom(Classname);

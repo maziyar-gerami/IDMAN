@@ -8,7 +8,9 @@ public interface AuthenticatorRepo {
 
     HttpStatus deleteByDeviceName(String name);
 
-    HttpStatus deleteByUsername(String usename);
+    HttpStatus deleteByUsername(String username);
+
+    Boolean retrieveUsersDevice(String username);
 
     HttpStatus deleteByUsernameAndDeviceName(String username, String deviceName);
 }

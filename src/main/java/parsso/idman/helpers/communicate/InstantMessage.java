@@ -137,7 +137,7 @@ public class InstantMessage {
         if (!(answer.equalsIgnoreCase(captcha.getPhrase())))
             mongoTemplate.remove(query, Variables.col_captchas);
 
-        if (user == null || user.getUserId() == null)
+        if (user == null || user.get_id() == null)
             return -3;
 
         if (tokenClass.insertMobileToken(user)) {
@@ -177,7 +177,7 @@ public class InstantMessage {
             return -1;
         }
 
-        if (user == null || user.getUserId() == null)
+        if (user == null || user.get_id() == null)
             return -3;
 
         if (tokenClass.insertMobileToken(user)) {
@@ -306,7 +306,7 @@ public class InstantMessage {
         JSONObject jsonObject;
         for (User user : people) {
             jsonObject = new JSONObject();
-            jsonObject.put("userId", user.getUserId());
+            jsonObject.put("userId", user.get_id());
             jsonArray.add(jsonObject);
         }
         return jsonArray;
@@ -329,13 +329,13 @@ public class InstantMessage {
 
         User user = userRepo.retrieveUsers(uId);
 
-        if (user != null && user.getUserId() != null && tokenClass.insertMobileToken(user)) {
+        if (user != null && user.get_id() != null && tokenClass.insertMobileToken(user)) {
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
             for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
 
             for (User p : people)
-                if (p.getUserId().equals(user.getUserId()))
+                if (p.get_id().equals(user.get_id()))
                     if (tokenClass.insertMobileToken(user))
                         return keveNegar_insertTokenAndSend(mobile, query, user);
         }
@@ -363,7 +363,7 @@ public class InstantMessage {
         if (user == null)
             return 0;
 
-        if (checkMobile(mobile) != null && userRepo.retrieveUsers(uId).getUserId() != null && tokenClass.insertMobileToken(user)) {
+        if (checkMobile(mobile) != null && userRepo.retrieveUsers(uId).get_id() != null && tokenClass.insertMobileToken(user)) {
 
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
@@ -371,7 +371,7 @@ public class InstantMessage {
             for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
 
             for (User p : people) {
-                if (p.getUserId().equals(user.getUserId())) {
+                if (p.get_id().equals(user.get_id())) {
 
                     if (tokenClass.insertMobileToken(user)) {
 

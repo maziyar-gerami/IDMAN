@@ -53,7 +53,7 @@ public class BuildAttributes {
 
         Attributes attrs = new BasicAttributes();
         attrs.put(ocattr);
-        String uid = new String(p.getUserId().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+        String uid = new String(p.get_id().toString().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
         attrs.put("uid", uid);
         String givenName = new String(p.getFirstName().trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
         attrs.put("givenName", givenName.equals("") ? " " : givenName.trim());
@@ -247,7 +247,7 @@ public class BuildAttributes {
             if (p.getExpiredTime() != null && old.getExpiredTime() != null) {
 
                 modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
-                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.getUserId(), BASE_DN), modificationItems);
+                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.get_id().toString(), BASE_DN), modificationItems);
 
             }
 

@@ -99,7 +99,7 @@ public class GroupsController {
         JSONObject jsonObject = new JSONObject();
         List<UsersExtraInfo> users = userRepo.retrieveGroupsUsers(gid);
         for (UsersExtraInfo usersExtraInfo : users) {
-            temp.add(usersExtraInfo.getUserId());
+            temp.add(usersExtraInfo.get_id().toString());
         }
         jsonObject.put("names", temp);
         return expirePassword(request.getUserPrincipal().getName(), jsonObject);

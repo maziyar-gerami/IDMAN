@@ -43,7 +43,7 @@ public class MobileController {
     byte[] GetQr(HttpServletRequest request) throws IOException, WriterException {
         Principal principal = request.getUserPrincipal();
         User user = userRepo.retrieveUsers(principal.getName());
-        String temp = url + "/api/mobile/sendsms" + "," + user.getUserId() + "," + user.getUsersExtraInfo().getQrToken();
+        String temp = url + "/api/mobile/sendsms" + "," + user.get_id() + "," + user.getUsersExtraInfo().getQrToken();
 
         return servicesRepo.getQRCodeImage(temp, 500, 500);
     }

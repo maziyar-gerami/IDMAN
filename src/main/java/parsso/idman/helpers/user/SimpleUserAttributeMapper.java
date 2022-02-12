@@ -20,7 +20,7 @@ public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInf
         if (attributes == null || attributes.get("uid") == null)
             return null;
 
-        user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
+        user.set_id(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
         user.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
         //user.setPasswordChangedTime(null != attributes.get("pwdChangedTime") ? Long.valueOf(attributes.get("pwdChangedTime").get().toString().substring(0, 14)) : Long.valueOf(attributes.get("createtimestamp").get().toString().substring(0, 14)));
 

@@ -1,6 +1,7 @@
 package parsso.idman.models.users;
 
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -16,7 +17,8 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class UsersExtraInfo {
-    private ObjectId _id;
+    private Object _id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String userId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String mobileToken;
@@ -72,7 +74,7 @@ public class UsersExtraInfo {
 
     public UsersExtraInfo(User user) {
         this._id = user.get_id();
-        this.userId = user.getUserId().trim();
+        this.userId = user.get_id().toString().trim();
         this.displayName = user.getDisplayName().trim();
         this.memberOf = user.getMemberOf();
         this.passwordChangedTime = user.getPasswordChangedTime();
@@ -93,7 +95,7 @@ public class UsersExtraInfo {
 
     public UsersExtraInfo(User user, String photoName, boolean unDeletable) {
         this._id = user.get_id();
-        this.userId = user.getUserId().trim();
+        this.userId = user.get_id().toString().trim();
         this.displayName = user.getDisplayName().trim();
         this.memberOf = user.getMemberOf();
         this.passwordChangedTime = user.getPasswordChangedTime();

@@ -93,6 +93,18 @@ public class Variables {
     public static final String PASSWORD_CHANGE_LIMIT = "password.change.limit";
     public static final String PASSWORD_CHANGE_LIMIT_NUMBER = "password.change.limit.number";
     public static final String TOKEN_VALID_EMAIL = "token.valid.email";
+    public static final String DISPLAY_NAME_CORRECTION = "DisplayNameCorrection";
+    public static final String DUPLICATE_USER = "DuplicateUsers";
+    public static final String SA_TO_SU = "SAtoSU";
+    public static final String PWD_RESET = "PWDreset";
+    public static final String MOBILE_TO_MONGO = "MongoMobile";
+    public static final String USERID_TO_ID = "UserIDtoID";
+    public static final String TRANSFER_SETTINGS = "TransferSettings";
+    public static final String ROLE_USER = "USER";
+    public static final String ROLE_PRESENTER = "PRESENTER";
+    public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_SUPERUSER = "SUPERUSER";
+    public static final String MODEL_AUTHENTICATOR = "Authenticator";
 
     static final String email_body = "شما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید." +
             "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +
@@ -112,17 +124,17 @@ public class Variables {
 
                 "<p style=\"text-align:right;\" dir=\"rtl\"><b>" + user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')) + " عزیز " + "</b></p>" +
                         "<p style=\"text-align:right;\" dir=\"rtl\">" + email_body + "</p>" +
-                        "<p style=\"text-align:right;\" dir=\"rtl\">" + email_stringUid + user.getUserId() + "</p>" +
+                        "<p style=\"text-align:right;\" dir=\"rtl\">" + email_stringUid + user.get_id() + "</p>" +
                         "<p style=\"text-align:right;\" dir=\"rtl\">" + email_stringLink + "<a href=" + url + ">" + url + "</a></p>" +
                         "<p style=\"text-align:right;\" dir=\"rtl\">" + email_end + "</p>" +
                         "<img style=\"vertical-align:middle;\" src=\"" + logo + "\"" + "alt= \"Parsso\">";
     }
 
     public static final String PARSSO_IDMAN =
-     "___ ____  __  __    _    _   _ \n"
+     " ___ ____  __  __    _    _   _ \n"
     +"|_ _|  _ \\|  \\/  |  / \\  | \\ | |\n"
-     +"| || | | | |\\/| | / _ \\ |  \\| |\n"
-     +"| || |_| | |  | |/ ___ \\| |\\  |\n"
+            +" | || | | | |\\/| | / _ \\ |  \\| |\n"
+     +" | || |_| | |  | |/ ___ \\| |\\  |\n"
     +"|___|____/|_|  |_/_/   \\_|_| \\_|";
                                     
 

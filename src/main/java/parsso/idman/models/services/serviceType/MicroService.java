@@ -44,7 +44,6 @@ public class MicroService implements Comparable {
         this.serviceId = serviceId;
         this.IPaddresses = machines;
         this.url = serviceId;
-
     }
 
 
@@ -52,6 +51,12 @@ public class MicroService implements Comparable {
         this._id = id;
         this.url = url;
         this.position = 0;
+    }
+
+    public MicroService(Long id, String url,int position) {
+        this._id = id;
+        this.url = url;
+        this.position = position;
     }
 
     public MicroService() {

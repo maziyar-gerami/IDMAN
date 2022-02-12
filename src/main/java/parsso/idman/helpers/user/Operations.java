@@ -58,14 +58,14 @@ public class Operations {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.STATUS_CHANGE,
+                uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.get_id(), "", Variables.STATUS_CHANGE,
                         Variables.RESULT_SUCCESS, Variables.STATUS_ENABLE, ""));
 
                 return HttpStatus.OK;
 
             } catch (Exception e) {
                 e.printStackTrace();
-                uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.STATUS_CHANGE,
+                uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.get_id(), "", Variables.STATUS_CHANGE,
                         Variables.RESULT_FAILED, Variables.STATUS_ENABLE, "Writing to ldap"));
                 return HttpStatus.BAD_REQUEST;
             }
@@ -89,12 +89,12 @@ public class Operations {
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(), "", Variables.RESULT_SUCCESS, Variables.ACTION_DISBLAE, ""));
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.get_id(), "", Variables.RESULT_SUCCESS, Variables.ACTION_DISBLAE, ""));
                 return HttpStatus.OK;
 
             } catch (Exception e) {
                 e.printStackTrace();
-                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(), Variables.ATTR_STATUS,
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.get_id(), Variables.ATTR_STATUS,
                         Variables.ACTION_UPDATE, Variables.RESULT_FAILED, Variables.ACTION_DISBLAE, "Writing to DB"));
                 return HttpStatus.BAD_REQUEST;
             }
@@ -124,17 +124,17 @@ public class Operations {
                     ldapTemplate.modifyAttributes(dn, modificationItems);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(), Variables.ATTR_STATUS,
+                    uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.get_id(), Variables.ATTR_STATUS,
                             Variables.ACTION_UPDATE, Variables.RESULT_FAILED, Variables.ACTION_UNLOCK, "Problem with LDAP modifyAttribute"));
                 }
 
-                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(), Variables.ATTR_STATUS,
+                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.get_id(), Variables.ATTR_STATUS,
                         Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, Variables.ACTION_UNLOCK, ""));
                 return HttpStatus.OK;
 
             } catch (Exception e) {
                 e.printStackTrace();
-                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(), Variables.ATTR_STATUS,
+                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.get_id(), Variables.ATTR_STATUS,
                         Variables.ACTION_UPDATE, Variables.RESULT_FAILED, Variables.ACTION_UNLOCK, "Problem with LDAP modifyAttribute"));
                 return HttpStatus.BAD_REQUEST;
             }
@@ -165,14 +165,14 @@ public class Operations {
 
                     String key = (String) o;
                     String value = (String) jsonObject.get(key);
-                    if (value.equalsIgnoreCase(user.getUserId())) {
+                    if (value.equalsIgnoreCase(user.get_id().toString())) {
                         jsonObject.remove(key, value);
                         existed = true;
                         break;
                     }
                 }
 
-                jsonObject.put(uuid, user.getUserId());
+                jsonObject.put(uuid, user.get_id());
 
                 ObjectMapper mapper = new ObjectMapper();
 
@@ -182,29 +182,29 @@ public class Operations {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    uniformLogger.warn(user.getUserId(), new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                    uniformLogger.warn(user.get_id().toString(), new ReportMessage(Variables.MODEL_USER, user.get_id(),
                             Variables.ATTR_DEVICEID, Variables.ACTION_INSERT, Variables.RESULT_FAILED, "Saving File problem"));
 
                 }
 
                 if (!existed)
-                    uniformLogger.info(user.getUserId(), new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                    uniformLogger.info(user.get_id().toString(), new ReportMessage(Variables.MODEL_USER, user.get_id(),
                             Variables.ATTR_DEVICEID, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
                 return uuid;
 
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                uniformLogger.warn(user.getUserId(), new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                uniformLogger.warn(user.get_id().toString(), new ReportMessage(Variables.MODEL_USER, user.get_id(),
                         Variables.ATTR_DEVICEID, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "File not found"));
             } catch (IOException e) {
                 e.printStackTrace();
-                uniformLogger.warn(user.getUserId(), new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                uniformLogger.warn(user.get_id().toString(), new ReportMessage(Variables.MODEL_USER, user.get_id(),
                         Variables.ATTR_DEVICEID, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Saving problem"));
 
             } catch (org.json.simple.parser.ParseException e) {
                 e.printStackTrace();
-                uniformLogger.warn(user.getUserId(), new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                uniformLogger.warn(user.get_id().toString(), new ReportMessage(Variables.MODEL_USER, user.get_id(),
                         Variables.ATTR_DEVICEID, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Json ّfile parse problem"));
 
             }

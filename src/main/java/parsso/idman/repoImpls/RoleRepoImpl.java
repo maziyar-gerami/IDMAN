@@ -45,7 +45,7 @@ public class RoleRepoImpl implements RolesRepo {
         List<String> userIDs = (List<String>) users.get("names");
         for (String userId : userIDs) {
             try {
-                Query query = new Query(Criteria.where("userId").is(userId));
+                Query query = new Query(Criteria.where("_id").is(userId));
                 UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
                 String oldRole = Objects.requireNonNull(usersExtraInfo).getRole();
                 usersExtraInfo.setRole(role);

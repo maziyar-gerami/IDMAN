@@ -51,7 +51,7 @@ public class Token {
 
             if (mainPartToken.length() > 30) {
 
-                String timeStamp = user.getUsersExtraInfo().getResetPassToken().substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
+                String timeStamp = user.getUsersExtraInfo().getResetPassToken().substring(mainDbToken.indexOf(user.get_id().toString()) + user.get_id().toString().length());
 
                 if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Long.parseLong(new Settings().retrieve("token.valid.email").getValue().toString())))
                     return HttpStatus.OK;
@@ -83,9 +83,9 @@ public class Token {
 
     public void insertEmailToken(User user) {
 
-        Query query = new Query(Criteria.where("userId").is(user.getUserId()));
+        Query query = new Query(Criteria.where("_id").is(user.get_id()));
 
-        String token = passwordResetToken(user.getUserId());
+        String token = passwordResetToken(user.get_id().toString());
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
         Objects.requireNonNull(usersExtraInfo).setResetPassToken(token);
 
@@ -114,7 +114,7 @@ public class Token {
 
     public boolean insertMobileToken(User user) {
 
-        Query query = new Query(Criteria.where("userId").is(user.getUserId()));
+        Query query = new Query(Criteria.where("_id").is(user.get_id()));
 
         UsersExtraInfo usersExtraInfo;
 
@@ -129,7 +129,7 @@ public class Token {
         int token = createRandomNum();
 
         Objects.requireNonNull(usersExtraInfo).setResetPassToken(String.valueOf(token) + new Date().getTime());
-        usersExtraInfo.setUserId(user.getUserId());
+        usersExtraInfo.setUserId(user.get_id().toString());
 
         if (user.getUsersExtraInfo() != null)
             user.getUsersExtraInfo().setResetPassToken(String.valueOf(token));

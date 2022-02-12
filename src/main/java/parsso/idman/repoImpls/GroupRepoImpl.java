@@ -89,12 +89,12 @@ public class GroupRepoImpl implements GroupRepo {
                 if (user != null && user.getMemberOf() != null)
                     for (String groupN : user.getMemberOf()) {
                         if (groupN.equalsIgnoreCase(group.getId())) {
-                            context = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(), BASE_DN));
+                            context = ldapTemplate.lookupContext(buildDnUser.buildDn(user.get_id().toString(), BASE_DN));
                             context.removeAttributeValue("ou", group.getId());
                             try {
                                 ldapTemplate.modifyAttributes(context);
                                 UsersExtraInfo simpleUser = mongoTemplate.findOne
-                                        (new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+                                        (new Query(Criteria.where("_id").is(user.get_id())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
                                 try {
                                     Objects.requireNonNull(simpleUser).getMemberOf().remove(group.getId());
                                 } catch (Exception e) {
@@ -104,13 +104,13 @@ public class GroupRepoImpl implements GroupRepo {
                                 mongoTemplate.save
                                         (Objects.requireNonNull(simpleUser), Variables.col_usersExtraInfo);
 
-                                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.get_id(),
                                         Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS, groupN + "Removing 'OU'=+" + groupN));
 
 
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.getUserId(),
+                                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, user.get_id(),
                                         Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_FAILED, groupN, "Changing LDAP for removing 'OU'=" + groupN));
 
                             }
@@ -238,12 +238,12 @@ public class GroupRepoImpl implements GroupRepo {
                 for (UsersExtraInfo user : userRepo.retrieveGroupsUsers(id)) {
                     for (String group : user.getMemberOf()) {
                         if (group.equalsIgnoreCase(id)) {
-                            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.getUserId(), BASE_DN));
+                            contextUser = ldapTemplate.lookupContext(buildDnUser.buildDn(user.get_id().toString(), BASE_DN));
                             contextUser.removeAttributeValue("ou", id);
                             contextUser.addAttributeValue("ou", ou.getId());
                             ldapTemplate.modifyAttributes(contextUser);
                             UsersExtraInfo usersExtraInfo = mongoTemplate.findOne
-                                    (new Query(Criteria.where("userId").is(user.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+                                    (new Query(Criteria.where("_id").is(user.get_id())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
                             if (usersExtraInfo != null) usersExtraInfo.getMemberOf().remove(id);
                             Objects.requireNonNull(usersExtraInfo).getMemberOf().add(ou.getId());
                             List<String> temp = usersExtraInfo.getMemberOf();

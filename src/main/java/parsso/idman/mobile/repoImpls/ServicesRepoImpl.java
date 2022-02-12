@@ -79,7 +79,7 @@ public class ServicesRepoImpl implements ServicesRepo {
 
         mongoTemplate.save(user.getUsersExtraInfo(), Token.collection);
 
-        return "mobile Token for " + user.getUserId() + " is created";
+        return "mobile Token for " + user.get_id() + " is created";
 
     }
 
@@ -104,7 +104,7 @@ public class ServicesRepoImpl implements ServicesRepo {
 
             if (mainPartToken.length() > 30) {
 
-                String timeStamp = mainDbToken.substring(mainDbToken.indexOf(user.getUserId()) + user.getUserId().length());
+                String timeStamp = mainDbToken.substring(mainDbToken.indexOf(user.get_id().toString()) + user.get_id().toString().length());
 
                 if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(new Settings(mongoTemplate)
                         .retrieve("token.valid.email").getValue().toString())))

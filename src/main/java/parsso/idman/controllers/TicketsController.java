@@ -46,7 +46,7 @@ public class TicketsController {
         Ticket ticket = ticketRepo.retrieveTicket(ticketID);
         User user = userRepo.retrieveUsers(request.getUserPrincipal().getName().toLowerCase());
         if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))
-            if (user.getUserId().equalsIgnoreCase(ticket.getTo()) || user.getUserId().equalsIgnoreCase(ticket.getFrom()))
+            if (user.get_id().toString().equalsIgnoreCase(ticket.getTo()) || user.get_id().toString().equalsIgnoreCase(ticket.getFrom()))
                 return new ResponseEntity<>(ticket, HttpStatus.OK);
             else
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);

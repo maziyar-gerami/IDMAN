@@ -91,7 +91,7 @@ public class EmailServiceImpl implements EmailService {
 
             tokenClass.insertEmailToken(user);
 
-            String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
+            String fullUrl = userRepo.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
             Thread thread = new Thread(() -> {
                 try {
@@ -156,7 +156,7 @@ public class EmailServiceImpl implements EmailService {
 
             tokenClass.insertEmailToken(user);
 
-            String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
+            String fullUrl = userRepo.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
             try {
                 sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
@@ -201,7 +201,7 @@ public class EmailServiceImpl implements EmailService {
             return -1;
         }
 
-        if (checkMail(email) != null && userRepo.retrieveUsers(uid) != null && userRepo.retrieveUsers(uid).getUserId() != null) {
+        if (checkMail(email) != null && userRepo.retrieveUsers(uid) != null && userRepo.retrieveUsers(uid).get_id() != null) {
             List<JSONObject> ids = checkMail(email);
             List<User> people = new LinkedList<>();
             User user = userRepo.retrieveUsers(uid);
@@ -213,7 +213,7 @@ public class EmailServiceImpl implements EmailService {
 
                     tokenClass.insertEmailToken(user);
 
-                    String fullUrl = userRepo.createUrl(user.getUserId(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
+                    String fullUrl = userRepo.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
                     try {
 
@@ -244,7 +244,7 @@ public class EmailServiceImpl implements EmailService {
         JSONObject jsonObject;
         for (User user : people) {
             jsonObject = new JSONObject();
-            jsonObject.put("userId", user.getUserId());
+            jsonObject.put("userId", user.get_id());
             jsonArray.add(jsonObject);
         }
         return jsonArray;

@@ -80,7 +80,7 @@ public class UsersExcelView extends AbstractXlsView {
         for (User user : users) {
 
             HSSFRow aRow = sheet.createRow(rowCount++);
-            aRow.createCell(0).setCellValue(user.getUserId());
+            aRow.createCell(0).setCellValue(user.get_id().toString());
             try {
                 aRow.createCell(1).setCellValue(user.getFirstName());
             } catch (Exception e) {

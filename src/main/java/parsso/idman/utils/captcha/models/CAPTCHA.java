@@ -31,7 +31,7 @@ public class CAPTCHA {
         if (s1<0)
             return s1;
 
-        if (user == null || user.getUserId() == null)
+        if (user == null || user.get_id() == null)
             return -3;
 
         return 0;

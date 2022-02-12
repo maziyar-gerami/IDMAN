@@ -32,7 +32,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
     public User mapFromAttributes(Attributes attributes) {
         User user = new User();
 
-        user.setUserId(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
+        user.set_id(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
         user.setFirstName(null != attributes.get("givenName") ? attributes.get("givenName").get().toString() : "");
         user.setLastName(null != attributes.get("sn") ? attributes.get("sn").get().toString() : null);
         user.setDisplayName((null != attributes.get("displayName") && !attributes.get("displayName").toString().equals("")) ? attributes.get("displayName").get().toString() : null);
@@ -54,7 +54,7 @@ public class UserAttributeMapper implements AttributesMapper<User> {
             user.getUsersExtraInfo().setResetPassToken(null != attributes.get("resetPassToken") ? attributes.get("resetPassToken").get().toString() : null);
         user.setMemberOf(null != attributes.get("ou") ? ls : null);
 
-        Query query = new Query(Criteria.where("userId").is(user.getUserId()));
+        Query query = new Query(Criteria.where("_id").is(user.get_id()));
 
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
 

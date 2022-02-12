@@ -2,9 +2,12 @@ package parsso.idman.helpers.oneTimeTasks;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.other.OneTime;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 
+import java.util.Date;
 import java.util.List;
 
 public class DisplayName {
@@ -30,12 +33,15 @@ public class DisplayName {
                     user.getUsersExtraInfo().setDisplayName(r);
                 }catch (NullPointerException ignored){}
 
-                userRepo.update("System",user.getUserId(),user);
+                userRepo.update("System",user.get_id().toString(),user);
             }
             int i = (++c * 100 / users.size());
 
             System.out.print("Processing displayName: " + i + "% " + animationChars[i % 4] + "\r");
         }
+
+        OneTime oneTime1 = new OneTime(Variables.DISPLAY_NAME_CORRECTION, true, new Date().getTime());
+        mongoTemplate.save(oneTime1, Variables.col_OneTime);
 
         System.out.println("Processing displayName: Done!");
 

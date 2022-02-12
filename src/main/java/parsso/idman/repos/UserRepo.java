@@ -75,8 +75,6 @@ public interface UserRepo {
 
     Boolean SAtoSU();
 
-    Boolean retrieveUsersDevice(String username);
-
     HttpStatus changePasswordPublic(String userId, String currentPassword, String newPassword);
 
     int authenticate(String userId, String password);

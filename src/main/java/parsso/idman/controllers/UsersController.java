@@ -440,10 +440,6 @@ public class UsersController {
         return new ResponseEntity<>(user, httpStatus);
     }
 
-    @GetMapping("/api/public/googleAuth/registered/{uid}")
-    public ResponseEntity<Boolean> getName(@PathVariable("uid") String uid) {
-        return new ResponseEntity<>(userRepo.retrieveUsersDevice(uid), HttpStatus.OK);
-    }
 
     @GetMapping("/api/public/counter")
     public ResponseEntity<Response> getCounter(@RequestParam(name = "lang", defaultValue = "fa") String lang) {

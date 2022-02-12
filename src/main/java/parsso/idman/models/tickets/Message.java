@@ -39,23 +39,23 @@ public class Message {
     public Message(User user, String body) {
         this.to = "SUPPORTER";
         this.toDisplayName = "پشتیبان";
-        this.from = user.getUserId();
+        this.from = user.get_id().toString();
         this.fromDisplayName = user.getDisplayName();
         this.body = body;
         this.creationLong = new Date().getTime();
     }
 
     public Message(User from, User to, String body) {
-        this.from = from.getUserId();
+        this.from = from.get_id().toString();
         this.fromDisplayName = from.getDisplayName();
-        this.to = to.getUserId();
+        this.to = to.get_id().toString();
         this.toDisplayName = to.getDisplayName();
         this.body = body;
         this.creationLong = new Date().getTime();
     }
 
     public Message(User by, String action, boolean state) {
-        this.from = by.getUserId();
+        this.from = by.get_id().toString();
         this.to = "SYSTEM";
         this.fromDisplayName = by.getDisplayName();
         long now = new Date().getTime();

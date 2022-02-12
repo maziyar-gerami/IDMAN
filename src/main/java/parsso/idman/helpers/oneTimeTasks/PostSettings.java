@@ -54,8 +54,6 @@ public class PostSettings {
     private String metadata_file_path;
     @Value("${profile.photo.path}")
     private String profile_photo_path;
-    @Value("${qr.devices.path}")
-    private String qr_devices_path;
     @Value("${password.change.notification}")
     private String password_change_notification;
     @Value("${services.folder.path}")
@@ -148,11 +146,6 @@ public class PostSettings {
                     mongoSettings.add(setting);
                     break;
 
-                case ("qr.devices.path"):
-                    setting.setValue(qr_devices_path);
-                    mongoSettings.add(setting);
-                    break;
-
                 case ("password.change.notification"):
                     if(password_change_notification.equals("on"))
                         password_change_notification = "true";
@@ -240,6 +233,40 @@ public class PostSettings {
             jsonObject.put("data",mongoSettings);
             mongoTemplate.save(jsonObject,Variables.col_propertiesBackup);
         }
+
+        Setting s1 = new Setting();
+        Setting s2 = new Setting();
+
+        s1.set_id("password.change.limit");
+        s1.setValue("on");
+        s1.setDescriptionEN("Password change limit enable");
+        s1.setDescriptionFA("قابلیت حداکثر تعداد تغییر گذرواژه در یک روز");
+        s1.setGroupEN("Password");
+        s1.setGroupFA("گذر واژه");
+        s1.setHelpEN("Password change limit in each day status. Enable it if you want define this limitation");
+        s1.setHelpFA("محدود سازی تغییر گذرواژه در یک روز. در صورتی که چنین محدودیتی نیاز است، این سوییچ را فعال و تعداد را مشخص فرمایید.\",");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", new JSONObject().put("class","switch"));
+        s1.setType(jsonObject);
+
+        mongoTemplate.insert(s1, Variables.col_properties);
+
+
+        s2.set_id("password.change.limit.number");
+        s2.setValue("3");
+        s2.setDescriptionEN("Password change limit in each day");
+        s2.setDescriptionFA("حدکثر تعداد تغییر گذرواژه در یک روز");
+        s2.setGroupEN("Password");
+        s2.setGroupFA("گذر واژه");
+        s2.setHelpEN("Password change limit in each day");
+        s2.setHelpFA("حدکثر تعداد تغییر گذرواژه در یک روز");
+        JSONObject jsonObject1 = new JSONObject();
+        jsonObject.put("type", new JSONObject().put("class","integer"));
+        s2.setType(jsonObject);
+
+        mongoTemplate.insert(s2, Variables.col_properties);
+
+
 
     }
 }

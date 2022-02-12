@@ -33,7 +33,7 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
         CasAssertionAuthenticationToken casAssertionAuthenticationToken = (CasAssertionAuthenticationToken) token;
         AttributePrincipal principal = casAssertionAuthenticationToken.getAssertion().getPrincipal();
         Collection<SimpleGrantedAuthority> collection = new ArrayList<>();
-        Query query = new Query(Criteria.where("userId").is(principal.getName().toLowerCase()));
+        Query query = new Query(Criteria.where("_id").is(principal.getName().toLowerCase()));
         String collection1 = Variables.col_usersExtraInfo;
 
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection1);
@@ -46,7 +46,7 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
         if (usersExtraInfo.getRole() == null)
             collection.add(new SimpleGrantedAuthority("ROLE_" + "USER"));
 
-        else if (usersExtraInfo.getRole().equals("SUPERUSER") || usersExtraInfo.getUserId().equalsIgnoreCase("su"))
+        else if (usersExtraInfo.getRole().equals("SUPERUSER") || usersExtraInfo.get_id().toString().equalsIgnoreCase("su"))
             collection.add(new SimpleGrantedAuthority("ROLE_" + "SUPERUSER"));
 
         else if (usersExtraInfo.getRole() != null)

@@ -1,6 +1,7 @@
 package parsso.idman.models.users;
 
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,7 +24,8 @@ import java.util.List;
 @Setter
 public class User implements UserDetails, Comparable {
     private static final String PREFIX = "ROLE_";
-    ObjectId _id;
+    @JsonAlias("userId")
+    Object _id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     SkyRoom skyRoom;
     Boolean skyroomAccess;
@@ -109,7 +111,7 @@ public class User implements UserDetails, Comparable {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> list = new ArrayList<>();
 
-        if (this.getUserId().equalsIgnoreCase("su"))
+        if (this.get_id().toString().equalsIgnoreCase("su"))
             list.add(new SimpleGrantedAuthority(PREFIX + "SUPERUSER"));
 
         else
@@ -160,7 +162,7 @@ public class User implements UserDetails, Comparable {
 
         final User other = (User) obj;
 
-        return this.getUserId().equals(other.getUserId());
+        return this.get_id().equals(other.get_id());
     }
 
     @Override

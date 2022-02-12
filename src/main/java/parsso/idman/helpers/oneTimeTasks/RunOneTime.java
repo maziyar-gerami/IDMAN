@@ -2,9 +2,13 @@ package parsso.idman.helpers.oneTimeTasks;
 
 import lombok.val;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.user.UserAttributeMapper;
+import parsso.idman.models.other.OneTime;
 import parsso.idman.repos.UserRepo;
 
 public class RunOneTime {
@@ -13,17 +17,19 @@ public class RunOneTime {
     final MongoTemplate mongoTemplate;
     final UserRepo userRepo;
     final String BASE_DN;
+    final UserAttributeMapper userAttributeMapper;
 
-    public RunOneTime(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,UserRepo userRepo, UniformLogger uniformLogger, String BASE_DN) {
+    public RunOneTime(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,UserRepo userRepo, UniformLogger uniformLogger, String BASE_DN, UserAttributeMapper userAttributeMapper) {
         this.ldapTemplate = ldapTemplate;
         this.mongoTemplate = mongoTemplate;
         this.uniformLogger = uniformLogger;
         this.userRepo = userRepo;
         this.BASE_DN = BASE_DN;
+        this.userAttributeMapper = userAttributeMapper;
     }
 
 
-    public void postConstruct() {
+    public void postConstruct() throws InterruptedException {
 
         val SUrunnable = new Runnable() {
 
@@ -54,7 +60,7 @@ public class RunOneTime {
 
             @Override
             public void run() {
-                new DisplayName(mongoTemplate,userRepo).run();
+                new DisplayName(mongoTemplate, userRepo).run();
             }
         };
 
@@ -62,15 +68,7 @@ public class RunOneTime {
 
             @Override
             public void run() {
-                new MongoMobile(mongoTemplate,userRepo).run();
-            }
-        };
-
-        val userIdFix = new Runnable() {
-
-            @Override
-            public void run() {
-                //new UserID(mongoTemplate).run();
+                new MongoUserDocumentFix(mongoTemplate, userRepo,ldapTemplate,BASE_DN,userAttributeMapper).run();
             }
         };
 
@@ -78,18 +76,30 @@ public class RunOneTime {
         Thread sathread = new Thread(SUrunnable);
         Thread logeInUsers = new Thread(loggeInUses);
         Thread duplicated = new Thread(duplicatedUsers);
-        Thread nameFix = new Thread(displayNameFix);
-        Thread userId = new Thread(userIdFix);
-        Thread  addMobile = new Thread(addMobileToMongo);
+        Thread addMobile = new Thread(addMobileToMongo);
+        Thread displayName = new Thread(displayNameFix);
         logeInUsers.start();
-        sathread.start();
-        duplicated.start();
-        nameFix.start();
-        userId.start();
-        addMobile.start();
+
+        OneTime  b1 = mongoTemplate.findOne(new Query(Criteria.where("_id").is(Variables.SA_TO_SU)), OneTime.class, Variables.col_OneTime);
+        if (b1==null || !b1.isRun()){
+            sathread.start();
+        }
+
+        OneTime b2 = mongoTemplate.findOne(new Query(Criteria.where("_id").is(Variables.DUPLICATE_USER)),OneTime.class,Variables.col_OneTime);
+        if(b2==null || !b2.isRun()) {
+            duplicated.start();
+        }
+
+        OneTime b4 = mongoTemplate.findOne(new Query(Criteria.where("_id").is(Variables.MOBILE_TO_MONGO)),OneTime.class,Variables.col_OneTime);
+        if(b4==null || !b4.isRun()) {
+            addMobile.start();
+        }
+
+        OneTime b5 = mongoTemplate.findOne(new Query(Criteria.where("_id").is(Variables.DISPLAY_NAME_CORRECTION)),OneTime.class,Variables.col_OneTime);
+        if(b5==null || !b5.isRun())
+            displayName.start();
 
         System.out.println(Variables.PARSSO_IDMAN);
-
 
     }
 
