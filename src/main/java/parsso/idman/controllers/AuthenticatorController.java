@@ -9,6 +9,8 @@ import parsso.idman.models.other.Devices;
 import parsso.idman.models.response.Response;
 import parsso.idman.repos.AuthenticatorRepo;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 @RestController
 public class AuthenticatorController {
@@ -31,21 +33,21 @@ public class AuthenticatorController {
     }
 
     @DeleteMapping("/api/googleAuth")
-    public ResponseEntity<Response> deleteBuUsername(@RequestParam(value = "username", defaultValue = "") String username,
-                                                       @RequestParam(value = "deviceName", defaultValue = "") String deviceName,
-                                                       @RequestParam(value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> deleteBuUsername(HttpServletRequest request, @RequestParam(value = "username", defaultValue = "") String username,
+                                                     @RequestParam(value = "deviceName", defaultValue = "") String deviceName,
+                                                     @RequestParam(value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         if (username.equals("") && deviceName.equals(""))
             return new ResponseEntity<>(new Response(lang, Variables.MODEL_AUTHENTICATOR,HttpStatus.FORBIDDEN.value()),HttpStatus.OK);
 
         else if (!username.equals("") && !deviceName.equals(""))
             return new ResponseEntity<>(new Response(lang,Variables.MODEL_AUTHENTICATOR,authenticatorRepo
-                    .deleteByUsernameAndDeviceName(username, deviceName).value()),HttpStatus.OK);
+                    .deleteByUsernameAndDeviceName(username, deviceName,request.getUserPrincipal().getName()).value()),HttpStatus.OK);
         else if (!username.equals(""))
             return new ResponseEntity<>(new Response(lang,Variables.MODEL_AUTHENTICATOR,authenticatorRepo
-                    .deleteByUsername(username).value()),HttpStatus.OK);
+                    .deleteByUsername(username,request.getUserPrincipal().getName()).value()),HttpStatus.OK);
         else
             return new ResponseEntity<>(new Response(lang,Variables.MODEL_AUTHENTICATOR,authenticatorRepo.
-                    deleteByDeviceName(deviceName).value()),HttpStatus.OK);
+                    deleteByDeviceName(deviceName,request.getUserPrincipal().getName()).value()),HttpStatus.OK);
 
     }
 

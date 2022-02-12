@@ -6,7 +6,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
+import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.Devices;
 import parsso.idman.models.other.OneTime;
 import parsso.idman.repos.AuthenticatorRepo;
@@ -19,10 +21,12 @@ import java.util.List;
 @Service
 public class AuthenticatorRepoImpl implements AuthenticatorRepo {
     final MongoTemplate mongoTemplate;
+    final UniformLogger uniformLogger;
 
     @Autowired
-    AuthenticatorRepoImpl(MongoTemplate mongoTemplate) {
+    AuthenticatorRepoImpl(MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
         this.mongoTemplate = mongoTemplate;
+        this.uniformLogger = uniformLogger;
     }
 
     @Override
@@ -53,21 +57,24 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
     }
 
     @Override
-    public HttpStatus deleteByDeviceName(String name) {
+    public HttpStatus deleteByDeviceName(String name,String doer) {
         Devices device = mongoTemplate.findOne(new Query(Criteria.where("name").is(name)), Devices.class, Variables.col_devices);
         if (device == null)
             return HttpStatus.FORBIDDEN;
 
         try {
             mongoTemplate.remove(new Query(Criteria.where("name").is(name)), Devices.class, Variables.col_devices);
+            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,name,Variables.ACTION_DELETE,Variables.RESULT_SUCCESS));
+
         } catch (Exception e) {
+            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,name,Variables.ACTION_DELETE,Variables.RESULT_FAILED));
             return HttpStatus.BAD_REQUEST;
         }
         return HttpStatus.NO_CONTENT;
     }
 
     @Override
-    public HttpStatus deleteByUsername(String username) {
+    public HttpStatus deleteByUsername(String username,String doer) {
 
         Devices device = mongoTemplate.findOne(new Query(Criteria.where("username").is(username)), Devices.class, Variables.col_devices);
         if (device == null)
@@ -75,14 +82,17 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
 
         try {
             mongoTemplate.findAndRemove(new Query(Criteria.where("username").is(username)), Devices.class, Variables.col_devices);
+            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,username,Variables.ACTION_DELETE,Variables.RESULT_SUCCESS));
+
         } catch (Exception e) {
+            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,username,Variables.ACTION_DELETE,Variables.RESULT_FAILED));
             return HttpStatus.BAD_REQUEST;
         }
         return HttpStatus.NO_CONTENT;
     }
 
     @Override
-    public HttpStatus deleteByUsernameAndDeviceName(String username, String deviceName) {
+    public HttpStatus deleteByUsernameAndDeviceName(String username, String deviceName,String doer) {
         Query query = new Query(Criteria.where("username").is(username).and("name").is(deviceName));
 
         Devices device = mongoTemplate.findOne(query, Devices.class, Variables.col_devices);
@@ -91,7 +101,10 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
 
         try {
             mongoTemplate.findAndRemove(query, Devices.class, Variables.col_devices);
+            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,username,Variables.ACTION_DELETE,Variables.RESULT_SUCCESS));
+
         } catch (Exception e) {
+            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,username,Variables.ACTION_DELETE,Variables.RESULT_FAILED));
             return HttpStatus.BAD_REQUEST;
         }
         return HttpStatus.NO_CONTENT;

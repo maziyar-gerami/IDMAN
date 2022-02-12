@@ -1,10 +1,14 @@
 package parsso.idman.helpers.oneTimeTasks;
 
+import com.google.gson.JsonObject;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import parsso.idman.helpers.Variables;
+import parsso.idman.models.other.OneTime;
 import parsso.idman.models.users.UsersExtraInfo;
 
+import java.util.Date;
 import java.util.List;
 
 public class UserID {
@@ -18,27 +22,38 @@ public class UserID {
         int limit = 1000;
         int pages = (int) Math.ceil(count / (float)limit);
 
-        int c;
+        int c,p;
 
         for(int i=0; i<limit; i++){
             if(i==pages)
                 limit = count%limit;
             c=i*limit;
-            List<UsersExtraInfo> usersExtraInfoList = mongoTemplate.find(new Query().skip(i*limit).limit(limit),UsersExtraInfo.class,Variables.col_usersExtraInfo);
+
+
+            List<UsersExtraInfo> usersExtraInfoList = mongoTemplate.find(new Query().skip(i*limit).limit(limit), UsersExtraInfo.class,Variables.col_usersExtraInfo);
             char[] animationChars = new char[]{'|', '/', '-', '\\'};
             for (UsersExtraInfo usersExtraInfo:usersExtraInfoList) {
-                UsersExtraInfo u2 = usersExtraInfo;
-                u2.setUserId(null);
 
-                //u2.set_id(usersExtraInfo.getUserId());
+                String userId = usersExtraInfo.get_id().toString();
 
-                //System.out.print("Processing userId: " + p + "% " + animationChars[p % 4] + "\r");
+                usersExtraInfo.setUserId(null);
+
+                usersExtraInfo.set_id(userId);
+                mongoTemplate.remove(new Query(Criteria.where("userId").is(userId)),Variables.col_usersExtraInfo);
+                mongoTemplate.save(usersExtraInfo,Variables.col_usersExtraInfo);
+
             }
 
-            //System.out.println("Processing userIDs: Done!");
-
+            p = (++c * 100 / count);
+            System.out.print("Processing userId: " + p + "% " + animationChars[p % 4] + "\r");
 
         }
+
+        OneTime oneTime1 = new OneTime(Variables.USERID_TO_ID, true, new Date().getTime());
+        mongoTemplate.save(oneTime1, Variables.col_OneTime);
+
+        System.out.println("Processing userIDs: Done!");
+
     }
 
 
