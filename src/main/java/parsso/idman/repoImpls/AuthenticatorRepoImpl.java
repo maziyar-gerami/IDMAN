@@ -10,13 +10,7 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.Devices;
-import parsso.idman.models.other.OneTime;
 import parsso.idman.repos.AuthenticatorRepo;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 
 @Service
 public class AuthenticatorRepoImpl implements AuthenticatorRepo {
@@ -33,6 +27,8 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
     public Devices.DeviceList retrieve(String username, String deviceName, int page, int count) {
         Query query = new Query();
         int skip = (page - 1) * count;
+        int pages;
+        long size;
 
         if (!username.equals(""))
             query.addCriteria(Criteria.where("username").regex(".*" + username + ".*", "i"));
@@ -40,41 +36,39 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
         if (!deviceName.equals(""))
             query.addCriteria(Criteria.where("name").regex(".*" + deviceName + ".*", "i"));
 
+        size = mongoTemplate.count(query, Variables.col_devices);
 
-        long size = mongoTemplate.count(query, Variables.col_devices);
-
-        if (page != 0 && count != 0) {
+        if (page != 0 && count != 0)
             query.skip(skip).limit(count);
-        }
-        List<Devices> devicesList = mongoTemplate.find(query, Devices.class, Variables.col_devices);
 
-        int pages;
         if (count != 0)
             pages = (int) Math.ceil(size / (float) count);
         else
             pages = 1;
-        return new Devices.DeviceList(devicesList, size, pages);
+        return new Devices.DeviceList(mongoTemplate.find(query, Devices.class, Variables.col_devices), size, pages);
     }
 
     @Override
-    public HttpStatus deleteByDeviceName(String name,String doer) {
+    public HttpStatus deleteByDeviceName(String name, String doer) {
         Devices device = mongoTemplate.findOne(new Query(Criteria.where("name").is(name)), Devices.class, Variables.col_devices);
         if (device == null)
             return HttpStatus.FORBIDDEN;
 
         try {
             mongoTemplate.remove(new Query(Criteria.where("name").is(name)), Devices.class, Variables.col_devices);
-            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,name,Variables.ACTION_DELETE,Variables.RESULT_SUCCESS));
+            uniformLogger.info(doer,
+                    new ReportMessage(Variables.MODEL_AUTHENTICATOR, name, Variables.ACTION_DELETE, Variables.RESULT_SUCCESS));
 
         } catch (Exception e) {
-            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,name,Variables.ACTION_DELETE,Variables.RESULT_FAILED));
+            uniformLogger.info(doer,
+                    new ReportMessage(Variables.MODEL_AUTHENTICATOR, name, Variables.ACTION_DELETE, Variables.RESULT_FAILED));
             return HttpStatus.BAD_REQUEST;
         }
         return HttpStatus.NO_CONTENT;
     }
 
     @Override
-    public HttpStatus deleteByUsername(String username,String doer) {
+    public HttpStatus deleteByUsername(String username, String doer) {
 
         Devices device = mongoTemplate.findOne(new Query(Criteria.where("username").is(username)), Devices.class, Variables.col_devices);
         if (device == null)
@@ -82,17 +76,19 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
 
         try {
             mongoTemplate.findAndRemove(new Query(Criteria.where("username").is(username)), Devices.class, Variables.col_devices);
-            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,username,Variables.ACTION_DELETE,Variables.RESULT_SUCCESS));
+            uniformLogger.info(doer,
+                    new ReportMessage(Variables.MODEL_AUTHENTICATOR, username, Variables.ACTION_DELETE, Variables.RESULT_SUCCESS));
 
         } catch (Exception e) {
-            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,username,Variables.ACTION_DELETE,Variables.RESULT_FAILED));
+            uniformLogger.info(doer,
+                    new ReportMessage(Variables.MODEL_AUTHENTICATOR, username, Variables.ACTION_DELETE, Variables.RESULT_FAILED));
             return HttpStatus.BAD_REQUEST;
         }
         return HttpStatus.NO_CONTENT;
     }
 
     @Override
-    public HttpStatus deleteByUsernameAndDeviceName(String username, String deviceName,String doer) {
+    public HttpStatus deleteByUsernameAndDeviceName(String username, String deviceName, String doer) {
         Query query = new Query(Criteria.where("username").is(username).and("name").is(deviceName));
 
         Devices device = mongoTemplate.findOne(query, Devices.class, Variables.col_devices);
@@ -101,20 +97,19 @@ public class AuthenticatorRepoImpl implements AuthenticatorRepo {
 
         try {
             mongoTemplate.findAndRemove(query, Devices.class, Variables.col_devices);
-            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,username,Variables.ACTION_DELETE,Variables.RESULT_SUCCESS));
+            uniformLogger.info(doer,
+                    new ReportMessage(Variables.MODEL_AUTHENTICATOR, username, Variables.ACTION_DELETE, Variables.RESULT_SUCCESS));
 
         } catch (Exception e) {
-            uniformLogger.info(doer,new ReportMessage(Variables.MODEL_AUTHENTICATOR,username,Variables.ACTION_DELETE,Variables.RESULT_FAILED));
+            uniformLogger.info(doer,
+                    new ReportMessage(Variables.MODEL_AUTHENTICATOR, username, Variables.ACTION_DELETE, Variables.RESULT_FAILED));
             return HttpStatus.BAD_REQUEST;
         }
         return HttpStatus.NO_CONTENT;
     }
 
-
     @Override
     public Boolean retrieveUsersDevice(String username) {
         return mongoTemplate.count(new Query(Criteria.where("username").is(username)), Variables.col_GoogleAuthDevice) > 0;
     }
-
-
 }
