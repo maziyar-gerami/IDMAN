@@ -26,31 +26,32 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.UUID;
 
-@SuppressWarnings("unchecked")
 @Service
 public class Operations {
-    private final String model = "users";
-    @Autowired
-    BuildDnUser buildDnUser;
-    @Autowired
-    UserRepo userRepo;
-    @Autowired
+    UserRepo.UsersOp.Retrieve usersOpRetrieve;
     LdapTemplate ldapTemplate;
-    @Autowired
     UniformLogger uniformLogger;
-    @Autowired
     MongoTemplate mongoTemplate;
+
+    @Autowired
+    public Operations(UserRepo.UsersOp.Retrieve usersOpRetrieve, LdapTemplate ldapTemplate, UniformLogger uniformLogger, MongoTemplate mongoTemplate) {
+        this.usersOpRetrieve = usersOpRetrieve;
+        this.ldapTemplate = ldapTemplate;
+        this.uniformLogger = uniformLogger;
+        this.mongoTemplate = mongoTemplate;
+    }
+
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
 
     public HttpStatus enable(String doer, String uid) {
 
-        Name dn = buildDnUser.buildDn(uid, BASE_DN);
+        Name dn = new BuildDnUser(BASE_DN).buildDn(uid);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
 
-        User user = userRepo.retrieveUsers(uid);
+        User user = usersOpRetrieve.retrieveUsers(uid);
         String status = user.getStatus();
 
         if (status.equalsIgnoreCase("disable")) {
@@ -76,12 +77,12 @@ public class Operations {
 
     public HttpStatus disable(String doerID, String uid) {
 
-        Name dn = buildDnUser.buildDn(uid, BASE_DN);
+        Name dn = new BuildDnUser(BASE_DN).buildDn(uid);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
 
-        User user = userRepo.retrieveUsers(uid);
+        User user = usersOpRetrieve.retrieveUsers(uid);
 
         if (user.isEnabled()) {
 
@@ -105,12 +106,13 @@ public class Operations {
 
     public HttpStatus unlock(String doerID, String uid) {
 
-        Name dn = buildDnUser.buildDn(uid, BASE_DN);
+        Name dn = new BuildDnUser(BASE_DN).buildDn(uid);
 
         ModificationItem[] modificationItems;
         modificationItems = new ModificationItem[1];
 
-        User user = userRepo.retrieveUsers(uid);
+        User user = usersOpRetrieve.retrieveUsers(uid);
+
         String locked = user.getStatus();
 
         if (locked.equalsIgnoreCase("lock")) {

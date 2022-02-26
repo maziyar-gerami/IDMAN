@@ -25,7 +25,7 @@ public class LoginwithQR {
     @Autowired
     WebSecurityConfig webSecurityConfig;
     @Autowired
-    private UserRepo userRepo;
+    private UserRepo.UsersOp.Retrieve usersOpRetrieve;
     @Autowired
     private ServicesRepoImpl servicesRepo;
     @Autowired
@@ -46,7 +46,7 @@ public class LoginwithQR {
     @PostMapping(value = "/api/mobile/login")
     public HttpStatus creatAuthenticationToken(@RequestParam("qrToken") String qrToken, @RequestParam("uid") String uid, @RequestParam("mobileToken") String mobileToken) throws Exception {
         try {
-            User user = userRepo.retrieveUsers(uid);
+            User user = usersOpRetrieve.retrieveUsers(uid);
             if (user.getUsersExtraInfo().getMobileToken().equals(mobileToken) && qrToken.equals(random)) {
                 authenticationManager.authenticate
                         (new UsernamePasswordAuthenticationToken(uid, mobileToken));

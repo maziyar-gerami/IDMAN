@@ -39,8 +39,6 @@ public class ConfigRepoImpl implements ConfigRepo {
     @Autowired
     InstantMessage instantMessage;
     @Autowired
-    UserRepo userRepo;
-    @Autowired
     UniformLogger uniformLogger;
     @Autowired
     private ApplicationContext appContext;

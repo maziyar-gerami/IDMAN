@@ -8,8 +8,6 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
@@ -38,7 +36,7 @@ public class ServicesRepoImpl implements ServicesRepo {
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
     @Autowired
-    private UserRepo userRepo;
+    private UserRepo.UsersOp.Retrieve usersOpRetrieve;
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -87,7 +85,7 @@ public class ServicesRepoImpl implements ServicesRepo {
         int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString());
 
 
-        User user = userRepo.retrieveUsers(userId);
+        User user = usersOpRetrieve.retrieveUsers(userId);
 
         String mainDbToken = user.getUsersExtraInfo().getMobileToken();
         String mainPartToken;

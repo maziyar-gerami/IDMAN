@@ -1,28 +1,25 @@
 package parsso.idman.models.users;
 
-
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.types.ObjectId;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import parsso.idman.models.license.License;
 import parsso.idman.models.other.SkyRoom;
 import parsso.idman.models.other.Time;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@SuppressWarnings("ALL")
 @Getter
 @Setter
-public class User implements UserDetails, Comparable {
+public class User implements UserDetails, Comparable<User> {
     private static final String PREFIX = "ROLE_";
     @JsonAlias("userId")
     Object _id;
@@ -165,11 +162,43 @@ public class User implements UserDetails, Comparable {
         return this.get_id().equals(other.get_id());
     }
 
+
     @Override
-    public int compareTo(Object second) {
-        return Long.compare(((User) second).timeStamp, this.timeStamp);
+    public int compareTo(User user) {
+        return Long.compare(user.timeStamp, this.timeStamp);
     }
 
+
+    @Getter
+    @Setter
+    @ToString
+    public static class UserRole {
+        String userId;
+        String role;
+    }
+
+
+    @Setter
+    @Getter
+    public static class UserLoggedIn {
+        String userId;
+        boolean loggedIn;
+    }
+
+
+    @Setter
+    @Getter
+    public static class ListUsers {
+        int size;
+        int pages;
+        List<UsersExtraInfo> userList;
+
+        public ListUsers(int size, List<UsersExtraInfo> relativeEvents, int pages) {
+            this.size = size;
+            this.pages = pages;
+            this.userList = relativeEvents;
+        }
+    }
 }
 
 

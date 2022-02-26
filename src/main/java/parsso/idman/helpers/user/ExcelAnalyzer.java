@@ -25,7 +25,8 @@ public class ExcelAnalyzer {
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
-    UserRepo userRepo;
+    UserRepo.UsersOp.Retrieve usersOpRetrieve;
+    UserRepo.UsersOp.Update usersOpUpdate;
 
     public List<String> excelSheetAnalyze(String doer, Sheet sheet, String ou, boolean hasHeader) {
 
@@ -47,7 +48,7 @@ public class ExcelAnalyzer {
 
             if (tempUID != null
                     && !tempUID.equals("")) {
-                user = userRepo.retrieveUsers(tempUID);
+                user = usersOpRetrieve.retrieveUsers(tempUID);
 
                 if (user == null) {
                     continue;
@@ -59,7 +60,7 @@ public class ExcelAnalyzer {
                     user.setMemberOf(ous);
                 } else
                     user.getMemberOf().add(ou);
-                userRepo.update(doer, tempUID, user);
+                usersOpUpdate.update(doer, tempUID, user);
             }
 
         }
@@ -81,9 +82,9 @@ public class ExcelAnalyzer {
                 continue;
             }
 
-            User user = userRepo.retrieveUsers(data[0]);
+            User user = usersOpRetrieve.retrieveUsers(data[0]);
             user.getMemberOf().add(ou);
-            userRepo.update(doer, data[0], user);
+            usersOpUpdate.update(doer, data[0], user);
 
             i++;
 

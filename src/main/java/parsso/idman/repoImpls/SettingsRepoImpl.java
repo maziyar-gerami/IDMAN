@@ -21,8 +21,10 @@ import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Property;
 import parsso.idman.models.other.Setting;
 import parsso.idman.models.other.Time;
+import parsso.idman.repoImpls.settings.helper.PreferenceSettings;
 import parsso.idman.repos.SettingsRepo;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,9 +37,6 @@ public class SettingsRepoImpl implements SettingsRepo {
     LdapTemplate ldapTemplate;
     UniformLogger uniformLogger;
 
-    public SettingsRepoImpl(MongoTemplate mongoTemplate){
-        this.mongoTemplate = mongoTemplate;
-    }
 
     @Autowired
     public SettingsRepoImpl(PasswordSettings passwordSettings, MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger) {
@@ -45,6 +44,11 @@ public class SettingsRepoImpl implements SettingsRepo {
         this.mongoTemplate = mongoTemplate;
         this.ldapTemplate = ldapTemplate;
         this.uniformLogger = uniformLogger;
+    }
+
+    @PostConstruct
+    public void setPreference(){
+        //new PreferenceSettings(mongoTemplate).run();
     }
 
 

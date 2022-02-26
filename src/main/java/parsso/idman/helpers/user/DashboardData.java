@@ -3,6 +3,7 @@ package parsso.idman.helpers.user;
 
 import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -12,6 +13,8 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.models.dashboardData.Dashboard;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.repoImpls.services.RetrieveService;
+import parsso.idman.repoImpls.users.usersOprations.retrieve.helper.UsersCount;
 import parsso.idman.repos.LogsRepo;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
@@ -26,21 +29,20 @@ import java.util.Objects;
 @Service
 public class DashboardData {
     final ZoneId zoneId = ZoneId.of(Variables.ZONE);
-    final UserRepo userRepo;
+    final UserRepo.UsersOp.Retrieve usersOp;
     final LogsRepo.EventRepo eventRepo;
-    final ServiceRepo serviceRepo;
     final MongoTemplate mongoTemplate;
-    final UserAttributeMapper userAttributeMapper;
     final SimpleUserAttributeMapper simpleUserAttributeMapper;
     final LdapTemplate ldapTemplate;
 
+    @Value("${spring.ldap.base.dn}")
+    protected String BASE_DN;
+
     @Autowired
-    public DashboardData(UserRepo userRepo, LogsRepo.EventRepo eventRepo, ServiceRepo serviceRepo, MongoTemplate mongoTemplate, UserAttributeMapper userAttributeMapper, SimpleUserAttributeMapper simpleUserAttributeMapper, LdapTemplate ldapTemplate) {
-        this.userRepo = userRepo;
+    public DashboardData(UserRepo.UsersOp.Retrieve usersOp, LogsRepo.EventRepo eventRepo,  MongoTemplate mongoTemplate, SimpleUserAttributeMapper simpleUserAttributeMapper, LdapTemplate ldapTemplate) {
+        this.usersOp = usersOp;
         this.eventRepo = eventRepo;
-        this.serviceRepo = serviceRepo;
         this.mongoTemplate = mongoTemplate;
-        this.userAttributeMapper = userAttributeMapper;
         this.simpleUserAttributeMapper = simpleUserAttributeMapper;
         this.ldapTemplate = ldapTemplate;
     }
@@ -71,7 +73,7 @@ public class DashboardData {
 
         Thread userData = new Thread(() -> {
             //________users data____________
-            int nUsers = userRepo.retrieveUsersLDAPSize();
+            int nUsers = new UsersCount(ldapTemplate, BASE_DN).ldapSize();
             //int nUsers = (int) mongoTemplate.count(new Query(), UsersExtraInfo.class,Variables.col_usersExtraInfo);
 
             int nDisabled = (int) mongoTemplate.count(new Query(Criteria.where("status").is("disable")), UsersExtraInfo.class, Variables.col_usersExtraInfo);
@@ -88,7 +90,7 @@ public class DashboardData {
 
             //________services data____________
             List<parsso.idman.models.services.Service> services;
-            services = serviceRepo.listServicesFull();
+            services = new RetrieveService(mongoTemplate).listServicesFull();
             int nServices = 0;
             if (services != null) {
                 nServices = services.size();

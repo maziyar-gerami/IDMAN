@@ -23,6 +23,7 @@ import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.repoImpls.services.RetrieveService;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.SystemRefresh;
 import parsso.idman.repos.UserRepo;
@@ -37,8 +38,7 @@ import java.util.UUID;
 
 @Service
 public class SystemRefreshRepoImpl implements SystemRefresh {
-    @Autowired
-    ServiceRepo serviceRepo;
+
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
@@ -46,9 +46,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
     @Autowired
     LdapTemplate ldapTemplate;
     @Autowired
-    UserRepo userRepo;
-    @Autowired
-    UserAttributeMapper userAttributeMapper;
+    UserRepo.UsersOp.Retrieve usersOpRetrieve;
     @Autowired
     SimpleUserAttributeMapper simpleUserAttributeMapper;
     @Autowired
@@ -73,7 +71,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         UsersExtraInfo userExtraInfo;
 
         //1. create documents
-        for (User user : userRepo.retrieveUsersFull()) {
+        for (User user : usersOpRetrieve.fullAttributes()) {
 
             try {
 
@@ -190,7 +188,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         mongoTemplate.getCollection(Variables.col_servicesExtraInfo);
         int i = 1;
 
-        for (parsso.idman.models.services.Service service : serviceRepo.listServicesFull()) {
+        for (parsso.idman.models.services.Service service : new RetrieveService(mongoTemplate).listServicesFull()) {
             Query query = new Query(Criteria.where("_id").is(service.getId()));
             MicroService serviceExtraInfo = mongoTemplate.findOne(query, MicroService.class, Variables.col_servicesExtraInfo);
             MicroService newServiceExtraInfo = new MicroService();
@@ -221,7 +219,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
             uniformLogger.info(doer, new ReportMessage(Variables.MODEL_SERVICE, "", "", Variables.ACTION_REFRESH, Variables.RESULT_SUCCESS, ""));
         }
 
-        List<parsso.idman.models.services.Service> serviceList = serviceRepo.listServicesFull();
+        List<parsso.idman.models.services.Service> serviceList = new RetrieveService(mongoTemplate).listServicesFull();
         List<Long> ids = new LinkedList<>();
 
         List<MicroService> microServices = mongoTemplate.findAll(MicroService.class, Variables.col_servicesExtraInfo);
@@ -274,7 +272,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
         List<User> users = new LinkedList<>();
         try {
-            users = ldapTemplate.search(BASE_DN, andFilter.encode(), userAttributeMapper);
+            users = ldapTemplate.search(BASE_DN, andFilter.encode(), new UserAttributeMapper(mongoTemplate));
         } catch (Exception ignored) {
         }
         for (User user : users) {
@@ -294,7 +292,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
         for (UsersExtraInfo simple : simpleUsers) {
             Query query = new Query(Criteria.where("_id").is(simple.get_id()));
 
-            if (ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", simple.get_id().toString()).encode(), searchControls, userAttributeMapper).size() == 0) {
+            if (ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", simple.get_id().toString()).encode(), searchControls, new UserAttributeMapper(mongoTemplate)).size() == 0) {
 
                 simple.setStatus("enable");
 

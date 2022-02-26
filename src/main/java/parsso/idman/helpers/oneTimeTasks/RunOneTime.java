@@ -15,17 +15,17 @@ public class RunOneTime {
     final UniformLogger uniformLogger;
     final LdapTemplate ldapTemplate;
     final MongoTemplate mongoTemplate;
-    final UserRepo userRepo;
+    final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+    final UserRepo.UsersOp.Update usersOpUpdate;
     final String BASE_DN;
-    final UserAttributeMapper userAttributeMapper;
 
-    public RunOneTime(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,UserRepo userRepo, UniformLogger uniformLogger, String BASE_DN, UserAttributeMapper userAttributeMapper) {
+    public RunOneTime(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve, UniformLogger uniformLogger, UserRepo.UsersOp.Update usersOpUpdate, String BASE_DN, UserAttributeMapper userAttributeMapper) {
         this.ldapTemplate = ldapTemplate;
         this.mongoTemplate = mongoTemplate;
         this.uniformLogger = uniformLogger;
-        this.userRepo = userRepo;
+        this.usersOpRetrieve = usersOpRetrieve;
+        this.usersOpUpdate = usersOpUpdate;
         this.BASE_DN = BASE_DN;
-        this.userAttributeMapper = userAttributeMapper;
     }
 
 
@@ -60,7 +60,7 @@ public class RunOneTime {
 
             @Override
             public void run() {
-                new DisplayName(mongoTemplate, userRepo).run();
+                new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
             }
         };
 
@@ -68,7 +68,7 @@ public class RunOneTime {
 
             @Override
             public void run() {
-                new MongoUserDocumentFix(mongoTemplate, userRepo,ldapTemplate,BASE_DN,userAttributeMapper).run();
+                new MongoUserDocumentFix(mongoTemplate, usersOpRetrieve,ldapTemplate,BASE_DN,new UserAttributeMapper(mongoTemplate)).run();
             }
         };
 

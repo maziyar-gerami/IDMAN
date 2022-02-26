@@ -23,18 +23,18 @@ public class Token {
     public static final String collection = Variables.col_usersExtraInfo;
 
     private final MongoTemplate mongoTemplate;
-    private final UserRepo userRepo;
+    private final UserRepo.UsersOp.Retrieve usersOpRetrieve;
 
     @Autowired
-    public Token(MongoTemplate mongoTemplate, UserRepo userRepo) {
+    public Token(MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve userOp) {
         this.mongoTemplate = mongoTemplate;
-        this.userRepo = userRepo;
+        this.usersOpRetrieve = userOp;
     }
 
 
     public HttpStatus checkToken(String userId, String token) {
 
-        User user = userRepo.retrieveUsers(userId);
+        User user = usersOpRetrieve.retrieveUsers(userId);
         String mainDbToken = user.getUsersExtraInfo().getResetPassToken();
         String mainPartToken;
         int SMS_VALIDATION_DIGITS = Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString());

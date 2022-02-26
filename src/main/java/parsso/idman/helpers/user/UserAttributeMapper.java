@@ -18,14 +18,13 @@ import javax.naming.directory.Attributes;
 import java.util.LinkedList;
 import java.util.List;
 
-@Service
 public class UserAttributeMapper implements AttributesMapper<User> {
-    @Autowired
     MongoTemplate mongoTemplate;
+
     @Autowired
-    LdapTemplate ldapTemplate;
-    @Autowired
-    UserRepo userRepo;
+    public UserAttributeMapper(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @SneakyThrows
     @Override

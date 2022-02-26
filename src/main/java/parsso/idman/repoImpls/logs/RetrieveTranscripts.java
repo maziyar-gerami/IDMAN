@@ -1,20 +1,17 @@
 package parsso.idman.repoImpls.logs;
 
 
-import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Component;
 import parsso.idman.helpers.Variables;
-import parsso.idman.helpers.group.GroupLicense;
-import parsso.idman.helpers.service.ExtractLicensedAndUnlicensed;
-import parsso.idman.helpers.user.UsersLicense;
+import parsso.idman.helpers.service.LicensedAndUnlicensed;
 import parsso.idman.models.license.License;
 import parsso.idman.models.services.Service;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.repoImpls.groups.RetrieveGroup;
 import parsso.idman.repos.LogsRepo;
 import parsso.idman.repos.ServiceRepo;
 
@@ -22,44 +19,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("unchecked")
-@Component
+@org.springframework.stereotype.Service
 public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 
-    final ServiceRepo serviceRepo;
-
+    final ServiceRepo.Retrieve serviceRepo;
     final MongoTemplate mongoTemplate;
-    final UsersLicense usersLicense;
-    final parsso.idman.helpers.group.GroupLicense groupLicense;
-    final ExtractLicensedAndUnlicensed extract;
 
     @Autowired
-    public RetrieveTranscripts(ServiceRepo serviceRepo,
-                               MongoTemplate mongoTemplate, UsersLicense usersLicense,
-                               GroupLicense groupLicense, ExtractLicensedAndUnlicensed extract) {
+    public RetrieveTranscripts(ServiceRepo.Retrieve serviceRepo,
+                               MongoTemplate mongoTemplate,
+                               RetrieveGroup retrieveGroup) {
         this.serviceRepo = serviceRepo;
         this.mongoTemplate = mongoTemplate;
-        this.usersLicense = usersLicense;
-        this.groupLicense = groupLicense;
-        this.extract = extract;
 
     }
 
-    @Override
-    public License servicesOfGroup(String ouID) {
-        List<MicroService> licensed = new LinkedList<>();
 
-        List<Service> allServices = serviceRepo.listServicesFull();
-
-        for (Service service : allServices)
-            if (service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
-                for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1))
-                    if (ouID.equalsIgnoreCase(name.toString()))
-                        licensed.add(new MicroService(service));
-
-        return new License(licensed, null);
-
-    }
 
     @Override
     public License servicesOfUser(String userId) {
@@ -79,6 +54,8 @@ public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
         }
 
         for (Service service : allServices) {
+
+            LicensedAndUnlicensed extract = new LicensedAndUnlicensed();
 
             licensed = extract.licensedServicesForGroups(user, licensed, service);
 

@@ -33,7 +33,7 @@ public class LogsRepo {
     }
 
     public interface TranscriptRepo {
-        License servicesOfGroup(String ouid);
+
 
         License servicesOfUser(String userId);
 

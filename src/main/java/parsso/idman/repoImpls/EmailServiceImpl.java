@@ -42,14 +42,15 @@ public class EmailServiceImpl implements EmailService {
     LdapTemplate ldapTemplate;
     @Autowired
     UniformLogger uniformLogger;
-    @Autowired
-    UserAttributeMapper userAttributeMapper;
+
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
     Token tokenClass;
     @Autowired
-    UserRepo userRepo;
+    UserRepo.UsersOp.Retrieve usersOpRetrieve;
+    @Autowired
+    UserRepo.Supplementary supplementary;
     @Autowired
     MailProperties mailProperties;
     @Autowired
@@ -87,11 +88,11 @@ public class EmailServiceImpl implements EmailService {
 
     public void sendMail(String email) {
         if (checkMail(email) != null) {
-            User user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
+            User user = usersOpRetrieve.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
 
-            String fullUrl = userRepo.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
+            String fullUrl = supplementary.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
             Thread thread = new Thread(() -> {
                 try {
@@ -109,7 +110,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public HttpStatus sendMail(JSONObject jsonObject) {
         if (jsonObject.size() == 0) {
-            List<User> users = userRepo.retrieveUsersFull();
+            List<User> users = usersOpRetrieve.fullAttributes();
 
             for (User user : users)
                 if (!user.getUsersExtraInfo().getRole().equals("SUPERUSER") && user.getMail() != null && user.getMail() != null && !user.getMail().equals("") && !user.getMail().equals(" "))
@@ -119,7 +120,7 @@ public class EmailServiceImpl implements EmailService {
             ArrayList jsonArray = (ArrayList) jsonObject.get("names");
             for (Object temp : jsonArray) {
 
-                User user = userRepo.retrieveUsers(temp.toString());
+                User user = usersOpRetrieve.retrieveUsers(temp.toString());
                 {
                     Thread thread = new Thread(() -> sendMail(user.getMail()));
                     if (checkMail(user.getMail()) != null)
@@ -152,11 +153,11 @@ public class EmailServiceImpl implements EmailService {
             return -2;
 
         if (checkMail(email).size() == 1) {
-            user = userRepo.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
+            user = usersOpRetrieve.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
 
             tokenClass.insertEmailToken(user);
 
-            String fullUrl = userRepo.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
+            String fullUrl = supplementary.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
             try {
                 sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
@@ -201,11 +202,11 @@ public class EmailServiceImpl implements EmailService {
             return -1;
         }
 
-        if (checkMail(email) != null && userRepo.retrieveUsers(uid) != null && userRepo.retrieveUsers(uid).get_id() != null) {
+        if (checkMail(email) != null && usersOpRetrieve.retrieveUsers(uid) != null && usersOpRetrieve.retrieveUsers(uid).get_id() != null) {
             List<JSONObject> ids = checkMail(email);
             List<User> people = new LinkedList<>();
-            User user = userRepo.retrieveUsers(uid);
-            for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
+            User user = usersOpRetrieve.retrieveUsers(uid);
+            for (JSONObject id : ids) people.add(usersOpRetrieve.retrieveUsers(id.getAsString("userId")));
 
             for (User p : people) {
 
@@ -213,7 +214,7 @@ public class EmailServiceImpl implements EmailService {
 
                     tokenClass.insertEmailToken(user);
 
-                    String fullUrl = userRepo.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
+                    String fullUrl = supplementary.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
                     try {
 
@@ -240,7 +241,7 @@ public class EmailServiceImpl implements EmailService {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
         List<JSONObject> jsonArray = new LinkedList<>();
-        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("mail", email).encode(), userAttributeMapper);
+        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("mail", email).encode(), new UserAttributeMapper(mongoTemplate));
         JSONObject jsonObject;
         for (User user : people) {
             jsonObject = new JSONObject();

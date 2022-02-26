@@ -11,7 +11,7 @@ import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.helpers.user.SimpleUserAttributeMapper;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.OneTime;
-import parsso.idman.models.users.UserLoggedIn;
+import parsso.idman.models.users.User.UserLoggedIn;
 import parsso.idman.models.users.UsersExtraInfo;
 
 import javax.naming.directory.BasicAttribute;
@@ -78,7 +78,7 @@ public class PWDreset {
                     modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdReset", "TRUE"));
 
                 try {
-                    ldapTemplate.modifyAttributes(new BuildDnUser().buildDn(userLoggedIn.getUserId(), BASE_DN), modificationItems);
+                    ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(userLoggedIn.getUserId()), modificationItems);
                 } catch (Exception ignore) {
 
                 }

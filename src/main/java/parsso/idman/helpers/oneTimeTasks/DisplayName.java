@@ -1,5 +1,6 @@
 package parsso.idman.helpers.oneTimeTasks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import parsso.idman.helpers.Variables;
@@ -12,17 +13,19 @@ import java.util.List;
 
 public class DisplayName {
     final MongoTemplate mongoTemplate;
-    final UserRepo userRepo;
-
-    DisplayName(MongoTemplate mongoTemplate, UserRepo userRepo) {
+    final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+    final UserRepo.UsersOp.Update usersOpUpdate;
+    @Autowired
+    DisplayName(MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve, UserRepo.UsersOp.Update usersOpUpdate) {
         this.mongoTemplate = mongoTemplate;
-        this.userRepo = userRepo;
+        this.usersOpRetrieve = usersOpRetrieve;
+        this.usersOpUpdate = usersOpUpdate;
     }
     public void run(){
         int c = 0;
         char[] animationChars = new char[]{'|', '/', '-', '\\'};
 
-        List<User> users = userRepo.retrieveUsersFull();
+        List<User> users = usersOpRetrieve.fullAttributes();
         for (User user: users) {
             if ((user.getDisplayName().contains("آقای") && !user.getDisplayName().contains("آقای "))
             || (user.getDisplayName().contains("خانم") && !user.getDisplayName().contains("خانم "))
@@ -33,7 +36,7 @@ public class DisplayName {
                     user.getUsersExtraInfo().setDisplayName(r);
                 }catch (NullPointerException ignored){}
 
-                userRepo.update("System",user.get_id().toString(),user);
+                usersOpUpdate.update("System",user.get_id().toString(),user);
             }
             int i = (++c * 100 / users.size());
 

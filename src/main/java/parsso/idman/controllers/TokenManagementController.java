@@ -13,7 +13,6 @@ import parsso.idman.repos.TokenManagementRepo;
 public class TokenManagementController {
 
     final TokenManagementRepo tokenManagement;
-    String model = Variables.MODEL_TOKEN;
 
     @Autowired
     TokenManagementController(TokenManagementRepo tokenManagementRepo) {
@@ -40,8 +39,8 @@ public class TokenManagementController {
     }
 
     @GetMapping("/valid")
-    ResponseEntity<Response> retrieve(@RequestParam("username") String userId, @RequestParam("token") String token, @RequestParam(value = "lang", defaultValue = "fa") String lang) {
-        return new ResponseEntity<>(new Response(tokenManagement.valid(userId, token), lang), HttpStatus.OK);
+    ResponseEntity<Response> retrieve(@RequestParam("username") String userId, @RequestParam("token") String token, @RequestParam(value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+        return new ResponseEntity<>(new Response(tokenManagement.valid(userId, token),Variables.MODEL_TOKEN,HttpStatus.OK.value(), lang), HttpStatus.OK);
     }
 
 }

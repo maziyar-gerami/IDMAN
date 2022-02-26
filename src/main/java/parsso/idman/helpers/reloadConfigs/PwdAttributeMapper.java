@@ -8,7 +8,6 @@ import parsso.idman.models.other.PWD;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 
-@Service
 public class PwdAttributeMapper implements AttributesMapper<PWD> {
     @Override
     public PWD mapFromAttributes(Attributes attributes) throws NamingException {

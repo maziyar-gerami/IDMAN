@@ -40,7 +40,7 @@ public class TicketRepoImpl implements TicketRepo {
     UniformLogger uniformLogger;
     Logger logger;
     @Autowired
-    UserRepo userRepo;
+    UserRepo.UsersOp.Retrieve usersOpRetrieve;
 
     @Override
     public HttpStatus sendTicket(Ticket ticket, String userid) {
@@ -48,7 +48,7 @@ public class TicketRepoImpl implements TicketRepo {
             logger = LogManager.getLogger(userid);
 
             List<Message> messages = new LinkedList<>();
-            messages.add(new Message(userRepo.retrieveUsers(userid), ticket.getMessage()));
+            messages.add(new Message(usersOpRetrieve.retrieveUsers(userid), ticket.getMessage()));
 
             Ticket ticketToSave = new Ticket(userid, ticket.getSubject(), messages);
 
@@ -105,13 +105,13 @@ public class TicketRepoImpl implements TicketRepo {
 
         //check if closed or reopen, add new message
         if (ticket.getStatus() < st && st == 2) {
-            messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
-            messages.add(new Message(userRepo.retrieveUsers(userid), "CLOSE", true));
+            messages.add(new Message(usersOpRetrieve.retrieveUsers(userid), usersOpRetrieve.retrieveUsers(to), replyTicket.getMessage()));
+            messages.add(new Message(usersOpRetrieve.retrieveUsers(userid), "CLOSE", true));
         } else if (ticket.getStatus() > st) {
-            messages.add(new Message(userRepo.retrieveUsers(userid), "REOPEN", true));
-            messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
+            messages.add(new Message(usersOpRetrieve.retrieveUsers(userid), "REOPEN", true));
+            messages.add(new Message(usersOpRetrieve.retrieveUsers(userid), usersOpRetrieve.retrieveUsers(to), replyTicket.getMessage()));
         } else
-            messages.add(new Message(userRepo.retrieveUsers(userid), userRepo.retrieveUsers(to), replyTicket.getMessage()));
+            messages.add(new Message(usersOpRetrieve.retrieveUsers(userid), usersOpRetrieve.retrieveUsers(to), replyTicket.getMessage()));
 
         Ticket ticketToSave = new Ticket(ticket, messages);
         ticketToSave.setStatus(st);
@@ -222,9 +222,9 @@ public class TicketRepoImpl implements TicketRepo {
 
             //check if closed or reopen, add new message
             if (ticket.getStatus() < status && status == 2)
-                messages.add(new Message(userRepo.retrieveUsers(doer), Variables.ACTION_CLOSE, true));
+                messages.add(new Message(usersOpRetrieve.retrieveUsers(doer), Variables.ACTION_CLOSE, true));
             else if (ticket.getStatus() > status)
-                messages.add(new Message(userRepo.retrieveUsers(doer), Variables.ACTION_REOPEN, true));
+                messages.add(new Message(usersOpRetrieve.retrieveUsers(doer), Variables.ACTION_REOPEN, true));
 
             ticket.setStatus(status);
             ticket.setMessages(messages);

@@ -26,18 +26,16 @@ import java.util.List;
 public class InstantMessage {
 
     @Autowired
-    public InstantMessage(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UserRepo userRepo, Token tokenClass, UserAttributeMapper userAttributeMapper){
+    public InstantMessage(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve, Token tokenClass){
         this.mongoTemplate = mongoTemplate;
         this.ldapTemplate = ldapTemplate;
         this.tokenClass = tokenClass;
-        this.userAttributeMapper = userAttributeMapper;
-        this.userRepo = userRepo;
+        this.usersOpRetrieve = usersOpRetrieve;
     }
     private final MongoTemplate mongoTemplate;
-    private final UserRepo userRepo;
+    private final UserRepo.UsersOp.Retrieve usersOpRetrieve;
     private final LdapTemplate ldapTemplate;
     private final Token tokenClass;
-    private final UserAttributeMapper userAttributeMapper;
 
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
@@ -96,7 +94,7 @@ public class InstantMessage {
         else if (checked.size() > 1)
             return -2;
 
-        else user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+        else user = usersOpRetrieve.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
 
         if (tokenClass.insertMobileToken(user)) {
             return keveNegar_insertTokenAndSend(mobile, query, user);
@@ -224,14 +222,14 @@ public class InstantMessage {
             return -2;
 
         else if (checkMobile(mobile).size() == 1)
-            user = userRepo.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+            user = usersOpRetrieve.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
 
         if (tokenClass.insertMobileToken(user)) {
 
             try {
 
                 Texts texts = new Texts();
-                texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString())));
+                texts.authorizeMessage(user.getUsersExtraInfo().getResetPassToken().substring(0, Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue())));
                 new MagfaSMS(mongoTemplate,texts.getMainMessage()).SendMessage( user.getMobile(), 1L);
 
                 mongoTemplate.remove(query, Variables.col_captchas);
@@ -301,7 +299,7 @@ public class InstantMessage {
 
     public List<JSONObject> checkMobile(String mobile) {
 
-        List<User> people = ldapTemplate.search(BASE_DN, new EqualsFilter("mobile", mobile).encode(), userAttributeMapper);
+        List<User> people = ldapTemplate.search(BASE_DN, new EqualsFilter("mobile", mobile).encode(), new UserAttributeMapper(mongoTemplate));
         List<JSONObject> jsonArray = new LinkedList<>();
         JSONObject jsonObject;
         for (User user : people) {
@@ -327,12 +325,12 @@ public class InstantMessage {
         if (checkMobile(mobile).size() == 0)
             return -3;
 
-        User user = userRepo.retrieveUsers(uId);
+        User user = usersOpRetrieve.retrieveUsers(uId);
 
         if (user != null && user.get_id() != null && tokenClass.insertMobileToken(user)) {
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
-            for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
+            for (JSONObject id : ids) people.add(usersOpRetrieve.retrieveUsers(id.getAsString("userId")));
 
             for (User p : people)
                 if (p.get_id().equals(user.get_id()))
@@ -358,17 +356,17 @@ public class InstantMessage {
 
             return -3;
         }
-        user = userRepo.retrieveUsers(uId);
+        user = usersOpRetrieve.retrieveUsers(uId);
 
         if (user == null)
             return 0;
 
-        if (checkMobile(mobile) != null && userRepo.retrieveUsers(uId).get_id() != null && tokenClass.insertMobileToken(user)) {
+        if (checkMobile(mobile) != null && usersOpRetrieve.retrieveUsers(uId).get_id() != null && tokenClass.insertMobileToken(user)) {
 
             List<JSONObject> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
-            user = userRepo.retrieveUsers(uId);
-            for (JSONObject id : ids) people.add(userRepo.retrieveUsers(id.getAsString("userId")));
+            user = usersOpRetrieve.retrieveUsers(uId);
+            for (JSONObject id : ids) people.add(usersOpRetrieve.retrieveUsers(id.getAsString("userId")));
 
             for (User p : people) {
                 if (p.get_id().equals(user.get_id())) {

@@ -1,37 +1,30 @@
 package parsso.idman.helpers.oneTimeTasks;
 
-import com.google.gson.JsonObject;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.filter.EqualsFilter;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.models.other.OneTime;
-import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.UserRepo;
 
-import javax.naming.directory.SearchControls;
 import java.util.Date;
 import java.util.List;
 
 public class MongoUserDocumentFix {
     final MongoTemplate mongoTemplate;
-    final UserRepo userRepo;
+    final UserRepo.UsersOp.Retrieve usersOpRetrieve;
     final LdapTemplate ldapTemplate;
     final String BASE_DN;
-    final UserAttributeMapper userAttributeMapper;
 
-    MongoUserDocumentFix(MongoTemplate mongoTemplate, UserRepo userRepo, LdapTemplate ldapTemplate, String BASE_DN, UserAttributeMapper userAttributeMapper) {
+    MongoUserDocumentFix(MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve usersOp, LdapTemplate ldapTemplate, String BASE_DN, UserAttributeMapper userAttributeMapper) {
         this.mongoTemplate = mongoTemplate;
-        this.userRepo = userRepo;
+        this.usersOpRetrieve = usersOp;
         this.ldapTemplate = ldapTemplate;
         this.BASE_DN = BASE_DN;
-        this.userAttributeMapper = userAttributeMapper;
     }
 
     public void run() {

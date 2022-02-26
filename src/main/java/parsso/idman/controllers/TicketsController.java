@@ -17,16 +17,12 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class TicketsController {
     final
-    UserRepo userRepo;
+    UserRepo.UsersOp.Retrieve retrieveUsers;
     TicketRepo ticketRepo;
 
-    public TicketsController(UserRepo userRepo) {
-        this.userRepo = userRepo;
-    }
-
     @Autowired
-    public TicketsController(UserRepo userRepo, TicketRepo ticketRepo) {
-        this.userRepo = userRepo;
+    public TicketsController(UserRepo.UsersOp.Retrieve retrieveUsers, TicketRepo ticketRepo) {
+        this.retrieveUsers = retrieveUsers;
         this.ticketRepo = ticketRepo;
     }
 
@@ -44,7 +40,7 @@ public class TicketsController {
     @GetMapping("/api/user/ticket/{ticketID}")
     public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request) {
         Ticket ticket = ticketRepo.retrieveTicket(ticketID);
-        User user = userRepo.retrieveUsers(request.getUserPrincipal().getName().toLowerCase());
+        User user = retrieveUsers.retrieveUsers(request.getUserPrincipal().getName().toLowerCase());
         if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))
             if (user.get_id().toString().equalsIgnoreCase(ticket.getTo()) || user.get_id().toString().equalsIgnoreCase(ticket.getFrom()))
                 return new ResponseEntity<>(ticket, HttpStatus.OK);

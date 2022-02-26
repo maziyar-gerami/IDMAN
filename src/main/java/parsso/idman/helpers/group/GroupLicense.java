@@ -15,12 +15,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("ALL")
-@Component
 public class GroupLicense {
-    @Autowired
     GroupRepo groupRepo;
-    @Autowired
-    ServiceRepo serviceRepo;
+    ServiceRepo.Retrieve serviceRepo;
+
+    public GroupLicense(GroupRepo groupRepo, ServiceRepo.Retrieve serviceRepo) {
+        this.groupRepo = groupRepo;
+        this.serviceRepo = serviceRepo;
+    }
 
     public List<Group> licensedGroups(long serviceId) {
         List<Group> groups = new LinkedList<>();

@@ -15,35 +15,48 @@ import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("SameReturnValue")
-public interface ServiceRepo {
-    List<MicroService> listUserServices(User user);
+public class ServiceRepo {
 
-    List<Service> listServicesFull();
+    public  interface Retrieve {
 
-    List<Service> listServicesWithGroups(String ou);
+        List<MicroService> listUserServices(User user);
 
-    List<MicroService> listServicesMain();
+        List<Service> listServicesFull();
 
-    Service retrieveService(long id);
+        List<Service> listServicesWithGroups(String ou);
 
-    LinkedList<String> deleteServices(String doerID, JSONObject files);
+        List<MicroService> listServicesMain();
 
-    String uploadMetadata(MultipartFile file);
+        Service retrieveService(long id);
 
-    void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException;
+        boolean serviceAccess(long id);
 
-    long createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
+        String showServicePic(HttpServletResponse response, String file);
 
-    HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system);
+    }
 
-    HttpStatus increasePosition(String id);
+    public interface Delete {
 
-    HttpStatus decreasePosition(String id);
+        LinkedList<String> delete(String doerID, JSONObject files);
+    }
+
+    @org.springframework.stereotype.Service
+    public interface Update {
+
+        String uploadMetadata(MultipartFile file);
+
+        void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException;
+
+        HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system);
+
+        String uploadIcon(MultipartFile file);
+
+    }
 
 
-    boolean serviceAccess(long id);
+    public interface Create {
 
-    String uploadIcon(MultipartFile file);
+        long createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
 
-    String showServicePic(HttpServletResponse response, String file);
+    }
 }

@@ -1,14 +1,11 @@
 package parsso.idman.models.users;
 
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.types.ObjectId;
 import parsso.idman.models.other.Time;
-
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -52,7 +49,7 @@ public class UsersExtraInfo {
     @JsonIgnore
     private ChangePassword changePassword;
 
-    public int getnPassChanged() {
+    public int getNPassChanged() {
         try{
             return nPassChanged;
         }catch(Exception e){
@@ -60,13 +57,11 @@ public class UsersExtraInfo {
         }
     }
 
-
     public Time getExpiredTime() {
         if (endTimeEpoch != 0)
             return Time.longToPersianTime(endTimeEpoch);
         return null;
     }
-
 
     public UsersExtraInfo() {
 
@@ -114,8 +109,6 @@ public class UsersExtraInfo {
             return memberOf.stream().distinct().collect(Collectors.toList());
         return null;
     }
-
-    
 }
 
 

@@ -4,7 +4,7 @@ package parsso.idman.helpers;
 import org.json.simple.JSONArray;
 import org.springframework.stereotype.Service;
 import parsso.idman.models.services.servicesSubModel.AccessStrategy;
-import parsso.idman.models.users.Inconsistency;
+import parsso.idman.models.users.UsersGroups.Inconsistency;
 import parsso.idman.models.users.UsersGroups;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class Comparison {
         return new UsersGroups(users, groups);
     }
 
-    private Inconsistency listCompare(List<String> listOld, List<String> listNew) {
+    private UsersGroups.Inconsistency listCompare(List<String> listOld, List<String> listNew) {
         List<String> add = new LinkedList<>();
         List<String> remove = new LinkedList<>();
 
@@ -77,6 +77,6 @@ public class Comparison {
 
             }
 
-        return new Inconsistency(add, remove);
+        return new UsersGroups.Inconsistency(add, remove);
     }
 }

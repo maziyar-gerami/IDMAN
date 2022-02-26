@@ -10,6 +10,7 @@ import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.oneTimeTasks.PWDreset;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Property;
@@ -22,15 +23,13 @@ import java.util.List;
 @Service
 public class PasswordSettings {
     private final LdapTemplate ldapTemplate;
-    final PwdAttributeMapper pwdAttributeMapper;
     final UniformLogger uniformLogger;
 
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
 
     @Autowired
-    public PasswordSettings(PwdAttributeMapper pwdAttributeMapper, UniformLogger uniformLogger,LdapTemplate ldapTemplate) {
-        this.pwdAttributeMapper = pwdAttributeMapper;
+    public PasswordSettings(UniformLogger uniformLogger,LdapTemplate ldapTemplate) {
         this.uniformLogger = uniformLogger;
         this.ldapTemplate = ldapTemplate;
     }
@@ -151,7 +150,7 @@ public class PasswordSettings {
     public PWD retrieve(){
         SearchControls searchControls = new SearchControls();
         searchControls.setReturningAttributes(new String[]{"*", "+"});
-        return ldapTemplate.search(buildDn(),new EqualsFilter("objectClass","pwdPolicy").encode(),pwdAttributeMapper).get(0);
+        return ldapTemplate.search(buildDn(),new EqualsFilter("objectClass","pwdPolicy").encode(),new PwdAttributeMapper()).get(0);
     }
 
 

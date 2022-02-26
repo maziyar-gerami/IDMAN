@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import parsso.idman.models.users.UserRole;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.response.Response;
+import parsso.idman.models.users.User.UserRole;
 import parsso.idman.repos.RolesRepo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,13 +25,16 @@ public class RolesController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserRole>> retrieveRoles() {
-        return new ResponseEntity<>(rolesRepo.retrieve(), rolesRepo.retrieve() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Response> retrieveRoles(@RequestParam(value = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+        List<UserRole> roles = rolesRepo.retrieve();
+        if (roles!= null)
+            return new ResponseEntity<>(new Response(roles, Variables.MODEL_ROLE, HttpStatus.OK.value(),lang),HttpStatus.OK);
+        return new ResponseEntity<>(new Response(null, Variables.MODEL_ROLE,HttpStatus.BAD_REQUEST.value(),lang) , HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/{role}")
-    public ResponseEntity<HttpStatus> updateTicket(HttpServletRequest request, @RequestBody JSONObject users, @PathVariable("role") String role) {
-        return new ResponseEntity<>(rolesRepo.updateRole("SU", role, users));
+    public ResponseEntity<Response> updateTicket(HttpServletRequest request, @RequestBody JSONObject users, @PathVariable("role") String role, @RequestParam(value = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+        HttpStatus code = rolesRepo.updateRole(request.getUserPrincipal().getName(), role, users);
+        return new ResponseEntity<>(new Response(null,Variables.MODEL_ROLE, code.value(),lang),code);
     }
-
 }

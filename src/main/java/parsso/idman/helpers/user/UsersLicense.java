@@ -15,12 +15,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("ALL")
-@Component
 public class UsersLicense {
-    @Autowired
-    ServiceRepo serviceRepo;
-    @Autowired
-    UserRepo userRepo;
+    ServiceRepo.Retrieve serviceRepo;
+    UserRepo.UsersOp.Retrieve usersOpRetrieve;
+
+
+    public UsersLicense(ServiceRepo.Retrieve serviceRepo, UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+        this.serviceRepo = serviceRepo;
+        this.usersOpRetrieve = usersOpRetrieve;
+    }
 
     public List<UsersExtraInfo> licensedUsers(long serviceId) {
         List<UsersExtraInfo> users = new LinkedList<>();
@@ -34,7 +37,7 @@ public class UsersLicense {
             jsonArray = (JSONArray) service.getAccessStrategy().getRequiredAttributes().get("uid");
             for (Object name : jsonArray)
                 try {
-                    users.add(new UsersExtraInfo(userRepo.retrieveUsers(name.toString())));
+                    users.add(new UsersExtraInfo(usersOpRetrieve.retrieveUsers(name.toString())));
                 } catch (NullPointerException ignored) {
                 }
         }
@@ -55,7 +58,7 @@ public class UsersLicense {
         JSONArray jsonArray = (JSONArray) ((JSONArray) (service.getAccessStrategy().getRejectedAttributes().get("uid"))).get(1);
         for (Object name : jsonArray)
             try {
-                uids.add(new UsersExtraInfo(userRepo.retrieveUsers(name.toString())));
+                uids.add(new UsersExtraInfo(usersOpRetrieve.retrieveUsers(name.toString())));
 
             } catch (NullPointerException ignored) {
             }

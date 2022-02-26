@@ -20,16 +20,21 @@ import java.util.List;
 
 @Service
 public class ExpirePassword {
-    @Autowired
-    LdapTemplate ldapTemplate;
-    @Autowired
-    MongoTemplate mongoTemplate;
-    @Autowired
-    BuildDnUser buildDnUser;
-    @Autowired
-    UniformLogger uniformLogger;
+    final LdapTemplate ldapTemplate;
+    final MongoTemplate mongoTemplate;
+    final UniformLogger uniformLogger;
+
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
+
+    @Autowired
+    public ExpirePassword(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,UniformLogger uniformLogger) {
+        this.ldapTemplate = ldapTemplate;
+        this.mongoTemplate = mongoTemplate;
+        this.uniformLogger = uniformLogger;
+    }
+
+
 
     public List<String> expire(String doer, List<UsersExtraInfo> users) {
 
@@ -46,7 +51,7 @@ public class ExpirePassword {
                 modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdReset", "TRUE"));
 
                 try {
-                    ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.get_id().toString(), BASE_DN), modificationItems);
+                    ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()), modificationItems);
                     user.setEndTimeEpoch(new Date().getTime());
                     mongoTemplate.save(user, Variables.col_usersExtraInfo);
 
@@ -56,7 +61,7 @@ public class ExpirePassword {
                 } catch (Exception e) {
                     try {
                         modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdReset", "TRUE"));
-                        ldapTemplate.modifyAttributes(buildDnUser.buildDn(user.get_id().toString(), BASE_DN), modificationItems);
+                        ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()), modificationItems);
                         user.setEndTimeEpoch(new Date().getTime());
                         mongoTemplate.save(user, Variables.col_usersExtraInfo);
 

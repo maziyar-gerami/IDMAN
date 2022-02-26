@@ -15,8 +15,37 @@ public class StringResult {
     public static String USER_400_FA = "مشکل در پارامترهای ارسالی";
     public static String USER_400_EN = "Parameter Problem";
 
+    public static String USER_302_FA = "کاربری با شناسه تعیین شده، از پیش وجود دارد.";
+    public static String USER_302_EN = "User with this 'id' is repetitive";
+
+    public static String USER_201_FA = "ایجاد کاربر موفقیت آمیز بود.";
+    public static String USER_201_EN = "Creating the user was successful";
+
+    public static String USER_204_FA = "حذف کاربر موفقیت آمیز بود.";
+    public static String USER_204_EN = "Deleting the user was successful";
+
+    public static String USER_206_FA = "حذف کاربر به صورت ناقص انجام شد.";
+    public static String USER_206_EN = "Deleting the user was partially successful";
+
     public static String USER_423_FA = "تعداد تغییرات گذرواژه در یک روز بیش از حد مجاز است.";
     public static String USER_423_EN = "Password change limit exceed";
+
+
+    public static String GROUP_400_FA = "مشکل در پارامترهای ارسالی";
+    public static String GROUP_400_EN = "Parameter Problem";
+
+    public static String GROUP_503_FA = "مشکل در ذخیره سازی داده ها";
+    public static String GROUP_503_EN = "Data saving problem";
+
+    public static String GROUP_302_FA = "گروهی با شناسه تعیین شده، از پیش وجود دارد.";
+    public static String GROUP_302_EN = "A group with this 'id' is repetitive";
+
+    public static String GROUP_201_FA = "ایجاد گروه موفقیت آمیز بود.";
+    public static String GROUP_201_EN = "Creating the group was successful";
+
+    public static String GROUP_204_FA = "حذف گروه موفقیت آمیز بود.";
+    public static String GROUP_204_EN = "Deleting the group was successful";
+
 
     public static String TOKEN_202_EN = "Token Delete Successful";
     public static String TOKEN_202_FA = "پاک کردن توکن با موفقیت انجام شد.";

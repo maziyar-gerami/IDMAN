@@ -105,6 +105,7 @@ public class Variables {
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_SUPERUSER = "SUPERUSER";
     public static final String MODEL_AUTHENTICATOR = "Authenticator";
+    public static final String MODEL_ROLE = "Role";
 
     static final String email_body = "شما این پیام را مبنی بر بازنشانی رمز عبور برای نام کاربری زیر دریافت نموده اید." +
             "در صورتی که این درخواست از طرف شما انجام نشده است، از این پیام صرف نظر کنید.\n" +

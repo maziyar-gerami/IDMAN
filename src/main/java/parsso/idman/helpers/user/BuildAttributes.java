@@ -24,22 +24,23 @@ import java.time.ZoneOffset;
 public class BuildAttributes {
     final ZoneId zoneId = ZoneId.of(Variables.ZONE);
     final MongoTemplate mongoTemplate;
-    final BuildDnUser buildDnUser;
-    private final UserRepo userRepo;
+    private final UserRepo.UsersOp.Retrieve usersOpRetrieve;
     private final LdapTemplate ldapTemplate;
     private final Operations operations;
 
+    @Value("${spring.ldap.base.dn}")
+    protected String BASE_DN;
+
     @Autowired
-    BuildAttributes(MongoTemplate mongoTemplate, BuildDnUser buildDnUser, UserRepo userRepo, LdapTemplate ldapTemplate, Operations operations) {
+    BuildAttributes(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate,
+                    Operations operations,UserRepo.UsersOp.Retrieve usersOpRetrieve) {
         this.mongoTemplate = mongoTemplate;
-        this.buildDnUser = buildDnUser;
-        this.userRepo = userRepo;
+        this.usersOpRetrieve = usersOpRetrieve;
         this.ldapTemplate = ldapTemplate;
         this.operations = operations;
     }
 
-    @Value("${spring.ldap.base.dn}")
-    private String BASE_DN;
+
 
 
     public Attributes build(User p) {
@@ -100,7 +101,7 @@ public class BuildAttributes {
     public DirContextOperations buildAttributes(String doerID, String uid, User p, Name dn) {
 
         //retrieve old user
-        User old = userRepo.retrieveUsers(uid);
+        User old = usersOpRetrieve.retrieveUsers(uid);
         DirContextOperations context = ldapTemplate.lookupContext(dn);
 
         //First name (givenName) *
@@ -247,7 +248,7 @@ public class BuildAttributes {
             if (p.getExpiredTime() != null && old.getExpiredTime() != null) {
 
                 modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
-                ldapTemplate.modifyAttributes(buildDnUser.buildDn(p.get_id().toString(), BASE_DN), modificationItems);
+                ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(p.get_id().toString()), modificationItems);
 
             }
 
