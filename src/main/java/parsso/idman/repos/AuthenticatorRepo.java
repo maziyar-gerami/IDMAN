@@ -3,14 +3,20 @@ package parsso.idman.repos;
 import org.springframework.http.HttpStatus;
 import parsso.idman.models.other.Devices;
 
-public interface AuthenticatorRepo {
-    Devices.DeviceList retrieve(String username, String deviceName, int skip, int limit);
+public class AuthenticatorRepo {
 
-    HttpStatus deleteByDeviceName(String name,String doer);
+    public interface Retrieve{
+        Boolean retrieveUsersDevice(String username);
 
-    HttpStatus deleteByUsername(String username,String doer);
+        Devices.DeviceList retrieve(String username, String deviceName, int skip, int limit);
 
-    Boolean retrieveUsersDevice(String username);
+    }
 
-    HttpStatus deleteByUsernameAndDeviceName(String username, String deviceName,String doer);
+    public interface Delete {
+        HttpStatus deleteByDeviceName(String name, String doer);
+
+        HttpStatus deleteByUsername(String username, String doer);
+
+        HttpStatus deleteByUsernameAndDeviceName(String username, String deviceName, String doer);
+    }
 }

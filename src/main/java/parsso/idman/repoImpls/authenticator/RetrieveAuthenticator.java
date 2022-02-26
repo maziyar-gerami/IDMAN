@@ -1,17 +1,22 @@
-package parsso.idman.repoImpls.authenticator.subClasses;
+package parsso.idman.repoImpls.authenticator;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Devices;
+import parsso.idman.repos.AuthenticatorRepo;
 
-public class Retrieve {
+@Service
+public class RetrieveAuthenticator implements AuthenticatorRepo.Retrieve {
     final MongoTemplate mongoTemplate;
     final UniformLogger uniformLogger;
 
-    public Retrieve(MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
+    @Autowired
+    public RetrieveAuthenticator(MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
         this.mongoTemplate = mongoTemplate;
         this.uniformLogger = uniformLogger;
     }

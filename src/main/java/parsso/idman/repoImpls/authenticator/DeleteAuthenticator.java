@@ -1,24 +1,29 @@
-package parsso.idman.repoImpls.authenticator.subClasses;
+package parsso.idman.repoImpls.authenticator;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.Devices;
+import parsso.idman.repos.AuthenticatorRepo;
 
-public class Delete {
+@Service
+public class DeleteAuthenticator implements AuthenticatorRepo.Delete {
 
     MongoTemplate mongoTemplate;
     UniformLogger uniformLogger;
 
-    public Delete(MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
+    @Autowired
+    public DeleteAuthenticator(MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
         this.mongoTemplate = mongoTemplate;
         this.uniformLogger = uniformLogger;
     }
-
+    @Override
     public HttpStatus deleteByDeviceName(String name, String doer) {
         Devices device = mongoTemplate.findOne(new Query(Criteria.where("name").is(name)), Devices.class, Variables.col_devices);
         if (device == null)
@@ -36,7 +41,7 @@ public class Delete {
         }
         return HttpStatus.NO_CONTENT;
     }
-
+    @Override
     public HttpStatus deleteByUsername(String username, String doer) {
 
         Devices device = mongoTemplate.findOne(new Query(Criteria.where("username").is(username)), Devices.class, Variables.col_devices);
@@ -55,7 +60,7 @@ public class Delete {
         }
         return HttpStatus.NO_CONTENT;
     }
-
+    @Override
     public HttpStatus deleteByUsernameAndDeviceName(String username, String deviceName, String doer) {
         Query query = new Query(Criteria.where("username").is(username).and("name").is(deviceName));
 
