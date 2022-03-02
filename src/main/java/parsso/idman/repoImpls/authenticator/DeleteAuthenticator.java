@@ -49,7 +49,7 @@ public class DeleteAuthenticator implements AuthenticatorRepo.Delete {
             return HttpStatus.FORBIDDEN;
 
         try {
-            mongoTemplate.findAndRemove(new Query(Criteria.where("username").is(username)), Devices.class, Variables.col_devices);
+            mongoTemplate.remove(new Query(Criteria.where("username").is(username)), Devices.class, Variables.col_devices);
             uniformLogger.info(doer,
                     new ReportMessage(Variables.MODEL_AUTHENTICATOR, username, Variables.ACTION_DELETE, Variables.RESULT_SUCCESS));
 
