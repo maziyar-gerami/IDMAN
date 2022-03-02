@@ -21,7 +21,6 @@ import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Property;
 import parsso.idman.models.other.Setting;
 import parsso.idman.models.other.Time;
-import parsso.idman.repoImpls.settings.helper.PreferenceSettings;
 import parsso.idman.repos.SettingsRepo;
 
 import javax.annotation.PostConstruct;

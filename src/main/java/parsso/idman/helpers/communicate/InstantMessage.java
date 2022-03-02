@@ -3,12 +3,13 @@ package parsso.idman.helpers.communicate;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.stereotype.Service;
+
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
@@ -22,7 +23,7 @@ import parsso.idman.utils.sms.magfa.Texts;
 import java.util.LinkedList;
 import java.util.List;
 
-@Configuration
+@Service
 public class InstantMessage {
 
     @Autowired

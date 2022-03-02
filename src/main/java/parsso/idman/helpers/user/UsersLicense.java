@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;

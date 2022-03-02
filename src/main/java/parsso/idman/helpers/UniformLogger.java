@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import parsso.idman.models.logs.Change;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.repoImpls.services.RetrieveService;
-import parsso.idman.repos.ServiceRepo;
 
 import java.util.LinkedList;
 import java.util.List;

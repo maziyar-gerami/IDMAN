@@ -16,6 +16,7 @@ import parsso.idman.models.groups.Group;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repoImpls.groups.helper.BuildDnGroup;
+import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 @Service
-public class DeleteGroup {
+public class DeleteGroup implements GroupRepo.Delete {
     final LdapTemplate ldapTemplate;
     final UniformLogger uniformLogger;
     final MongoTemplate mongoTemplate;
@@ -47,8 +48,14 @@ public class DeleteGroup {
         DirContextOperations context;
         for (String s : jsonArray) {
             Group group = retrieveGroup.retrieve(false, s);
-
-            Name dn = new BuildDnGroup(BASE_DN).buildDn(group.getId());
+            Name dn = null;
+            try{
+            dn = new BuildDnGroup(BASE_DN).buildDn(group.getId());
+        }catch(Exception e){
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, s, Variables.MODEL_GROUP,
+                        Variables.ACTION_REMOVE, Variables.RESULT_FAILED, "Not exist"));
+                        continue;
+        }
             try {
                 ldapTemplate.unbind(dn);
                 uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, group.getId(), Variables.MODEL_GROUP,

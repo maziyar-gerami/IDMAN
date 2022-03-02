@@ -11,9 +11,10 @@ import parsso.idman.models.groups.Group;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.repoImpls.groups.helper.BuildAttribute;
 import parsso.idman.repoImpls.groups.helper.BuildDnGroup;
+import parsso.idman.repos.GroupRepo;
 
 @Service
-public class CreateGroup {
+public class CreateGroup implements GroupRepo.Create {
     final LdapTemplate ldapTemplate;
     final UniformLogger uniformLogger;
     final RetrieveGroup retrieveGroup;

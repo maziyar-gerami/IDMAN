@@ -10,7 +10,6 @@ import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
-import parsso.idman.helpers.oneTimeTasks.PWDreset;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Property;

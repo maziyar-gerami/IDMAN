@@ -11,7 +11,6 @@ import parsso.idman.repoImpls.users.usersOprations.retrieve.subClass.Conditional
 import parsso.idman.repoImpls.users.usersOprations.retrieve.subClass.FullAttributes;
 import parsso.idman.repoImpls.users.usersOprations.retrieve.subClass.MainAttributes;
 import parsso.idman.repoImpls.users.usersOprations.retrieve.helper.Parameters;
-import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 import java.util.List;
 

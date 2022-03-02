@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import parsso.idman.models.groups.Group;
 import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.ServiceRepo;
@@ -16,11 +14,11 @@ import java.util.List;
 
 @SuppressWarnings("ALL")
 public class GroupLicense {
-    GroupRepo groupRepo;
+    GroupRepo.Retrieve groupRepoRetrieve;
     ServiceRepo.Retrieve serviceRepo;
 
-    public GroupLicense(GroupRepo groupRepo, ServiceRepo.Retrieve serviceRepo) {
-        this.groupRepo = groupRepo;
+    public GroupLicense(GroupRepo.Retrieve groupRepoRetrieve, ServiceRepo.Retrieve serviceRepo) {
+        this.groupRepoRetrieve = groupRepoRetrieve;
         this.serviceRepo = serviceRepo;
     }
 
@@ -31,7 +29,7 @@ public class GroupLicense {
         JSONArray jsonArray = (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes().get("ou"))).get(1);
         for (Object name : jsonArray)
             try {
-                groups.add(groupRepo.retrieveOu(true, name.toString()));
+                groups.add(groupRepoRetrieve.retrieve(true, name.toString()));
             } catch (NullPointerException ignored) {
             }
         return groups;

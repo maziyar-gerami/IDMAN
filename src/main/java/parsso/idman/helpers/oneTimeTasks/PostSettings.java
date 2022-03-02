@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.reloadConfigs.PasswordSettings;
@@ -16,7 +15,6 @@ import parsso.idman.repos.SettingsRepo;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;

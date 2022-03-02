@@ -9,17 +9,25 @@ import parsso.idman.models.users.User;
 import java.util.List;
 
 @SuppressWarnings("SameReturnValue")
-public interface GroupRepo {
-    List<Group> retrieve();
+public class GroupRepo {
+    public interface Retrieve {
+        List<Group> retrieve();
+        Group retrieve(boolean simple, String name);
 
-    HttpStatus create(String doerId, Group ou);
+        List<Group> retrieve(User user);
 
-    HttpStatus update(String doerID, String name, Group ou);
+    }
 
-    HttpStatus remove(String doerId, JSONObject jsonObject);
+    public interface Update{
+        HttpStatus update(String doerID, String name, Group ou);
+    }
 
-    Group retrieveOu(boolean simple, String name);
+    public interface Create{
+        HttpStatus create(String doerId, Group ou);
 
-    List<Group> retrieveCurrentUserGroup(User user);
+    }
 
+    public interface Delete{
+        HttpStatus remove(String doerId, JSONObject jsonObject);
+    }
 }

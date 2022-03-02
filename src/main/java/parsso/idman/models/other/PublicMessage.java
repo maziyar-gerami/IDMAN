@@ -23,7 +23,6 @@ public class PublicMessage {
     private Long createDate;
     @JsonIgnore
     private Long updateDate;
-    private Time createTime;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Time updateTime;
     private String body;

@@ -37,7 +37,6 @@ public class LicensedAndUnlicensed {
         return licensed;
     }
 
-    @SuppressWarnings("unchecked")
     public List licensedServiceWithGroupID(List<MicroService> licensed, List<MicroService> unLicensed, Service service, List<String> memberOf) {
 
         if (memberOf != null)

@@ -11,13 +11,14 @@ import parsso.idman.models.groups.Group;
 import parsso.idman.models.users.User;
 import parsso.idman.repoImpls.groups.helper.OUAttributeMapper;
 import parsso.idman.repoImpls.services.ServicesGroup;
+import parsso.idman.repos.GroupRepo;
 
 import javax.naming.directory.SearchControls;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class RetrieveGroup {
+public class RetrieveGroup implements GroupRepo.Retrieve {
     final LdapTemplate ldapTemplate;
     final MongoTemplate mongoTemplate;
     @Value("${spring.ldap.base.dn}")

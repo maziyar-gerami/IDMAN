@@ -19,7 +19,6 @@ import parsso.idman.models.services.Service;
 import parsso.idman.models.services.serviceType.SamlService;
 import parsso.idman.models.services.servicesSubModel.*;
 import parsso.idman.repoImpls.services.RetrieveService;
-import parsso.idman.repos.ServiceRepo;
 
 import java.io.File;
 import java.io.FileReader;

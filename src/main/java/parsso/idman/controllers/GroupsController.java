@@ -15,6 +15,7 @@ import parsso.idman.repoImpls.groups.CreateGroup;
 import parsso.idman.repoImpls.groups.DeleteGroup;
 import parsso.idman.repoImpls.groups.RetrieveGroup;
 import parsso.idman.repoImpls.groups.UpdateGroup;
+import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
@@ -25,10 +26,10 @@ import java.util.List;
 public class GroupsController {
     private final UserRepo.UsersOp.Retrieve retrieveUsers;
     private final UserRepo.PasswordOp passwordOp;
-    private final RetrieveGroup retrieveGroup;
-    private final UpdateGroup updateGroup;
-    private final DeleteGroup deleteGroup;
-    private final CreateGroup createGroup;
+    private final GroupRepo.Retrieve retrieveGroup;
+    private final GroupRepo.Update updateGroup;
+    private final GroupRepo.Delete deleteGroup;
+    private final GroupRepo.Create createGroup;
 
 
     @Autowired
@@ -92,17 +93,17 @@ public class GroupsController {
     }
 
     @PutMapping("/password/expire")
-    public Response expireUsersGroupPassword(HttpServletRequest request,
+    public ResponseEntity<Response> expireUsersGroupPassword(HttpServletRequest request,
                                                       @RequestBody JSONObject jsonObject,
                                                       @RequestParam(value = "id", defaultValue = "") String id,
                                                       @RequestParam(value = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
 
-        String userId = "request.getUserPrincipal().getName()";
+        String userId = request.getUserPrincipal().getName();
 
         if (!id.equals(""))
-            return new Response(passwordOp.expire(userId, jsonObject),Variables.MODEL_GROUP, HttpStatus.OK.value(),lang);
+            return new ResponseEntity<>(new Response(passwordOp.expire(userId, jsonObject),Variables.MODEL_GROUP, HttpStatus.OK.value(),lang), HttpStatus.OK);
         else
-            return new ExpirePassword(passwordOp,retrieveUsers).expireUsersSpecGroupPassword(request,id,lang);
+            return new ResponseEntity<>(new ExpirePassword(passwordOp,retrieveUsers).expireUsersSpecGroupPassword(request,id,lang),HttpStatus.OK);
 
     }
 }

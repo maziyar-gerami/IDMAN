@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,6 @@ import parsso.idman.models.services.serviceType.OAuthService;
 import parsso.idman.models.services.servicesSubModel.*;
 import parsso.idman.models.users.UsersGroups;
 import parsso.idman.repoImpls.services.RetrieveService;
-import parsso.idman.repos.ServiceRepo;
 
 import java.io.File;
 import java.io.FileReader;

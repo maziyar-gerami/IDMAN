@@ -16,7 +16,6 @@ import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repoImpls.services.RetrieveService;
 import parsso.idman.repoImpls.users.usersOprations.retrieve.helper.UsersCount;
 import parsso.idman.repos.LogsRepo;
-import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 import parsso.idman.utils.convertor.DateUtils;
 

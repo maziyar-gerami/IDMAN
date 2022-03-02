@@ -24,7 +24,6 @@ public class Message {
     private Time closeTime;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Time reOpenTime;
-    private Time creationTime;
     @JsonIgnore
     private long creationLong;
     @JsonIgnore

@@ -2,7 +2,6 @@ package parsso.idman.helpers.user;
 
 
 import org.springframework.ldap.support.LdapNameBuilder;
-import org.springframework.stereotype.Service;
 
 import javax.naming.Name;
 

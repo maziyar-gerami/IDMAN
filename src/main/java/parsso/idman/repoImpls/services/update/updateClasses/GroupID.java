@@ -22,8 +22,8 @@ public class GroupID {
         updateUsers.usersWithSpecificOU(doerID, oldOu, newOu);
 
         //Update text
-        String fileName = String.valueOf(sid);
-        String s1 = fileName.replaceAll("\\s+", "");
+        //String fileName = String.valueOf(sid);
+        //String s1 = fileName.replaceAll("\\s+", "");
         String filePath = name + "-" + sid + ".json";
 
         ObjectMapper mapper = new ObjectMapper();

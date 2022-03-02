@@ -7,12 +7,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.AttributesMapper;
-import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.UserRepo;
 
 import javax.naming.directory.Attributes;
 import java.util.LinkedList;

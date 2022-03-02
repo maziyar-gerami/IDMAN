@@ -22,6 +22,7 @@ import parsso.idman.repoImpls.services.DeleteService;
 import parsso.idman.repoImpls.services.RetrieveService;
 import parsso.idman.repoImpls.services.update.UpdateService;
 import parsso.idman.repos.FilesStorageService;
+import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class UpdateGroup {
+public class UpdateGroup implements GroupRepo.Update {
     final LdapTemplate ldapTemplate;
     final MongoTemplate mongoTemplate;
     final UniformLogger uniformLogger;

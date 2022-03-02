@@ -2,7 +2,6 @@ package parsso.idman.helpers.reloadConfigs;
 
 
 import org.springframework.ldap.core.AttributesMapper;
-import org.springframework.stereotype.Service;
 import parsso.idman.models.other.PWD;
 
 import javax.naming.NamingException;

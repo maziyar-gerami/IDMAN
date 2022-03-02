@@ -11,7 +11,6 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.services.Service;
-import parsso.idman.models.services.serviceType.SamlService;
 import parsso.idman.models.services.servicesSubModel.ExtraInfo;
 import parsso.idman.repoImpls.services.types.CAS;
 import parsso.idman.repoImpls.services.types.OAuth;

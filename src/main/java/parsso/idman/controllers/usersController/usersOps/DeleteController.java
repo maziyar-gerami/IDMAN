@@ -1,6 +1,5 @@
 package parsso.idman.controllers.usersController.usersOps;
 
-import jdk.vm.ci.meta.Value;
 import net.minidev.json.JSONObject;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,6 @@ import parsso.idman.models.response.Response;
 import parsso.idman.repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.util.List;
 
 @RestController
