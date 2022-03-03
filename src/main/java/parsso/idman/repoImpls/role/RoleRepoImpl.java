@@ -13,6 +13,8 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.User.UserRole;
+import parsso.idman.repoImpls.role.subclass.Retrieve;
+import parsso.idman.repoImpls.role.subclass.Update;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.RolesRepo;
 
@@ -35,41 +37,11 @@ public class RoleRepoImpl implements RolesRepo {
 
     @Override
     public List<User.UserRole> retrieve() {
-        Query query = new Query();
-        try {
-            return mongoTemplate.find(query, UserRole.class, collection);
-
-        } catch (Exception e) {
-            return null;
-        }
+        return new Retrieve(mongoTemplate).retrieve();
     }
 
     @Override
     public HttpStatus updateRole(String doerID, String role, JSONObject users) {
-        int i = 0;
-        for (String userId : (List<String>) users.get("names")) {
-            try {
-                UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("_id").is(userId)), UsersExtraInfo.class, collection);
-                String oldRole = Objects.requireNonNull(usersExtraInfo).getRole();
-                usersExtraInfo.setRole(role);
-                mongoTemplate.save(usersExtraInfo, collection);
-                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_ROLE, userId, "", "change", Variables.RESULT_SUCCESS,
-                        "from \"" + oldRole + "\" to \"" + role + "\""));
-
-            } catch (Exception e) {
-                i++;
-                e.printStackTrace();
-                uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_ROLE, userId, "", "change", Variables.RESULT_FAILED, "due to writing to ldap"));
-
-            }
-
-            if (i > 0) {
-                uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_ROLE, userId, "", "change", Variables.RESULT_SUCCESS, "partially done"));
-                return HttpStatus.PARTIAL_CONTENT;
-
-            }
-        }
-        return HttpStatus.OK;
-
+        return new Update(mongoTemplate, uniformLogger).update(doerID, role, users);
     }
 }
