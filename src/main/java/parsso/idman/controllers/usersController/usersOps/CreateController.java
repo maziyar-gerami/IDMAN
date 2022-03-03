@@ -38,7 +38,7 @@ public class CreateController extends UsersOps {
     }
 
     @PostMapping("/api/users")
-    public ResponseEntity<Response> bindLdapUser(HttpServletRequest request, @RequestBody User user,@RequestParam(value="lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> bindLdapUser(HttpServletRequest request, @RequestBody User user,@RequestParam(value="lang",defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         JSONObject jsonObject = userOpCreate.create(request.getUserPrincipal().getName(), user);
 
         if (jsonObject == null || jsonObject.size() == 0)

@@ -25,14 +25,14 @@ public class AuthenticatorController {
                                                     @RequestParam(value = "deviceName", defaultValue = "") String name,
                                                     @RequestParam(value = "page", defaultValue = "0") String page,
                                                     @RequestParam(value = "count", defaultValue = "0") String count,
-                                                    @RequestParam(value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+                                                    @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         return new ResponseEntity<>(new Response(authenticatorRepoRetrieve.retrieve(username, name, Integer.parseInt(page), Integer.parseInt(count)),Variables.MODEL_USER,HttpStatus.OK.value(), lang), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/googleAuth")
     public ResponseEntity<Response> deleteBuUsername(HttpServletRequest request, @RequestParam(value = "username", defaultValue = "") String username,
                                                      @RequestParam(value = "deviceName", defaultValue = "") String deviceName,
-                                                     @RequestParam(value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+                                                     @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         if (username.equals("") && deviceName.equals(""))
             return new ResponseEntity<>(new Response(null, Variables.MODEL_AUTHENTICATOR, HttpStatus.FORBIDDEN.value(),lang), HttpStatus.OK);
 
@@ -49,7 +49,7 @@ public class AuthenticatorController {
 
     @GetMapping("/api/public/googleAuth/registered/{uid}")
     public ResponseEntity<Response> registeredDevices(@PathVariable("uid") String uid,
-                                                      @RequestParam(value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+                                                      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         Boolean result = authenticatorRepoRetrieve.retrieveUsersDevice(uid);
         if (result)
             return new ResponseEntity<>(new Response(true, Variables.MODEL_AUTHENTICATOR,HttpStatus.OK.value(), lang),HttpStatus.OK);

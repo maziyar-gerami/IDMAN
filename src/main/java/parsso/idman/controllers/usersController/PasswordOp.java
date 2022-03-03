@@ -55,7 +55,7 @@ public class PasswordOp extends UsersOps{
 
     @PutMapping("/api/public/resetPass/{uid}/{token}")
     public ResponseEntity<Response> rebindLdapUser(@RequestParam("newPassword") String newPassword,
-                                                   @RequestParam(value = "lang", defaultValue = "fa")  String lang, @PathVariable("token") String token,
+                                                   @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG)  String lang, @PathVariable("token") String token,
                                                    @PathVariable("uid") String uid) throws NoSuchFieldException, IllegalAccessException {
         JSONObject objectResult = new JSONObject();
         String dn = "cn=DefaultPPolicy,ou=Policies," + BASE_DN;
@@ -73,7 +73,7 @@ public class PasswordOp extends UsersOps{
     }
 
     @PutMapping("/api/user/password")
-    public ResponseEntity<Response> changePassword(HttpServletRequest request, @RequestParam(value = "lang", defaultValue = "fa") String lang,
+    public ResponseEntity<Response> changePassword(HttpServletRequest request, @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang,
                                                    @RequestBody JSONObject jsonObject) throws NoSuchFieldException, IllegalAccessException {
         JSONObject objectResult = new JSONObject();
         String newPassword = jsonObject.getAsString("newPassword");
@@ -111,7 +111,7 @@ public class PasswordOp extends UsersOps{
 
 
     @PutMapping("/api/public/changePassword")
-    public ResponseEntity<Response> changePasswordWithoutToken(@RequestBody JSONObject jsonObject, @RequestParam(value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> changePasswordWithoutToken(@RequestBody JSONObject jsonObject, @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         String currentPassword = jsonObject.getAsString("currentPassword");
         String newPassword = jsonObject.getAsString("newPassword");
         String userId = jsonObject.getAsString("userId");

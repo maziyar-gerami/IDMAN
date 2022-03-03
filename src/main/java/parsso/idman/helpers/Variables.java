@@ -118,6 +118,7 @@ public class Variables {
     public static final int PER_BATCH_COUNT = 1000;
     public static final String col_Token = "Tokens";
     public static String col_propertiesBackup = "IDMAN_PropertiesBackup";
+    public static final String DEFAULT_LANG = "fa";
 
     public static String template(User user, String url) {
 

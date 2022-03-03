@@ -173,7 +173,7 @@ public class User implements UserDetails, Comparable<User> {
     @Setter
     @ToString
     public static class UserRole {
-        String userId;
+        String _id;
         String role;
     }
 
@@ -181,7 +181,7 @@ public class User implements UserDetails, Comparable<User> {
     @Setter
     @Getter
     public static class UserLoggedIn {
-        String userId;
+        String _id;
         boolean loggedIn;
     }
 

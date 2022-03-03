@@ -61,7 +61,7 @@ public class PWDreset {
         int c = 0;
         char[] animationChars = new char[]{'|', '/', '-', '\\'};
         for (UserLoggedIn userLoggedIn : usersLoggedIn) {
-            UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("_id").is(userLoggedIn.getUserId())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+            UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("_id").is(userLoggedIn.get_id())), UsersExtraInfo.class, Variables.col_usersExtraInfo);
             try {
                 assert usersExtraInfo != null;
                 usersExtraInfo.setLoggedIn(userLoggedIn.isLoggedIn());
@@ -78,13 +78,13 @@ public class PWDreset {
                     modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdReset", "TRUE"));
 
                 try {
-                    ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(userLoggedIn.getUserId()), modificationItems);
+                    ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(userLoggedIn.get_id()), modificationItems);
                 } catch (Exception ignore) {
 
                 }
 
             } catch (Exception e) {
-                uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, userLoggedIn.getUserId(), Variables.ATTR_LOGGEDIN, Variables.ACTION_SET, Variables.RESULT_FAILED, "Writing to DB"));
+                uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, userLoggedIn.get_id(), Variables.ATTR_LOGGEDIN, Variables.ACTION_SET, Variables.RESULT_FAILED, "Writing to DB"));
             }
             int i = (++c * 100 / usersLoggedIn.size());
 

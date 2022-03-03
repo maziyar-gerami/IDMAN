@@ -25,7 +25,7 @@ public class RolesController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<Response> retrieveRoles(@RequestParam(value = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> retrieveRoles(@RequestParam(value = "lang",defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         List<UserRole> roles = rolesRepo.retrieve();
         if (roles!= null)
             return new ResponseEntity<>(new Response(roles, Variables.MODEL_ROLE, HttpStatus.OK.value(),lang),HttpStatus.OK);
@@ -33,7 +33,7 @@ public class RolesController {
     }
 
     @PutMapping("/{role}")
-    public ResponseEntity<Response> updateTicket(HttpServletRequest request, @RequestBody JSONObject users, @PathVariable("role") String role, @RequestParam(value = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> updateTicket(HttpServletRequest request, @RequestBody JSONObject users, @PathVariable("role") String role, @RequestParam(value = "lang",defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         HttpStatus code = rolesRepo.updateRole(request.getUserPrincipal().getName(), role, users);
         return new ResponseEntity<>(new Response(null,Variables.MODEL_ROLE, code.value(),lang),code);
     }

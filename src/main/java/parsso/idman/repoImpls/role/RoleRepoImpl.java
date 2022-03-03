@@ -47,11 +47,9 @@ public class RoleRepoImpl implements RolesRepo {
     @Override
     public HttpStatus updateRole(String doerID, String role, JSONObject users) {
         int i = 0;
-        List<String> userIDs = (List<String>) users.get("names");
-        for (String userId : userIDs) {
+        for (String userId : (List<String>) users.get("names")) {
             try {
-                Query query = new Query(Criteria.where("_id").is(userId));
-                UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
+                UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("_id").is(userId)), UsersExtraInfo.class, collection);
                 String oldRole = Objects.requireNonNull(usersExtraInfo).getRole();
                 usersExtraInfo.setRole(role);
                 mongoTemplate.save(usersExtraInfo, collection);
