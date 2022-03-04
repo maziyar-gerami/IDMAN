@@ -19,8 +19,11 @@ import parsso.idman.utils.captcha.repoImp.subClass.Phrase;
 @Getter
 @Service
 public class CaptchaRepoImp implements CAPTCHARepo {
-    @Autowired
     MongoTemplate mongoTemplate;
+    @Autowired
+    public CaptchaRepoImp(MongoTemplate mongoTemplate){
+        this.mongoTemplate=mongoTemplate;
+    }
 
     int len;
     double alphabetRate;

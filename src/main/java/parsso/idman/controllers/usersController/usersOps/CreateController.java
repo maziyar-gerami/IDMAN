@@ -28,17 +28,15 @@ public class CreateController extends UsersOps {
     private final int[] defaultSequence = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
     private final UserRepo.UsersOp.Create userOpCreate;
-    private final UserRepo.UsersOp.Retrieve usersOpRetrieve;
 
     @Autowired
     public CreateController(Token tokenClass, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve, UserRepo.UsersOp.Create UserOpCreate, UserRepo.UsersOp.Create userOpCreate) {
         super(tokenClass, ldapTemplate, mongoTemplate,usersOpRetrieve);
         this.userOpCreate = userOpCreate;
-        this.usersOpRetrieve = usersOpRetrieve;
     }
 
     @PostMapping("/api/users")
-    public ResponseEntity<Response> bindLdapUser(HttpServletRequest request, @RequestBody User user,@RequestParam(value="lang",defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> bindLdapUser(HttpServletRequest request, @RequestBody User user,@RequestParam(value="lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         JSONObject jsonObject = userOpCreate.create(request.getUserPrincipal().getName(), user);
 
         if (jsonObject == null || jsonObject.size() == 0)

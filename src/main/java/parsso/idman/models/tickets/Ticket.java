@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.types.ObjectId;
 import parsso.idman.models.other.Time;
 
 import java.util.Date;
@@ -15,8 +14,7 @@ import java.util.Random;
 @Setter
 @Getter
 public class Ticket {
-    ObjectId _id;
-    String ID;
+    Object _id;
     String from;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     String to;
@@ -48,13 +46,13 @@ public class Ticket {
         this.from = from;
         this.to = "SUPPORTER";
         this.creationTime = new Date().getTime();
-        this.ID = new Random().nextInt(899) + 100 + "-" + getCreationTime().toString().substring(7);
+        this._id = new Random().nextInt(899) + 100 + "-" + getCreationTime().toString().substring(7);
         this.subject = subject;
         this.messages = messages;
     }
 
     public Ticket(Ticket ticket, List<Message> messages) {
-        this.ID = ticket.getID();
+        this._id = ticket.get_id();
         this.from = ticket.getFrom();
         this.creationTime = ticket.getCreationTime();
         this.modifiedTime = new Date().getTime();

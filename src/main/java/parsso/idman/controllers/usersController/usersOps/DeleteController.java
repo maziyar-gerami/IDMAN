@@ -30,7 +30,7 @@ public class DeleteController extends UsersOps {
     }
 
     @DeleteMapping("/api/users")
-    public ResponseEntity<Response> unbindAllLdapUser(HttpServletRequest request, @RequestBody JSONObject jsonObject,@RequestParam(value= "lang",defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> unbindAllLdapUser(HttpServletRequest request, @RequestBody JSONObject jsonObject,@RequestParam(value= "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         List<String> names = usersOpDelete.remove(request.getUserPrincipal().getName(), jsonObject);
         if (names.size() == 0)
             return new ResponseEntity<>(new Response(null,Variables.MODEL_USER,HttpStatus.NO_CONTENT.value(), lang), HttpStatus.OK);

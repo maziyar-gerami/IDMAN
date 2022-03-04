@@ -28,7 +28,7 @@ public class TicketsController {
 
     @PostMapping("/api/user/ticket")
     public ResponseEntity<HttpStatus> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request) {
-        return new ResponseEntity<>(ticketRepo.sendTicket(ticket, request.getUserPrincipal().getName().toLowerCase()));
+        return new ResponseEntity<>(ticketRepo.sendTicket(ticket, "su"));
     }
 
     @PutMapping("/api/user/ticket/reply/{ticketID}")
@@ -40,7 +40,7 @@ public class TicketsController {
     @GetMapping("/api/user/ticket/{ticketID}")
     public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request) {
         Ticket ticket = ticketRepo.retrieveTicket(ticketID);
-        User user = retrieveUsers.retrieveUsers(request.getUserPrincipal().getName().toLowerCase());
+        User user = retrieveUsers.retrieveUsers("su");
         if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))
             if (user.get_id().toString().equalsIgnoreCase(ticket.getTo()) || user.get_id().toString().equalsIgnoreCase(ticket.getFrom()))
                 return new ResponseEntity<>(ticket, HttpStatus.OK);

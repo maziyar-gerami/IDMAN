@@ -45,7 +45,7 @@ public class GroupsController {
 
     @GetMapping("/user")
     public ResponseEntity<Response> retrieveUserOU(HttpServletRequest request,
-                                                   @RequestParam(value = "lang",defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+                                                   @RequestParam(value = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         User user = retrieveUsers.retrieveUsers(request.getUserPrincipal().getName());
         if (user == null)
             return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
@@ -59,14 +59,14 @@ public class GroupsController {
 
     @PostMapping
     public ResponseEntity<Response> bindLdapGroup(HttpServletRequest request,
-                                                  @RequestParam(value = "lang",defaultValue = Variables.DEFAULT_LANG) String lang, @RequestBody Group group) throws NoSuchFieldException, IllegalAccessException {
+                                                  @RequestParam(value = "lang",defaultValue = "fa") String lang, @RequestBody Group group) throws NoSuchFieldException, IllegalAccessException {
         return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
                 createGroup.create(request.getUserPrincipal().getName(),group).value(), lang),HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<?> retrieveGroups(@RequestParam(value = "id", defaultValue = "") String id,
-                                            @RequestParam(value = "lang",defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+                                            @RequestParam(value = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         if (!id.equals(""))
         return new ResponseEntity<>(new Response(retrieveGroup.retrieve(false, id), Variables.MODEL_GROUP,
                 HttpStatus.OK.value(), lang),HttpStatus.OK);
@@ -80,14 +80,14 @@ public class GroupsController {
 
     @DeleteMapping
     public ResponseEntity<Response> unbindAllLdapOU(HttpServletRequest request, @RequestBody JSONObject jsonObject,
-                                                      @RequestParam(value = "lang",defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+                                                      @RequestParam(value = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
                 deleteGroup.remove(request.getUserPrincipal().getName(), jsonObject).value(), lang),HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<Response> rebind(HttpServletRequest request, @RequestParam(value = "id") String ouID,
-                                             @RequestBody Group ou,@RequestParam(value = "lang",defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+                                             @RequestBody Group ou,@RequestParam(value = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
                 updateGroup.update(request.getUserPrincipal().getName(), ouID, ou).value(), lang),HttpStatus.OK);
     }
@@ -96,7 +96,7 @@ public class GroupsController {
     public ResponseEntity<Response> expireUsersGroupPassword(HttpServletRequest request,
                                                       @RequestBody JSONObject jsonObject,
                                                       @RequestParam(value = "id", defaultValue = "") String id,
-                                                      @RequestParam(value = "lang",defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+                                                      @RequestParam(value = "lang",defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
 
         String userId = request.getUserPrincipal().getName();
 

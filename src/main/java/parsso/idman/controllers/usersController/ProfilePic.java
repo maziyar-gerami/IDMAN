@@ -32,7 +32,7 @@ public class ProfilePic extends UsersOps {
 
 
     @DeleteMapping("/api/user/photo")
-    public ResponseEntity<Response> deleteImage(HttpServletRequest request, @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> deleteImage(HttpServletRequest request, @RequestParam(name = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         parsso.idman.models.users.User user = usersOpRetrieve.retrieveUsers(request.getUserPrincipal().getName());
         if (profilePic.delete(user))
             return new ResponseEntity<>(new Response(true,Variables.MODEL_USER,HttpStatus.OK.value(), lang), HttpStatus.OK);
@@ -40,7 +40,7 @@ public class ProfilePic extends UsersOps {
     }
 
     @PostMapping("/api/user/photo")
-    public ResponseEntity<Response> uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> uploadProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(name = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         if (profilePic.upload(file, request.getUserPrincipal().getName()))
             return new ResponseEntity<>(new Response(true,Variables.MODEL_USER, HttpStatus.OK.value(), lang), HttpStatus.OK);
         return new ResponseEntity<>(new Response(true, Variables.MODEL_USER, HttpStatus.BAD_REQUEST.value(), lang), HttpStatus.OK);

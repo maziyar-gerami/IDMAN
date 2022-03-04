@@ -39,7 +39,7 @@ public class TokenManagementController {
     }
 
     @GetMapping("/valid")
-    ResponseEntity<Response> retrieve(@RequestParam("username") String userId, @RequestParam("token") String token, @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+    ResponseEntity<Response> retrieve(@RequestParam("username") String userId, @RequestParam("token") String token, @RequestParam(value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
         return new ResponseEntity<>(new Response(tokenManagement.valid(userId, token),Variables.MODEL_TOKEN,HttpStatus.OK.value(), lang), HttpStatus.OK);
     }
 
