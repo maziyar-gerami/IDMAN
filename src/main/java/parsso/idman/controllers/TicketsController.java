@@ -34,7 +34,7 @@ public class TicketsController {
     @PutMapping("/api/user/ticket/reply/{ticketID}")
     public ResponseEntity<HttpStatus> replyTicket(@PathVariable("ticketID") String ticketID,
                                                   @RequestBody Ticket ticket, HttpServletRequest request) {
-        return new ResponseEntity<>(ticketRepo.reply(ticketID, request.getUserPrincipal().getName().toLowerCase(), ticket));
+        return new ResponseEntity<>(ticketRepo.reply(ticketID, "su", ticket));
     }
 
     @GetMapping("/api/user/ticket/{ticketID}")
@@ -52,7 +52,7 @@ public class TicketsController {
 
     @DeleteMapping("/api/user/ticket")
     public ResponseEntity<HttpStatus> deleteTicket(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
-        return new ResponseEntity<>(ticketRepo.deleteTicket(request.getUserPrincipal().getName().toLowerCase(),
+        return new ResponseEntity<>(ticketRepo.deleteTicket("su",
                 jsonObject) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
@@ -61,13 +61,13 @@ public class TicketsController {
                                                   @RequestParam(name = "date", defaultValue = "") String date,
                                                   @PathVariable(name = "count") String count) {
 
-        return new ResponseEntity<>(ticketRepo.retrieveSentTickets(request.getUserPrincipal().getName().toLowerCase(), page, count, date), HttpStatus.OK);
+        return new ResponseEntity<>(ticketRepo.retrieveSentTickets("su", page, count, date), HttpStatus.OK);
     }
 
     @PutMapping("/api/supporter/ticket/status/{status}")
     public ResponseEntity<HttpStatus> updateTicketStatus(@PathVariable int status, @RequestBody JSONObject jsonObject,
                                                          HttpServletRequest request) {
-        return new ResponseEntity<>(ticketRepo.updateTicketStatus(request.getUserPrincipal().getName().toLowerCase(), status, jsonObject) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ticketRepo.updateTicketStatus("su", status, jsonObject) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
 
     }
 
@@ -85,7 +85,7 @@ public class TicketsController {
     public ResponseEntity<HttpStatus> updateTicket(@RequestBody Ticket ticket, @PathVariable("ticketID") String ticketID,
                                                    HttpServletRequest request) {
 
-        return new ResponseEntity<>(ticketRepo.updateTicket(request.getUserPrincipal().getName().toLowerCase(), ticketID, ticket) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ticketRepo.updateTicket("su", ticketID, ticket) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/api/supporter/tickets/{page}/{count}")
