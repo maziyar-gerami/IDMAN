@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.response.Response;
 import parsso.idman.models.tickets.ListTickets;
 import parsso.idman.models.tickets.Ticket;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.TicketRepo;
 import parsso.idman.repos.UserRepo;
-
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
@@ -27,69 +29,82 @@ public class TicketsController {
     }
 
     @PostMapping("/api/user/ticket")
-    public ResponseEntity<HttpStatus> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request) {
-        return new ResponseEntity<>(ticketRepo.sendTicket(ticket, "su"));
+    public ResponseEntity<Response> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+        return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, ticketRepo.sendTicket(ticket, "su").value(),lang),HttpStatus.CREATED);
     }
 
     @PutMapping("/api/user/ticket/reply/{ticketID}")
-    public ResponseEntity<HttpStatus> replyTicket(@PathVariable("ticketID") String ticketID,
-                                                  @RequestBody Ticket ticket, HttpServletRequest request) {
-        return new ResponseEntity<>(ticketRepo.reply(ticketID, "su", ticket));
+    public ResponseEntity<Response> replyTicket(@PathVariable("ticketID") String ticketID,
+                                                  @RequestBody Ticket ticket, HttpServletRequest request,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+        return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, ticketRepo.reply(ticketID, "su", ticket).value(), lang), HttpStatus.OK);
     }
 
     @GetMapping("/api/user/ticket/{ticketID}")
-    public ResponseEntity<Ticket> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request) {
+    public ResponseEntity<Response> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         Ticket ticket = ticketRepo.retrieveTicket(ticketID);
         User user = retrieveUsers.retrieveUsers("su");
         if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))
             if (user.get_id().toString().equalsIgnoreCase(ticket.getTo()) || user.get_id().toString().equalsIgnoreCase(ticket.getFrom()))
-                return new ResponseEntity<>(ticket, HttpStatus.OK);
+                return new ResponseEntity<>(new Response(ticket,Variables.MODEL_TICKETING, HttpStatus.OK.value(),lang), HttpStatus.OK);
             else
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, HttpStatus.FORBIDDEN.value(), lang), HttpStatus.OK);
         else
-            return new ResponseEntity<>(ticket, ticket != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+            if (ticket != null) 
+                return new ResponseEntity<>(new Response(ticket,Variables.MODEL_TICKETING, HttpStatus.OK.value(),lang),HttpStatus.OK);
+                return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, HttpStatus.BAD_REQUEST.value(),lang),HttpStatus.OK);
     }
 
     @DeleteMapping("/api/user/ticket")
-    public ResponseEntity<HttpStatus> deleteTicket(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
-        return new ResponseEntity<>(ticketRepo.deleteTicket("su",
-                jsonObject) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Response> deleteTicket(@RequestBody JSONObject jsonObject, HttpServletRequest request,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+            if(ticketRepo.deleteTicket("su",jsonObject) == HttpStatus.OK)
+                return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, HttpStatus.OK.value(),lang),HttpStatus.OK);    
+                return new ResponseEntity<>(new Response(null, Variables.MODEL_TICKETING, HttpStatus.BAD_REQUEST.value(),lang),HttpStatus.OK);
     }
 
     @GetMapping("/api/user/tickets/sent/{page}/{count}")
-    public ResponseEntity<ListTickets> sendTicket(HttpServletRequest request, @PathVariable(name = "page") String page,
+    public ResponseEntity<Response> sendTicket(HttpServletRequest request, @PathVariable(name = "page") String page,
                                                   @RequestParam(name = "date", defaultValue = "") String date,
-                                                  @PathVariable(name = "count") String count) {
+                                                  @PathVariable(name = "count") String count,
+                                                  @RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
 
-        return new ResponseEntity<>(ticketRepo.retrieveSentTickets("su", page, count, date), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(ticketRepo.retrieveSentTickets("su", page, count, date),Variables.MODEL_TICKETING,HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
 
     @PutMapping("/api/supporter/ticket/status/{status}")
-    public ResponseEntity<HttpStatus> updateTicketStatus(@PathVariable int status, @RequestBody JSONObject jsonObject,
-                                                         HttpServletRequest request) {
-        return new ResponseEntity<>(ticketRepo.updateTicketStatus("su", status, jsonObject) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Response> updateTicketStatus(@PathVariable int status, @RequestBody JSONObject jsonObject,
+                                                         HttpServletRequest request
+                                                         ,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+        if (ticketRepo.updateTicketStatus("su", status, jsonObject) == HttpStatus.OK)
+            return new ResponseEntity<>(new Response(null, Variables.MODEL_TICKETING, HttpStatus.OK.value(),lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(null, Variables.MODEL_TICKETING, HttpStatus.BAD_REQUEST.value(),lang), HttpStatus.OK);
+
 
     }
 
     @GetMapping("/api/supporter/tickets/inbox/{page}/{count}")
-    public ResponseEntity<ListTickets> received(HttpServletRequest request, @PathVariable(name = "page") String page,
+    public ResponseEntity<Response> received(HttpServletRequest request, @PathVariable(name = "page") String page,
                                                 @RequestParam(name = "from", defaultValue = "") String from,
                                                 @RequestParam(name = "id", defaultValue = "") String id,
                                                 @RequestParam(name = "date", defaultValue = "") String date,
-                                                @PathVariable(name = "count") String count) {
+                                                @PathVariable(name = "count") String count
+                                                ,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         ListTickets tickets = ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName(), page, count, from, id, date);
-        return new ResponseEntity<>(tickets, HttpStatus.OK);
+        return new ResponseEntity<>(new Response(tickets,Variables.MODEL_TICKETING, HttpStatus.OK.value(),lang),HttpStatus.OK);
     }
 
     @PutMapping("/api/user/ticket/{ticketID}")
-    public ResponseEntity<HttpStatus> updateTicket(@RequestBody Ticket ticket, @PathVariable("ticketID") String ticketID,
-                                                   HttpServletRequest request) {
+    public ResponseEntity<Response> updateTicket(@RequestBody Ticket ticket, @PathVariable("ticketID") String ticketID,
+                                                   HttpServletRequest request
+                                                   ,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
 
-        return new ResponseEntity<>(ticketRepo.updateTicket("su", ticketID, ticket) == HttpStatus.OK ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+    if (ticketRepo.updateTicket("su", ticketID, ticket) == HttpStatus.OK)
+        return new ResponseEntity<>(new Response(null, Variables.MODEL_TICKETING, HttpStatus.OK.value(), lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(null, Variables.MODEL_TICKETING, HttpStatus.BAD_REQUEST.value(), lang), HttpStatus.OK);
+
     }
 
     @GetMapping("/api/supporter/tickets/{page}/{count}")
-    public ResponseEntity<ListTickets> pendingTickets(@RequestParam(name = "cat", defaultValue = "") String cat,
+    public ResponseEntity<Response> pendingTickets(@RequestParam(name = "cat", defaultValue = "") String cat,
                                                       @RequestParam(name = "subCat", defaultValue = "") String subCat,
                                                       @RequestParam(name = "status", defaultValue = "") String status,
                                                       @RequestParam(name = "from", defaultValue = "") String from,
@@ -97,23 +112,25 @@ public class TicketsController {
                                                       @RequestParam(name = "date", defaultValue = "") String date,
                                                       @PathVariable(name = "page") String page,
                                                       @PathVariable(name = "count") String count,
-                                                      HttpServletRequest request) {
+                                                      HttpServletRequest request
+                                                      ,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         ListTickets ls = ticketRepo.retrieve(request.getUserPrincipal().getName(), cat, subCat, status, page, count, from, id, date);
-        return new ResponseEntity<>(ls, HttpStatus.OK);
+        return new ResponseEntity<>(new Response(ls,Variables.MODEL_TICKETING, HttpStatus.OK.value(),lang), HttpStatus.OK);
 
     }
 
     @GetMapping("/api/superuser/tickets/archive/{page}/{count}")
-    public ResponseEntity<ListTickets> archiveTickets(@RequestParam(name = "cat", defaultValue = "") String cat,
+    public ResponseEntity<Response> archiveTickets(@RequestParam(name = "cat", defaultValue = "") String cat,
                                                       @RequestParam(name = "subCat", defaultValue = "") String subCat,
                                                       @RequestParam(name = "status", defaultValue = "") String status,
                                                       @RequestParam(name = "from", defaultValue = "") String from,
                                                       @RequestParam(name = "id", defaultValue = "") String id,
                                                       @RequestParam(name = "date", defaultValue = "") String date,
                                                       @PathVariable(name = "page") String page,
-                                                      @PathVariable(name = "count") String count) {
+                                                      @PathVariable(name = "count") String count
+                                                      ,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         ListTickets ls = ticketRepo.retrieveArchivedTickets(cat, subCat, page, count, from, id, date);
-        return new ResponseEntity<>(ls, HttpStatus.OK);
+        return new ResponseEntity<>(new Response (ls,Variables.MODEL_TICKETING,HttpStatus.OK.value(),lang), HttpStatus.OK);
 
     }
 

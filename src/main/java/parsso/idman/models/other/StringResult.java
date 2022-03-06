@@ -64,6 +64,18 @@ public class StringResult {
 
     public static String AUTHENTICATOR_400_FA = "خطا در پاک کردن دستگاه مورد نظر";
     public static String AUTHENTICATOR_400_EN = "Error when deleting the device";
+    
+    public static String Ticketing_200_FA = "عملیات با موفقیت انجام شد.";
+    public static String Ticketing_200_EN = "The opration was successful";
+
+    public static String Ticketing_204_FA = "تیکت[های] مورد نظر حذف شد.";
+    public static String Ticketing_204_EN = "The ticket[s] was deleted";
+
+    public static String Ticketing_400_FA = "عملیات موفقیت آمیز نبود";
+    public static String Ticketing_400_EN = "The action failed";
+
+    public static String Ticketing_403_FA = "عمل مورد نظر مجاز نمی باشد.";
+    public static String Ticketing_403_EN = "The action is not allowed";
 
     public static String get(int code, String model, String lang) throws NoSuchFieldException, IllegalAccessException {
         String name = model.toUpperCase() + "_" + code + "_" + lang.toUpperCase();
