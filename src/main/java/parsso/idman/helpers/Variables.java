@@ -55,6 +55,7 @@ public class Variables {
     public static final String MODEL_USER = "user";
     public static final String MODEL_SERVICE = "service";
     public static final String MODEL_GROUP = "group";
+    public static final String MODEL_PUBICMESSAGE = "Public Message";
     public static final String MODEL_TICKETING = "Ticketing";
     public static final String email_recoverySubject = "بازنشانی رمز عبور";
     public static final String ZONE = "Asia/Tehran";
