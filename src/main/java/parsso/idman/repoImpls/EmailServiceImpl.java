@@ -76,7 +76,6 @@ public class EmailServiceImpl implements EmailService {
         helper.setFrom(from);
         helper.setTo(user.getMail());
         helper.setSubject(subject);
-        String s = Variables.template(user, url);
         helper.setText(Variables.template(user, url), true);
         try {
             mailSender.send(message);
