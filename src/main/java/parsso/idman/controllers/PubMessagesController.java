@@ -12,7 +12,6 @@ import parsso.idman.models.response.Response;
 import parsso.idman.repos.PubMessageRepo;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @RestController
 public class PubMessagesController {

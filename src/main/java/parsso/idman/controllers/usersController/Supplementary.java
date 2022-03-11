@@ -14,7 +14,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.communicate.Token;
-import parsso.idman.models.other.SkyRoom;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
 import parsso.idman.repoImpls.users.supplementary.Authenticate;
@@ -50,9 +49,9 @@ public class Supplementary extends UsersOps{
 
 
     @GetMapping("/api/skyroom")
-    public ResponseEntity<SkyRoom> skyroom(HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> skyroom(HttpServletRequest request,@RequestParam(value = "lang", defaultValue = "fa") String lang) throws IOException, NoSuchFieldException, IllegalAccessException {
 
-        return new ResponseEntity<>(skyroomRepo.Run(usersOpRetrieve.retrieveUsers(request.getUserPrincipal().getName())), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(skyroomRepo.run(usersOpRetrieve.retrieveUsers(request.getUserPrincipal().getName())),Variables.MODEL_USER,HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
     @GetMapping("/api/public/getName/{uid}/{token}")
     public ResponseEntity<User> getName(@PathVariable("uid") String uid, @PathVariable("token") String token) {
