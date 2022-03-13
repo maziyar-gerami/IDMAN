@@ -3,7 +3,6 @@ package parsso.idman.repoImpls.publicMessages.subClasses;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Objects;
 
 
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -15,7 +14,6 @@ import net.minidev.json.JSONObject;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
-import parsso.idman.models.other.PublicMessage;
 
 public class DeletePubMessage {
     MongoTemplate mongoTemplate;

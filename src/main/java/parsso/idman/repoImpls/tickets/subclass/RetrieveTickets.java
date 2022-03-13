@@ -3,9 +3,6 @@ package parsso.idman.repoImpls.tickets.subclass;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
-
-import com.unboundid.util.json.JSONObject;
-
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

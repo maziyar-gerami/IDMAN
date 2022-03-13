@@ -1,4 +1,4 @@
-package parsso.idman.repoImpls;
+package parsso.idman.repoImpls.storage;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

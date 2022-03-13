@@ -139,7 +139,10 @@ public class Variables {
             +" | || | | | |\\/| | / _ \\ |  \\| |\n"
      +" | || |_| | |  | |/ ___ \\| |\\  |\n"
     +"|___|____/|_|  |_/_/   \\_|_| \\_|";
+    public static final String MODEL_REFRESH = "Refresh";
                                     
 
+
+    public static final String MODEL_DASHBOARD = "Dashboard";
 }
 

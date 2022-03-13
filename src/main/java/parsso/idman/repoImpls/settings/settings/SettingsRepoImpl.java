@@ -4,24 +4,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.reloadConfigs.PasswordSettings;
-import parsso.idman.models.logs.ReportMessage;
-import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Property;
 import parsso.idman.models.other.Setting;
-import parsso.idman.models.other.Time;
-import parsso.idman.repoImpls.role.subclass.Retrieve;
 import parsso.idman.repoImpls.settings.settings.subclasses.BackupSettings;
 import parsso.idman.repoImpls.settings.settings.subclasses.ResetSettings;
 import parsso.idman.repoImpls.settings.settings.subclasses.RestoreSettings;
@@ -32,8 +26,6 @@ import parsso.idman.repos.SettingsRepo;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
