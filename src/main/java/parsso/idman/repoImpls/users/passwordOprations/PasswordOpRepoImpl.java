@@ -1,7 +1,6 @@
 package parsso.idman.repoImpls.users.passwordOprations;
 
 import net.minidev.json.JSONObject;
-import one.util.streamex.StreamEx;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,13 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 
 @Service
 public class PasswordOpRepoImpl implements UserRepo.PasswordOp {

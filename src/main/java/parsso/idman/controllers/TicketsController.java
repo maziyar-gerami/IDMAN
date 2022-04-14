@@ -29,13 +29,13 @@ public class TicketsController {
 
     @PostMapping("/api/user/ticket")
     public ResponseEntity<Response> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-        return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, ticketRepo.sendTicket(ticket, "maziyar").value(),lang),HttpStatus.CREATED);
+        return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, ticketRepo.sendTicket(ticket, request.getUserPrincipal().getName()).value(),lang),HttpStatus.CREATED);
     }
 
     @PutMapping("/api/user/ticket/reply/{ticketID}")
     public ResponseEntity<Response> replyTicket(@PathVariable("ticketID") String ticketID,
                                                   @RequestBody Ticket ticket, HttpServletRequest request,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-        return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, ticketRepo.reply(ticketID, "maziyar", ticket).value(), lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, ticketRepo.reply(ticketID, request.getUserPrincipal().getName(), ticket).value(), lang), HttpStatus.OK);
     }
 
     @GetMapping("/api/user/ticket/{ticketID}")
@@ -53,9 +53,9 @@ public class TicketsController {
                 return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, HttpStatus.BAD_REQUEST.value(),lang),HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/user/ticket")
+    @DeleteMapping("/api/user/tickets")
     public ResponseEntity<Response> deleteTicket(@RequestBody JSONObject jsonObject, HttpServletRequest request,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-            if(ticketRepo.deleteTicket("su",jsonObject) == HttpStatus.OK)
+            if(ticketRepo.deleteTicket(request.getUserPrincipal().getName(),jsonObject) == HttpStatus.OK)
                 return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, HttpStatus.OK.value(),lang),HttpStatus.OK);    
                 return new ResponseEntity<>(new Response(null, Variables.MODEL_TICKETING, HttpStatus.BAD_REQUEST.value(),lang),HttpStatus.OK);
     }
@@ -66,14 +66,14 @@ public class TicketsController {
                                                   @PathVariable(name = "count") String count,
                                                   @RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
 
-        return new ResponseEntity<>(new Response(ticketRepo.retrieveSentTickets("maziyar", page, count, date),Variables.MODEL_TICKETING,HttpStatus.OK.value(),lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(ticketRepo.retrieveSentTickets(request.getUserPrincipal().getName(), page, count, date),Variables.MODEL_TICKETING,HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
 
     @PutMapping("/api/supporter/ticket/status/{status}")
     public ResponseEntity<Response> updateTicketStatus(@PathVariable int status, @RequestBody JSONObject jsonObject,
                                                          HttpServletRequest request
                                                          ,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-        if (ticketRepo.updateTicketStatus("su", status, jsonObject) == HttpStatus.OK)
+        if (ticketRepo.updateTicketStatus(request.getUserPrincipal().getName(), status, jsonObject) == HttpStatus.OK)
             return new ResponseEntity<>(new Response(null, Variables.MODEL_TICKETING, HttpStatus.OK.value(),lang), HttpStatus.OK);
         return new ResponseEntity<>(new Response(null, Variables.MODEL_TICKETING, HttpStatus.BAD_REQUEST.value(),lang), HttpStatus.OK);
 
