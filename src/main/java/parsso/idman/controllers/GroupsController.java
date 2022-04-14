@@ -101,7 +101,7 @@ public class GroupsController {
             @RequestParam(value = "lang", defaultValue = "fa") String lang)
             throws NoSuchFieldException, IllegalAccessException {
 
-        return new ResponseEntity<>(new Response(passwordOp.expireGroup("request.getUserPrincipal().getName()", jsonObject),
+        return new ResponseEntity<>(new Response(passwordOp.expireGroup(request.getUserPrincipal().getName(), jsonObject),
                 Variables.MODEL_GROUP, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
     }

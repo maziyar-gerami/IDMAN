@@ -24,7 +24,8 @@ public class Expire {
     private String BASE_DN;
     UserRepo.UsersOp.Retrieve userOpRetrieve;
 
-    public Expire(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger,UserRepo.UsersOp.Retrieve userOpRetrieve , String BASE_DN) {
+    public Expire(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger,
+            UserRepo.UsersOp.Retrieve userOpRetrieve, String BASE_DN) {
         this.mongoTemplate = mongoTemplate;
         this.uniformLogger = uniformLogger;
         this.ldapTemplate = ldapTemplate;
@@ -35,48 +36,58 @@ public class Expire {
     public List<String> expire(String doer, List<UsersExtraInfo> usersExtraInfo) {
 
         List<String> superUsers = new LinkedList<>();
-        
+
         for (UsersExtraInfo user : usersExtraInfo) {
-            
+
+            if (user.getRole() == null)
+                user.setRole("USER");
+
             if (!user.getRole().equals("SUPERUSER")) {
 
                 ModificationItem[] modificationItems;
                 modificationItems = new ModificationItem[1];
 
-                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdReset", "TRUE"));
+                modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE,
+                        new BasicAttribute("pwdReset", "TRUE"));
 
                 try {
-                    ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()), modificationItems);
+                    ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()),
+                            modificationItems);
                     user.setEndTimeEpoch(new Date().getTime());
                     mongoTemplate.save(user, Variables.col_usersExtraInfo);
 
-                    uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.get_id(), Variables.ATTR_PASSWORD,
-                            Variables.ACTION_EXPIREPASSWORD, Variables.RESULT_SUCCESS, ""));
+                    uniformLogger.info(doer,
+                            new ReportMessage(Variables.MODEL_USER, user.get_id(), Variables.ATTR_PASSWORD,
+                                    Variables.ACTION_EXPIREPASSWORD, Variables.RESULT_SUCCESS, ""));
 
                 } catch (Exception e) {
                     try {
-                        modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdReset", "TRUE"));
-                        ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()), modificationItems);
+                        modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
+                                new BasicAttribute("pwdReset", "TRUE"));
+                        ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()),
+                                modificationItems);
                         user.setEndTimeEpoch(new Date().getTime());
                         mongoTemplate.save(user, Variables.col_usersExtraInfo);
 
                         uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.get_id(),
-                                Variables.ACTION_EXPIREPASSWORD, Variables.ACTION_REPLACE, Variables.RESULT_SUCCESS, ""));
+                                Variables.ACTION_EXPIREPASSWORD, Variables.ACTION_REPLACE, Variables.RESULT_SUCCESS,
+                                ""));
                     } catch (Exception e1) {
                         e.printStackTrace();
                         uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.get_id(),
-                                Variables.ACTION_EXPIREPASSWORD, Variables.ACTION_INSERT, Variables.RESULT_FAILED, "writing to ldap"));
+                                Variables.ACTION_EXPIREPASSWORD, Variables.ACTION_INSERT, Variables.RESULT_FAILED,
+                                "writing to ldap"));
                     }
                 }
             } else {
                 superUsers.add(user.get_id().toString());
 
-                uniformLogger.warn(doer, new ReportMessage(Variables.MODEL_USER, user.get_id(), Variables.ACTION_EXPIREPASSWORD,
-                        Variables.ACTION_INSERT, Variables.RESULT_FAILED, "Cant add to SUPERUSER role"));
+                uniformLogger.warn(doer,
+                        new ReportMessage(Variables.MODEL_USER, user.get_id(), Variables.ACTION_EXPIREPASSWORD,
+                                Variables.ACTION_INSERT, Variables.RESULT_FAILED, "Cant add to SUPERUSER role"));
 
             }
         }
-       return superUsers;
+        return superUsers;
     }
 }
-

@@ -21,10 +21,13 @@ import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.UserRepo;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -122,13 +125,12 @@ public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
         }
         JSONObject exceptions = new JSONObject();
         exceptions.put("notFound", notFound);
-
+        Set<String> set = new HashSet<>(users.size());
+        users.removeIf(p -> !set.add((p.get_id()).toString()));
         exceptions.put("superUsers",new Expire(mongoTemplate, ldapTemplate,uniformLogger,usersOpRetrieve,BASE_DN).expire(doer,users));
 
         return exceptions;
     }
-
-
 
     @Override
     public HttpStatus changePublic(String userId, String currentPassword, String newPassword) {

@@ -1,6 +1,5 @@
 package parsso.idman.models.users;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -51,9 +50,9 @@ public class UsersExtraInfo {
     private ChangePassword changePassword;
 
     public int getNPassChanged() {
-        try{
+        try {
             return nPassChanged;
-        }catch(Exception e){
+        } catch (Exception e) {
             return 0;
         }
     }
@@ -111,5 +110,3 @@ public class UsersExtraInfo {
         return null;
     }
 }
-
-
