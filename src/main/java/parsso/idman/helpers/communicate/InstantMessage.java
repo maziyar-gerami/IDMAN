@@ -1,6 +1,5 @@
 package parsso.idman.helpers.communicate;
 
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -15,7 +14,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
-import parsso.idman.utils.captcha.models.CAPTCHA;
+import parsso.idman.utils.captcha.repo.CAPTCHARepo;
 import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
 import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
 import parsso.idman.utils.sms.kaveNegar.excepctions.HttpException;
@@ -27,16 +26,18 @@ import java.util.List;
 public class InstantMessage {
 
     @Autowired
-    public InstantMessage(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve, Token tokenClass){
+    public InstantMessage(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve, Token tokenClass, CAPTCHARepo captchaRepo){
         this.mongoTemplate = mongoTemplate;
         this.ldapTemplate = ldapTemplate;
         this.tokenClass = tokenClass;
         this.usersOpRetrieve = usersOpRetrieve;
+        this.captchaRepo = captchaRepo;
     }
     private final MongoTemplate mongoTemplate;
     private final UserRepo.UsersOp.Retrieve usersOpRetrieve;
     private final LdapTemplate ldapTemplate;
     private final Token tokenClass;
+    private final CAPTCHARepo captchaRepo;
 
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
@@ -78,16 +79,13 @@ public class InstantMessage {
     private int sendMessageKaveNegar(String mobile, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
-        if (captcha == null)
-            return -1;
 
-        if (!(answer.equalsIgnoreCase(captcha.getPhrase())))
-            mongoTemplate.remove(query, Variables.col_captchas);
+       if(!captchaRepo.check(cid, answer))
+            return -1;
 
         User user;
 
-        List<JSONObject> checked = checkMobile(mobile);
+        List<String> checked = checkMobile(mobile);
 
         if (checked.size() == 0)
             return -3;
@@ -95,15 +93,13 @@ public class InstantMessage {
         else if (checked.size() > 1)
             return -2;
 
-        else user = usersOpRetrieve.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+        else user = usersOpRetrieve.retrieveUsers(checkMobile(mobile).get(0));
 
         if (tokenClass.insertMobileToken(user)) {
             return keveNegar_insertTokenAndSend(mobile, query, user);
         }
 
         return 0;
-
-
     }
 
     private int keveNegar_insertTokenAndSend(String mobile, Query query, User user) {
@@ -129,12 +125,9 @@ public class InstantMessage {
     private int sendMessageKaveNegar(User user, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
-        if (captcha == null)
-            return -1;
 
-        if (!(answer.equalsIgnoreCase(captcha.getPhrase())))
-            mongoTemplate.remove(query, Variables.col_captchas);
+        if (!captchaRepo.check(cid, answer))
+            return -1;
 
         if (user == null || user.get_id() == null)
             return -3;
@@ -167,14 +160,9 @@ public class InstantMessage {
     private int sendMessageMagfa(User user, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
-        if (captcha == null)
-            return -1;
 
-        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query, Variables.col_captchas);
+        if (!captchaRepo.check(cid, answer))
             return -1;
-        }
 
         if (user == null || user.get_id() == null)
             return -3;
@@ -205,25 +193,21 @@ public class InstantMessage {
     private int sendMessageMagfa(String mobile, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
-        if (captcha == null)
-            return -1;
 
-        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query, Variables.col_captchas);
+        if (!captchaRepo.check(cid, answer))
             return -1;
-        }
-
+            
         User user = new User();
+        int check = checkMobile(mobile).size();
 
-        if (checkMobile(mobile).size() == 0)
+        if (check == 0)
             return -3;
 
-        else if (checkMobile(mobile).size() > 1)
+        else if (check > 1)
             return -2;
 
-        else if (checkMobile(mobile).size() == 1)
-            user = usersOpRetrieve.retrieveUsers(checkMobile(mobile).get(0).getAsString("userId"));
+        else if (check == 1)
+            user = usersOpRetrieve.retrieveUsers(checkMobile(mobile).get(0));
 
         if (tokenClass.insertMobileToken(user)) {
 
@@ -298,30 +282,21 @@ public class InstantMessage {
         return 0;
     }
 
-    public List<JSONObject> checkMobile(String mobile) {
+    public LinkedList<String> checkMobile(String mobile) {
 
         List<User> people = ldapTemplate.search(BASE_DN, new EqualsFilter("mobile", mobile).encode(), new UserAttributeMapper(mongoTemplate));
-        List<JSONObject> jsonArray = new LinkedList<>();
-        JSONObject jsonObject;
-        for (User user : people) {
-            jsonObject = new JSONObject();
-            jsonObject.put("userId", user.get_id());
-            jsonArray.add(jsonObject);
-        }
-        return jsonArray;
+        LinkedList<String> names = new LinkedList<String>();
+        for (User user : people) 
+            names.add(user.get_id().toString());
+
+        return names;
     }
 
     private int sendMessageKaveNegar(String mobile, String uId, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
-        if (captcha == null)
+        if (!captchaRepo.check(cid, answer))
             return -1;
-
-        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query, Variables.col_captchas);
-            return -1;
-        }
 
         if (checkMobile(mobile).size() == 0)
             return -3;
@@ -329,9 +304,9 @@ public class InstantMessage {
         User user = usersOpRetrieve.retrieveUsers(uId);
 
         if (user != null && user.get_id() != null && tokenClass.insertMobileToken(user)) {
-            List<JSONObject> ids = checkMobile(mobile);
+            LinkedList<String> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
-            for (JSONObject id : ids) people.add(usersOpRetrieve.retrieveUsers(id.getAsString("userId")));
+            for (String id : ids) people.add(usersOpRetrieve.retrieveUsers(id));
 
             for (User p : people)
                 if (p.get_id().equals(user.get_id()))
@@ -342,18 +317,17 @@ public class InstantMessage {
     }
 
     private int sendMessageMagfa(String mobile, String uId, String cid, String answer) {
+
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
-        if (captcha == null)
+
+        if (!captchaRepo.check(cid, answer))
             return -1;
-        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query, Variables.col_captchas);
-            return -1;
-        }
+            
 
         User user;
+        LinkedList<String> check = checkMobile(mobile);
 
-        if (checkMobile(mobile).size() == 0) {
+        if (check.size() == 0) {
 
             return -3;
         }
@@ -362,12 +336,12 @@ public class InstantMessage {
         if (user == null)
             return 0;
 
-        if (checkMobile(mobile) != null && usersOpRetrieve.retrieveUsers(uId).get_id() != null && tokenClass.insertMobileToken(user)) {
+        if (check != null && usersOpRetrieve.retrieveUsers(uId).get_id() != null && tokenClass.insertMobileToken(user)) {
 
-            List<JSONObject> ids = checkMobile(mobile);
+            List<String> ids = checkMobile(mobile);
             List<User> people = new LinkedList<>();
             user = usersOpRetrieve.retrieveUsers(uId);
-            for (JSONObject id : ids) people.add(usersOpRetrieve.retrieveUsers(id.getAsString("userId")));
+            for (String id : ids) people.add(usersOpRetrieve.retrieveUsers(id));
 
             for (User p : people) {
                 if (p.get_id().equals(user.get_id())) {

@@ -20,5 +20,5 @@ public interface EmailService {
 
     int sendMail(String email, String uid, String cid, String answer);
 
-    List<JSONObject> checkMail(String email);
+    List<String> checkMail(String email);
 }

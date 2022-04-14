@@ -1,6 +1,8 @@
 package parsso.idman.repoImpls.users.passwordOprations;
 
 import net.minidev.json.JSONObject;
+import one.util.streamex.StreamEx;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -13,12 +15,19 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.user.ExpirePassword;
+import parsso.idman.models.groups.Group;
 import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.UserRepo;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 
 @Service
 public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
@@ -27,6 +36,7 @@ public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
     final UserRepo.UsersOp.Retrieve usersOpRetrieve;
     final LdapTemplate ldapTemplate;
     final Token tokenClass;
+    final GroupRepo.Retrieve groupRepoRetrieve;
     final ExpirePassword expirePassword;
     final UserRepo.Supplementary supplementary;
 
@@ -39,7 +49,7 @@ public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
     @Autowired
     public PasswordOpRepoImpl(MongoTemplate mongoTemplate, UniformLogger uniformLogger, UserRepo.UsersOp.Retrieve usersOpRetrieve,
                               LdapTemplate ldapTemplate, Token tokenClass,
-                              ExpirePassword expirePassword, UserRepo.Supplementary supplementary) {
+                              ExpirePassword expirePassword, UserRepo.Supplementary supplementary, GroupRepo.Retrieve groupRepo) {
         this.mongoTemplate = mongoTemplate;
         this.uniformLogger = uniformLogger;
         this.usersOpRetrieve = usersOpRetrieve;
@@ -47,34 +57,78 @@ public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
         this.tokenClass = tokenClass;
         this.expirePassword =expirePassword;
         this.supplementary = supplementary;
+        this.groupRepoRetrieve = groupRepo;
     }
 
     @Override
     public HttpStatus change(String uId, String newPassword, String token) {
-        return new Change(usersOpRetrieve,ldapTemplate,mongoTemplate,supplementary,BASE_DN,BASE_URL, uniformLogger)
+        return new Change(usersOpRetrieve,ldapTemplate,mongoTemplate,supplementary,BASE_DN,BASE_URL, tokenClass, uniformLogger)
                 .change(uId,newPassword,token);
     }
 
     @Override
-    public HttpStatus reset(String userId, String oldPass, String token, int pwdin) {
-        return new Reset(usersOpRetrieve,supplementary,uniformLogger,mongoTemplate,ldapTemplate,tokenClass,BASE_URL,BASE_DN).resetPassword(userId,oldPass,token,pwdin);
+    public HttpStatus reset(String userId, String newPassword, String token) {
+        return new Change(usersOpRetrieve,ldapTemplate,mongoTemplate,supplementary,BASE_DN,BASE_URL, tokenClass, uniformLogger).change(userId,newPassword,token);
     }
 
     @Override
-    public List<String> expire(String doer, JSONObject jsonObject) {
+    public JSONObject expire(String doer, JSONObject jsonObject) {
         List<UsersExtraInfo> users = new LinkedList<>();
+        LinkedList<String> notFound = new LinkedList();
 
         if (((List<String>) jsonObject.get("names")).size() == 0) {
             users.addAll(mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo));
 
         } else {
             final ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
-            for (String temp : jsonArray)
-                users.add(mongoTemplate.findOne(new Query(Criteria.where("_id").is(temp)), UsersExtraInfo.class, Variables.col_usersExtraInfo));
-        }
+            for (String temp : jsonArray){
+                UsersExtraInfo user = mongoTemplate.findOne(new Query(Criteria.where("_id").is(temp)), UsersExtraInfo.class, Variables.col_usersExtraInfo);
+                if (user==null)
+                    notFound.add(temp);
+                else
+                    users.add(user);
 
-        return new Expire(mongoTemplate, ldapTemplate,uniformLogger).expire(doer,users);
+            }
+        }
+        JSONObject exceptions = new JSONObject();
+        exceptions.put("notFound", notFound);
+        exceptions.put("superUsers",new Expire(mongoTemplate, ldapTemplate,uniformLogger,usersOpRetrieve,BASE_DN).expire(doer,users));
+
+        return exceptions;
     }
+
+    @Override
+    public JSONObject expireGroup(String doer, JSONObject jsonObject) {
+        List<Group> groups = new LinkedList<>();
+        LinkedList<String> notFound = new LinkedList();
+        List<UsersExtraInfo> users = new LinkedList<>();
+
+        if (((List<String>) jsonObject.get("names")).size() == 0) {
+            groups.addAll(groupRepoRetrieve.retrieve());
+
+        } else {
+            final ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
+            for (String temp : jsonArray){
+                Group group = groupRepoRetrieve.retrieve(true, temp);
+                if (group==null)
+                    notFound.add(temp);
+                else
+                    groups.add(group);
+
+            }
+        }
+        for(Group gr: groups){
+            users.addAll(usersOpRetrieve.retrieveUsersGroup(gr.getId()));
+        }
+        JSONObject exceptions = new JSONObject();
+        exceptions.put("notFound", notFound);
+
+        exceptions.put("superUsers",new Expire(mongoTemplate, ldapTemplate,uniformLogger,usersOpRetrieve,BASE_DN).expire(doer,users));
+
+        return exceptions;
+    }
+
+
 
     @Override
     public HttpStatus changePublic(String userId, String currentPassword, String newPassword) {

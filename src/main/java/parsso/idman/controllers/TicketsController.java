@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.tickets.ListTickets;
@@ -30,19 +29,19 @@ public class TicketsController {
 
     @PostMapping("/api/user/ticket")
     public ResponseEntity<Response> sendTicket(@RequestBody Ticket ticket, HttpServletRequest request,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-        return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, ticketRepo.sendTicket(ticket, "su").value(),lang),HttpStatus.CREATED);
+        return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, ticketRepo.sendTicket(ticket, "maziyar").value(),lang),HttpStatus.CREATED);
     }
 
     @PutMapping("/api/user/ticket/reply/{ticketID}")
     public ResponseEntity<Response> replyTicket(@PathVariable("ticketID") String ticketID,
                                                   @RequestBody Ticket ticket, HttpServletRequest request,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-        return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, ticketRepo.reply(ticketID, "su", ticket).value(), lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(null,Variables.MODEL_TICKETING, ticketRepo.reply(ticketID, "maziyar", ticket).value(), lang), HttpStatus.OK);
     }
 
     @GetMapping("/api/user/ticket/{ticketID}")
     public ResponseEntity<Response> retrieveTicket(@PathVariable("ticketID") String ticketID, HttpServletRequest request,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
         Ticket ticket = ticketRepo.retrieveTicket(ticketID);
-        User user = retrieveUsers.retrieveUsers("su");
+        User user = retrieveUsers.retrieveUsers("ali");
         if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))
             if (user.get_id().toString().equalsIgnoreCase(ticket.getTo()) || user.get_id().toString().equalsIgnoreCase(ticket.getFrom()))
                 return new ResponseEntity<>(new Response(ticket,Variables.MODEL_TICKETING, HttpStatus.OK.value(),lang), HttpStatus.OK);
@@ -67,7 +66,7 @@ public class TicketsController {
                                                   @PathVariable(name = "count") String count,
                                                   @RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
 
-        return new ResponseEntity<>(new Response(ticketRepo.retrieveSentTickets("su", page, count, date),Variables.MODEL_TICKETING,HttpStatus.OK.value(),lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(ticketRepo.retrieveSentTickets("maziyar", page, count, date),Variables.MODEL_TICKETING,HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
 
     @PutMapping("/api/supporter/ticket/status/{status}")
@@ -88,7 +87,7 @@ public class TicketsController {
                                                 @RequestParam(name = "date", defaultValue = "") String date,
                                                 @PathVariable(name = "count") String count
                                                 ,@RequestParam(value =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-        ListTickets tickets = ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName(), page, count, from, id, date);
+        ListTickets tickets = ticketRepo.retrieveTicketsReceived("su", page, count, from, id, date);
         return new ResponseEntity<>(new Response(tickets,Variables.MODEL_TICKETING, HttpStatus.OK.value(),lang),HttpStatus.OK);
     }
 

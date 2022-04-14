@@ -16,7 +16,6 @@ import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.users.User;
 import parsso.idman.repoImpls.services.RetrieveService;
 import parsso.idman.repos.LogsRepo;
-import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;

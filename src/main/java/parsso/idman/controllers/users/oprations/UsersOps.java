@@ -1,4 +1,4 @@
-package parsso.idman.controllers.usersController;
+package parsso.idman.controllers.users.oprations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

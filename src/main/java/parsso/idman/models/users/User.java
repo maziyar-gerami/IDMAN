@@ -26,6 +26,7 @@ public class User implements UserDetails, Comparable<User> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     SkyRoom skyRoom;
     Boolean skyroomAccess;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String userId;
     private String firstName;
     private String lastName;
@@ -44,6 +45,7 @@ public class User implements UserDetails, Comparable<User> {
     private List<String> memberOf;
     @JsonIgnore
     private String exportMemberOf;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String userPassword;
     @JsonIgnore
     private String photo;

@@ -56,7 +56,7 @@ public class RetrieveUser extends Parameters implements UserRepo.UsersOp.Retriev
 
     @Override
     public User.ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec) {
-        return new Conditional().group(groupId,page,nRec);
+        return new Conditional(ldapTemplate,BASE_DN).group(groupId,page,nRec);
     }
 
     @Override

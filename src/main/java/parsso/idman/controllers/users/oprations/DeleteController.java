@@ -1,4 +1,4 @@
-package parsso.idman.controllers.usersController.usersOps;
+package parsso.idman.controllers.users.oprations;
 
 import net.minidev.json.JSONObject;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import parsso.idman.controllers.usersController.UsersOps;
+
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.models.response.Response;

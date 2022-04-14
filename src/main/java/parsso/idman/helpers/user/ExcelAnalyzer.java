@@ -4,10 +4,8 @@ package parsso.idman.helpers.user;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.stereotype.Service;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 
@@ -18,15 +16,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("ALL")
-@Service
 public class ExcelAnalyzer {
-    @Autowired
-    LdapTemplate ldapTemplate;
-    @Autowired
-    MongoTemplate mongoTemplate;
-    @Autowired
-    UserRepo.UsersOp.Retrieve usersOpRetrieve;
-    UserRepo.UsersOp.Update usersOpUpdate;
+    final LdapTemplate ldapTemplate;
+    final MongoTemplate mongoTemplate;
+    final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+    final UserRepo.UsersOp.Update usersOpUpdate;
+
+    public ExcelAnalyzer(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve, UserRepo.UsersOp.Update usersOpUpdate) {
+        this.ldapTemplate = ldapTemplate;
+        this.mongoTemplate = mongoTemplate;
+        this.usersOpRetrieve = usersOpRetrieve;
+        this.usersOpUpdate = usersOpUpdate;
+    }
+
 
     public List<String> excelSheetAnalyze(String doer, Sheet sheet, String ou, boolean hasHeader) {
 
@@ -51,6 +53,7 @@ public class ExcelAnalyzer {
                 user = usersOpRetrieve.retrieveUsers(tempUID);
 
                 if (user == null) {
+                    notExist.add(tempUID);
                     continue;
                 }
 
@@ -58,8 +61,13 @@ public class ExcelAnalyzer {
                     List<String> ous = new LinkedList<>();
                     ous.add(ou);
                     user.setMemberOf(ous);
-                } else
-                    user.getMemberOf().add(ou);
+                } else{
+                    if (!user.getMemberOf().contains(ou))
+                        user.getMemberOf().add(ou);
+                        else
+                            continue;
+
+                }
                 usersOpUpdate.update(doer, tempUID, user);
             }
 
@@ -83,7 +91,20 @@ public class ExcelAnalyzer {
             }
 
             User user = usersOpRetrieve.retrieveUsers(data[0]);
-            user.getMemberOf().add(ou);
+            if (user == null) {
+                notExist.add(data[0]);
+                continue;
+            }
+            if (user.getMemberOf() == null) {
+                List<String> ous = new LinkedList<>();
+                ous.add(ou);
+                user.setMemberOf(ous);
+            } else{
+                if (!user.getMemberOf().contains(ou))
+                    user.getMemberOf().add(ou);
+                    else
+                        continue;
+            }
             usersOpUpdate.update(doer, data[0], user);
 
             i++;

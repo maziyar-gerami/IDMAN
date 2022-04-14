@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import io.jsonwebtoken.io.IOException;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.DashboardData;
-import parsso.idman.models.dashboardData.Dashboard;
 import parsso.idman.models.response.Response;
 
 import javax.servlet.http.HttpServletRequest;
@@ -167,7 +166,7 @@ public class PagesController implements ErrorController {
     //************************************* APIs ****************************************
 
     @GetMapping("/api/dashboard")
-    public ResponseEntity<Response> retrieveDashboardData(@RequestParam(value= "lang") String lang) throws IOException, NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> retrieveDashboardData(@RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws IOException, NoSuchFieldException, IllegalAccessException {
         return new ResponseEntity<>(new Response(dashboardData.retrieveDashboardData(),Variables.MODEL_DASHBOARD, HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
 

@@ -2,6 +2,7 @@ package parsso.idman.repoImpls.users.usersOprations.retrieve.subClass;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
@@ -61,11 +62,8 @@ public class MainAttributes {
 
     public UsersExtraInfo get(String userId) {
 
-        SearchControls searchControls = new SearchControls();
-        searchControls.setReturningAttributes(new String[]{"*", "+"});
-        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-        return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(), searchControls, new SimpleUserAttributeMapper()).get(0);
+        return mongoTemplate.findOne(new Query(Criteria.where("_id").is(userId)), UsersExtraInfo.class,Variables.col_usersExtraInfo);
 
     }
 

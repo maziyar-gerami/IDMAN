@@ -7,9 +7,9 @@ import lombok.Setter;
 @Getter
     public  class ChangePassword{
         
-        public ChangePassword(long time2, int i) {
-            this.time = time2;
-            this.n = i;
+        public ChangePassword(long time, int n) {
+            this.time = time;
+            this.n = n;
     }
         long time;
         int n;

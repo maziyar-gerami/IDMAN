@@ -9,7 +9,6 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Variables;
-import parsso.idman.models.other.Time;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 
@@ -223,36 +222,6 @@ public class BuildAttributes {
             mongoTemplate.save(p.getUsersExtraInfo(), Variables.col_usersExtraInfo);
 
         //EndTime
-
-        if (p.getExpiredTime() != null && !p.getExpiredTime().equals(old.getExpiredTime()) && p.getExpiredTime().charAt(0) != ('-')) {
-            if (p.getExpiredTime() != null && !p.getExpiredTime().equals("")) {
-                if (p.getExpiredTime().length() == 10)
-                    context.setAttributeValue("pwdEndTime", new Time().epochToDateLdapFormat(Long.parseLong(p.getExpiredTime()) * 1000));
-                else
-                    try {
-                        context.setAttributeValue("pwdEndTime", new Time().epochToDateLdapFormat(Long.parseLong(p.getExpiredTime())));
-                    } catch (NumberFormatException e) {
-                        if (p.getExpiredTime().contains("+"))
-                            context.setAttributeValue("pwdEndTime", p.getExpiredTime());
-                        else
-                            context.setAttributeValue("pwdEndTime", p.getExpiredTime() + currentOffsetForMyZone.toString().replaceAll(":", ""));
-
-                    }
-
-            } else if (p.getExpiredTime() != null && p.getExpiredTime().equals(""))
-                context.removeAttributeValue("pwdEndTime", old.getExpiredTime());
-
-            ModificationItem[] modificationItems;
-            modificationItems = new ModificationItem[1];
-
-            if (p.getExpiredTime() != null && old.getExpiredTime() != null) {
-
-                modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("pwdEndTime"));
-                ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(p.get_id().toString()), modificationItems);
-
-            }
-
-        }
         return context;
     }
 

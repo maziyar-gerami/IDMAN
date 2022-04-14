@@ -5,6 +5,7 @@ import org.apache.commons.collections4.PredicateUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
+
 import parsso.idman.helpers.user.SimpleUserAttributeMapper;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
@@ -49,11 +50,13 @@ public class Conditional {
         this.BASE_DN = BASE_DN;
     }
 
+
     public User licensed(String userId) {
 
         User user = userOpRetrieve.retrieveUsers(userId);
 
-        user.setServices(new ServicesOfObject(serviceRepo, mongoTemplate).servicesOfUser(userId));
+        if (user!=null)
+            user.setServices(new ServicesOfObject(serviceRepo, mongoTemplate).servicesOfUser(userId));
 
         return user;
     }
@@ -65,6 +68,7 @@ public class Conditional {
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
         return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("ou", groupId).encode(), searchControls, new SimpleUserAttributeMapper());
+
     }
 
     public User.ListUsers group(String groupId, int page, int number) {

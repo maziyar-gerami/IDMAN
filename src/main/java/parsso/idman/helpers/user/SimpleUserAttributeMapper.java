@@ -22,6 +22,7 @@ public class SimpleUserAttributeMapper implements AttributesMapper<UsersExtraInf
 
         user.set_id(null != attributes.get("uid") ? attributes.get("uid").get().toString() : null);
         user.setDisplayName(null != attributes.get("displayName") ? attributes.get("displayName").get().toString() : null);
+        user.setMobile(null != attributes.get("mobile") ? attributes.get("mobile").get().toString() : null);
         //user.setPasswordChangedTime(null != attributes.get("pwdChangedTime") ? Long.valueOf(attributes.get("pwdChangedTime").get().toString().substring(0, 14)) : Long.valueOf(attributes.get("createtimestamp").get().toString().substring(0, 14)));
 
         int nGroups = (null == attributes.get("ou") ? 0 : attributes.get("ou").size());

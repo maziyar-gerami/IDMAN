@@ -1,6 +1,5 @@
 package parsso.idman.repoImpls;
 
-
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +14,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
@@ -25,6 +23,7 @@ import parsso.idman.models.users.User;
 import parsso.idman.repos.EmailService;
 import parsso.idman.repos.UserRepo;
 import parsso.idman.utils.captcha.models.CAPTCHA;
+import parsso.idman.utils.captcha.repo.CAPTCHARepo;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -42,7 +41,8 @@ public class EmailServiceImpl implements EmailService {
     LdapTemplate ldapTemplate;
     @Autowired
     UniformLogger uniformLogger;
-
+    @Autowired
+    CAPTCHARepo captchaRepo;
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
@@ -57,9 +57,7 @@ public class EmailServiceImpl implements EmailService {
     private JavaMailSender mailSender;
     @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
-    @Autowired
-    private TemplateEngine templateEngine;
-
+    
     public void sendSimpleMessage(User user, String subject, String url) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
@@ -87,11 +85,12 @@ public class EmailServiceImpl implements EmailService {
 
     public void sendMail(String email) {
         if (checkMail(email) != null) {
-            User user = usersOpRetrieve.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
+            User user = usersOpRetrieve.retrieveUsers(checkMail(email).get(0).toString());
 
             tokenClass.insertEmailToken(user);
 
-            String fullUrl = supplementary.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
+            String fullUrl = supplementary.createUrl(user.get_id().toString(),
+                    user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
             Thread thread = new Thread(() -> {
                 try {
@@ -112,7 +111,8 @@ public class EmailServiceImpl implements EmailService {
             List<User> users = usersOpRetrieve.fullAttributes();
 
             for (User user : users)
-                if (!user.getUsersExtraInfo().getRole().equals("SUPERUSER") && user.getMail() != null && user.getMail() != null && !user.getMail().equals("") && !user.getMail().equals(" "))
+                if (!user.getUsersExtraInfo().getRole().equals("SUPERUSER") && user.getMail() != null
+                        && user.getMail() != null && !user.getMail().equals("") && !user.getMail().equals(" "))
                     sendMail(user.getMail());
 
         } else {
@@ -134,40 +134,40 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public int sendMail(String email, String cid, String answer) {
 
-        Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
-        if ((captcha) == null)
-            return -1;
-        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query, Variables.col_captchas);
-            return -1;
-        }
+       if (!captchaRepo.check(cid, answer))
+       return -1;
 
+       Query query = new Query(Criteria.where("_id").is(cid));
+
+    
         User user;
 
-        if (checkMail(email).size() == 0)
+        List check =checkMail(email);
+
+        if (check.size() == 0)
             return -3;
 
-        else if (checkMail(email).size() > 1)
+        else if (check.size() > 1)
             return -2;
 
         if (checkMail(email).size() == 1) {
-            user = usersOpRetrieve.retrieveUsers(checkMail(email).get(0).getAsString("userId"));
+            user = usersOpRetrieve.retrieveUsers((checkMail(email).get(0)).toString());
 
             tokenClass.insertEmailToken(user);
 
-            String fullUrl = supplementary.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
+            String fullUrl = supplementary.createUrl(user.get_id().toString(),
+                    user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
             try {
                 sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
-
 
             } catch (Exception e) {
                 return 0;
             }
 
             mongoTemplate.remove(query, Variables.col_captchas);
-            return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_EMAIL).getValue().toString());
+            return Integer
+                    .parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_EMAIL).getValue().toString());
         } else
             return 0;
     }
@@ -193,61 +193,73 @@ public class EmailServiceImpl implements EmailService {
     public int sendMail(String email, String uid, String cid, String answer) {
 
         Query query = new Query(Criteria.where("_id").is(cid));
-        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
-        if ((captcha) == null)
-            return -1;
-        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
-            mongoTemplate.remove(query, Variables.col_captchas);
-            return -1;
-        }
+        if (!captchaRepo.check(cid, answer))
+       return -1;
 
-        if (checkMail(email) != null && usersOpRetrieve.retrieveUsers(uid) != null && usersOpRetrieve.retrieveUsers(uid).get_id() != null) {
-            List<JSONObject> ids = checkMail(email);
-            List<User> people = new LinkedList<>();
-            User user = usersOpRetrieve.retrieveUsers(uid);
-            for (JSONObject id : ids) people.add(usersOpRetrieve.retrieveUsers(id.getAsString("userId")));
+        List<String> ids = checkMail(email);
 
-            for (User p : people) {
+        if (ids.size() != 0) {
+            if (uid==null&&ids.size() > 1)
+                return -2;
+            else {
+                if(uid!=null){
+                    if (!uid.equals(ids.get(0)))
+                        return -3;
+                }
 
-                if (user.equals(p)) {
+                if (usersOpRetrieve.retrieveUsers(uid) != null && usersOpRetrieve.retrieveUsers(uid).get_id() != null) {
+                    List<User> people = new LinkedList<>();
+                    User user = usersOpRetrieve.retrieveUsers(uid);
+                    for (String id : ids)
+                        people.add(usersOpRetrieve.retrieveUsers(id));
 
-                    tokenClass.insertEmailToken(user);
+                    for (User p : people) {
 
-                    String fullUrl = supplementary.createUrl(user.get_id().toString(), user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
+                        if (user.equals(p)) {
 
-                    try {
+                            tokenClass.insertEmailToken(user);
 
-                        sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
+                            String fullUrl = supplementary.createUrl(user.get_id().toString(),
+                                    user.getUsersExtraInfo().getResetPassToken().substring(0, 36));
 
-                    } catch (Exception e) {
-                        return 0;
+                            try {
+
+                                sendHtmlMessage(user, Variables.email_recoverySubject, fullUrl);
+
+                            } catch (Exception e) {
+                                return 0;
+                            }
+
+                            mongoTemplate.remove(query, Variables.col_captchas);
+                            return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_EMAIL)
+                                    .getValue().toString());
+
+                        }
                     }
 
-                    mongoTemplate.remove(query, Variables.col_captchas);
-                    return Integer.parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_EMAIL).getValue().toString());
+                    return -2;
 
+                }else{
+                    return -3;
                 }
             }
+        }
 
-            return -2;
-
-        } else
-            return 0;
+        return 0;
 
     }
 
-    public List<JSONObject> checkMail(String email) {
+    public LinkedList checkMail(String email) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
-        List<JSONObject> jsonArray = new LinkedList<>();
-        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("mail", email).encode(), new UserAttributeMapper(mongoTemplate));
+        LinkedList<String> names = new LinkedList<>();
+        List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("mail", email).encode(),
+                new UserAttributeMapper(mongoTemplate));
         JSONObject jsonObject;
-        for (User user : people) {
-            jsonObject = new JSONObject();
-            jsonObject.put("userId", user.get_id());
-            jsonArray.add(jsonObject);
-        }
-        return jsonArray;
+        for (User user : people)
+            names.add(user.get_id().toString());
+
+        return names;
     }
 
 }

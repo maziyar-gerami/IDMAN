@@ -26,7 +26,6 @@ public class Audit {
     private Date whenActionWasPerformed;
     private String clientIpAddress;
     private String serverIpAddress;
-    private Time time;
 
     public static List<Audit> analyze(MongoTemplate mongoTemplate, int skip, int limit) {
         Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));

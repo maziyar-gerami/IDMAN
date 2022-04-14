@@ -77,7 +77,8 @@ public class FullAttributes {
                 user.setUnDeletable(false);
             }
 
-        }
+        }else
+            return null;
 
         user.setSkyroomAccess(new SkyroomAccess(mongoTemplate).get(user));
 

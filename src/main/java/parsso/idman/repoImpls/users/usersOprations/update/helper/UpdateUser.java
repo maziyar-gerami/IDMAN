@@ -26,12 +26,27 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class UpdateUser extends parsso.idman.repoImpls.users.usersOprations.update.UpdateUser {
+public class UpdateUser {
 
-    public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-                      UserRepo.UsersOp.Retrieve userOpRetrieve, BuildAttributes buildAttributes, ExcelAnalyzer excelAnalyzer) {
-        super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve, buildAttributes, excelAnalyzer);
+    final LdapTemplate ldapTemplate;
+    final MongoTemplate mongoTemplate;
+    final UniformLogger uniformLogger;
+    final UserRepo.UsersOp.Retrieve userOpRetrieve;
+    final BuildAttributes buildAttributes;
+    final ExcelAnalyzer excelAnalyzer;
+    final String BASE_DN;
+
+    public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger, UserRepo.UsersOp.Retrieve userOpRetrieve, BuildAttributes buildAttributes, ExcelAnalyzer excelAnalyzer, String BASE_DN) {
+        this.ldapTemplate = ldapTemplate;
+        this.mongoTemplate = mongoTemplate;
+        this.uniformLogger = uniformLogger;
+        this.userOpRetrieve = userOpRetrieve;
+        this.buildAttributes = buildAttributes;
+        this.excelAnalyzer = excelAnalyzer;
+        this.BASE_DN = BASE_DN;
     }
+
+    
 
     public HttpStatus update(String doerID, String usid, User p) {
 
@@ -44,21 +59,17 @@ public class UpdateUser extends parsso.idman.repoImpls.users.usersOprations.upda
             if (!userOpRetrieve.retrieveUsers(doerID).getRole().equals(Variables.ROLE_USER)
                     && !userOpRetrieve.retrieveUsers(doerID).getRole().equals("PRESENTER")
                     && !userOpRetrieve.retrieveUsers(usid).getRole().equals("USER") &&
-                    user.getRole().equals("USER") && new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS).getValue().equalsIgnoreCase("false"))
+                    user.getRole().equals("USER") && new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS)
+                            .getValue().equalsIgnoreCase("false"))
                 return HttpStatus.FORBIDDEN;
         } catch (Exception ignored) {
         }
         DirContextOperations context;
 
-        //remove current pwdEndTime
-        if (p.getExpiredTime() == null ||
-                p.getExpiredTime().equals("")
-                        && user.getExpiredTime() != null)
-            new EndTime(userOpRetrieve,ldapTemplate,BASE_DN).remove(p.get_id().toString());
-
         context = buildAttributes.buildAttributes(doerID, usid, p, dn);
-        Query query = new Query(Criteria.where("_id").is(p.get_id().toString().toLowerCase()));
-        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
+        Query query = new Query(Criteria.where("_id").is(usid));
+        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class,
+                Variables.col_usersExtraInfo);
 
         try {
             Objects.requireNonNull(usersExtraInfo).setUnDeletable(p.isUnDeletable());
@@ -67,13 +78,14 @@ public class UpdateUser extends parsso.idman.repoImpls.users.usersOprations.upda
         }
 
         if (p.getCStatus() != null) {
-            if (p.getCStatus().equals("unlock") || p.getCStatus().equals("enable"))
+            if ((p.getCStatus().equals("unlock") || p.getCStatus().equals("enable")) || (p.getStatus().equals("unlock") || p.getStatus().equals("enable"))){
                 p.setStatus("enable");
-            else if (p.getCStatus().equals("disable"))
+            }
+            else if (p.getCStatus().equals("disable") ||p.getStatus().equals("disable"))
                 p.setStatus("disable");
             Objects.requireNonNull(usersExtraInfo).setStatus(p.getStatus());
         } else
-            Objects.requireNonNull(usersExtraInfo).setStatus("enable");
+            Objects.requireNonNull(usersExtraInfo).setStatus(p.getStatus());
 
         if (p.getMemberOf() != null)
             usersExtraInfo.setMemberOf(p.getMemberOf());
@@ -87,15 +99,15 @@ public class UpdateUser extends parsso.idman.repoImpls.users.usersOprations.upda
         if (p.isUnDeletable())
             usersExtraInfo.setUnDeletable(true);
 
-        if (p.getMobile()!=null)
+        if (p.getMobile() != null)
             usersExtraInfo.setMobile(p.getMobile());
 
         usersExtraInfo.setTimeStamp(new Date().getTime());
 
         if (p.getUserPassword() != null && !p.getUserPassword().equals("")) {
             context.setAttributeValue("userPassword", p.getUserPassword());
-            p.setPasswordChangedTime(Long.parseLong(new Time().epochToDateLdapFormat(new Date().getTime()).substring(0, 14)));
-
+            p.setPasswordChangedTime(
+                    Long.parseLong(new Time().epochToDateLdapFormat(new Date().getTime()).substring(0, 14)));
 
         } else
             p.setPasswordChangedTime(user.getPasswordChangedTime());
@@ -103,13 +115,16 @@ public class UpdateUser extends parsso.idman.repoImpls.users.usersOprations.upda
         try {
             ldapTemplate.modifyAttributes(context);
             mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
-            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE,
+                    Variables.RESULT_SUCCESS, ""));
         } catch (org.springframework.ldap.InvalidAttributeValueException e) {
-            uniformLogger.warn(p.get_id().toString(), new ReportMessage(Variables.MODEL_USER, p.get_id().toString(), Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, p.get_id().toString(),
+                    Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
             return HttpStatus.FOUND;
         } catch (Exception e) {
             e.printStackTrace();
-            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Writing to DB"));
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_USER, usid, "", Variables.ACTION_UPDATE,
+                    Variables.RESULT_FAILED, "Writing to DB"));
         }
 
         return HttpStatus.OK;
@@ -134,7 +149,6 @@ public class UpdateUser extends parsso.idman.repoImpls.users.usersOprations.upda
 
         return jsonObject;
     }
-
 
     public HttpStatus massUsersGroupUpdate(String doerID, String groupId, JSONObject gu) {
         val add = (List<String>) gu.get("add");

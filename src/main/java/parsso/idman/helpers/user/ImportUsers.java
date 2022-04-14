@@ -12,7 +12,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -65,7 +64,7 @@ public class ImportUsers {
             if (cell == null) break;
 
             DataFormatter formatter = new DataFormatter();
-            user.setUserId(formatter.formatCellValue(row.getCell(sequence[0])));
+            user.set_id(formatter.formatCellValue(row.getCell(sequence[0])));
             user.setFirstName(formatter.formatCellValue(row.getCell(sequence[1])));
             user.setLastName(formatter.formatCellValue(row.getCell(sequence[2])));
             user.setDisplayName(formatter.formatCellValue(row.getCell(sequence[3])));
@@ -214,13 +213,16 @@ public class ImportUsers {
 
         if (Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xlsx")) {
             //Create Workbook instance holding reference to .xlsx file
-            XSSFWorkbook workbookXLSX;
-            workbookXLSX = new XSSFWorkbook(insfile);
+            XSSFWorkbook workbookXLSX = new XSSFWorkbook(insfile);
 
             //Get first/desired sheet from the workbook
             XSSFSheet sheet = workbookXLSX.getSheetAt(0);
 
+            workbookXLSX.close();
+
             lsusers = excelSheetAnalyze(doerId, sheet, sequence, hasHeader);
+
+
 
         } else if (file.getOriginalFilename().endsWith(".xls")) {
             HSSFWorkbook workbookXLS;
@@ -228,6 +230,8 @@ public class ImportUsers {
             workbookXLS = new HSSFWorkbook(insfile);
 
             HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
+
+            workbookXLS.close();
 
             lsusers = excelSheetAnalyze(doerId, xlssheet, sequence, hasHeader);
 

@@ -70,7 +70,6 @@ public class OAuth {
             service.setExpirationPolicy(new ExpirationPolicy());
         else {
             JSONObject jsonObject = null;
-            String s = jo.get("expirationPolicy").getClass().toString();
             if (jo.get("expirationPolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
                 jsonObject = (JSONObject) jo.get("expirationPolicy");
             if (jo.get("expirationPolicy").getClass().toString().equals("class java.util.LinkedHashMap"))

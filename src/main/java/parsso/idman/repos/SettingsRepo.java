@@ -3,7 +3,6 @@ package parsso.idman.repos;
 import org.springframework.http.HttpStatus;
 import parsso.idman.models.other.Property;
 import parsso.idman.models.other.Setting;
-import parsso.idman.repoImpls.settings.settings.SettingsRepoImpl;
 import parsso.idman.repoImpls.settings.settings.subclasses.BackupSettings.Backup;
 
 import java.io.IOException;

@@ -30,7 +30,7 @@ public class ServiceAccess {
         ExtraInfo extraInfo = mongoTemplate.findOne
                 (new Query(Criteria.where("_id").is(id)), ExtraInfo.class, Variables.col_servicesExtraInfo);
 
-        Time time = new Time().longToPersianTime(new Date().getTime());
+        Time time = Time.longToPersianTime(new Date().getTime());
         SimpleTime simpleTime = new SimpleTime(time);
         List<Schedule> dailyAccess;
         try {

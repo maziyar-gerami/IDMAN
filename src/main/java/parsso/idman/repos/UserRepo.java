@@ -47,7 +47,7 @@ public class UserRepo {
 
             HttpStatus update(String doer, String uid, User p);
 
-            HttpStatus groupOfUsers(String doerID, String groupId, JSONObject gu);
+            JSONObject groupOfUsers(String doerID, String groupId, JSONObject gu);
 
             JSONObject mass(String doerID, List<User> users);
 
@@ -81,16 +81,18 @@ public class UserRepo {
     public  interface PasswordOp{
         HttpStatus change(String uId, String newPassword, String token);
 
-        HttpStatus reset(String userId, String oldPass, String token, int pwdin);
+        HttpStatus reset(String userId, String oldPass, String token);
 
-        List<String> expire(String name, JSONObject jsonObject);
+        JSONObject expire(String name, JSONObject jsonObject);
 
         HttpStatus changePublic(String userId, String currentPassword, String newPassword);
+
+        public JSONObject expireGroup(String doer, JSONObject jsonObject);
     }
 
     public  interface Supplementary{
 
-        User getName(String uid, String token);
+        UsersExtraInfo getName(String uid, String token);
 
         boolean increaseSameDayPasswordChanges(User user);
 

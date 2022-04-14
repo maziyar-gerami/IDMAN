@@ -6,6 +6,8 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.User;
+import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.UserRepo;
 
 import javax.naming.Name;
@@ -52,13 +55,16 @@ public class Operations {
         modificationItems = new ModificationItem[1];
 
         User user = usersOpRetrieve.retrieveUsers(uid);
+        UsersExtraInfo userExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("_id").is(uid)), UsersExtraInfo.class,Variables.col_usersExtraInfo);
         String status = user.getStatus();
 
         if (status.equalsIgnoreCase("disable")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
+            userExtraInfo.setStatus("enable");
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
+                mongoTemplate.save(userExtraInfo, Variables.col_usersExtraInfo);
                 uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.get_id(), "", Variables.STATUS_CHANGE,
                         Variables.RESULT_SUCCESS, Variables.STATUS_ENABLE, ""));
 
@@ -83,13 +89,18 @@ public class Operations {
         modificationItems = new ModificationItem[1];
 
         User user = usersOpRetrieve.retrieveUsers(uid);
+        UsersExtraInfo userExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("_id").is(uid)), UsersExtraInfo.class,Variables.col_usersExtraInfo);
+        userExtraInfo.setStatus("disable");
 
         if (user.isEnabled()) {
 
             modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime", "00010101000000Z"));
+            userExtraInfo.setStatus("disable");
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
+                mongoTemplate.save(userExtraInfo, Variables.col_usersExtraInfo);
+                
                 uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.get_id(), "", Variables.RESULT_SUCCESS, Variables.ACTION_DISBLAE, ""));
                 return HttpStatus.OK;
 
@@ -112,15 +123,17 @@ public class Operations {
         modificationItems = new ModificationItem[1];
 
         User user = usersOpRetrieve.retrieveUsers(uid);
+        UsersExtraInfo userExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("_id").is(uid)), UsersExtraInfo.class,Variables.col_usersExtraInfo);
 
         String locked = user.getStatus();
 
         if (locked.equalsIgnoreCase("lock")) {
             modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdAccountLockedTime"));
+            userExtraInfo.setStatus("enable");
 
             try {
                 ldapTemplate.modifyAttributes(dn, modificationItems);
-
+                mongoTemplate.save(userExtraInfo, Variables.col_usersExtraInfo);
                 try {
                     modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute("pwdFailureTime"));
                     ldapTemplate.modifyAttributes(dn, modificationItems);

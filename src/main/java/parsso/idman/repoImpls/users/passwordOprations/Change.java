@@ -28,64 +28,71 @@ public class Change {
     final String BASE_URL;
 
     public Change(UserRepo.UsersOp.Retrieve usersOpRetrieve, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-                  UserRepo.Supplementary supplementary,String BASE_DN,String BASE_URL, UniformLogger uniformLogger) {
+            UserRepo.Supplementary supplementary, String BASE_DN, String BASE_URL, UniformLogger uniformLogger) {
         this.usersOpRetrieve = usersOpRetrieve;
         this.ldapTemplate = ldapTemplate;
         this.mongoTemplate = mongoTemplate;
         this.supplementary = supplementary;
-        this.BASE_DN =BASE_DN;
+        this.BASE_DN = BASE_DN;
         this.BASE_URL = BASE_URL;
         this.uniformLogger = uniformLogger;
     }
 
     public Change(UserRepo.UsersOp.Retrieve usersOpRetrieve, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-                  UserRepo.Supplementary supplementary,String BASE_DN,String BASE_URL,Token tokenClass, UniformLogger uniformLogger) {
+            UserRepo.Supplementary supplementary, String BASE_DN, String BASE_URL, Token tokenClass,
+            UniformLogger uniformLogger) {
         this.usersOpRetrieve = usersOpRetrieve;
         this.ldapTemplate = ldapTemplate;
         this.mongoTemplate = mongoTemplate;
         this.supplementary = supplementary;
-        this.BASE_DN =BASE_DN;
+        this.BASE_DN = BASE_DN;
         this.BASE_URL = BASE_URL;
         this.tokenClass = tokenClass;
         this.uniformLogger = uniformLogger;
     }
 
-
     public HttpStatus change(String uId, String newPassword, String token) {
         User user = usersOpRetrieve.retrieveUsers(uId);
-        if (!supplementary.accessChangePassword(user))
-            return HttpStatus.NOT_ACCEPTABLE;
+
 
         AndFilter andFilter = new AndFilter();
         andFilter.and(new EqualsFilter("objectclass", "person"));
         andFilter.and(new EqualsFilter("uid", uId));
 
+        HttpStatus httpStatus = HttpStatus.FORBIDDEN;
+
         if (token != null) {
-            if (tokenClass.checkToken(uId, token) == HttpStatus.OK) {
+            httpStatus = tokenClass.checkToken(uId, token);
+            if (httpStatus == HttpStatus.OK) {
 
                 DirContextOperations contextUser;
                 contextUser = ldapTemplate.lookupContext(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()));
                 contextUser.setAttributeValue("userPassword", newPassword);
 
                 try {
-                    if (!supplementary.increaseSameDayPasswordChanges(user))
+                    if (!supplementary.increaseSameDayPasswordChanges(user)){
+                        uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD,
+                            Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Too many password changes"));
                         return HttpStatus.TOO_MANY_REQUESTS;
+                    }
                     ldapTemplate.modifyAttributes(contextUser);
-                    uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
-                    if (Boolean.parseBoolean(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()))
-                        new Notification(mongoTemplate).sendPasswordChangeNotify(user,BASE_URL);
+                    uniformLogger.info(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD,
+                            Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
+                    if (Boolean.parseBoolean(
+                            new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue()))
+                        new Notification(mongoTemplate).sendPasswordChangeNotify(user, BASE_URL);
 
                     return HttpStatus.OK;
                 } catch (org.springframework.ldap.InvalidAttributeValueException e) {
-                    uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD, Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
+                    uniformLogger.warn(uId, new ReportMessage(Variables.MODEL_USER, uId, Variables.ATTR_PASSWORD,
+                            Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
                     return HttpStatus.FOUND;
                 }
 
-            } else
-                return HttpStatus.METHOD_NOT_ALLOWED;
-        } else {
-            return HttpStatus.BAD_REQUEST;
+            }
         }
+
+        return httpStatus;
     }
 
     public HttpStatus publicChange(String userId, String currentPassword, String newPassword) {
@@ -109,16 +116,19 @@ public class Change {
             contextUser = ldapTemplate.lookupContext(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()));
             contextUser.setAttributeValue("userPassword", newPassword);
             try {
-                if (!supplementary.increaseSameDayPasswordChanges(usersOpRetrieve.retrieveUsers(userId)))
+                if (!supplementary.increaseSameDayPasswordChanges(usersOpRetrieve.retrieveUsers(userId))){
+                    uniformLogger.warn(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
+                            Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Too many password changes"));
                     return HttpStatus.TOO_MANY_REQUESTS;
+                }
                 ldapTemplate.modifyAttributes(contextUser);
                 usersExtraInfo.setLoggedIn(true);
                 mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
             } catch (org.springframework.ldap.InvalidAttributeValueException e) {
+                uniformLogger.warn(userId, new ReportMessage(Variables.MODEL_USER, userId, Variables.ATTR_PASSWORD,
+                            Variables.ACTION_UPDATE, Variables.RESULT_FAILED, "Repetitive password"));
                 return HttpStatus.FOUND;
-            } catch (Exception e) {
-                return HttpStatus.EXPECTATION_FAILED;
-            }
+            } 
 
         } else {
             return HttpStatus.NOT_FOUND;

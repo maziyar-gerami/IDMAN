@@ -1,4 +1,4 @@
-package parsso.idman.controllers.usersController;
+package parsso.idman.controllers.users;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import parsso.idman.controllers.users.oprations.UsersOps;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.models.response.Response;

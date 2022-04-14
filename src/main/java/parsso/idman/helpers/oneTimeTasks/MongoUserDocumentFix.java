@@ -38,7 +38,6 @@ public class MongoUserDocumentFix {
         int number = 50;
         int it = (int) (Math.floor(count/ number) + 1);
         char[] animationChars = new char[]{'|', '/', '-', '\\'};
-        String mobile;
         
         for (int i = 0; i < it; i++) {
             int skip = i * number;

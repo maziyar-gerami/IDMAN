@@ -1,13 +1,14 @@
 package parsso.idman.repoImpls.users.passwordOprations;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
+
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.repos.UserRepo;
 
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
@@ -20,22 +21,23 @@ public class Expire {
     final MongoTemplate mongoTemplate;
     final UniformLogger uniformLogger;
     final LdapTemplate ldapTemplate;
-    @Value("${spring.ldap.base.dn}")
     private String BASE_DN;
+    UserRepo.UsersOp.Retrieve userOpRetrieve;
 
-    public Expire(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger) {
+    public Expire(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger,UserRepo.UsersOp.Retrieve userOpRetrieve , String BASE_DN) {
         this.mongoTemplate = mongoTemplate;
         this.uniformLogger = uniformLogger;
         this.ldapTemplate = ldapTemplate;
+        this.userOpRetrieve = userOpRetrieve;
+        this.BASE_DN = BASE_DN;
     }
 
-    public List<String> expire(String doer, List<UsersExtraInfo> users) {
+    public List<String> expire(String doer, List<UsersExtraInfo> usersExtraInfo) {
 
         List<String> superUsers = new LinkedList<>();
-
-        for (UsersExtraInfo user : users) {
-            if (user == null)
-                continue;
+        
+        for (UsersExtraInfo user : usersExtraInfo) {
+            
             if (!user.getRole().equals("SUPERUSER")) {
 
                 ModificationItem[] modificationItems;
@@ -74,7 +76,7 @@ public class Expire {
 
             }
         }
-        return superUsers;
+       return superUsers;
     }
 }
 

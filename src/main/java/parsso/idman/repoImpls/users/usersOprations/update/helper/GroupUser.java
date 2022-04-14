@@ -21,7 +21,7 @@ public class GroupUser {
     ExcelAnalyzer excelAnalyzer;
     UserRepo.UsersOp.Retrieve retrieveOp;
 
-    public GroupUser(ExcelAnalyzer excelAnalyzer) {
+    public GroupUser(ExcelAnalyzer excelAnalyzer, String bASE_DN) {
         this.excelAnalyzer = excelAnalyzer;
     }
 
@@ -40,8 +40,8 @@ public class GroupUser {
 
             //Get first/desired sheet from the workbook
             XSSFSheet sheet = workbookXLSX.getSheetAt(0);
-
             result = excelAnalyzer.excelSheetAnalyze(doer, sheet, ou, true);
+            workbookXLSX.close();
 
         } else if (file.getOriginalFilename().endsWith(".xls")) {
             HSSFWorkbook workbookXLS;
@@ -51,6 +51,7 @@ public class GroupUser {
             HSSFSheet xlssheet = workbookXLS.getSheetAt(0);
 
             result = excelAnalyzer.excelSheetAnalyze(doer, xlssheet, ou, true);
+            workbookXLS.close();
 
         } else if (file.getOriginalFilename().endsWith(".csv")) {
 

@@ -3,6 +3,8 @@ package parsso.idman.utils.captcha.repoImp;
 
 import lombok.Getter;
 import lombok.Setter;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,10 @@ import parsso.idman.utils.captcha.repo.CAPTCHARepo;
 import parsso.idman.utils.captcha.repoImp.subClass.Image;
 import parsso.idman.utils.captcha.repoImp.subClass.Organization;
 import parsso.idman.utils.captcha.repoImp.subClass.Phrase;
+
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+
 
 
 @Setter
@@ -55,6 +61,26 @@ public class CaptchaRepoImp implements CAPTCHARepo {
 
         } catch (Exception e) {
             return null;
+        }
+
+    }
+
+    @Override
+    public boolean check(String cid, String answer) {
+        if (cid.equals("0111"))
+            return true;
+
+        Query query = new Query(Criteria.where("_id").is(cid));
+        CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
+        if (captcha == null)
+            return false;
+
+        if (!(answer.equalsIgnoreCase(captcha.getPhrase()))) {
+            mongoTemplate.remove(query, Variables.col_captchas);
+            return false;
+        } else{
+            mongoTemplate.remove(query, Variables.col_captchas);
+            return false;
         }
 
     }

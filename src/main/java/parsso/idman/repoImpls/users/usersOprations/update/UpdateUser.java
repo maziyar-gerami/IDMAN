@@ -24,34 +24,32 @@ import java.util.List;
 public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
 
     final protected BuildAttributes buildAttributes;
-    final protected ExcelAnalyzer excelAnalyzer;
 
     @Autowired
     public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-                      UserRepo.UsersOp.Retrieve userOpRetrieve, BuildAttributes buildAttributes, ExcelAnalyzer excelAnalyzer) {
+                      UserRepo.UsersOp.Retrieve userOpRetrieve,  BuildAttributes buildAttributes) {
         super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);
         this.buildAttributes = buildAttributes;
-        this.excelAnalyzer = excelAnalyzer;
     }
 
 
     public HttpStatus update(String doerID, String usid, User p) {
         return new parsso.idman.repoImpls.users.usersOprations.update.helper.UpdateUser(ldapTemplate,mongoTemplate,uniformLogger,
-                userOpRetrieve,buildAttributes,excelAnalyzer)
+                userOpRetrieve,buildAttributes,new ExcelAnalyzer(ldapTemplate,mongoTemplate,userOpRetrieve,this),BASE_DN)
                 .update(doerID,usid,p);
     }
 
 
     @Override
-    public HttpStatus groupOfUsers(String doerID, String groupId, JSONObject gu) {
+    public JSONObject groupOfUsers(String doerID, String groupId, JSONObject gu) {
         return new GroupOfUsers(userOpRetrieve,new parsso.idman.repoImpls.users.usersOprations.update.helper.UpdateUser(ldapTemplate,mongoTemplate,uniformLogger,userOpRetrieve,
-                buildAttributes,excelAnalyzer)).massUsersGroupUpdate(doerID,groupId,gu);
+                buildAttributes,new ExcelAnalyzer(ldapTemplate,mongoTemplate,userOpRetrieve,this),BASE_DN)).massUsersGroupUpdate(doerID,groupId,gu);
     }
 
     @Override
     public JSONObject mass(String doerID, List<User> users) {
         return new parsso.idman.repoImpls.users.usersOprations.update.helper.UpdateUser(ldapTemplate,mongoTemplate,uniformLogger,userOpRetrieve,
-                buildAttributes,excelAnalyzer).mass(doerID,users);
+                buildAttributes,new ExcelAnalyzer(ldapTemplate,mongoTemplate,userOpRetrieve,this),BASE_DN).massUpdate (doerID,users);
     }
 
     @Override
@@ -62,6 +60,6 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
 
     @Override
     public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException {
-        return new GroupUser(excelAnalyzer).addGroupToUsers(doer,file,ou);
+        return new GroupUser(new ExcelAnalyzer(ldapTemplate,mongoTemplate,userOpRetrieve,this),BASE_DN).addGroupToUsers(doer,file,ou);
     }
 }

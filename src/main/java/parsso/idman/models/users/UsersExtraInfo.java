@@ -3,6 +3,7 @@ package parsso.idman.models.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.models.other.Time;
@@ -28,6 +29,7 @@ public class UsersExtraInfo {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String photoName;
     private boolean unDeletable;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String role;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String category;
@@ -46,7 +48,6 @@ public class UsersExtraInfo {
     private boolean loggedIn;
     @JsonIgnore
     private int nPassChanged;
-    @JsonIgnore
     private ChangePassword changePassword;
 
     public int getNPassChanged() {
