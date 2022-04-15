@@ -2,10 +2,14 @@ package parsso.idman.controllers;
 
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
 import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.excelView.GroupsExcelView;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
@@ -24,20 +28,22 @@ import java.util.List;
 public class GroupsController {
     private final UserRepo.UsersOp.Retrieve retrieveUsers;
     private final UserRepo.PasswordOp passwordOp;
-    private final GroupRepo.Retrieve retrieveGroup;
+    private final RetrieveGroup retrieveGroup;
     private final GroupRepo.Update updateGroup;
     private final GroupRepo.Delete deleteGroup;
     private final GroupRepo.Create createGroup;
+    private final MongoTemplate mongoTemplate;
 
     @Autowired
     public GroupsController(UserRepo.UsersOp.Retrieve retrieveUsers, UserRepo.PasswordOp passwordOp,
-            RetrieveGroup retrieveGroup, UpdateGroup updateGroup, DeleteGroup deleteGroup, CreateGroup createGroup) {
+            RetrieveGroup retrieveGroup, UpdateGroup updateGroup, DeleteGroup deleteGroup, CreateGroup createGroup,MongoTemplate mongoTemplate) {
         this.retrieveUsers = retrieveUsers;
         this.passwordOp = passwordOp;
         this.retrieveGroup = retrieveGroup;
         this.updateGroup = updateGroup;
         this.deleteGroup = deleteGroup;
         this.createGroup = createGroup;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @GetMapping("/user")
@@ -104,5 +110,10 @@ public class GroupsController {
         return new ResponseEntity<>(new Response(passwordOp.expireGroup(request.getUserPrincipal().getName(), jsonObject),
                 Variables.MODEL_GROUP, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
+    }
+
+    @GetMapping("/export")
+    public ModelAndView downloadExcel() {
+        return new ModelAndView(new GroupsExcelView(retrieveGroup,mongoTemplate), "listGroups", Object.class);
     }
 }

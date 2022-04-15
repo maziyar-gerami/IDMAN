@@ -60,11 +60,11 @@ public class StringResult {
     public static String PASSWORD_302_EN = "New password is repetitive";
     public static String PASSWORD_302_FA = "گذرواژه جدید تکراری است";
 
-    public static String PASSWORD_403_EN = "Token is incorrect.";
-    public static String PASSWORD_403_FA = "توکن صحیح نیست";
+    public static String PASSWORD_403_EN = "Verification code is incorrect.";
+    public static String PASSWORD_403_FA = "کد تایید صحیح نیست";
 
-    public static String PASSWORD_408_EN = "Token is expired.";
-    public static String PASSWORD_408_FA = "توکن منقضی شده است";
+    public static String PASSWORD_408_EN = "Verification code is expired.";
+    public static String PASSWORD_408_FA = "کد تایید منقضی شده است";
 
     public static String PASSWORD_429_EN = "The number of requests to change the password in one day, is too much ";
     public static String PASSWORD_429_FA = "تعداد درخواست های تغییر گذرواژه در یک روز بیش از حد مجاز است";
