@@ -1,6 +1,8 @@
 package parsso.idman.controllers;
 
 import net.minidev.json.JSONObject;
+
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
@@ -131,17 +133,17 @@ public class GroupsController {
         @PostMapping("/import")
         public ResponseEntity<Response> uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file,
                         @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
-                        throws IOException, NoSuchFieldException, IllegalAccessException, java.io.IOException {
+                        throws IOException, NoSuchFieldException, IllegalAccessException, java.io.IOException, ParseException {
 
-                JSONObject jsonObject = new ImportGroups(createGroup)
+                org.json.simple.JSONObject jsonObject = new ImportGroups(createGroup)
                                 .importFileGroups(request.getUserPrincipal().getName(), file, true);
-                if (Integer.parseInt(jsonObject.getAsString("nUnSuccessful")) == 0)
+                if (Integer.parseInt(jsonObject.get("nUnSuccessful").toString()) == 0)
                         return new ResponseEntity<>(
                                         new Response(jsonObject, Variables.MODEL_USER, HttpStatus.CREATED.value(),
                                                         lang),
                                         HttpStatus.OK);
-                else if (Integer.parseInt(jsonObject.getAsString("nUnSuccessful")) > 0
-                                && Integer.parseInt(jsonObject.getAsString("nSuccessful")) > 0)
+                else if (Integer.parseInt(jsonObject.get("nUnSuccessful").toString()) > 0
+                                && Integer.parseInt(jsonObject.get("nSuccessful").toString()) > 0)
                         return new ResponseEntity<>(
                                         new Response(jsonObject, Variables.MODEL_USER, HttpStatus.MULTI_STATUS.value(),
                                                         lang),

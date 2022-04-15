@@ -1,10 +1,10 @@
 package parsso.idman.helpers.group;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldif.LDIFException;
 import com.unboundid.ldif.LDIFReader;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -13,6 +13,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +42,7 @@ public class ImportGroups {
         this.groupCreateRepo = groupCreateRepo;
     }
 
-    public JSONObject excelSheetAnalyze(String doerId, Sheet sheet, boolean hasHeader) {
+    public JSONObject excelSheetAnalyze(String doerId, Sheet sheet, boolean hasHeader) throws ParseException {
         JSONArray jsonArray = new JSONArray();
 
         Iterator<Row> rowIterator = sheet.iterator();
@@ -56,10 +60,10 @@ public class ImportGroups {
 
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
+            count++;
 
             Group group = new Group();
 
-            HttpStatus temp;
 
             Cell cell = row.getCell(0);
             // Check the cell type and format accordingly
@@ -82,14 +86,29 @@ public class ImportGroups {
                     nUnSuccessful++;
                     continue;
                 }
+                HttpStatus httpStatus = null;
+                ;
                 try {
-                    groupCreateRepo.create(doerId, group);
+                    httpStatus = groupCreateRepo.create(doerId, group);
                 } catch (Exception e) {
                     nUnSuccessful++;
                     continue;
                 }
 
-                count++;
+                 if (httpStatus == HttpStatus.FOUND){
+                    ObjectMapper mapper = new ObjectMapper();
+                    try {
+                      String jsonString = mapper.writeValueAsString(group);
+                      JSONParser parser = new JSONParser();
+                        JSONObject json = (JSONObject) parser.parse(jsonString);
+                        repetitiveGroups.add(json);
+                        nUnSuccessful++;
+                    } catch (JsonProcessingException e) {
+                       e.printStackTrace();
+                    }
+                 }
+                    
+                continue;
 
             }
         }
@@ -209,7 +228,7 @@ public class ImportGroups {
     }
 
     public JSONObject importFileGroups(String doerId, MultipartFile file, boolean hasHeader)
-            throws IOException {
+            throws IOException, ParseException {
 
         JSONObject lsGroups = new JSONObject();
         InputStream insfile = file.getInputStream();
@@ -275,21 +294,11 @@ public class ImportGroups {
 
     private void extractAttrEntry(Entry entry) {
 
-        User user = new User();
+        Group group = new Group();
 
-        user.setUserId(entry.getAttributeValue("uid"));
-        user.setFirstName(entry.getAttributeValue("givenName"));
-        user.setLastName(entry.getAttributeValue("sn"));
-        user.setDisplayName(entry.getAttributeValue("displayName"));
-        user.setMobile(entry.getAttributeValue("mobile"));
-        user.setMail(entry.getAttributeValue("mail"));
-        int nGroups = (null == entry.getAttributeValue("ou") ? 0 : entry.getAttributeValue("ou").length());
-        List<String> ls = new LinkedList<>();
-        for (int i = 0; i < nGroups; i++)
-            ls.add(entry.getAttributeValue("ou"));
-        user.setMemberOf(null != entry.getAttributeValue("ou") ? ls : null);
-        user.setDescription(entry.getAttributeValue("description"));
-        user.setStatus(entry.getAttributeValue("employeeNumber"));
+        group.setId(entry.getAttributeValue("uid"));
+        group.setName(entry.getAttributeValue("name"));
+        group.setDescription(entry.getAttributeValue("description"));
 
     }
 }

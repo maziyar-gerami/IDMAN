@@ -40,127 +40,11 @@ public class PagesController implements ErrorController {
 
     //************************************* Pages ****************************************
 
-    @GetMapping("/publicmessages")
-    public String PublicMessages() {
-        return "publicmessages";
-    }
-
-    @GetMapping("/groups")
-    public String getPageGroups() {
-        return "groups";
-    }
-
     @GetMapping("/")
     public String Root() {
-        return "redirect:/dashboard";
+        return "index";
     }
 
-    @SuppressWarnings("SameReturnValue")
-    @GetMapping("/roles")
-    public String getPageRoles() {
-        return "roles";
-    }
-
-    @GetMapping("/reports")
-    public String getPageReports() {
-        return "reports";
-    }
-
-    @GetMapping("/events")
-    public String getPageEvents() {
-        return "events";
-    }
-
-    @GetMapping("/audits")
-    public String getPageAudits() {
-        return "audits";
-    }
-
-    @GetMapping("/transcripts")
-    public String getPageTranscripts() {
-        return "transcripts";
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @GetMapping("/configs")
-    public String getPageConfigs() {
-        return "configs";
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @GetMapping("/ticketing")
-    public String Reports() {
-        return "ticketing";
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @RequestMapping("/error")
-    public String handleError() {
-        return "redirect:/errorpage";
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @GetMapping("/services")
-    public String getPageServices() {
-        return "services";
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @GetMapping("/createservice")
-    public String CreateService() {
-        return "createservice";
-    }
-
-
-    @SuppressWarnings("SameReturnValue")
-    @GetMapping("/403")
-    public String AccessDenied() {
-        return "403";
-    }
-
-    @Override
-    public String getErrorPath() {
-        return null;
-    }
-
-    @GetMapping("/dashboard")
-    public String Dashboard() {
-        return "dashboard";
-    }
-
-    @GetMapping("/privacy")
-    public String Privacy() {
-        return "privacy";
-    }
-
-    @GetMapping("/errorpage")
-    public String Error() {
-        return "error";
-    }
-
-    @GetMapping("/login")
-    public String Login() {
-        return "redirect:/login/cas";
-    }
-
-    @GetMapping("/changepassword")
-    public String changepassword() {
-        return "changepassword";
-    }
-
-    @GetMapping("/logout")
-    public String logout(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            SecurityContextLogoutHandler logoutHandler) {
-        Authentication auth = SecurityContextHolder
-                .getContext().getAuthentication();
-        logoutHandler.logout(request, response, auth);
-        new CookieClearingLogoutHandler(
-                AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY)
-                .logout(request, response, auth);
-        return "redirect:" + casLogout;
-    }
 
 
     //************************************* APIs ****************************************
@@ -170,26 +54,11 @@ public class PagesController implements ErrorController {
         return new ResponseEntity<>(new Response(dashboardData.retrieveDashboardData(),Variables.MODEL_DASHBOARD, HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
 
-    //************************************* Pages ****************************************
-
-    @GetMapping("/users")
-    public String Users() {
-        return "users";
+    @Override
+    public String getErrorPath() {
+        return null;
     }
 
-    @GetMapping("/profile")
-    public String Profile() {
-        return "profile";
-    }
 
-    @GetMapping("/resetpassword")
-    public String resetPass() {
-        return "resetpassword";
-    }
-
-    @GetMapping("/newpassword")
-    public String resetPassword() {
-        return "newpassword";
-    }
 
 }
