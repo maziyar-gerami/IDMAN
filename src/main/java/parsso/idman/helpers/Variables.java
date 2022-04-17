@@ -71,6 +71,7 @@ public class Variables {
     public static final String MSG_FA_CODE_503 = "آدرس API صحیح نیست و یا متد آن به درستی تعیین نشده است.";
     public static final String MODEL_SETTINGS = "Settings";
     public static final String MODEL_TOKEN = "Token";
+    public static final String MODEL_LOGS = "Logs";
 
     public static final String SMS_MAGFA_USERNAME = "SMS.Magfa.username";
     public static final String SMS_MAGFA_PASSWORD = "SMS.Magfa.password";

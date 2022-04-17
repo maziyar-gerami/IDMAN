@@ -1,6 +1,5 @@
 package parsso.idman.repoImpls.logs;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -26,17 +25,31 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
     }
 
     @Override
-    public Audit.ListAudits retrieve(String userId, String date, int p, int n) {
+    public Audit.ListAudits retrieve(String userId, String startDate, String endDate, int p, int n) {
+        long[] range = null;
         Query query = new Query();
         if (!userId.equals(""))
             query.addCriteria(Criteria.where("principal").is(userId));
 
-        if (!date.equals("")) {
-            long[] range = new Time().specificDateToEpochRange(new Time().stringInputToTime(date), ZoneId.of(Variables.ZONE));
-            query.addCriteria(Criteria.where("whenActionWasPerformed")
-                    .gte(new Time().convertEpochToDate(range[0])).lte(new Time().convertEpochToDate(range[1])));
+        if (!startDate.equals("") && !endDate.equals("")) {
+            range = new Time().dateRangeToEpochRange(new Time().stringInputToTime(startDate),
+                    new Time().stringInputToTime(endDate), ZoneId.of(Variables.ZONE));
+
+        } else if (!startDate.equals("") && endDate.equals("")) {
+            range = new Time().dateRangeToEpochRange(new Time().stringInputToTime(startDate),
+                    new Time(Integer.parseInt(endDate.substring(0, 2)),
+                            Integer.parseInt(endDate.substring(2, 4)), Integer.parseInt(endDate.substring(4))),
+                    ZoneId.of(Variables.ZONE));
+
+        } else if (startDate.equals("") && !endDate.equals("")) {
+            range = new Time().dateRangeToEpochRange(new Time(Integer.parseInt(startDate.substring(0, 2)),
+                    Integer.parseInt(startDate.substring(2, 4)), Integer.parseInt(startDate.substring(4))),
+                    new Time().stringInputToTime(endDate), ZoneId.of(Variables.ZONE));
         }
 
+        if (range != null)
+            query.addCriteria(Criteria.where("whenActionWasPerformed")
+                    .gte(new Time().convertEpochToDate(range[0])).lte(new Time().convertEpochToDate(range[1])));
 
         long size = mongoTemplate.count(query, Event.class, Variables.col_audit);
 
@@ -46,5 +59,3 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
     }
 
 }
-
-

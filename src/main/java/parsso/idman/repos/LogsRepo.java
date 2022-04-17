@@ -14,12 +14,12 @@ import java.util.List;
 
 public class LogsRepo {
     public interface AuditRepo {
-        Audit.ListAudits retrieve(String userId, String date, int p, int n);
+        Audit.ListAudits retrieve(String userId, String startDate, String endDate, int p, int n);
     }
 
     public interface EventRepo {
 
-        Event.ListEvents retrieve(String userId, String date, int p, int n);
+        Event.ListEvents retrieve(String userId, String startDate, String endDate, int p, int n);
 
         Event.ListEvents retrieveListSizeEvents(int page, int n);
 
@@ -27,9 +27,9 @@ public class LogsRepo {
     }
 
     public interface ReportRepo {
-        Report.ListReports retrieve(String userId, String date, int p, int n);
+        Report.ListReports retrieve(String userId, String startDate, String endDate, int p, int n);
 
-        ReportMessage.ListReportMessage accessManaging(int page, int nRows, long id, String date, String doerId, String instanceName);
+        ReportMessage.ListReportMessage accessManaging(int page, int nRows, long id, String startDate, String endDate, String doerId, String instanceName);
     }
 
     public interface TranscriptRepo {

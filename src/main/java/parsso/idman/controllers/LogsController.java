@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+
+import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.excelView.AuditsExcelView;
 import parsso.idman.helpers.excelView.EventsExcelView;
 import parsso.idman.helpers.excelView.LogsExcelView;
-import parsso.idman.models.logs.Audit;
-import parsso.idman.models.logs.Event;
-import parsso.idman.models.logs.Report;
-import parsso.idman.models.logs.ReportMessage;
+
+import parsso.idman.models.response.Response;
 import parsso.idman.postConstruct.LogsTime;
 import parsso.idman.repos.LogsRepo;
 
@@ -47,80 +47,100 @@ public class LogsController {
 
 
     @GetMapping("/audits/users")
-    public ResponseEntity<Audit.ListAudits> getUsersAudits(@RequestParam(name = "userID", defaultValue = "") String userID,
-                                                           @RequestParam(name = "date", defaultValue = "") String date,
+    public ResponseEntity<Response> getUsersAudits(@RequestParam(name = "userID", defaultValue = "") String userID,
+                                                           @RequestParam(name = "startDate", defaultValue = "") String startDate,
+                                                           @RequestParam(name = "endDate", defaultValue = "") String endDate,
                                                            @RequestParam(name = "page") String page,
-                                                           @RequestParam(name = "count") String count) {
-        return new ResponseEntity<>(auditRepo.retrieve(userID, date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
+                                                           @RequestParam(name = "count") String count,
+                                                           @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
+        return new ResponseEntity<>(new Response(auditRepo.retrieve(userID, startDate, endDate, Integer.parseInt(page), Integer.parseInt(count)), Variables.MODEL_LOGS,HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
 
     @GetMapping("/audits/user")
-    public ResponseEntity<Audit.ListAudits> getUserAudits(HttpServletRequest request,
-                                                          @RequestParam(name = "date", defaultValue = "") String date,
+    public ResponseEntity<Response> getUserAudits(HttpServletRequest request,
+    @RequestParam(name = "startDate", defaultValue = "") String startDate,
+    @RequestParam(name = "endDate", defaultValue = "") String endDate,
                                                           @RequestParam(name = "page") String page,
-                                                          @RequestParam(name = "count") String count) {
+                                                          @RequestParam(name = "count") String count,
+                                                          @RequestParam(name =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
         Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
         lt.start();
 
-        return new ResponseEntity<>(auditRepo.retrieve(request.getUserPrincipal().getName(), date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(auditRepo.retrieve(request.getUserPrincipal().getName(), startDate, endDate, Integer.parseInt(page), Integer.parseInt(count)), Variables.MODEL_LOGS,HttpStatus.OK.value(),lang), HttpStatus.OK);
+
     }
 
     @GetMapping("/events/users")
-    public ResponseEntity<Event.ListEvents> getUsersEvents(@RequestParam(name = "userID", defaultValue = "") String userID,
-                                                           @RequestParam(name = "date", defaultValue = "") String date,
+    public ResponseEntity<Response> getUsersEvents(@RequestParam(name = "userID", defaultValue = "") String userID,
+    @RequestParam(name = "startDate", defaultValue = "") String startDate,
+    @RequestParam(name = "endDate", defaultValue = "") String endDate,
                                                            @RequestParam(name = "page") String page,
-                                                           @RequestParam(name = "count") String count) {
+                                                           @RequestParam(name = "count") String count,
+                                                           @RequestParam(name =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
 
         Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
         lt.start();
 
-        return new ResponseEntity<>(eventRepo.retrieve(userID, date, !page.equals("") ? Integer.parseInt(page) : 0,
-                !count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);
+        
+        return new ResponseEntity<>(new Response(eventRepo.retrieve(userID, startDate, endDate, !page.equals("") ? Integer.parseInt(page) : 0,
+                !count.equals("") ? Integer.parseInt(count) : 0),Variables.MODEL_LOGS,HttpStatus.OK.value(),lang),HttpStatus.OK);
+
     }
 
     @GetMapping("/events/user")
-    public ResponseEntity<Event.ListEvents> getUserEvents(HttpServletRequest request,
-                                                          @RequestParam(name = "date", defaultValue = "") String date,
+    public ResponseEntity<Response> getUserEvents(HttpServletRequest request,
+    @RequestParam(name = "startDate", defaultValue = "") String startDate,
+    @RequestParam(name = "endDate", defaultValue = "") String endDate,
                                                           @RequestParam(name = "page") String page,
-                                                          @RequestParam(name = "count") String count) {
+                                                          @RequestParam(name = "count") String count,
+                                                          @RequestParam(name =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
         Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
         lt.start();
-        return new ResponseEntity<>(eventRepo.retrieve(request.getUserPrincipal().getName(), date, !page.equals("") ? Integer.parseInt(page) : 0,
-                !count.equals("") ? Integer.parseInt(count) : 0), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(eventRepo.retrieve(request.getUserPrincipal().getName(), startDate, endDate, !page.equals("") ? Integer.parseInt(page) : 0,
+        !count.equals("") ? Integer.parseInt(count) : 0), Variables.MODEL_LOGS,HttpStatus.OK.value(),lang), HttpStatus.OK);
+
 
     }
 
     @GetMapping("/reports/users")
-    public ResponseEntity<Report.ListReports> getUsersReports(@RequestParam(name = "userID", defaultValue = "") String userID,
-                                                              @RequestParam(name = "date", defaultValue = "") String date,
+    public ResponseEntity<Response> getUsersReports(@RequestParam(name = "userID", defaultValue = "") String userID,
+    @RequestParam(name = "startDate", defaultValue = "") String startDate,
+    @RequestParam(name = "endDate", defaultValue = "") String endDate,
                                                               @RequestParam(name = "page") String page,
-                                                              @RequestParam(name = "count") String count) {
-        Report.ListReports s1 = reportsRepo.retrieve(userID, date, Integer.parseInt(page), Integer.parseInt(count));
+                                                              @RequestParam(name = "count") String count,
+                                                              @RequestParam(name =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
 
-        return new ResponseEntity<>(s1, HttpStatus.OK);
+        return new ResponseEntity<>(new Response(reportsRepo.retrieve(userID, startDate, endDate, Integer.parseInt(page), Integer.parseInt(count)), Variables.MODEL_LOGS,HttpStatus.OK.value(),lang), HttpStatus.OK);
+
 
     }
 
     @GetMapping("/reports/user")
-    public ResponseEntity<Report.ListReports> getUserReports(HttpServletRequest request,
-                                                             @RequestParam(name = "date", defaultValue = "") String date,
+    public ResponseEntity<Response> getUserReports(HttpServletRequest request,
+    @RequestParam(name = "startDate", defaultValue = "") String startDate,
+    @RequestParam(name = "endDate", defaultValue = "") String endDate,
                                                              @RequestParam(name = "page") String page,
-                                                             @RequestParam(name = "count") String count) {
-        return new ResponseEntity<>(reportsRepo.retrieve(request.getUserPrincipal().getName(), date, Integer.parseInt(page), Integer.parseInt(count)), HttpStatus.OK);
+                                                             @RequestParam(name = "count") String count,
+                                                             @RequestParam(name =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
+        return new ResponseEntity<>(new Response(reportsRepo.retrieve(request.getUserPrincipal().getName(), startDate, endDate, Integer.parseInt(page), Integer.parseInt(count)), Variables.MODEL_LOGS,HttpStatus.OK.value(),lang), HttpStatus.OK);
+
     }
 
     @GetMapping("/reports/serviceAccess")
-    public ResponseEntity<ReportMessage.ListReportMessage> accessManaging(@RequestParam(value = "page") String p,
+    public ResponseEntity<Response> accessManaging(@RequestParam(value = "page") String p,
                                                                           @RequestParam(value = "count") String n,
                                                                           @RequestParam(value = "name", defaultValue = "") String instanceName,
                                                                           @RequestParam(value = "id", defaultValue = "") String id,
-                                                                          @RequestParam(value = "date", defaultValue = "") String date,
-                                                                          @RequestParam(value = "doerID", defaultValue = "") String doerId) {
+                                                                          @RequestParam(name = "startDate", defaultValue = "") String startDate,
+                                                           @RequestParam(name = "endDate", defaultValue = "") String endDate,
+                                                                          @RequestParam(value = "doerID", defaultValue = "") String doerId,
+                                                                          @RequestParam(name =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
         long _id = !id.equals("") ? Long.parseLong(id) : 0;
         int page = !p.equals("") ? Integer.parseInt(p) : 0;
         int nRows = !n.equals("") ? Integer.parseInt(n) : 0;
 
-        return new ResponseEntity<>(reportsRepo.accessManaging(page, nRows, _id, date, doerId, instanceName), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(reportsRepo.accessManaging(page, nRows, _id, startDate, endDate, doerId, instanceName), Variables.MODEL_LOGS,HttpStatus.OK.value(),lang), HttpStatus.OK);
+
     }
 
     @SuppressWarnings("ConstantConditions")

@@ -151,6 +151,20 @@ public class Time {
 
     }
 
+    public long[] dateRangeToEpochRange(Time startTime, Time endTime, ZoneId zoneId) {
+
+        long[] result = new long[2];
+
+        LocalDate startDay = LocalDate.of(startTime.getYear(), startTime.getMonth(), startTime.getDay());
+        LocalDate endDay = LocalDate.of(endTime.getYear(), endTime.getMonth(), endTime.getDay());
+
+        result[0] = startDay.atStartOfDay().atZone(zoneId).toEpochSecond() * 1000;
+        result[1] = endDay.plusDays(1).atStartOfDay().atZone(zoneId).toEpochSecond() * 1000;
+
+        return result;
+
+    }
+
     public Date convertEpochToDate(long epoch) {
         return new Date(epoch);
     }

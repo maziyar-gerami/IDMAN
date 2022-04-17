@@ -1,6 +1,5 @@
 package parsso.idman.repoImpls.logs;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -27,17 +26,32 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
     }
 
     @Override
-    public Event.ListEvents retrieve(String userId, String date, int p, int n) {
+    public Event.ListEvents retrieve(String userId, String startDate, String endDate, int p, int n) {
         Query query = new Query();
+        long[] range = null;
+
         if (!userId.equals(""))
             query.addCriteria(Criteria.where("principalId").is(userId));
 
-        if (!date.equals("")) {
-            long[] range = new Time().specificDateToEpochRange(new Time().stringInputToTime(date), ZoneId.of(Variables.ZONE));
-            query.addCriteria(Criteria.where("_id")
-                    .gte(range[0]).lte(range[1]));
+        if (!startDate.equals("") && !endDate.equals("")) {
+            range = new Time().dateRangeToEpochRange(new Time().stringInputToTime(startDate),
+                    new Time().stringInputToTime(endDate), ZoneId.of(Variables.ZONE));
+
+        } else if (!startDate.equals("") && endDate.equals("")) {
+            range = new Time().dateRangeToEpochRange(new Time().stringInputToTime(startDate),
+                    new Time(Integer.parseInt(endDate.substring(0, 2)),
+                            Integer.parseInt(endDate.substring(2, 4)), Integer.parseInt(endDate.substring(4))),
+                    ZoneId.of(Variables.ZONE));
+
+        } else if (startDate.equals("") && !endDate.equals("")) {
+            range = new Time().dateRangeToEpochRange(new Time(Integer.parseInt(startDate.substring(0, 2)),
+                    Integer.parseInt(startDate.substring(2, 4)), Integer.parseInt(startDate.substring(4))),
+                    new Time().stringInputToTime(endDate), ZoneId.of(Variables.ZONE));
         }
 
+        if (range != null)
+            query.addCriteria(Criteria.where("_id")
+                    .gte(range[0]).lte(range[1]));
 
         long size = mongoTemplate.count(query, Event.class, Variables.col_casEvent);
 
@@ -65,7 +79,8 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
 
     private List<Event> eventsSetTime(List<Event> le) {
         for (Event event : le) {
-            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime()).atZoneSameInstant(ZoneId.of(Variables.ZONE));
+            ZonedDateTime eventDate = OffsetDateTime.parse(event.getCreationTime())
+                    .atZoneSameInstant(ZoneId.of(Variables.ZONE));
             Time time1 = new Time(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth(),
                     eventDate.getHour(), eventDate.getMinute(), eventDate.getSecond());
             event.setTime(time1);
@@ -73,5 +88,3 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
         return le;
     }
 }
-
-
