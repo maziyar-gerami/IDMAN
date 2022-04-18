@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
+import parsso.idman.helpers.LogTime;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.logs.ReportMessage;
@@ -85,21 +87,8 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
             query.addCriteria(Criteria.where("doerID").is(doerId));
         if (!instanceName.equals(""))
             query.addCriteria(Criteria.where("instanceName").is(instanceName));
-        if (!startDate.equals("") && !endDate.equals("")) {
-            range = new Time().dateRangeToEpochRange(new Time().stringInputToTime(startDate),
-                    new Time().stringInputToTime(endDate), ZoneId.of(Variables.ZONE));
-
-        } else if (!startDate.equals("") && endDate.equals("")) {
-            range = new Time().dateRangeToEpochRange(new Time().stringInputToTime(startDate),
-                    new Time(Integer.parseInt(endDate.substring(0, 2)),
-                            Integer.parseInt(endDate.substring(2, 4)), Integer.parseInt(endDate.substring(4))),
-                    ZoneId.of(Variables.ZONE));
-
-        } else if (startDate.equals("") && !endDate.equals("")) {
-            range = new Time().dateRangeToEpochRange(new Time(Integer.parseInt(startDate.substring(0, 2)),
-                    Integer.parseInt(startDate.substring(2, 4)), Integer.parseInt(startDate.substring(4))),
-                    new Time().stringInputToTime(endDate), ZoneId.of(Variables.ZONE));
-        }
+        
+            range = LogTime.rangeCreator(startDate,endDate);
 
         if (range != null)
 

@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
+import parsso.idman.helpers.LogTime;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.other.Time;
@@ -14,6 +16,7 @@ import parsso.idman.repos.LogsRepo;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -33,21 +36,7 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
         if (!userId.equals(""))
             query.addCriteria(Criteria.where("principalId").is(userId));
 
-        if (!startDate.equals("") && !endDate.equals("")) {
-            range = new Time().dateRangeToEpochRange(new Time().stringInputToTime(startDate),
-                    new Time().stringInputToTime(endDate), ZoneId.of(Variables.ZONE));
-
-        } else if (!startDate.equals("") && endDate.equals("")) {
-            range = new Time().dateRangeToEpochRange(new Time().stringInputToTime(startDate),
-                    new Time(Integer.parseInt(endDate.substring(0, 2)),
-                            Integer.parseInt(endDate.substring(2, 4)), Integer.parseInt(endDate.substring(4))),
-                    ZoneId.of(Variables.ZONE));
-
-        } else if (startDate.equals("") && !endDate.equals("")) {
-            range = new Time().dateRangeToEpochRange(new Time(Integer.parseInt(startDate.substring(0, 2)),
-                    Integer.parseInt(startDate.substring(2, 4)), Integer.parseInt(startDate.substring(4))),
-                    new Time().stringInputToTime(endDate), ZoneId.of(Variables.ZONE));
-        }
+        range = LogTime.rangeCreator(startDate,endDate);
 
         if (range != null)
             query.addCriteria(Criteria.where("_id")
