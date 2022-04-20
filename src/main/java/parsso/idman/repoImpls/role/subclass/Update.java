@@ -12,7 +12,7 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.UsersExtraInfo;
-
+@SuppressWarnings("unchecked")
 public class Update {
     MongoTemplate mongoTemplate;
     UniformLogger uniformLogger;

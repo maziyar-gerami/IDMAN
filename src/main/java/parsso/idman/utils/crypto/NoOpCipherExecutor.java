@@ -13,6 +13,7 @@ import lombok.Getter;
  * @since 4.1
  */
 @Getter
+@SuppressWarnings({"unchecked","rawtypes"})
 public
 class NoOpCipherExecutor<I, O> implements CipherExecutor<I, O> {
 

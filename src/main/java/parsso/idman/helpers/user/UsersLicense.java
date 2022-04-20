@@ -12,7 +12,7 @@ import parsso.idman.repos.UserRepo;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("ALL")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class UsersLicense {
     ServiceRepo.Retrieve serviceRepo;
     UserRepo.UsersOp.Retrieve usersOpRetrieve;

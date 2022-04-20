@@ -14,7 +14,6 @@ import parsso.idman.helpers.service.Notifs;
 import parsso.idman.helpers.service.Trim;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.services.Service;
-import parsso.idman.models.services.ServiceGist;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.services.servicesSubModel.ExtraInfo;
 import parsso.idman.models.users.User;
@@ -28,6 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 @org.springframework.stereotype.Service
+
+
+@SuppressWarnings({"unchecked"})
 public class RetrieveService implements ServiceRepo.Retrieve {
 
     MongoTemplate mongoTemplate;
@@ -102,8 +104,6 @@ public class RetrieveService implements ServiceRepo.Retrieve {
                 MicroService fMicro = new MicroService(service, microService);
 
                 try {
-                    ServiceGist s = new Notifs().getNotifications(user.get_id().toString(),
-                            service.getExtraInfo().getNotificationApiURL(), service.getExtraInfo().getNotificationApiKey());
                     fMicro.setNotification(new Notifs().getNotifications(user.get_id().toString(),
                             service.getExtraInfo().getNotificationApiURL(), service.getExtraInfo().getNotificationApiKey()));
                 } catch (Exception ignored) {

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
+@SuppressWarnings({"unchecked"})
 public class Operations {
     UserRepo.UsersOp.Retrieve usersOpRetrieve;
     LdapTemplate ldapTemplate;

@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
+@SuppressWarnings("unchecked")
 public class GroupsExcelView extends AbstractXlsView {
     final GroupRepo.Retrieve retrieveGroup;
     final MongoTemplate mongoTemplate;

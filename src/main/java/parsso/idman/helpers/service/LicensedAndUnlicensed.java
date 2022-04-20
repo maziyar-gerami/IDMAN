@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("ALL")
+
 @Component
+@SuppressWarnings({"unchecked","rawtypes"})
 public class LicensedAndUnlicensed {
     public List<MicroService> licensedServicesForGroups(UsersExtraInfo user, List<MicroService> licensed, Service service) {
         Object ou = null;
@@ -57,7 +58,6 @@ public class LicensedAndUnlicensed {
         return list;
     }
 
-    @SuppressWarnings("unchecked")
     public List unLicensedServicesForUserID(String userId, List<MicroService> licensed, List<MicroService> unLicensed, Service service) {
         if (service.getAccessStrategy().getRejectedAttributes().get("uid") != null)
             for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRejectedAttributes().get("uid"))).get(1))

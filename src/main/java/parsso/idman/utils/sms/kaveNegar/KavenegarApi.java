@@ -310,8 +310,6 @@ public class KavenegarApi {
         JsonArray array = execute(path, "messageid", id).getAsJsonArray();
         List<StatusResult> list = new ArrayList<>();
         for (int i = 0; i < array.size(); i++) {
-            JsonObject json = array.get(i).getAsJsonObject();
-            StatusResult result = new StatusResult(json);
         }
         return list;
     }

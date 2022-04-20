@@ -14,7 +14,6 @@ import parsso.idman.models.logs.Event;
 import parsso.idman.models.other.Time;
 import parsso.idman.repos.LogsRepo;
 
-import java.time.ZoneId;
 import java.util.List;
 
 @Service

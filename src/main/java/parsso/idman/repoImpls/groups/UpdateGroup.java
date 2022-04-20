@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@SuppressWarnings({"unchecked"})
 public class UpdateGroup implements GroupRepo.Update {
     final LdapTemplate ldapTemplate;
     final MongoTemplate mongoTemplate;

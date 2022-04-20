@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings({"unchecked"})
 public class ServicesOfObject {
     private final ServiceRepo.Retrieve serviceRepo;
     private final MongoTemplate mongoTemplate;

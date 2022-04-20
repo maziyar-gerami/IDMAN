@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@SuppressWarnings({"unchecked","rawtypes"})
 public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
     final MongoTemplate mongoTemplate;
     final UniformLogger uniformLogger;

@@ -21,6 +21,8 @@ public class Setting {
     public Setting(){
 
     }
+@SuppressWarnings({"rawtypes"})
+
     public Setting(LinkedHashMap hashMap) {
         this._id = (String) hashMap.get("_id");
         this.value = (String) hashMap.get("value");

@@ -12,6 +12,7 @@ import java.util.List;
 
 @Setter
 @Getter
+@SuppressWarnings({"unchecked"})
 public class ExtraInfo {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     long id;

@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("ALL")
+@SuppressWarnings("rawtyoes")
 public class ExcelAnalyzer {
     final LdapTemplate ldapTemplate;
     final MongoTemplate mongoTemplate;
@@ -75,7 +75,7 @@ public class ExcelAnalyzer {
 
         return notExist;
     }
-
+    @SuppressWarnings("rawtypes")
     public List csvSheetAnalyzer(String doer, BufferedReader sheet, String ou, boolean hasHeader) throws IOException {
 
         String row;

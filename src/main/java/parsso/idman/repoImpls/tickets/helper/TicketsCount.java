@@ -26,7 +26,7 @@ public class TicketsCount {
             if (!subcat.equals(""))
                 query.addCriteria(Criteria.where("subCategory").regex(subcat));
         }
-        if (!query.equals(""))
+        if (!id.equals(""))
             query.addCriteria(Criteria.where("_id").regex(id));
 
         if (archive)

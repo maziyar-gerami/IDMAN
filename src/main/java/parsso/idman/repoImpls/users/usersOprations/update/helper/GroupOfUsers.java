@@ -1,6 +1,5 @@
 package parsso.idman.repoImpls.users.usersOprations.update.helper;
 
-import lombok.val;
 import net.minidev.json.JSONObject;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
@@ -8,7 +7,7 @@ import parsso.idman.repos.UserRepo.UsersOp.Retrieve;
 
 import java.util.LinkedList;
 import java.util.List;
-
+@SuppressWarnings("unchecked")
 public class GroupOfUsers {
     UserRepo.UsersOp.Retrieve retrieveOp;
     UpdateUser updateUser;

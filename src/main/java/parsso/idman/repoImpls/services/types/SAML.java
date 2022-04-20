@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 
-@SuppressWarnings("ALL")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class SAML {
     MongoTemplate mongoTemplate;
     UniformLogger uniformLogger;

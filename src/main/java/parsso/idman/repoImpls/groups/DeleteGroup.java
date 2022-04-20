@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 @Service
+@SuppressWarnings("unchecked")
 public class DeleteGroup implements GroupRepo.Delete {
     final LdapTemplate ldapTemplate;
     final UniformLogger uniformLogger;

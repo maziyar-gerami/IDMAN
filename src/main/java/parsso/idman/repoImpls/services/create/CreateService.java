@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@SuppressWarnings({"unchecked","rawtypes"})
 public class CreateService implements ServiceRepo.Create {
     MongoTemplate mongoTemplate;
     UniformLogger uniformLogger;

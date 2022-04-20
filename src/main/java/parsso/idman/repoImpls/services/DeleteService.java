@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.*;
 
 @Service
+@SuppressWarnings({"unchecked","rawtypes"})
 public class DeleteService implements ServiceRepo.Delete {
     MongoTemplate mongoTemplate;
     UniformLogger uniformLogger;

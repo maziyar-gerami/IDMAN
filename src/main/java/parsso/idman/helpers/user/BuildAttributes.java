@@ -15,9 +15,8 @@ import parsso.idman.repos.UserRepo;
 import javax.naming.Name;
 import javax.naming.directory.*;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
+
 
 @Service
 public class BuildAttributes {
@@ -215,9 +214,7 @@ public class BuildAttributes {
                 }
         }
 
-        Instant instant = Instant.now(); //can be LocalDateTime
-        ZoneOffset currentOffsetForMyZone = zoneId.getRules().getOffset(instant);
-
+        
         if (p.getUsersExtraInfo() != null && p.getUsersExtraInfo().getResetPassToken() != null)
             mongoTemplate.save(p.getUsersExtraInfo(), Variables.col_usersExtraInfo);
 

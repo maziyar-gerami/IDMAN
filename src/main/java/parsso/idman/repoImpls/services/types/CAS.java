@@ -28,7 +28,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 
-@SuppressWarnings("ALL")
+
+@SuppressWarnings("rawtypes")
 public class CAS {
 
     MongoTemplate mongoTemplate;

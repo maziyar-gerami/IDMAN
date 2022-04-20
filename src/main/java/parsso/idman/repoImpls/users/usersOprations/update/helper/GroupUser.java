@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Objects;
-
+@SuppressWarnings("unchecked")
 public class GroupUser {
 
     ExcelAnalyzer excelAnalyzer;

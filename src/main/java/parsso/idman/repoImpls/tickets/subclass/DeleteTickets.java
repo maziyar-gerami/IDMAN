@@ -18,6 +18,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.tickets.Ticket;
 
+@SuppressWarnings({"unchecked"})
 public class DeleteTickets {
 
     MongoTemplate mongoTemplate;

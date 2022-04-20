@@ -33,10 +33,6 @@ public class Token {
 
     public HttpStatus checkToken(String userId, String token) {
 
-        // TODO: REMOVE
-        if (token.equals("0111"))
-            return HttpStatus.OK;
-            
         User user = usersOpRetrieve.retrieveUsers(userId);
         String mainDbToken = user.getUsersExtraInfo().getResetPassToken();
         String mainPartToken;

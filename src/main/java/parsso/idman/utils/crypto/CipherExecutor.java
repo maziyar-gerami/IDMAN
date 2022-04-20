@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Misagh Moayyed
  * @since 4.1
  */
-@SuppressWarnings("SameReturnValue")
+@SuppressWarnings("unchecked")
 public interface CipherExecutor<I, O> {
     Logger LOGGER = LoggerFactory.getLogger(CipherExecutor.class);
 

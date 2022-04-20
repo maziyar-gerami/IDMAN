@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
+@SuppressWarnings({"unchecked"})
 public class DeleteUser extends Parameters implements UserRepo.UsersOp.Delete {
     public DeleteUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger, UserRepo.UsersOp.Retrieve userOpRetrieve) {
         super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);

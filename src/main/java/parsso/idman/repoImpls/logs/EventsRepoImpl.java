@@ -16,7 +16,6 @@ import parsso.idman.repos.LogsRepo;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Service

@@ -22,7 +22,6 @@ import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.EmailService;
 import parsso.idman.repos.UserRepo;
-import parsso.idman.utils.captcha.models.CAPTCHA;
 import parsso.idman.utils.captcha.repo.CAPTCHARepo;
 
 import javax.mail.MessagingException;
@@ -32,8 +31,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("ALL")
 @Service
+@SuppressWarnings({"unchecked","rawtypes"})
 public class EmailServiceImpl implements EmailService {
     @Value("${spring.mail.username}")
     String from;
@@ -255,7 +254,6 @@ public class EmailServiceImpl implements EmailService {
         LinkedList<String> names = new LinkedList<>();
         List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("mail", email).encode(),
                 new UserAttributeMapper(mongoTemplate));
-        JSONObject jsonObject;
         for (User user : people)
             names.add(user.get_id().toString());
 

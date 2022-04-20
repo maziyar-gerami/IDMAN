@@ -63,15 +63,6 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
         return new Report.ListReports(reports, size, (int) Math.ceil(size / (float) n));
     }
 
-    private Report.ListReports getListReports(int n, int skip, Query query) {
-        long size = mongoTemplate.find(query, Report.class, Variables.col_Log).size();
-
-        List<Report> reportList = mongoTemplate.find(
-                query.with(Sort.by(Sort.Direction.DESC, "millis")).skip(skip).limit(n), Report.class,
-                Variables.col_Log);
-
-        return new Report.ListReports(size, (int) Math.ceil(size / (float) n), reportList);
-    }
 
     @Override
     public ReportMessage.ListReportMessage accessManaging(int page, int nRows, long id, String startDate,

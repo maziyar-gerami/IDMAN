@@ -66,7 +66,7 @@ public class MagfaSoapServer_Service
         return super.getPort(new QName("http://impl.webservice.magfa.com/", "MagfaSoapServer"), MagfaSoapServer.class);
     }
 
-    @SuppressWarnings({"unused", "HttpUrlsUsage"})
+    @SuppressWarnings({"HttpUrlsUsage"})
     @WebEndpoint(name = "MagfaSoapServer")
     public MagfaSoapServer getMagfaSoapServer(WebServiceFeature... features) {
         return super.getPort(new QName("http://impl.webservice.magfa.com/", "MagfaSoapServer"), MagfaSoapServer.class, features);

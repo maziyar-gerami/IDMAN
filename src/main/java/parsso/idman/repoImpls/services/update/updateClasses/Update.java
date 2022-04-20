@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressWarnings({"unchecked","rawtypes"})
 public class Update {
     final MongoTemplate mongoTemplate;
     final String BASE_URL;

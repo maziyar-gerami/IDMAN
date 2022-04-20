@@ -20,7 +20,7 @@ import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.tickets.Message;
 import parsso.idman.models.tickets.Ticket;
 import parsso.idman.repos.UserRepo;
-
+@SuppressWarnings("unchecked")
 public class UpdateTickets {
     MongoTemplate mongoTemplate;
     UniformLogger uniformLogger;
@@ -55,7 +55,7 @@ public class UpdateTickets {
 
         logger = LogManager.getLogger(doer);
 
-        ArrayList jsonArray = (ArrayList) jsonObject.get("names");
+        ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
         Iterator<String> iterator = jsonArray.iterator();
         int i = 0;
         String ticketID;

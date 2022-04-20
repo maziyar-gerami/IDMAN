@@ -14,10 +14,9 @@ import parsso.idman.utils.convertor.DateConverter;
 import java.time.ZoneId;
 import java.util.Map;
 
-@SuppressWarnings("ALL")
 @Setter
 @Getter
-
+@SuppressWarnings({"unchecked","rawtypes"})
 public class AccessStrategy {
     @JsonIgnore
     ZoneId zoneId = ZoneId.of(Variables.ZONE);

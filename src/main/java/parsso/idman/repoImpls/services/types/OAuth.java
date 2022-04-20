@@ -29,8 +29,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 
-@SuppressWarnings("ALL")
 @Component
+@SuppressWarnings("rawtypes")
 public class OAuth {
 
     final MongoTemplate mongoTemplate;
@@ -122,7 +122,6 @@ public class OAuth {
             service.setAttributeReleasePolicy(attributeReleasePolicy);
         } else {
             JSONObject jsonObject = null;
-            String s = jo.get("attributeReleasePolicy").getClass().toString();
             if (jo.get("attributeReleasePolicy").getClass().toString().equals("class org.json.simple.JSONObject"))
                 jsonObject = (JSONObject) jo.get("attributeReleasePolicy");
 

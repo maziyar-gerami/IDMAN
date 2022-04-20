@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 @org.springframework.stereotype.Service
+@SuppressWarnings({"unchecked"})
 public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 
     final ServiceRepo.Retrieve serviceRepo;

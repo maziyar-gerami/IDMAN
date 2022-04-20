@@ -14,7 +14,7 @@ import net.minidev.json.JSONObject;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
-
+@SuppressWarnings({"unchecked","rawtypes"})
 public class DeletePubMessage {
     MongoTemplate mongoTemplate;
     UniformLogger uniformLogger;

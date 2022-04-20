@@ -12,7 +12,7 @@ import parsso.idman.repos.ServiceRepo;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("ALL")
+@SuppressWarnings({"rawtypes"})
 public class GroupLicense {
     GroupRepo.Retrieve groupRepoRetrieve;
     ServiceRepo.Retrieve serviceRepo;

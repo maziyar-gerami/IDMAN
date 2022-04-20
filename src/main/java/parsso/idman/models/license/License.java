@@ -7,9 +7,9 @@ import lombok.Setter;
 
 import java.util.List;
 
-@SuppressWarnings("ALL")
 @Setter
 @Getter
+@SuppressWarnings({"rawtypes"})
 public class License {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     List licensed;

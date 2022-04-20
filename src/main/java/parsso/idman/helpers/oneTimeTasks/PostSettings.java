@@ -21,6 +21,7 @@ import java.util.List;
 
 @Service
 @ComponentScan
+@SuppressWarnings({"rawtypes","unchecked"})
 public class PostSettings {
     @Autowired
     SettingsRepo settingsRepo;
@@ -258,13 +259,9 @@ public class PostSettings {
         s2.setGroupFA("گذر واژه");
         s2.setHelpEN("Password change limit in each day");
         s2.setHelpFA("حدکثر تعداد تغییر گذرواژه در یک روز");
-        JSONObject jsonObject1 = new JSONObject();
         jsonObject.put("type", new JSONObject().put("class","integer"));
         s2.setType(jsonObject);
 
         mongoTemplate.insert(s2, Variables.col_properties);
-
-
-
     }
 }

@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("ALL")
+
 @Service
+@SuppressWarnings({"unchecked","rawtypes"})
 public class Comparison {
     public UsersGroups compare(AccessStrategy strategy1, AccessStrategy strategy2) {
         List<String> new_ous = null;

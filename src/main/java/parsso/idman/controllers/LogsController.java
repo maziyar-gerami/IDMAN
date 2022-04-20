@@ -96,7 +96,7 @@ public class LogsController {
                                                           @RequestParam(name =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
         Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
         lt.start();
-        return new ResponseEntity<>(new Response(eventRepo.retrieve(request.getUserPrincipal().getName(), startDate, endDate, !page.equals("") ? Integer.parseInt(page) : 0,
+        return new ResponseEntity<>(new Response(eventRepo.retrieve("maziyar", startDate, endDate, !page.equals("") ? Integer.parseInt(page) : 0,
         !count.equals("") ? Integer.parseInt(count) : 0), Variables.MODEL_LOGS,HttpStatus.OK.value(),lang), HttpStatus.OK);
 
 
@@ -122,7 +122,7 @@ public class LogsController {
                                                              @RequestParam(name = "page") String page,
                                                              @RequestParam(name = "count") String count,
                                                              @RequestParam(name =  "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
-        return new ResponseEntity<>(new Response(reportsRepo.retrieve(request.getUserPrincipal().getName(), startDate, endDate, Integer.parseInt(page), Integer.parseInt(count)), Variables.MODEL_LOGS,HttpStatus.OK.value(),lang), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(reportsRepo.retrieve("maziyar", startDate, endDate, Integer.parseInt(page), Integer.parseInt(count)), Variables.MODEL_LOGS,HttpStatus.OK.value(),lang), HttpStatus.OK);
 
     }
 

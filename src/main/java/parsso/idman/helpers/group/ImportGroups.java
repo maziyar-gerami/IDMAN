@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@SuppressWarnings("unchecked")
 public class ImportGroups {
     private GroupRepo.Create groupCreateRepo;
 
@@ -166,7 +167,7 @@ public class ImportGroups {
         int i = 0;
         int count = 0;
         int nUnSuccessful = 0;
-        int nGroupIdEmpty = 0;
+        int nGroupIdEmpty=0;
 
         while ((row = sheet.readLine()) != null) {
             if (i == 0 && hasHeader) {
@@ -213,6 +214,7 @@ public class ImportGroups {
         JSONObject finalJson = new JSONObject();
         finalJson.put("count", count);
         finalJson.put("nUnSuccessful", nUnSuccessful);
+        finalJson.put("groupIdEmpty", nGroupIdEmpty);
         finalJson.put("nSuccessful", count - nUnSuccessful);
         finalJson.put("repUser", jsonArray);
 
