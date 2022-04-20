@@ -32,24 +32,7 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
         Query query = new Query();
         long[] range = new long[2];
 
-        if (!userId.equals(""))
-            query.addCriteria(Criteria.where("loggerName").is(userId));
-
-        if (!startDate.equals("") && !endDate.equals("")) {
-            range = new Time().dateRangeToEpochRange(new Time().stringInputToTime(startDate),
-                    new Time().stringInputToTime(endDate), ZoneId.of(Variables.ZONE));
-
-        } else if (!startDate.equals("") && endDate.equals("")) {
-            range = new Time().dateRangeToEpochRange(new Time().stringInputToTime(startDate),
-                    new Time(Integer.parseInt(endDate.substring(0, 5)),
-                            Integer.parseInt(endDate.substring(5, 7)), Integer.parseInt(endDate.substring(7, 9))),
-                    ZoneId.of(Variables.ZONE));
-
-        } else if (startDate.equals("") && !endDate.equals("")) {
-            range = new Time().dateRangeToEpochRange(new Time(Integer.parseInt(startDate.substring(0, 5)),
-                    Integer.parseInt(startDate.substring(5, 7)), Integer.parseInt(startDate.substring(7, 9))),
-                    new Time().stringInputToTime(endDate), ZoneId.of(Variables.ZONE));
-        }
+        range = LogTime.rangeCreator(startDate,endDate);
 
         long size = mongoTemplate.count(query, Report.class, Variables.col_Log);
 
