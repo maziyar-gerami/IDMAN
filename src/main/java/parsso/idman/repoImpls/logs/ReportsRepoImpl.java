@@ -11,10 +11,8 @@ import parsso.idman.helpers.LogTime;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.logs.ReportMessage;
-import parsso.idman.models.other.Time;
 import parsso.idman.repos.LogsRepo;
 
-import java.time.ZoneId;
 import java.util.List;
 
 @Service

@@ -1,5 +1,7 @@
 package parsso.idman.controllers.users.oprations;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
@@ -18,7 +20,6 @@ import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class RetrieveController extends UsersOps {
@@ -29,9 +30,11 @@ public class RetrieveController extends UsersOps {
     }
 
     @GetMapping("/api/user")
-    public ResponseEntity<Response> retrieveUser(HttpServletRequest request,@RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-
-        return new ResponseEntity<>(new Response(usersOpRetrieve.retrieveUsers(request.getUserPrincipal().getName()),Variables.MODEL_USER,HttpStatus.OK.value(), lang), HttpStatus.OK);
+    public ResponseEntity<Response> retrieveUser(HttpServletRequest request,
+    @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+        User user = usersOpRetrieve.retrieveUsers(request.getUserPrincipal().getName());
+        if (user == null) return new ResponseEntity<>(new Response(null,Variables.MODEL_USER, HttpStatus.NOT_FOUND.value(),lang), HttpStatus.OK);
+        else return new ResponseEntity<>(new Response(user,Variables.MODEL_USER,  HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
 
     @GetMapping("/api/users")
@@ -51,13 +54,6 @@ public class RetrieveController extends UsersOps {
         return new ResponseEntity<>(new Response(usersOpRetrieve.mainAttributes(page, n, sortType, groupFilter, searchUid, searchDisplayName,mobile, userStatus), Variables.MODEL_USER,HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
 
-    @GetMapping("/api/users/u/{uid}")
-    public ResponseEntity<Response> retrieveUser(@PathVariable("uid") String userId,
-    @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-        User user = usersOpRetrieve.retrieveUsers(userId);
-        if (user == null) return new ResponseEntity<>(new Response(null,Variables.MODEL_USER, HttpStatus.NOT_FOUND.value(),lang), HttpStatus.OK);
-        else return new ResponseEntity<>(new Response(user,Variables.MODEL_USER,  HttpStatus.OK.value(),lang), HttpStatus.OK);
-    }
 
     @GetMapping("/api/users/group/{groupId}")
     public ResponseEntity<Response> retrieveUsersMainWithGroupId(@PathVariable(name = "groupId") String groupId,
