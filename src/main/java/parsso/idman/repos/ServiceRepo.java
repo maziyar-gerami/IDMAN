@@ -1,6 +1,5 @@
 package parsso.idman.repos;
 
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
@@ -17,46 +16,46 @@ import java.util.List;
 @SuppressWarnings("SameReturnValue")
 public class ServiceRepo {
 
-    public  interface Retrieve {
+  public interface Retrieve {
 
-        List<MicroService> listUserServices(User user);
+    List<MicroService> listUserServices(User user);
 
-        List<Service> listServicesFull();
+    List<Service> listServicesFull();
 
-        List<Service> listServicesWithGroups(String ou);
+    List<Service> listServicesWithGroups(String ou);
 
-        List<MicroService> listServicesMain();
+    List<MicroService> listServicesMain();
 
-        Service retrieveService(long id);
+    Service retrieveService(long id);
 
-        boolean serviceAccess(long id);
+    boolean serviceAccess(long id);
 
-        String showServicePic(HttpServletResponse response, String file);
+    String showServicePic(HttpServletResponse response, String file);
 
-    }
+  }
 
-    public interface Delete {
+  public interface Delete {
 
-        LinkedList<String> delete(String doerID, JSONObject files);
-    }
+    LinkedList<String> delete(String doerID, JSONObject files);
+  }
 
-    @org.springframework.stereotype.Service
-    public interface Update {
+  @org.springframework.stereotype.Service
+  public interface Update {
 
-        String uploadMetadata(MultipartFile file);
+    String uploadMetadata(MultipartFile file);
 
-        void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException;
+    void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu)
+        throws IOException;
 
-        HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system);
+    HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system);
 
-        String uploadIcon(MultipartFile file);
+    String uploadIcon(MultipartFile file);
 
-    }
+  }
 
+  public interface Create {
 
-    public interface Create {
+    long createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
 
-        long createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
-
-    }
+  }
 }

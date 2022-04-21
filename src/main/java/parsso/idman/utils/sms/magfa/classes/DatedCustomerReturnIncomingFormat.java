@@ -1,6 +1,5 @@
 package parsso.idman.utils.sms.magfa.classes;
 
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -8,19 +7,19 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "datedCustomerReturnIncomingFormat", propOrder = {
-        "date"
+    "date"
 })
 public class DatedCustomerReturnIncomingFormat
-        extends CustomerReturnIncomingFormat {
-    @XmlElement(required = true)
-    protected String date;
+    extends CustomerReturnIncomingFormat {
+  @XmlElement(required = true)
+  protected String date;
 
-    public String getDate() {
-        return date;
-    }
+  public String getDate() {
+    return date;
+  }
 
-    public void setDate(String value) {
-        this.date = value;
-    }
+  public void setDate(String value) {
+    this.date = value;
+  }
 
 }

@@ -5,18 +5,18 @@ import parsso.idman.models.other.Devices;
 
 public class AuthenticatorRepo {
 
-    public interface Retrieve{
-        Boolean retrieveUsersDevice(String username);
+  public interface Retrieve {
+    Boolean retrieveUsersDevice(String username);
 
-        Devices.DeviceList retrieve(String username, String deviceName, int skip, int limit);
+    Devices.DeviceList retrieve(String username, String deviceName, int skip, int limit);
 
-    }
+  }
 
-    public interface Delete {
-        HttpStatus deleteByDeviceName(String name, String doer);
+  public interface Delete {
+    HttpStatus deleteByDeviceName(String name, String doer);
 
-        HttpStatus deleteByUsername(String username, String doer);
+    HttpStatus deleteByUsername(String username, String doer);
 
-        HttpStatus deleteByUsernameAndDeviceName(String username, String deviceName, String doer);
-    }
+    HttpStatus deleteByUsernameAndDeviceName(String username, String deviceName, String doer);
+  }
 }

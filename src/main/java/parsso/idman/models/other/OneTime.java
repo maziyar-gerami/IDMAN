@@ -6,23 +6,23 @@ import lombok.Setter;
 @Setter
 @Getter
 public class OneTime {
-    String _id;
-    boolean run;
-    Long time;
+  String _id;
+  boolean run;
+  Long time;
 
-    public OneTime(String _id, boolean run, Long time) {
-        this._id = _id;
-        this.run = run;
-        this.time = time;
-    }
+  public OneTime(String id, boolean run, Long time) {
+    this._id = id;
+    this.run = run;
+    this.time = time;
+  }
 
-    public OneTime() {
-    }
+  public OneTime() {
+  }
 
-    public OneTime(String _id) {
-        this._id = _id;
-        this.run = false;
-        this.time = 0L;
-    }
+  public OneTime(String id) {
+    this._id = id;
+    this.run = false;
+    this.time = 0L;
+  }
 
 }

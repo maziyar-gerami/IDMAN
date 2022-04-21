@@ -5,29 +5,30 @@
   */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.VueRouter = factory());
-}(this, function () { 'use strict';
+    typeof define === 'function' && define.amd ? define(factory) :
+      (global = global || self, global.VueRouter = factory());
+}(this, function () {
+  'use strict';
 
   /*  */
 
-  function assert (condition, message) {
+  function assert(condition, message) {
     if (!condition) {
       throw new Error(("[vue-router] " + message))
     }
   }
 
-  function warn (condition, message) {
-    if ( !condition) {
+  function warn(condition, message) {
+    if (!condition) {
       typeof console !== 'undefined' && console.warn(("[vue-router] " + message));
     }
   }
 
-  function isError (err) {
+  function isError(err) {
     return Object.prototype.toString.call(err).indexOf('Error') > -1
   }
 
-  function isExtendedError (constructor, err) {
+  function isExtendedError(constructor, err) {
     return (
       err instanceof constructor ||
       // _name is to support IE9 too
@@ -35,7 +36,7 @@
     )
   }
 
-  function extend (a, b) {
+  function extend(a, b) {
     for (var key in b) {
       a[key] = b[key];
     }
@@ -51,7 +52,7 @@
         default: 'default'
       }
     },
-    render: function render (_, ref) {
+    render: function render(_, ref) {
       var props = ref.props;
       var children = ref.children;
       var parent = ref.parent;
@@ -125,11 +126,11 @@
         }
       }
 
-      // also register instance in prepatch hook
-      // in case the same component instance is reused across different routes
-      ;(data.hook || (data.hook = {})).prepatch = function (_, vnode) {
-        matched.instances[name] = vnode.componentInstance;
-      };
+        // also register instance in prepatch hook
+        // in case the same component instance is reused across different routes
+        ; (data.hook || (data.hook = {})).prepatch = function (_, vnode) {
+          matched.instances[name] = vnode.componentInstance;
+        };
 
       // register instance in init hook
       // in case kept-alive component be actived when routes changed
@@ -156,7 +157,7 @@
     }
   };
 
-  function fillPropsinData (component, data, route, configProps) {
+  function fillPropsinData(component, data, route, configProps) {
     // resolve props
     var propsToPass = data.props = resolveProps(route, configProps);
     if (propsToPass) {
@@ -173,7 +174,7 @@
     }
   }
 
-  function resolveProps (route, config) {
+  function resolveProps(route, config) {
     switch (typeof config) {
       case 'undefined':
         return
@@ -203,25 +204,27 @@
   // fixed encodeURIComponent which is more conformant to RFC3986:
   // - escapes [!'()*]
   // - preserve commas
-  var encode = function (str) { return encodeURIComponent(str)
-    .replace(encodeReserveRE, encodeReserveReplacer)
-    .replace(commaRE, ','); };
+  var encode = function (str) {
+    return encodeURIComponent(str)
+      .replace(encodeReserveRE, encodeReserveReplacer)
+      .replace(commaRE, ',');
+  };
 
   var decode = decodeURIComponent;
 
-  function resolveQuery (
+  function resolveQuery(
     query,
     extraQuery,
     _parseQuery
   ) {
-    if ( extraQuery === void 0 ) extraQuery = {};
+    if (extraQuery === void 0) extraQuery = {};
 
     var parse = _parseQuery || parseQuery;
     var parsedQuery;
     try {
       parsedQuery = parse(query || '');
     } catch (e) {
-       warn(false, e.message);
+      warn(false, e.message);
       parsedQuery = {};
     }
     for (var key in extraQuery) {
@@ -230,7 +233,7 @@
     return parsedQuery
   }
 
-  function parseQuery (query) {
+  function parseQuery(query) {
     var res = {};
 
     query = query.trim().replace(/^(\?|#|&)/, '');
@@ -258,7 +261,7 @@
     return res
   }
 
-  function stringifyQuery (obj) {
+  function stringifyQuery(obj) {
     var res = obj ? Object.keys(obj).map(function (key) {
       var val = obj[key];
 
@@ -294,7 +297,7 @@
 
   var trailingSlashRE = /\/?$/;
 
-  function createRoute (
+  function createRoute(
     record,
     location,
     redirectedFrom,
@@ -305,7 +308,7 @@
     var query = location.query || {};
     try {
       query = clone(query);
-    } catch (e) {}
+    } catch (e) { }
 
     var route = {
       name: location.name || (record && record.name),
@@ -323,7 +326,7 @@
     return Object.freeze(route)
   }
 
-  function clone (value) {
+  function clone(value) {
     if (Array.isArray(value)) {
       return value.map(clone)
     } else if (value && typeof value === 'object') {
@@ -342,7 +345,7 @@
     path: '/'
   });
 
-  function formatMatch (record) {
+  function formatMatch(record) {
     var res = [];
     while (record) {
       res.unshift(record);
@@ -351,19 +354,19 @@
     return res
   }
 
-  function getFullPath (
+  function getFullPath(
     ref,
     _stringifyQuery
   ) {
     var path = ref.path;
-    var query = ref.query; if ( query === void 0 ) query = {};
-    var hash = ref.hash; if ( hash === void 0 ) hash = '';
+    var query = ref.query; if (query === void 0) query = {};
+    var hash = ref.hash; if (hash === void 0) hash = '';
 
     var stringify = _stringifyQuery || stringifyQuery;
     return (path || '/') + stringify(query) + hash
   }
 
-  function isSameRoute (a, b) {
+  function isSameRoute(a, b) {
     if (b === START) {
       return a === b
     } else if (!b) {
@@ -386,9 +389,9 @@
     }
   }
 
-  function isObjectEqual (a, b) {
-    if ( a === void 0 ) a = {};
-    if ( b === void 0 ) b = {};
+  function isObjectEqual(a, b) {
+    if (a === void 0) a = {};
+    if (b === void 0) b = {};
 
     // handle null value #1566
     if (!a || !b) { return a === b }
@@ -408,7 +411,7 @@
     })
   }
 
-  function isIncludedRoute (current, target) {
+  function isIncludedRoute(current, target) {
     return (
       current.path.replace(trailingSlashRE, '/').indexOf(
         target.path.replace(trailingSlashRE, '/')
@@ -418,7 +421,7 @@
     )
   }
 
-  function queryIncludes (current, target) {
+  function queryIncludes(current, target) {
     for (var key in target) {
       if (!(key in current)) {
         return false
@@ -429,7 +432,7 @@
 
   /*  */
 
-  function resolvePath (
+  function resolvePath(
     relative,
     base,
     append
@@ -471,7 +474,7 @@
     return stack.join('/')
   }
 
-  function parsePath (path) {
+  function parsePath(path) {
     var hash = '';
     var query = '';
 
@@ -494,7 +497,7 @@
     }
   }
 
-  function cleanPath (path) {
+  function cleanPath(path) {
     return path.replace(/\/\//g, '/')
   }
 
@@ -536,7 +539,7 @@
    * @param  {Object=} options
    * @return {!Array}
    */
-  function parse (str, options) {
+  function parse(str, options) {
     var tokens = [];
     var key = 0;
     var index = 0;
@@ -609,7 +612,7 @@
    * @param  {Object=}            options
    * @return {!function(Object=, Object=)}
    */
-  function compile (str, options) {
+  function compile(str, options) {
     return tokensToFunction(parse(str, options))
   }
 
@@ -619,7 +622,7 @@
    * @param  {string}
    * @return {string}
    */
-  function encodeURIComponentPretty (str) {
+  function encodeURIComponentPretty(str) {
     return encodeURI(str).replace(/[\/?#]/g, function (c) {
       return '%' + c.charCodeAt(0).toString(16).toUpperCase()
     })
@@ -631,7 +634,7 @@
    * @param  {string}
    * @return {string}
    */
-  function encodeAsterisk (str) {
+  function encodeAsterisk(str) {
     return encodeURI(str).replace(/[?#]/g, function (c) {
       return '%' + c.charCodeAt(0).toString(16).toUpperCase()
     })
@@ -640,7 +643,7 @@
   /**
    * Expose a method for transforming tokens into the path function.
    */
-  function tokensToFunction (tokens) {
+  function tokensToFunction(tokens) {
     // Compile all the tokens into regexps.
     var matches = new Array(tokens.length);
 
@@ -727,7 +730,7 @@
    * @param  {string} str
    * @return {string}
    */
-  function escapeString (str) {
+  function escapeString(str) {
     return str.replace(/([.+*?=^!:${}()[\]|\/\\])/g, '\\$1')
   }
 
@@ -737,7 +740,7 @@
    * @param  {string} group
    * @return {string}
    */
-  function escapeGroup (group) {
+  function escapeGroup(group) {
     return group.replace(/([=!:$\/()])/g, '\\$1')
   }
 
@@ -748,7 +751,7 @@
    * @param  {Array}   keys
    * @return {!RegExp}
    */
-  function attachKeys (re, keys) {
+  function attachKeys(re, keys) {
     re.keys = keys;
     return re
   }
@@ -759,7 +762,7 @@
    * @param  {Object} options
    * @return {string}
    */
-  function flags (options) {
+  function flags(options) {
     return options.sensitive ? '' : 'i'
   }
 
@@ -770,7 +773,7 @@
    * @param  {!Array}  keys
    * @return {!RegExp}
    */
-  function regexpToRegexp (path, keys) {
+  function regexpToRegexp(path, keys) {
     // Use a negative lookahead to match only capturing groups.
     var groups = path.source.match(/\((?!\?)/g);
 
@@ -800,7 +803,7 @@
    * @param  {!Object} options
    * @return {!RegExp}
    */
-  function arrayToRegexp (path, keys, options) {
+  function arrayToRegexp(path, keys, options) {
     var parts = [];
 
     for (var i = 0; i < path.length; i++) {
@@ -820,7 +823,7 @@
    * @param  {!Object} options
    * @return {!RegExp}
    */
-  function stringToRegexp (path, keys, options) {
+  function stringToRegexp(path, keys, options) {
     return tokensToRegExp(parse(path, options), keys, options)
   }
 
@@ -832,7 +835,7 @@
    * @param  {Object=}         options
    * @return {!RegExp}
    */
-  function tokensToRegExp (tokens, keys, options) {
+  function tokensToRegExp(tokens, keys, options) {
     if (!isarray(keys)) {
       options = /** @type {!Object} */ (keys || options);
       keys = [];
@@ -908,7 +911,7 @@
    * @param  {Object=}               options
    * @return {!RegExp}
    */
-  function pathToRegexp (path, keys, options) {
+  function pathToRegexp(path, keys, options) {
     if (!isarray(keys)) {
       options = /** @type {!Object} */ (keys || options);
       keys = [];
@@ -917,14 +920,14 @@
     options = options || {};
 
     if (path instanceof RegExp) {
-      return regexpToRegexp(path, /** @type {!Array} */ (keys))
+      return regexpToRegexp(path, /** @type {!Array} */(keys))
     }
 
     if (isarray(path)) {
-      return arrayToRegexp(/** @type {!Array} */ (path), /** @type {!Array} */ (keys), options)
+      return arrayToRegexp(/** @type {!Array} */(path), /** @type {!Array} */(keys), options)
     }
 
-    return stringToRegexp(/** @type {string} */ (path), /** @type {!Array} */ (keys), options)
+    return stringToRegexp(/** @type {string} */(path), /** @type {!Array} */(keys), options)
   }
   pathToRegexp_1.parse = parse_1;
   pathToRegexp_1.compile = compile_1;
@@ -936,7 +939,7 @@
   // $flow-disable-line
   var regexpCompileCache = Object.create(null);
 
-  function fillParams (
+  function fillParams(
     path,
     params,
     routeMsg
@@ -966,7 +969,7 @@
 
   /*  */
 
-  function normalizeLocation (
+  function normalizeLocation(
     raw,
     current,
     append,
@@ -1033,7 +1036,7 @@
   var toTypes = [String, Object];
   var eventTypes = [String, Array];
 
-  var noop = function () {};
+  var noop = function () { };
 
   var Link = {
     name: 'RouterLink',
@@ -1056,7 +1059,7 @@
         default: 'click'
       }
     },
-    render: function render (h) {
+    render: function render(h) {
       var this$1 = this;
 
       var router = this.$router;
@@ -1182,7 +1185,7 @@
     }
   };
 
-  function guardEvent (e) {
+  function guardEvent(e) {
     // don't redirect with control keys
     if (e.metaKey || e.altKey || e.ctrlKey || e.shiftKey) { return }
     // don't redirect when preventDefault called
@@ -1201,7 +1204,7 @@
     return true
   }
 
-  function findAnchor (children) {
+  function findAnchor(children) {
     if (children) {
       var child;
       for (var i = 0; i < children.length; i++) {
@@ -1218,7 +1221,7 @@
 
   var _Vue;
 
-  function install (Vue) {
+  function install(Vue) {
     if (install.installed && _Vue === Vue) { return }
     install.installed = true;
 
@@ -1234,7 +1237,7 @@
     };
 
     Vue.mixin({
-      beforeCreate: function beforeCreate () {
+      beforeCreate: function beforeCreate() {
         if (isDef(this.$options.router)) {
           this._routerRoot = this;
           this._router = this.$options.router;
@@ -1245,17 +1248,17 @@
         }
         registerInstance(this, this);
       },
-      destroyed: function destroyed () {
+      destroyed: function destroyed() {
         registerInstance(this);
       }
     });
 
     Object.defineProperty(Vue.prototype, '$router', {
-      get: function get () { return this._routerRoot._router }
+      get: function get() { return this._routerRoot._router }
     });
 
     Object.defineProperty(Vue.prototype, '$route', {
-      get: function get () { return this._routerRoot._route }
+      get: function get() { return this._routerRoot._route }
     });
 
     Vue.component('RouterView', View);
@@ -1272,7 +1275,7 @@
 
   /*  */
 
-  function createRouteMap (
+  function createRouteMap(
     routes,
     oldPathList,
     oldPathMap,
@@ -1301,7 +1304,7 @@
     {
       // warn if routes do not include leading slashes
       var found = pathList
-      // check for missing leading slash
+        // check for missing leading slash
         .filter(function (path) { return path && path.charAt(0) !== '*' && path.charAt(0) !== '/'; });
 
       if (found.length > 0) {
@@ -1317,7 +1320,7 @@
     }
   }
 
-  function addRouteRecord (
+  function addRouteRecord(
     pathList,
     pathMap,
     nameMap,
@@ -1377,10 +1380,10 @@
           warn(
             false,
             "Named Route '" + (route.name) + "' has a default child route. " +
-              "When navigating to this named route (:to=\"{name: '" + (route.name) + "'\"), " +
-              "the default child route will not be rendered. Remove the name from " +
-              "this route and use the name of the default child route for named " +
-              "links instead."
+            "When navigating to this named route (:to=\"{name: '" + (route.name) + "'\"), " +
+            "the default child route will not be rendered. Remove the name from " +
+            "this route and use the name of the default child route for named " +
+            "links instead."
           );
         }
       }
@@ -1401,7 +1404,7 @@
       var aliases = Array.isArray(route.alias) ? route.alias : [route.alias];
       for (var i = 0; i < aliases.length; ++i) {
         var alias = aliases[i];
-        if ( alias === path) {
+        if (alias === path) {
           warn(
             false,
             ("Found an alias with the same value as the path: \"" + path + "\". You have to remove that alias. It will be ignored in development.")
@@ -1428,17 +1431,17 @@
     if (name) {
       if (!nameMap[name]) {
         nameMap[name] = record;
-      } else if ( !matchAs) {
+      } else if (!matchAs) {
         warn(
           false,
           "Duplicate named routes definition: " +
-            "{ name: \"" + name + "\", path: \"" + (record.path) + "\" }"
+          "{ name: \"" + name + "\", path: \"" + (record.path) + "\" }"
         );
       }
     }
   }
 
-  function compileRouteRegex (
+  function compileRouteRegex(
     path,
     pathToRegexpOptions
   ) {
@@ -1456,7 +1459,7 @@
     return regex
   }
 
-  function normalizePath (
+  function normalizePath(
     path,
     parent,
     strict
@@ -1471,7 +1474,7 @@
 
 
 
-  function createMatcher (
+  function createMatcher(
     routes,
     router
   ) {
@@ -1480,11 +1483,11 @@
     var pathMap = ref.pathMap;
     var nameMap = ref.nameMap;
 
-    function addRoutes (routes) {
+    function addRoutes(routes) {
       createRouteMap(routes, pathList, pathMap, nameMap);
     }
 
-    function match (
+    function match(
       raw,
       currentRoute,
       redirectedFrom
@@ -1530,7 +1533,7 @@
       return _createRoute(null, location)
     }
 
-    function redirect (
+    function redirect(
       record,
       location
     ) {
@@ -1595,7 +1598,7 @@
       }
     }
 
-    function alias (
+    function alias(
       record,
       location,
       matchAs
@@ -1614,7 +1617,7 @@
       return _createRoute(null, location)
     }
 
-    function _createRoute (
+    function _createRoute(
       record,
       location,
       redirectedFrom
@@ -1634,7 +1637,7 @@
     }
   }
 
-  function matchRoute (
+  function matchRoute(
     regex,
     path,
     params
@@ -1659,7 +1662,7 @@
     return true
   }
 
-  function resolveRecordPath (path, record) {
+  function resolveRecordPath(path, record) {
     return resolvePath(path, record.parent ? record.parent.path : '/', true)
   }
 
@@ -1671,17 +1674,17 @@
       ? window.performance
       : Date;
 
-  function genStateKey () {
+  function genStateKey() {
     return Time.now().toFixed(3)
   }
 
   var _key = genStateKey();
 
-  function getStateKey () {
+  function getStateKey() {
     return _key
   }
 
-  function setStateKey (key) {
+  function setStateKey(key) {
     return (_key = key)
   }
 
@@ -1689,7 +1692,7 @@
 
   var positionStore = Object.create(null);
 
-  function setupScroll () {
+  function setupScroll() {
     // Fix for #1585 for Firefox
     // Fix for #2195 Add optional third attribute to workaround a bug in safari https://bugs.webkit.org/show_bug.cgi?id=182678
     // Fix for #2774 Support for apps loaded from Windows file shares not mapped to network drives: replaced location.origin with
@@ -1709,7 +1712,7 @@
     });
   }
 
-  function handleScroll (
+  function handleScroll(
     router,
     to,
     from,
@@ -1758,7 +1761,7 @@
     });
   }
 
-  function saveScrollPosition () {
+  function saveScrollPosition() {
     var key = getStateKey();
     if (key) {
       positionStore[key] = {
@@ -1768,14 +1771,14 @@
     }
   }
 
-  function getScrollPosition () {
+  function getScrollPosition() {
     var key = getStateKey();
     if (key) {
       return positionStore[key]
     }
   }
 
-  function getElementPosition (el, offset) {
+  function getElementPosition(el, offset) {
     var docEl = document.documentElement;
     var docRect = docEl.getBoundingClientRect();
     var elRect = el.getBoundingClientRect();
@@ -1785,31 +1788,31 @@
     }
   }
 
-  function isValidPosition (obj) {
+  function isValidPosition(obj) {
     return isNumber(obj.x) || isNumber(obj.y)
   }
 
-  function normalizePosition (obj) {
+  function normalizePosition(obj) {
     return {
       x: isNumber(obj.x) ? obj.x : window.pageXOffset,
       y: isNumber(obj.y) ? obj.y : window.pageYOffset
     }
   }
 
-  function normalizeOffset (obj) {
+  function normalizeOffset(obj) {
     return {
       x: isNumber(obj.x) ? obj.x : 0,
       y: isNumber(obj.y) ? obj.y : 0
     }
   }
 
-  function isNumber (v) {
+  function isNumber(v) {
     return typeof v === 'number'
   }
 
   var hashStartsWithNumberRE = /^#\d/;
 
-  function scrollToPosition (shouldScroll, position) {
+  function scrollToPosition(shouldScroll, position) {
     var isObject = typeof shouldScroll === 'object';
     if (isObject && typeof shouldScroll.selector === 'string') {
       // getElementById would still fail if the selector contains a more complicated query like #main[data-attr]
@@ -1856,7 +1859,7 @@
       return window.history && 'pushState' in window.history
     })();
 
-  function pushState (url, replace) {
+  function pushState(url, replace) {
     saveScrollPosition();
     // try...catch the pushState call to get around Safari
     // DOM Exception 18 where it limits to 100 pushState calls
@@ -1875,13 +1878,13 @@
     }
   }
 
-  function replaceState (url) {
+  function replaceState(url) {
     pushState(url, true);
   }
 
   /*  */
 
-  function runQueue (queue, fn, cb) {
+  function runQueue(queue, fn, cb) {
     var step = function (index) {
       if (index >= queue.length) {
         cb();
@@ -1900,7 +1903,7 @@
 
   /*  */
 
-  function resolveAsyncComponents (matched) {
+  function resolveAsyncComponents(matched) {
     return function (to, from, next) {
       var hasAsync = false;
       var pending = 0;
@@ -1933,7 +1936,7 @@
 
           var reject = once(function (reason) {
             var msg = "Failed to resolve async component " + key + ": " + reason;
-             warn(false, msg);
+            warn(false, msg);
             if (!error) {
               error = isError(reason)
                 ? reason
@@ -1966,20 +1969,22 @@
     }
   }
 
-  function flatMapComponents (
+  function flatMapComponents(
     matched,
     fn
   ) {
     return flatten(matched.map(function (m) {
-      return Object.keys(m.components).map(function (key) { return fn(
-        m.components[key],
-        m.instances[key],
-        m, key
-      ); })
+      return Object.keys(m.components).map(function (key) {
+        return fn(
+          m.components[key],
+          m.instances[key],
+          m, key
+        );
+      })
     }))
   }
 
-  function flatten (arr) {
+  function flatten(arr) {
     return Array.prototype.concat.apply([], arr)
   }
 
@@ -1987,7 +1992,7 @@
     typeof Symbol === 'function' &&
     typeof Symbol.toStringTag === 'symbol';
 
-  function isESModule (obj) {
+  function isESModule(obj) {
     return obj.__esModule || (hasSymbol && obj[Symbol.toStringTag] === 'Module')
   }
 
@@ -1995,11 +2000,11 @@
   // so the resolve/reject functions may get called an extra time
   // if the user uses an arrow function shorthand that happens to
   // return that Promise.
-  function once (fn) {
+  function once(fn) {
     var called = false;
     return function () {
       var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
+      while (len--) args[len] = arguments[len];
 
       if (called) { return }
       called = true;
@@ -2008,7 +2013,7 @@
   }
 
   var NavigationDuplicated = /*@__PURE__*/(function (Error) {
-    function NavigationDuplicated (normalizedLocation) {
+    function NavigationDuplicated(normalizedLocation) {
       Error.call(this);
       this.name = this._name = 'NavigationDuplicated';
       // passing the message to super() doesn't seem to work in the transpiled version
@@ -2024,8 +2029,8 @@
       // but it only exists on node and chrome
     }
 
-    if ( Error ) NavigationDuplicated.__proto__ = Error;
-    NavigationDuplicated.prototype = Object.create( Error && Error.prototype );
+    if (Error) NavigationDuplicated.__proto__ = Error;
+    NavigationDuplicated.prototype = Object.create(Error && Error.prototype);
     NavigationDuplicated.prototype.constructor = NavigationDuplicated;
 
     return NavigationDuplicated;
@@ -2036,7 +2041,7 @@
 
   /*  */
 
-  var History = function History (router, base) {
+  var History = function History(router, base) {
     this.router = router;
     this.base = normalizeBase(base);
     // start with a route object that stands for "nowhere"
@@ -2048,11 +2053,11 @@
     this.errorCbs = [];
   };
 
-  History.prototype.listen = function listen (cb) {
+  History.prototype.listen = function listen(cb) {
     this.cb = cb;
   };
 
-  History.prototype.onReady = function onReady (cb, errorCb) {
+  History.prototype.onReady = function onReady(cb, errorCb) {
     if (this.ready) {
       cb();
     } else {
@@ -2063,16 +2068,16 @@
     }
   };
 
-  History.prototype.onError = function onError (errorCb) {
+  History.prototype.onError = function onError(errorCb) {
     this.errorCbs.push(errorCb);
   };
 
-  History.prototype.transitionTo = function transitionTo (
+  History.prototype.transitionTo = function transitionTo(
     location,
     onComplete,
     onAbort
   ) {
-      var this$1 = this;
+    var this$1 = this;
 
     var route = this.router.match(location, this.current);
     this.confirmTransition(
@@ -2104,8 +2109,8 @@
     );
   };
 
-  History.prototype.confirmTransition = function confirmTransition (route, onComplete, onAbort) {
-      var this$1 = this;
+  History.prototype.confirmTransition = function confirmTransition(route, onComplete, onAbort) {
+    var this$1 = this;
 
     var current = this.current;
     var abort = function (err) {
@@ -2138,9 +2143,9 @@
       this.current.matched,
       route.matched
     );
-      var updated = ref.updated;
-      var deactivated = ref.deactivated;
-      var activated = ref.activated;
+    var updated = ref.updated;
+    var deactivated = ref.deactivated;
+    var activated = ref.activated;
 
     var queue = [].concat(
       // in-component leave guards
@@ -2212,7 +2217,7 @@
     });
   };
 
-  History.prototype.updateRoute = function updateRoute (route) {
+  History.prototype.updateRoute = function updateRoute(route) {
     var prev = this.current;
     this.current = route;
     this.cb && this.cb(route);
@@ -2221,7 +2226,7 @@
     });
   };
 
-  function normalizeBase (base) {
+  function normalizeBase(base) {
     if (!base) {
       if (inBrowser) {
         // respect <base> tag
@@ -2241,7 +2246,7 @@
     return base.replace(/\/$/, '')
   }
 
-  function resolveQueue (
+  function resolveQueue(
     current,
     next
   ) {
@@ -2259,7 +2264,7 @@
     }
   }
 
-  function extractGuards (
+  function extractGuards(
     records,
     name,
     bind,
@@ -2276,7 +2281,7 @@
     return flatten(reverse ? guards.reverse() : guards)
   }
 
-  function extractGuard (
+  function extractGuard(
     def,
     key
   ) {
@@ -2287,23 +2292,23 @@
     return def.options[key]
   }
 
-  function extractLeaveGuards (deactivated) {
+  function extractLeaveGuards(deactivated) {
     return extractGuards(deactivated, 'beforeRouteLeave', bindGuard, true)
   }
 
-  function extractUpdateHooks (updated) {
+  function extractUpdateHooks(updated) {
     return extractGuards(updated, 'beforeRouteUpdate', bindGuard)
   }
 
-  function bindGuard (guard, instance) {
+  function bindGuard(guard, instance) {
     if (instance) {
-      return function boundRouteGuard () {
+      return function boundRouteGuard() {
         return guard.apply(instance, arguments)
       }
     }
   }
 
-  function extractEnterGuards (
+  function extractEnterGuards(
     activated,
     cbs,
     isValid
@@ -2317,14 +2322,14 @@
     )
   }
 
-  function bindEnterGuard (
+  function bindEnterGuard(
     guard,
     match,
     key,
     cbs,
     isValid
   ) {
-    return function routeEnterGuard (to, from, next) {
+    return function routeEnterGuard(to, from, next) {
       return guard(to, from, function (cb) {
         if (typeof cb === 'function') {
           cbs.push(function () {
@@ -2341,7 +2346,7 @@
     }
   }
 
-  function poll (
+  function poll(
     cb, // somehow flow cannot infer this is a function
     instances,
     key,
@@ -2362,7 +2367,7 @@
   /*  */
 
   var HTML5History = /*@__PURE__*/(function (History) {
-    function HTML5History (router, base) {
+    function HTML5History(router, base) {
       var this$1 = this;
 
       History.call(this, router, base);
@@ -2393,15 +2398,15 @@
       });
     }
 
-    if ( History ) HTML5History.__proto__ = History;
-    HTML5History.prototype = Object.create( History && History.prototype );
+    if (History) HTML5History.__proto__ = History;
+    HTML5History.prototype = Object.create(History && History.prototype);
     HTML5History.prototype.constructor = HTML5History;
 
-    HTML5History.prototype.go = function go (n) {
+    HTML5History.prototype.go = function go(n) {
       window.history.go(n);
     };
 
-    HTML5History.prototype.push = function push (location, onComplete, onAbort) {
+    HTML5History.prototype.push = function push(location, onComplete, onAbort) {
       var this$1 = this;
 
       var ref = this;
@@ -2413,7 +2418,7 @@
       }, onAbort);
     };
 
-    HTML5History.prototype.replace = function replace (location, onComplete, onAbort) {
+    HTML5History.prototype.replace = function replace(location, onComplete, onAbort) {
       var this$1 = this;
 
       var ref = this;
@@ -2425,21 +2430,21 @@
       }, onAbort);
     };
 
-    HTML5History.prototype.ensureURL = function ensureURL (push) {
+    HTML5History.prototype.ensureURL = function ensureURL(push) {
       if (getLocation(this.base) !== this.current.fullPath) {
         var current = cleanPath(this.base + this.current.fullPath);
         push ? pushState(current) : replaceState(current);
       }
     };
 
-    HTML5History.prototype.getCurrentLocation = function getCurrentLocation () {
+    HTML5History.prototype.getCurrentLocation = function getCurrentLocation() {
       return getLocation(this.base)
     };
 
     return HTML5History;
   }(History));
 
-  function getLocation (base) {
+  function getLocation(base) {
     var path = decodeURI(window.location.pathname);
     if (base && path.indexOf(base) === 0) {
       path = path.slice(base.length);
@@ -2450,7 +2455,7 @@
   /*  */
 
   var HashHistory = /*@__PURE__*/(function (History) {
-    function HashHistory (router, base, fallback) {
+    function HashHistory(router, base, fallback) {
       History.call(this, router, base);
       // check history fallback deeplinking
       if (fallback && checkFallback(this.base)) {
@@ -2459,13 +2464,13 @@
       ensureSlash();
     }
 
-    if ( History ) HashHistory.__proto__ = History;
-    HashHistory.prototype = Object.create( History && History.prototype );
+    if (History) HashHistory.__proto__ = History;
+    HashHistory.prototype = Object.create(History && History.prototype);
     HashHistory.prototype.constructor = HashHistory;
 
     // this is delayed until the app mounts
     // to avoid the hashchange listener being fired too early
-    HashHistory.prototype.setupListeners = function setupListeners () {
+    HashHistory.prototype.setupListeners = function setupListeners() {
       var this$1 = this;
 
       var router = this.router;
@@ -2495,7 +2500,7 @@
       );
     };
 
-    HashHistory.prototype.push = function push (location, onComplete, onAbort) {
+    HashHistory.prototype.push = function push(location, onComplete, onAbort) {
       var this$1 = this;
 
       var ref = this;
@@ -2511,7 +2516,7 @@
       );
     };
 
-    HashHistory.prototype.replace = function replace (location, onComplete, onAbort) {
+    HashHistory.prototype.replace = function replace(location, onComplete, onAbort) {
       var this$1 = this;
 
       var ref = this;
@@ -2527,25 +2532,25 @@
       );
     };
 
-    HashHistory.prototype.go = function go (n) {
+    HashHistory.prototype.go = function go(n) {
       window.history.go(n);
     };
 
-    HashHistory.prototype.ensureURL = function ensureURL (push) {
+    HashHistory.prototype.ensureURL = function ensureURL(push) {
       var current = this.current.fullPath;
       if (getHash() !== current) {
         push ? pushHash(current) : replaceHash(current);
       }
     };
 
-    HashHistory.prototype.getCurrentLocation = function getCurrentLocation () {
+    HashHistory.prototype.getCurrentLocation = function getCurrentLocation() {
       return getHash()
     };
 
     return HashHistory;
   }(History));
 
-  function checkFallback (base) {
+  function checkFallback(base) {
     var location = getLocation(base);
     if (!/^\/#/.test(location)) {
       window.location.replace(cleanPath(base + '/#' + location));
@@ -2553,7 +2558,7 @@
     }
   }
 
-  function ensureSlash () {
+  function ensureSlash() {
     var path = getHash();
     if (path.charAt(0) === '/') {
       return true
@@ -2562,7 +2567,7 @@
     return false
   }
 
-  function getHash () {
+  function getHash() {
     // We can't use window.location.hash here because it's not
     // consistent across browsers - Firefox will pre-decode it!
     var href = window.location.href;
@@ -2587,14 +2592,14 @@
     return href
   }
 
-  function getUrl (path) {
+  function getUrl(path) {
     var href = window.location.href;
     var i = href.indexOf('#');
     var base = i >= 0 ? href.slice(0, i) : href;
     return (base + "#" + path)
   }
 
-  function pushHash (path) {
+  function pushHash(path) {
     if (supportsPushState) {
       pushState(getUrl(path));
     } else {
@@ -2602,7 +2607,7 @@
     }
   }
 
-  function replaceHash (path) {
+  function replaceHash(path) {
     if (supportsPushState) {
       replaceState(getUrl(path));
     } else {
@@ -2613,17 +2618,17 @@
   /*  */
 
   var AbstractHistory = /*@__PURE__*/(function (History) {
-    function AbstractHistory (router, base) {
+    function AbstractHistory(router, base) {
       History.call(this, router, base);
       this.stack = [];
       this.index = -1;
     }
 
-    if ( History ) AbstractHistory.__proto__ = History;
-    AbstractHistory.prototype = Object.create( History && History.prototype );
+    if (History) AbstractHistory.__proto__ = History;
+    AbstractHistory.prototype = Object.create(History && History.prototype);
     AbstractHistory.prototype.constructor = AbstractHistory;
 
-    AbstractHistory.prototype.push = function push (location, onComplete, onAbort) {
+    AbstractHistory.prototype.push = function push(location, onComplete, onAbort) {
       var this$1 = this;
 
       this.transitionTo(
@@ -2637,7 +2642,7 @@
       );
     };
 
-    AbstractHistory.prototype.replace = function replace (location, onComplete, onAbort) {
+    AbstractHistory.prototype.replace = function replace(location, onComplete, onAbort) {
       var this$1 = this;
 
       this.transitionTo(
@@ -2650,7 +2655,7 @@
       );
     };
 
-    AbstractHistory.prototype.go = function go (n) {
+    AbstractHistory.prototype.go = function go(n) {
       var this$1 = this;
 
       var targetIndex = this.index + n;
@@ -2672,12 +2677,12 @@
       );
     };
 
-    AbstractHistory.prototype.getCurrentLocation = function getCurrentLocation () {
+    AbstractHistory.prototype.getCurrentLocation = function getCurrentLocation() {
       var current = this.stack[this.stack.length - 1];
       return current ? current.fullPath : '/'
     };
 
-    AbstractHistory.prototype.ensureURL = function ensureURL () {
+    AbstractHistory.prototype.ensureURL = function ensureURL() {
       // noop
     };
 
@@ -2688,8 +2693,8 @@
 
 
 
-  var VueRouter = function VueRouter (options) {
-    if ( options === void 0 ) options = {};
+  var VueRouter = function VueRouter(options) {
+    if (options === void 0) options = {};
 
     this.app = null;
     this.apps = [];
@@ -2728,7 +2733,7 @@
 
   var prototypeAccessors = { currentRoute: { configurable: true } };
 
-  VueRouter.prototype.match = function match (
+  VueRouter.prototype.match = function match(
     raw,
     current,
     redirectedFrom
@@ -2740,10 +2745,10 @@
     return this.history && this.history.current
   };
 
-  VueRouter.prototype.init = function init (app /* Vue component instance */) {
-      var this$1 = this;
+  VueRouter.prototype.init = function init(app /* Vue component instance */) {
+    var this$1 = this;
 
-     assert(
+    assert(
       install.installed,
       "not installed. Make sure to call `Vue.use(VueRouter)` " +
       "before creating root instance."
@@ -2792,28 +2797,28 @@
     });
   };
 
-  VueRouter.prototype.beforeEach = function beforeEach (fn) {
+  VueRouter.prototype.beforeEach = function beforeEach(fn) {
     return registerHook(this.beforeHooks, fn)
   };
 
-  VueRouter.prototype.beforeResolve = function beforeResolve (fn) {
+  VueRouter.prototype.beforeResolve = function beforeResolve(fn) {
     return registerHook(this.resolveHooks, fn)
   };
 
-  VueRouter.prototype.afterEach = function afterEach (fn) {
+  VueRouter.prototype.afterEach = function afterEach(fn) {
     return registerHook(this.afterHooks, fn)
   };
 
-  VueRouter.prototype.onReady = function onReady (cb, errorCb) {
+  VueRouter.prototype.onReady = function onReady(cb, errorCb) {
     this.history.onReady(cb, errorCb);
   };
 
-  VueRouter.prototype.onError = function onError (errorCb) {
+  VueRouter.prototype.onError = function onError(errorCb) {
     this.history.onError(errorCb);
   };
 
-  VueRouter.prototype.push = function push (location, onComplete, onAbort) {
-      var this$1 = this;
+  VueRouter.prototype.push = function push(location, onComplete, onAbort) {
+    var this$1 = this;
 
     // $flow-disable-line
     if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
@@ -2825,8 +2830,8 @@
     }
   };
 
-  VueRouter.prototype.replace = function replace (location, onComplete, onAbort) {
-      var this$1 = this;
+  VueRouter.prototype.replace = function replace(location, onComplete, onAbort) {
+    var this$1 = this;
 
     // $flow-disable-line
     if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
@@ -2838,19 +2843,19 @@
     }
   };
 
-  VueRouter.prototype.go = function go (n) {
+  VueRouter.prototype.go = function go(n) {
     this.history.go(n);
   };
 
-  VueRouter.prototype.back = function back () {
+  VueRouter.prototype.back = function back() {
     this.go(-1);
   };
 
-  VueRouter.prototype.forward = function forward () {
+  VueRouter.prototype.forward = function forward() {
     this.go(1);
   };
 
-  VueRouter.prototype.getMatchedComponents = function getMatchedComponents (to) {
+  VueRouter.prototype.getMatchedComponents = function getMatchedComponents(to) {
     var route = to
       ? to.matched
         ? to
@@ -2866,7 +2871,7 @@
     }))
   };
 
-  VueRouter.prototype.resolve = function resolve (
+  VueRouter.prototype.resolve = function resolve(
     to,
     current,
     append
@@ -2892,16 +2897,16 @@
     }
   };
 
-  VueRouter.prototype.addRoutes = function addRoutes (routes) {
+  VueRouter.prototype.addRoutes = function addRoutes(routes) {
     this.matcher.addRoutes(routes);
     if (this.history.current !== START) {
       this.history.transitionTo(this.history.getCurrentLocation());
     }
   };
 
-  Object.defineProperties( VueRouter.prototype, prototypeAccessors );
+  Object.defineProperties(VueRouter.prototype, prototypeAccessors);
 
-  function registerHook (list, fn) {
+  function registerHook(list, fn) {
     list.push(fn);
     return function () {
       var i = list.indexOf(fn);
@@ -2909,7 +2914,7 @@
     }
   }
 
-  function createHref (base, fullPath, mode) {
+  function createHref(base, fullPath, mode) {
     var path = mode === 'hash' ? '#' + fullPath : fullPath;
     return base ? cleanPath(base + '/' + path) : path
   }

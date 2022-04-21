@@ -8,42 +8,42 @@ let CheckboxDropdown = function (el) {
   this.$checkAll = this.$el.find("[data-toggle='check-all']").first();
   this.$inputs = this.$el.find("[type='checkbox']");
   this.onCheckBox();
-  this.$label.on("click", function(e) {
+  this.$label.on("click", function (e) {
     e.preventDefault();
     _this.toggleOpen();
   });
-  this.$checkAll.on("click", function(e) {
+  this.$checkAll.on("click", function (e) {
     e.preventDefault();
     _this.onCheckAll();
   });
-  this.$inputs.on("change", function(e) {
+  this.$inputs.on("change", function (e) {
     _this.onCheckBox();
   });
 };
-CheckboxDropdown.prototype.onCheckBox = function() {
+CheckboxDropdown.prototype.onCheckBox = function () {
   this.updateStatus();
 };
-CheckboxDropdown.prototype.updateStatus = function() {
+CheckboxDropdown.prototype.updateStatus = function () {
   let checked = this.$el.find(":checked");
   let value = "";
   let text = "";
   this.areAllChecked = false;
   this.$checkAll.html(this.$checkAll.attr("checkText"));
-  if(checked.length === this.$inputs.length) {
+  if (checked.length === this.$inputs.length) {
     this.areAllChecked = true;
     this.$checkAll.html(this.$checkAll.attr("uncheckText"));
   }
-  for(let i = 0; i < this.$inputs.length; ++i){
-    if(typeof $(this.$inputs[i]).attr("setVisible") !== typeof undefined && $(this.$inputs[i]).attr("setVisible") !== false){
-      if($(this.$inputs[i]).is(":checked")){
+  for (let i = 0; i < this.$inputs.length; ++i) {
+    if (typeof $(this.$inputs[i]).attr("setVisible") !== typeof undefined && $(this.$inputs[i]).attr("setVisible") !== false) {
+      if ($(this.$inputs[i]).is(":checked")) {
         $("#" + $(this.$inputs[i]).attr("setVisible")).css("visibility", "visible");
-      }else {
+      } else {
         $("#" + $(this.$inputs[i]).attr("setVisible")).css("visibility", "hidden");
       }
     }
   }
-  if(checked.length > 0){
-    for(let i = 0; i < checked.length - 1; ++i){
+  if (checked.length > 0) {
+    for (let i = 0; i < checked.length - 1; ++i) {
       value = value + $(checked[i]).attr("value") + ", ";
       text = text + $(checked[i]).attr("text") + ", ";
     }
@@ -51,28 +51,28 @@ CheckboxDropdown.prototype.updateStatus = function() {
     text = text + $(checked[checked.length - 1]).attr("text");
     this.$labelContainer.html(text);
     this.$labelContainer.attr("value", value);
-  }else {
+  } else {
     this.$labelContainer.html(this.$labelContainer.attr("text"));
     this.$labelContainer.attr("value", "");
   }
 };
-CheckboxDropdown.prototype.onCheckAll = function(checkAll) {
-  if(!this.areAllChecked || checkAll) {
+CheckboxDropdown.prototype.onCheckAll = function (checkAll) {
+  if (!this.areAllChecked || checkAll) {
     this.areAllChecked = true;
     this.$checkAll.html(this.$checkAll.attr("uncheckText"));
     this.$inputs.prop("checked", true);
-  }else {
+  } else {
     this.areAllChecked = false;
     this.$checkAll.html(this.$checkAll.attr("checkText"));
     this.$inputs.prop("checked", false);
   }
   this.updateStatus();
 };
-CheckboxDropdown.prototype.toggleOpen = function(forceOpen) {
-  if(!this.isOpen || forceOpen) {
+CheckboxDropdown.prototype.toggleOpen = function (forceOpen) {
+  if (!this.isOpen || forceOpen) {
     this.isOpen = true;
     this.$el.addClass("on");
-  }else {
+  } else {
     this.isOpen = false;
     this.$el.removeClass("on");
   }
@@ -96,15 +96,15 @@ document.addEventListener('DOMContentLoaded', function () {
       name: "",
       nameEN: "",
       groups: [],
-      users:[],
+      users: [],
       searchQuery: "",
       searchQueryAllowedList: "",
       searchQueryBlockedList: "",
-      userSearch:[],
-      userAllowed:[],
-      userBlocked:[],
-      userAllowedId:[],
-      userBlockedId:[],
+      userSearch: [],
+      userAllowed: [],
+      userBlocked: [],
+      userAllowedId: [],
+      userBlockedId: [],
       flagList: [true],
       indexList: [0],
       attributeList: [],
@@ -271,9 +271,9 @@ document.addEventListener('DOMContentLoaded', function () {
       this.getUserPic();
       this.getGroups();
       this.getUsersList();
-      if(window.localStorage.getItem("lang") === null){
+      if (window.localStorage.getItem("lang") === null) {
         window.localStorage.setItem("lang", "FA");
-      }else if(window.localStorage.getItem("lang") === "EN") {
+      } else if (window.localStorage.getItem("lang") === "EN") {
         this.changeLang();
       }
     },
@@ -288,16 +288,16 @@ document.addEventListener('DOMContentLoaded', function () {
         this.dateNavText = this.dateNav;
       },
       dropdownNavbar: function () {
-        if(this.dropdownMenu){
+        if (this.dropdownMenu) {
           let dropdowns = document.getElementsByClassName("dropdown-content");
           for (let i = 0; i < dropdowns.length; ++i) {
             let openDropdown = dropdowns[i];
-            if(openDropdown.classList.contains("show")) {
+            if (openDropdown.classList.contains("show")) {
               openDropdown.classList.remove("show");
             }
           }
           this.dropdownMenu = false;
-        }else{
+        } else {
           document.getElementById("dropdownMenu").classList.toggle("show");
           this.dropdownMenu = true;
         }
@@ -311,12 +311,12 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("overlay").style.display = "block";
         this.overlayLoader = true;
         axios.get(url + "/api/skyroom") //
-            .then((res) => {
-              vm.overlayLoader = false;
-              document.getElementById("overlayBody").style.display = "block";
-              vm.meetingAdminLink = res.data.presenter;
-              vm.meetingGuestLink = res.data.students;
-            });
+          .then((res) => {
+            vm.overlayLoader = false;
+            document.getElementById("overlayBody").style.display = "block";
+            vm.meetingAdminLink = res.data.presenter;
+            vm.meetingGuestLink = res.data.students;
+          });
       },
       closeOverlay: function () {
         document.getElementById("overlay").style.display = "none";
@@ -327,12 +327,12 @@ document.addEventListener('DOMContentLoaded', function () {
         copyText.select();
         document.execCommand("copy");
         document.getElementById("copyMeetingLinkBtn").disabled = true;
-        setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+        setTimeout(function () { document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
       },
-      isActive (menuItem) {
+      isActive(menuItem) {
         return this.activeItem === menuItem
       },
-      setActive (menuItem) {
+      setActive(menuItem) {
         this.activeItem = menuItem
       },
       selectMetaDataAddress: function () {
@@ -351,12 +351,12 @@ document.addEventListener('DOMContentLoaded', function () {
             vm.username = res.data.userId;
             vm.name = res.data.displayName;
             vm.nameEN = res.data.firstName + " " + res.data.lastName;
-            if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+            if (window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA") {
               vm.s1 = vm.name;
-            }else if(window.localStorage.getItem("lang") === "EN") {
+            } else if (window.localStorage.getItem("lang") === "EN") {
               vm.s1 = vm.nameEN;
             }
-            if(res.data.skyroomAccess){
+            if (res.data.skyroomAccess) {
               vm.showMeeting = true;
             }
           });
@@ -365,68 +365,68 @@ document.addEventListener('DOMContentLoaded', function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         axios.get(url + "/api/user/photo") //
-            .then((res) => {
-              if(res.data == "Problem" || res.data == "NotExist"){
+          .then((res) => {
+            if (res.data == "Problem" || res.data == "NotExist") {
+              vm.userPicture = "images/PlaceholderUser.png";
+            } else {
+              vm.userPicture = "/api/user/photo";
+            }
+          })
+          .catch((error) => {
+            if (error.response) {
+              if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                 vm.userPicture = "images/PlaceholderUser.png";
-              }else{
+              } else {
                 vm.userPicture = "/api/user/photo";
               }
-            })
-            .catch((error) => {
-                if (error.response) {
-                  if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
-                    vm.userPicture = "images/PlaceholderUser.png";
-                  }else{
-                    vm.userPicture = "/api/user/photo";
-                  }
-                }
-            });
+            }
+          });
       },
       getGroups: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         axios.get(url + "/api/groups")
-        .then((res) => {
-          vm.groups = res.data;
-        });
+          .then((res) => {
+            vm.groups = res.data;
+          });
       },
-      getUsersList: function (){
+      getUsersList: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         axios.get(url + "/api/users")
-        .then((res) => {
-          vm.userSearch = res.data;
-        });
+          .then((res) => {
+            vm.userSearch = res.data;
+          });
       },
       addGroup: function (n) {
         //n = n.split("'").join("");
-        if(this.groupList.includes(n)){
-          if(this.groupList.includes(n + ',')){
+        if (this.groupList.includes(n)) {
+          if (this.groupList.includes(n + ',')) {
             this.groupList = this.groupList.replace(n + ',', "");
-          }else if(this.groupList === n){
+          } else if (this.groupList === n) {
             this.groupList = this.groupList.replace(n, "");
-          }else{
+          } else {
             this.groupList = this.groupList.replace(',' + n, "");
           }
-        }else{
-          if(this.groupList === ""){
+        } else {
+          if (this.groupList === "") {
             this.groupList += n;
-          }else{
+          } else {
             this.groupList += ',' + n;
           }
         }
       },
       allGroups: function () {
-        if(this.allGroupsHolderText == this.addAllGroupsText){
-          for(let i = 0; i < this.groups.length; ++i){
-            if(!this.groupList.includes(this.groups[i].id)){
+        if (this.allGroupsHolderText == this.addAllGroupsText) {
+          for (let i = 0; i < this.groups.length; ++i) {
+            if (!this.groupList.includes(this.groups[i].id)) {
               document.getElementById("groupNameId" + this.groups[i].id).click();
             }
           }
           this.allGroupsHolderText = this.removeAllGroupsText;
-        }else{
-          for(let i = 0; i < this.groups.length; ++i){
-            if(this.groupList.includes(this.groups[i].id)){
+        } else {
+          for (let i = 0; i < this.groups.length; ++i) {
+            if (this.groupList.includes(this.groups[i].id)) {
               document.getElementById("groupNameId" + this.groups[i].id).click();
             }
           }
@@ -438,276 +438,276 @@ document.addEventListener('DOMContentLoaded', function () {
         let vm = this;
 
         let serviceIdFlag = false;
-        for(let i = 0; i < document.getElementsByName('serviceId')[0].value.length; ++i){
-          if(i == 0){
-            if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
-            document.getElementsByName('serviceId')[0].value[i+1] != '\\'){
+        for (let i = 0; i < document.getElementsByName('serviceId')[0].value.length; ++i) {
+          if (i == 0) {
+            if (document.getElementsByName('serviceId')[0].value[i] == '\\' &&
+              document.getElementsByName('serviceId')[0].value[i + 1] != '\\') {
               serviceIdFlag = true;
               break;
             }
-          }else if(i == document.getElementsByName('serviceId')[0].value.length-1){
-            if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
-            document.getElementsByName('serviceId')[0].value[i-1] != '\\'){
+          } else if (i == document.getElementsByName('serviceId')[0].value.length - 1) {
+            if (document.getElementsByName('serviceId')[0].value[i] == '\\' &&
+              document.getElementsByName('serviceId')[0].value[i - 1] != '\\') {
               serviceIdFlag = true;
               break;
             }
-          }else{
-            if(document.getElementsByName('serviceId')[0].value[i] == '\\' && 
-            document.getElementsByName('serviceId')[0].value[i+1] != '\\' &&
-            document.getElementsByName('serviceId')[0].value[i-1] != '\\'){
+          } else {
+            if (document.getElementsByName('serviceId')[0].value[i] == '\\' &&
+              document.getElementsByName('serviceId')[0].value[i + 1] != '\\' &&
+              document.getElementsByName('serviceId')[0].value[i - 1] != '\\') {
               serviceIdFlag = true;
               break;
             }
           }
         }
 
-        if(document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
-        document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
-        document.getElementsByName('description')[0].value == "" || document.getElementsByName('url')[0].value == ""){
+        if (document.getElementsByName('name')[0].value == "" || document.getElementsByName('serviceId')[0].value == "" ||
+          document.getElementsByName('cName')[0].value == "" || document.getElementsByName('cEmail')[0].value == "" ||
+          document.getElementsByName('description')[0].value == "" || document.getElementsByName('url')[0].value == "") {
           alert("لطفا قسمت های الزامی را پر کنید.");
-        }else if(serviceIdFlag){
+        } else if (serviceIdFlag) {
           alert("فرمت آدرس سرویس درست نمی باشد.");
-        }else{
+        } else {
 
           this.service.name = document.getElementsByName('name')[0].value;
 
           this.service.serviceId = document.getElementsByName('serviceId')[0].value;
 
-          if(document.getElementsByName('description')[0].value != ""){
+          if (document.getElementsByName('description')[0].value != "") {
             this.service.description = document.getElementsByName('description')[0].value;
-          }else{
+          } else {
             this.service.description = null;
           }
 
           this.extraInfo.url = document.getElementsByName('url')[0].value;
 
-          if(document.getElementsByName('informationUrl')[0].value != ""){
+          if (document.getElementsByName('informationUrl')[0].value != "") {
             this.service.informationUrl = document.getElementsByName('informationUrl')[0].value;
-          }else{
+          } else {
             this.service.informationUrl = null;
           }
 
-          if(document.getElementsByName('privacyUrl')[0].value != ""){
+          if (document.getElementsByName('privacyUrl')[0].value != "") {
             this.service.privacyUrl = document.getElementsByName('privacyUrl')[0].value;
-          }else{
+          } else {
             this.service.privacyUrl = null;
           }
 
-          if(document.getElementsByName('logoutType')[0].value != ""){
+          if (document.getElementsByName('logoutType')[0].value != "") {
             this.service.logoutType = document.getElementsByName('logoutType')[0].value;
-          }else{
+          } else {
             this.service.logoutType = null;
           }
 
-          if(document.getElementsByName('logoutUrl')[0].value != ""){
+          if (document.getElementsByName('logoutUrl')[0].value != "") {
             this.service.logoutUrl = document.getElementsByName('logoutUrl')[0].value;
-          }else{
+          } else {
             this.service.logoutUrl = null;
           }
 
-          if(document.getElementsByName('enabled')[0].checked){
+          if (document.getElementsByName('enabled')[0].checked) {
             this.accessStrategy.enabled = true;
-          }else{
+          } else {
             this.accessStrategy.enabled = false;
           }
 
-          if(document.getElementsByName('ssoEnabled')[0].checked){
+          if (document.getElementsByName('ssoEnabled')[0].checked) {
             this.accessStrategy.ssoEnabled = true;
-          }else{
+          } else {
             this.accessStrategy.ssoEnabled = false;
           }
 
-          if(document.getElementsByName('unauthorizedRedirectUrl')[0].value != ""){
+          if (document.getElementsByName('unauthorizedRedirectUrl')[0].value != "") {
             this.accessStrategy.unauthorizedRedirectUrl = document.getElementsByName('unauthorizedRedirectUrl')[0].value;
-          }else{
+          } else {
             this.accessStrategy.unauthorizedRedirectUrl = null;
           }
 
-          if(document.getElementsByName('dateStart')[0].value != "" && 
-          document.getElementsByName('dateEnd')[0].value != ""){
-                let dateStartTemp = document.getElementsByName('dateStart')[0].value.split("  ");
-                let dateStart = dateStartTemp[0].split(' ');
-                let dateStartFinal;
-                dateStart[dateStart.length-1] = this.FaNumToEnNum(dateStart[dateStart.length-1]);
-                dateStart[dateStart.length-3] = this.FaNumToEnNum(dateStart[dateStart.length-3]);
+          if (document.getElementsByName('dateStart')[0].value != "" &&
+            document.getElementsByName('dateEnd')[0].value != "") {
+            let dateStartTemp = document.getElementsByName('dateStart')[0].value.split("  ");
+            let dateStart = dateStartTemp[0].split(' ');
+            let dateStartFinal;
+            dateStart[dateStart.length - 1] = this.FaNumToEnNum(dateStart[dateStart.length - 1]);
+            dateStart[dateStart.length - 3] = this.FaNumToEnNum(dateStart[dateStart.length - 3]);
 
-                switch(dateStart[dateStart.length-2]) {
-                  case "فروردین":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-01-" + dateStart[dateStart.length-3];
-                    break;
-                  case "اردیبهشت":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-02-" + dateStart[dateStart.length-3];
-                    break;
-                  case "خرداد":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-03-" + dateStart[dateStart.length-3];
-                    break;
-                  case "تیر":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-04-" + dateStart[dateStart.length-3];
-                    break;
-                  case "مرداد":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-05-" + dateStart[dateStart.length-3];
-                    break;
-                  case "شهریور":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-06-" + dateStart[dateStart.length-3];
-                    break;
-                  case "مهر":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-07-" + dateStart[dateStart.length-3];
-                    break;
-                  case "آبان":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-08-" + dateStart[dateStart.length-3];
-                    break;
-                  case "آذر":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-09-" + dateStart[dateStart.length-3];
-                    break;
-                  case "دی":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-10-" + dateStart[dateStart.length-3];
-                    break;
-                  case "بهمن":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-11-" + dateStart[dateStart.length-3];
-                    break;
-                  case "اسفند":
-                    dateStartFinal = dateStart[dateStart.length-1] + "-12-" + dateStart[dateStart.length-3];
-                    break;
-                  default:
-                    console.log("Wrong Input for Month");
-                }
+            switch (dateStart[dateStart.length - 2]) {
+              case "فروردین":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-01-" + dateStart[dateStart.length - 3];
+                break;
+              case "اردیبهشت":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-02-" + dateStart[dateStart.length - 3];
+                break;
+              case "خرداد":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-03-" + dateStart[dateStart.length - 3];
+                break;
+              case "تیر":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-04-" + dateStart[dateStart.length - 3];
+                break;
+              case "مرداد":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-05-" + dateStart[dateStart.length - 3];
+                break;
+              case "شهریور":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-06-" + dateStart[dateStart.length - 3];
+                break;
+              case "مهر":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-07-" + dateStart[dateStart.length - 3];
+                break;
+              case "آبان":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-08-" + dateStart[dateStart.length - 3];
+                break;
+              case "آذر":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-09-" + dateStart[dateStart.length - 3];
+                break;
+              case "دی":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-10-" + dateStart[dateStart.length - 3];
+                break;
+              case "بهمن":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-11-" + dateStart[dateStart.length - 3];
+                break;
+              case "اسفند":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-12-" + dateStart[dateStart.length - 3];
+                break;
+              default:
+                console.log("Wrong Input for Month");
+            }
 
-                let dateEndTemp = document.getElementsByName('dateEnd')[0].value.split("  ");
-                let dateEnd = dateEndTemp[0].split(' ');
-                let dateEndFinal;
-                dateEnd[dateEnd.length-1] = this.FaNumToEnNum(dateEnd[dateEnd.length-1]);
-                dateEnd[dateEnd.length-3] = this.FaNumToEnNum(dateEnd[dateEnd.length-3]);
+            let dateEndTemp = document.getElementsByName('dateEnd')[0].value.split("  ");
+            let dateEnd = dateEndTemp[0].split(' ');
+            let dateEndFinal;
+            dateEnd[dateEnd.length - 1] = this.FaNumToEnNum(dateEnd[dateEnd.length - 1]);
+            dateEnd[dateEnd.length - 3] = this.FaNumToEnNum(dateEnd[dateEnd.length - 3]);
 
-                switch(dateEnd[dateEnd.length-2]) {
-                  case "فروردین":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-01-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "اردیبهشت":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-02-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "خرداد":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-03-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "تیر":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-04-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "مرداد":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-05-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "شهریور":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-06-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "مهر":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-07-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "آبان":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-08-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "آذر":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-09-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "دی":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-10-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "بهمن":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-11-" + dateEnd[dateEnd.length-3];
-                    break;
-                  case "اسفند":
-                    dateEndFinal = dateEnd[dateEnd.length-1] + "-12-" + dateEnd[dateEnd.length-3];
-                    break;
-                  default:
-                    console.log("Wrong Input for Month");
-                }
+            switch (dateEnd[dateEnd.length - 2]) {
+              case "فروردین":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-01-" + dateEnd[dateEnd.length - 3];
+                break;
+              case "اردیبهشت":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-02-" + dateEnd[dateEnd.length - 3];
+                break;
+              case "خرداد":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-03-" + dateEnd[dateEnd.length - 3];
+                break;
+              case "تیر":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-04-" + dateEnd[dateEnd.length - 3];
+                break;
+              case "مرداد":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-05-" + dateEnd[dateEnd.length - 3];
+                break;
+              case "شهریور":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-06-" + dateEnd[dateEnd.length - 3];
+                break;
+              case "مهر":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-07-" + dateEnd[dateEnd.length - 3];
+                break;
+              case "آبان":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-08-" + dateEnd[dateEnd.length - 3];
+                break;
+              case "آذر":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-09-" + dateEnd[dateEnd.length - 3];
+                break;
+              case "دی":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-10-" + dateEnd[dateEnd.length - 3];
+                break;
+              case "بهمن":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-11-" + dateEnd[dateEnd.length - 3];
+                break;
+              case "اسفند":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-12-" + dateEnd[dateEnd.length - 3];
+                break;
+              default:
+                console.log("Wrong Input for Month");
+            }
 
-                let timeStart = dateStartTemp[1].split(':');
-                let timeEnd = dateEndTemp[1].split(':');
+            let timeStart = dateStartTemp[1].split(':');
+            let timeEnd = dateEndTemp[1].split(':');
 
-                timeStart = this.FaNumToEnNum(timeStart[0]) + ':' + this.FaNumToEnNum(timeStart[1]);
-                timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
-                
-                let dateS = dateStartFinal.split('-');
-                let dateE = dateEndFinal.split('-');
+            timeStart = this.FaNumToEnNum(timeStart[0]) + ':' + this.FaNumToEnNum(timeStart[1]);
+            timeEnd = this.FaNumToEnNum(timeEnd[0]) + ':' + this.FaNumToEnNum(timeEnd[1]);
 
-                if(parseInt(dateS[1]) < 7){
-                  timeStart = timeStart + ":00.000+04:30";
-                }else{
-                  timeStart = timeStart + ":00.000+03:30";
-                }
+            let dateS = dateStartFinal.split('-');
+            let dateE = dateEndFinal.split('-');
 
-                if(parseInt(dateE[1]) < 7){
-                  timeEnd = timeEnd + ":00.000+04:30";
-                }else{
-                  timeEnd = timeEnd + ":00.000+03:30";
-                }
+            if (parseInt(dateS[1]) < 7) {
+              timeStart = timeStart + ":00.000+04:30";
+            } else {
+              timeStart = timeStart + ":00.000+03:30";
+            }
 
-                let TempS = timeStart.split(':');
-                let TempE = timeEnd.split(':');
-                if(TempS[0].length == 1){
-                  TempS[0] = '0' + TempS[0];
-                  timeStart = "";
-                  for(i = 0; i < TempS.length; ++i){
-                    timeStart = timeStart + TempS[i] + ':';
-                  }
-                  timeStart = timeStart.substring(0,timeStart.length-1);
-                }
-                if(TempE[0].length == 1){
-                  TempE[0] = '0' + TempE[0];
-                  timeEnd = "";
-                  for(i = 0; i < TempE.length; ++i){
-                    timeEnd = timeEnd + TempE[i] + ':';
-                  }
-                  timeEnd = timeEnd.substring(0,timeEnd.length-1);
-                }
+            if (parseInt(dateE[1]) < 7) {
+              timeEnd = timeEnd + ":00.000+04:30";
+            } else {
+              timeEnd = timeEnd + ":00.000+03:30";
+            }
 
-                TempS = dateStartFinal.split('-');
-                TempE = dateEndFinal.split('-');
-                if(TempS[1].length == 1){
-                  TempS[1] = '0' + TempS[1];
-                }
-                if(TempS[2].length == 1){
-                  TempS[2] = '0' + TempS[2];
-                }
-                if(TempE[1].length == 1){
-                  TempE[1] = '0' + TempE[1];
-                }
-                if(TempE[2].length == 1){
-                  TempE[2] = '0' + TempE[2];
-                }
-                
-                dateStartFinal = TempS[0] + '-' + TempS[1] + '-' + TempS[2];
-                dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
+            let TempS = timeStart.split(':');
+            let TempE = timeEnd.split(':');
+            if (TempS[0].length == 1) {
+              TempS[0] = '0' + TempS[0];
+              timeStart = "";
+              for (i = 0; i < TempS.length; ++i) {
+                timeStart = timeStart + TempS[i] + ':';
+              }
+              timeStart = timeStart.substring(0, timeStart.length - 1);
+            }
+            if (TempE[0].length == 1) {
+              TempE[0] = '0' + TempE[0];
+              timeEnd = "";
+              for (i = 0; i < TempE.length; ++i) {
+                timeEnd = timeEnd + TempE[i] + ':';
+              }
+              timeEnd = timeEnd.substring(0, timeEnd.length - 1);
+            }
 
-                this.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart;
-                this.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd;
+            TempS = dateStartFinal.split('-');
+            TempE = dateEndFinal.split('-');
+            if (TempS[1].length == 1) {
+              TempS[1] = '0' + TempS[1];
+            }
+            if (TempS[2].length == 1) {
+              TempS[2] = '0' + TempS[2];
+            }
+            if (TempE[1].length == 1) {
+              TempE[1] = '0' + TempE[1];
+            }
+            if (TempE[2].length == 1) {
+              TempE[2] = '0' + TempE[2];
+            }
+
+            dateStartFinal = TempS[0] + '-' + TempS[1] + '-' + TempS[2];
+            dateEndFinal = TempE[0] + '-' + TempE[1] + '-' + TempE[2];
+
+            this.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart;
+            this.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd;
           }
 
 
-          if(document.getElementsByName('groups')[0].value != ""){
+          if (document.getElementsByName('groups')[0].value != "") {
             this.ouList = document.getElementsByName('groups')[0].value.split(',');
             this.ou[0] = "java.util.HashSet";
             this.ou[1] = this.ouList;
             this.requiredAttributes.ou = this.ou;
           }
 
-          if(this.userAllowedId.length != 0){
+          if (this.userAllowedId.length != 0) {
             this.userIdAllowed[0] = "java.util.HashSet";
             this.userIdAllowed[1] = this.userAllowedId;
             this.requiredAttributes.uid = this.userIdAllowed;
           }
-          
-          if(this.userBlockedId.length != 0){
+
+          if (this.userBlockedId.length != 0) {
             this.userIdBlocked[0] = "java.util.HashSet";
             this.userIdBlocked[1] = this.userBlockedId;
             this.rejectedAttributes.uid = this.userIdBlocked;
           }
 
-          for(let i = 0; i < this.indexList.length; ++i){
-            if(this.flagList[i]){
-              if(document.getElementById("attributeKey" + this.indexList[i]).value != "" &&
-              document.getElementById("attributeValue" + this.indexList[i]).value != ""){
-                if(document.getElementById("attributeKey" + this.indexList[i]).value != "@class" &&
-                document.getElementById("attributeKey" + this.indexList[i]).value != "uid" &&
-                document.getElementById("attributeKey" + this.indexList[i]).value != "ou"){
+          for (let i = 0; i < this.indexList.length; ++i) {
+            if (this.flagList[i]) {
+              if (document.getElementById("attributeKey" + this.indexList[i]).value != "" &&
+                document.getElementById("attributeValue" + this.indexList[i]).value != "") {
+                if (document.getElementById("attributeKey" + this.indexList[i]).value != "@class" &&
+                  document.getElementById("attributeKey" + this.indexList[i]).value != "uid" &&
+                  document.getElementById("attributeKey" + this.indexList[i]).value != "ou") {
                   this.requiredAttributes[document.getElementById("attributeKey" + this.indexList[i]).value] = ["java.util.HashSet", document.getElementById("attributeValue" + this.indexList[i]).value.split(',')];
                 }
               }
@@ -717,80 +717,80 @@ document.addEventListener('DOMContentLoaded', function () {
 
           this.accessStrategy.requiredAttributes = this.requiredAttributes;
           this.accessStrategy.rejectedAttributes = this.rejectedAttributes;
-          
-          
+
+
           this.contactsObj.name = document.getElementsByName('cName')[0].value;
-          
+
           this.contactsObj.email = document.getElementsByName('cEmail')[0].value;
 
-          if(document.getElementsByName('cPhone')[0].value != ""){
+          if (document.getElementsByName('cPhone')[0].value != "") {
             this.contactsObj.phone = document.getElementsByName('cPhone')[0].value;
-          }else{
+          } else {
             this.contactsObj.phone = null;
           }
 
-          if(document.getElementsByName('cDepartment')[0].value != ""){
+          if (document.getElementsByName('cDepartment')[0].value != "") {
             this.contactsObj.department = document.getElementsByName('cDepartment')[0].value;
-          }else{
+          } else {
             this.contactsObj.department = null;
           }
-          
+
           this.contactsList[0] = this.contactsObj;
           this.contacts[0] = "java.util.ArrayList";
           this.contacts[1] = this.contactsList;
 
-          if(document.getElementsByName('mfaEnabled')[0].value != ""){
+          if (document.getElementsByName('mfaEnabled')[0].value != "") {
             this.multifactorPolicy.multifactorAuthenticationProviders = document.getElementsByName('mfaEnabled')[0].value;
-          }else{
+          } else {
             this.multifactorPolicy.multifactorAuthenticationProviders = "";
           }
 
-          if(document.getElementsByName('bypassEnabled')[0].checked){
+          if (document.getElementsByName('bypassEnabled')[0].checked) {
             this.multifactorPolicy.bypassEnabled = true;
-          }else{
+          } else {
             this.multifactorPolicy.bypassEnabled = false;
           }
 
-          if(document.getElementsByName('failureMode')[0].value != ""){
+          if (document.getElementsByName('failureMode')[0].value != "") {
             this.multifactorPolicy.failureMode = document.getElementsByName('failureMode')[0].value;
-          }else{
+          } else {
             this.multifactorPolicy.failureMode = null;
           }
 
-          if(document.getElementsByName("notificationApiURL")[0].value != ""){
+          if (document.getElementsByName("notificationApiURL")[0].value != "") {
             this.extraInfo.notificationApiURL = document.getElementsByName("notificationApiURL")[0].value;
-          }else{
+          } else {
             this.extraInfo.notificationApiURL = null;
           }
 
-          if(document.getElementsByName("notificationApiKey")[0].value != ""){
+          if (document.getElementsByName("notificationApiKey")[0].value != "") {
             this.extraInfo.notificationApiKey = document.getElementsByName("notificationApiKey")[0].value;
-          }else{
+          } else {
             this.extraInfo.notificationApiKey = null;
           }
 
-          if(this.dailyAccessType === "DAY"){
+          if (this.dailyAccessType === "DAY") {
             let dailyAccessArray = document.getElementsByName("dailyAccess")[0].getAttribute("value").split("");
-            if(dailyAccessArray.length !== 0){
+            if (dailyAccessArray.length !== 0) {
               this.extraInfo.dailyAccess = [];
               let tempDailyAccessDay = {};
               let tempDailyAccessStart = "";
               let tempDailyAccessEnd = "";
-              for(let i = 0; i < dailyAccessArray.length; ++i){
-                if(typeof document.getElementById("dailyAccessStart" + dailyAccessArray[i]) !== "undefined" &&
-                    typeof document.getElementById("dailyAccessEnd" + dailyAccessArray[i]) !== "undefined"){
+              for (let i = 0; i < dailyAccessArray.length; ++i) {
+                if (typeof document.getElementById("dailyAccessStart" + dailyAccessArray[i]) !== "undefined" &&
+                  typeof document.getElementById("dailyAccessEnd" + dailyAccessArray[i]) !== "undefined") {
                   tempDailyAccessStart = document.getElementById("dailyAccessStart" + dailyAccessArray[i]).value.split(":");
-                  tempDailyAccessEnd =  document.getElementById("dailyAccessEnd" + dailyAccessArray[i]).value.split(":");
-                  if(tempDailyAccessStart[0] === ""){
+                  tempDailyAccessEnd = document.getElementById("dailyAccessEnd" + dailyAccessArray[i]).value.split(":");
+                  if (tempDailyAccessStart[0] === "") {
                     tempDailyAccessStart[0] = "0";
                     tempDailyAccessStart.push("00");
-                  }else if(typeof tempDailyAccessStart[1] === "undefined"){
+                  } else if (typeof tempDailyAccessStart[1] === "undefined") {
                     tempDailyAccessStart.push("00");
                   }
-                  if(tempDailyAccessEnd[0] === ""){
+                  if (tempDailyAccessEnd[0] === "") {
                     tempDailyAccessEnd[0] = "23";
                     tempDailyAccessEnd.push("59");
-                  }else if(typeof tempDailyAccessEnd[1] === "undefined"){
+                  } else if (typeof tempDailyAccessEnd[1] === "undefined") {
                     tempDailyAccessEnd.push("00");
                   }
                   tempDailyAccessStart[0] = this.FaNumToEnNum(tempDailyAccessStart[0]);
@@ -811,26 +811,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                   }
                   this.extraInfo.dailyAccess.push(tempDailyAccessDay);
-                }else {
+                } else {
                   this.extraInfo.dailyAccess = null;
                 }
               }
-            }else {
+            } else {
               this.extraInfo.dailyAccess = null;
             }
-          }else if(this.dailyAccessType === "URL"){
-            if(document.getElementsByName("endpointUrl")[0].value !== ""){
+          } else if (this.dailyAccessType === "URL") {
+            if (document.getElementsByName("endpointUrl")[0].value !== "") {
               this.accessStrategy.endpointUrl = document.getElementsByName("endpointUrl")[0].value;
-            }else{
+            } else {
               this.accessStrategy.endpointUrl = null;
             }
 
-            if(document.getElementsByName("acceptableResponseCodes")[0].value !== ""){
+            if (document.getElementsByName("acceptableResponseCodes")[0].value !== "") {
               this.accessStrategy.acceptableResponseCodes = document.getElementsByName("acceptableResponseCodes")[0].value;
-            }else{
-              if(document.getElementsByName("endpointUrl")[0].value !== ""){
+            } else {
+              if (document.getElementsByName("endpointUrl")[0].value !== "") {
                 this.accessStrategy.acceptableResponseCodes = "200";
-              }else{
+              } else {
                 this.accessStrategy.acceptableResponseCodes = null;
               }
             }
@@ -838,41 +838,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
           let logoFile = document.querySelector("#logoFile");
-          if(logoFile.files[0]){
+          if (logoFile.files[0]) {
             let logoFileBodyFormData = new FormData();
             logoFileBodyFormData.append("file", logoFile.files[0]);
             axios({
               method: "post",
               url: url + "/api/services/icon",  //
-              headers: {"Content-Type": "multipart/form-data"},
+              headers: { "Content-Type": "multipart/form-data" },
               data: logoFileBodyFormData,
             }).then((logoRes) => {
-              if(logoRes.data !== ""){
+              if (logoRes.data !== "") {
                 vm.service.logo = logoRes.data;
-              }else{
+              } else {
                 vm.service.logo = null;
               }
-              if(vm.serviceType === "SAML"){
-                if(vm.metaDataAddress || vm.metaDataFile){
-                  if(vm.metaDataFile){
+              if (vm.serviceType === "SAML") {
+                if (vm.metaDataAddress || vm.metaDataFile) {
+                  if (vm.metaDataFile) {
                     let metadataFile = document.querySelector("#metadataFile");
-                    if(!metadataFile.files[0]){
+                    if (!metadataFile.files[0]) {
                       alert("لطفا قسمت های الزامی را پر کنید.");
-                    }else{
+                    } else {
                       let metadataFileBodyFormData = new FormData();
                       metadataFileBodyFormData.append("file", metadataFile.files[0]);
                       axios({
                         method: "post",
                         url: url + "/api/services/metadata",  //
-                        headers: {"Content-Type": "multipart/form-data"},
+                        headers: { "Content-Type": "multipart/form-data" },
                         data: metadataFileBodyFormData,
                       }).then((res) => {
-                        if(res.data != ""){
+                        if (res.data != "") {
                           vm.service.metadataLocation = res.data;
                           axios({
                             method: "post",
                             url: url + "/api/services/saml", //
-                            headers: {"Content-Type": "application/json"},
+                            headers: { "Content-Type": "application/json" },
                             data: JSON.stringify({
                               name: vm.service.name,
                               serviceId: vm.service.serviceId,
@@ -894,13 +894,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                       });
                     }
-                  }else if(vm.metaDataAddress){
-                    if(document.getElementsByName("metadataLocation")[0].value != ""){
+                  } else if (vm.metaDataAddress) {
+                    if (document.getElementsByName("metadataLocation")[0].value != "") {
                       vm.service.metadataLocation = document.getElementsByName("metadataLocation")[0].value;
                       axios({
                         method: "post",
                         url: url + "/api/services/saml", //
-                        headers: {"Content-Type": "application/json"},
+                        headers: { "Content-Type": "application/json" },
                         data: JSON.stringify({
                           name: vm.service.name,
                           serviceId: vm.service.serviceId,
@@ -917,30 +917,30 @@ document.addEventListener('DOMContentLoaded', function () {
                           contacts: vm.contacts,
                         }).replace(/\\\\/g, "\\")
                       })
-                          .then((res) => {
-                            window.location.replace(vm.s34);
-                          });
-                    }else{
+                        .then((res) => {
+                          window.location.replace(vm.s34);
+                        });
+                    } else {
                       alert("لطفا قسمت های الزامی را پر کنید.");
                     }
                   }
-                }else{
+                } else {
                   alert("لطفا قسمت های الزامی را پر کنید.");
                 }
-              }else if(vm.serviceType === "Oauth2"){
+              } else if (vm.serviceType === "Oauth2") {
                 let supportedGrantTypesArray = document.getElementsByName("supportedGrantTypes")[0].getAttribute("value").split(", ");
                 let supportedResponseTypesArray = document.getElementsByName("supportedResponseTypes")[0].getAttribute("value").split(", ");
                 vm.service.clientId = document.getElementsByName("clientId")[0].value;
                 vm.service.clientSecret = document.getElementsByName("clientSecret")[0].value;
-                vm.service.supportedGrantTypes = [ "java.util.HashSet", supportedGrantTypesArray ];
-                vm.service.supportedResponseTypes = [ "java.util.HashSet", supportedResponseTypesArray ];
+                vm.service.supportedGrantTypes = ["java.util.HashSet", supportedGrantTypesArray];
+                vm.service.supportedResponseTypes = ["java.util.HashSet", supportedResponseTypesArray];
 
-                if(vm.service.clientId !== "" && vm.service.clientSecret !== "" &&
-                    supportedGrantTypesArray[0] !== "" && supportedResponseTypesArray[0] !== ""){
+                if (vm.service.clientId !== "" && vm.service.clientSecret !== "" &&
+                  supportedGrantTypesArray[0] !== "" && supportedResponseTypesArray[0] !== "") {
                   axios({
                     method: "post",
                     url: url + "/api/services/oauth", //
-                    headers: {"Content-Type": "application/json"},
+                    headers: { "Content-Type": "application/json" },
                     data: JSON.stringify({
                       name: vm.service.name,
                       serviceId: vm.service.serviceId,
@@ -962,14 +962,14 @@ document.addEventListener('DOMContentLoaded', function () {
                   }).then((res) => {
                     window.location.replace(vm.s34);
                   });
-                }else{
+                } else {
                   alert("لطفا قسمت های الزامی را پر کنید.");
                 }
-              }else if(vm.serviceType === "CAS"){
+              } else if (vm.serviceType === "CAS") {
                 axios({
                   method: "post",
                   url: url + "/api/services/cas", //
-                  headers: {"Content-Type": "application/json"},
+                  headers: { "Content-Type": "application/json" },
                   data: JSON.stringify({
                     name: vm.service.name,
                     serviceId: vm.service.serviceId,
@@ -989,29 +989,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
               }
             });
-          }else{
+          } else {
             vm.service.logo = null;
-            if(vm.serviceType === "SAML"){
-              if(vm.metaDataAddress || vm.metaDataFile){
-                if(vm.metaDataFile){
+            if (vm.serviceType === "SAML") {
+              if (vm.metaDataAddress || vm.metaDataFile) {
+                if (vm.metaDataFile) {
                   let metadataFile = document.querySelector("#metadataFile");
-                  if(!metadataFile.files[0]){
+                  if (!metadataFile.files[0]) {
                     alert("لطفا قسمت های الزامی را پر کنید.");
-                  }else{
+                  } else {
                     let metadataFileBodyFormData = new FormData();
                     metadataFileBodyFormData.append("file", metadataFile.files[0]);
                     axios({
                       method: "post",
                       url: url + "/api/services/metadata",  //
-                      headers: {"Content-Type": "multipart/form-data"},
+                      headers: { "Content-Type": "multipart/form-data" },
                       data: metadataFileBodyFormData,
                     }).then((res) => {
-                      if(res.data != ""){
+                      if (res.data != "") {
                         vm.service.metadataLocation = res.data;
                         axios({
                           method: "post",
                           url: url + "/api/services/saml", //
-                          headers: {"Content-Type": "application/json"},
+                          headers: { "Content-Type": "application/json" },
                           data: JSON.stringify({
                             name: vm.service.name,
                             serviceId: vm.service.serviceId,
@@ -1033,13 +1033,13 @@ document.addEventListener('DOMContentLoaded', function () {
                       }
                     });
                   }
-                }else if(vm.metaDataAddress){
-                  if(document.getElementsByName("metadataLocation")[0].value != ""){
+                } else if (vm.metaDataAddress) {
+                  if (document.getElementsByName("metadataLocation")[0].value != "") {
                     vm.service.metadataLocation = document.getElementsByName("metadataLocation")[0].value;
                     axios({
                       method: "post",
                       url: url + "/api/services/saml", //
-                      headers: {"Content-Type": "application/json"},
+                      headers: { "Content-Type": "application/json" },
                       data: JSON.stringify({
                         name: vm.service.name,
                         serviceId: vm.service.serviceId,
@@ -1056,30 +1056,30 @@ document.addEventListener('DOMContentLoaded', function () {
                         contacts: vm.contacts,
                       }).replace(/\\\\/g, "\\")
                     })
-                        .then((res) => {
-                          window.location.replace(vm.s34);
-                        });
-                  }else{
+                      .then((res) => {
+                        window.location.replace(vm.s34);
+                      });
+                  } else {
                     alert("لطفا قسمت های الزامی را پر کنید.");
                   }
                 }
-              }else{
+              } else {
                 alert("لطفا قسمت های الزامی را پر کنید.");
               }
-            }else if(vm.serviceType === "Oauth2"){
+            } else if (vm.serviceType === "Oauth2") {
               let supportedGrantTypesArray = document.getElementsByName("supportedGrantTypes")[0].getAttribute("value").split(", ");
               let supportedResponseTypesArray = document.getElementsByName("supportedResponseTypes")[0].getAttribute("value").split(", ");
               vm.service.clientId = document.getElementsByName("clientId")[0].value;
               vm.service.clientSecret = document.getElementsByName("clientSecret")[0].value;
-              vm.service.supportedGrantTypes = [ "java.util.HashSet", supportedGrantTypesArray ];
-              vm.service.supportedResponseTypes = [ "java.util.HashSet", supportedResponseTypesArray ];
+              vm.service.supportedGrantTypes = ["java.util.HashSet", supportedGrantTypesArray];
+              vm.service.supportedResponseTypes = ["java.util.HashSet", supportedResponseTypesArray];
 
-              if(vm.service.clientId !== "" && vm.service.clientSecret !== "" &&
-                  supportedGrantTypesArray[0] !== "" && supportedResponseTypesArray[0] !== ""){
+              if (vm.service.clientId !== "" && vm.service.clientSecret !== "" &&
+                supportedGrantTypesArray[0] !== "" && supportedResponseTypesArray[0] !== "") {
                 axios({
                   method: "post",
                   url: url + "/api/services/oauth", //
-                  headers: {"Content-Type": "application/json"},
+                  headers: { "Content-Type": "application/json" },
                   data: JSON.stringify({
                     name: vm.service.name,
                     serviceId: vm.service.serviceId,
@@ -1101,14 +1101,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 }).then((res) => {
                   window.location.replace(vm.s34);
                 });
-              }else{
+              } else {
                 alert("لطفا قسمت های الزامی را پر کنید.");
               }
-            }else if(vm.serviceType === "CAS"){
+            } else if (vm.serviceType === "CAS") {
               axios({
                 method: "post",
                 url: url + "/api/services/cas", //
-                headers: {"Content-Type": "application/json"},
+                headers: { "Content-Type": "application/json" },
                 data: JSON.stringify({
                   name: vm.service.name,
                   serviceId: vm.service.serviceId,
@@ -1133,44 +1133,44 @@ document.addEventListener('DOMContentLoaded', function () {
       FaNumToEnNum: function (str) {
         let s = str.split("");
         let sEn = "";
-        for(let i = 0; i < s.length; ++i){
-          if(s[i] === "۰" || s[i] === "0"){
+        for (let i = 0; i < s.length; ++i) {
+          if (s[i] === "۰" || s[i] === "0") {
             sEn = sEn + "0";
-          }else if(s[i] === "۱" || s[i] === "1"){
+          } else if (s[i] === "۱" || s[i] === "1") {
             sEn = sEn + "1";
-          }else if(s[i] === "۲" || s[i] === "2"){
+          } else if (s[i] === "۲" || s[i] === "2") {
             sEn = sEn + "2";
-          }else if(s[i] === "۳" || s[i] === "3"){
+          } else if (s[i] === "۳" || s[i] === "3") {
             sEn = sEn + "3";
-          }else if(s[i] === "۴" || s[i] === "4"){
+          } else if (s[i] === "۴" || s[i] === "4") {
             sEn = sEn + "4";
-          }else if(s[i] === "۵" || s[i] === "5"){
+          } else if (s[i] === "۵" || s[i] === "5") {
             sEn = sEn + "5";
-          }else if(s[i] === "۶" || s[i] === "6"){
+          } else if (s[i] === "۶" || s[i] === "6") {
             sEn = sEn + "6";
-          }else if(s[i] === "۷" || s[i] === "7"){
+          } else if (s[i] === "۷" || s[i] === "7") {
             sEn = sEn + "7";
-          }else if(s[i] === "۸" || s[i] === "8"){
+          } else if (s[i] === "۸" || s[i] === "8") {
             sEn = sEn + "8";
-          }else if(s[i] === "۹" || s[i] === "9"){
+          } else if (s[i] === "۹" || s[i] === "9") {
             sEn = sEn + "9";
           }
         }
         return sEn;
       },
       allowUserAccess: function (user) {
-        if(this.userAllowedId.indexOf(user.userId) == -1){
+        if (this.userAllowedId.indexOf(user.userId) == -1) {
           this.userAllowedId.push(user.userId);
           this.userAllowed.push(user);
-        }else{
+        } else {
           alert("کاربر پیش از این به لیست اضافه شده است.")
         }
       },
       blockUserAccess: function (user) {
-        if(this.userBlockedId.indexOf(user.userId) == -1){
+        if (this.userBlockedId.indexOf(user.userId) == -1) {
           this.userBlockedId.push(user.userId);
           this.userBlocked.push(user);
-        }else{
+        } else {
           alert("کاربر پیش از این به لیست اضافه شده است.")
         }
       },
@@ -1195,42 +1195,42 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       },
       addAttribute: function () {
-        this.indexList.push(this.indexList[this.indexList.length-1] + 1);
+        this.indexList.push(this.indexList[this.indexList.length - 1] + 1);
         this.flagList.push(true);
       },
       deleteAttribute: function (index) {
         this.flagList[index] = false;
         document.getElementById("attribute" + index).remove();
       },
-      persianInputCharCheck ($event) {
-        if($event.type == "keypress"){
+      persianInputCharCheck($event) {
+        if ($event.type == "keypress") {
           let key = ($event.key ? $event.key : $event.which);
           let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
-          if(keyCode < 48 || 57 < keyCode){
-            if(32 < keyCode && keyCode < 65){
+          if (keyCode < 48 || 57 < keyCode) {
+            if (32 < keyCode && keyCode < 65) {
               $event.preventDefault();
-            }else if(90 < keyCode && keyCode < 97){
+            } else if (90 < keyCode && keyCode < 97) {
               $event.preventDefault();
-            }else if(122 < keyCode && keyCode < 127){
+            } else if (122 < keyCode && keyCode < 127) {
               $event.preventDefault();
-            }else if(!persianRex.text.test(key)){
+            } else if (!persianRex.text.test(key)) {
               $event.preventDefault();
             }
           }
-        }else if ($event.type == "paste"){
+        } else if ($event.type == "paste") {
           let text = $event.clipboardData.getData("text");
-          for(let i = 0; i < text.length; ++i){
-            if(text[i].charCodeAt(0) < 48 || 57 < text[i].charCodeAt(0)){
-              if(32 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 65){
+          for (let i = 0; i < text.length; ++i) {
+            if (text[i].charCodeAt(0) < 48 || 57 < text[i].charCodeAt(0)) {
+              if (32 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 65) {
                 $event.preventDefault();
                 break;
-              }else if(90 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 97){
+              } else if (90 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 97) {
                 $event.preventDefault();
                 break;
-              }else if(122 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 127){
+              } else if (122 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 127) {
                 $event.preventDefault();
                 break;
-              }else if(!persianRex.text.test(text[i])){
+              } else if (!persianRex.text.test(text[i])) {
                 $event.preventDefault();
                 break;
               }
@@ -1238,26 +1238,26 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         }
       },
-      englishInputCharCheck ($event) {
-        if($event.type == "keypress"){
+      englishInputCharCheck($event) {
+        if ($event.type == "keypress") {
           let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
           if (keyCode < 48 || 122 < keyCode) {
             $event.preventDefault();
-          }else if (57 < keyCode  && keyCode < 65) {
+          } else if (57 < keyCode && keyCode < 65) {
             $event.preventDefault();
-          }else if (90 < keyCode  && keyCode < 97) {
+          } else if (90 < keyCode && keyCode < 97) {
             $event.preventDefault();
           }
-        }else if ($event.type == "paste"){
+        } else if ($event.type == "paste") {
           let text = $event.clipboardData.getData("text");
-          for(let i = 0; i < text.length; ++i){
+          for (let i = 0; i < text.length; ++i) {
             if (text[i].charCodeAt(0) < 48 || 122 < text[i].charCodeAt(0)) {
               $event.preventDefault();
               break;
-            }else if (57 < text[i].charCodeAt(0)  && text[i].charCodeAt(0) < 65) {
+            } else if (57 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 65) {
               $event.preventDefault();
               break;
-            }else if (90 < text[i].charCodeAt(0)  && text[i].charCodeAt(0) < 97) {
+            } else if (90 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 97) {
               $event.preventDefault();
               break;
             }
@@ -1265,15 +1265,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       },
       setServiceType: function () {
-        if(this.serviceType == "CAS"){
+        if (this.serviceType == "CAS") {
           this.samls = false;
-        }else if(this.serviceType == "Oauth2"){
+        } else if (this.serviceType == "Oauth2") {
           this.samls = true;
           let supportedGrantTypesContainer = document.getElementById("supportedGrantTypesContainer");
           new CheckboxDropdown(supportedGrantTypesContainer);
           let supportedResponseTypesContainer = document.getElementById("supportedResponseTypesContainer");
           new CheckboxDropdown(supportedResponseTypesContainer);
-        }else{
+        } else {
           this.samls = true;
         }
       },
@@ -1281,42 +1281,42 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementsByName("clientSecret")[0].value = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       },
       dailyAccessController: function (input) {
-        if(input === "selectAll"){
-          for(let i = 0; i < 7; ++i){
+        if (input === "selectAll") {
+          for (let i = 0; i < 7; ++i) {
             document.getElementById("dailyAccessCheckbox" + i).checked = true;
             document.getElementById("dailyAccessContainer" + i).style.visibility = "visible";
           }
           document.getElementsByName("dailyAccess")[0].setAttribute("value", "0123456");
           document.getElementById("dailyAccessSelectAll").classList.add("d-none");
           document.getElementById("dailyAccessRemoveAll").classList.remove("d-none");
-        }else if(input === "removeAll"){
-          for(let i = 0; i < 7; ++i){
+        } else if (input === "removeAll") {
+          for (let i = 0; i < 7; ++i) {
             document.getElementById("dailyAccessCheckbox" + i).checked = false;
             document.getElementById("dailyAccessContainer" + i).style.visibility = "hidden";
           }
           document.getElementsByName("dailyAccess")[0].setAttribute("value", "");
           document.getElementById("dailyAccessSelectAll").classList.remove("d-none");
           document.getElementById("dailyAccessRemoveAll").classList.add("d-none");
-        }else{
-          if(document.getElementById("dailyAccessCheckbox" + input).checked){
+        } else {
+          if (document.getElementById("dailyAccessCheckbox" + input).checked) {
             document.getElementById("dailyAccessContainer" + input).style.visibility = "visible";
             document.getElementsByName("dailyAccess")[0].setAttribute("value",
-                document.getElementsByName("dailyAccess")[0].getAttribute("value") + input);
-            if(document.getElementsByName("dailyAccess")[0].getAttribute("value").length === 7){
+              document.getElementsByName("dailyAccess")[0].getAttribute("value") + input);
+            if (document.getElementsByName("dailyAccess")[0].getAttribute("value").length === 7) {
               document.getElementById("dailyAccessSelectAll").classList.add("d-none");
               document.getElementById("dailyAccessRemoveAll").classList.remove("d-none");
             }
-          }else {
+          } else {
             document.getElementById("dailyAccessContainer" + input).style.visibility = "hidden";
             document.getElementsByName("dailyAccess")[0].setAttribute("value",
-                document.getElementsByName("dailyAccess")[0].getAttribute("value").replace(input, ""));
+              document.getElementsByName("dailyAccess")[0].getAttribute("value").replace(input, ""));
             document.getElementById("dailyAccessSelectAll").classList.remove("d-none");
             document.getElementById("dailyAccessRemoveAll").classList.add("d-none");
           }
         }
       },
       changeLang: function () {
-        if(this.lang == "EN"){
+        if (this.lang == "EN") {
           window.localStorage.setItem("lang", "EN");
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
@@ -1402,9 +1402,9 @@ document.addEventListener('DOMContentLoaded', function () {
           this.publicmessagesText = "Public Messages";
           this.ticketingText = "Ticketing";
           this.transcriptsText = "Access Reports";
-          if(this.allGroupsHolderText == this.addAllGroupsText){
+          if (this.allGroupsHolderText == this.addAllGroupsText) {
             this.allGroupsHolderText = "Select All";
-          }else{
+          } else {
             this.allGroupsHolderText = "Unselect All";
           }
           this.addAllGroupsText = "Select All";
@@ -1440,7 +1440,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.dayBasedText = "Day Based";
           this.urlBasedText = "URL Based";
           this.smsText = "SMS";
-        }else {
+        } else {
           window.localStorage.setItem("lang", "FA");
           this.margin = "margin-right: 30px;";
           this.lang = "EN";
@@ -1485,7 +1485,7 @@ document.addEventListener('DOMContentLoaded', function () {
           this.s44 = "استراتژی دسترسی";
           this.s45 = "فعال سازی SSO";
           this.s46 = "آدرس صفحه مقصد در صورت مجاز نبودن دسترسی";
-          this.s47 =  " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
+          this.s47 = " (برای نام سرویس تنها حروف انگلیسی و اعداد مجاز می باشد)";
           this.s48 = "تنظیمات پایه";
           this.s49 = "استراتژی دسترسی";
           this.s50 = "دسترسی بر اساس زمان";
@@ -1526,9 +1526,9 @@ document.addEventListener('DOMContentLoaded', function () {
           this.publicmessagesText = "اعلان های عمومی";
           this.ticketingText = "پشتیبانی";
           this.transcriptsText = "گزارش های دسترسی";
-          if(this.allGroupsHolderText == this.addAllGroupsText){
+          if (this.allGroupsHolderText == this.addAllGroupsText) {
             this.allGroupsHolderText = "انتخاب همه";
-          }else{
+          } else {
             this.allGroupsHolderText = "لغو انتخاب همه";
           }
           this.addAllGroupsText = "انتخاب همه";
@@ -1568,38 +1568,38 @@ document.addEventListener('DOMContentLoaded', function () {
       },
     },
     computed: {
-      resultQuery(){
-        if(this.searchQuery){
+      resultQuery() {
+        if (this.searchQuery) {
           let buffer = [];
-          buffer = buffer.concat(this.userSearch.filter((item)=>{
+          buffer = buffer.concat(this.userSearch.filter((item) => {
             return this.searchQuery.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
           }));
-          buffer = buffer.concat(this.userSearch.filter((item)=>{
+          buffer = buffer.concat(this.userSearch.filter((item) => {
             return this.searchQuery.split(' ').every(v => item.displayName.includes(v))
           }));
           let uniqueBuffer = [...new Set(buffer)];
           return uniqueBuffer;
-        }else{
+        } else {
           return [];
         }
       },
-      allowedResultQuery(){
+      allowedResultQuery() {
         let buffer = [];
-        buffer = buffer.concat(this.userAllowed.filter((item)=>{
+        buffer = buffer.concat(this.userAllowed.filter((item) => {
           return this.searchQueryAllowedList.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
         }));
-        buffer = buffer.concat(this.userAllowed.filter((item)=>{
+        buffer = buffer.concat(this.userAllowed.filter((item) => {
           return this.searchQueryAllowedList.split(' ').every(v => item.displayName.includes(v))
         }));
         let uniqueBuffer = [...new Set(buffer)];
         return uniqueBuffer;
       },
-      blockedResultQuery(){
+      blockedResultQuery() {
         let buffer = [];
-        buffer = buffer.concat(this.userBlocked.filter((item)=>{
+        buffer = buffer.concat(this.userBlocked.filter((item) => {
           return this.searchQueryBlockedList.toLowerCase().split(' ').every(v => item.userId.toLowerCase().includes(v))
         }));
-        buffer = buffer.concat(this.userBlocked.filter((item)=>{
+        buffer = buffer.concat(this.userBlocked.filter((item) => {
           return this.searchQueryBlockedList.split(' ').every(v => item.displayName.includes(v))
         }));
         let uniqueBuffer = [...new Set(buffer)];

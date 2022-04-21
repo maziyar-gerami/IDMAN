@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fa" class="h-100">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -24,23 +25,26 @@
     <script src="js/vue-spinners-css.min.js"></script>
 
 </head>
+
 <body class="h-100">
     <div id="app">
         <div id="overlay">
             <div id="overlayContent" v-bind:class="{rtl: isRtl}">
                 <div v-if="overlayLoader" style="text-align: center;">
-                    <roller-loader color="#007bff"/>
+                    <roller-loader color="#007bff" />
                 </div>
                 <div id="overlayBody">
                     <div class="form-group">
                         <div class="row mt-3 mb-5 ml-0 mr-0">
-                            <button v-on:click="openMeeting" class="btn btn-primary col-12">{{enterMeetingText}}</button>
+                            <button v-on:click="openMeeting"
+                                class="btn btn-primary col-12">{{enterMeetingText}}</button>
                         </div><br>
                         <p>{{inviteToMeetingText}}</p>
                         <div class="row ml-0 mr-0">
-                            <input id="copyMeetingLink" v-model:value="meetingGuestLink" type="text" class="form-control col-10" v-bind:style="meetingInviteLinkStyle" readonly>
+                            <input id="copyMeetingLink" v-model:value="meetingGuestLink" type="text"
+                                class="form-control col-10" v-bind:style="meetingInviteLinkStyle" readonly>
                             <button id="copyMeetingLinkBtn" v-bind:style="meetingInviteLinkCopyStyle"
-                                    v-on:click="copyMeetingLink" class="btn btn-sm btn-success col-2">{{copyText}}</button>
+                                v-on:click="copyMeetingLink" class="btn btn-sm btn-success col-2">{{copyText}}</button>
                         </div>
                     </div>
                 </div>
@@ -62,7 +66,7 @@
                         <div id="dropdownMenu" class="dropdown-content">
                             <a href="./logout">{{exitText}}</a>
                         </div>
-                        <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
+                        <a id="langbtn" href="#" v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
                     </div>
                 </div>
             </nav>
@@ -73,7 +77,8 @@
                             <div class="card-body p-0 pt-3">
 
                                 <div class="userpic mb-3" style="width: 130px;height: 130px;">
-                                    <img v-bind:src="userPicture" class="img-responsive avatar w-100 h-100" alt="Picture">
+                                    <img v-bind:src="userPicture" class="img-responsive avatar w-100 h-100"
+                                        alt="Picture">
                                     <a v-bind:href="userPicture" target="_blank"></a>
                                 </div>
 
@@ -102,68 +107,71 @@
 
                                 <div class="list-group list-group-flush">
                                     <a class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="dashboardURLText">
+                                        v-bind:href="dashboardURLText">
                                         <i class="fa fa-dashboard fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{dashboardText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="servicesURLText">
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 "
+                                        v-bind:href="servicesURLText">
                                         <i class="fa fa-server fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{servicesText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="usersURLText">
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 " v-bind:href="usersURLText">
                                         <i class="fa fa-user fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{usersText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="groupsURLText">
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 "
+                                        v-bind:href="groupsURLText">
                                         <i class="fa fa-users fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{groupsText}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
-                                    v-bind:href="rolesURLText">
+                                    <a sec:authorize="hasRole('SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 "
+                                        style="color: #fff; background-color: #007bff; border-color: #007bff;"
+                                        v-bind:href="rolesURLText">
                                         <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{rolesText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                       v-bind:href="publicmessagesURLText">
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 "
+                                        v-bind:href="publicmessagesURLText">
                                         <i class="fa fa-bell fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{publicmessagesText}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
-                                       v-bind:href="ticketingURLText">
+                                        v-bind:href="ticketingURLText">
                                         <i class="fa fa-ticket fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{ticketingText}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="eventsURLText">
+                                    <a class="list-group-item list-group-item-action py-2 " v-bind:href="eventsURLText">
                                         <i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{eventsText}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="auditsURLText">
+                                    <a class="list-group-item list-group-item-action py-2 " v-bind:href="auditsURLText">
                                         <i class="fa fa-history fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{auditsText}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2"
-                                       v-bind:href="reportsURLText">
+                                    <a class="list-group-item list-group-item-action py-2" v-bind:href="reportsURLText">
                                         <i class="fa fa-file fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{reportsText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2"
-                                       v-bind:href="transcriptsURLText">
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2"
+                                        v-bind:href="transcriptsURLText">
                                         <i class="fa fa-file-text fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{transcriptsText}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="profileURLText">
+                                        v-bind:href="profileURLText">
                                         <i class="fa fa-cogs fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{profileText}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="configsURLText">
+                                    <a sec:authorize="hasRole('SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 "
+                                        v-bind:href="configsURLText">
                                         <i class="fa fa-cog fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{configsText}}</span>
                                     </a>
@@ -181,19 +189,23 @@
                                     <div class="row mb-3 mt-3 ml-0 mr-0">
                                         <div class="col pr-0 pl-0">
                                             <div class="card">
-                                                <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                                                <div
+                                                    class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
                                                     <div class="row ml-0 mr-0 w-100">
                                                         <div class="col-4 pl-1 pr-1">
                                                             <div class="input-group input-group-sm">
-                                                                <input type="text" :placeholder="searchText" class="form-control" v-model="userListSearch">
+                                                                <input type="text" :placeholder="searchText"
+                                                                    class="form-control" v-model="userListSearch">
                                                             </div>
                                                         </div>
                                                         <div class="col-2"></div>
                                                         <div class="col-4 pl-1 pr-1">
                                                             <div class="input-group input-group-sm">
                                                                 <select id="role" class="form-control">
-                                                                    <option value="" selected disabled>{{chooseRoleText}}</option>
-                                                                    <option value="SUPERUSER">{{superAdminText}}</option>
+                                                                    <option value="" selected disabled>
+                                                                        {{chooseRoleText}}</option>
+                                                                    <option value="SUPERUSER">{{superAdminText}}
+                                                                    </option>
                                                                     <option value="SUPPORTER">{{supporterText}}</option>
                                                                     <option value="ADMIN">{{adminText}}</option>
                                                                     <option value="PRESENTER">{{presenterText}}</option>
@@ -203,7 +215,8 @@
                                                         </div>
                                                         <div class="col-2 pl-1 pr-1">
                                                             <div class="input-group input-group-sm">
-                                                                <button class="btn btn-success btn-sm form-control" v-on:click="editRole()">
+                                                                <button class="btn btn-success btn-sm form-control"
+                                                                    v-on:click="editRole()">
                                                                     {{submitText}}
                                                                 </button>
                                                             </div>
@@ -216,10 +229,11 @@
                                                     <div class="table-wrapper list-group-item">
                                                         <div v-if="loader" class="text-center">
                                                             <br><br>
-                                                            <roller-loader color="#007bff"/>
+                                                            <roller-loader color="#007bff" />
                                                         </div>
                                                         <div v-else>
-                                                            <table class="tableList table table-responsive p-2 text-center">
+                                                            <table
+                                                                class="tableList table table-responsive p-2 text-center">
                                                                 <tr>
                                                                     <th style="border: none;"></th>
                                                                     <th style="border: none;">{{userIdText}}</th>
@@ -227,19 +241,27 @@
                                                                     <th style="border: none;"></th>
                                                                 </tr>
                                                                 <tbody id="body">
-                                                                    <tr v-for="user in userList" :style="user.checked ? 'background: #c2dbff;' : 'background: ;'" v-bind:key="user.userId">
+                                                                    <tr v-for="user in userList"
+                                                                        :style="user.checked ? 'background: #c2dbff;' : 'background: ;'"
+                                                                        v-bind:key="user.userId">
                                                                         <td class="align-middle">
                                                                             <label class="checkboxclass mb-3">
-                                                                                <input type="checkbox" :checked="user.checked" @click="preventCheckbox">
-                                                                                <span v-on:click="selectUser(user)" class="checkmark"></span>
-                                                                            </label>                                                                      
+                                                                                <input type="checkbox"
+                                                                                    :checked="user.checked"
+                                                                                    @click="preventCheckbox">
+                                                                                <span v-on:click="selectUser(user)"
+                                                                                    class="checkmark"></span>
+                                                                            </label>
                                                                         </td>
                                                                         <td class="align-middle">{{user.userId}}</td>
-                                                                        <td v-if="isRtl" class="align-middle">{{user.roleFa}}</td>
-                                                                        <td v-else class="align-middle">{{user.role}}</td>
+                                                                        <td v-if="isRtl" class="align-middle">
+                                                                            {{user.roleFa}}</td>
+                                                                        <td v-else class="align-middle">{{user.role}}
+                                                                        </td>
                                                                         <td class="align-middle">
                                                                             <span class="fa-stack fa-lg">
-                                                                                <i class="fa fa-user fa-lg" :style="user.icon"></i>
+                                                                                <i class="fa fa-user fa-lg"
+                                                                                    :style="user.icon"></i>
                                                                             </span>
                                                                         </td>
                                                                     </tr>
@@ -248,7 +270,7 @@
                                                             <div v-if="userList.length == 0" class="emptyList">
                                                                 <div>
                                                                     <i class="fa fa-signing fa-2x"></i>
-                                                                </div> 
+                                                                </div>
                                                                 <div>
                                                                     <span>{{userNotFoundText}}</span>
                                                                 </div>
@@ -268,19 +290,26 @@
                                                                 <th style="border: none;"></th>
                                                             </tr>
                                                             <tbody id="body">
-                                                                <tr v-for="user in usersListResult" :style="user.checked ? 'background: #c2dbff;' : 'background: ;'" v-bind:key="user.userId">
+                                                                <tr v-for="user in usersListResult"
+                                                                    :style="user.checked ? 'background: #c2dbff;' : 'background: ;'"
+                                                                    v-bind:key="user.userId">
                                                                     <td class="align-middle">
                                                                         <label class="checkboxclass mb-3">
-                                                                            <input type="checkbox" :checked="user.checked" @click="preventCheckbox">
-                                                                            <span v-on:click="selectUser(user)" class="checkmark"></span>
-                                                                        </label>                                                                      
+                                                                            <input type="checkbox"
+                                                                                :checked="user.checked"
+                                                                                @click="preventCheckbox">
+                                                                            <span v-on:click="selectUser(user)"
+                                                                                class="checkmark"></span>
+                                                                        </label>
                                                                     </td>
                                                                     <td class="align-middle">{{user.userId}}</td>
-                                                                    <td v-if="isRtl" class="align-middle">{{user.roleFa}}</td>
+                                                                    <td v-if="isRtl" class="align-middle">
+                                                                        {{user.roleFa}}</td>
                                                                     <td v-else class="align-middle">{{user.role}}</td>
                                                                     <td class="align-middle">
                                                                         <span class="fa-stack fa-lg">
-                                                                            <i class="fa fa-user fa-lg" :style="user.icon"></i>
+                                                                            <i class="fa fa-user fa-lg"
+                                                                                :style="user.icon"></i>
                                                                         </span>
                                                                     </td>
                                                                 </tr>
@@ -289,7 +318,7 @@
                                                         <div v-if="usersListResult.length == 0" class="emptyList">
                                                             <div>
                                                                 <i class="fa fa-signing fa-2x"></i>
-                                                            </div> 
+                                                            </div>
                                                             <div>
                                                                 <span>{{userNotFoundText}}</span>
                                                             </div>
@@ -308,13 +337,17 @@
             <footer class="mb-3 mt-4">
                 <div class="container">
                     <div class="d-flex justify-content-center">
-                        <a href="#" class="btn btn-link" style="text-decoration: none;" target="_blank">{{rulesText}}</a>
-                        <a v-bind:href="privacyURLText" class="btn btn-link" style="text-decoration: none;" target="_blank">{{privacyText}}</a>
-                        <a href="public/Parsso-User-Guide.pdf" class="btn btn-link" style="text-decoration: none;" target="_blank">{{guideText}}</a>
+                        <a href="#" class="btn btn-link" style="text-decoration: none;"
+                            target="_blank">{{rulesText}}</a>
+                        <a v-bind:href="privacyURLText" class="btn btn-link" style="text-decoration: none;"
+                            target="_blank">{{privacyText}}</a>
+                        <a href="public/Parsso-User-Guide.pdf" class="btn btn-link" style="text-decoration: none;"
+                            target="_blank">{{guideText}}</a>
                     </div>
                 </div>
             </footer>
         </div>
     </div>
 </body>
+
 </html>

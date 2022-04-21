@@ -12,10 +12,10 @@ document.addEventListener('DOMContentLoaded', function () {
             dateNavEn: "",
             dateNavText: "",
             rules: [
-                { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. "},
-                { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. "},
-				{ message:"حداقل ۸ کاراکتر باشد. "},
-				{ message:"حداقل شامل یک عدد باشد. "}
+                { message: "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. " },
+                { message: "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. " },
+                { message: "حداقل ۸ کاراکتر باشد. " },
+                { message: "حداقل شامل یک عدد باشد. " }
             ],
             show: false,
             showR: false,
@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
             has_char: false,
             password: "",
             checkPassword: "",
-			passwordVisible: true,
+            passwordVisible: true,
             submitted: false,
-            btnDisable : true,
+            btnDisable: true,
             userInfo: [],
             email: "",
             username: "",
@@ -154,9 +154,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.getUserInfo();
             this.getUserPic();
             this.getQR();
-            if(window.localStorage.getItem("lang") === null){
+            if (window.localStorage.getItem("lang") === null) {
                 window.localStorage.setItem("lang", "FA");
-            }else if(window.localStorage.getItem("lang") === "EN") {
+            } else if (window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
@@ -171,16 +171,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.dateNavText = this.dateNav;
             },
             dropdownNavbar: function () {
-                if(this.dropdownMenu){
+                if (this.dropdownMenu) {
                     let dropdowns = document.getElementsByClassName("dropdown-content");
                     for (let i = 0; i < dropdowns.length; ++i) {
                         let openDropdown = dropdowns[i];
-                        if(openDropdown.classList.contains("show")) {
+                        if (openDropdown.classList.contains("show")) {
                             openDropdown.classList.remove("show");
                         }
                     }
                     this.dropdownMenu = false;
-                }else{
+                } else {
                     document.getElementById("dropdownMenu").classList.toggle("show");
                     this.dropdownMenu = true;
                 }
@@ -210,12 +210,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 copyText.select();
                 document.execCommand("copy");
                 document.getElementById("copyMeetingLinkBtn").disabled = true;
-                setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+                setTimeout(function () { document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
             },
-            isActive (menuItem) {
+            isActive(menuItem) {
                 return this.activeItem === menuItem
             },
-            setActive (menuItem) {
+            setActive(menuItem) {
                 this.activeItem = menuItem
             },
             backDashboard: function () {
@@ -230,12 +230,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         vm.username = res.data.userId;
                         vm.name = res.data.displayName;
                         vm.nameEN = res.data.firstName + " " + res.data.lastName;
-                        if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+                        if (window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA") {
                             vm.s1 = vm.name;
-                        }else if(window.localStorage.getItem("lang") === "EN") {
+                        } else if (window.localStorage.getItem("lang") === "EN") {
                             vm.s1 = vm.nameEN;
                         }
-                        if(res.data.profileInaccessibility){
+                        if (res.data.profileInaccessibility) {
                             document.getElementById("userInfo.firstNameUpdate").readOnly = true;
                             document.getElementById("userInfo.lastNameUpdate").readOnly = true;
                             document.getElementById("userInfo.displayNameUpdate").readOnly = true;
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             document.getElementById("editButton").style = "display: none;";
                             vm.U17 = "اطلاعات کاربری";
                         }
-                        if(res.data.skyroomAccess){
+                        if (res.data.skyroomAccess) {
                             vm.showMeeting = true;
                         }
                     });
@@ -256,9 +256,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 let vm = this;
                 axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                        if(res.data == "Problem" || res.data == "NotExist"){
+                        if (res.data == "Problem" || res.data == "NotExist") {
                             vm.userPicture = "images/PlaceholderUser.png";
-                        }else{
+                        } else {
                             vm.userPicture = "/api/user/photo";
                         }
                     })
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (error.response) {
                             if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                                 vm.userPicture = "images/PlaceholderUser.png";
-                            }else{
+                            } else {
                                 vm.userPicture = "/api/user/photo";
                             }
                         }
@@ -276,36 +276,36 @@ document.addEventListener('DOMContentLoaded', function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 this.profilePictureChangeLoader = true;
-                if(action === "edit"){
+                if (action === "edit") {
                     let bodyFormData = new FormData();
                     bodyFormData.append("file", document.getElementById("editProfilePicture").files[0]);
                     axios({
                         method: "post",
                         url: url + "/api/user/photo",
-                        headers: {"Content-Type": "multipart/form-data"},
+                        headers: { "Content-Type": "multipart/form-data" },
                         data: bodyFormData
                     }).then((res) => {
                         vm.profilePictureChangeLoader = false;
                         vm.getUserPic();
-                        if(res.data.data){
+                        if (res.data.data) {
                             alert(vm.profilePictureChangedSuccessfully);
-                        }else{
+                        } else {
                             alert(vm.profilePictureChangeUnsuccessful);
                         }
                     }).catch((error) => {
                         vm.profilePictureChangeLoader = false;
                         alert(vm.profilePictureChangeUnsuccessful);
                     });
-                }else if(action === "delete"){
+                } else if (action === "delete") {
                     axios({
                         method: "delete",
                         url: url + "/api/user/photo"
                     }).then((res) => {
                         vm.profilePictureChangeLoader = false;
                         vm.getUserPic();
-                        if(res.data.data){
+                        if (res.data.data) {
                             alert(vm.profilePictureDeletedSuccessfully);
-                        }else{
+                        } else {
                             alert(vm.profilePictureDeleteUnsuccessful);
                         }
                     }).catch((error) => {
@@ -324,21 +324,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 const mobileRegex = /^09\d{9}$/;
 
-                if(document.getElementById("userInfo.displayNameUpdate").value == "" ||
-                document.getElementById("userInfo.mobileUpdate").value == "" ||
-                document.getElementById("userInfo.mailUpdate").value == ""){
+                if (document.getElementById("userInfo.displayNameUpdate").value == "" ||
+                    document.getElementById("userInfo.mobileUpdate").value == "" ||
+                    document.getElementById("userInfo.mailUpdate").value == "") {
                     alert("لطفا قسمت های الزامی را پر کنید.");
-                }else if(!emailRegex.test(document.getElementById("userInfo.mailUpdate").value)){
+                } else if (!emailRegex.test(document.getElementById("userInfo.mailUpdate").value)) {
                     alert(this.emailFormatErrorText);
-                }else if(!mobileRegex.test(document.getElementById("userInfo.mobileUpdate").value)){
+                } else if (!mobileRegex.test(document.getElementById("userInfo.mobileUpdate").value)) {
                     alert(this.mobileFormatErrorText);
-                }else{
+                } else {
                     var check = confirm(this.s24);
                     if (check == true) {
                         axios({
                             method: 'put',
                             url: url + '/api/user',   //
-                            headers: {'Content-Type': 'application/json'},
+                            headers: { 'Content-Type': 'application/json' },
                             data: JSON.stringify({
                                 firstName: document.getElementById('userInfo.firstNameUpdate').value,
                                 lastName: document.getElementById('userInfo.lastNameUpdate').value,
@@ -357,13 +357,13 @@ document.addEventListener('DOMContentLoaded', function () {
             editPass: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
-                if(document.getElementById("token").value !== ""){
+                if (document.getElementById("token").value !== "") {
                     let check = confirm(this.s24);
                     if (check === true) {
                         axios({
                             method: "put",
                             url: url + "/api/user/password",   //
-                            headers: {"Content-Type": "application/json"},
+                            headers: { "Content-Type": "application/json" },
                             data: JSON.stringify({
                                 newPassword: document.getElementById("newPassword").value,
                                 currentPassword: "dummyPassword",
@@ -372,33 +372,33 @@ document.addEventListener('DOMContentLoaded', function () {
                         }).then((res) => {
                             location.replace(url + "/profile"); //
                         }).catch((error) => {
-                            if(error.response) {
-                                if(error.response.status === 302) {
+                            if (error.response) {
+                                if (error.response.status === 302) {
                                     vm.duplicatePasswords = true;
-                                    setTimeout(function(){ vm.duplicatePasswords = false; }, 5000);
-                                }else if(error.response.status === 403) {
+                                    setTimeout(function () { vm.duplicatePasswords = false; }, 5000);
+                                } else if (error.response.status === 403) {
                                     vm.incorrectPassword = true;
-                                    setTimeout(function(){ vm.incorrectPassword = false; }, 5000);
-                                }else if(error.response.status === 405) {
+                                    setTimeout(function () { vm.incorrectPassword = false; }, 5000);
+                                } else if (error.response.status === 405) {
                                     vm.incorrectToken = true;
-                                    setTimeout(function(){ vm.incorrectToken = false; }, 5000);
+                                    setTimeout(function () { vm.incorrectToken = false; }, 5000);
                                 }
                             }
                         });
                     }
-                }else{
+                } else {
                     alert(this.s36);
                 }
             },
-            passwordCheck () {
-                this.has_number    = /[0-9]+/.test(this.password);
+            passwordCheck() {
+                this.has_number = /[0-9]+/.test(this.password);
                 this.has_lowerUPPERcase = /[a-zA-Z]/.test(this.password);
                 this.has_specialchar = /[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password);
-                this.has_char   = /.{8,}/.test(this.password);
+                this.has_char = /.{8,}/.test(this.password);
             },
-            persianTextCheck (s) {
+            persianTextCheck(s) {
                 for (let i = 0; i < s.length; ++i) {
-                    if(persianRex.text.test(s.charAt(i))){
+                    if (persianRex.text.test(s.charAt(i))) {
                         return true;
                     }
                 }
@@ -407,32 +407,32 @@ document.addEventListener('DOMContentLoaded', function () {
             sendToken: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
-                if(this.userInfo.mobile == "" || this.userInfo.mobile == null){
+                if (this.userInfo.mobile == "" || this.userInfo.mobile == null) {
                     this.requestSentFail = true;
                     this.requestSentSuccess = false;
-                }else{
+                } else {
                     this.requestSentFail = false;
                     this.requestSentSuccess = true;
                     axios.get(url + "/api/user/password/request") //
                         .then((res) => {
                             vm.setCountdown(res.data * 60);
                             document.getElementById("countdownBtn").disabled = true;
-                            setTimeout(function(){ vm.requestSentSuccess = false; }, 5000);
+                            setTimeout(function () { vm.requestSentSuccess = false; }, 5000);
                         });
                 }
-                
+
             },
             setCountdown: function (duration) {
                 var timer = duration, minutes, seconds;
                 var cd = setInterval(function () {
                     minutes = parseInt(timer / 60, 10)
                     seconds = parseInt(timer % 60, 10);
-            
+
                     minutes = minutes < 10 ? "0" + minutes : minutes;
                     seconds = seconds < 10 ? "0" + seconds : seconds;
-            
+
                     document.querySelector("#countdown").textContent = " (" + minutes + ":" + seconds + ") ";
-            
+
                     if (--timer < 0) {
                         clearInterval(cd);
                         document.querySelector("#countdown").textContent = "";
@@ -440,35 +440,35 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }, 1000);
             },
-            persianInputCharCheck ($event) {
-                if($event.type == "keypress"){
+            persianInputCharCheck($event) {
+                if ($event.type == "keypress") {
                     let key = ($event.key ? $event.key : $event.which);
                     let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
-                    if(keyCode < 48 || 57 < keyCode){
-                        if(32 < keyCode && keyCode < 65){
+                    if (keyCode < 48 || 57 < keyCode) {
+                        if (32 < keyCode && keyCode < 65) {
                             $event.preventDefault();
-                        }else if(90 < keyCode && keyCode < 97){
+                        } else if (90 < keyCode && keyCode < 97) {
                             $event.preventDefault();
-                        }else if(122 < keyCode && keyCode < 127){
+                        } else if (122 < keyCode && keyCode < 127) {
                             $event.preventDefault();
-                        }else if(!persianRex.text.test(key)){
+                        } else if (!persianRex.text.test(key)) {
                             $event.preventDefault();
                         }
                     }
-                }else if ($event.type == "paste"){
+                } else if ($event.type == "paste") {
                     let text = $event.clipboardData.getData("text");
-                    for(let i = 0; i < text.length; ++i){
-                        if(text[i].charCodeAt(0) < 48 || 57 < text[i].charCodeAt(0)){
-                            if(32 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 65){
+                    for (let i = 0; i < text.length; ++i) {
+                        if (text[i].charCodeAt(0) < 48 || 57 < text[i].charCodeAt(0)) {
+                            if (32 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 65) {
                                 $event.preventDefault();
                                 break;
-                            }else if(90 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 97){
+                            } else if (90 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 97) {
                                 $event.preventDefault();
                                 break;
-                            }else if(122 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 127){
+                            } else if (122 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 127) {
                                 $event.preventDefault();
                                 break;
-                            }else if(!persianRex.text.test(text[i])){
+                            } else if (!persianRex.text.test(text[i])) {
                                 $event.preventDefault();
                                 break;
                             }
@@ -476,26 +476,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             },
-            englishInputCharCheck ($event) {
-                if($event.type == "keypress"){
+            englishInputCharCheck($event) {
+                if ($event.type == "keypress") {
                     let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
                     if (keyCode < 48 || 122 < keyCode) {
                         $event.preventDefault();
-                    }else if (57 < keyCode  && keyCode < 65) {
+                    } else if (57 < keyCode && keyCode < 65) {
                         $event.preventDefault();
-                    }else if (90 < keyCode  && keyCode < 97) {
+                    } else if (90 < keyCode && keyCode < 97) {
                         $event.preventDefault();
                     }
-                }else if ($event.type == "paste"){
+                } else if ($event.type == "paste") {
                     let text = $event.clipboardData.getData("text");
-                    for(let i = 0; i < text.length; ++i){
+                    for (let i = 0; i < text.length; ++i) {
                         if (text[i].charCodeAt(0) < 48 || 122 < text[i].charCodeAt(0)) {
                             $event.preventDefault();
                             break;
-                        }else if (57 < text[i].charCodeAt(0)  && text[i].charCodeAt(0) < 65) {
+                        } else if (57 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 65) {
                             $event.preventDefault();
                             break;
-                        }else if (90 < text[i].charCodeAt(0)  && text[i].charCodeAt(0) < 97) {
+                        } else if (90 < text[i].charCodeAt(0) && text[i].charCodeAt(0) < 97) {
                             $event.preventDefault();
                             break;
                         }
@@ -503,7 +503,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             changeLang: function () {
-                if(this.lang == "EN"){
+                if (this.lang == "EN") {
                     window.localStorage.setItem("lang", "EN");
                     this.placeholder = "text-align: left;";
                     this.margin = "margin-left: 30px;";
@@ -584,9 +584,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.U12 = "Add New User";
                     this.U13 = "Edit";
                     this.U16 = "Edit Password";
-                    if(this.userInfo.profileInaccessibility){
+                    if (this.userInfo.profileInaccessibility) {
                         this.U17 = "User Information";
-                    }else {
+                    } else {
                         this.U17 = "Edit User Information";
                     }
                     this.U18 = "Employee Number";
@@ -594,7 +594,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rules[1].message = "- One special Character or Persian Letter Required.";
                     this.rules[2].message = "- 8 Characters Minimum.";
                     this.rules[3].message = "- One Number Required.";
-                }else {
+                } else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
                     this.margin = "margin-right: 30px;";
@@ -660,24 +660,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.profilePictureDeletedSuccessfully = "عکس پروفایل با موفقیت حذف شد.";
                     this.profilePictureChangeUnsuccessful = "تغییر عکس پروفایل ناموفق بود.";
                     this.profilePictureDeleteUnsuccessful = "عکس پروفایلی از پیش وجود ندارد.";
-                    this.U0= "رمز عبور";
-                    this.U1= "کاربران";
-                    this.U2= "شناسه";
-                    this.U3= "نام (به انگلیسی)";
-                    this.U4= "نام خانوادگی (به انگلیسی)";
-                    this.U5= "نام کامل (به فارسی)";
-                    this.U6= "شماره تماس";
-                    this.U7= "ایمیل";
-                    this.U8= "کد ملی";
-                    this.U9= "توضیحات";
+                    this.U0 = "رمز عبور";
+                    this.U1 = "کاربران";
+                    this.U2 = "شناسه";
+                    this.U3 = "نام (به انگلیسی)";
+                    this.U4 = "نام خانوادگی (به انگلیسی)";
+                    this.U5 = "نام کامل (به فارسی)";
+                    this.U6 = "شماره تماس";
+                    this.U7 = "ایمیل";
+                    this.U8 = "کد ملی";
+                    this.U9 = "توضیحات";
                     this.U10 = "به روز رسانی";
                     this.U11 = "حذف"
                     this.U12 = "اضافه کردن کاربر جدید";
                     this.U13 = "ویرایش";
                     this.U16 = "تغییر رمز عبور";
-                    if(this.userInfo.profileInaccessibility){
+                    if (this.userInfo.profileInaccessibility) {
                         this.U17 = "اطلاعات کاربری";
-                    }else {
+                    } else {
                         this.U17 = "تغییر اطلاعات کاربری";
                     }
                     this.U18 = "کد پرسنلی";
@@ -689,48 +689,48 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         computed: {
-            notSamePasswords: function() {
+            notSamePasswords: function () {
                 return this.password !== this.checkPassword;
             },
-            isActiveUserPassUpdate: function() {
-                if(this.password !== "" && this.checkPassword !== ""){
-                    if(/[0-9]+/.test(this.password)){
-                        if(/[a-zA-Z]/.test(this.password)){
+            isActiveUserPassUpdate: function () {
+                if (this.password !== "" && this.checkPassword !== "") {
+                    if (/[0-9]+/.test(this.password)) {
+                        if (/[a-zA-Z]/.test(this.password)) {
                             /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){*/
-                                if(/.{8,}/.test(this.password)){
-                                    if(this.password === this.checkPassword){
-                                        return false
-                                    }else{
-                                        return true
-                                    }
-                                }else{
+                            if (/.{8,}/.test(this.password)) {
+                                if (this.password === this.checkPassword) {
+                                    return false
+                                } else {
                                     return true
                                 }
+                            } else {
+                                return true
+                            }
                             /*}else{
                                 return true
                             }*/
-                        }else{
+                        } else {
                             return true
                         }
-                    }else{
+                    } else {
                         return true
                     }
-                }else{
+                } else {
                     return true
                 }
             },
-            strengthLevel: function() {
+            strengthLevel: function () {
                 let checks = 0;
-                if(/[0-9]+/.test(this.password)){
+                if (/[0-9]+/.test(this.password)) {
                     checks += 1;
                 }
-                if(/[a-zA-Z]/.test(this.password)){
+                if (/[a-zA-Z]/.test(this.password)) {
                     checks += 1;
                 }
                 /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
                     checks += 1;
                 }*/
-                if(/.{8,}/.test(this.password)){
+                if (/.{8,}/.test(this.password)) {
                     checks += 1;
                 }
                 return checks;

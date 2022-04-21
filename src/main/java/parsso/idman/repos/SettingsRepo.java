@@ -1,27 +1,28 @@
 package parsso.idman.repos;
 
 import org.springframework.http.HttpStatus;
+
+import parsso.idman.impls.settings.settings.subclasses.BackupSettings.Backup;
 import parsso.idman.models.other.Property;
 import parsso.idman.models.other.Setting;
-import parsso.idman.repoImpls.settings.settings.subclasses.BackupSettings.Backup;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface SettingsRepo {
-    List<Setting> retrieve();
+  List<Setting> retrieve();
 
-    List<Setting> retrieveALL();
+  List<Setting> retrieveALL();
 
-    HttpStatus update(String doer, List<Property> properties);
+  HttpStatus update(String doer, List<Property> properties);
 
-    HttpStatus backup(String doerID);
+  HttpStatus backup(String doerID);
 
-    Object retrieveProperties(long id) ;
+  Object retrieveProperties(long id);
 
-    HttpStatus reset(String doerID) throws IOException;
+  HttpStatus reset(String doerID) throws IOException;
 
-    HttpStatus restore(String name, String id);
+  HttpStatus restore(String name, String id);
 
-    List<Backup> listBackups(String lang);
+  List<Backup> listBackups(String lang);
 }

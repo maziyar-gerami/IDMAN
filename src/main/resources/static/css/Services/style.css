@@ -1,42 +1,58 @@
-html,body {
+html,
+body {
   height: 100%;
   background-color: #ffffff;
 }
+
 body {
   background-image: url("../../images/pixle-background.jpg");
   background-repeat: repeat-x;
   font-family: IRANSans;
 }
-a, a:hover {
+
+a,
+a:hover {
   text-decoration: none;
 }
-button,.btn {
+
+button,
+.btn {
   border-radius: 2rem;
 }
+
 textarea {
   border-radius: 2rem;
 }
-input,.form-control {
+
+input,
+.form-control {
   border-radius: 2rem;
 }
-.table td,.table th{
+
+.table td,
+.table th {
   padding: .5rem;
 }
+
 .rtl {
   direction: rtl;
   text-align: right;
 }
+
 #btn {
   color: rgba(255, 255, 255, 0.5);
 }
+
 .avatar {
   width: 100%;
   border-radius: 50%;
 }
+
 #langbtn {
   color: white;
   text-decoration: none;
 }
+
 .userpic {
   float: none;
   width: 50%;
@@ -46,6 +62,7 @@ input,.form-control {
   border: 1px solid #95a5a6;
   border-radius: 50% !important;
 }
+
 .userpic a {
   top: 0;
   right: 0;
@@ -57,16 +74,19 @@ input,.form-control {
   position: absolute;
   -webkit-transition: opacity .3s;
   transition: opacity .3s;
-  background: rgba(0,0,0,.5);
+  background: rgba(0, 0, 0, .5);
 }
+
 img:hover {
   background: rgba(255, 255, 255, 1);
 }
+
 .userpic table {
   width: 100%;
   height: 100%;
   text-align: center;
 }
+
 .dropbtn {
   background-color: #007bff;
   color: white;
@@ -75,47 +95,58 @@ img:hover {
   border: none;
   cursor: pointer;
 }
+
 #btn:hover {
   color: rgba(255, 255, 255, 1);
 }
+
 .dropdown {
   position: relative;
   display: inline-block;
 }
+
 .dropdown-content {
   display: none;
   position: absolute;
   background-color: #f1f1f1;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   margin: 7px 0 0;
   border-radius: .25rem;
   left: 0;
   right: auto;
 }
+
 .dropdown-content a {
   color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
 }
+
 .dropdown-content a:hover {
   background-color: #ddd;
   border-radius: .25rem;
 }
-.show {display:block;}
+
+.show {
+  display: block;
+}
+
 .switch {
   position: relative;
   display: inline-block;
   width: 40px;
   height: 24px;
 }
+
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
+
 .slider {
   position: absolute;
   cursor: pointer;
@@ -127,6 +158,7 @@ img:hover {
   -webkit-transition: .4s;
   transition: .4s;
 }
+
 .slider:before {
   position: absolute;
   content: "";
@@ -138,23 +170,29 @@ img:hover {
   -webkit-transition: .4s;
   transition: .4s;
 }
-input:checked + .slider {
+
+input:checked+.slider {
   background-color: #2196F3;
 }
-input:focus + .slider {
+
+input:focus+.slider {
   box-shadow: 0 0 1px #2196F3;
 }
-input:checked + .slider:before {
+
+input:checked+.slider:before {
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
   transform: translateX(16px);
 }
+
 .slider.round {
   border-radius: 34px;
 }
+
 .slider.round:before {
   border-radius: 50%;
 }
+
 .enInput {
   text-align: left;
   direction: ltr;
@@ -192,11 +230,11 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-.checkboxclass:hover input ~ .checkmark {
+.checkboxclass:hover input~.checkmark {
   background-color: rgb(97, 97, 97);
 }
 
-.checkboxclass input:checked ~ .checkmark {
+.checkboxclass input:checked~.checkmark {
   background-color: #2196F3;
 }
 
@@ -206,7 +244,7 @@ input:checked + .slider:before {
   display: none;
 }
 
-.checkboxclass input:checked ~ .checkmark:after {
+.checkboxclass input:checked~.checkmark:after {
   display: block;
 }
 
@@ -223,16 +261,19 @@ input:checked + .slider:before {
 }
 
 @media only screen and (min-width: 776px) {
-  .mobileView{
+  .mobileView {
     display: none;
   }
-  .desktopView{
+
+  .desktopView {
     display: "";
   }
-  .tableList{
+
+  .tableList {
     display: inline-table;
   }
-  #overlayContent{
+
+  #overlayContent {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -240,8 +281,8 @@ input:checked + .slider:before {
     height: 50%;
     color: black;
     background-color: rgb(255, 255, 255);
-    transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
     border-radius: 5px;
     z-index: 11;
     padding: 20px;
@@ -249,16 +290,19 @@ input:checked + .slider:before {
 }
 
 @media only screen and (max-width: 775px) {
-  .mobileView{
+  .mobileView {
     display: "";
   }
-  .desktopView{
+
+  .desktopView {
     display: none;
   }
-  .tableList{
+
+  .tableList {
     display: block;
   }
-  #overlayContent{
+
+  #overlayContent {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -266,8 +310,8 @@ input:checked + .slider:before {
     height: 60%;
     color: black;
     background-color: rgb(255, 255, 255);
-    transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
     border-radius: 5px;
     z-index: 11;
     padding: 20px;
@@ -295,22 +339,22 @@ input:checked + .slider:before {
   cursor: pointer;
 }
 
-.table-wrapper{
+.table-wrapper {
   overflow-y: auto;
   height: 70vh;
 }
 
-.emptyList{
+.emptyList {
   color: #856404;
   background-color: #ffeeba;
   text-align: center !important;
   border-top-left-radius: .25rem;
   border-top-right-radius: .25rem;
   padding: .75rem 1.25rem;
-  border: 1px solid rgba(0,0,0,.125);
+  border: 1px solid rgba(0, 0, 0, .125);
 }
 
-#overlay{
+#overlay {
   position: fixed;
   display: none;
   width: 100%;
@@ -319,17 +363,17 @@ input:checked + .slider:before {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 20;
 }
 
-#overlayBody{
+#overlayBody {
   display: none;
   height: 90%;
   overflow: auto;
 }
 
-#closeOverlay{
+#closeOverlay {
   position: absolute;
   bottom: 20px;
   width: 100px;
@@ -346,6 +390,7 @@ input:checked + .slider:before {
 .dropdown-checkbox {
   position: relative;
 }
+
 .dropdown-checkbox .dropdown-checkbox-list {
   padding: 12px;
   background: #fff;
@@ -361,6 +406,7 @@ input:checked + .slider:before {
   overflow-y: auto;
   z-index: 4;
 }
+
 .dropdown-checkbox .dropdown-checkbox-option {
   display: block;
   padding: 8px 12px;
@@ -368,6 +414,7 @@ input:checked + .slider:before {
   transition: opacity 0.15s ease-in-out;
   cursor: pointer;
 }
+
 .dropdown-checkbox .dropdown-checkbox-label {
   display: block;
   height: 30px;
@@ -376,28 +423,35 @@ input:checked + .slider:before {
   line-height: .7;
   cursor: pointer;
 }
+
 .dropdown-checkbox .bg:hover {
   background-color: #eaeaea;
 }
+
 .dropdown-checkbox .dropdown-checkbox-label:before {
   content: "▼";
   float: left;
 }
+
 .dropdown-checkbox.on .dropdown-checkbox-list {
   transform: scale(1, 1);
   transition-delay: 0s;
 }
+
 .dropdown-checkbox.on .dropdown-checkbox-list .dropdown-checkbox-option {
   opacity: 1;
   transition-delay: 0.2s;
 }
+
 .dropdown-checkbox.on .dropdown-checkbox-label:before {
   content: "▲";
 }
+
 .dropdown-checkbox [type="checkbox"] {
   position: relative;
   top: -1px;
   margin-right: 4px;
   margin-left: 8px;
 }
+
 /* ------------------------------------------------------------- */

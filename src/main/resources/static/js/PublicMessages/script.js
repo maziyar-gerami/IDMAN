@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 li: 'page-item',
                 liActive: 'active',
                 liDisable: 'disabled',
-                button: 'page-link'  
+                button: 'page-link'
             },
             paginationAnchorTexts: {
                 first: '<<',
@@ -130,9 +130,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.getUserInfo();
             this.getUserPic();
             this.getPubMsgs();
-            if(window.localStorage.getItem("lang") === null){
+            if (window.localStorage.getItem("lang") === null) {
                 window.localStorage.setItem("lang", "FA");
-            }else if(window.localStorage.getItem("lang") === "EN") {
+            } else if (window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
@@ -147,16 +147,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.dateNavText = this.dateNav;
             },
             dropdownNavbar: function () {
-                if(this.dropdownMenu){
+                if (this.dropdownMenu) {
                     let dropdowns = document.getElementsByClassName("dropdown-content");
                     for (let i = 0; i < dropdowns.length; ++i) {
                         let openDropdown = dropdowns[i];
-                        if(openDropdown.classList.contains("show")) {
+                        if (openDropdown.classList.contains("show")) {
                             openDropdown.classList.remove("show");
                         }
                     }
                     this.dropdownMenu = false;
-                }else{
+                } else {
                     document.getElementById("dropdownMenu").classList.toggle("show");
                     this.dropdownMenu = true;
                 }
@@ -186,28 +186,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 copyText.select();
                 document.execCommand("copy");
                 document.getElementById("copyMeetingLinkBtn").disabled = true;
-                setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+                setTimeout(function () { document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
             },
-            allSelected () {
-                if(this.allIsSelected){
+            allSelected() {
+                if (this.allIsSelected) {
                     this.allIsSelected = false;
-                    for(let i = 0; i < this.pubmsgs.length; ++i){
-                        if(document.getElementById("checkbox-" + this.pubmsgs[i].messageId).checked == true){
+                    for (let i = 0; i < this.pubmsgs.length; ++i) {
+                        if (document.getElementById("checkbox-" + this.pubmsgs[i].messageId).checked == true) {
                             document.getElementById("checkbox-" + this.pubmsgs[i].messageId).click();
                         }
                         document.getElementById("row-" + this.pubmsgs[i].messageId).style.background = "";
                     }
-                }else{
+                } else {
                     this.allIsSelected = true;
-                    for(let i = 0; i < this.pubmsgs.length; ++i){
-                        if(document.getElementById("checkbox-" + this.pubmsgs[i].messageId).checked == false){
+                    for (let i = 0; i < this.pubmsgs.length; ++i) {
+                        if (document.getElementById("checkbox-" + this.pubmsgs[i].messageId).checked == false) {
                             document.getElementById("checkbox-" + this.pubmsgs[i].messageId).click();
                         }
                         document.getElementById("row-" + this.pubmsgs[i].messageId).style.background = "#c2dbff";
                     }
                 }
             },
-            changeRecords: function(event) {
+            changeRecords: function (event) {
                 this.recordsShownOnPage = event.target.value;
                 this.getPubMsgs();
             },
@@ -215,28 +215,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 axios.get(url + "/api/user") //
-                .then((res) => {
-                    vm.username = res.data.userId;
-                    vm.name = res.data.displayName;
-                    vm.nameEN = res.data.firstName + " " + res.data.lastName;
-                    if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
-                        vm.s1 = vm.name;
-                    }else if(window.localStorage.getItem("lang") === "EN") {
-                        vm.s1 = vm.nameEN;
-                    }
-                    if(res.data.skyroomAccess){
-                        vm.showMeeting = true;
-                    }
-                });
+                    .then((res) => {
+                        vm.username = res.data.userId;
+                        vm.name = res.data.displayName;
+                        vm.nameEN = res.data.firstName + " " + res.data.lastName;
+                        if (window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA") {
+                            vm.s1 = vm.name;
+                        } else if (window.localStorage.getItem("lang") === "EN") {
+                            vm.s1 = vm.nameEN;
+                        }
+                        if (res.data.skyroomAccess) {
+                            vm.showMeeting = true;
+                        }
+                    });
             },
             getUserPic: function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                        if(res.data == "Problem" || res.data == "NotExist"){
+                        if (res.data == "Problem" || res.data == "NotExist") {
                             vm.userPicture = "images/PlaceholderUser.png";
-                        }else{
+                        } else {
                             vm.userPicture = "/api/user/photo";
                         }
                     })
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (error.response) {
                             if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                                 vm.userPicture = "images/PlaceholderUser.png";
-                            }else{
+                            } else {
                                 vm.userPicture = "/api/user/photo";
                             }
                         }
@@ -256,12 +256,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.isListEmpty = false;
                 axios.get(url + "/api/users/publicMessages") //
                     .then((res) => {
-                        if(res.data.length == 0){
+                        if (res.data.length == 0) {
                             vm.isListEmpty = true;
                         }
                         vm.pubmsgs = res.data.slice().reverse();
-                        for(let i = 0; i < vm.pubmsgs.length; ++i){
-                            vm.pubmsgs[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
+                        for (let i = 0; i < vm.pubmsgs.length; ++i) {
+                            vm.pubmsgs[i].orderOfRecords = ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
                         }
                         vm.total = Math.ceil(vm.pubmsgs.length / vm.recordsShownOnPage);
                     });
@@ -280,9 +280,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 axios.get(url + "/api/users/publicMessages?id=" + id) //
                     .then((res) => {
                         vm.pubmsg = res.data[0];
-                        if(res.data[0].visible){
+                        if (res.data[0].visible) {
                             document.getElementById("pubmsg.edit.visible").checked = true;
-                        }else {
+                        } else {
                             document.getElementById("pubmsg.edit.visible").checked = false;
                         }
                         vm.pubmsgEditBody = res.data[0].body;
@@ -292,20 +292,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 let isVisible = true;
-                if(document.getElementById("pubmsg.edit.title").value == ""){
+                if (document.getElementById("pubmsg.edit.title").value == "") {
                     alert("لطفا قسمت های الزامی را پر کنید.");
-                }else{
+                } else {
                     var check = confirm(this.s23);
                     if (check == true) {
-                        if(document.getElementById("pubmsg.edit.visible").checked) {
+                        if (document.getElementById("pubmsg.edit.visible").checked) {
                             isVisible = true;
-                        }else {
+                        } else {
                             isVisible = false;
                         }
                         axios({
                             method: "put",
                             url: url + "/api/users/publicMessage", //
-                            headers: {"Content-Type": "application/json"},
+                            headers: { "Content-Type": "application/json" },
                             data: JSON.stringify({
                                 messageId: vm.pubmsg.messageId,
                                 title: document.getElementById("pubmsg.edit.title").value,
@@ -313,11 +313,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                 body: vm.pubmsgEditBody,
                             }).replace(/\\\\/g, "\\")
                         })
-                        .then((res) => {
-                            location.reload();
-                        }).catch((error) => {
-                            alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
-                        });
+                            .then((res) => {
+                                location.reload();
+                            }).catch((error) => {
+                                alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
+                            });
                     }
                 }
             },
@@ -330,29 +330,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 let isVisible = true;
-                if(document.getElementById("pubmsg.create.title").value == ""){
+                if (document.getElementById("pubmsg.create.title").value == "") {
                     alert("لطفا قسمت های الزامی را پر کنید.");
-                }else{
-                    if(document.getElementById("pubmsg.create.visible").checked) {
+                } else {
+                    if (document.getElementById("pubmsg.create.visible").checked) {
                         isVisible = true;
-                    }else {
+                    } else {
                         isVisible = false;
                     }
                     axios({
                         method: "post",
                         url: url + "/api/users/publicMessage", //
-                        headers: {"Content-Type": "application/json"},
+                        headers: { "Content-Type": "application/json" },
                         data: JSON.stringify({
                             title: document.getElementById("pubmsg.create.title").value,
                             visible: isVisible,
                             body: vm.pubmsgCreateBody,
                         }).replace(/\\\\/g, "\\")
                     })
-                    .then((res) => {
-                        location.reload();
-                    }).catch((error) => {
-                        alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
-                    });
+                        .then((res) => {
+                            location.reload();
+                        }).catch((error) => {
+                            alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
+                        });
                 }
             },
             deletePubMsg: function (id) {
@@ -365,65 +365,65 @@ document.addEventListener('DOMContentLoaded', function () {
                     axios({
                         method: "delete",
                         url: url + "/api/users/publicMessages", //
-                        headers: {"Content-Type": "application/json"},
+                        headers: { "Content-Type": "application/json" },
                         data: JSON.stringify({
                             names: selectedPubMsgs
                         }).replace(/\\\\/g, "\\")
                     })
-                    .then((res) => {
-                        vm.getPubMsgs();
-                    }).catch((error) => {
-                        alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
-                    });
+                        .then((res) => {
+                            vm.getPubMsgs();
+                        }).catch((error) => {
+                            alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
+                        });
                 }
             },
             changeSelected: function (action) {
                 var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 var vm = this;
                 let selectedPubMsgs = [];
-                if(action == "delete"){
+                if (action == "delete") {
                     selectedPubMsgs = [];
-                    for(let i = 0; i < vm.pubmsgs.length; ++i){
-                        if(document.getElementById("checkbox-" + vm.pubmsgs[i].messageId).checked){
+                    for (let i = 0; i < vm.pubmsgs.length; ++i) {
+                        if (document.getElementById("checkbox-" + vm.pubmsgs[i].messageId).checked) {
                             selectedPubMsgs.push(vm.pubmsgs[i].messageId.toString());
                         }
                     }
-                    if(selectedPubMsgs.length != 0){
+                    if (selectedPubMsgs.length != 0) {
                         var check = confirm(this.s34);
                         if (check == true) {
                             axios({
                                 method: "delete",
                                 url: url + "/api/users/publicMessages", //
-                                headers: {"Content-Type": "application/json"},
+                                headers: { "Content-Type": "application/json" },
                                 data: JSON.stringify({
                                     names: selectedPubMsgs
                                 }).replace(/\\\\/g, "\\")
                             })
-                            .then((res) => {
-                                vm.getPubMsgs();
-                            }).catch((error) => {
-                                alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
-                            });
+                                .then((res) => {
+                                    vm.getPubMsgs();
+                                }).catch((error) => {
+                                    alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
+                                });
                         }
-                    }else{
+                    } else {
                         alert(this.s35);
                     }
                 }
             },
-            rowSelected:function(id) {
+            rowSelected: function (id) {
                 let row = document.getElementById("row-" + id);
-                if(row.style.background == ""){
+                if (row.style.background == "") {
                     row.style.background = "#c2dbff";
-                }else{
+                } else {
                     row.style.background = "";
                 }
                 this.allIsSelected = false;
-                if(document.getElementById("selectAllCheckbox").checked == true){
+                if (document.getElementById("selectAllCheckbox").checked == true) {
                     document.getElementById("selectAllCheckbox").click();
                 }
             },
             changeLang: function () {
-                if(this.lang == "EN"){
+                if (this.lang == "EN") {
                     window.localStorage.setItem("lang", "EN");
                     this.placeholder = "text-align: left;"
                     this.margin = "margin-left: 30px;";
@@ -473,14 +473,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.inviteToMeetingText = "Invite To Meeting";
                     this.copyText = "Copy";
                     this.returnText = "Return";
-                    this.U2= "Title";
-                    this.U3= "Visible";
+                    this.U2 = "Title";
+                    this.U3 = "Visible";
                     this.U9 = "Description";
                     this.U11 = "Delete"
                     this.U12 = "New";
                     this.U13 = "Edit";
                     this.U17 = "Delete";
-                }else {
+                } else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
@@ -541,11 +541,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         },
-        computed:{
-            sortedPubMsgs:function() {
+        computed: {
+            sortedPubMsgs: function () {
                 this.pubmsgsPage = [];
-                for(let i = 0; i < this.recordsShownOnPage; ++i){
-                    if(i + ((this.currentPage - 1) * this.recordsShownOnPage) <= this.pubmsgs.length - 1){
+                for (let i = 0; i < this.recordsShownOnPage; ++i) {
+                    if (i + ((this.currentPage - 1) * this.recordsShownOnPage) <= this.pubmsgs.length - 1) {
                         this.pubmsgsPage[i] = this.pubmsgs[i + ((this.currentPage - 1) * this.recordsShownOnPage)];
                     }
                 }

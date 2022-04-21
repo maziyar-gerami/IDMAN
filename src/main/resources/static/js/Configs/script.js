@@ -101,52 +101,52 @@ document.addEventListener('DOMContentLoaded', function () {
       this.getUserPic();
       this.getConfigs();
       this.getRestorePoints();
-      if(window.localStorage.getItem("lang") === null){
+      if (window.localStorage.getItem("lang") === null) {
         window.localStorage.setItem("lang", "FA");
-      }else if(window.localStorage.getItem("lang") === "EN") {
+      } else if (window.localStorage.getItem("lang") === "EN") {
         this.changeLang();
       }
     },
     methods: {
       setDateNav: function () {
-            this.dateNav = new persianDate().format("dddd، DD MMMM YYYY");
-            persianDate.toCalendar("gregorian");
-            persianDate.toLocale("en");
-            this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
-            persianDate.toCalendar("persian");
-            persianDate.toLocale("fa");
-            this.dateNavText = this.dateNav;
+        this.dateNav = new persianDate().format("dddd، DD MMMM YYYY");
+        persianDate.toCalendar("gregorian");
+        persianDate.toLocale("en");
+        this.dateNavEn = new persianDate().format("dddd, DD MMMM YYYY");
+        persianDate.toCalendar("persian");
+        persianDate.toLocale("fa");
+        this.dateNavText = this.dateNav;
       },
       dropdownNavbar: function () {
-            if(this.dropdownMenu){
-                let dropdowns = document.getElementsByClassName("dropdown-content");
-                for (let i = 0; i < dropdowns.length; ++i) {
-                    let openDropdown = dropdowns[i];
-                    if(openDropdown.classList.contains("show")) {
-                        openDropdown.classList.remove("show");
-                    }
-                }
-                this.dropdownMenu = false;
-            }else{
-                document.getElementById("dropdownMenu").classList.toggle("show");
-                this.dropdownMenu = true;
+        if (this.dropdownMenu) {
+          let dropdowns = document.getElementsByClassName("dropdown-content");
+          for (let i = 0; i < dropdowns.length; ++i) {
+            let openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains("show")) {
+              openDropdown.classList.remove("show");
             }
+          }
+          this.dropdownMenu = false;
+        } else {
+          document.getElementById("dropdownMenu").classList.toggle("show");
+          this.dropdownMenu = true;
+        }
       },
       openMeeting: function () {
         window.open(this.meetingAdminLink, "_blank").focus();
       },
       openOverlay: function () {
-          let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
-          let vm = this;
-          document.getElementById("overlay").style.display = "block";
-          this.overlayLoader = true;
-          axios.get(url + "/api/skyroom") //
-              .then((res) => {
-                  vm.overlayLoader = false;
-                  document.getElementById("overlayBody").style.display = "block";
-                  vm.meetingAdminLink = res.data.presenter;
-                  vm.meetingGuestLink = res.data.students;
-              });
+        let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+        let vm = this;
+        document.getElementById("overlay").style.display = "block";
+        this.overlayLoader = true;
+        axios.get(url + "/api/skyroom") //
+          .then((res) => {
+            vm.overlayLoader = false;
+            document.getElementById("overlayBody").style.display = "block";
+            vm.meetingAdminLink = res.data.presenter;
+            vm.meetingGuestLink = res.data.students;
+          });
       },
       closeOverlay: function () {
         document.getElementById("overlay").style.display = "none";
@@ -157,18 +157,18 @@ document.addEventListener('DOMContentLoaded', function () {
         copyText.select();
         document.execCommand("copy");
         document.getElementById("copyMeetingLinkBtn").disabled = true;
-        setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+        setTimeout(function () { document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
       },
-      isActive (menuItem) {
+      isActive(menuItem) {
         return this.activeItem === menuItem;
       },
-      setActive (menuItem) {
+      setActive(menuItem) {
         this.activeItem = menuItem;
       },
-      isActiveMain (menuItem) {
+      isActiveMain(menuItem) {
         return this.activeItemMain === menuItem;
       },
-      setActiveMain (menuItem) {
+      setActiveMain(menuItem) {
         this.activeItemMain = menuItem;
       },
       getUserInfo: function () {
@@ -179,13 +179,13 @@ document.addEventListener('DOMContentLoaded', function () {
             vm.username = res.data.userId;
             vm.name = res.data.displayName;
             vm.nameEN = res.data.firstName + " " + res.data.lastName;
-            if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
-                vm.s1 = vm.name;
-            }else if(window.localStorage.getItem("lang") === "EN") {
-                vm.s1 = vm.nameEN;
+            if (window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA") {
+              vm.s1 = vm.name;
+            } else if (window.localStorage.getItem("lang") === "EN") {
+              vm.s1 = vm.nameEN;
             }
-            if(res.data.skyroomAccess){
-                vm.showMeeting = true;
+            if (res.data.skyroomAccess) {
+              vm.showMeeting = true;
             }
           });
       },
@@ -193,26 +193,26 @@ document.addEventListener('DOMContentLoaded', function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         axios.get(url + "/api/user/photo") //
-            .then((res) => {
-              if(res.data == "Problem" || res.data == "NotExist"){
+          .then((res) => {
+            if (res.data == "Problem" || res.data == "NotExist") {
+              vm.userPicture = "images/PlaceholderUser.png";
+            } else {
+              vm.userPicture = "/api/user/photo";
+            }
+          })
+          .catch((error) => {
+            if (error.response) {
+              if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                 vm.userPicture = "images/PlaceholderUser.png";
-              }else{
+              } else {
                 vm.userPicture = "/api/user/photo";
               }
-            })
-            .catch((error) => {
-                if (error.response) {
-                  if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
-                    vm.userPicture = "images/PlaceholderUser.png";
-                  }else{
-                    vm.userPicture = "/api/user/photo";
-                  }
-                }
-            });
+            }
+          });
       },
       groupSearchDescription: function (group, description) {
-        for(i = 0; i < this.configsList.length; ++i){
-          if(this.configsList[i].group == group && this.configsList[i].description == description){
+        for (i = 0; i < this.configsList.length; ++i) {
+          if (this.configsList[i].group == group && this.configsList[i].description == description) {
             return true;
           }
         }
@@ -228,23 +228,23 @@ document.addEventListener('DOMContentLoaded', function () {
         this.configsDescription = [];
         this.configsGroupNames = [];
         axios.get(url + "/api/config") // /settings?lang=" + vm.contentLang
-        .then((res) => {
-          vm.configsList = res.data;
-          for(let i = 0; i < vm.configsList.length; ++i){
-            if(vm.configsGroupNames.indexOf(vm.configsList[i].group) == -1){
-              vm.configsGroupNames[j] = vm.configsList[i].group;
-              if(j == 0){
-                vm.activeItem = vm.configsList[i].group;
+          .then((res) => {
+            vm.configsList = res.data;
+            for (let i = 0; i < vm.configsList.length; ++i) {
+              if (vm.configsGroupNames.indexOf(vm.configsList[i].group) == -1) {
+                vm.configsGroupNames[j] = vm.configsList[i].group;
+                if (j == 0) {
+                  vm.activeItem = vm.configsList[i].group;
+                }
+                ++j;
               }
-              ++j;
+              if (vm.configsDescription.indexOf(vm.configsList[i].description) == -1) {
+                vm.configsDescription[z] = vm.configsList[i].description;
+                ++z;
+              }
             }
-            if(vm.configsDescription.indexOf(vm.configsList[i].description) == -1){
-              vm.configsDescription[z] = vm.configsList[i].description;
-              ++z;
-            }
-          }
-          this.configsLoaded = true;
-        });
+            this.configsLoaded = true;
+          });
       },
       editConfigs: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -252,12 +252,12 @@ document.addEventListener('DOMContentLoaded', function () {
         axios({
           method: "put",
           url: url + "/api/configs",  //
-          headers: {"Content-Type": "application/json"},
+          headers: { "Content-Type": "application/json" },
           data: JSON.stringify(vm.configsList).replace(/\\\\/g, "\\")
         })
-        .then((res) => {
-          vm.getConfigs();
-        });
+          .then((res) => {
+            vm.getConfigs();
+          });
       },
       getRestorePoints: function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
         this.restorePoints = [];
         axios.get(url + "/api/configs") //
           .then((res) => {
-            for(let i = 0; i < res.data.length; ++i){
+            for (let i = 0; i < res.data.length; ++i) {
               vm.restorePoints.push(res.data[i].name);
             }
           });
@@ -290,12 +290,12 @@ document.addEventListener('DOMContentLoaded', function () {
         var url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
         var vm = this;
         let name = document.getElementById("restorePointID").value;
-        if(this.restorePoints.length != 0){
+        if (this.restorePoints.length != 0) {
           axios.get(url + "/api/configs/restore/" + name) //
-          .then((res) => {
-            vm.getConfigs();
-          });
-        }else{
+            .then((res) => {
+              vm.getConfigs();
+            });
+        } else {
           alert(this.s30);
         }
       },
@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
             vm.loader = false;
             vm.refreshSuccessText = vm.s39;
             vm.refreshSuccess = true;
-            setTimeout(function(){ vm.refreshSuccess = false; }, 3000);
+            setTimeout(function () { vm.refreshSuccess = false; }, 3000);
           });
       },
       refreshUsers: function () {
@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function () {
             vm.loader = false;
             vm.refreshSuccessText = vm.s40;
             vm.refreshSuccess = true;
-            setTimeout(function(){ vm.refreshSuccess = false; }, 3000);
+            setTimeout(function () { vm.refreshSuccess = false; }, 3000);
           });
       },
       refreshCaptchas: function () {
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
             vm.loader = false;
             vm.refreshSuccessText = vm.s41;
             vm.refreshSuccess = true;
-            setTimeout(function(){ vm.refreshSuccess = false; }, 3000);
+            setTimeout(function () { vm.refreshSuccess = false; }, 3000);
           });
       },
       refreshAll: function () {
@@ -344,11 +344,11 @@ document.addEventListener('DOMContentLoaded', function () {
             vm.loader = false;
             vm.refreshSuccessText = vm.s42;
             vm.refreshSuccess = true;
-            setTimeout(function(){ vm.refreshSuccess = false; }, 3000);
+            setTimeout(function () { vm.refreshSuccess = false; }, 3000);
           });
       },
       changeLang: function () {
-        if(this.lang == "EN"){
+        if (this.lang == "EN") {
           window.localStorage.setItem("lang", "EN");
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
@@ -402,68 +402,68 @@ document.addEventListener('DOMContentLoaded', function () {
           this.returnText = "Return";
           this.contentLang = "en";
           //this.getConfigs();
-        }else {
-            window.localStorage.setItem("lang", "FA");
-            this.margin = "margin-right: 30px;";
-            this.lang = "EN";
-            this.isRtl = true;
-            this.dateNavText = this.dateNav;
-            this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
-            this.s1 = this.name;
-            this.s2 = "خروج";
-            this.s3 = "داشبورد";
-            this.s4 = "سرویس ها";
-            this.s5 = "گروه ها";
-            this.s6 = "رویداد ها";
-            this.s7 = "پروفایل";
-            this.s8 = "دسترسی سریع";
-            this.s9 = "خلاصه وضعیت";
-            this.s10 = "قوانین";
-            this.s11 = "حریم خصوصی";
-            this.s12 = "راهنما";
-            this.s13 = "کاربران";
-            this.s17 = "شناسه";
-            this.s18 = "نام";
-            this.s19 = "توضیحات";
-            this.s20 = "اتصال";
-            this.s24 = "پیکربندی";
-            this.s26 = "ویرایش";
-            this.s28 = "ذخیره پیکربندی کنونی";
-            this.s29 = "بازگردانی پیکربندی اولیه";
-            this.s30 = "نقطه بازگردانی قبلی وجود ندارد";
-            this.s31 = "بازگردانی";
-            this.s32 = "ممیزی ها";
-            this.s34 = "به‌روزرسانی";
-            this.s35 = "به‌روزرسانی سرویس ها";
-            this.s36 = "به‌روزرسانی کاربران";
-            this.s37 = "به‌روزرسانی CAPTCHA";
-            this.s38 = "به‌روزرسانی کلی";
-            this.s39 = "به‌روزرسانی سرویس ها با موفقیت انجام شد.";
-            this.s40 = "به‌روزرسانی کاربران با موفقیت انجام شد.";
-            this.s41 = "به‌روزرسانی CAPTCHA با موفقیت انجام شد.";
-            this.s42 = "به‌روزرسانی کلی با موفقیت انجام شد.";
-            this.rolesText = "نقش ها";
-            this.reportsText = "گزارش ها";
-            this.publicmessagesText = "اعلان های عمومی";
-            this.ticketingText = "پشتیبانی";
-            this.transcriptsText = "گزارش های دسترسی";
-            this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
-            this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
-            this.meetingText = "جلسه مجازی";
-            this.enterMeetingText = "ورود به جلسه";
-            this.inviteToMeetingText = "دعوت به جلسه";
-            this.copyText = "کپی";
-            this.returnText = "بازگشت";
-            this.contentLang = "fa";
-            //this.getConfigs();
+        } else {
+          window.localStorage.setItem("lang", "FA");
+          this.margin = "margin-right: 30px;";
+          this.lang = "EN";
+          this.isRtl = true;
+          this.dateNavText = this.dateNav;
+          this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
+          this.s1 = this.name;
+          this.s2 = "خروج";
+          this.s3 = "داشبورد";
+          this.s4 = "سرویس ها";
+          this.s5 = "گروه ها";
+          this.s6 = "رویداد ها";
+          this.s7 = "پروفایل";
+          this.s8 = "دسترسی سریع";
+          this.s9 = "خلاصه وضعیت";
+          this.s10 = "قوانین";
+          this.s11 = "حریم خصوصی";
+          this.s12 = "راهنما";
+          this.s13 = "کاربران";
+          this.s17 = "شناسه";
+          this.s18 = "نام";
+          this.s19 = "توضیحات";
+          this.s20 = "اتصال";
+          this.s24 = "پیکربندی";
+          this.s26 = "ویرایش";
+          this.s28 = "ذخیره پیکربندی کنونی";
+          this.s29 = "بازگردانی پیکربندی اولیه";
+          this.s30 = "نقطه بازگردانی قبلی وجود ندارد";
+          this.s31 = "بازگردانی";
+          this.s32 = "ممیزی ها";
+          this.s34 = "به‌روزرسانی";
+          this.s35 = "به‌روزرسانی سرویس ها";
+          this.s36 = "به‌روزرسانی کاربران";
+          this.s37 = "به‌روزرسانی CAPTCHA";
+          this.s38 = "به‌روزرسانی کلی";
+          this.s39 = "به‌روزرسانی سرویس ها با موفقیت انجام شد.";
+          this.s40 = "به‌روزرسانی کاربران با موفقیت انجام شد.";
+          this.s41 = "به‌روزرسانی CAPTCHA با موفقیت انجام شد.";
+          this.s42 = "به‌روزرسانی کلی با موفقیت انجام شد.";
+          this.rolesText = "نقش ها";
+          this.reportsText = "گزارش ها";
+          this.publicmessagesText = "اعلان های عمومی";
+          this.ticketingText = "پشتیبانی";
+          this.transcriptsText = "گزارش های دسترسی";
+          this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+          this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+          this.meetingText = "جلسه مجازی";
+          this.enterMeetingText = "ورود به جلسه";
+          this.inviteToMeetingText = "دعوت به جلسه";
+          this.copyText = "کپی";
+          this.returnText = "بازگشت";
+          this.contentLang = "fa";
+          //this.getConfigs();
         }
       }
     },
     computed: {
-      storePointsExists () {
-        if(this.restorePoints.length == 0){
+      storePointsExists() {
+        if (this.restorePoints.length == 0) {
           return true;
-        }else{
+        } else {
           return false;
         }
       }

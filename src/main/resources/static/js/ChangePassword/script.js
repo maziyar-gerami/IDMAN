@@ -6,10 +6,10 @@ document.addEventListener("DOMContentLoaded", function () {
             dateNavEn: "",
             dateNavText: "",
             rules: [
-                { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. "},
-                { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. "},
-				{ message:"حداقل ۸ کاراکتر باشد. "},
-				{ message:"حداقل شامل یک عدد باشد. "}
+                { message: "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. " },
+                { message: "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. " },
+                { message: "حداقل ۸ کاراکتر باشد. " },
+                { message: "حداقل شامل یک عدد باشد. " }
             ],
             userInfo: [],
             show: false,
@@ -20,8 +20,8 @@ document.addEventListener("DOMContentLoaded", function () {
             has_char: false,
             userId: "",
             currentPassword: "",
-			password: "",
-			checkPassword: "",
+            password: "",
+            checkPassword: "",
             passwordVisible: true,
             isRtl: true,
             submitted: false,
@@ -60,13 +60,13 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         created: function () {
             const redirectedUrl = new URL(window.location.href);
-            if(typeof redirectedUrl.searchParams.get("i") === "undefined" || redirectedUrl.searchParams.get("i") === null){
+            if (typeof redirectedUrl.searchParams.get("i") === "undefined" || redirectedUrl.searchParams.get("i") === null) {
                 this.getUsernamePassword = true;
             }
             this.setDateNav();
-            if(window.localStorage.getItem("lang") === null){
+            if (window.localStorage.getItem("lang") === null) {
                 window.localStorage.setItem("lang", "FA");
-            }else if(window.localStorage.getItem("lang") === "EN") {
+            } else if (window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
@@ -81,14 +81,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 this.dateNavText = this.dateNav;
             },
             passwordCheck: function () {
-                this.has_number    = /[0-9]+/.test(this.password);
+                this.has_number = /[0-9]+/.test(this.password);
                 this.has_lowerUPPERcase = /[a-zA-Z]/.test(this.password);
                 this.has_specialchar = /[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password);
-                this.has_char   = /.{8,}/.test(this.password);
+                this.has_char = /.{8,}/.test(this.password);
             },
             persianTextCheck: function (s) {
                 for (let i = 0; i < s.length; ++i) {
-                    if(persianRex.text.test(s.charAt(i))){
+                    if (persianRex.text.test(s.charAt(i))) {
                         return true;
                     }
                 }
@@ -98,23 +98,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 const redirectedUrl = new URL(window.location.href);
-                if(typeof redirectedUrl.searchParams.get("i") !== "undefined" && redirectedUrl.searchParams.get("i") !== null){
+                if (typeof redirectedUrl.searchParams.get("i") !== "undefined" && redirectedUrl.searchParams.get("i") !== null) {
                     let tempInfo = decodeURIComponent(escape(window.atob(redirectedUrl.searchParams.get("i")))).split(" - ");
                     axios({
                         method: "put",
                         url: url + "/api/public/changePassword",
-                        headers: {"Content-Type": "application/json"},
+                        headers: { "Content-Type": "application/json" },
                         data: JSON.stringify({
-                                userId: tempInfo[0],
-                                currentPassword: tempInfo[1],
-                                newPassword: vm.password
-                            }
+                            userId: tempInfo[0],
+                            currentPassword: tempInfo[1],
+                            newPassword: vm.password
+                        }
                         ).replace(/\\\\/g, "\\")
                     }).then((res0) => {
                         vm.passwordChangeSuccessful = true;
                         let index = 0;
-                        let customTimer = window.setInterval(function() {
-                            if(index === 1){
+                        let customTimer = window.setInterval(function () {
+                            if (index === 1) {
                                 clearInterval(customTimer);
                             }
                             ++index;
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 axios({
                                     method: "post",
                                     url: url + "/cas/login",
-                                    headers: {"Content-Type": "multipart/form-data"},
+                                    headers: { "Content-Type": "multipart/form-data" },
                                     data: bodyFormData
                                 }).then((res2) => {
                                     location.replace(url + "/cas/login?service=" + tempInfo[2]);
@@ -141,22 +141,22 @@ document.addEventListener("DOMContentLoaded", function () {
                                     console.log(error);
                                 });
                             }).catch((error) => {
-                            console.log(error);
-                        });
+                                console.log(error);
+                            });
                     }).catch((error) => {
                         if (error.response) {
-                            if(error.response.status === 302){
+                            if (error.response.status === 302) {
                                 alert(vm.duplicatePasswordsText);
-                            } else if(error.response.status === 403){
+                            } else if (error.response.status === 403) {
                                 alert(vm.doubleUseText);
-                            } else if(error.response.status === 404){
+                            } else if (error.response.status === 404) {
                                 alert(vm.incorrectInfoText);
-                            } else if(error.response.status === 417){
+                            } else if (error.response.status === 417) {
                                 alert(vm.passwordChangeInterruptedText);
                             }
                         }
                     });
-                }else {
+                } else {
                     alert(vm.passwordChangeInterruptedText);
                 }
             },
@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     this.doubleUseText = "You have already successfully logged in, this is only possible for new users.";
                     this.passwordChangeInterruptedText = "There was a problem with the password change process, please try again.";
                     this.passwordChangeSuccessfulText = "Your password has been successfully changed, loading dashboard";
-                }else {
+                } else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
                     this.isRtl = true;
@@ -234,57 +234,57 @@ document.addEventListener("DOMContentLoaded", function () {
                     this.passwordChangeInterruptedText = "در فرآیند تغییر گذرواژه مشکلی پیش آمده است، لطفا دوباره تلاش کنید.";
                     this.passwordChangeSuccessfulText = "گذرواژه شما با موفقیت تغییر یافت، در حال انتقال به صفحه داشبورد";
                 }
-            } 
+            }
         },
         computed: {
-            infoError () {
+            infoError() {
                 if (typeof this.$route.query.error !== "undefined") {
                     return true
                 }
             },
 
-            notSamePasswords: function() {
+            notSamePasswords: function () {
                 return this.password !== this.checkPassword;
             },
-            isActiveUserPassUpdate: function() {
-                if(this.password !== "" && this.checkPassword !== ""){
-                    if(/[0-9]+/.test(this.password)){
-                        if(/[a-zA-Z]/.test(this.password)){
+            isActiveUserPassUpdate: function () {
+                if (this.password !== "" && this.checkPassword !== "") {
+                    if (/[0-9]+/.test(this.password)) {
+                        if (/[a-zA-Z]/.test(this.password)) {
                             /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){*/
-                                if(/.{8,}/.test(this.password)){
-                                    if(this.password === this.checkPassword){
-                                        return false
-                                    }else{
-                                        return true
-                                    }
-                                }else{
+                            if (/.{8,}/.test(this.password)) {
+                                if (this.password === this.checkPassword) {
+                                    return false
+                                } else {
                                     return true
                                 }
+                            } else {
+                                return true
+                            }
                             /*}else{
                                 return true
                             }*/
-                        }else{
+                        } else {
                             return true
                         }
-                    }else{
+                    } else {
                         return true
                     }
-                }else{
+                } else {
                     return true
                 }
             },
-            strengthLevel: function() {
+            strengthLevel: function () {
                 let checks = 0;
-                if(/[0-9]+/.test(this.password)){
+                if (/[0-9]+/.test(this.password)) {
                     checks += 1;
                 }
-                if(/[a-zA-Z]/.test(this.password)){
+                if (/[a-zA-Z]/.test(this.password)) {
                     checks += 1;
                 }
                 /*if(/[!@#\$%\^\&*\)\(+=\[\]._-]+/.test(this.password) || this.persianTextCheck(this.password)){
                     checks += 1;
                 }*/
-                if(/.{8,}/.test(this.password)){
+                if (/.{8,}/.test(this.password)) {
                     checks += 1;
                 }
                 return checks;

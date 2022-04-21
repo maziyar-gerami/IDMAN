@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 li: 'page-item',
                 liActive: 'active',
                 liDisable: 'disabled',
-                button: 'page-link'  
+                button: 'page-link'
             },
             paginationAnchorTexts: {
                 first: '<<',
@@ -174,9 +174,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.getUserInfo();
             this.getUserPic();
             this.getTickets();
-            if(window.localStorage.getItem("lang") === null){
+            if (window.localStorage.getItem("lang") === null) {
                 window.localStorage.setItem("lang", "FA");
-            }else if(window.localStorage.getItem("lang") === "EN") {
+            } else if (window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
@@ -191,16 +191,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.dateNavText = this.dateNav;
             },
             dropdownNavbar: function () {
-                if(this.dropdownMenu){
+                if (this.dropdownMenu) {
                     let dropdowns = document.getElementsByClassName("dropdown-content");
                     for (let i = 0; i < dropdowns.length; ++i) {
                         let openDropdown = dropdowns[i];
-                        if(openDropdown.classList.contains("show")) {
+                        if (openDropdown.classList.contains("show")) {
                             openDropdown.classList.remove("show");
                         }
                     }
                     this.dropdownMenu = false;
-                }else{
+                } else {
                     document.getElementById("dropdownMenu").classList.toggle("show");
                     this.dropdownMenu = true;
                 }
@@ -230,11 +230,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 copyText.select();
                 document.execCommand("copy");
                 document.getElementById("copyMeetingLinkBtn").disabled = true;
-                setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+                setTimeout(function () { document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
             },
             faMonthtoNumMonth: function (faMonth) {
                 let numMonth = "";
-                switch(faMonth) {
+                switch (faMonth) {
                     case "فروردین":
                         numMonth = "01";
                         break;
@@ -279,50 +279,50 @@ document.addEventListener('DOMContentLoaded', function () {
             faNumToEnNum: function (str) {
                 let s = str.split("");
                 let sEn = "";
-                for(i = 0; i < s.length; ++i){
-                    if(s[i] == '۰'){
+                for (i = 0; i < s.length; ++i) {
+                    if (s[i] == '۰') {
                         sEn = sEn + '0';
-                    }else if(s[i] == '۱'){
+                    } else if (s[i] == '۱') {
                         sEn = sEn + '1';
-                    }else if(s[i] == '۲'){
+                    } else if (s[i] == '۲') {
                         sEn = sEn + '2';
-                    }else if(s[i] == '۳'){
+                    } else if (s[i] == '۳') {
                         sEn = sEn + '3';
-                    }else if(s[i] == '۴'){
+                    } else if (s[i] == '۴') {
                         sEn = sEn + '4';
-                    }else if(s[i] == '۵'){
+                    } else if (s[i] == '۵') {
                         sEn = sEn + '5';
-                    }else if(s[i] == '۶'){
+                    } else if (s[i] == '۶') {
                         sEn = sEn + '6';
-                    }else if(s[i] == '۷'){
+                    } else if (s[i] == '۷') {
                         sEn = sEn + '7';
-                    }else if(s[i] == '۸'){
+                    } else if (s[i] == '۸') {
                         sEn = sEn + '8';
-                    }else if(s[i] == '۹'){
+                    } else if (s[i] == '۹') {
                         sEn = sEn + '9';
                     }
                 }
                 return sEn;
             },
-            isActive (menuItem) {
+            isActive(menuItem) {
                 return this.activeItem === menuItem
             },
-            setActive (menuItem) {
+            setActive(menuItem) {
                 this.activeItem = menuItem
             },
             allSelected: function () {
-                if(this.allIsSelected){
+                if (this.allIsSelected) {
                     this.allIsSelected = false;
-                    for(let i = 0; i < this.tickets.length; ++i){
-                        if(document.getElementById("checkbox-" + this.tickets[i].id).checked == true){
+                    for (let i = 0; i < this.tickets.length; ++i) {
+                        if (document.getElementById("checkbox-" + this.tickets[i].id).checked == true) {
                             document.getElementById("checkbox-" + this.tickets[i].id).click();
                         }
                         document.getElementById("row-" + this.tickets[i].id).style.background = "";
                     }
-                }else{
+                } else {
                     this.allIsSelected = true;
-                    for(let i = 0; i < this.tickets.length; ++i){
-                        if(document.getElementById("checkbox-" + this.tickets[i].id).checked == false){
+                    for (let i = 0; i < this.tickets.length; ++i) {
+                        if (document.getElementById("checkbox-" + this.tickets[i].id).checked == false) {
                             document.getElementById("checkbox-" + this.tickets[i].id).click();
                         }
                         document.getElementById("row-" + this.tickets[i].id).style.background = "#c2dbff";
@@ -330,39 +330,39 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             allInboxSelected: function () {
-                if(this.allInboxIsSelected){
+                if (this.allInboxIsSelected) {
                     this.allInboxIsSelected = false;
-                    for(let i = 0; i < this.inboxTickets.length; ++i){
-                        if(document.getElementById("inbox-checkbox-" + this.inboxTickets[i].id).checked == true){
+                    for (let i = 0; i < this.inboxTickets.length; ++i) {
+                        if (document.getElementById("inbox-checkbox-" + this.inboxTickets[i].id).checked == true) {
                             document.getElementById("inbox-checkbox-" + this.inboxTickets[i].id).click();
                         }
                         document.getElementById("inbox-row-" + this.inboxTickets[i].id).style.background = "";
                     }
-                }else{
+                } else {
                     this.allInboxIsSelected = true;
-                    for(let i = 0; i < this.inboxTickets.length; ++i){
-                        if(document.getElementById("inbox-checkbox-" + this.inboxTickets[i].id).checked == false){
+                    for (let i = 0; i < this.inboxTickets.length; ++i) {
+                        if (document.getElementById("inbox-checkbox-" + this.inboxTickets[i].id).checked == false) {
                             document.getElementById("inbox-checkbox-" + this.inboxTickets[i].id).click();
                         }
                         document.getElementById("inbox-row-" + this.inboxTickets[i].id).style.background = "#c2dbff";
                     }
                 }
             },
-            changeRecords: function(event) {
+            changeRecords: function (event) {
                 this.recordsShownOnPage = event.target.value;
                 this.getTickets();
             },
-            changeInboxRecords: function(event) {
+            changeInboxRecords: function (event) {
                 this.recordsShownOnInboxPage = event.target.value;
-                if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERUSER"){
+                if (userInfo.role == "SUPPORTER" || userInfo.role == "SUPERUSER") {
                     this.getInboxTickets();
-                }else {
+                } else {
                     this.getSentTickets();
                 }
             },
-            changeArchivesRecords: function(event) {
+            changeArchivesRecords: function (event) {
                 this.recordsShownOnArchivesPage = event.target.value;
-                if(userInfo.role == "SUPERUSER"){
+                if (userInfo.role == "SUPERUSER") {
                     this.getArchivesTickets();
                 }
             },
@@ -370,37 +370,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 axios.get(url + "/api/user") //
-                .then((res) => {
-                    vm.userInfo = res.data;
-                    vm.username = res.data.userId;
-                    vm.name = res.data.displayName;
-                    vm.nameEN = res.data.firstName + " " + res.data.lastName;
-                    if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
-                        vm.s1 = vm.name;
-                    }else if(window.localStorage.getItem("lang") === "EN") {
-                        vm.s1 = vm.nameEN;
-                    }
-                    if(res.data.skyroomAccess){
-                        vm.showMeeting = true;
-                    }
-                    if(res.data.role == "SUPPORTER" || res.data.role == "SUPERUSER"){
-                        vm.getInboxTickets();
-                    }else {
-                        vm.getSentTickets();
-                    }
-                    if(res.data.role == "SUPERUSER"){
-                        vm.getArchivesTickets();
-                    }
-                });
+                    .then((res) => {
+                        vm.userInfo = res.data;
+                        vm.username = res.data.userId;
+                        vm.name = res.data.displayName;
+                        vm.nameEN = res.data.firstName + " " + res.data.lastName;
+                        if (window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA") {
+                            vm.s1 = vm.name;
+                        } else if (window.localStorage.getItem("lang") === "EN") {
+                            vm.s1 = vm.nameEN;
+                        }
+                        if (res.data.skyroomAccess) {
+                            vm.showMeeting = true;
+                        }
+                        if (res.data.role == "SUPPORTER" || res.data.role == "SUPERUSER") {
+                            vm.getInboxTickets();
+                        } else {
+                            vm.getSentTickets();
+                        }
+                        if (res.data.role == "SUPERUSER") {
+                            vm.getArchivesTickets();
+                        }
+                    });
             },
             getUserPic: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                        if(res.data == "Problem" || res.data == "NotExist"){
+                        if (res.data == "Problem" || res.data == "NotExist") {
                             vm.userPicture = "images/PlaceholderUser.png";
-                        }else{
+                        } else {
                             vm.userPicture = "/api/user/photo";
                         }
                     })
@@ -408,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (error.response) {
                             if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                                 vm.userPicture = "images/PlaceholderUser.png";
-                            }else{
+                            } else {
                                 vm.userPicture = "/api/user/photo";
                             }
                         }
@@ -419,22 +419,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 let vm = this;
                 let searchQuery = "";
                 let searchQueryInit = "?";
-                if(this.searchStatus != ""){
+                if (this.searchStatus != "") {
                     searchQuery = searchQuery + searchQueryInit + "status=" + this.searchStatus;
                     searchQueryInit = "&";
                 }
-                if(this.idSearch != ""){
+                if (this.idSearch != "") {
                     searchQuery = searchQuery + searchQueryInit + "id=" + this.idSearch;
                     searchQueryInit = "&";
                 }
                 this.dateSearch = document.getElementById("dateSearch").value;
-                if(this.dateSearch != ""){
+                if (this.dateSearch != "") {
                     let tempArray = this.dateSearch.split(" ");
                     this.dateSearch = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
                     searchQuery = searchQuery + searchQueryInit + "date=" + this.dateSearch;
                     searchQueryInit = "&";
                 }
-                if(p != "paginationCurrentPage"){
+                if (p != "paginationCurrentPage") {
                     this.currentPage = 1;
                     this.paginationCurrentPage = this.currentPage;
                 }
@@ -444,10 +444,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then((res) => {
                         vm.total = Math.ceil(res.data.size / vm.recordsShownOnPage);
                         vm.tickets = res.data.ticketList;
-                        for(let i = 0; i < vm.recordsShownOnPage && i < res.data.size; ++i){
-                            vm.tickets[i].orderOfRecords =  ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
+                        for (let i = 0; i < vm.recordsShownOnPage && i < res.data.size; ++i) {
+                            vm.tickets[i].orderOfRecords = ((vm.currentPage - 1) * vm.recordsShownOnPage) + (i + 1);
                         }
-                        if(res.data.ticketList.length == 0){
+                        if (res.data.ticketList.length == 0) {
                             vm.isListEmpty = true;
                         }
                     });
@@ -459,18 +459,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 let unansweredTickets = [];
                 let searchQuery = "";
                 let searchQueryInit = "?";
-                if(this.inboxIdSearch != ""){
+                if (this.inboxIdSearch != "") {
                     searchQuery = searchQuery + searchQueryInit + "id=" + this.inboxIdSearch;
                     searchQueryInit = "&";
                 }
                 this.inboxDateSearch = document.getElementById("inboxDateSearch").value;
-                if(this.inboxDateSearch != ""){
+                if (this.inboxDateSearch != "") {
                     let tempArray = this.inboxDateSearch.split(" ");
                     this.inboxDateSearch = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
                     searchQuery = searchQuery + searchQueryInit + "date=" + this.inboxDateSearch;
                     searchQueryInit = "&";
                 }
-                if(p != "paginationCurrentPage"){
+                if (p != "paginationCurrentPage") {
                     this.currentInboxPage = 1;
                     this.paginationCurrentInboxPage = this.currentInboxPage;
                 }
@@ -479,20 +479,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 axios.get(url + "/api/supporter/tickets/inbox/" + vm.currentInboxPage + "/" + vm.recordsShownOnInboxPage + searchQuery) //
                     .then((res) => {
                         vm.totalInbox = Math.ceil(res.data.size / vm.recordsShownOnInboxPage);
-                        for(let i = 0; i < res.data.ticketList.length; ++i){
-                            if(res.data.ticketList[i].from == res.data.ticketList[i].lastFrom){
+                        for (let i = 0; i < res.data.ticketList.length; ++i) {
+                            if (res.data.ticketList[i].from == res.data.ticketList[i].lastFrom) {
                                 res.data.ticketList[i].isUnanswered = true;
                                 unansweredTickets.push(res.data.ticketList[i]);
-                            }else {
+                            } else {
                                 res.data.ticketList[i].isUnanswered = false;
                                 answeredTickets.push(res.data.ticketList[i]);
                             }
                         }
                         vm.inboxTickets = unansweredTickets.concat(answeredTickets);
-                        for(let i = 0; i < vm.recordsShownOnInboxPage && i < res.data.size; ++i){
-                            vm.inboxTickets[i].orderOfRecords =  ((vm.currentInboxPage - 1) * vm.recordsShownOnInboxPage) + (i + 1);
+                        for (let i = 0; i < vm.recordsShownOnInboxPage && i < res.data.size; ++i) {
+                            vm.inboxTickets[i].orderOfRecords = ((vm.currentInboxPage - 1) * vm.recordsShownOnInboxPage) + (i + 1);
                         }
-                        if(res.data.ticketList.length == 0){
+                        if (res.data.ticketList.length == 0) {
                             vm.isInboxListEmpty = true;
                         }
                     });
@@ -502,18 +502,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 let vm = this;
                 let searchQuery = "";
                 let searchQueryInit = "?";
-                if(this.archivesIdSearch != ""){
+                if (this.archivesIdSearch != "") {
                     searchQuery = searchQuery + searchQueryInit + "id=" + this.archivesIdSearch;
                     searchQueryInit = "&";
                 }
                 this.archivesDateSearch = document.getElementById("archivesDateSearch").value;
-                if(this.archivesDateSearch != ""){
+                if (this.archivesDateSearch != "") {
                     let tempArray = this.archivesDateSearch.split(" ");
                     this.archivesDateSearch = this.faNumToEnNum(tempArray[1]) + this.faMonthtoNumMonth(tempArray[0]) + this.faNumToEnNum(tempArray[2]);
                     searchQuery = searchQuery + searchQueryInit + "date=" + this.archivesDateSearch;
                     searchQueryInit = "&";
                 }
-                if(p != "paginationCurrentPage"){
+                if (p != "paginationCurrentPage") {
                     this.currentArchivesPage = 1;
                     this.paginationCurrentArchivesPage = this.currentArchivesPage;
                 }
@@ -523,10 +523,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then((res) => {
                         vm.totalArchives = Math.ceil(res.data.size / vm.recordsShownOnArchivesPage);
                         vm.archivesTickets = res.data.ticketList;
-                        for(let i = 0; i < vm.recordsShownOnArchivesPage && i < res.data.size; ++i){
-                            vm.archivesTickets[i].orderOfRecords =  ((vm.currentArchivesPage - 1) * vm.recordsShownOnArchivesPage) + (i + 1);
+                        for (let i = 0; i < vm.recordsShownOnArchivesPage && i < res.data.size; ++i) {
+                            vm.archivesTickets[i].orderOfRecords = ((vm.currentArchivesPage - 1) * vm.recordsShownOnArchivesPage) + (i + 1);
                         }
-                        if(res.data.ticketList.length == 0){
+                        if (res.data.ticketList.length == 0) {
                             vm.isArchivesListEmpty = true;
                         }
                     });
@@ -536,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let vm = this;
                 let answeredTickets = [];
                 let unansweredTickets = [];
-                if(p != "paginationCurrentPage"){
+                if (p != "paginationCurrentPage") {
                     this.currentInboxPage = 1;
                     this.paginationCurrentInboxPage = this.currentInboxPage;
                 }
@@ -545,20 +545,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 axios.get(url + "/api/user/tickets/sent/" + vm.currentInboxPage + "/" + vm.recordsShownOnInboxPage) //
                     .then((res) => {
                         vm.totalInbox = Math.ceil(res.data.size / vm.recordsShownOnInboxPage);
-                        for(let i = 0; i < res.data.ticketList.length; ++i){
-                            if(res.data.ticketList[i].from != res.data.ticketList[i].lastFrom){
+                        for (let i = 0; i < res.data.ticketList.length; ++i) {
+                            if (res.data.ticketList[i].from != res.data.ticketList[i].lastFrom) {
                                 res.data.ticketList[i].isUnanswered = true;
                                 unansweredTickets.push(res.data.ticketList[i]);
-                            }else {
+                            } else {
                                 res.data.ticketList[i].isUnanswered = false;
                                 answeredTickets.push(res.data.ticketList[i]);
                             }
                         }
                         vm.inboxTickets = unansweredTickets.concat(answeredTickets);
-                        for(let i = 0; i < vm.recordsShownOnInboxPage && i < res.data.size; ++i){
-                            vm.inboxTickets[i].orderOfRecords =  ((vm.currentInboxPage - 1) * vm.recordsShownOnInboxPage) + (i + 1);
+                        for (let i = 0; i < vm.recordsShownOnInboxPage && i < res.data.size; ++i) {
+                            vm.inboxTickets[i].orderOfRecords = ((vm.currentInboxPage - 1) * vm.recordsShownOnInboxPage) + (i + 1);
                         }
-                        if(res.data.ticketList.length == 0){
+                        if (res.data.ticketList.length == 0) {
                             vm.isInboxListEmpty = true;
                         }
                     });
@@ -608,16 +608,16 @@ document.addEventListener('DOMContentLoaded', function () {
             sendTicketReply: function (id, sendType) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
-                if(document.getElementById("messageBody").value == ""){
+                if (document.getElementById("messageBody").value == "") {
                     alert("لطفا قسمت های الزامی را پر کنید.");
-                }else{
+                } else {
                     let check = confirm(this.s23);
                     if (check == true) {
-                        if(sendType === "send"){
+                        if (sendType === "send") {
                             axios({
                                 method: "put",
                                 url: url + "/api/user/ticket/reply/" + id, //
-                                headers: {"Content-Type": "application/json"},
+                                headers: { "Content-Type": "application/json" },
                                 data: JSON.stringify({
                                     message: document.getElementById("messageBody").value
                                 }).replace(/\\\\/g, "\\")
@@ -626,11 +626,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             }).catch((error) => {
                                 alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
                             });
-                        }else if(sendType === "send&close"){
+                        } else if (sendType === "send&close") {
                             axios({
                                 method: "put",
                                 url: url + "/api/user/ticket/reply/" + id, //
-                                headers: {"Content-Type": "application/json"},
+                                headers: { "Content-Type": "application/json" },
                                 data: JSON.stringify({
                                     message: document.getElementById("messageBody").value,
                                     status: 2
@@ -647,16 +647,16 @@ document.addEventListener('DOMContentLoaded', function () {
             createTicket: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
-                if(document.getElementById("messageBodyCreate").value == "" ||
-                    document.getElementById("ticketCreateSubject").value == ""){
+                if (document.getElementById("messageBodyCreate").value == "" ||
+                    document.getElementById("ticketCreateSubject").value == "") {
                     alert("لطفا قسمت های الزامی را پر کنید.");
-                }else{
+                } else {
                     let check = confirm(this.s23);
                     if (check == true) {
                         axios({
                             method: "post",
                             url: url + "/api/user/ticket", //
-                            headers: {"Content-Type": "application/json"},
+                            headers: { "Content-Type": "application/json" },
                             data: JSON.stringify({
                                 subject: document.getElementById("ticketCreateSubject").value,
                                 message: document.getElementById("messageBodyCreate").value
@@ -679,36 +679,36 @@ document.addEventListener('DOMContentLoaded', function () {
                     axios({
                         method: "delete",
                         url: url + "/api/user/ticket", //
-                        headers: {"Content-Type": "application/json"},
+                        headers: { "Content-Type": "application/json" },
                         data: JSON.stringify({
                             names: selectedTickets
                         }).replace(/\\\\/g, "\\")
                     })
-                    .then((res) => {
-                        location.reload();
-                    }).catch((error) => {
-                        alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
-                    });
+                        .then((res) => {
+                            location.reload();
+                        }).catch((error) => {
+                            alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
+                        });
                 }
             },
             changeSelected: function (action) {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 let selectedTickets = [];
-                if(action == "delete"){
+                if (action == "delete") {
                     selectedTickets = [];
-                    for(let i = 0; i < vm.tickets.length; ++i){
-                        if(document.getElementById("checkbox-" + vm.tickets[i].id).checked){
+                    for (let i = 0; i < vm.tickets.length; ++i) {
+                        if (document.getElementById("checkbox-" + vm.tickets[i].id).checked) {
                             selectedTickets.push(vm.tickets[i].id.toString());
                         }
                     }
-                    if(selectedTickets.length != 0){
+                    if (selectedTickets.length != 0) {
                         let check = confirm(this.s34);
                         if (check == true) {
                             axios({
                                 method: "delete",
                                 url: url + "/api/user/ticket", //
-                                headers: {"Content-Type": "application/json"},
+                                headers: { "Content-Type": "application/json" },
                                 data: JSON.stringify({
                                     names: selectedTickets
                                 }).replace(/\\\\/g, "\\")
@@ -718,23 +718,23 @@ document.addEventListener('DOMContentLoaded', function () {
                                 alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
                             });
                         }
-                    }else{
+                    } else {
                         alert(this.s35);
                     }
-                }else if(action == "close"){
+                } else if (action == "close") {
                     selectedTickets = [];
-                    for(let i = 0; i < vm.tickets.length; ++i){
-                        if(document.getElementById("checkbox-" + vm.tickets[i].id).checked){
+                    for (let i = 0; i < vm.tickets.length; ++i) {
+                        if (document.getElementById("checkbox-" + vm.tickets[i].id).checked) {
                             selectedTickets.push(vm.tickets[i].id.toString());
                         }
                     }
-                    if(selectedTickets.length != 0){
+                    if (selectedTickets.length != 0) {
                         let check = confirm(this.closeSelectedTicketsText);
                         if (check == true) {
                             axios({
                                 method: "put",
                                 url: url + "/api/supporter/ticket/status/2", //
-                                headers: {"Content-Type": "application/json"},
+                                headers: { "Content-Type": "application/json" },
                                 data: JSON.stringify({
                                     names: selectedTickets
                                 }).replace(/\\\\/g, "\\")
@@ -744,7 +744,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
                             });
                         }
-                    }else{
+                    } else {
                         alert(this.s35);
                     }
                 }
@@ -753,20 +753,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 let selectedInboxTickets = [];
-                if(action == "delete"){
+                if (action == "delete") {
                     selectedInboxTickets = [];
-                    for(let i = 0; i < vm.inboxTickets.length; ++i){
-                        if(document.getElementById("inbox-checkbox-" + vm.inboxTickets[i].id).checked){
+                    for (let i = 0; i < vm.inboxTickets.length; ++i) {
+                        if (document.getElementById("inbox-checkbox-" + vm.inboxTickets[i].id).checked) {
                             selectedInboxTickets.push(vm.inboxTickets[i].id.toString());
                         }
                     }
-                    if(selectedInboxTickets.length != 0){
+                    if (selectedInboxTickets.length != 0) {
                         let check = confirm(this.s34);
                         if (check == true) {
                             axios({
                                 method: "delete",
                                 url: url + "/api/user/ticket", //
-                                headers: {"Content-Type": "application/json"},
+                                headers: { "Content-Type": "application/json" },
                                 data: JSON.stringify({
                                     names: selectedInboxTickets
                                 }).replace(/\\\\/g, "\\")
@@ -776,23 +776,23 @@ document.addEventListener('DOMContentLoaded', function () {
                                 alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
                             });
                         }
-                    }else{
+                    } else {
                         alert(this.s35);
                     }
-                }else if(action == "close"){
+                } else if (action == "close") {
                     selectedInboxTickets = [];
-                    for(let i = 0; i < vm.inboxTickets.length; ++i){
-                        if(document.getElementById("inbox-checkbox-" + vm.inboxTickets[i].id).checked){
+                    for (let i = 0; i < vm.inboxTickets.length; ++i) {
+                        if (document.getElementById("inbox-checkbox-" + vm.inboxTickets[i].id).checked) {
                             selectedInboxTickets.push(vm.inboxTickets[i].id.toString());
                         }
                     }
-                    if(selectedInboxTickets.length != 0){
+                    if (selectedInboxTickets.length != 0) {
                         let check = confirm(this.closeSelectedTicketsText);
                         if (check == true) {
                             axios({
                                 method: "put",
                                 url: url + "/api/supporter/ticket/status/2", //
-                                headers: {"Content-Type": "application/json"},
+                                headers: { "Content-Type": "application/json" },
                                 data: JSON.stringify({
                                     names: selectedInboxTickets
                                 }).replace(/\\\\/g, "\\")
@@ -802,32 +802,32 @@ document.addEventListener('DOMContentLoaded', function () {
                                 alert("ما قادر به پردازش درخواست شما نبودیم، لطفا دوباره امتحان کنید.");
                             });
                         }
-                    }else{
+                    } else {
                         alert(this.s35);
                     }
                 }
             },
             rowSelected: function (id) {
                 let row = document.getElementById("row-" + id);
-                if(row.style.background == ""){
+                if (row.style.background == "") {
                     row.style.background = "#c2dbff";
-                }else{
+                } else {
                     row.style.background = "";
                 }
                 this.allIsSelected = false;
-                if(document.getElementById("selectAllCheckbox").checked == true){
+                if (document.getElementById("selectAllCheckbox").checked == true) {
                     document.getElementById("selectAllCheckbox").click();
                 }
             },
             rowInboxSelected: function (id) {
                 let row = document.getElementById("inbox-row-" + id);
-                if(row.style.background == ""){
+                if (row.style.background == "") {
                     row.style.background = "#c2dbff";
-                }else{
+                } else {
                     row.style.background = "";
                 }
                 this.allInboxIsSelected = false;
-                if(document.getElementById("selectAllInboxCheckbox").checked == true){
+                if (document.getElementById("selectAllInboxCheckbox").checked == true) {
                     document.getElementById("selectAllInboxCheckbox").click();
                 }
             },
@@ -904,7 +904,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             },
             changeLang: function () {
-                if(this.lang == "EN"){
+                if (this.lang == "EN") {
                     window.localStorage.setItem("lang", "EN");
                     this.placeholder = "text-align: left;"
                     this.margin = "margin-left: 30px;";
@@ -984,10 +984,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.alertMessage2Text = " User ";
                     this.alertMessageOpen3Text = ", Opened the Ticket.";
                     this.alertMessageClose3Text = ", Closed the Ticket.";
-                    this.unreadMessageText ="Unanswered Message";
+                    this.unreadMessageText = "Unanswered Message";
                     this.ticketArchivesText = "Ticket Archives";
                     this.detailText = "Detail";
-                }else {
+                } else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;"
                     this.margin = "margin-right: 30px;";
@@ -1074,7 +1074,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         },
-        computed:{
+        computed: {
             sortedTickets: function () {
                 this.ticketsPage = this.tickets;
                 return this.ticketsPage;
@@ -1088,27 +1088,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 return this.archivesTicketsPage;
             },
         },
-        watch : {
-            paginationCurrentPage : function () {
-                if(this.paginationCurrentPage != this.currentPage){
+        watch: {
+            paginationCurrentPage: function () {
+                if (this.paginationCurrentPage != this.currentPage) {
                     this.currentPage = this.paginationCurrentPage;
                     this.getTickets("paginationCurrentPage");
                 }
             },
-            paginationCurrentInboxPage : function () {
-                if(this.paginationCurrentInboxPage != this.currentInboxPage){
+            paginationCurrentInboxPage: function () {
+                if (this.paginationCurrentInboxPage != this.currentInboxPage) {
                     this.currentInboxPage = this.paginationCurrentInboxPage;
-                    if(userInfo.role == "SUPPORTER" || userInfo.role == "SUPERUSER"){
+                    if (userInfo.role == "SUPPORTER" || userInfo.role == "SUPERUSER") {
                         this.getInboxTickets("paginationCurrentPage");
-                    }else {
+                    } else {
                         this.getSentTickets("paginationCurrentPage");
                     }
                 }
             },
-            paginationCurrentArchivesPage : function () {
-                if(this.paginationCurrentArchivesPage != this.currentArchivesPage){
+            paginationCurrentArchivesPage: function () {
+                if (this.paginationCurrentArchivesPage != this.currentArchivesPage) {
                     this.currentArchivesPage = this.paginationCurrentArchivesPage;
-                    if(userInfo.role == "SUPERUSER"){
+                    if (userInfo.role == "SUPERUSER") {
                         this.getArchivesTickets("paginationCurrentPage");
                     }
                 }

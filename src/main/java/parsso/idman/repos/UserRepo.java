@@ -1,6 +1,5 @@
 package parsso.idman.repos;
 
-
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,104 +14,103 @@ import java.util.List;
 @SuppressWarnings("ALL")
 public class UserRepo {
 
+  public interface UsersOp {
 
-    public interface UsersOp{
+    public interface Create {
+      JSONObject create(String doerID, User p);
 
-        public interface Create{
-            JSONObject create(String doerID, User p);
+      JSONObject createUserImport(String doerId, User p);
+    }
 
-            JSONObject createUserImport(String doerId, User p);
-        }
+    public interface Retrieve {
+      List<UsersExtraInfo> mainAttributes(int page, int number);
 
-        public interface Retrieve{
-            List<UsersExtraInfo> mainAttributes(int page, int number);
+      List<User> fullAttributes();
 
-            List<User> fullAttributes();
+      User retrieveUsers(String userId);
 
-            User retrieveUsers(String userId);
+      User retrieveUsersWithLicensed(String userId);
 
-            User retrieveUsersWithLicensed(String userId);
+      UsersExtraInfo retrieveUserMain(String userId);
 
-            UsersExtraInfo retrieveUserMain(String userId);
+      List<UsersExtraInfo> retrieveUsersGroup(String groupId);
 
-            List<UsersExtraInfo> retrieveUsersGroup(String groupId);
+      ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);
 
-            ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec);
-
-            ListUsers mainAttributes(int page, int number, String sortType, String groupFilter, String searchUid, String searchDisplayName, String mobile, String userStatus);
-
-        }
-
-        public interface Update{
-
-            HttpStatus update(String doer, String uid, User p);
-
-            JSONObject groupOfUsers(String doerID, String groupId, JSONObject gu);
-
-            JSONObject mass(String doerID, List<User> users);
-
-            void usersWithSpecificOU(String doerID, String old_ou, String new_ou);
-
-            List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException;
-
-        }
-
-        public interface Delete{
-
-            List<String> remove(String doerID, JSONObject jsonObject);
-        }
-
-        int retrieveUsersLDAPSize();
+      ListUsers mainAttributes(int page, int number, String sortType, String groupFilter, String searchUid,
+          String searchDisplayName, String mobile, String userStatus);
 
     }
 
+    public interface Update {
 
-    public interface ProfilePic{
+      HttpStatus update(String doer, String uid, User p);
 
-        String retrieve(HttpServletResponse response, User user);
+      JSONObject groupOfUsers(String doerID, String groupId, JSONObject gu);
 
-        byte[] retrieve(User user);
+      JSONObject mass(String doerID, List<User> users);
 
-        boolean upload(MultipartFile file, String name);
+      void usersWithSpecificOU(String doerID, String old_ou, String new_ou);
 
-        boolean delete(User user);
+      List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException;
+
     }
 
-    public  interface PasswordOp{
-        HttpStatus change(String uId, String newPassword, String token);
+    public interface Delete {
 
-        HttpStatus reset(String userId, String oldPass, String token);
-
-        JSONObject expire(String name, JSONObject jsonObject);
-
-        HttpStatus changePublic(String userId, String currentPassword, String newPassword);
-
-        public JSONObject expireGroup(String doer, JSONObject jsonObject);
+      List<String> remove(String doerID, JSONObject jsonObject);
     }
 
-    public  interface Supplementary{
+    int retrieveUsersLDAPSize();
 
-        UsersExtraInfo getName(String uid, String token);
+  }
 
-        boolean increaseSameDayPasswordChanges(User user);
+  public interface ProfilePic {
 
-        boolean accessChangePassword(User user);
+    String retrieve(HttpServletResponse response, User user);
 
-        void setIfLoggedIn();
+    byte[] retrieve(User user);
 
-        User setRole(User user);
+    boolean upload(MultipartFile file, String name);
 
-        String getByMobile(String mobile);
+    boolean delete(User user);
+  }
 
-        int sendEmail(String email, String uid, String cid, String answer);
+  public interface PasswordOp {
+    HttpStatus change(String uId, String newPassword, String token);
 
-        String createUrl(String userId, String token);
+    HttpStatus reset(String userId, String oldPass, String token);
 
-        Boolean SAtoSU();
+    JSONObject expire(String name, JSONObject jsonObject);
 
-        int authenticate(String userId, String password);
+    HttpStatus changePublic(String userId, String currentPassword, String newPassword);
 
-        void removeCurrentEndTime(String uid);
-    }
+    public JSONObject expireGroup(String doer, JSONObject jsonObject);
+  }
+
+  public interface Supplementary {
+
+    UsersExtraInfo getName(String uid, String token);
+
+    boolean increaseSameDayPasswordChanges(User user);
+
+    boolean accessChangePassword(User user);
+
+    void setIfLoggedIn();
+
+    User setRole(User user);
+
+    String getByMobile(String mobile);
+
+    int sendEmail(String email, String uid, String cid, String answer);
+
+    String createUrl(String userId, String token);
+
+    Boolean SAtoSU();
+
+    int authenticate(String userId, String password);
+
+    void removeCurrentEndTime(String uid);
+  }
 
 }

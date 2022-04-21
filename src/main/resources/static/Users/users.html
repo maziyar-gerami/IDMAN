@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fa" class="h-100">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -61,36 +62,41 @@
                 this.refreshUsers();
             }
         }
-        
+
     </script>
 
 </head>
+
 <body class="h-100">
     <div id="app">
-        <div  v-bind:class="{rtl: isRtl}" class=" h-100">
-                <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
-                    <div class="container">
-                        <a class="navbar-brand" href="/">{{s0}}</a>
-                        <div class="dropdown">
-                            <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span class="fa fa-caret-down"></span></a>
-                            <div id="myDropdown" class="dropdown-content">
-                                <a href="./logout">{{s2}}</a>
-                            </div>
-                            <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
-                        </div>  
-                    </div>
-                </nav>
+        <div v-bind:class="{rtl: isRtl}" class=" h-100">
+            <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
                 <div class="container">
+                    <a class="navbar-brand" href="/">{{s0}}</a>
+                    <div class="dropdown">
+                        <a id="btn" onclick="myFunction()" class="dropbtn"> {{s1}} <span
+                                class="fa fa-caret-down"></span></a>
+                        <div id="myDropdown" class="dropdown-content">
+                            <a href="./logout">{{s2}}</a>
+                        </div>
+                        <a id="langbtn" href="#" v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
+                    </div>
+                </div>
+            </nav>
+            <div class="container">
                 <div class="row">
                     <div class="col-lg-3 mb-3 mb-lg-0">
                         <div class="card">
                             <div class="card-body p-0 pt-3">
-                                <form id="upload-form" method="POST" action="#" accept-charset="UTF-8" role="form" class="d-none" enctype="multipart/form-data">
-                                    <input type="file" id="upload-image" name="upload-image" onchange="document.getElementById('upload-form').submit()">
+                                <form id="upload-form" method="POST" action="#" accept-charset="UTF-8" role="form"
+                                    class="d-none" enctype="multipart/form-data">
+                                    <input type="file" id="upload-image" name="upload-image"
+                                        onchange="document.getElementById('upload-form').submit()">
                                 </form>
                                 <div class="userpic mb-3">
                                     <img src="images/PlaceholderUser.png" class="img-responsive avatar" alt="Avatar">
-                                    <a href="javascript:void(0)" onclick="document.getElementById('upload-image').click()">
+                                    <a href="javascript:void(0)"
+                                        onclick="document.getElementById('upload-image').click()">
                                         <table>
                                             <tr>
                                                 <td>
@@ -113,39 +119,33 @@
                                 <div class="text-center mb-3">
                                     <a href="./logout" class="btn btn-danger btn-sm">
                                         <i class="fa fa-power-off"></i>
-                                        {{s2}}                            
+                                        {{s2}}
                                     </a>
                                 </div>
 
                                 <div class="list-group list-group-flush">
-                                    <a class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="s33">
+                                    <a class="list-group-item list-group-item-action py-2 " v-bind:href="s33">
                                         <i class="fa fa-dashboard"></i>
                                         <span>{{s3}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="s34">
+                                    <a class="list-group-item list-group-item-action py-2 " v-bind:href="s34">
                                         <i class="fa fa-server"></i>
                                         <span>{{s4}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
-                                    href="#">
+                                    <a class="list-group-item list-group-item-action py-2 " href="#">
                                         <i class="fa fa-user"></i>
                                         <span>{{s13}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
-                                    href="#">
+                                    <a class="list-group-item list-group-item-action py-2 " href="#">
                                         <i class="fa fa-users"></i>
                                         <span>{{s5}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
-                                    href="#">
+                                    <a class="list-group-item list-group-item-action py-2 " href="#">
                                         <i class="fa fa-calendar"></i>
                                         <span>{{s6}}</span>
                                     </a>
-                                    
-                                    <a class="list-group-item list-group-item-action py-2 "
-                                    href="#">
+
+                                    <a class="list-group-item list-group-item-action py-2 " href="#">
                                         <i class="fa fa-cogs"></i>
                                         <span>{{s7}}</span>
                                     </a>
@@ -162,32 +162,34 @@
                             <div class="container">
                                 <table class="table">
                                     <thead>
-                                    <tr>
-                                        <th>{{U2}}</th>
-                                        <th>{{U3}}</th>
-                                        <th>{{U4}}</th>
-                                        <th>{{U5}}</th>
-                                        <th>{{U6}}</th>
-                                        <th>{{U7}}</th>
-                                        <th>{{U8}}</th>
-                                        <th>{{U9}}</th>
+                                        <tr>
+                                            <th>{{U2}}</th>
+                                            <th>{{U3}}</th>
+                                            <th>{{U4}}</th>
+                                            <th>{{U5}}</th>
+                                            <th>{{U6}}</th>
+                                            <th>{{U7}}</th>
+                                            <th>{{U8}}</th>
+                                            <th>{{U9}}</th>
 
-                                    </tr>
+                                        </tr>
 
                                     </thead>
                                     <tbody id="body">
-                                    <tr v-for="user in users" v-bind:key="user.userId">
-                                        <td>{{user.userId}}</td>
-                                        <td>{{user.givenName}}</td>
-                                        <td>{{user.surName}}</td>
-                                        <td>{{user.displayName}}</td>
-                                        <td>{{user.phone}}</td>
-                                        <td>{{user.mail}}</td>
-                                        <td>{{user.nid}}</td>
-                                        <td>{{user.description}}</td>
-                                        <td><button class="btn btn-success" v-on:click="updateUser(user.userId)">{{U10}}</button></td>
-                                        <td><button class="btn btn-warning" v-on:click="deleteUser(user.userId)">{{U11}}</button></td>
-                                    </tr>
+                                        <tr v-for="user in users" v-bind:key="user.userId">
+                                            <td>{{user.userId}}</td>
+                                            <td>{{user.givenName}}</td>
+                                            <td>{{user.surName}}</td>
+                                            <td>{{user.displayName}}</td>
+                                            <td>{{user.phone}}</td>
+                                            <td>{{user.mail}}</td>
+                                            <td>{{user.nid}}</td>
+                                            <td>{{user.description}}</td>
+                                            <td><button class="btn btn-success"
+                                                    v-on:click="updateUser(user.userId)">{{U10}}</button></td>
+                                            <td><button class="btn btn-warning"
+                                                    v-on:click="deleteUser(user.userId)">{{U11}}</button></td>
+                                        </tr>
                                     </tbody>
                                 </table>
                                 <div class="row">
@@ -222,4 +224,5 @@
         </div>
     </div>
 </body>
+
 </html>

@@ -8,16 +8,16 @@ import org.springframework.ldap.odm.annotations.Id;
 @Setter
 @Getter
 @Entry(objectClasses = {})
-public class PWD{
-    @Id
-    String pwdCheckQuality;
-    String pwdFailureCountInterval;
-    String pwdExpireWarning;
-    String pwdGraceAuthNLimit;
-    String pwdInHistory;
-    String pwdLockout;
-    String pwdLockoutDuration;
-    String pwdMaxAge;
-    String pwdMaxFailure;
-    String pwdMinLength;
+public class PWD {
+  @Id
+  String pwdCheckQuality;
+  String pwdFailureCountInterval;
+  String pwdExpireWarning;
+  String pwdGraceAuthNLimit;
+  String pwdInHistory;
+  String pwdLockout;
+  String pwdLockoutDuration;
+  String pwdMaxAge;
+  String pwdMaxFailure;
+  String pwdMinLength;
 }

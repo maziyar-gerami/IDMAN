@@ -1,6 +1,5 @@
 package parsso.idman;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.session.SingleSignOutFilter;
@@ -26,99 +25,94 @@ import parsso.idman.repos.FilesStorageService;
 @SuppressWarnings("unchecked")
 @SpringBootApplication
 @EnableScheduling
-//@EnableCaching
+// @EnableCaching
 public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
-    private static final Logger logger = LogManager.getLogger("System");
-    final FilesStorageService storageService;
-    CasUserDetailService casUserDetailService;
+  private static final Logger logger = LogManager.getLogger("System");
+  final FilesStorageService storageService;
+  CasUserDetailService casUserDetailService;
 
-    @Autowired
-    public IdmanApplication(CasUserDetailService casUserDetailService, FilesStorageService filesStorageService) {
-        this.casUserDetailService = casUserDetailService;
-        this.storageService = filesStorageService;
+  @Autowired
+  public IdmanApplication(CasUserDetailService casUserDetailService, FilesStorageService filesStorageService) {
+    this.casUserDetailService = casUserDetailService;
+    this.storageService = filesStorageService;
+  }
+
+  @Value("${cas.url.logout.path}")
+  private String casLogout;
+  @Value("${cas.url.validator}")
+  private String ticketValidator;
+  @Value("${base.url}")
+  private String baseurl;
+
+  public static void main(String[] args) {
+
+    try {
+      SpringApplication.run(IdmanApplication.class, args);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+    logger.warn("Started!");
+  }
 
-    @Value("${cas.url.logout.path}")
-    private String casLogout;
-    @Value("${cas.url.validator}")
-    private String ticketValidator;
-    @Value("${base.url}")
-    private String baseurl;
+  @Override
+  public void run(String... arg) {
+    // storageService.deleteAll();
+    storageService.init();
+  }
 
-    public static void main(String[] args) {
+  @Bean
+  public CasAuthenticationFilter casAuthenticationFilter(
+      AuthenticationManager authenticationManager,
+      ServiceProperties serviceProperties) {
+    CasAuthenticationFilter filter = new CasAuthenticationFilter();
+    filter.setAuthenticationManager(authenticationManager);
+    filter.setServiceProperties(serviceProperties);
+    return filter;
+  }
 
-        try {
-            SpringApplication.run(IdmanApplication.class, args);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        logger.warn("Started!");
-    }
+  @Bean
+  public ServiceProperties serviceProperties() {
+    ServiceProperties serviceProperties = new ServiceProperties();
+    serviceProperties.setService(baseurl + "/login/cas");
+    serviceProperties.setSendRenew(false);
+    return serviceProperties;
+  }
 
-    @Override
-    public void run(String... arg) {
-        //storageService.deleteAll();
-        storageService.init();
-    }
+  @Bean
+  public TicketValidator ticketValidator() {
+    return new Cas30ServiceTicketValidator(ticketValidator);
+  }
 
-    @Bean
-    public CasAuthenticationFilter casAuthenticationFilter(
-            AuthenticationManager authenticationManager,
-            ServiceProperties serviceProperties) {
-        CasAuthenticationFilter filter = new CasAuthenticationFilter();
-        filter.setAuthenticationManager(authenticationManager);
-        filter.setServiceProperties(serviceProperties);
-        return filter;
-    }
+  @Bean
+  public CasAuthenticationProvider casAuthenticationProvider() {
+    CasAuthenticationProvider provider = new CasAuthenticationProvider();
+    provider.setServiceProperties(serviceProperties());
+    provider.setTicketValidator(ticketValidator());
 
-    @Bean
-    public ServiceProperties serviceProperties() {
-        ServiceProperties serviceProperties = new ServiceProperties();
-        serviceProperties.setService(baseurl + "/login/cas");
-        serviceProperties.setSendRenew(false);
-        return serviceProperties;
-    }
+    provider.setAuthenticationUserDetailsService(casUserDetailService);
+    provider.setKey("CAS_PROVIDER_LOCALHOST_8900");
+    return provider;
+  }
 
-    @Bean
-    public TicketValidator ticketValidator() {
-        return new Cas30ServiceTicketValidator(ticketValidator);
-    }
+  @Bean
+  public SecurityContextLogoutHandler securityContextLogoutHandler() {
+    return new SecurityContextLogoutHandler();
+  }
 
-    @Bean
-    public CasAuthenticationProvider casAuthenticationProvider() {
-        CasAuthenticationProvider provider = new CasAuthenticationProvider();
-        provider.setServiceProperties(serviceProperties());
-        provider.setTicketValidator(ticketValidator());
+  @Bean
+  public LogoutFilter logoutFilter() {
+    LogoutFilter logoutFilter = new LogoutFilter(casLogout, securityContextLogoutHandler());
+    logoutFilter.setFilterProcessesUrl("/logout/cas");
+    return logoutFilter;
+  }
 
-        provider.setAuthenticationUserDetailsService(casUserDetailService);
-        provider.setKey("CAS_PROVIDER_LOCALHOST_8900");
-        return provider;
-    }
-
-    @Bean
-    public SecurityContextLogoutHandler securityContextLogoutHandler() {
-        return new SecurityContextLogoutHandler();
-    }
-
-    @Bean
-    public LogoutFilter logoutFilter() {
-        LogoutFilter logoutFilter = new LogoutFilter(casLogout, securityContextLogoutHandler());
-        logoutFilter.setFilterProcessesUrl("/logout/cas");
-        return logoutFilter;
-    }
-
-    @Bean
-    public SingleSignOutFilter singleSignOutFilter() {
-        SingleSignOutFilter singleSignOutFilter = new SingleSignOutFilter();
-        //singleSignOutFilter.setCasServerUrlPrefix(casLogout);
-        singleSignOutFilter.setLogoutCallbackPath("/exit/cas");
-        singleSignOutFilter.setIgnoreInitConfiguration(true);
-        return singleSignOutFilter;
-    }
+  @Bean
+  public SingleSignOutFilter singleSignOutFilter() {
+    SingleSignOutFilter singleSignOutFilter = new SingleSignOutFilter();
+    // singleSignOutFilter.setCasServerUrlPrefix(casLogout);
+    singleSignOutFilter.setLogoutCallbackPath("/exit/cas");
+    singleSignOutFilter.setIgnoreInitConfiguration(true);
+    return singleSignOutFilter;
+  }
 
 }
-
-
-
-
-

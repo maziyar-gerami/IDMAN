@@ -1,6 +1,5 @@
 package parsso.idman.models.logs;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.models.other.Setting;
@@ -12,7 +11,7 @@ import java.util.List;
 @Setter
 
 public class Config {
-    private String name;
-    private Time dateTime;
-    private List<Setting> settingList;
+  private String name;
+  private Time dateTime;
+  private List<Setting> settingList;
 }

@@ -11,10 +11,10 @@ document.addEventListener('DOMContentLoaded', function () {
             dateNavEn: "",
             dateNavText: "",
             rules: [
-                { message:"حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ", regex:/[a-zA-Z]+/, fa:false},
-                { message:"حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ",  regex:/[!@#\$%\^\&*\)\(+=\[\]._-]+/, fa:true},
-				{ message:"حداقل ۸ کاراکتر باشد. ", regex:/.{8,}/, fa:false},
-				{ message:"حداقل شامل یک عدد باشد. ", regex:/[0-9]+/, fa:false}
+                { message: "حداقل شامل یک حرف کوچک یا بزرگ انگلیسی باشد. ", regex: /[a-zA-Z]+/, fa: false },
+                { message: "حداقل شامل یک کاراکتر خاص یا حرف فارسی باشد. ", regex: /[!@#\$%\^\&*\)\(+=\[\]._-]+/, fa: true },
+                { message: "حداقل ۸ کاراکتر باشد. ", regex: /.{8,}/, fa: false },
+                { message: "حداقل شامل یک عدد باشد. ", regex: /[0-9]+/, fa: false }
             ],
             userInfo: [],
             show: false,
@@ -23,12 +23,12 @@ document.addEventListener('DOMContentLoaded', function () {
             has_lowerUPPERcase: false,
             has_specialchar: false,
             has_char: false,
-			password: "",
-			checkPassword: "",
+            password: "",
+            checkPassword: "",
             passwordVisible: true,
             isRtl: true,
             submitted: false,
-            btnDisable : true,
+            btnDisable: true,
             placeholder: "text-align: right;",
             margin: "margin-right: 30px;",
             marg: "margin-left: auto;",
@@ -61,9 +61,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         created: function () {
             this.setDateNav();
-            if(window.localStorage.getItem("lang") === null){
+            if (window.localStorage.getItem("lang") === null) {
                 window.localStorage.setItem("lang", "FA");
-            }else if(window.localStorage.getItem("lang") === "EN") {
+            } else if (window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.rules[2].message = "- 8 Characters Minimum.";
                     this.rules[3].message = "- One Number Required.";
 
-                }else {
+                } else {
                     window.localStorage.setItem("lang", "FA");
                     this.placeholder = "text-align: right;";
                     this.isRtl = true;

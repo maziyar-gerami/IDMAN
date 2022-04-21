@@ -7,12 +7,12 @@ import org.bson.types.ObjectId;
 @Getter
 @Setter
 public class Token {
-    ObjectId _id;
-    String username;
-    String token;
+  ObjectId _id;
+  String username;
+  String token;
 
-    public Token(String username, String token) {
-        this.username = username;
-        this.token = token;
-    }
+  public Token(String username, String token) {
+    this.username = username;
+    this.token = token;
+  }
 }

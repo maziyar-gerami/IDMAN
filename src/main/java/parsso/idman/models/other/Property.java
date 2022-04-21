@@ -10,44 +10,45 @@ import java.util.List;
 @Getter
 public class Property {
 
-    private String _id;
-    private Object value;
-    private String description;
-    private String group;
-    private Object type;
-    private String help;
+  private String _id;
+  private Object value;
+  private String description;
+  private String group;
+  private Object type;
+  private String help;
 
+  public Property() {
+  }
 
-    public Property() {
+  public Property(Setting setting, String lang) {
+    this._id = setting.get_id();
+    this.value = setting.getValue();
+    if (lang.equalsIgnoreCase("en")) {
+      this.description = setting.getDescriptionEN();
+    } else {
+      this.description = setting.getDescriptionFA();
     }
 
-    public Property(Setting setting, String lang){
-        this._id = setting.get_id();
-        this.value = setting.getValue();
-        if(lang.equalsIgnoreCase("en"))
-            this.description = setting.getDescriptionEN();
-        else
-            this.description = setting.getDescriptionFA();
-
-        if(lang.equalsIgnoreCase("en"))
-            this.group = setting.getGroupEN();
-        else
-            this.group = setting.getGroupFA();
-
-        this.type = setting.getType();
-        if(lang.equalsIgnoreCase("en"))
-            this.help = setting.getHelpEN();
-        else
-            this.help = setting.getHelpFA();
-
+    if (lang.equalsIgnoreCase("en")) {
+      this.group = setting.getGroupEN();
+    } else {
+      this.group = setting.getGroupFA();
     }
 
-
-    public List<Property> settingsToProperty(List<Setting> settings,String lang){
-        List<Property> properties = new LinkedList<>();
-        for (Setting setting: settings ) {
-            properties.add(new Property(setting,lang));
-        }
-        return properties;
+    this.type = setting.getType();
+    if (lang.equalsIgnoreCase("en")) {
+      this.help = setting.getHelpEN();
+    } else {
+      this.help = setting.getHelpFA();
     }
+
+  }
+
+  public List<Property> settingsToProperty(List<Setting> settings, String lang) {
+    List<Property> properties = new LinkedList<>();
+    for (Setting setting : settings) {
+      properties.add(new Property(setting, lang));
+    }
+    return properties;
+  }
 }

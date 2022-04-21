@@ -20,139 +20,137 @@ import java.util.UUID;
 
 @Service
 public class Token {
-    public static final String collection = Variables.col_usersExtraInfo;
+  public static final String collection = Variables.col_usersExtraInfo;
 
-    private final MongoTemplate mongoTemplate;
-    private final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  private final MongoTemplate mongoTemplate;
+  private final UserRepo.UsersOp.Retrieve usersOpRetrieve;
 
-    @Autowired
-    public Token(MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve userOp) {
-        this.mongoTemplate = mongoTemplate;
-        this.usersOpRetrieve = userOp;
-    }
+  @Autowired
+  public Token(MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve userOp) {
+    this.mongoTemplate = mongoTemplate;
+    this.usersOpRetrieve = userOp;
+  }
 
-    public HttpStatus checkToken(String userId, String token) {
+  public HttpStatus checkToken(String userId, String token) {
 
-        User user = usersOpRetrieve.retrieveUsers(userId);
-        String mainDbToken = user.getUsersExtraInfo().getResetPassToken();
-        String mainPartToken;
-        int SMS_VALIDATION_DIGITS = Integer
-                .parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString());
+    User user = usersOpRetrieve.retrieveUsers(userId);
+    String mainDbToken = user.getUsersExtraInfo().getResetPassToken();
+    String mainPartToken;
+    int SMS_VALIDATION_DIGITS = Integer
+        .parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString());
 
-        
+    if (token.length() > 30)
+      mainPartToken = mainDbToken.substring(0, 36);
+    else
+      mainPartToken = mainDbToken.substring(0, SMS_VALIDATION_DIGITS);
 
-        if (token.length() > 30)
-            mainPartToken = mainDbToken.substring(0, 36);
+    if (token.equals(mainPartToken)) {
+
+      Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+      long cTimeStamp = currentTimestamp.getTime();
+
+      if (mainPartToken.length() > 30) {
+
+        String timeStamp = user.getUsersExtraInfo().getResetPassToken()
+            .substring(mainDbToken.indexOf(user.get_id().toString()) + user.get_id().toString().length());
+
+        if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L
+            * Long.parseLong(new Settings().retrieve("token.valid.email").getValue().toString())))
+          return HttpStatus.OK;
+
         else
-            mainPartToken = mainDbToken.substring(0, SMS_VALIDATION_DIGITS);
-
-        if (token.equals(mainPartToken)) {
-
-            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-            long cTimeStamp = currentTimestamp.getTime();
-
-            if (mainPartToken.length() > 30) {
-
-                String timeStamp = user.getUsersExtraInfo().getResetPassToken()
-                        .substring(mainDbToken.indexOf(user.get_id().toString()) + user.get_id().toString().length());
-
-                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L
-                        * Long.parseLong(new Settings().retrieve("token.valid.email").getValue().toString())))
-                    return HttpStatus.OK;
-
-                else
-                    return HttpStatus.REQUEST_TIMEOUT;
-            } else {
-                String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
-                if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(
-                        new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString()))) {
-                    return HttpStatus.OK;
-                } else
-                    return HttpStatus.REQUEST_TIMEOUT;
-
-            }
-
+          return HttpStatus.REQUEST_TIMEOUT;
+      } else {
+        String timeStamp = mainDbToken.substring(SMS_VALIDATION_DIGITS);
+        if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L * Integer.parseInt(
+            new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString()))) {
+          return HttpStatus.OK;
         } else
-            return HttpStatus.FORBIDDEN;
+          return HttpStatus.REQUEST_TIMEOUT;
 
+      }
+
+    } else
+      return HttpStatus.FORBIDDEN;
+
+  }
+
+  private String passwordResetToken(String userId) {
+
+    Date date = new Date();
+
+    return UUID.randomUUID().toString().toUpperCase()
+        + userId
+        + date.getTime();
+  }
+
+  public void insertEmailToken(User user) {
+
+    Query query = new Query(Criteria.where("_id").is(user.get_id()));
+
+    String token = passwordResetToken(user.get_id().toString());
+    UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
+    Objects.requireNonNull(usersExtraInfo).setResetPassToken(token);
+
+    if (user.getUsersExtraInfo() != null)
+      user.getUsersExtraInfo().setResetPassToken(token);
+    else {
+
+      user.setUsersExtraInfo(usersExtraInfo);
     }
 
-    private String passwordResetToken(String userId) {
-
-        Date date = new Date();
-
-        return UUID.randomUUID().toString().toUpperCase()
-                + userId
-                + date.getTime();
+    try {
+      mongoTemplate.save(usersExtraInfo, collection);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
-    public void insertEmailToken(User user) {
+  }
 
-        Query query = new Query(Criteria.where("_id").is(user.get_id()));
+  public int createRandomNum() {
+    int SMS_VALIDATION_DIGITS = Integer
+        .parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString());
+    Random rnd = new Random();
+    int max = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS)));
+    int min = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1))) + 1;
+    return min + rnd.nextInt(max - min);
+  }
 
-        String token = passwordResetToken(user.get_id().toString());
-        UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
-        Objects.requireNonNull(usersExtraInfo).setResetPassToken(token);
+  public boolean insertMobileToken(User user) {
 
-        if (user.getUsersExtraInfo() != null)
-            user.getUsersExtraInfo().setResetPassToken(token);
-        else {
+    Query query = new Query(Criteria.where("_id").is(user.get_id()));
 
-            user.setUsersExtraInfo(usersExtraInfo);
-        }
+    UsersExtraInfo usersExtraInfo;
 
-        try {
-            mongoTemplate.save(usersExtraInfo, collection);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    try {
+      usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
+      if (usersExtraInfo == null)
+        usersExtraInfo = new UsersExtraInfo(user);
+    } catch (NullPointerException e) {
+      usersExtraInfo = new UsersExtraInfo(user);
     }
 
-    public int createRandomNum() {
-        int SMS_VALIDATION_DIGITS = Integer
-                .parseInt(new Settings(mongoTemplate).retrieve(Variables.SMS_VALIDATION_DIGITS).getValue().toString());
-        Random rnd = new Random();
-        int max = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS)));
-        int min = (int) (Math.pow(10, (SMS_VALIDATION_DIGITS - 1))) + 1;
-        return min + rnd.nextInt(max - min);
+    int token = createRandomNum();
+
+    Objects.requireNonNull(usersExtraInfo).setResetPassToken(String.valueOf(token) + new Date().getTime());
+    usersExtraInfo.setUserId(user.get_id().toString());
+
+    if (user.getUsersExtraInfo() != null)
+      user.getUsersExtraInfo().setResetPassToken(String.valueOf(token));
+    else {
+      usersExtraInfo.setResetPassToken(String.valueOf(token));
+      user.setUsersExtraInfo(usersExtraInfo);
+    }
+    Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+    long cTimeStamp = currentTimestamp.getTime();
+    user.getUsersExtraInfo().setResetPassToken(String.valueOf(token) + cTimeStamp);
+
+    try {
+      mongoTemplate.save(usersExtraInfo, collection);
+    } catch (Exception e) {
+      return false;
     }
 
-    public boolean insertMobileToken(User user) {
-
-        Query query = new Query(Criteria.where("_id").is(user.get_id()));
-
-        UsersExtraInfo usersExtraInfo;
-
-        try {
-            usersExtraInfo = mongoTemplate.findOne(query, UsersExtraInfo.class, collection);
-            if (usersExtraInfo == null)
-                usersExtraInfo = new UsersExtraInfo(user);
-        } catch (NullPointerException e) {
-            usersExtraInfo = new UsersExtraInfo(user);
-        }
-
-        int token = createRandomNum();
-
-        Objects.requireNonNull(usersExtraInfo).setResetPassToken(String.valueOf(token) + new Date().getTime());
-        usersExtraInfo.setUserId(user.get_id().toString());
-
-        if (user.getUsersExtraInfo() != null)
-            user.getUsersExtraInfo().setResetPassToken(String.valueOf(token));
-        else {
-            usersExtraInfo.setResetPassToken(String.valueOf(token));
-            user.setUsersExtraInfo(usersExtraInfo);
-        }
-        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-        long cTimeStamp = currentTimestamp.getTime();
-        user.getUsersExtraInfo().setResetPassToken(String.valueOf(token) + cTimeStamp);
-
-        try {
-            mongoTemplate.save(usersExtraInfo, collection);
-        } catch (Exception e) {
-            return false;
-        }
-
-        return true;
-    }
+    return true;
+  }
 }

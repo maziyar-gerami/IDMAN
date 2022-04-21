@@ -95,9 +95,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.getUserInfo();
             this.getUserPic();
             this.getUsers();
-            if(window.localStorage.getItem("lang") === null){
+            if (window.localStorage.getItem("lang") === null) {
                 window.localStorage.setItem("lang", "FA");
-            }else if(window.localStorage.getItem("lang") === "EN") {
+            } else if (window.localStorage.getItem("lang") === "EN") {
                 this.changeLang();
             }
         },
@@ -112,16 +112,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.dateNavText = this.dateNav;
             },
             dropdownNavbar: function () {
-                if(this.dropdownMenu){
+                if (this.dropdownMenu) {
                     let dropdowns = document.getElementsByClassName("dropdown-content");
                     for (let i = 0; i < dropdowns.length; ++i) {
                         let openDropdown = dropdowns[i];
-                        if(openDropdown.classList.contains("show")) {
+                        if (openDropdown.classList.contains("show")) {
                             openDropdown.classList.remove("show");
                         }
                     }
                     this.dropdownMenu = false;
-                }else{
+                } else {
                     document.getElementById("dropdownMenu").classList.toggle("show");
                     this.dropdownMenu = true;
                 }
@@ -151,34 +151,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 copyText.select();
                 document.execCommand("copy");
                 document.getElementById("copyMeetingLinkBtn").disabled = true;
-                setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+                setTimeout(function () { document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
             },
             getUserInfo: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 axios.get(url + "/api/user") //
-                .then((res) => {
-                    vm.username = res.data.userId;
-                    vm.name = res.data.displayName;
-                    vm.nameEN = res.data.firstName + " " + res.data.lastName;
-                    if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
-                        vm.usernameText = vm.name;
-                    }else if(window.localStorage.getItem("lang") === "EN") {
-                        vm.usernameText = vm.nameEN;
-                    }
-                    if(res.data.skyroomAccess){
-                        vm.showMeeting = true;
-                    }
-                });
+                    .then((res) => {
+                        vm.username = res.data.userId;
+                        vm.name = res.data.displayName;
+                        vm.nameEN = res.data.firstName + " " + res.data.lastName;
+                        if (window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA") {
+                            vm.usernameText = vm.name;
+                        } else if (window.localStorage.getItem("lang") === "EN") {
+                            vm.usernameText = vm.nameEN;
+                        }
+                        if (res.data.skyroomAccess) {
+                            vm.showMeeting = true;
+                        }
+                    });
             },
             getUserPic: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 axios.get(url + "/api/user/photo") //
                     .then((res) => {
-                        if(res.data == "Problem" || res.data == "NotExist"){
+                        if (res.data == "Problem" || res.data == "NotExist") {
                             vm.userPicture = "images/PlaceholderUser.png";
-                        }else{
+                        } else {
                             vm.userPicture = "/api/user/photo";
                         }
                     })
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (error.response) {
                             if (error.response.status == 400 || error.response.status == 500 || error.response.status == 403) {
                                 vm.userPicture = "images/PlaceholderUser.png";
-                            }else{
+                            } else {
                                 vm.userPicture = "/api/user/photo";
                             }
                         }
@@ -205,61 +205,61 @@ document.addEventListener('DOMContentLoaded', function () {
                     method: "get",
                     url: url + "/api/roles/users", //
                 })
-                .then((res) => {
-                    for(let i = 0; i < res.data.length; ++i){
-                        res.data[i].checked = false;
-                        if(res.data[i].role == "SUPERUSER"){
-                            res.data[i].roleFa = "مدیر کل";
-                            res.data[i].icon = "color: #dc3545;";
-                            superAdminTempList.push(res.data[i]);
-                        }else if(res.data[i].role == "SUPPORTER"){
-                            res.data[i].roleFa = "پشتیبانی";
-                            res.data[i].icon = "color: #28a745;";
-                            supporterTempList.push(res.data[i]);
-                        }else if(res.data[i].role == "ADMIN"){
-                            res.data[i].roleFa = "مدیر";
-                            res.data[i].icon = "color: #007bff;";
-                            adminTempList.push(res.data[i]);
-                        }else if(res.data[i].role == "PRESENTER"){
-                            res.data[i].roleFa = "ارائه دهنده";
-                            res.data[i].icon = "color: #00f7f7;";
-                            presenterTempList.push(res.data[i]);
-                        }else if(res.data[i].role == "USER"){
-                            res.data[i].roleFa = "کاربر";
-                            res.data[i].icon = "color: #ffc107;";
-                            userTempList.push(res.data[i]);
+                    .then((res) => {
+                        for (let i = 0; i < res.data.length; ++i) {
+                            res.data[i].checked = false;
+                            if (res.data[i].role == "SUPERUSER") {
+                                res.data[i].roleFa = "مدیر کل";
+                                res.data[i].icon = "color: #dc3545;";
+                                superAdminTempList.push(res.data[i]);
+                            } else if (res.data[i].role == "SUPPORTER") {
+                                res.data[i].roleFa = "پشتیبانی";
+                                res.data[i].icon = "color: #28a745;";
+                                supporterTempList.push(res.data[i]);
+                            } else if (res.data[i].role == "ADMIN") {
+                                res.data[i].roleFa = "مدیر";
+                                res.data[i].icon = "color: #007bff;";
+                                adminTempList.push(res.data[i]);
+                            } else if (res.data[i].role == "PRESENTER") {
+                                res.data[i].roleFa = "ارائه دهنده";
+                                res.data[i].icon = "color: #00f7f7;";
+                                presenterTempList.push(res.data[i]);
+                            } else if (res.data[i].role == "USER") {
+                                res.data[i].roleFa = "کاربر";
+                                res.data[i].icon = "color: #ffc107;";
+                                userTempList.push(res.data[i]);
+                            }
                         }
-                    }
-                    vm.userList = superAdminTempList.concat(supporterTempList, adminTempList, presenterTempList, userTempList);
-                    vm.loader = false;
-                });
+                        vm.userList = superAdminTempList.concat(supporterTempList, adminTempList, presenterTempList, userTempList);
+                        vm.loader = false;
+                    });
             },
             editRole: function () {
                 let url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
                 let vm = this;
                 let role = document.getElementById("role").value;
-                if(role == ""){
+                if (role == "") {
                     alert(this.noRoleSelectedAlertText);
-                }else if(this.editList.length == 0){
+                } else if (this.editList.length == 0) {
                     alert(this.noUserAddedAlertText);
-                }else{
+                } else {
                     let check = confirm(this.confirmationText);
-                    if(check){
+                    if (check) {
                         axios({
                             method: "put",
                             url: url + "/api/roles/" + role, //
-                            headers: {"Content-Type": "application/json"},
+                            headers: { "Content-Type": "application/json" },
                             data: JSON.stringify({
                                 names: vm.editList
                             }).replace(/\\\\/g, "\\")
                         })
-                        .then((res) => {
-                            vm.userListSearch = "";
-                            vm.userList = [];
-                            vm.editList = [];
-                            document.getElementById("role").value = "";
-                            vm.getUsers();
-                        });
+                            .then((res) => {
+                                vm.userListSearch = "";
+                                vm.userList = [];
+                                vm.editList = [];
+                                document.getElementById("role").value = "";
+                                vm.getUsers();
+                            });
                     }
                 }
             },
@@ -270,16 +270,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (editListIndex > -1) {
                     this.editList.splice(editListIndex, 1);
                     this.userList[userListIndex].checked = false;
-                }else{
+                } else {
                     this.editList.push(user.userId);
                     this.userList[userListIndex].checked = true;
                 }
             },
-            preventCheckbox(e){
+            preventCheckbox(e) {
                 e.preventDefault();
             },
             changeLang: function () {
-                if(this.lang == "EN"){
+                if (this.lang == "EN") {
                     window.localStorage.setItem("lang", "EN");
                     this.lang = "فارسی";
                     this.isRtl = false;
@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.inviteToMeetingText = "Invite To Meeting";
                     this.copyText = "Copy";
                     this.returnText = "Return";
-                } else{
+                } else {
                     window.localStorage.setItem("lang", "FA");
                     this.lang = "EN";
                     this.isRtl = true;
@@ -384,17 +384,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         },
-        computed:{
-            usersListResult(){
-                if(this.userListSearch){
-                  let buffer = [];
-                  buffer = buffer.concat(this.userList.filter((item)=>{
-                    return this.userListSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v))
-                  }));
-                  let uniqueBuffer = [...new Set(buffer)];
-                  return uniqueBuffer;
-                }else{
-                  return [];
+        computed: {
+            usersListResult() {
+                if (this.userListSearch) {
+                    let buffer = [];
+                    buffer = buffer.concat(this.userList.filter((item) => {
+                        return this.userListSearch.toLowerCase().split(" ").every(v => item.userId.toLowerCase().includes(v))
+                    }));
+                    let uniqueBuffer = [...new Set(buffer)];
+                    return uniqueBuffer;
+                } else {
+                    return [];
                 }
             }
         }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fa" class="h-100">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,8 +11,8 @@
     <link href="css/Events/style.css" rel="stylesheet">
     <link href="css/FontAwesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="fonts/IranSans/font.css" rel="stylesheet">
-    <link href="css/persian-datepicker.min.css" rel="stylesheet"/>
-    
+    <link href="css/persian-datepicker.min.css" rel="stylesheet" />
+
 
     <script src="js/es6-promise.min.js"></script>
     <script src="js/es6-promise.auto.min.js"></script>
@@ -28,119 +29,122 @@
 
 </head>
 <script type="text/javascript">
-    $(document).ready(function() {
-      $(".datePickerFa").pDatepicker({
-        inline: false,
-        format: "LL",
-        viewMode: "day",
-        initialValue: false,
-        initialValueType: "persian",
-        autoClose: true,
-        position: "auto",
-        altFormat: "lll",
-        altField: ".alt-field",
-        onlyTimePicker: false,
-        onlySelectOnDate: true,
-        calendarType: "persian",
-        inputDelay: 800,
-        observer: false,
-        calendar: {
-            persian: {
-            locale: "fa",
-            showHint: true,
-            leapYearMode: "algorithmic"
+    $(document).ready(function () {
+        $(".datePickerFa").pDatepicker({
+            inline: false,
+            format: "LL",
+            viewMode: "day",
+            initialValue: false,
+            initialValueType: "persian",
+            autoClose: true,
+            position: "auto",
+            altFormat: "lll",
+            altField: ".alt-field",
+            onlyTimePicker: false,
+            onlySelectOnDate: true,
+            calendarType: "persian",
+            inputDelay: 800,
+            observer: false,
+            calendar: {
+                persian: {
+                    locale: "fa",
+                    showHint: true,
+                    leapYearMode: "algorithmic"
+                },
+                gregorian: {
+                    locale: "en",
+                    showHint: true
+                }
             },
-            gregorian: {
-            locale: "en",
-            showHint: true
-            }
-        },
-        navigator: {
-            enabled: true,
-            scroll: {
-            enabled: true
+            navigator: {
+                enabled: true,
+                scroll: {
+                    enabled: true
+                },
+                text: {
+                    btnNextText: "<",
+                    btnPrevText: ">"
+                }
             },
-            text: {
-            btnNextText: "<",
-            btnPrevText: ">"
-            }
-        },
-        toolbox: {
-            enabled: true,
-            calendarSwitch: {
-            enabled: true,
-            format: "MMMM"
+            toolbox: {
+                enabled: true,
+                calendarSwitch: {
+                    enabled: true,
+                    format: "MMMM"
+                },
+                todayButton: {
+                    enabled: true,
+                    text: {
+                        fa: "امروز",
+                        en: "Today"
+                    }
+                },
+                submitButton: {
+                    enabled: true,
+                    text: {
+                        fa: "تایید",
+                        en: "Submit"
+                    }
+                },
+                text: {
+                    btnToday: "امروز"
+                }
             },
-            todayButton: {
-            enabled: true,
-            text: {
-                fa: "امروز",
-                en: "Today"
-            }
+            timePicker: {
+                enabled: false,
+                step: 1,
+                hour: {
+                    enabled: false,
+                    step: null
+                },
+                minute: {
+                    enabled: false,
+                    step: null
+                },
+                second: {
+                    enabled: false,
+                    step: null
+                },
+                meridian: {
+                    enabled: false
+                }
             },
-            submitButton: {
-            enabled: true,
-            text: {
-                fa: "تایید",
-                en: "Submit"
-            }
+            dayPicker: {
+                enabled: true,
+                titleFormat: "YYYY MMMM"
             },
-            text: {
-            btnToday: "امروز"
-            }
-        },
-        timePicker: {
-            enabled: false,
-            step: 1,
-            hour: {
-            enabled: false,
-            step: null
+            monthPicker: {
+                enabled: true,
+                titleFormat: "YYYY"
             },
-            minute: {
-            enabled: false,
-            step: null
+            yearPicker: {
+                enabled: true,
+                titleFormat: "YYYY"
             },
-            second: {
-            enabled: false,
-            step: null
-            },
-            meridian: {
-            enabled: false
-            }
-        },
-        dayPicker: {
-            enabled: true,
-            titleFormat: "YYYY MMMM"
-        },
-        monthPicker: {
-            enabled: true,
-            titleFormat: "YYYY"
-        },
-        yearPicker: {
-            enabled: true,
-            titleFormat: "YYYY"
-        },
-        responsive: true
+            responsive: true
         });
     });
 </script>
+
 <body class="h-100">
     <div id="app">
         <div id="overlay">
             <div id="overlayContent" v-bind:class="{rtl: isRtl}">
                 <div v-if="overlayLoader" style="text-align: center;">
-                    <roller-loader color="#007bff"/>
+                    <roller-loader color="#007bff" />
                 </div>
                 <div id="overlayBody">
                     <div class="form-group">
                         <div class="row mt-3 mb-5 ml-0 mr-0">
-                            <button v-on:click="openMeeting" class="btn btn-primary col-12">{{enterMeetingText}}</button>
+                            <button v-on:click="openMeeting"
+                                class="btn btn-primary col-12">{{enterMeetingText}}</button>
                         </div><br>
                         <p>{{inviteToMeetingText}}</p>
                         <div class="row ml-0 mr-0">
-                            <input id="copyMeetingLink" v-model:value="meetingGuestLink" type="text" class="form-control col-10" v-bind:style="meetingInviteLinkStyle" readonly>
+                            <input id="copyMeetingLink" v-model:value="meetingGuestLink" type="text"
+                                class="form-control col-10" v-bind:style="meetingInviteLinkStyle" readonly>
                             <button id="copyMeetingLinkBtn" v-bind:style="meetingInviteLinkCopyStyle"
-                                    v-on:click="copyMeetingLink" class="btn btn-sm btn-success col-2">{{copyText}}</button>
+                                v-on:click="copyMeetingLink" class="btn btn-sm btn-success col-2">{{copyText}}</button>
                         </div>
                     </div>
                 </div>
@@ -162,7 +166,7 @@
                         <div id="dropdownMenu" class="dropdown-content">
                             <a href="./logout">{{s2}}</a>
                         </div>
-                        <a id="langbtn" href="#"  v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
+                        <a id="langbtn" href="#" v-on:click="changeLang" v-bind:style="margin"><b>{{lang}}</b></a>
                     </div>
                 </div>
             </nav>
@@ -173,7 +177,8 @@
                             <div class="card-body p-0 pt-3">
 
                                 <div class="userpic mb-3" style="width: 130px;height: 130px;">
-                                    <img v-bind:src="userPicture" class="img-responsive avatar w-100 h-100" alt="Picture">
+                                    <img v-bind:src="userPicture" class="img-responsive avatar w-100 h-100"
+                                        alt="Picture">
                                     <a v-bind:href="userPicture" target="_blank"></a>
                                 </div>
 
@@ -201,69 +206,67 @@
                                 </div>
 
                                 <div class="list-group list-group-flush">
-                                    <a class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="s14">
+                                    <a class="list-group-item list-group-item-action py-2 " v-bind:href="s14">
                                         <i class="fa fa-dashboard fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s3}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="s15">
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 " v-bind:href="s15">
                                         <i class="fa fa-server fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s4}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="s16">
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 " v-bind:href="s16">
                                         <i class="fa fa-user fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s13}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="s21">
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 " v-bind:href="s21">
                                         <i class="fa fa-users fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s5}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="rolesURLText">
+                                    <a sec:authorize="hasRole('SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 " v-bind:href="rolesURLText">
                                         <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{rolesText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                       v-bind:href="publicmessagesURLText">
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 "
+                                        v-bind:href="publicmessagesURLText">
                                         <i class="fa fa-bell fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{publicmessagesText}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
-                                       v-bind:href="ticketingURLText">
+                                        v-bind:href="ticketingURLText">
                                         <i class="fa fa-ticket fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{ticketingText}}</span>
                                     </a>
                                     <a class="list-group-item list-group-item-action py-2 "
-                                    style="color: #fff; background-color: #007bff; border-color: #007bff;"
-                                    v-bind:href="s36">
+                                        style="color: #fff; background-color: #007bff; border-color: #007bff;"
+                                        v-bind:href="s36">
                                         <i class="fa fa-calendar fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s6}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="s46">
+                                    <a class="list-group-item list-group-item-action py-2 " v-bind:href="s46">
                                         <i class="fa fa-history fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s45}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2"
-                                       v-bind:href="reportsURLText">
+                                    <a class="list-group-item list-group-item-action py-2" v-bind:href="reportsURLText">
                                         <i class="fa fa-file fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{reportsText}}</span>
                                     </a>
-                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" class="list-group-item list-group-item-action py-2"
-                                       v-bind:href="transcriptsURLText">
+                                    <a sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2"
+                                        v-bind:href="transcriptsURLText">
                                         <i class="fa fa-file-text fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{transcriptsText}}</span>
                                     </a>
-                                    <a class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="s22">
+                                    <a class="list-group-item list-group-item-action py-2 " v-bind:href="s22">
                                         <i class="fa fa-cogs fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s7}}</span>
                                     </a>
-                                    <a sec:authorize="hasRole('SUPERUSER')" class="list-group-item list-group-item-action py-2 "
-                                    v-bind:href="s25">
+                                    <a sec:authorize="hasRole('SUPERUSER')"
+                                        class="list-group-item list-group-item-action py-2 " v-bind:href="s25">
                                         <i class="fa fa-cog fa-fw" aria-hidden="true"></i>&nbsp;
                                         <span>{{s24}}</span>
                                     </a>
@@ -278,29 +281,34 @@
                                     <div class="ml-0 mr-0">
                                         <h3 class="border-bottom pb-2">{{s6}}</h3>
                                     </div>
-                                    <div class="container mb-5 mr-0 ml-0 pr-0 pl-0" style="background-color: white; font-size: 15px;">
+                                    <div class="container mb-5 mr-0 ml-0 pr-0 pl-0"
+                                        style="background-color: white; font-size: 15px;">
                                         <div sec:authorize="hasAnyRole('USER', 'PRESENTER')" style="font-size: 15px;">
                                             <div class="row justify-content-center">
                                                 <div class="col-2"></div>
                                                 <div class="col-5">
-                                                    <input id="eventDate" type="text" :placeholder="s26" class="datePickerFa form-control icon-input">
-                                                    <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeEventDate()"></i>
+                                                    <input id="eventDate" type="text" :placeholder="s26"
+                                                        class="datePickerFa form-control icon-input">
+                                                    <i class="fa fa-times icon" v-bind:style="deleteInputIcon"
+                                                        v-on:click="removeEventDate()"></i>
                                                 </div>
                                                 <div class="col-3">
-                                                    <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getEventDate()">{{s27}}</button>
+                                                    <button class="btn btn-primary btn-sm w-100 h-100"
+                                                        v-on:click="getEventDate()">{{s27}}</button>
                                                 </div>
                                                 <div class="col-2"></div>
                                             </div>
                                             <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
-                                                <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
-                                                :labels="paginationAnchorTexts"></v-pagination>
+                                                <v-pagination v-model="currentPageEvent" :page-count="totalEvent"
+                                                    :classes="bootstrapPaginationClasses"
+                                                    :labels="paginationAnchorTexts"></v-pagination>
                                             </div>
                                             <div style="overflow: auto;">
                                                 <div class="table-wrapper">
                                                     <div v-if="isListEmpty" class="emptyList">
                                                         <div>
                                                             <i class="fa fa-signing fa-2x"></i>
-                                                        </div> 
+                                                        </div>
                                                         <div>
                                                             <span>{{s47}}</span>
                                                         </div>
@@ -326,12 +334,16 @@
                                                                     <td>{{eve.clock}}</td>
                                                                     <!-- <td>{{eve.service}}</td> -->
                                                                     <td class="text-center">
-                                                                        <span class="fa-stack" :style="eve.oscol" data-toggle="tooltip" data-placement="top" :title="eve.osdes">
+                                                                        <span class="fa-stack" :style="eve.oscol"
+                                                                            data-toggle="tooltip" data-placement="top"
+                                                                            :title="eve.osdes">
                                                                             <i :class="eve.os"></i>
                                                                         </span>
                                                                     </td>
                                                                     <td class="text-center">
-                                                                        <span class="fa-stack" :style="eve.browsercol" data-toggle="tooltip" data-placement="top" :title="eve.browserdes">
+                                                                        <span class="fa-stack" :style="eve.browsercol"
+                                                                            data-toggle="tooltip" data-placement="top"
+                                                                            :title="eve.browserdes">
                                                                             <i :class="eve.browser"></i>
                                                                         </span>
                                                                     </td>
@@ -342,16 +354,19 @@
                                                 </div>
                                             </div>
                                             <div class="p-2" style="direction: rtl;">
-                                                <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
-                                                :labels="paginationAnchorTexts"></v-pagination>
+                                                <v-pagination v-model="currentPageEvent" :page-count="totalEvent"
+                                                    :classes="bootstrapPaginationClasses"
+                                                    :labels="paginationAnchorTexts"></v-pagination>
                                             </div>
                                             <div class="row mt-3">
                                                 <div class="col-8"></div>
-                                                <div class="col-2 pr-0 pl-0 d-flex align-items-center justify-content-center">
+                                                <div
+                                                    class="col-2 pr-0 pl-0 d-flex align-items-center justify-content-center">
                                                     <label style="display: contents;">{{s44}}</label>
                                                 </div>
                                                 <div class="col-2 pr-2 pl-3">
-                                                    <select class="form-control" v-on:change="changeRecordsEvent($event)">
+                                                    <select class="form-control"
+                                                        v-on:change="changeRecordsEvent($event)">
                                                         <option value="20" selected>20</option>
                                                         <option value="50">50</option>
                                                         <option value="100">100</option>
@@ -361,40 +376,55 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')" style="font-size: 15px;">
+                                        <div sec:authorize="hasAnyRole('ADMIN', 'SUPPORTER', 'SUPERUSER')"
+                                            style="font-size: 15px;">
                                             <ul class="nav nav-tabs nav-justified">
                                                 <li class="nav-item">
-                                                    <a class="nav-link" @click.prevent="setActive('myEvents')" :class="{ active: isActive('myEvents') }" href="#myEvents">{{s31}}</a>
+                                                    <a class="nav-link" @click.prevent="setActive('myEvents')"
+                                                        :class="{ active: isActive('myEvents') }"
+                                                        href="#myEvents">{{s31}}</a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link" @click.prevent="setActive('usersEvents')" :class="{ active: isActive('usersEvents') }" href="#usersEvents">{{s32}}</a>
+                                                    <a class="nav-link" @click.prevent="setActive('usersEvents')"
+                                                        :class="{ active: isActive('usersEvents') }"
+                                                        href="#usersEvents">{{s32}}</a>
                                                 </li>
                                             </ul>
-                                            <div class="tab-content py-3" id="myTabContent" style="background-color: white;">
-                                                <div class="tab-pane fade" :class="{ 'active show': isActive('usersEvents') }" id="usersEvents">
+                                            <div class="tab-content py-3" id="myTabContent"
+                                                style="background-color: white;">
+                                                <div class="tab-pane fade"
+                                                    :class="{ 'active show': isActive('usersEvents') }"
+                                                    id="usersEvents">
                                                     <div class="row justify-content-center">
                                                         <div class="col-4">
-                                                            <input id="eventsUserId" v-model="eventsUserId" type="text" :placeholder="s33" class="form-control icon-input">
-                                                            <i class="fa fa-times icon" v-bind:style="deleteInputIcon1" v-on:click="removeEventsUserId()"></i>
+                                                            <input id="eventsUserId" v-model="eventsUserId" type="text"
+                                                                :placeholder="s33" class="form-control icon-input">
+                                                            <i class="fa fa-times icon" v-bind:style="deleteInputIcon1"
+                                                                v-on:click="removeEventsUserId()"></i>
                                                         </div>
                                                         <div class="col-2">
-                                                            <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getEventsUserId()">{{s27}}</button>
+                                                            <button class="btn btn-primary btn-sm w-100 h-100"
+                                                                v-on:click="getEventsUserId()">{{s27}}</button>
                                                         </div>
                                                         <div class="col-4">
-                                                            <input id="eventsDate" type="text" :placeholder="s26" class="datePickerFa form-control icon-input">
-                                                            <i class="fa fa-times icon" v-bind:style="deleteInputIcon1" v-on:click="removeEventsDate()"></i>
+                                                            <input id="eventsDate" type="text" :placeholder="s26"
+                                                                class="datePickerFa form-control icon-input">
+                                                            <i class="fa fa-times icon" v-bind:style="deleteInputIcon1"
+                                                                v-on:click="removeEventsDate()"></i>
                                                         </div>
                                                         <div class="col-2">
-                                                            <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getEventsDate()">{{s27}}</button>
+                                                            <button class="btn btn-primary btn-sm w-100 h-100"
+                                                                v-on:click="getEventsDate()">{{s27}}</button>
                                                         </div>
                                                     </div>
                                                     <div class="row justify-content-center mt-3">
                                                         <div class="col-10"></div>
                                                         <div class="col-2">
                                                             <div v-if="loader">
-                                                                <roller-loader color="#007bff"/>
+                                                                <roller-loader color="#007bff" />
                                                             </div>
-                                                            <button v-else class="btn btn-primary btn-sm w-100 h-100" v-on:click="exportEvents()">
+                                                            <button v-else class="btn btn-primary btn-sm w-100 h-100"
+                                                                v-on:click="exportEvents()">
                                                                 <span class="fa-stack">
                                                                     <i class="fa fa-upload fa-stack-1x"></i>
                                                                 </span>
@@ -403,21 +433,24 @@
                                                         </div>
                                                     </div>
                                                     <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
-                                                        <v-pagination  v-model="currentPageEvents" :page-count="totalEvents" :classes="bootstrapPaginationClasses"
-                                                        :labels="paginationAnchorTexts"></v-pagination>
+                                                        <v-pagination v-model="currentPageEvents"
+                                                            :page-count="totalEvents"
+                                                            :classes="bootstrapPaginationClasses"
+                                                            :labels="paginationAnchorTexts"></v-pagination>
                                                     </div>
                                                     <div style="overflow: auto;">
                                                         <div class="table-wrapper">
                                                             <div v-if="isListEmpty1" class="emptyList">
                                                                 <div>
                                                                     <i class="fa fa-signing fa-2x"></i>
-                                                                </div> 
+                                                                </div>
                                                                 <div>
                                                                     <span>{{s47}}</span>
                                                                 </div>
                                                             </div>
                                                             <div v-else>
-                                                                <table class="tableList table table-responsive p-2 text-center">
+                                                                <table
+                                                                    class="tableList table table-responsive p-2 text-center">
                                                                     <tr>
                                                                         <th>{{s28}}</th>
                                                                         <th>{{s37}}</th>
@@ -431,7 +464,8 @@
                                                                         <th>{{s43}}</th>
                                                                     </tr>
                                                                     <tbody id="body">
-                                                                        <tr v-for="event in sortedEvents" :style="event.rowStyle">
+                                                                        <tr v-for="event in sortedEvents"
+                                                                            :style="event.rowStyle">
                                                                             <td>{{event.action}}</td>
                                                                             <td>{{event.userId}}</td>
                                                                             <td>{{event.application}}</td>
@@ -441,12 +475,20 @@
                                                                             <td>{{event.clock}}</td>
                                                                             <!-- <td>{{event.service}}</td> -->
                                                                             <td class="text-center">
-                                                                                <span class="fa-stack" :style="event.oscol" data-toggle="tooltip" data-placement="top" :title="event.osdes">
+                                                                                <span class="fa-stack"
+                                                                                    :style="event.oscol"
+                                                                                    data-toggle="tooltip"
+                                                                                    data-placement="top"
+                                                                                    :title="event.osdes">
                                                                                     <i :class="event.os"></i>
                                                                                 </span>
                                                                             </td>
                                                                             <td class="text-center">
-                                                                                <span class="fa-stack" :style="event.browsercol" data-toggle="tooltip" data-placement="top" :title="event.browserdes">
+                                                                                <span class="fa-stack"
+                                                                                    :style="event.browsercol"
+                                                                                    data-toggle="tooltip"
+                                                                                    data-placement="top"
+                                                                                    :title="event.browserdes">
                                                                                     <i :class="event.browser"></i>
                                                                                 </span>
                                                                             </td>
@@ -457,16 +499,20 @@
                                                         </div>
                                                     </div>
                                                     <div class="p-2" style="direction: rtl;">
-                                                        <v-pagination  v-model="currentPageEvents" :page-count="totalEvents" :classes="bootstrapPaginationClasses"
-                                                        :labels="paginationAnchorTexts"></v-pagination>
+                                                        <v-pagination v-model="currentPageEvents"
+                                                            :page-count="totalEvents"
+                                                            :classes="bootstrapPaginationClasses"
+                                                            :labels="paginationAnchorTexts"></v-pagination>
                                                     </div>
                                                     <div class="row mt-3">
                                                         <div class="col-8"></div>
-                                                        <div class="col-2 pr-0 pl-0 d-flex align-items-center justify-content-center">
+                                                        <div
+                                                            class="col-2 pr-0 pl-0 d-flex align-items-center justify-content-center">
                                                             <label style="display: contents;">{{s44}}</label>
                                                         </div>
                                                         <div class="col-2 pr-2 pl-3">
-                                                            <select class="form-control" v-on:change="changeRecordsEvents($event)">
+                                                            <select class="form-control"
+                                                                v-on:change="changeRecordsEvents($event)">
                                                                 <option value="20" selected>20</option>
                                                                 <option value="50">50</option>
                                                                 <option value="100">100</option>
@@ -476,34 +522,41 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="tab-pane fade" :class="{ 'active show': isActive('myEvents') }" id="myEvents">
+                                                <div class="tab-pane fade"
+                                                    :class="{ 'active show': isActive('myEvents') }" id="myEvents">
                                                     <div class="row justify-content-center">
                                                         <div class="col-2"></div>
                                                         <div class="col-5">
-                                                            <input id="eventDate" type="text" :placeholder="s26" class="datePickerFa form-control icon-input">
-                                                            <i class="fa fa-times icon" v-bind:style="deleteInputIcon" v-on:click="removeEventDate()"></i>
+                                                            <input id="eventDate" type="text" :placeholder="s26"
+                                                                class="datePickerFa form-control icon-input">
+                                                            <i class="fa fa-times icon" v-bind:style="deleteInputIcon"
+                                                                v-on:click="removeEventDate()"></i>
                                                         </div>
                                                         <div class="col-3">
-                                                            <button class="btn btn-primary btn-sm w-100 h-100" v-on:click="getEventDate()">{{s27}}</button>
+                                                            <button class="btn btn-primary btn-sm w-100 h-100"
+                                                                v-on:click="getEventDate()">{{s27}}</button>
                                                         </div>
                                                         <div class="col-2"></div>
                                                     </div>
                                                     <div class="pb-2 pr-2 pl-2 pt-4" style="direction: rtl;">
-                                                        <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
-                                                        :labels="paginationAnchorTexts"></v-pagination>
+                                                        <v-pagination v-model="currentPageEvent"
+                                                            :page-count="totalEvent"
+                                                            :classes="bootstrapPaginationClasses"
+                                                            :labels="paginationAnchorTexts"></v-pagination>
                                                     </div>
                                                     <div style="overflow: auto;">
                                                         <div class="table-wrapper">
                                                             <div v-if="isListEmpty" class="emptyList">
                                                                 <div>
                                                                     <i class="fa fa-signing fa-2x"></i>
-                                                                </div> 
+                                                                </div>
                                                                 <div>
                                                                     <span>{{s47}}</span>
                                                                 </div>
                                                             </div>
                                                             <div v-else>
-                                                                <table class="tableList table table-responsive p-2 text-center">
+                                                                <table
+                                                                    class="tableList table table-responsive p-2 text-center">
                                                                     <tr>
                                                                         <th>{{s28}}</th>
                                                                         <th>{{s29}}</th>
@@ -515,7 +568,8 @@
                                                                         <th>{{s43}}</th>
                                                                     </tr>
                                                                     <tbody id="body">
-                                                                        <tr v-for="eve in sortedEvent" :style="eve.rowStyle">
+                                                                        <tr v-for="eve in sortedEvent"
+                                                                            :style="eve.rowStyle">
                                                                             <td>{{eve.action}}</td>
                                                                             <td>{{eve.application}}</td>
                                                                             <td>{{eve.clientIP}}</td>
@@ -523,12 +577,20 @@
                                                                             <td>{{eve.clock}}</td>
                                                                             <!-- <td>{{eve.service}}</td> -->
                                                                             <td class="text-center">
-                                                                                <span class="fa-stack" :style="eve.oscol" data-toggle="tooltip" data-placement="top" :title="eve.osdes">
+                                                                                <span class="fa-stack"
+                                                                                    :style="eve.oscol"
+                                                                                    data-toggle="tooltip"
+                                                                                    data-placement="top"
+                                                                                    :title="eve.osdes">
                                                                                     <i :class="eve.os"></i>
                                                                                 </span>
                                                                             </td>
                                                                             <td class="text-center">
-                                                                                <span class="fa-stack" :style="eve.browsercol" data-toggle="tooltip" data-placement="top" :title="eve.browserdes">
+                                                                                <span class="fa-stack"
+                                                                                    :style="eve.browsercol"
+                                                                                    data-toggle="tooltip"
+                                                                                    data-placement="top"
+                                                                                    :title="eve.browserdes">
                                                                                     <i :class="eve.browser"></i>
                                                                                 </span>
                                                                             </td>
@@ -539,16 +601,20 @@
                                                         </div>
                                                     </div>
                                                     <div class="p-2" style="direction: rtl;">
-                                                        <v-pagination v-model="currentPageEvent" :page-count="totalEvent" :classes="bootstrapPaginationClasses"
-                                                        :labels="paginationAnchorTexts"></v-pagination>
+                                                        <v-pagination v-model="currentPageEvent"
+                                                            :page-count="totalEvent"
+                                                            :classes="bootstrapPaginationClasses"
+                                                            :labels="paginationAnchorTexts"></v-pagination>
                                                     </div>
                                                     <div class="row mt-3">
                                                         <div class="col-8"></div>
-                                                        <div class="col-2 pr-0 pl-0 d-flex align-items-center justify-content-center">
+                                                        <div
+                                                            class="col-2 pr-0 pl-0 d-flex align-items-center justify-content-center">
                                                             <label style="display: contents;">{{s44}}</label>
                                                         </div>
                                                         <div class="col-2 pr-2 pl-3">
-                                                            <select class="form-control" v-on:change="changeRecordsEvent($event)">
+                                                            <select class="form-control"
+                                                                v-on:change="changeRecordsEvent($event)">
                                                                 <option value="20" selected>20</option>
                                                                 <option value="50">50</option>
                                                                 <option value="100">100</option>
@@ -571,13 +637,16 @@
                 <div class="container">
                     <div class="d-flex justify-content-center">
                         <a href="#" class="btn btn-link" style="text-decoration: none;" target="_blank">{{s10}}</a>
-                        <a v-bind:href="s23" class="btn btn-link" style="text-decoration: none;" target="_blank">{{s11}}</a>
-                        <a href="public/Parsso-User-Guide.pdf" class="btn btn-link" style="text-decoration: none;" target="_blank">{{s12}}</a>
+                        <a v-bind:href="s23" class="btn btn-link" style="text-decoration: none;"
+                            target="_blank">{{s11}}</a>
+                        <a href="public/Parsso-User-Guide.pdf" class="btn btn-link" style="text-decoration: none;"
+                            target="_blank">{{s12}}</a>
                     </div>
                 </div>
             </footer>
         </div>
     </div>
-    
+
 </body>
+
 </html>

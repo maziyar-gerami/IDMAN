@@ -29,10 +29,10 @@ document.addEventListener("DOMContentLoaded", function () {
         button: 'page-link'
       },
       paginationAnchorTexts: {
-          first: '<<',
-          prev: '<',
-          next: '>',
-          last: '>>'
+        first: '<<',
+        prev: '<',
+        next: '>',
+        last: '>>'
       },
       serviceTranscriptsCurrentPage: 1,
       serviceTranscriptsCurrentPageBuffer: 1,
@@ -121,9 +121,9 @@ document.addEventListener("DOMContentLoaded", function () {
       this.getUserPic();
       this.getServices();
       this.getServiceTranscripts();
-      if(window.localStorage.getItem("lang") === null){
+      if (window.localStorage.getItem("lang") === null) {
         window.localStorage.setItem("lang", "FA");
-      }else if(window.localStorage.getItem("lang") === "EN") {
+      } else if (window.localStorage.getItem("lang") === "EN") {
         this.changeLang();
       }
     },
@@ -138,16 +138,16 @@ document.addEventListener("DOMContentLoaded", function () {
         this.dateNavText = this.dateNav;
       },
       dropdownNavbar: function () {
-        if(this.dropdownMenu){
+        if (this.dropdownMenu) {
           let dropdowns = document.getElementsByClassName("dropdown-content");
           for (let i = 0; i < dropdowns.length; ++i) {
             let openDropdown = dropdowns[i];
-            if(openDropdown.classList.contains("show")) {
+            if (openDropdown.classList.contains("show")) {
               openDropdown.classList.remove("show");
             }
           }
           this.dropdownMenu = false;
-        }else{
+        } else {
           document.getElementById("dropdownMenu").classList.toggle("show");
           this.dropdownMenu = true;
         }
@@ -161,12 +161,12 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("overlay").style.display = "block";
         this.overlayLoader = true;
         axios.get(url + "/api/skyroom") //
-            .then((res) => {
-              vm.overlayLoader = false;
-              document.getElementById("overlayBody").style.display = "block";
-              vm.meetingAdminLink = res.data.presenter;
-              vm.meetingGuestLink = res.data.students;
-            });
+          .then((res) => {
+            vm.overlayLoader = false;
+            document.getElementById("overlayBody").style.display = "block";
+            vm.meetingAdminLink = res.data.presenter;
+            vm.meetingGuestLink = res.data.students;
+          });
       },
       closeOverlay: function () {
         document.getElementById("overlay").style.display = "none";
@@ -177,12 +177,12 @@ document.addEventListener("DOMContentLoaded", function () {
         copyText.select();
         document.execCommand("copy");
         document.getElementById("copyMeetingLinkBtn").disabled = true;
-        setTimeout(function(){ document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
+        setTimeout(function () { document.getElementById("copyMeetingLinkBtn").disabled = false; }, 3000);
       },
-      isActive (menuItem) {
+      isActive(menuItem) {
         return this.activeItem === menuItem
       },
-      setActive (menuItem) {
+      setActive(menuItem) {
         this.activeItem = menuItem
       },
       getUserInfo: function () {
@@ -193,12 +193,12 @@ document.addEventListener("DOMContentLoaded", function () {
             vm.username = res.data.userId;
             vm.name = res.data.displayName;
             vm.nameEN = res.data.firstName + " " + res.data.lastName;
-            if(window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA"){
+            if (window.localStorage.getItem("lang") === null || window.localStorage.getItem("lang") === "FA") {
               vm.s1 = vm.name;
-            }else if(window.localStorage.getItem("lang") === "EN") {
+            } else if (window.localStorage.getItem("lang") === "EN") {
               vm.s1 = vm.nameEN;
             }
-            if(res.data.skyroomAccess){
+            if (res.data.skyroomAccess) {
               vm.showMeeting = true;
             }
           });
@@ -208,9 +208,9 @@ document.addEventListener("DOMContentLoaded", function () {
         let vm = this;
         axios.get(url + "/api/user/photo") //
           .then((res) => {
-            if(res.data === "Problem" || res.data === "NotExist"){
+            if (res.data === "Problem" || res.data === "NotExist") {
               vm.userPicture = "images/PlaceholderUser.png";
-            }else{
+            } else {
               vm.userPicture = "/api/user/photo";
             }
           })
@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (error.response) {
               if (error.response.status === 400 || error.response.status === 500 || error.response.status === 403) {
                 vm.userPicture = "images/PlaceholderUser.png";
-              }else{
+              } else {
                 vm.userPicture = "/api/user/photo";
               }
             }
@@ -239,15 +239,15 @@ document.addEventListener("DOMContentLoaded", function () {
         let vm = this;
         let date;
 
-        if(document.getElementById("serviceTranscriptsFilterDate").value.split("/").length === 3){
+        if (document.getElementById("serviceTranscriptsFilterDate").value.split("/").length === 3) {
           date = this.FaNumToEnNum(document.getElementById("serviceTranscriptsFilterDate").value.split("/")[2]) +
-              this.FaNumToEnNum(document.getElementById("serviceTranscriptsFilterDate").value.split("/")[1]) +
-              this.FaNumToEnNum(document.getElementById("serviceTranscriptsFilterDate").value.split("/")[0]);
-        }else {
+            this.FaNumToEnNum(document.getElementById("serviceTranscriptsFilterDate").value.split("/")[1]) +
+            this.FaNumToEnNum(document.getElementById("serviceTranscriptsFilterDate").value.split("/")[0]);
+        } else {
           date = document.getElementById("serviceTranscriptsFilterDate").value;
         }
 
-        if(src !== "pagination"){
+        if (src !== "pagination") {
           this.serviceTranscriptsCurrentPageBuffer = 1;
           this.serviceTranscriptsCurrentPage = this.serviceTranscriptsCurrentPageBuffer;
         }
@@ -257,15 +257,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         axios.get(url + "/api/logs/reports/serviceAccess", {
           params: {
-              count: vm.serviceTranscriptsRecordsOnPage,
-              page: vm.serviceTranscriptsCurrentPageBuffer,
-              id: document.getElementById("serviceTranscriptsFilterId").value,
-              name: document.getElementById("serviceTranscriptsFilterName").value,
-              doerId: document.getElementById("serviceTranscriptsFilterDoerId").value,
-              date: date
+            count: vm.serviceTranscriptsRecordsOnPage,
+            page: vm.serviceTranscriptsCurrentPageBuffer,
+            id: document.getElementById("serviceTranscriptsFilterId").value,
+            name: document.getElementById("serviceTranscriptsFilterName").value,
+            doerId: document.getElementById("serviceTranscriptsFilterDoerId").value,
+            date: date
           }
         }).then((res) => {
-          for(let i = 0; i < res.data.reportMessageList.length; ++i){
+          for (let i = 0; i < res.data.reportMessageList.length; ++i) {
             res.data.reportMessageList[i].recordNumber = i + 1;
           }
           vm.serviceTranscripts = res.data.reportMessageList;
@@ -273,27 +273,27 @@ document.addEventListener("DOMContentLoaded", function () {
           vm.serviceTranscriptsLoader = false;
         });
       },
-      changeActiveFilter: function(filter) {
-        for(const prop in this.serviceTranscriptsFilterController){
+      changeActiveFilter: function (filter) {
+        for (const prop in this.serviceTranscriptsFilterController) {
           this.serviceTranscriptsFilterController[prop] = prop === filter;
         }
-        let timer = setInterval(function() {
-          if($("#serviceTranscriptsFilter" + filter).is(":visible")){
+        let timer = setInterval(function () {
+          if ($("#serviceTranscriptsFilter" + filter).is(":visible")) {
             $("#serviceTranscriptsFilter" + filter).focus();
             clearInterval(timer);
           }
         }, 100);
       },
-      removeServiceTranscriptsFilter: function(filter) {
-        if(filter === "id"){
+      removeServiceTranscriptsFilter: function (filter) {
+        if (filter === "id") {
           document.getElementById("serviceTranscriptsFilterId").value = "";
-        }else if(filter === "name"){
+        } else if (filter === "name") {
           document.getElementById("serviceTranscriptsFilterName").selectedIndex = "0";
-        }else if(filter === "doerId"){
+        } else if (filter === "doerId") {
           document.getElementById("serviceTranscriptsFilterDoerId").value = "";
-        }else if(filter === "date"){
+        } else if (filter === "date") {
           document.getElementById("serviceTranscriptsFilterDate").value = "";
-        }else if(filter === "all"){
+        } else if (filter === "all") {
           document.getElementById("serviceTranscriptsFilterId").value = "";
           document.getElementById("serviceTranscriptsFilterName").selectedIndex = "0";
           document.getElementById("serviceTranscriptsFilterDoerId").value = "";
@@ -301,7 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         this.getServiceTranscripts();
       },
-      changeRecordsOnPage: function(event) {
+      changeRecordsOnPage: function (event) {
         this.serviceTranscriptsRecordsOnPage = event.target.value;
         this.getServiceTranscripts();
         document.getElementById("serviceTranscriptsFilterCount").selectedIndex = "0";
@@ -309,26 +309,26 @@ document.addEventListener("DOMContentLoaded", function () {
       FaNumToEnNum: function (str) {
         let s = str.split("");
         let sEn = "";
-        for(let i = 0; i < s.length; ++i){
-          if(s[i] === "۰" || s[i] === "0"){
+        for (let i = 0; i < s.length; ++i) {
+          if (s[i] === "۰" || s[i] === "0") {
             sEn = sEn + "0";
-          }else if(s[i] === "۱" || s[i] === "1"){
+          } else if (s[i] === "۱" || s[i] === "1") {
             sEn = sEn + "1";
-          }else if(s[i] === "۲" || s[i] === "2"){
+          } else if (s[i] === "۲" || s[i] === "2") {
             sEn = sEn + "2";
-          }else if(s[i] === "۳" || s[i] === "3"){
+          } else if (s[i] === "۳" || s[i] === "3") {
             sEn = sEn + "3";
-          }else if(s[i] === "۴" || s[i] === "4"){
+          } else if (s[i] === "۴" || s[i] === "4") {
             sEn = sEn + "4";
-          }else if(s[i] === "۵" || s[i] === "5"){
+          } else if (s[i] === "۵" || s[i] === "5") {
             sEn = sEn + "5";
-          }else if(s[i] === "۶" || s[i] === "6"){
+          } else if (s[i] === "۶" || s[i] === "6") {
             sEn = sEn + "6";
-          }else if(s[i] === "۷" || s[i] === "7"){
+          } else if (s[i] === "۷" || s[i] === "7") {
             sEn = sEn + "7";
-          }else if(s[i] === "۸" || s[i] === "8"){
+          } else if (s[i] === "۸" || s[i] === "8") {
             sEn = sEn + "8";
-          }else if(s[i] === "۹" || s[i] === "9"){
+          } else if (s[i] === "۹" || s[i] === "9") {
             sEn = sEn + "9";
           }
         }
@@ -348,7 +348,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       },
       changeLang: function () {
-        if(this.lang === "EN"){
+        if (this.lang === "EN") {
           window.localStorage.setItem("lang", "EN");
           this.margin = "margin-left: 30px;";
           this.lang = "فارسی";
@@ -398,62 +398,62 @@ document.addEventListener("DOMContentLoaded", function () {
           this.entityText = "Entity";
           this.resultText = "Result";
           this.doerText = "Doer";
-        }else {
-            window.localStorage.setItem("lang", "FA");
-            this.margin = "margin-right: 30px;";
-            this.lang = "EN";
-            this.isRtl = true;
-            this.deleteInputIcon = "left: 7%;";
-            this.deleteInputIcon1 = "left: 10%;";
-            this.dateNavText = this.dateNav;
-            this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
-            this.s1 = this.name;
-            this.s2 = "خروج";
-            this.s3 = "داشبورد";
-            this.s4 = "سرویس ها";
-            this.s5 = "گروه ها";
-            this.s6 = "رویداد ها";
-            this.s7 = "پروفایل";
-            this.s10 = "قوانین";
-            this.s11 = "حریم خصوصی";
-            this.s12 = "راهنما";
-            this.s13 = "کاربران";
-            this.s24 = "پیکربندی";
-            this.s45 = "ممیزی ها";
-            this.rolesText = "نقش ها";
-            this.reportsText = "گزارش ها";
-            this.publicMessagesText = "اعلان های عمومی";
-            this.ticketingText = "پشتیبانی";
-            this.transcriptsText = "گزارش های دسترسی";
-            this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
-            this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
-            this.meetingText = "جلسه مجازی";
-            this.enterMeetingText = "ورود به جلسه";
-            this.inviteToMeetingText = "دعوت به جلسه";
-            this.copyText = "کپی";
-            this.returnText = "بازگشت";
-            this.recordNotFoundText = "موردی یافت نشد";
-            this.serviceReportText = "گزارش سرویس";
-            this.searchText = "جستجو";
-            this.serviceNameText = "نام سرویس";
-            this.date = "تاریخ";
-            this.time = "زمان";
-            this.deleteAllFiltersText = "حذف تمام فیلتر ها";
-            this.deleteFilterText = "حذف فیلتر";
-            this.recordsOnPageText = " رکورد در صفحه";
-            this.nameText = "نام";
-            this.persianNameText = "نام فارسی";
-            this.actionText = "عمل";
-            this.accessChangeText = "تغییر دسترسی";
-            this.entityText = "موجودیت";
-            this.resultText = "نتیجه";
-            this.doerText = "عامل";
+        } else {
+          window.localStorage.setItem("lang", "FA");
+          this.margin = "margin-right: 30px;";
+          this.lang = "EN";
+          this.isRtl = true;
+          this.deleteInputIcon = "left: 7%;";
+          this.deleteInputIcon1 = "left: 10%;";
+          this.dateNavText = this.dateNav;
+          this.s0 = "احراز هویت متمرکز شرکت نفت فلات قاره ایران";
+          this.s1 = this.name;
+          this.s2 = "خروج";
+          this.s3 = "داشبورد";
+          this.s4 = "سرویس ها";
+          this.s5 = "گروه ها";
+          this.s6 = "رویداد ها";
+          this.s7 = "پروفایل";
+          this.s10 = "قوانین";
+          this.s11 = "حریم خصوصی";
+          this.s12 = "راهنما";
+          this.s13 = "کاربران";
+          this.s24 = "پیکربندی";
+          this.s45 = "ممیزی ها";
+          this.rolesText = "نقش ها";
+          this.reportsText = "گزارش ها";
+          this.publicMessagesText = "اعلان های عمومی";
+          this.ticketingText = "پشتیبانی";
+          this.transcriptsText = "گزارش های دسترسی";
+          this.meetingInviteLinkStyle = "border-top-left-radius: 0;border-bottom-left-radius: 0;";
+          this.meetingInviteLinkCopyStyle = "border-top-right-radius: 0;border-bottom-right-radius: 0;";
+          this.meetingText = "جلسه مجازی";
+          this.enterMeetingText = "ورود به جلسه";
+          this.inviteToMeetingText = "دعوت به جلسه";
+          this.copyText = "کپی";
+          this.returnText = "بازگشت";
+          this.recordNotFoundText = "موردی یافت نشد";
+          this.serviceReportText = "گزارش سرویس";
+          this.searchText = "جستجو";
+          this.serviceNameText = "نام سرویس";
+          this.date = "تاریخ";
+          this.time = "زمان";
+          this.deleteAllFiltersText = "حذف تمام فیلتر ها";
+          this.deleteFilterText = "حذف فیلتر";
+          this.recordsOnPageText = " رکورد در صفحه";
+          this.nameText = "نام";
+          this.persianNameText = "نام فارسی";
+          this.actionText = "عمل";
+          this.accessChangeText = "تغییر دسترسی";
+          this.entityText = "موجودیت";
+          this.resultText = "نتیجه";
+          this.doerText = "عامل";
         }
       },
     },
-    watch : {
-      serviceTranscriptsCurrentPage : function () {
-        if(this.serviceTranscriptsCurrentPage !== this.serviceTranscriptsCurrentPageBuffer){
+    watch: {
+      serviceTranscriptsCurrentPage: function () {
+        if (this.serviceTranscriptsCurrentPage !== this.serviceTranscriptsCurrentPageBuffer) {
           this.serviceTranscriptsCurrentPageBuffer = this.serviceTranscriptsCurrentPage;
           this.getServiceTranscripts("pagination");
         }

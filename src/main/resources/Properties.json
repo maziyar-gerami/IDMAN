@@ -186,29 +186,29 @@
         }
     },
     {
-        "_id" : "password.change.limit",
-        "value" : "on",
-        "descriptionEN" : "Password change limit enable",
-        "descriptionFA" : "قابلیت حداکثر تعداد تغییر گذرواژه در یک روز",
-        "groupFA" : "گذر واژه",
-        "groupEN" : "Password",
-        "helpEN" : "Password change limit in each day status. Enable it if you want define this limitation",
-        "helpFA" : "محدود سازی تغییر گذرواژه در یک روز. در صورتی که چنین محدودیتی نیاز است، این سوییچ را فعال و تعداد را مشخص فرمایید.\",",
-        "type" : {
-            "type" : "switch"
+        "_id": "password.change.limit",
+        "value": "on",
+        "descriptionEN": "Password change limit enable",
+        "descriptionFA": "قابلیت حداکثر تعداد تغییر گذرواژه در یک روز",
+        "groupFA": "گذر واژه",
+        "groupEN": "Password",
+        "helpEN": "Password change limit in each day status. Enable it if you want define this limitation",
+        "helpFA": "محدود سازی تغییر گذرواژه در یک روز. در صورتی که چنین محدودیتی نیاز است، این سوییچ را فعال و تعداد را مشخص فرمایید.\",",
+        "type": {
+            "type": "switch"
         }
     },
     {
-        "_id" : "password.change.limit.number",
-        "value" : "3",
-        "descriptionEN" : "Password change limit in each day",
-        "descriptionFA" : "حدکثر تعداد تغییر گذرواژه در یک روز",
-        "groupFA" : "گذر واژه",
-        "groupEN" : "Password",
-        "helpEN" : "Password change limit in each day",
-        "helpFA" : "حدکثر تعداد تغییر گذرواژه در یک روز",
-        "type" : {
-            "type" : "integer"
+        "_id": "password.change.limit.number",
+        "value": "3",
+        "descriptionEN": "Password change limit in each day",
+        "descriptionFA": "حدکثر تعداد تغییر گذرواژه در یک روز",
+        "groupFA": "گذر واژه",
+        "groupEN": "Password",
+        "helpEN": "Password change limit in each day",
+        "helpFA": "حدکثر تعداد تغییر گذرواژه در یک روز",
+        "type": {
+            "type": "integer"
         }
     },
     {
