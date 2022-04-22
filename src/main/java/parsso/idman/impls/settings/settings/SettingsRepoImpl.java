@@ -1,8 +1,10 @@
 package parsso.idman.impls.settings.settings;
 
+import java.io.IOException;
+import java.util.List;
+import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -14,18 +16,15 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.configs.PasswordSettings;
 import parsso.idman.impls.settings.settings.subclasses.BackupSettings;
+import parsso.idman.impls.settings.settings.subclasses.BackupSettings.Backup;
 import parsso.idman.impls.settings.settings.subclasses.ResetSettings;
 import parsso.idman.impls.settings.settings.subclasses.RestoreSettings;
 import parsso.idman.impls.settings.settings.subclasses.RetrieveSettings;
 import parsso.idman.impls.settings.settings.subclasses.UpdateSettings;
-import parsso.idman.impls.settings.settings.subclasses.BackupSettings.Backup;
 import parsso.idman.models.other.Property;
 import parsso.idman.models.other.Setting;
 import parsso.idman.repos.SettingsRepo;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.List;
 
 @Service
 public class SettingsRepoImpl implements SettingsRepo {
@@ -35,8 +34,8 @@ public class SettingsRepoImpl implements SettingsRepo {
   UniformLogger uniformLogger;
 
   @Autowired
-  public SettingsRepoImpl(PasswordSettings passwordSettings, MongoTemplate mongoTemplate, LdapTemplate ldapTemplate,
-      UniformLogger uniformLogger) {
+  public SettingsRepoImpl(PasswordSettings passwordSettings,
+      MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger) {
     this.passwordSettings = passwordSettings;
     this.mongoTemplate = mongoTemplate;
     this.ldapTemplate = ldapTemplate;
@@ -63,7 +62,8 @@ public class SettingsRepoImpl implements SettingsRepo {
   @Override
   public HttpStatus update(String doer, List<Property> properties) {
 
-    return new UpdateSettings(passwordSettings, mongoTemplate, uniformLogger).update(doer, properties);
+    return new UpdateSettings(
+      passwordSettings, mongoTemplate, uniformLogger).update(doer, properties);
   }
 
   @Override
@@ -73,8 +73,9 @@ public class SettingsRepoImpl implements SettingsRepo {
 
   @Override
   public Object retrieveProperties(long id) {
-    if (id == 0)
+    if (id == 0) {
       return mongoTemplate.findAll(ID.class, Variables.col_propertiesBackup);
+    }
     return mongoTemplate.find(new Query(Criteria.where("_id").is(id)), Setting.class,
         Variables.col_propertiesBackup);
   }
@@ -98,13 +99,13 @@ public class SettingsRepoImpl implements SettingsRepo {
   @Setter
   @Getter
   private class ID {
-    private long _id;
+    private long id;
   }
 
   @Setter
   @Getter
   public class BackupData {
-    long _id;
+    long id;
     List<Setting> data;
   }
 }

@@ -27,10 +27,9 @@ public class RetrieveSettings {
         Variables.col_properties);
 
     assert sms_sdk != null;
-    if (sms_sdk.getValue().equalsIgnoreCase("magfa"))
+    if (sms_sdk.getValue().equalsIgnoreCase("magfa")) {
       settings.removeIf(s -> s.get_id().equalsIgnoreCase(Variables.KAVENEGAR_API_KEY));
-
-    else if (sms_sdk.getValue().toString().equalsIgnoreCase("kavenegar")) {
+    } else if (sms_sdk.getValue().toString().equalsIgnoreCase("kavenegar")) {
       settings.removeIf(s -> s.get_id().equalsIgnoreCase(Variables.SMS_MAGFA_USERNAME));
       settings.removeIf(s -> s.get_id().equalsIgnoreCase(Variables.SMS_MAGFA_PASSWORD));
     }
@@ -39,15 +38,17 @@ public class RetrieveSettings {
         new Query(Criteria.where("_id").is(Variables.PASSWORD_CHANGE_LIMIT)), Setting.class,
         Variables.col_properties);
 
-    if (passwordLimit.getValue().equals("off"))
+    if (Boolean.getBoolean(passwordLimit.getValue())) {
       settings.removeIf(s -> s.get_id().equalsIgnoreCase(Variables.PASSWORD_CHANGE_LIMIT_NUMBER));
+    }
 
     boolean skyroom = Boolean
         .parseBoolean(mongoTemplate.findOne(new Query(Criteria.where("_id").is(Variables.SKYROOM_ENABLE)),
             Setting.class, Variables.col_properties).getValue().toString());
 
-    if (!skyroom)
+    if (!skyroom) {
       settings.removeIf(s -> s.get_id().equalsIgnoreCase("skyroom.api.key"));
+    }
 
     if (Integer.parseInt(pwd.getPwdCheckQuality()) == 0) {
       settings.removeIf(s -> s.get_id().equalsIgnoreCase("pwdMinLength"));
@@ -64,10 +65,11 @@ public class RetrieveSettings {
       if (setting.getGroupEN().equalsIgnoreCase("Password") && setting.getValue() == null) {
         switch (setting.get_id()) {
           case ("pwdCheckQuality"):
-            if (Integer.parseInt(pwd.getPwdCheckQuality()) > 0)
+            if (Integer.parseInt(pwd.getPwdCheckQuality()) > 0) {
               setting.setValue("true");
-            else
+            } else {
               setting.setValue("false");
+            }
             break;
 
           case ("pwdFailureCountInterval"):
@@ -99,12 +101,15 @@ public class RetrieveSettings {
             break;
 
           case ("pwdMinLength"):
-            if (Integer.parseInt(pwd.getPwdCheckQuality()) > 0)
+            if (Integer.parseInt(pwd.getPwdCheckQuality()) > 0) {
               setting.setValue(pwd.getPwdMinLength());
+            }
             break;
 
           case ("pwdExpireWarning"):
             setting.setValue(pwd.getPwdExpireWarning());
+            break;
+          default:
             break;
         }
 

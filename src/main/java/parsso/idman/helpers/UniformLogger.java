@@ -1,5 +1,7 @@
 package parsso.idman.helpers;
 
+import java.util.LinkedList;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +12,6 @@ import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.logs.Change;
 import parsso.idman.models.logs.ReportMessage;
 
-import java.util.LinkedList;
-import java.util.List;
 
 @Service
 public class UniformLogger {

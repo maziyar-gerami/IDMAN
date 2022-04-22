@@ -43,8 +43,8 @@ public class SupplementaryRepoImpl implements UserRepo.Supplementary {
   @Override
   public boolean accessChangePassword(User user) {
 
-    if (new Settings(mongoTemplate).retrieve(
-          Variables.PASSWORD_CHANGE_LIMIT).getValue().equals("on")) {
+    if (Boolean.valueOf(new Settings(mongoTemplate).retrieve(
+          (Variables.PASSWORD_CHANGE_LIMIT)).getValue())) {
       if (sameDayPasswordChanges(new Date().getTime(),
            user.getUsersExtraInfo().getChangePassword().getTime())) {
         if (user.getUsersExtraInfo().getChangePassword().getN() >= Integer

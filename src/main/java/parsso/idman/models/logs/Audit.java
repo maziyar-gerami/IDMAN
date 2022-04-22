@@ -1,22 +1,27 @@
 package parsso.idman.models.logs;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mongodb.lang.NonNull;
+
+import java.util.Date;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.query.Query;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Time;
 
-import java.util.Date;
-import java.util.List;
-
 @Setter
 @Getter
 public class Audit {
-  ObjectId _id;
+  @JsonProperty("_id")
+  ObjectId id;
   private String principal;
+  @TextIndexed
   private String resourceOperatedUpon;
   private String actionPerformed;
   private String applicationCode;
@@ -25,6 +30,8 @@ public class Audit {
   private Date whenActionWasPerformed;
   private String clientIpAddress;
   private String serverIpAddress;
+  @NonNull
+  private String service;
 
   public static List<Audit> analyze(MongoTemplate mongoTemplate, int skip, int limit) {
     Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
