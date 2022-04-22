@@ -236,7 +236,7 @@ public class PostSettings {
     Setting s2 = new Setting();
 
     s1.set_id("password.change.limit");
-    s1.setValue("on");
+    s1.setValue("true");
     s1.setDescriptionEN("Password change limit enable");
     s1.setDescriptionFA("قابلیت حداکثر تعداد تغییر گذرواژه در یک روز");
     s1.setGroupEN("Password");

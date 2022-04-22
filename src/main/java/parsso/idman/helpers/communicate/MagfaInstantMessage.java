@@ -1,26 +1,36 @@
 package parsso.idman.helpers.communicate;
 
-import org.springframework.data.mongodb.core.MongoTemplate;
-import parsso.idman.helpers.Settings;
-import parsso.idman.helpers.Variables;
-import parsso.idman.utils.sms.magfa.classes.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import parsso.idman.helpers.Settings;
+import parsso.idman.helpers.Variables;
+import parsso.idman.utils.sms.magfa.classes.IntArray;
+import parsso.idman.utils.sms.magfa.classes.LongArray;
+import parsso.idman.utils.sms.magfa.classes.MagfaSoapServer;
+import parsso.idman.utils.sms.magfa.classes.MagfaSoapServer_Service;
+import parsso.idman.utils.sms.magfa.classes.StringArray;
 
-public class MagfaSMS {
+
+
+
+public class MagfaInstantMessage {
   final MongoTemplate mongoTemplate;
   String message;
 
-  public MagfaSMS(MongoTemplate mongoTemplate, String message) {
+  public MagfaInstantMessage(MongoTemplate mongoTemplate, String message) {
     this.mongoTemplate = mongoTemplate;
     this.message = message;
   }
 
-  public MagfaSMS(MongoTemplate mongoTemplate) {
+  public MagfaInstantMessage(MongoTemplate mongoTemplate) {
     this.mongoTemplate = mongoTemplate;
   }
 

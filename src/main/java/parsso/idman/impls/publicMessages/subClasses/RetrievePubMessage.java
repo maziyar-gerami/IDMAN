@@ -20,7 +20,7 @@ public class RetrievePubMessage {
     if (id.equals(""))
       return mongoTemplate.find(new Query(new Criteria()), PublicMessage.class, Variables.col_publicMessage);
 
-    return mongoTemplate.find(new Query(Criteria.where("_id").is(id)), PublicMessage.class,
+    return mongoTemplate.find(new Query(Criteria.where("messageId").is(id)), PublicMessage.class,
         Variables.col_publicMessage);
   }
 

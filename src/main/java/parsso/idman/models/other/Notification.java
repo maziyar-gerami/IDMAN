@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
-import parsso.idman.helpers.communicate.MagfaSMS;
+import parsso.idman.helpers.communicate.MagfaInstantMessage;
 import parsso.idman.models.users.User;
 import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
 import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
@@ -55,7 +55,7 @@ public class Notification implements Comparable {
     try {
       Texts texts = new Texts();
       texts.passwordChangeNotification();
-      new MagfaSMS(mongoTemplate).SendMessage(user.getMobile(), 1L);
+      new MagfaInstantMessage(mongoTemplate).SendMessage(user.getMobile(), 1L);
       return Integer
           .parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString());
     } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
