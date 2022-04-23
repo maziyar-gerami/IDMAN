@@ -21,6 +21,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
   Path photoPathRoot;
   Path servicesPathRoot;
   String serviceIcon;
+  @Autowired
   MongoTemplate mongoTemplate;
 
   @Autowired
