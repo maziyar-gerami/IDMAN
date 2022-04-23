@@ -877,7 +877,7 @@ export default {
         this.inboxFilters.date = this.dateSerializer(document.getElementById("inboxFilters.date").value)
         this.loadingInbox = true
         this.axios({
-          url: "http://localhost:8080/api/supporter/tickets/inbox/" + String(vm.newPageNumberInbox) + "/" + String(vm.rowsPerPageInbox),
+          url: "/api/supporter/tickets/inbox/" + String(vm.newPageNumberInbox) + "/" + String(vm.rowsPerPageInbox),
           method: "GET",
           params: {
             id: vm.inboxFilters._id,
@@ -912,7 +912,7 @@ export default {
       } else if (command === "getTicket") {
         this.loadingInbox = true
         this.axios({
-          url: "http://localhost:8080/api/user/ticket/" + vm.toolbarBuffer,
+          url: "/api/user/ticket/" + vm.toolbarBuffer,
           method: "GET",
           params: {
             lang: langCode
@@ -934,7 +934,7 @@ export default {
       } else if (command === "replyTicket") {
         this.loadingInbox = true
         this.axios({
-          url: "http://localhost:8080/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
+          url: "/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
           method: "PUT",
           params: {
             lang: langCode
@@ -957,7 +957,7 @@ export default {
       } else if (command === "reply&closeTicket") {
         this.loadingInbox = true
         this.axios({
-          url: "http://localhost:8080/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
+          url: "/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
           method: "PUT",
           params: {
             lang: langCode
@@ -986,7 +986,7 @@ export default {
         }
         this.loadingInbox = true
         this.axios({
-          url: "http://localhost:8080/api/supporter/ticket/status/2",
+          url: "/api/supporter/ticket/status/2",
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           params: {
@@ -1011,7 +1011,7 @@ export default {
         const toolbarBufferList = [this.toolbarBuffer]
         this.loadingInbox = true
         this.axios({
-          url: "http://localhost:8080/api/user/tickets",
+          url: "/api/user/tickets",
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           params: {
@@ -1039,7 +1039,7 @@ export default {
         }
         this.loadingInbox = true
         this.axios({
-          url: "http://localhost:8080/api/user/tickets",
+          url: "/api/user/tickets",
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           params: {
@@ -1074,7 +1074,7 @@ export default {
         this.ticketsFilters.date = this.dateSerializer(document.getElementById("ticketsFilters.date").value)
         this.loadingTickets = true
         this.axios({
-          url: "http://localhost:8080/api/supporter/tickets/" + String(vm.newPageNumberTickets) + "/" + String(vm.rowsPerPageTickets),
+          url: "/api/supporter/tickets/" + String(vm.newPageNumberTickets) + "/" + String(vm.rowsPerPageTickets),
           method: "GET",
           params: {
             id: vm.ticketsFilters._id,
@@ -1103,7 +1103,7 @@ export default {
       } else if (command === "getTicket") {
         this.loadingTickets = true
         this.axios({
-          url: "http://localhost:8080/api/user/ticket/" + vm.toolbarBuffer,
+          url: "/api/user/ticket/" + vm.toolbarBuffer,
           method: "GET",
           params: {
             lang: langCode
@@ -1125,7 +1125,7 @@ export default {
       } else if (command === "replyTicket") {
         this.loadingTickets = true
         this.axios({
-          url: "http://localhost:8080/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
+          url: "/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
           method: "PUT",
           params: {
             lang: langCode
@@ -1148,7 +1148,7 @@ export default {
       } else if (command === "reply&closeTicket") {
         this.loadingTickets = true
         this.axios({
-          url: "http://localhost:8080/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
+          url: "/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
           method: "PUT",
           params: {
             lang: langCode
@@ -1177,7 +1177,7 @@ export default {
         }
         this.loadingTickets = true
         this.axios({
-          url: "http://localhost:8080/api/supporter/ticket/status/2",
+          url: "/api/supporter/ticket/status/2",
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           params: {
@@ -1202,7 +1202,7 @@ export default {
         const toolbarBufferList = [this.toolbarBuffer]
         this.loadingTickets = true
         this.axios({
-          url: "http://localhost:8080/api/user/tickets",
+          url: "/api/user/tickets",
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           params: {
@@ -1230,7 +1230,7 @@ export default {
         }
         this.loadingTickets = true
         this.axios({
-          url: "http://localhost:8080/api/user/tickets",
+          url: "/api/user/tickets",
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           params: {
@@ -1265,7 +1265,7 @@ export default {
         this.archivesFilters.date = this.dateSerializer(document.getElementById("archivesFilters.date").value)
         this.loadingArchives = true
         this.axios({
-          url: "http://localhost:8080/api/superuser/tickets/archive/" + String(vm.newPageNumberArchives) + "/" + String(vm.rowsPerPageArchives),
+          url: "/api/superuser/tickets/archive/" + String(vm.newPageNumberArchives) + "/" + String(vm.rowsPerPageArchives),
           method: "GET",
           params: {
             id: vm.archivesFilters._id,
@@ -1293,7 +1293,7 @@ export default {
       } else if (command === "getTicket") {
         this.loadingArchives = true
         this.axios({
-          url: "http://localhost:8080/api/user/ticket/" + vm.toolbarBuffer,
+          url: "/api/user/ticket/" + vm.toolbarBuffer,
           method: "GET",
           params: {
             lang: langCode
@@ -1325,7 +1325,7 @@ export default {
       if (command === "getUserTickets") {
         this.loadingUserTickets = true
         this.axios({
-          url: "http://localhost:8080/api/user/tickets/sent/" + String(vm.newPageNumberUserTickets) + "/" + String(vm.rowsPerPageUserTickets),
+          url: "/api/user/tickets/sent/" + String(vm.newPageNumberUserTickets) + "/" + String(vm.rowsPerPageUserTickets),
           method: "GET",
           params: {
             lang: langCode
@@ -1350,7 +1350,7 @@ export default {
       } else if (command === "getTicket") {
         this.loadingUserTickets = true
         this.axios({
-          url: "http://localhost:8080/api/user/ticket/" + vm.toolbarBuffer,
+          url: "/api/user/ticket/" + vm.toolbarBuffer,
           method: "GET",
           params: {
             lang: langCode
@@ -1372,7 +1372,7 @@ export default {
       } else if (command === "createTicket") {
         this.loadingUserTickets = true
         this.axios({
-          url: "http://localhost:8080/api/user/ticket",
+          url: "/api/user/ticket",
           method: "POST",
           params: {
             lang: langCode
@@ -1397,7 +1397,7 @@ export default {
       } else if (command === "replyTicket") {
         this.loadingUserTickets = true
         this.axios({
-          url: "http://localhost:8080/api/user/ticket/reply/" + vm.replyTicketUser._id,
+          url: "/api/user/ticket/reply/" + vm.replyTicketUser._id,
           method: "PUT",
           params: {
             lang: langCode
@@ -1421,7 +1421,7 @@ export default {
         const toolbarBufferList = [this.toolbarBuffer]
         this.loadingUserTickets = true
         this.axios({
-          url: "http://localhost:8080/api/user/tickets",
+          url: "/api/user/tickets",
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           params: {
@@ -1449,7 +1449,7 @@ export default {
         }
         this.loadingUserTickets = true
         this.axios({
-          url: "http://localhost:8080/api/user/tickets",
+          url: "/api/user/tickets",
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           params: {
