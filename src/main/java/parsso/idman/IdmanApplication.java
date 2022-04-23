@@ -1,5 +1,7 @@
 package parsso.idman;
 
+import javax.annotation.Resource;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.session.SingleSignOutFilter;
@@ -12,6 +14,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
@@ -29,9 +32,16 @@ import parsso.idman.repos.FilesStorageService;
 public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
   public IdmanApplication() {
   }
-  private static final Logger logger = LogManager.getLogger("System");
   @Autowired
-  FilesStorageService storageService;
+    static MongoTemplate mongoTemplate;
+    /**
+     * The Storage service.
+     */
+    @Resource
+    FilesStorageService storageService;
+
+  private static final Logger logger = LogManager.getLogger("System");
+
   @Autowired
   CasUserDetailService casUserDetailService;
 
