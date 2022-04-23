@@ -1,17 +1,15 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to AccessReports"/>
+  <div class="grid">
+    <div class="col-12">
+      <div class="card">
+        <h3>{{ $t("accessReports") }}</h3>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from "@/components/HelloWorld.vue"
-
 export default {
-  name: "AccessReports",
-  components: {
-    HelloWorld
-  }
+  name: "AccessReports"
 }
 </script>

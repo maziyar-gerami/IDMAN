@@ -4,7 +4,9 @@ import "primeicons/primeicons.css"
 import "prismjs/themes/prism-coy.css"
 import "./assets/styles/layout.scss"
 import "@fortawesome/fontawesome-free/css/all.css"
+import "boxicons/css/boxicons.min.css"
 import "./assets/styles/iziToast.min.css"
+import "persian-datepicker/dist/css/persian-datepicker.css"
 
 import ParssoConfigs from "./Configs.json"
 import ParssoMessages from "./Messages.json"
@@ -16,6 +18,8 @@ import router from "./router"
 import { createI18n } from "vue-i18n"
 import axios from "axios"
 import VueAxios from "vue-axios"
+import jQuery from "jquery"
+import persianDate from "persian-date"
 import PrimeVue from "primevue/config"
 import Ripple from "primevue/ripple"
 import StyleClass from "primevue/styleclass"
@@ -30,6 +34,33 @@ import Badge from "primevue/badge"
 import Toolbar from "primevue/toolbar"
 import DataTable from "primevue/datatable"
 import Column from "primevue/column"
+import InputText from "primevue/inputtext"
+import InputNumber from "primevue/inputnumber"
+import Dropdown from "primevue/dropdown"
+import Paginator from "primevue/paginator"
+import TabView from "primevue/tabview"
+import TabPanel from "primevue/tabpanel"
+import ProgressSpinner from "primevue/progressspinner"
+import ToggleButton from "primevue/togglebutton"
+import MultiSelect from "primevue/multiselect"
+import Textarea from "primevue/textarea"
+import Fieldset from "primevue/fieldset"
+import Password from "primevue/password"
+import Divider from "primevue/divider"
+import Checkbox from "primevue/checkbox"
+import BlockUI from "primevue/blockui"
+import Tag from "primevue/tag"
+import OverlayPanel from "primevue/overlaypanel"
+import Listbox from "primevue/listbox"
+import PickList from "primevue/picklist"
+import Steps from "primevue/steps"
+import Dialog from "primevue/dialog"
+import InputSwitch from "primevue/inputswitch"
+import Editor from "primevue/editor"
+
+window.$ = jQuery
+window.jQuery = jQuery
+window.persianDate = persianDate
 
 const i18n = createI18n({
   locale: "Fa",
@@ -41,14 +72,14 @@ const store = createStore({
     return {
       languages: ParssoConfigs.languages,
       version: ParssoConfigs.app.version,
-      lastError: 403,
       appName: ParssoConfigs.app.Fa,
       clientName: ParssoConfigs.client.Fa,
       direction: ParssoConfigs.languages.Fa,
+      reverseDirection: ParssoConfigs.reverseDirection.Fa,
       accessLevel: 0, // 0 for not logged in, 1 for "USER" and "PRESENTER", 2 for "SUPPORTER", 3 for "ADMIN", 4 for "SUPERUSER"
       userId: "",
       displayName: "",
-      farsiFont: ParssoConfigs.font.Fa,
+      persianFont: ParssoConfigs.font.Fa,
       alignRTL: ParssoConfigs.alignRTL.Fa,
       alignLTR: ParssoConfigs.alignLTR.Fa,
       translations: {},
@@ -59,14 +90,12 @@ const store = createStore({
     }
   },
   mutations: {
-    errorChange (state, error) {
-      state.lastError = error
-    },
     languageChange (state, language) {
       state.appName = ParssoConfigs.app[language]
       state.clientName = ParssoConfigs.client[language]
       state.direction = ParssoConfigs.languages[language]
-      state.farsiFont = ParssoConfigs.font[language]
+      state.reverseDirection = ParssoConfigs.reverseDirection[language]
+      state.persianFont = ParssoConfigs.font[language]
       state.alignRTL = ParssoConfigs.alignRTL[language]
       state.alignLTR = ParssoConfigs.alignLTR[language]
       for (const translation in state.translations) {
@@ -78,28 +107,26 @@ const store = createStore({
       }
     },
     setAccessLevel (state) {
-      /* axios.get("https://parsso2.razi.ac.ir/api/users")
-        .then((res) => {
-          if (res.data.role === "SUPERUSER") {
-            state.accessLevel = 4
-          } else if (res.data.role === "ADMIN") {
-            state.accessLevel = 3
-          } else if (res.data.role === "SUPPORTER") {
-            state.accessLevel = 2
-          } else if (res.data.role === "USER" || res.data.role === "PRESENTER") {
-            state.accessLevel = 1
-          } else {
-            state.accessLevel = 0
-          }
-          state.userId = res.data.userId
-          state.displayName = res.data.displayName
-        })
-        .catch(() => {
+      axios({
+        url: "/api/user",
+        method: "GET"
+      }).then((res) => {
+        if (res.data.data.role === "SUPERUSER") {
+          state.accessLevel = 4
+        } else if (res.data.data.role === "ADMIN") {
+          state.accessLevel = 3
+        } else if (res.data.data.role === "SUPPORTER") {
+          state.accessLevel = 2
+        } else if (res.data.data.role === "USER" || res.data.data.role === "PRESENTER") {
+          state.accessLevel = 1
+        } else {
           state.accessLevel = 0
-        }) */
-      state.accessLevel = 4
-      state.userId = "admin"
-      state.displayName = "مدیر ویژه"
+        }
+        state.userId = res.data.data.userId
+        state.displayName = res.data.data.displayName
+      }).catch(() => {
+        state.accessLevel = 0
+      })
     }
   }
 })
@@ -110,22 +137,19 @@ router.beforeEach(function (to, from, next) {
     if (store.state.accessLevel >= 4) {
       next()
     } else {
-      store.commit("errorChange", 403)
-      next({ path: "/error" })
+      next({ path: "/403" })
     }
   } else if (to.meta.requiresAccessLevel === 2) {
     if (store.state.accessLevel >= 2) {
       next()
     } else {
-      store.commit("errorChange", 403)
-      next({ path: "/error" })
+      next({ path: "/403" })
     }
   } else if (to.meta.requiresAccessLevel === 1) {
     if (store.state.accessLevel >= 1) {
       next()
     } else {
-      store.commit("errorChange", 403)
-      next({ path: "/error" })
+      next({ path: "/403" })
     }
   } else {
     next()
@@ -156,5 +180,28 @@ app.component("Badge", Badge)
 app.component("Toolbar", Toolbar)
 app.component("DataTable", DataTable)
 app.component("Column", Column)
+app.component("InputText", InputText)
+app.component("InputNumber", InputNumber)
+app.component("Dropdown", Dropdown)
+app.component("Paginator", Paginator)
+app.component("TabView", TabView)
+app.component("TabPanel", TabPanel)
+app.component("ProgressSpinner", ProgressSpinner)
+app.component("ToggleButton", ToggleButton)
+app.component("MultiSelect", MultiSelect)
+app.component("Textarea", Textarea)
+app.component("Fieldset", Fieldset)
+app.component("Password", Password)
+app.component("Divider", Divider)
+app.component("Checkbox", Checkbox)
+app.component("BlockUI", BlockUI)
+app.component("Tag", Tag)
+app.component("OverlayPanel", OverlayPanel)
+app.component("Listbox", Listbox)
+app.component("PickList", PickList)
+app.component("Dialog", Dialog)
+app.component("Steps", Steps)
+app.component("InputSwitch", InputSwitch)
+app.component("Editor", Editor)
 
 app.mount("#app")

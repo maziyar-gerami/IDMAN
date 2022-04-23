@@ -3,7 +3,7 @@
     <router-link to="/" class="layout-topbar-logo">
       <span>{{ $store.state.clientName }}</span>
     </router-link>
-    <p :style="'font-family: ' + this.$store.state.farsiFont" class="dateTime mx-3">{{ setDate }}|{{ time }}</p>
+    <p :style="'font-family: ' + this.$store.state.persianFont" class="dateTime mx-3">{{ setDate }}|{{ time }}</p>
     <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle">
       <i class="pi pi-bars"></i>
     </button>
@@ -16,7 +16,7 @@
     <ul class="layout-topbar-menu hidden lg:flex origin-top">
       <li v-if="$store.state.accessLevel > 0">
         <button class="topbarBtn" :dir="$store.state.direction">
-          <SpeedDial :model="profileList" direction="down" showIcon="pi pi-user" :rotateAnimation="false" :tooltipOptions="{ position: this.$store.state.alignRTL }" style="top: 0;" />
+          <SpeedDial :model="profileList" direction="down" showIcon="bx bxs-user" :rotateAnimation="false" :tooltipOptions="{ position: this.$store.state.alignRTL }" style="top: 0;" />
         </button>
       </li>
       <li>
@@ -60,6 +60,20 @@ export default {
     setTime () {
       const clock = new Date()
       this.time = "  " + this.zeroPadding(clock.getHours(), 2) + ":" + this.zeroPadding(clock.getMinutes(), 2) + ":" + this.zeroPadding(clock.getSeconds(), 2) + "  "
+    },
+    changeOnLanguageChange () {
+      this.$primevue.config.locale.startsWith = this.$t("startsWith")
+      this.$primevue.config.locale.contains = this.$t("contains")
+      this.$primevue.config.locale.notContains = this.$t("notContains")
+      this.$primevue.config.locale.endsWith = this.$t("endsWith")
+      this.$primevue.config.locale.equals = this.$t("equals")
+      this.$primevue.config.locale.notEquals = this.$t("notEquals")
+      this.$primevue.config.locale.clear = this.$t("clear")
+      this.$primevue.config.locale.apply = this.$t("apply")
+      this.$primevue.config.locale.matchAll = this.$t("matchAll")
+      this.$primevue.config.locale.matchAny = this.$t("matchAny")
+      this.$primevue.config.locale.addRule = this.$t("addFilter")
+      this.$primevue.config.locale.removeRule = this.$t("removeFilter")
     }
   },
   computed: {
@@ -67,14 +81,14 @@ export default {
       return [
         {
           label: this.$t("profile"),
-          icon: "pi pi-id-card",
+          icon: "bx bxs-id-card bx-sm",
           command: () => {
             this.$router.push("Profile")
           }
         },
         {
           label: this.$t("logout"),
-          icon: "pi pi-sign-out",
+          icon: "bx bx-log-out bx-sm",
           command: () => {
             window.location.href = "/logout"
           }
@@ -93,6 +107,7 @@ export default {
               command: () => {
                 this.$i18n.locale = language
                 this.$store.commit("languageChange", language)
+                this.changeOnLanguageChange()
               }
             }
           )

@@ -27,12 +27,6 @@ const routes = [
     meta: { requiresAccessLevel: 0 }
   },
   {
-    path: "/error",
-    name: "Error",
-    component: () => import("../views/Error.vue"),
-    meta: { requiresAccessLevel: 0 }
-  },
-  {
     path: "/events",
     name: "Events",
     component: () => import("../views/Events.vue"),
@@ -107,6 +101,18 @@ const routes = [
   {
     path: "/Parsso-User-Guide.pdf",
     name: "Parsso-User-Guide.pdf",
+    meta: { requiresAccessLevel: 0 }
+  },
+  {
+    path: "/403",
+    name: "Error403",
+    component: () => import("../views/Error403.vue"),
+    meta: { requiresAccessLevel: 0 }
+  },
+  {
+    path: "/:catchAll(.*)",
+    name: "Error404",
+    component: () => import("../views/Error404.vue"),
     meta: { requiresAccessLevel: 0 }
   }
 ]

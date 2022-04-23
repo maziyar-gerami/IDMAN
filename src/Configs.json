@@ -13,6 +13,10 @@
         "Fa": "rtl",
         "En": "ltr"
     },
+    "reverseDirection": {
+        "Fa": "ltr",
+        "En": "rtl"
+    },
     "font": {
         "Fa": "IRANSansWeb-PersianNumbers",
         "En": ""

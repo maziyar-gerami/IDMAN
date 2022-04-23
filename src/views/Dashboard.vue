@@ -2,25 +2,25 @@
   <div class="grid mt-0 h-full">
     <div v-if="$store.state.accessLevel > 1" class="col-12 lg:col-4 xl:col-4 pt-0">
       <div class="card mb-0 h-full">
-        <h4 :style="'font-family: ' + this.$store.state.farsiFont">{{ usersChartTitle }} ({{ usersChartAll }})</h4>
+        <h4 :style="'font-family: ' + this.$store.state.persianFont">{{ usersChartTitle }} ({{ usersChartAll }})</h4>
         <Chart type="pie" :data="usersChartData" :options="lightOptions" :width="550" :height="200" />
       </div>
     </div>
     <div v-if="$store.state.accessLevel > 1" class="col-12 lg:col-4 xl:col-4 pt-0">
       <div class="card mb-0 h-full">
-        <h4 :style="'font-family: ' + this.$store.state.farsiFont">{{ servicesChartTitle }} ({{ servicesChartAll }})</h4>
+        <h4 :style="'font-family: ' + this.$store.state.persianFont">{{ servicesChartTitle }} ({{ servicesChartAll }})</h4>
         <Chart type="pie" :data="servicesChartData" :options="lightOptions" :width="550" :height="200" />
       </div>
     </div>
     <div v-if="$store.state.accessLevel > 1" class="col-12 lg:col-4 xl:col-4 pt-0">
       <div class="card mb-0 h-full">
-        <h4 :style="'font-family: ' + this.$store.state.farsiFont">{{ todaysLoginsChartTitle }} ({{ todaysLoginsChartAll }})</h4>
+        <h4 :style="'font-family: ' + this.$store.state.persianFont">{{ todaysLoginsChartTitle }} ({{ todaysLoginsChartAll }})</h4>
         <Chart type="pie" :data="todaysLoginsChartData" :options="lightOptions" :width="550" :height="200" />
       </div>
     </div>
     <div class="col-12 lg:col-12 xl:col-12 mb-0 pb-0">
       <div class="card mb-0 h-full">
-        <DataView :value="services" :layout="layout" paginatorPosition="both" :paginator="true" :rows="4" :rowsPerPageOptions="[4, 8, 16, 24]" :pageLinkSize="5">
+        <DataView :value="services" :layout="layout" paginatorPosition="both" :paginator="true" :rows="4" :rowsPerPageOptions="[4,8,16,24]" :pageLinkSize="5">
           <template #header>
             <div class="grid grid-nogutter">
               <div :class="'col-6 align-self-center text-' + this.$store.state.alignRTL">
@@ -140,394 +140,121 @@ export default {
           }
         }
       },
-      services: [
-        {
-          serviceId: "http://localhost:8080/login/cas",
-          _id: 1638885239567,
-          name: "Localhost",
-          description: "11لوکال هاست",
-          logo: "images/servicePlaceholder.jpg",
-          url: "http://localhost:8080",
-          position: 11,
-          notification: {
-            count: 22,
-            notifications: [
-              {
-                title: "Test Parso #1",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #2",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #3",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #4",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              }
-            ],
-            inconsistency: null,
-            return: {
-              status: 405,
-              message: "فرمت آدرس API صحیح نیست."
-            }
-          },
-          dailyAccess: null,
-          ipaddresses: null
-        },
-        {
-          serviceId: "https://blog.pars-sso.ir/wp-admin",
-          _id: 1609055559871,
-          name: "weblog",
-          description: "3وبلاگ پارسو",
-          logo: "images/servicePlaceholder.jpg",
-          url: "https://blog.pars-sso.ir",
-          position: 3,
-          notification: {
-            count: 0,
-            notifications: [],
-            inconsistency: null,
-            return: {
-              status: 405,
-              message: "فرمت آدرس API صحیح نیست."
-            }
-          },
-          dailyAccess: null,
-          ipaddresses: null
-        },
-        {
-          serviceId: "https://blog.pars-sso.ir/wp-admin",
-          _id: 1609055559555,
-          name: "web",
-          description: "1وبلاگ",
-          logo: "images/servicePlaceholder.jpg",
-          url: "https://blog.pars-sso.ir",
-          position: 1,
-          notification: {
-            count: 4,
-            notifications: [
-              {
-                title: "Test Parso #1",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #2",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #3",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #4",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              }
-            ],
-            inconsistency: null,
-            return: {
-              status: 405,
-              message: "فرمت آدرس API صحیح نیست."
-            }
-          },
-          dailyAccess: null,
-          ipaddresses: null
-        },
-        {
-          serviceId: "http://localhost:8080/login/cas",
-          _id: 1638885236667,
-          name: "Localhost",
-          description: "6لوکال هاست",
-          logo: "images/servicePlaceholder.jpg",
-          url: "http://localhost:8080",
-          position: 6,
-          notification: {
-            count: 22,
-            notifications: [
-              {
-                title: "Test Parso #1",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #2",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #3",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #4",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              }
-            ],
-            inconsistency: null,
-            return: {
-              status: 405,
-              message: "فرمت آدرس API صحیح نیست."
-            }
-          },
-          dailyAccess: null,
-          ipaddresses: null
-        },
-        {
-          serviceId: "https://blog.pars-sso.ir/wp-admin",
-          _id: 16090145559871,
-          name: "weblog",
-          description: "5وبلاگ پارسو",
-          logo: "images/servicePlaceholder.jpg",
-          url: "https://blog.pars-sso.ir",
-          position: 5,
-          notification: {
-            count: 0,
-            notifications: [],
-            inconsistency: null,
-            return: {
-              status: 405,
-              message: "فرمت آدرس API صحیح نیست."
-            }
-          },
-          dailyAccess: null,
-          ipaddresses: null
-        },
-        {
-          serviceId: "https://blog.pars-sso.ir/wp-admin",
-          _id: 1509055559555,
-          name: "web",
-          description: "20وبلاگ",
-          logo: "images/servicePlaceholder.jpg",
-          url: "https://blog.pars-sso.ir",
-          position: 20,
-          notification: {
-            count: 4,
-            notifications: [
-              {
-                title: "Test Parso #1",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #2",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #3",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #4",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              }
-            ],
-            inconsistency: null,
-            return: {
-              status: 405,
-              message: "فرمت آدرس API صحیح نیست."
-            }
-          },
-          dailyAccess: null,
-          ipaddresses: null
-        },
-        {
-          serviceId: "http://localhost:8080/login/cas",
-          _id: 2638885239567,
-          name: "Localhost",
-          description: "13لوکال هاست",
-          logo: "images/servicePlaceholder.jpg",
-          url: "http://localhost:8080",
-          position: 13,
-          notification: {
-            count: 22,
-            notifications: [
-              {
-                title: "Test Parso #1",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #2",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #3",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #4",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              }
-            ],
-            inconsistency: null,
-            return: {
-              status: 405,
-              message: "فرمت آدرس API صحیح نیست."
-            }
-          },
-          dailyAccess: null,
-          ipaddresses: null
-        },
-        {
-          serviceId: "https://blog.pars-sso.ir/wp-admin",
-          _id: 3609055559871,
-          name: "weblog",
-          description: "8وبلاگ پارسو",
-          logo: "images/servicePlaceholder.jpg",
-          url: "https://blog.pars-sso.ir",
-          position: 8,
-          notification: {
-            count: 0,
-            notifications: [],
-            inconsistency: null,
-            return: {
-              status: 405,
-              message: "فرمت آدرس API صحیح نیست."
-            }
-          },
-          dailyAccess: null,
-          ipaddresses: null
-        },
-        {
-          serviceId: "https://blog.pars-sso.ir/wp-admin",
-          _id: 1609055359553,
-          name: "web",
-          description: "16وبلاگ",
-          logo: "images/servicePlaceholder.jpg",
-          url: "https://blog.pars-sso.ir",
-          position: 16,
-          notification: {
-            count: 4,
-            notifications: [
-              {
-                title: "Test Parso #1",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #2",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #3",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              },
-              {
-                title: "Test Parso #4",
-                url: "Http://thr.iooc.local",
-                timestamp: 1630000000000
-              }
-            ],
-            inconsistency: null,
-            return: {
-              status: 405,
-              message: "فرمت آدرس API صحیح نیست."
-            }
-          },
-          dailyAccess: null,
-          ipaddresses: null
-        }
-      ],
+      services: [],
       layout: "grid"
     }
   },
-  created () {
-    const vm = this
-    /* this.axios.get("/api/dashboard")
-      .then((res) => {
-        vm.usersChartData.datasets.data[2] = res.data.users.active
-        vm.usersChartData.datasets.data[1] = res.data.users.disabled
-        vm.usersChartData.datasets.data[0] = res.data.users.locked
-        vm.usersChartAll = res.data.users.total
+  mounted () {
+    if (this.$store.state.accessLevel > 1) {
+      this.ticketingRequestMaster("getDashboardInfo")
+    }
+    this.ticketingRequestMaster("getUserServices")
+  },
+  methods: {
+    ticketingRequestMaster (command) {
+      const vm = this
+      let langCode = ""
+      if (this.$i18n.locale === "Fa") {
+        langCode = "fa"
+      } else if (this.$i18n.locale === "En") {
+        langCode = "en"
+      }
+      if (command === "getDashboardInfo") {
+        this.axios({
+          url: "/api/dashboard",
+          method: "GET",
+          params: {
+            lang: langCode
+          }
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            vm.usersChartData.datasets.data[2] = res.data.data.users.active
+            vm.usersChartData.datasets.data[1] = res.data.data.users.disabled
+            vm.usersChartData.datasets.data[0] = res.data.data.users.locked
+            vm.usersChartAll = res.data.data.users.total
 
-        vm.servicesChartData.datasets.data[1] = res.data.services.enabled
-        vm.servicesChartData.datasets.data[0] = res.data.services.disabled
-        vm.servicesChartAll = res.data.services.total
+            vm.servicesChartData.datasets.data[1] = res.data.data.services.enabled
+            vm.servicesChartData.datasets.data[0] = res.data.data.services.disabled
+            vm.servicesChartAll = res.data.data.services.total
 
-        vm.todaysLoginsChartData.datasets.data[1] = res.data.logins.successful
-        vm.todaysLoginsChartData.datasets.data[0] = res.data.logins.unsuccessful
-        vm.todaysLoginsChartAll = res.data.logins.total
-      })
+            vm.todaysLoginsChartData.datasets.data[1] = res.data.data.logins.successful
+            vm.todaysLoginsChartData.datasets.data[0] = res.data.data.logins.unsuccessful
+            vm.todaysLoginsChartAll = res.data.data.logins.total
+          } else {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          }
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+        })
+      } else if (command === "getUserServices") {
+        this.axios({
+          url: "/api/services/user",
+          method: "GET"
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            for (let i = 0; i < res.data.data.length; ++i) {
+              if (typeof res.data.data[i].logo !== "undefined") {
+                if (res.data.data[i].logo === "") {
+                  res.data.data[i].logo = "images/servicePlaceholder.jpg"
+                }
+              } else {
+                res.data.data[i].logo = "images/servicePlaceholder.jpg"
+              }
 
-    this.axios.get("/api/services/user")
-      .then((res) => {
-        for (let i = 0; i < res.data.length; ++i) {
-          if (typeof res.data[i].logo !== "undefined") {
-            if (res.data[i].logo === "") {
-              res.data[i].logo = "images/servicePlaceholder.jpg"
+              // eslint-disable-next-line prefer-const
+              let translationId = "dashboardService_" + String(res.data.data[i]._id)
+              vm.$store.state.translationsSwitch.Fa[translationId] = res.data.data[i].description
+              vm.$store.state.translationsSwitch.En[translationId] = res.data.data[i].name
+              vm.$store.state.translations[translationId] = res.data.data[i].description
+
+              res.data.data[i].serviceId = res.data.data[i].serviceId.replace(/\((.*?)\)/g, "")
+              res.data.data[i].serviceId = res.data.data[i].serviceId.replace(/\^/g, "")
+              res.data.data[i].serviceId = res.data.data[i].serviceId.replace(/\\/g, "\\\\")
+
+              if (vm.services[i].notification.count > 10) {
+                vm.services[i].notification.realCount = "10+"
+              } else {
+                vm.services[i].notification.realCount = String(vm.services[i].notification.count)
+              }
+
+              vm.services = res.data.data
+            }
+            vm.services.sort((a, b) => b.position - a.position)
+          } else {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          }
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+        })
+
+        for (let i = 0; i < vm.services.length; ++i) {
+          if (typeof vm.services[i].logo !== "undefined") {
+            if (vm.services[i].logo === "") {
+              vm.services[i].logo = "images/servicePlaceholder.jpg"
             }
           } else {
-            res.data[i].logo = "images/servicePlaceholder.jpg"
+            vm.services[i].logo = "images/servicePlaceholder.jpg"
           }
 
           // eslint-disable-next-line prefer-const
-          let translationId = "dashboardService_" + String(res.data[i]._id)
-          vm.$store.state.translationsSwitch.Fa[translationId] = res.data[i].description
-          vm.$store.state.translationsSwitch.En[translationId] = res.data[i].name
-          vm.$store.state.translations[translationId] = res.data[i].description
+          let translationId = "dashboardService_" + String(vm.services[i]._id)
+          vm.$store.state.translationsSwitch.Fa[translationId] = vm.services[i].description
+          vm.$store.state.translationsSwitch.En[translationId] = vm.services[i].name
+          vm.$store.state.translations[translationId] = vm.services[i].description
 
-          res.data[i].serviceId = res.data[i].serviceId.replace(/\((.*?)\)/g, "")
-          res.data[i].serviceId = res.data[i].serviceId.replace(/\^/g, "")
-          res.data[i].serviceId = res.data[i].serviceId.replace(/\\/g, "\\\\")
+          vm.services[i].serviceId = vm.services[i].serviceId.replace(/\((.*?)\)/g, "")
+          vm.services[i].serviceId = vm.services[i].serviceId.replace(/\^/g, "")
+          vm.services[i].serviceId = vm.services[i].serviceId.replace(/\\/g, "\\\\")
 
           if (vm.services[i].notification.count > 10) {
             vm.services[i].notification.realCount = "10+"
           } else {
             vm.services[i].notification.realCount = String(vm.services[i].notification.count)
           }
-
-          vm.services = res.data
         }
         vm.services.sort((a, b) => b.position - a.position)
-      }) */
-    for (let i = 0; i < vm.services.length; ++i) {
-      if (typeof vm.services[i].logo !== "undefined") {
-        if (vm.services[i].logo === "") {
-          vm.services[i].logo = "images/servicePlaceholder.jpg"
-        }
-      } else {
-        vm.services[i].logo = "images/servicePlaceholder.jpg"
       }
-
-      // eslint-disable-next-line prefer-const
-      let translationId = "dashboardService_" + String(vm.services[i]._id)
-      vm.$store.state.translationsSwitch.Fa[translationId] = vm.services[i].description
-      vm.$store.state.translationsSwitch.En[translationId] = vm.services[i].name
-      vm.$store.state.translations[translationId] = vm.services[i].description
-
-      vm.services[i].serviceId = vm.services[i].serviceId.replace(/\((.*?)\)/g, "")
-      vm.services[i].serviceId = vm.services[i].serviceId.replace(/\^/g, "")
-      vm.services[i].serviceId = vm.services[i].serviceId.replace(/\\/g, "\\\\")
-
-      if (vm.services[i].notification.count > 10) {
-        vm.services[i].notification.realCount = "10+"
-      } else {
-        vm.services[i].notification.realCount = String(vm.services[i].notification.count)
-      }
-    }
-    vm.services.sort((a, b) => b.position - a.position)
-  },
-  methods: {
+    },
     showServiceNotification (id) {
       const vm = this
       for (let i = 0; i < this.services.length; ++i) {
@@ -544,14 +271,20 @@ export default {
               message: this.services[i].notification.notifications[j].title,
               position: position,
               backgroundColor: "#A3DBF1",
+              icon: "pi pi-bell",
+              transitionIn: "fadeInLeft",
               rtl: rtl,
               layout: 2,
               timeout: false,
               progressBar: false,
               buttons: [
-                ["<button class='service-notification-button'>" + this.$t("more") + "</button>",
+                [
+                  "<button class='service-notification-button' style='border-radius: 6px;'>" + this.$t("more") + "</button>",
                   function (instance, toast) {
                     window.open(vm.services[i].notification.notifications[j].url)
+                    instance.hide({
+                      transitionOut: "fadeOutRight"
+                    }, toast)
                   }
                 ]
               ]
@@ -560,6 +293,34 @@ export default {
           break
         }
       }
+    },
+    alertPromptMaster (title, message, icon, background) {
+      let rtl = true
+      if (this.$store.state.direction === "ltr") {
+        rtl = false
+      }
+      iziToast.show({
+        title: title,
+        message: message,
+        position: "center",
+        icon: "pi " + icon,
+        backgroundColor: background,
+        transitionIn: "fadeInLeft",
+        rtl: rtl,
+        layout: 2,
+        timeout: false,
+        progressBar: false,
+        buttons: [
+          [
+            "<button class='service-notification-button my-3' style='border-radius: 6px;'>" + this.$t("confirm") + "</button>",
+            function (instance, toast) {
+              instance.hide({
+                transitionOut: "fadeOutRight"
+              }, toast)
+            }
+          ]
+        ]
+      })
     }
   },
   computed: {

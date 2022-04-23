@@ -13,7 +13,7 @@
         </div>
       </div>
     </div>
-    <Button type="button" class="p-button-sm p-button-danger w-full logout" icon="pi pi-sign-out" v-tooltip.top="$t('logout')" @click="logout" />
+    <Button type="button" class="p-button-sm p-button-danger w-full logout" icon="bx bx-log-out bx-sm" v-tooltip.top="$t('logout')" @click="logout" />
   </div>
 </template>
 
@@ -25,14 +25,16 @@ export default {
       userAvatar: "images/avatarPlaceholder.png"
     }
   },
-  created () {
-    /* const vm = this
-    this.axios.get("/api/user/photo")
-      .then((res) => {
-        if (res.data !== "Problem" && res.data !== "NotExist") {
-          vm.userAvatar = "/api/user/photo"
-        }
-      }) */
+  mounted () {
+    const vm = this
+    this.axios({
+      url: "/api/user/photo",
+      method: "GET"
+    }).then((res) => {
+      if (res.data !== "Problem" && res.data !== "NotExist") {
+        vm.userAvatar = "/api/user/photo"
+      }
+    })
   },
   methods: {
     logout () {

@@ -4,20 +4,14 @@
     <div class="layout-sidebar" @click="onSidebarClick" :dir="$store.state.direction">
       <AppUserInfo v-if="$store.state.accessLevel > 0" />
       <AppMenu :model="menuObject.menu" @menuitem-click="onMenuItemClick" />
-      <p :style="'font-family: ' + this.$store.state.farsiFont" class="varsion">{{ $store.state.version }}</p>
+      <p :style="'font-family: ' + this.$store.state.persianFont" class="varsion">{{ $store.state.version }}</p>
     </div>
 
     <div class="layout-main-container" :dir="$store.state.direction">
         <div class="layout-main" :dir="$store.state.direction">
             <router-view />
         </div>
-        <!-- <AppFooter /> -->
     </div>
-
-<!-- <AppConfig :layoutMode="layoutMode" @layout-change="onLayoutChange" />
-    <transition name="layout-mask">
-        <div class="layout-mask p-component-overlay" v-if="mobileMenuActive"></div>
-    </transition> -->
   </div>
 </template>
 
@@ -25,8 +19,6 @@
 import AppTopBar from "@/components/AppTopbar.vue"
 import AppMenu from "@/components/AppMenu.vue"
 import AppUserInfo from "@/components/AppUserInfo.vue"
-/* import AppConfig from "./AppConfig.vue"
-import AppFooter from "./AppFooter.vue" */
 
 export default {
   data () {
@@ -40,6 +32,25 @@ export default {
   beforeCreate () {
     document.title = this.$store.state.appName
     this.$store.commit("setAccessLevel")
+    this.$primevue.config.locale.startsWith = this.$t("startsWith")
+    this.$primevue.config.locale.contains = this.$t("contains")
+    this.$primevue.config.locale.notContains = this.$t("notContains")
+    this.$primevue.config.locale.endsWith = this.$t("endsWith")
+    this.$primevue.config.locale.equals = this.$t("equals")
+    this.$primevue.config.locale.notEquals = this.$t("notEquals")
+    this.$primevue.config.locale.clear = this.$t("clear")
+    this.$primevue.config.locale.apply = this.$t("apply")
+    this.$primevue.config.locale.matchAll = this.$t("matchAll")
+    this.$primevue.config.locale.matchAny = this.$t("matchAny")
+    this.$primevue.config.locale.addRule = this.$t("addFilter")
+    this.$primevue.config.locale.removeRule = this.$t("removeFilter")
+    this.$primevue.config.locale.weak = this.$t("weak")
+    this.$primevue.config.locale.medium = this.$t("medium")
+    this.$primevue.config.locale.strong = this.$t("strong")
+    this.$primevue.config.locale.passwordPrompt = this.$t("passwordPrompt")
+    this.$primevue.config.locale.emptyFilterMessage = this.$t("emptyFilterMessage")
+    this.$primevue.config.locale.emptyMessage = this.$t("emptyMessage")
+    this.$primevue.config.locale.passwordPrompt = ""
   },
   beforeUpdate () {
     if (this.mobileMenuActive) {
@@ -137,55 +148,55 @@ export default {
               label: "",
               items: [
                 {
-                  label: this.$t("dashboard"), icon: "pi pi-fw pi-th-large", to: "/"
+                  label: this.$t("dashboard"), icon: "bx bx-fw bxs-dashboard", to: "/"
                 },
                 {
-                  label: this.$t("users"), icon: "pi pi-fw pi-user", to: "/users"
+                  label: this.$t("users"), icon: "bx bx-fw bxs-user", to: "/users"
                 },
                 {
-                  label: this.$t("groups"), icon: "pi pi-fw pi-users", to: "/groups"
+                  label: this.$t("groups"), icon: "bx bx-fw bxs-group", to: "/groups"
                 },
                 {
-                  label: this.$t("services"), icon: "fa fa-fw fa-server", to: "/services"
+                  label: this.$t("services"), icon: "bx bx-fw bxs-server", to: "/services"
                 },
                 {
-                  label: this.$t("roles"), icon: "pi pi-fw pi-tags", to: "/roles"
+                  label: this.$t("roles"), icon: "bx bx-fw bxs-tag", to: "/roles"
                 },
                 {
-                  label: this.$t("ticketing"), icon: "pi pi-fw pi-ticket", to: "/ticketing"
+                  label: this.$t("ticketing"), icon: "bx bx-fw bxs-envelope", to: "/ticketing"
                 },
                 {
-                  label: this.$t("notifications"), icon: "pi pi-fw pi-bell", to: "/notifications"
+                  label: this.$t("notifications"), icon: "bx bx-fw bxs-bell", to: "/notifications"
                 },
                 {
                   label: this.$t("reports"),
-                  icon: "pi pi-fw pi-chart-bar",
+                  icon: "bx bx-fw bxs-bar-chart-square",
                   items: [
                     {
-                      label: this.$t("audits"), icon: "pi pi-fw pi-search", to: "/audits"
+                      label: this.$t("audits"), icon: "bx bx-fw bxs-search", to: "/audits"
                     },
                     {
-                      label: this.$t("events"), icon: "pi pi-fw pi-calendar", to: "/events"
+                      label: this.$t("events"), icon: "bx bx-fw bxs-calendar", to: "/events"
                     },
                     {
-                      label: this.$t("reports"), icon: "pi pi-fw pi-file", to: "/reports"
+                      label: this.$t("reports"), icon: "bx bx-fw bxs-file-blank", to: "/reports"
                     },
                     {
-                      label: this.$t("accessReports"), icon: "pi pi-fw pi-list", to: "/accessreports"
+                      label: this.$t("accessReports"), icon: "bx bx-fw bxs-pie-chart-alt-2", to: "/accessreports"
                     }
                   ]
                 },
                 {
-                  label: this.$t("profile"), icon: "pi pi-fw pi-id-card", to: "/profile"
+                  label: this.$t("profile"), icon: "bx bx-fw bxs-id-card", to: "/profile"
                 },
                 {
-                  label: this.$t("settings"), icon: "pi pi-fw pi-cog", to: "/settings"
+                  label: this.$t("settings"), icon: "bx bx-fw bxs-cog", to: "/settings"
                 },
                 {
-                  label: this.$t("privacy"), icon: "pi pi-fw pi-lock", to: "/privacy"
+                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy"
                 },
                 {
-                  label: this.$t("guide"), icon: "pi pi-fw pi-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
+                  label: this.$t("guide"), icon: "bx bx-fw bxs-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
                 }
               ]
             }
@@ -198,49 +209,49 @@ export default {
               label: "",
               items: [
                 {
-                  label: this.$t("dashboard"), icon: "pi pi-fw pi-th-large", to: "/"
+                  label: this.$t("dashboard"), icon: "bx bx-fw bxs-dashboard", to: "/"
                 },
                 {
-                  label: this.$t("users"), icon: "pi pi-fw pi-user", to: "/users"
+                  label: this.$t("users"), icon: "bx bx-fw bxs-user", to: "/users"
                 },
                 {
-                  label: this.$t("groups"), icon: "pi pi-fw pi-users", to: "/groups"
+                  label: this.$t("groups"), icon: "bx bx-fw bxs-group", to: "/groups"
                 },
                 {
-                  label: this.$t("services"), icon: "fa fa-fw fa-server", to: "/services"
+                  label: this.$t("services"), icon: "bx bx-fw bxs-server", to: "/services"
                 },
                 {
-                  label: this.$t("ticketing"), icon: "pi pi-fw pi-ticket", to: "/ticketing"
+                  label: this.$t("ticketing"), icon: "bx bx-fw bxs-envelope", to: "/ticketing"
                 },
                 {
-                  label: this.$t("notifications"), icon: "pi pi-fw pi-bell", to: "/notifications"
+                  label: this.$t("notifications"), icon: "bx bx-fw bxs-bell", to: "/notifications"
                 },
                 {
                   label: this.$t("reports"),
-                  icon: "pi pi-fw pi-chart-bar",
+                  icon: "bx bx-fw bxs-bar-chart-square",
                   items: [
                     {
-                      label: this.$t("audits"), icon: "pi pi-fw pi-search", to: "/audits"
+                      label: this.$t("audits"), icon: "bx bx-fw bxs-search", to: "/audits"
                     },
                     {
-                      label: this.$t("events"), icon: "pi pi-fw pi-calendar", to: "/events"
+                      label: this.$t("events"), icon: "bx bx-fw bxs-calendar", to: "/events"
                     },
                     {
-                      label: this.$t("reports"), icon: "pi pi-fw pi-file", to: "/reports"
+                      label: this.$t("reports"), icon: "bx bx-fw bxs-file-blank", to: "/reports"
                     },
                     {
-                      label: this.$t("accessReports"), icon: "pi pi-fw pi-list", to: "/accessreports"
+                      label: this.$t("accessReports"), icon: "bx bx-fw bxs-pie-chart-alt-2", to: "/accessreports"
                     }
                   ]
                 },
                 {
-                  label: this.$t("profile"), icon: "pi pi-fw pi-id-card", to: "/profile"
+                  label: this.$t("profile"), icon: "bx bx-fw bxs-id-card", to: "/profile"
                 },
                 {
-                  label: this.$t("privacy"), icon: "pi pi-fw pi-lock", to: "/privacy"
+                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy"
                 },
                 {
-                  label: this.$t("guide"), icon: "pi pi-fw pi-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
+                  label: this.$t("guide"), icon: "bx bx-fw bxs-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
                 }
               ]
             }
@@ -253,34 +264,34 @@ export default {
               label: "",
               items: [
                 {
-                  label: this.$t("dashboard"), icon: "pi pi-fw pi-th-large", to: "/"
+                  label: this.$t("dashboard"), icon: "bx bx-fw bxs-dashboard", to: "/"
                 },
                 {
-                  label: this.$t("ticketing"), icon: "pi pi-fw pi-ticket", to: "/ticketing"
+                  label: this.$t("ticketing"), icon: "bx bx-fw bxs-envelope", to: "/ticketing"
                 },
                 {
                   label: this.$t("reports"),
-                  icon: "pi pi-fw pi-chart-bar",
+                  icon: "bx bx-fw bxs-bar-chart-square",
                   items: [
                     {
-                      label: this.$t("audits"), icon: "pi pi-fw pi-search", to: "/audits"
+                      label: this.$t("audits"), icon: "bx bx-fw bxs-search", to: "/audits"
                     },
                     {
-                      label: this.$t("events"), icon: "pi pi-fw pi-calendar", to: "/events"
+                      label: this.$t("events"), icon: "bx bx-fw bxs-calendar", to: "/events"
                     },
                     {
-                      label: this.$t("reports"), icon: "pi pi-fw pi-file", to: "/reports"
+                      label: this.$t("reports"), icon: "bx bx-fw bxs-file-blank", to: "/reports"
                     }
                   ]
                 },
                 {
-                  label: this.$t("profile"), icon: "pi pi-fw pi-id-card", to: "/profile"
+                  label: this.$t("profile"), icon: "bx bx-fw bxs-id-card", to: "/profile"
                 },
                 {
-                  label: this.$t("privacy"), icon: "pi pi-fw pi-lock", to: "/privacy"
+                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy"
                 },
                 {
-                  label: this.$t("guide"), icon: "pi pi-fw pi-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
+                  label: this.$t("guide"), icon: "bx bx-fw bxs-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
                 }
               ]
             }
@@ -293,13 +304,13 @@ export default {
               label: "",
               items: [
                 {
-                  label: this.$t("resetPassword"), icon: "pi pi-fw pi-key", to: "/resetpassword"
+                  label: this.$t("resetPassword"), icon: "bx bx-fw bxs-key", to: "/resetpassword"
                 },
                 {
-                  label: this.$t("privacy"), icon: "pi pi-fw pi-lock", to: "/privacy"
+                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy"
                 },
                 {
-                  label: this.$t("guide"), icon: "pi pi-fw pi-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
+                  label: this.$t("guide"), icon: "bx bx-fw bxs-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
                 }
               ]
             }
@@ -312,8 +323,6 @@ export default {
     AppTopBar,
     AppMenu,
     AppUserInfo
-    /* AppConfig,
-    AppFooter, */
   }
 }
 </script>
