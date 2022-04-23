@@ -27,6 +27,8 @@ import parsso.idman.repos.FilesStorageService;
 @EnableScheduling
 // @EnableCaching
 public class IdmanApplication extends SpringBootServletInitializer implements CommandLineRunner {
+  public IdmanApplication() {
+  }
   private static final Logger logger = LogManager.getLogger("System");
   @Autowired
   FilesStorageService storageService;
@@ -42,8 +44,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
   @Value("${base.url}")
   private String baseurl;
 
-  public IdmanApplication() {
-  }
 
 
   public static void main(String[] args) {
