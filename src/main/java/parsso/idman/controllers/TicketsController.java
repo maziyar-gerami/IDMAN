@@ -52,7 +52,7 @@ public class TicketsController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
     Ticket ticket = ticketRepo.retrieveTicket(ticketID);
-    User user = retrieveUsers.retrieveUsers("ali");
+    User user = retrieveUsers.retrieveUsers(request.getUserPrincipal().getName());
     if (user.getUsersExtraInfo().getRole().equalsIgnoreCase("USER"))
       if (user.get_id().toString().equalsIgnoreCase(ticket.getTo())
           || user.get_id().toString().equalsIgnoreCase(ticket.getFrom()))
@@ -114,7 +114,7 @@ public class TicketsController {
       @PathVariable(name = "count") String count,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
-    ListTickets tickets = ticketRepo.retrieveTicketsReceived("su", page, count, from, id, date);
+    ListTickets tickets = ticketRepo.retrieveTicketsReceived(request.getUserPrincipal().getName(), page, count, from, id, date);
     return new ResponseEntity<>(new Response(tickets, Variables.MODEL_TICKETING, HttpStatus.OK.value(), lang),
         HttpStatus.OK);
   }
@@ -125,7 +125,7 @@ public class TicketsController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
 
-    if (ticketRepo.updateTicket("su", ticketID, ticket) == HttpStatus.OK)
+    if (ticketRepo.updateTicket(request.getUserPrincipal().getName(), ticketID, ticket) == HttpStatus.OK)
       return new ResponseEntity<>(new Response(null, Variables.MODEL_TICKETING, HttpStatus.OK.value(), lang),
           HttpStatus.OK);
     return new ResponseEntity<>(new Response(null, Variables.MODEL_TICKETING, HttpStatus.BAD_REQUEST.value(), lang),

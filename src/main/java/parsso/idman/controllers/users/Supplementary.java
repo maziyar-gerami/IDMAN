@@ -45,9 +45,10 @@ public class Supplementary extends UsersOps {
     this.instantMessage = instantMessage;
     this.authenticate = authenticate;
     this.supplementary = supplementary;
+    this.counter = "3";
   }
 
-  @Value("${cas.authn.passwordless.tokens.expireInSeconds}")
+  //@Value("${cas.authn.passwordless.tokens.expireInSeconds}")
   private String counter;
 
   @GetMapping("/api/skyroom")
