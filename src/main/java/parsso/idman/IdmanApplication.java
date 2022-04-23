@@ -42,6 +42,10 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
   @Value("${base.url}")
   private String baseurl;
 
+  public IdmanApplication() {
+  }
+
+
   public static void main(String[] args) {
 
     try {
