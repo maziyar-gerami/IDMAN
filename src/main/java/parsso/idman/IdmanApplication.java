@@ -35,7 +35,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
   @Autowired
   CasUserDetailService casUserDetailService;
 
-  
 
   @Value("${cas.url.logout.path}")
   private String casLogout;
