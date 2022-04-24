@@ -1,8 +1,16 @@
 package parsso.idman.impls.services;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import javax.servlet.http.HttpServletResponse;
 import lombok.val;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -20,12 +28,7 @@ import parsso.idman.models.services.servicesSubModel.ExtraInfo;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.ServiceRepo;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+
 
 @org.springframework.stereotype.Service
 
@@ -34,6 +37,7 @@ public class RetrieveService implements ServiceRepo.Retrieve {
 
   MongoTemplate mongoTemplate;
   UniformLogger uniformLogger;
+  Logger logger = LoggerFactory.getLogger(RetrieveService.class);
 
   @Autowired
   public RetrieveService(MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
@@ -124,7 +128,55 @@ public class RetrieveService implements ServiceRepo.Retrieve {
 
   @Override
   public List<MicroService> listUserServices(User user) {
-    return null;
+    
+    List<Service> services = listServicesFull();
+
+    List<Service> relatedList = new LinkedList();
+
+    for (Service service : services) {
+
+        if (service.getAccessStrategy() != null)
+            if (service.getAccessStrategy().getRequiredAttributes() != null)
+                if (service.getAccessStrategy().getRequiredAttributes().get("ou") != null) {
+
+                    Object member = service.getAccessStrategy().getRequiredAttributes().get("ou");
+                    if (member != null) {
+                        JSONArray s = (JSONArray) member;
+
+                        if (user.getMemberOf() != null && s != null)
+                            for (int i = 0; i < user.getMemberOf().size(); i++)
+                                for (int j = 0; j < ((JSONArray) s.get(1)).size(); j++) {
+                                    if (user.getMemberOf().get(i).equals(((JSONArray) s.get(1)).get(j)) && !relatedList.contains(service)) {
+                                        relatedList.add(service);
+                                        break;
+
+                                    }
+                                }
+                    }
+
+
+                }
+
+
+    }
+    List<MicroService> microServices = new LinkedList<>();
+    MicroService microService = null;
+
+    for (Service service : relatedList) {
+        Query query = new Query(Criteria.where("_id").is(service.getId()));
+        try {
+            microService = mongoTemplate.findOne(query, MicroService.class, Variables.col_servicesExtraInfo);
+        } catch (Exception e) {
+            microService = new MicroService(service.getId(), service.getServiceId());
+            logger.warn("Unable to read ExtraInfo for service " + service.getId());
+        } finally {
+            microServices.add(new MicroService(service, microService));
+        }
+    }
+
+    Collections.sort(microServices);
+    return microServices;
+
   }
 
   public List<Service> listServicesFull() {
