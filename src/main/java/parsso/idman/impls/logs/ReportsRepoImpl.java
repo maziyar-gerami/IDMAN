@@ -11,6 +11,7 @@ import parsso.idman.helpers.LogTime;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Report;
 import parsso.idman.models.logs.ReportMessage;
+import parsso.idman.models.other.Time;
 import parsso.idman.repos.LogsRepo;
 
 import java.util.List;
@@ -33,6 +34,14 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
     range = LogTime.rangeCreator(startDate, endDate);
 
     long size = mongoTemplate.count(query, Report.class, Variables.col_Log);
+
+    range = LogTime.rangeCreator(startDate, endDate);
+
+    if (range != null) {
+      query.addCriteria(Criteria.where("millis")
+          .gte(new Time().convertEpochToDate(range[0]))
+          .lte(new Time().convertEpochToDate(range[1])));
+    }
 
     query.addCriteria(Criteria.where("millis")
         .gte(range[0]).lte(range[1]));
