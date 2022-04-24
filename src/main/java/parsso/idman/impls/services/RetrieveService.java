@@ -37,7 +37,6 @@ public class RetrieveService implements ServiceRepo.Retrieve {
 
   MongoTemplate mongoTemplate;
   UniformLogger uniformLogger;
-  Logger logger = LoggerFactory.getLogger(RetrieveService.class);
 
   @Autowired
   public RetrieveService(MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
@@ -128,6 +127,9 @@ public class RetrieveService implements ServiceRepo.Retrieve {
 
   @Override
   public List<MicroService> listUserServices(User user) {
+
+  Logger logger = LoggerFactory.getLogger(user.get_id().toString());
+
     
     List<Service> services = listServicesFull();
 
@@ -227,6 +229,7 @@ public class RetrieveService implements ServiceRepo.Retrieve {
     List<MicroService> services = new LinkedList<>();
     Service service = null;
     MicroService microService = null;
+    if(files!=null)
     for (String file : Objects.requireNonNull(files)) {
       if (file.endsWith(".json"))
         try {
