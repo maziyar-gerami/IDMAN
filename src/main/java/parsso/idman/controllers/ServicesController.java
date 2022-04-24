@@ -75,6 +75,8 @@ public class ServicesController {
   public ResponseEntity<Response> listUserServices(HttpServletRequest request,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) 
           throws NoSuchFieldException, IllegalAccessException {
+            System.out.println("***********************************************************************");
+            System.out.println(request.getUserPrincipal().getName());
     return new ResponseEntity<>(new Response(
         retrieveService.listUserServices(
           userOpRetrieve.retrieveUsers(request.getUserPrincipal().getName())),
