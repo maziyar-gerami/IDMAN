@@ -186,6 +186,7 @@ public class RetrieveService implements ServiceRepo.Retrieve {
     String[] files = folder.list();
     List<Service> services = new LinkedList<>();
     Service service = null;
+    if(files!=null)
     for (String file : Objects.requireNonNull(files)) {
       if (file.endsWith(".json"))
         try {
