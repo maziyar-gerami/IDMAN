@@ -251,7 +251,7 @@ export default {
           }
         }).then((res) => {
           if (res.data.status.code === 200) {
-            vm.editNotificationBuffer = res.data.data
+            vm.editNotificationBuffer = res.data.data[0]
             vm.editNotificationBuffer.createDateString = vm.editNotificationBuffer.createTime.year + "/" + vm.editNotificationBuffer.createTime.month + "/" + vm.editNotificationBuffer.createTime.day
             vm.editNotificationBuffer.createTimeString = vm.editNotificationBuffer.createTime.hours + ":" + vm.editNotificationBuffer.createTime.minutes + ":" + vm.editNotificationBuffer.createTime.seconds
             vm.editNotificationBuffer.updateDateString = vm.editNotificationBuffer.updateTime.year + "/" + vm.editNotificationBuffer.updateTime.month + "/" + vm.editNotificationBuffer.updateTime.day
