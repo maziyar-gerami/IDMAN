@@ -168,17 +168,17 @@ export default {
           }
         }).then((res) => {
           if (res.data.status.code === 200) {
-            vm.usersChartData.datasets.data[2] = res.data.data.users.active
-            vm.usersChartData.datasets.data[1] = res.data.data.users.disabled
-            vm.usersChartData.datasets.data[0] = res.data.data.users.locked
+            vm.usersChartData.datasets[0].data[2] = res.data.data.users.active
+            vm.usersChartData.datasets[0].data[1] = res.data.data.users.disabled
+            vm.usersChartData.datasets[0].data[0] = res.data.data.users.locked
             vm.usersChartAll = res.data.data.users.total
 
-            vm.servicesChartData.datasets.data[1] = res.data.data.services.enabled
-            vm.servicesChartData.datasets.data[0] = res.data.data.services.disabled
+            vm.servicesChartData.datasets[0].data[1] = res.data.data.services.enabled
+            vm.servicesChartData.datasets[0].data[0] = res.data.data.services.disabled
             vm.servicesChartAll = res.data.data.services.total
 
-            vm.todaysLoginsChartData.datasets.data[1] = res.data.data.logins.successful
-            vm.todaysLoginsChartData.datasets.data[0] = res.data.data.logins.unsuccessful
+            vm.todaysLoginsChartData.datasets[0].data[1] = res.data.data.logins.successful
+            vm.todaysLoginsChartData.datasets[0].data[0] = res.data.data.logins.unsuccessful
             vm.todaysLoginsChartAll = res.data.data.logins.total
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")

@@ -289,7 +289,7 @@
                 <Column bodyStyle="display: flex;" bodyClass="flex justify-content-evenly flex-wrap card-container text-center w-full" style="flex: 0 0 5rem">
                   <template #body="{data}">
                     <div class="flex align-items-center justify-content-center">
-                      <Button icon="bx bx-info-circle bx-sm'" class="p-button-rounded p-button-info p-button-outlined mx-1" @click="getTicket('archives', data._id)" v-tooltip.top="$t('description')" />
+                      <Button icon="bx bx-info-circle bx-sm" class="p-button-rounded p-button-info p-button-outlined mx-1" @click="getTicket('archives', data._id)" v-tooltip.top="$t('description')" />
                     </div>
                   </template>
                 </Column>
@@ -334,8 +334,8 @@
                       <div v-if="msg.close || msg.reOpen" class="w-full">
                         <div class="col-6"></div>
                         <div class="col-6 p-1 mt-3 alertMessage">
-                          <small v-if="msg.reOpen">{{ticketingText1}}{{msg.reOpenTime.hours}}:{{msg.reOpenTime.minutes}}:{{msg.reOpenTime.seconds}} {{msg.reOpenTime.year}}/{{msg.reOpenTime.month}}/{{msg.reOpenTime.day}}{{ticketingText2}}{{msg.from}}{{ticketingText3}}</small>
-                          <small v-else>{{ticketingText1}}{{msg.closeTime.hours}}:{{msg.closeTime.minutes}}:{{msg.closeTime.seconds}} {{msg.closeTime.year}}/{{msg.closeTime.month}}/{{msg.closeTime.day}}{{ticketingText2}}{{msg.from}}{{ticketingText4}}</small>
+                          <small v-if="msg.reOpen">{{ $t("ticketingText1") }}{{ msg.reOpenTime.hours }}:{{ msg.reOpenTime.minutes }}:{{ msg.reOpenTime.seconds }} {{ msg.reOpenTime.year }}/{{ msg.reOpenTime.month }}/{{ msg.reOpenTime.day }}{{ $t("ticketingText2") }}{{ msg.from }}{{ $t("ticketingText3") }}</small>
+                          <small v-else>{{$t("ticketingText1")}}{{msg.closeTime.hours}}:{{msg.closeTime.minutes}}:{{msg.closeTime.seconds}} {{msg.closeTime.year}}/{{msg.closeTime.month}}/{{msg.closeTime.day}}{{$t("ticketingText2")}}{{msg.from}}{{$t("ticketingText4")}}</small>
                         </div>
                         <div class="col-2"></div>
                       </div>
@@ -410,8 +410,8 @@
                       <div v-if="msg.close || msg.reOpen" class="w-full">
                         <div class="col-6"></div>
                         <div class="col-6 p-1 mt-3 alertMessage">
-                          <small v-if="msg.reOpen">{{ticketingText1}}{{msg.reOpenTime.hours}}:{{msg.reOpenTime.minutes}}:{{msg.reOpenTime.seconds}} {{msg.reOpenTime.year}}/{{msg.reOpenTime.month}}/{{msg.reOpenTime.day}}{{ticketingText2}}{{msg.from}}{{ticketingText3}}</small>
-                          <small v-else>{{ticketingText1}}{{msg.closeTime.hours}}:{{msg.closeTime.minutes}}:{{msg.closeTime.seconds}} {{msg.closeTime.year}}/{{msg.closeTime.month}}/{{msg.closeTime.day}}{{ticketingText2}}{{msg.from}}{{ticketingText4}}</small>
+                          <small v-if="msg.reOpen">{{ $t("ticketingText1") }}{{ msg.reOpenTime.hours }}:{{ msg.reOpenTime.minutes }}:{{ msg.reOpenTime.seconds }} {{ msg.reOpenTime.year }}/{{ msg.reOpenTime.month }}/{{ msg.reOpenTime.day }}{{ $t("ticketingText2") }}{{ msg.from }}{{ $t("ticketingText3") }}</small>
+                          <small v-else>{{$t("ticketingText1")}}{{msg.closeTime.hours}}:{{msg.closeTime.minutes}}:{{msg.closeTime.seconds}} {{msg.closeTime.year}}/{{msg.closeTime.month}}/{{msg.closeTime.day}}{{$t("ticketingText2")}}{{msg.from}}{{$t("ticketingText4")}}</small>
                         </div>
                         <div class="col-2"></div>
                       </div>
