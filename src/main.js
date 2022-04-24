@@ -107,7 +107,7 @@ const store = createStore({
       }
     },
     setAccessLevel (state) {
-      /* axios({
+      axios({
         url: "/api/user",
         method: "GET"
       }).then((res) => {
@@ -122,14 +122,11 @@ const store = createStore({
         } else {
           state.accessLevel = 0
         }
-        state.userId = res.data.data.userId
+        state.userId = res.data.data._id
         state.displayName = res.data.data.displayName
       }).catch(() => {
         state.accessLevel = 0
-      }) */
-      state.accessLevel = 1
-      state.userId = "admin"
-      state.displayName = "مدیر ویژه"
+      })
     }
   }
 })

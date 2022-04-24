@@ -710,7 +710,7 @@ export default {
         this.editUserLoader = true
         if (this.editUserPasswordFlag) {
           this.axios({
-            url: "/api/users/u/" + vm.editUserBuffer._id,
+            url: "/api/users",
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             params: {
@@ -747,7 +747,7 @@ export default {
           })
         } else {
           this.axios({
-            url: "/api/users/u/" + vm.editUserBuffer._id,
+            url: "/api/users",
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             params: {

@@ -225,6 +225,7 @@ export default {
           method: "GET"
         }).then((res) => {
           if (res.data.status.code === 200) {
+            vm.loading = false
             vm.user._id = res.data.data._id
             vm.user.displayName = res.data.data.displayName
             vm.user.firstName = res.data.data.firstName
@@ -244,7 +245,6 @@ export default {
               document.getElementById("user.description").readOnly = true
               document.getElementById("user.editButton").style = "display: none;"
             }
-            vm.loading = false
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.loading = false
@@ -330,14 +330,14 @@ export default {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
         })
       } else if (command === "getUserAvatar") {
-        /* this.axios({
+        this.axios({
           url: "/api/user/photo",
           method: "GET"
         }).then((res) => {
           if (res.data !== "Problem" && res.data !== "NotExist") {
             vm.userAvatar = "/api/user/photo"
           }
-        }) */
+        })
       } else if (command === "editUserAvatar") {
         const bodyFormData = new FormData()
         bodyFormData.append("file", document.getElementById("user.avatar").files[0])

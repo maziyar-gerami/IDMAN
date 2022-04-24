@@ -590,7 +590,7 @@
                 </div>
               </div>
             </div>
-            <Button :label="$t('create')" class="p-button-success mt-3 mx-1" @click="replyTicket('userTickets', 'reply')" />
+            <Button :label="$t('reply')" class="p-button-success mt-3 mx-1" @click="replyTicket('userTickets', 'reply')" />
             <Button :label="$t('back')" class="p-button-danger mt-3 mx-1" @click="resetState('userTickets')" />
           </div>
           <div v-else-if="userCreateFlag">
@@ -1550,11 +1550,11 @@ export default {
       } else if (scale === "archives") {
         this.supporterListFlag = false
         this.supporterShowFlag = true
-        this.archivesRequestMaster("getArchives")
+        this.archivesRequestMaster("getTicket")
       } else if (scale === "userTickets") {
         this.userListFlag = false
         this.userReplyFlag = true
-        this.userTicketsRequestMaster("getUserTickets")
+        this.userTicketsRequestMaster("getTicket")
       }
     },
     replyTicket (scale, action) {
