@@ -196,12 +196,14 @@ export default {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
         })
       } else if (command === "getUserServices") {
+        const positionedServices = []
+        const unpositionedServices = []
         this.axios({
           url: "/api/services/user",
           method: "GET"
         }).then((res) => {
           if (res.data.status.code === 200) {
-            for (let i = 0; i < res.data.data.length; ++i) {
+            for (const i in res.data.data) {
               if (typeof res.data.data[i].logo !== "undefined") {
                 if (res.data.data[i].logo === "") {
                   res.data.data[i].logo = "images/servicePlaceholder.jpg"
@@ -210,8 +212,7 @@ export default {
                 res.data.data[i].logo = "images/servicePlaceholder.jpg"
               }
 
-              // eslint-disable-next-line prefer-const
-              let translationId = "dashboardService_" + String(res.data.data[i]._id)
+              const translationId = "dashboardService_" + String(res.data.data[i]._id)
               vm.$store.state.translationsSwitch.Fa[translationId] = res.data.data[i].description
               vm.$store.state.translationsSwitch.En[translationId] = res.data.data[i].name
               vm.$store.state.translations[translationId] = res.data.data[i].description
@@ -220,48 +221,30 @@ export default {
               res.data.data[i].serviceId = res.data.data[i].serviceId.replace(/\^/g, "")
               res.data.data[i].serviceId = res.data.data[i].serviceId.replace(/\\/g, "\\\\")
 
-              if (vm.services[i].notification.count > 10) {
-                vm.services[i].notification.realCount = "10+"
+              if (typeof res.data.data[i].notification !== "undefined") {
+                if (res.data.data[i].notification.count > 10) {
+                  res.data.data[i].notification.realCount = "10+"
+                } else {
+                  res.data.data[i].notification.realCount = String(res.data.data[i].notification.count)
+                }
               } else {
-                vm.services[i].notification.realCount = String(vm.services[i].notification.count)
+                res.data.data[i].notification.count = 0
               }
 
-              vm.services = res.data.data
+              if (typeof res.data.data[i].position !== "undefined") {
+                positionedServices.push(res.data.data[i])
+              } else {
+                unpositionedServices.push(res.data.data[i])
+              }
             }
-            vm.services.sort((a, b) => b.position - a.position)
+
+            vm.services = positionedServices.concat(unpositionedServices)
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           }
         }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
         })
-
-        for (let i = 0; i < vm.services.length; ++i) {
-          if (typeof vm.services[i].logo !== "undefined") {
-            if (vm.services[i].logo === "") {
-              vm.services[i].logo = "images/servicePlaceholder.jpg"
-            }
-          } else {
-            vm.services[i].logo = "images/servicePlaceholder.jpg"
-          }
-
-          // eslint-disable-next-line prefer-const
-          let translationId = "dashboardService_" + String(vm.services[i]._id)
-          vm.$store.state.translationsSwitch.Fa[translationId] = vm.services[i].description
-          vm.$store.state.translationsSwitch.En[translationId] = vm.services[i].name
-          vm.$store.state.translations[translationId] = vm.services[i].description
-
-          vm.services[i].serviceId = vm.services[i].serviceId.replace(/\((.*?)\)/g, "")
-          vm.services[i].serviceId = vm.services[i].serviceId.replace(/\^/g, "")
-          vm.services[i].serviceId = vm.services[i].serviceId.replace(/\\/g, "\\\\")
-
-          if (vm.services[i].notification.count > 10) {
-            vm.services[i].notification.realCount = "10+"
-          } else {
-            vm.services[i].notification.realCount = String(vm.services[i].notification.count)
-          }
-        }
-        vm.services.sort((a, b) => b.position - a.position)
       }
     },
     showServiceNotification (id) {
