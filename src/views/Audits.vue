@@ -50,6 +50,11 @@
                   {{ data.actionPerformed }}
                 </template>
               </Column>
+              <Column field="service" :header="$t('service')" bodyClass="text-center" style="flex: 0 0 7rem">
+                <template #body="{data}">
+                  {{ data.service }}
+                </template>
+              </Column>
               <Column field="application" :header="$t('application')" bodyClass="text-center" style="flex: 0 0 5rem">
                 <template #body="{data}">
                   {{ data.applicationCode }}
@@ -132,6 +137,11 @@
                 </template>
                 <template #filterclear="{filterCallback}">
                   <Button type="button" icon="pi pi-times" @click="filterCallback(); removeFilters('auditsUsers', 'userID')" v-tooltip.top="$t('removeFilter')" class="p-button-danger"></Button>
+                </template>
+              </Column>
+              <Column field="service" :header="$t('service')" bodyClass="text-center" style="flex: 0 0 7rem">
+                <template #body="{data}">
+                  {{ data.service }}
                 </template>
               </Column>
               <Column field="application" :header="$t('application')" bodyClass="text-center" style="flex: 0 0 5rem">
