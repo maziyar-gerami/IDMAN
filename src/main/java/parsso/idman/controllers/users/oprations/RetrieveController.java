@@ -46,6 +46,22 @@ public class RetrieveController extends UsersOps {
     }
   }
 
+  @GetMapping("/api/users/u/{uid}")
+  public ResponseEntity<Response> retrieveUser( @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang,
+      @PathVariable("uid") String uid)
+      throws NoSuchFieldException, IllegalAccessException {
+    User user = usersOpRetrieve.retrieveUsers(uid);
+    if (user == null) {
+      return new ResponseEntity<>(new Response(
+        null, Variables.MODEL_USER, HttpStatus.NOT_FOUND.value(), lang),
+          HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(
+        new Response(user, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
+          HttpStatus.OK);
+    }
+  }
+
   @GetMapping("/api/users")
   public ResponseEntity<Response> retrieveUsersMain(
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)

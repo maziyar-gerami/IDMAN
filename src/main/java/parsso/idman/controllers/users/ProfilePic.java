@@ -17,6 +17,7 @@ import parsso.idman.repos.UserRepo;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@RestController
 public class ProfilePic extends UsersOps {
   private UserRepo.ProfilePic profilePic;
 

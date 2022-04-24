@@ -31,6 +31,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
   @Override
   public void init() {
+    /*
     String path = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
     photoPathRoot = Paths.get(path);
 
@@ -50,6 +51,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     } catch (IOException e) {
       throw new RuntimeException("Could not initialize folder for services!");
     }
+    */
 
   }
 
