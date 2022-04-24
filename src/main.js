@@ -67,33 +67,6 @@ const i18n = createI18n({
   messages: ParssoMessages
 })
 
-function routerConfig () {
-  router.beforeEach(function (to, from, next) {
-    window.scrollTo(0, 0)
-    if (to.meta.requiresAccessLevel === 4) {
-      if (store.state.accessLevel >= 4) {
-        next()
-      } else {
-        next({ path: "/403" })
-      }
-    } else if (to.meta.requiresAccessLevel === 2) {
-      if (store.state.accessLevel >= 2) {
-        next()
-      } else {
-        next({ path: "/403" })
-      }
-    } else if (to.meta.requiresAccessLevel === 1) {
-      if (store.state.accessLevel >= 1) {
-        next()
-      } else {
-        next({ path: "/403" })
-      }
-    } else {
-      next()
-    }
-  })
-}
-
 const store = createStore({
   state () {
     return {
@@ -151,9 +124,10 @@ const store = createStore({
         }
         state.userId = res.data.data._id
         state.displayName = res.data.data.displayName
-        routerConfig()
+        runApp()
       }).catch(() => {
         state.accessLevel = 0
+        runApp()
       })
     }
   }
@@ -161,52 +135,79 @@ const store = createStore({
 
 store.commit("setAccessLevel")
 
-const app = createApp(App)
+function runApp () {
+  router.beforeEach(function (to, from, next) {
+    window.scrollTo(0, 0)
+    if (to.meta.requiresAccessLevel === 4) {
+      if (store.state.accessLevel >= 4) {
+        next()
+      } else {
+        next({ path: "/403" })
+      }
+    } else if (to.meta.requiresAccessLevel === 2) {
+      if (store.state.accessLevel >= 2) {
+        next()
+      } else {
+        next({ path: "/403" })
+      }
+    } else if (to.meta.requiresAccessLevel === 1) {
+      if (store.state.accessLevel >= 1) {
+        next()
+      } else {
+        next({ path: "/403" })
+      }
+    } else {
+      next()
+    }
+  })
 
-app.config.globalProperties.$appState = reactive({ theme: ParssoConfigs.app.defaultTheme, darkTheme: false })
+  const app = createApp(App)
 
-app.use(store)
-app.use(router)
-app.use(i18n)
-app.use(PrimeVue, { ripple: true, inputStyle: "outlined" })
-app.use(VueAxios, axios)
+  app.config.globalProperties.$appState = reactive({ theme: ParssoConfigs.app.defaultTheme, darkTheme: false })
 
-app.directive("ripple", Ripple)
-app.directive("styleclass", StyleClass)
-app.directive("tooltip", Tooltip)
+  app.use(store)
+  app.use(router)
+  app.use(i18n)
+  app.use(PrimeVue, { ripple: true, inputStyle: "outlined" })
+  app.use(VueAxios, axios)
 
-app.component("AppAvatar", Avatar)
-app.component("Button", Button)
-app.component("SpeedDial", SpeedDial)
-app.component("Chart", Chart)
-app.component("DataView", DataView)
-app.component("DataViewLayoutOptions", DataViewLayoutOptions)
-app.component("Badge", Badge)
-app.component("Toolbar", Toolbar)
-app.component("DataTable", DataTable)
-app.component("Column", Column)
-app.component("InputText", InputText)
-app.component("InputNumber", InputNumber)
-app.component("Dropdown", Dropdown)
-app.component("Paginator", Paginator)
-app.component("TabView", TabView)
-app.component("TabPanel", TabPanel)
-app.component("ProgressSpinner", ProgressSpinner)
-app.component("ToggleButton", ToggleButton)
-app.component("MultiSelect", MultiSelect)
-app.component("Textarea", Textarea)
-app.component("Fieldset", Fieldset)
-app.component("Password", Password)
-app.component("Divider", Divider)
-app.component("Checkbox", Checkbox)
-app.component("BlockUI", BlockUI)
-app.component("Tag", Tag)
-app.component("OverlayPanel", OverlayPanel)
-app.component("Listbox", Listbox)
-app.component("PickList", PickList)
-app.component("Dialog", Dialog)
-app.component("Steps", Steps)
-app.component("InputSwitch", InputSwitch)
-app.component("Editor", Editor)
+  app.directive("ripple", Ripple)
+  app.directive("styleclass", StyleClass)
+  app.directive("tooltip", Tooltip)
 
-app.mount("#app")
+  app.component("AppAvatar", Avatar)
+  app.component("Button", Button)
+  app.component("SpeedDial", SpeedDial)
+  app.component("Chart", Chart)
+  app.component("DataView", DataView)
+  app.component("DataViewLayoutOptions", DataViewLayoutOptions)
+  app.component("Badge", Badge)
+  app.component("Toolbar", Toolbar)
+  app.component("DataTable", DataTable)
+  app.component("Column", Column)
+  app.component("InputText", InputText)
+  app.component("InputNumber", InputNumber)
+  app.component("Dropdown", Dropdown)
+  app.component("Paginator", Paginator)
+  app.component("TabView", TabView)
+  app.component("TabPanel", TabPanel)
+  app.component("ProgressSpinner", ProgressSpinner)
+  app.component("ToggleButton", ToggleButton)
+  app.component("MultiSelect", MultiSelect)
+  app.component("Textarea", Textarea)
+  app.component("Fieldset", Fieldset)
+  app.component("Password", Password)
+  app.component("Divider", Divider)
+  app.component("Checkbox", Checkbox)
+  app.component("BlockUI", BlockUI)
+  app.component("Tag", Tag)
+  app.component("OverlayPanel", OverlayPanel)
+  app.component("Listbox", Listbox)
+  app.component("PickList", PickList)
+  app.component("Dialog", Dialog)
+  app.component("Steps", Steps)
+  app.component("InputSwitch", InputSwitch)
+  app.component("Editor", Editor)
+
+  app.mount("#app")
+}

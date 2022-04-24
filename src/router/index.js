@@ -6,7 +6,7 @@ const routes = [
     path: "/",
     name: "Dashboard",
     component: Dashboard,
-    meta: { requiresAccessLevel: 1 }
+    meta: { requiresAccessLevel: 0 }
   },
   {
     path: "/accessreports",
