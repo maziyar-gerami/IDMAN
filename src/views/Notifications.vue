@@ -254,10 +254,12 @@ export default {
             vm.editNotificationBuffer = res.data.data[0]
             vm.editNotificationBuffer.createDateString = vm.editNotificationBuffer.createTime.year + "/" + vm.editNotificationBuffer.createTime.month + "/" + vm.editNotificationBuffer.createTime.day
             vm.editNotificationBuffer.createTimeString = vm.editNotificationBuffer.createTime.hours + ":" + vm.editNotificationBuffer.createTime.minutes + ":" + vm.editNotificationBuffer.createTime.seconds
-            vm.editNotificationBuffer.updateDateString = vm.editNotificationBuffer.updateTime.year + "/" + vm.editNotificationBuffer.updateTime.month + "/" + vm.editNotificationBuffer.updateTime.day
-            vm.editNotificationBuffer.updateTimeString = vm.editNotificationBuffer.updateTime.hours + ":" + vm.editNotificationBuffer.updateTime.minutes + ":" + vm.editNotificationBuffer.updateTime.seconds
             vm.editNotificationBuffer.createDateTimeString = vm.editNotificationBuffer.createDateString + " - " + vm.editNotificationBuffer.createTimeString
-            vm.editNotificationBuffer.updateDateTimeString = vm.editNotificationBuffer.updateDateString + " - " + vm.editNotificationBuffer.updateTimeString
+            if (typeof vm.editNotificationBuffer.updateTime !== "undefined") {
+              vm.editNotificationBuffer.updateDateString = vm.editNotificationBuffer.updateTime.year + "/" + vm.editNotificationBuffer.updateTime.month + "/" + vm.editNotificationBuffer.updateTime.day
+              vm.editNotificationBuffer.updateTimeString = vm.editNotificationBuffer.updateTime.hours + ":" + vm.editNotificationBuffer.updateTime.minutes + ":" + vm.editNotificationBuffer.updateTime.seconds
+              vm.editNotificationBuffer.updateDateTimeString = vm.editNotificationBuffer.updateDateString + " - " + vm.editNotificationBuffer.updateTimeString
+            }
             vm.editNotificationLoader = false
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")

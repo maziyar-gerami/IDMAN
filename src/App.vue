@@ -31,7 +31,6 @@ export default {
   },
   beforeCreate () {
     document.title = this.$store.state.appName
-    this.$store.commit("setAccessLevel")
     this.$primevue.config.locale.startsWith = this.$t("startsWith")
     this.$primevue.config.locale.contains = this.$t("contains")
     this.$primevue.config.locale.notContains = this.$t("notContains")

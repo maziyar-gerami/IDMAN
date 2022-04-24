@@ -333,7 +333,7 @@
                     <div v-for="msg in replyTicketSupporter.messages" :key="msg" class="grid w-full">
                       <div v-if="msg.close || msg.reOpen" class="w-full">
                         <div class="col-6"></div>
-                        <div class="col-6 p-1 mt-3 alertMessage">
+                        <div class="col-6 p-1 mt-3 mx-3 alertMessage">
                           <small v-if="msg.reOpen">{{ $t("ticketingText1") }}{{ msg.reOpenTime.hours }}:{{ msg.reOpenTime.minutes }}:{{ msg.reOpenTime.seconds }} {{ msg.reOpenTime.year }}/{{ msg.reOpenTime.month }}/{{ msg.reOpenTime.day }}{{ $t("ticketingText2") }}{{ msg.from }}{{ $t("ticketingText3") }}</small>
                           <small v-else>{{$t("ticketingText1")}}{{msg.closeTime.hours}}:{{msg.closeTime.minutes}}:{{msg.closeTime.seconds}} {{msg.closeTime.year}}/{{msg.closeTime.month}}/{{msg.closeTime.day}}{{$t("ticketingText2")}}{{msg.from}}{{$t("ticketingText4")}}</small>
                         </div>
@@ -341,14 +341,14 @@
                       </div>
                       <div v-else-if="msg.from === replyTicketSupporter.from" class="w-full">
                         <div class="col-6"></div>
-                        <div class="col-6 p-2 mt-3 receivedMessage">
+                        <div class="col-6 p-2 mt-3 mx-3 receivedMessage">
                           {{msg.body}}
                           <br><br>
                           <small>{{msg.creationTime.hours}}:{{msg.creationTime.minutes}}:{{msg.creationTime.seconds}} {{msg.creationTime.year}}/{{msg.creationTime.month}}/{{msg.creationTime.day}} ({{msg.fromDisplayName}})</small>
                         </div>
                       </div>
                       <div v-else class="w-full">
-                        <div class="col-6 p-2 mt-3 sentMessage">
+                        <div class="col-6 p-2 mt-3 mx-3 sentMessage">
                           {{msg.body}}
                           <br><br>
                           <small>{{msg.creationTime.hours}}:{{msg.creationTime.minutes}}:{{msg.creationTime.seconds}} {{msg.creationTime.year}}/{{msg.creationTime.month}}/{{msg.creationTime.day}} ({{msg.fromDisplayName}})</small>
@@ -409,7 +409,7 @@
                     <div v-for="msg in showTicketSupporter.messages" :key="msg" class="grid w-full">
                       <div v-if="msg.close || msg.reOpen" class="w-full">
                         <div class="col-6"></div>
-                        <div class="col-6 p-1 mt-3 alertMessage">
+                        <div class="col-6 p-1 mt-3 mx-3 alertMessage">
                           <small v-if="msg.reOpen">{{ $t("ticketingText1") }}{{ msg.reOpenTime.hours }}:{{ msg.reOpenTime.minutes }}:{{ msg.reOpenTime.seconds }} {{ msg.reOpenTime.year }}/{{ msg.reOpenTime.month }}/{{ msg.reOpenTime.day }}{{ $t("ticketingText2") }}{{ msg.from }}{{ $t("ticketingText3") }}</small>
                           <small v-else>{{$t("ticketingText1")}}{{msg.closeTime.hours}}:{{msg.closeTime.minutes}}:{{msg.closeTime.seconds}} {{msg.closeTime.year}}/{{msg.closeTime.month}}/{{msg.closeTime.day}}{{$t("ticketingText2")}}{{msg.from}}{{$t("ticketingText4")}}</small>
                         </div>
@@ -417,14 +417,14 @@
                       </div>
                       <div v-else-if="msg.from === showTicketSupporter.from" class="w-full">
                         <div class="col-6"></div>
-                        <div class="col-6 p-2 mt-3 receivedMessage">
+                        <div class="col-6 p-2 mt-3 mx-3 receivedMessage">
                           {{msg.body}}
                           <br><br>
                           <small>{{msg.creationTime.hours}}:{{msg.creationTime.minutes}}:{{msg.creationTime.seconds}} {{msg.creationTime.year}}/{{msg.creationTime.month}}/{{msg.creationTime.day}} ({{msg.fromDisplayName}})</small>
                         </div>
                       </div>
                       <div v-else class="w-full">
-                        <div class="col-6 p-2 mt-3 sentMessage">
+                        <div class="col-6 p-2 mt-3 mx-3 sentMessage">
                           {{msg.body}}
                           <br><br>
                           <small>{{msg.creationTime.hours}}:{{msg.creationTime.minutes}}:{{msg.creationTime.seconds}} {{msg.creationTime.year}}/{{msg.creationTime.month}}/{{msg.creationTime.day}} ({{msg.fromDisplayName}})</small>
@@ -555,7 +555,7 @@
                     <div v-for="msg in replyTicketUser.messages" :key="msg" class="grid w-full">
                       <div v-if="msg.close || msg.reOpen" class="w-full">
                         <div class="col-6"></div>
-                        <div class="col-6 p-1 mt-3 alertMessage">
+                        <div class="col-6 p-1 mt-3 mx-3 alertMessage">
                           <small v-if="msg.reOpen">{{ticketingText1}}{{msg.reOpenTime.hours}}:{{msg.reOpenTime.minutes}}:{{msg.reOpenTime.seconds}} {{msg.reOpenTime.year}}/{{msg.reOpenTime.month}}/{{msg.reOpenTime.day}}{{ticketingText2}}{{msg.from}}{{ticketingText3}}</small>
                           <small v-else>{{ticketingText1}}{{msg.closeTime.hours}}:{{msg.closeTime.minutes}}:{{msg.closeTime.seconds}} {{msg.closeTime.year}}/{{msg.closeTime.month}}/{{msg.closeTime.day}}{{ticketingText2}}{{msg.from}}{{ticketingText4}}</small>
                         </div>
@@ -563,14 +563,14 @@
                       </div>
                       <div v-else-if="msg.from === replyTicketUser.from" class="w-full">
                         <div class="col-6"></div>
-                        <div class="col-6 p-2 mt-3 receivedMessage">
+                        <div class="col-6 p-2 mt-3 mx-3 receivedMessage">
                           {{msg.body}}
                           <br><br>
                           <small>{{msg.creationTime.hours}}:{{msg.creationTime.minutes}}:{{msg.creationTime.seconds}} {{msg.creationTime.year}}/{{msg.creationTime.month}}/{{msg.creationTime.day}} ({{msg.fromDisplayName}})</small>
                         </div>
                       </div>
                       <div v-else class="w-full">
-                        <div class="col-6 p-2 mt-3 sentMessage">
+                        <div class="col-6 p-2 mt-3 mx-3 sentMessage">
                           {{msg.body}}
                           <br><br>
                           <small>{{msg.creationTime.hours}}:{{msg.creationTime.minutes}}:{{msg.creationTime.seconds}} {{msg.creationTime.year}}/{{msg.creationTime.month}}/{{msg.creationTime.day}} ({{msg.fromDisplayName}})</small>

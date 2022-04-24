@@ -67,6 +67,33 @@ const i18n = createI18n({
   messages: ParssoMessages
 })
 
+function routerConfig () {
+  router.beforeEach(function (to, from, next) {
+    window.scrollTo(0, 0)
+    if (to.meta.requiresAccessLevel === 4) {
+      if (store.state.accessLevel >= 4) {
+        next()
+      } else {
+        next({ path: "/403" })
+      }
+    } else if (to.meta.requiresAccessLevel === 2) {
+      if (store.state.accessLevel >= 2) {
+        next()
+      } else {
+        next({ path: "/403" })
+      }
+    } else if (to.meta.requiresAccessLevel === 1) {
+      if (store.state.accessLevel >= 1) {
+        next()
+      } else {
+        next({ path: "/403" })
+      }
+    } else {
+      next()
+    }
+  })
+}
+
 const store = createStore({
   state () {
     return {
@@ -124,6 +151,7 @@ const store = createStore({
         }
         state.userId = res.data.data._id
         state.displayName = res.data.data.displayName
+        routerConfig()
       }).catch(() => {
         state.accessLevel = 0
       })
@@ -131,30 +159,7 @@ const store = createStore({
   }
 })
 
-router.beforeEach(function (to, from, next) {
-  window.scrollTo(0, 0)
-  if (to.meta.requiresAccessLevel === 4) {
-    if (store.state.accessLevel >= 4) {
-      next()
-    } else {
-      next({ path: "/403" })
-    }
-  } else if (to.meta.requiresAccessLevel === 2) {
-    if (store.state.accessLevel >= 2) {
-      next()
-    } else {
-      next({ path: "/403" })
-    }
-  } else if (to.meta.requiresAccessLevel === 1) {
-    if (store.state.accessLevel >= 1) {
-      next()
-    } else {
-      next({ path: "/403" })
-    }
-  } else {
-    next()
-  }
-})
+store.commit("setAccessLevel")
 
 const app = createApp(App)
 

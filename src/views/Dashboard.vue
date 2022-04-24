@@ -1,75 +1,82 @@
 <template>
-  <div class="grid mt-0 h-full">
-    <div v-if="$store.state.accessLevel > 1" class="col-12 lg:col-4 xl:col-4 pt-0">
-      <div class="card mb-0 h-full">
-        <h4 :style="'font-family: ' + this.$store.state.persianFont">{{ usersChartTitle }} ({{ usersChartAll }})</h4>
-        <Chart type="pie" :data="usersChartData" :options="lightOptions" :width="550" :height="200" />
+  <div v-if="$store.state.accessLevel === 0">
+    <h1>{{ $store.state.appName }}</h1>
+    <p>{{ $t("loginText1") }}</p>
+    <Button :label="$t('login')" class="p-button-success mx-1" @click="redirectToLogin()" />
+  </div>
+  <div v-else>
+    <div class="grid mt-0 h-full">
+      <div v-if="$store.state.accessLevel > 1" class="col-12 lg:col-4 xl:col-4 pt-0">
+        <div class="card mb-0 h-full">
+          <h4 :style="'font-family: ' + this.$store.state.persianFont">{{ usersChartTitle }} ({{ usersChartAll }})</h4>
+          <Chart type="pie" :data="usersChartData" :options="lightOptions" :width="550" :height="200" />
+        </div>
       </div>
-    </div>
-    <div v-if="$store.state.accessLevel > 1" class="col-12 lg:col-4 xl:col-4 pt-0">
-      <div class="card mb-0 h-full">
-        <h4 :style="'font-family: ' + this.$store.state.persianFont">{{ servicesChartTitle }} ({{ servicesChartAll }})</h4>
-        <Chart type="pie" :data="servicesChartData" :options="lightOptions" :width="550" :height="200" />
+      <div v-if="$store.state.accessLevel > 1" class="col-12 lg:col-4 xl:col-4 pt-0">
+        <div class="card mb-0 h-full">
+          <h4 :style="'font-family: ' + this.$store.state.persianFont">{{ servicesChartTitle }} ({{ servicesChartAll }})</h4>
+          <Chart type="pie" :data="servicesChartData" :options="lightOptions" :width="550" :height="200" />
+        </div>
       </div>
-    </div>
-    <div v-if="$store.state.accessLevel > 1" class="col-12 lg:col-4 xl:col-4 pt-0">
-      <div class="card mb-0 h-full">
-        <h4 :style="'font-family: ' + this.$store.state.persianFont">{{ todaysLoginsChartTitle }} ({{ todaysLoginsChartAll }})</h4>
-        <Chart type="pie" :data="todaysLoginsChartData" :options="lightOptions" :width="550" :height="200" />
+      <div v-if="$store.state.accessLevel > 1" class="col-12 lg:col-4 xl:col-4 pt-0">
+        <div class="card mb-0 h-full">
+          <h4 :style="'font-family: ' + this.$store.state.persianFont">{{ todaysLoginsChartTitle }} ({{ todaysLoginsChartAll }})</h4>
+          <Chart type="pie" :data="todaysLoginsChartData" :options="lightOptions" :width="550" :height="200" />
+        </div>
       </div>
-    </div>
-    <div class="col-12 lg:col-12 xl:col-12 mb-0 pb-0">
-      <div class="card mb-0 h-full">
-        <DataView :value="services" :layout="layout" paginatorPosition="both" :paginator="true" :rows="4" :rowsPerPageOptions="[4,8,16,24]" :pageLinkSize="5">
-          <template #header>
-            <div class="grid grid-nogutter">
-              <div :class="'col-6 align-self-center text-' + this.$store.state.alignRTL">
-                <h3 class="m-0">{{ $t("services") }}</h3>
+      <div class="col-12 lg:col-12 xl:col-12 mb-0 pb-0">
+        <div class="card mb-0 h-full">
+          <DataView :value="services" :layout="layout" paginatorPosition="both" :paginator="true" :rows="4" :rowsPerPageOptions="[4,8,16,24]" :pageLinkSize="5">
+            <template #header>
+              <div class="grid grid-nogutter">
+                <div :class="'col-6 align-self-center text-' + this.$store.state.alignRTL">
+                  <h3 class="m-0">{{ $t("services") }}</h3>
+                </div>
+                <div :class="'col-6 align-self-center text-' + this.$store.state.alignLTR">
+                  <DataViewLayoutOptions v-model="layout"/>
+                </div>
               </div>
-              <div :class="'col-6 align-self-center text-' + this.$store.state.alignLTR">
-                <DataViewLayoutOptions v-model="layout"/>
-              </div>
-            </div>
-          </template>
+            </template>
 
-          <template #list="slotProps">
-            <div class="col-12">
-              <div class="flex flex-column md:flex-row align-items-center p-3 w-full">
-                <a :href="slotProps.data.url" target="_blank" class="service-link">
-                  <img :src="slotProps.data.logo" class="my-4 md:my-0 shadow-2 mx-5" style="width: 80px; height: 80px;" />
-                </a>
-                <div class="flex-1">
+            <template #list="slotProps">
+              <div class="col-12">
+                <div class="flex flex-column md:flex-row align-items-center p-3 w-full">
                   <a :href="slotProps.data.url" target="_blank" class="service-link">
-                    <div class="font-bold text-2xl">{{ $store.state.translations["dashboardService_" + String(slotProps.data._id)] }}</div>
+                    <img :src="slotProps.data.logo" class="my-4 md:my-0 shadow-2 mx-5" style="width: 80px; height: 80px;" />
                   </a>
-                </div>
-                <div class="flex flex-row md:flex-column justify-content-between w-full md:w-auto align-items-center md:align-items-end mt-5 md:mt-0">
-                  <i @click="showServiceNotification(slotProps.data._id)" class="pi pi-bell mr-4 p-text-secondary service-notification p-overlay-badge">
-                    <Badge v-if="slotProps.data.notification.count > 0" :value="slotProps.data.notification.realCount" severity="danger"></Badge>
-                  </i>
+                  <div class="flex-1">
+                    <a :href="slotProps.data.url" target="_blank" class="service-link">
+                      <div class="font-bold text-2xl">{{ $store.state.translations["dashboardService_" + String(slotProps.data._id)] }}</div>
+                    </a>
+                  </div>
+                  <div class="flex flex-row md:flex-column justify-content-between w-full md:w-auto align-items-center md:align-items-end mt-5 md:mt-0">
+                    <i @click="showServiceNotification(slotProps.data._id)" class="pi pi-bell mr-4 p-text-secondary service-notification p-overlay-badge">
+                      <Badge v-if="slotProps.data.notification.count > 0" :value="slotProps.data.notification.realCount" severity="danger"></Badge>
+                    </i>
+                  </div>
                 </div>
               </div>
-            </div>
-          </template>
+            </template>
 
-          <template #grid="slotProps">
-            <div class="col-12 lg:col-4 xl:col-3">
-              <div class="card m-3 border-1 surface-border">
-                <div class="flex align-items-center justify-content-end">
-                  <i @click="showServiceNotification(slotProps.data._id)" class="pi pi-bell mr-4 p-text-secondary service-notification p-overlay-badge">
-                    <Badge v-if="slotProps.data.notification.count > 0" :value="slotProps.data.notification.realCount" severity="danger"></Badge>
-                  </i>
-                </div>
-                <div class="text-center">
-                  <a :href="slotProps.data.url" target="_blank" class="service-link">
-                    <img :src="slotProps.data.logo" class="shadow-2 my-3 mx-0" style="width: 100px; height: 100px;" />
-                    <div class="text-2xl font-bold">{{ $store.state.translations["dashboardService_" + String(slotProps.data._id)] }}</div>
-                  </a>
+            <template #grid="slotProps">
+              <div class="col-12 lg:col-4 xl:col-3">
+                <div class="card m-3 border-1 surface-border">
+                  <div class="flex align-items-center justify-content-end">
+                    <i @click="showServiceNotification(slotProps.data._id)" class="pi pi-bell mr-4 p-text-secondary service-notification p-overlay-badge">
+                      <Badge v-if="slotProps.data.notification.count > 0" :value="slotProps.data.notification.realCount" severity="danger"></Badge>
+                    </i>
+                  </div>
+                  <div class="text-center">
+                    <a :href="slotProps.data.url" target="_blank" class="service-link">
+                      <img :src="slotProps.data.logo" class="shadow-2 my-3 mx-0" style="width: 100px; height: 100px;" />
+                      <div class="text-2xl font-bold">{{ $store.state.translations["dashboardService_" + String(slotProps.data._id)] }}</div>
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          </template>
-        </DataView>
+            </template>
+          </DataView>
+        </div>
       </div>
     </div>
   </div>
@@ -148,7 +155,9 @@ export default {
     if (this.$store.state.accessLevel > 1) {
       this.ticketingRequestMaster("getDashboardInfo")
     }
-    this.ticketingRequestMaster("getUserServices")
+    if (this.$store.state.accessLevel > 0) {
+      this.ticketingRequestMaster("getUserServices")
+    }
   },
   methods: {
     ticketingRequestMaster (command) {
@@ -321,6 +330,9 @@ export default {
           ]
         ]
       })
+    },
+    redirectToLogin () {
+      window.location.replace("/")
     }
   },
   computed: {
