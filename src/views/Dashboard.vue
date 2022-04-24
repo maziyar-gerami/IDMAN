@@ -228,6 +228,7 @@ export default {
                   res.data.data[i].notification.realCount = String(res.data.data[i].notification.count)
                 }
               } else {
+                res.data.data[i].notification = {}
                 res.data.data[i].notification.count = 0
               }
 
