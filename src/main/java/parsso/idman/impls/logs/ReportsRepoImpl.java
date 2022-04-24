@@ -43,9 +43,6 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
           .lte(new Time().convertEpochToDate(range[1])));
     }
 
-    query.addCriteria(Criteria.where("millis")
-        .gte(range[0]).lte(range[1]));
-
     query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "millis"));
 
     List<Report> reports = mongoTemplate.find(query, Report.class, Variables.col_Log);
