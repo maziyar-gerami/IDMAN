@@ -95,8 +95,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .antMatchers("/403").permitAll()
           .antMatchers("/error").permitAll()
           .antMatchers("/privacy").permitAll()
-          .antMatchers("/#/**").permitAll()
-
+          .antMatchers("/resetpassword").permitAll()
+          .antMatchers("/chagepassword").permitAll()
           
           //APIs
           .antMatchers("/api/public/**").permitAll()
