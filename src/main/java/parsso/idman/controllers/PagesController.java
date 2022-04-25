@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.DashboardData;
@@ -35,23 +36,113 @@ public class PagesController implements ErrorController {
     this.dashboardData = dashboardData;
   }
 
-  // ************************************* Pages
-  // ****************************************
+  //************************************* Pages ****************************************
+
+  @GetMapping("/notifications")
+  public String PublicMessages() {
+    return "index";
+  }
+
+  @GetMapping("/groups")
+  public String getPageGroups() {
+    return "index";
+  }
 
   @GetMapping("/")
-  public String root() {
+  public String Root() {
+    return "index";
+  }
+
+  @GetMapping("/roles")
+  public String getPageRoles() {
+    return "index";
+  }
+
+  @GetMapping("/reports")
+  public String getPageReports() {
+    return "index";
+  }
+
+  @GetMapping("/events")
+  public String getPageEvents() {
+    return "index";
+  }
+
+  @GetMapping("/audits")
+  public String getPageAudits() {
+    return "index";
+  }
+
+  @GetMapping("/accessreports")
+  public String getPageTranscripts() {
+    return "index";
+  }
+
+  @GetMapping("/settings")
+  public String getPageSettings() {
+    return "index";
+  }
+
+  @GetMapping("/ticketing")
+  public String Reports() {
+    return "index";
+  }
+
+  @RequestMapping("/error")
+  public String handleError() {
+    return "redirect:/404";
+  }
+
+  @GetMapping("/services")
+  public String getPageServices() {
+    return "index";
+  }
+
+  @GetMapping("/403")
+  public String AccessDenied() {
+    return "index";
+  }
+
+  @GetMapping("/privacy")
+  public String Privacy() {
+    return "index";
+  }
+
+  @GetMapping("/errorpage")
+  public String Error() {
+    return "redirect:/404";
+  }
+
+  @GetMapping("/login")
+  public String Login() {
+    return "redirect:/login/cas";
+  }
+
+  @GetMapping("/changepassword")
+  public String changepassword() {
+    return "index";
+  }
+
+  @GetMapping("/users")
+  public String Users() {
+    return "index";
+  }
+
+  @GetMapping("/profile")
+  public String Profile() {
     return "index";
   }
 
   @GetMapping("/resetpassword")
   public String resetPass() {
-    return "redirect:/#/resetpassword";
+    return "index";
   }
 
-  @GetMapping("/changepassword")
-  public String changepassword() {
-    return "redirect:/#/changepassword";
+  @GetMapping("/404")
+  public String resetPassword() {
+    return "index";
   }
+
 
   @GetMapping("/logout")
   public String logout(

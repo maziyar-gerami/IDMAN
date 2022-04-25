@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     http
 
-        .authorizeRequests().antMatchers("/dashboard", "/login").authenticated()
+        .authorizeRequests().antMatchers("/", "/login").authenticated()
         // .antMatchers("")
         .and()
         .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
@@ -71,7 +71,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter.class)
         .addFilterBefore(logoutFilter, LogoutFilter.class)
 
-        .authorizeRequests().antMatchers("/dashboard", "/login")
+        .authorizeRequests().antMatchers("/", "/login")
         .authenticated()
         .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
         .and()
@@ -85,20 +85,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .antMatchers("/css/**").permitAll()
           .antMatchers("/fonts/**").permitAll()
           .antMatchers("/images/**").permitAll()
-          .antMatchers("/public/Parsso-User-Guide.pdf").permitAll()
+          .antMatchers("/img/**").permitAll()
+          .antMatchers("/templates/**").permitAll()
+          .antMatchers("/themes/**").permitAll()
+          .antMatchers("/favicon.ico").permitAll()
+          .antMatchers("/Parsso-User-Guide.pdf").permitAll()
           
           //pages
           .antMatchers("/resetpassword").permitAll()
           .antMatchers("/changepassword").permitAll()
-          .antMatchers("/newpassword**").permitAll()
           .antMatchers("/login/cas").permitAll()
           .antMatchers("/403").permitAll()
+          .antMatchers("/404").permitAll()
           .antMatchers("/error").permitAll()
           .antMatchers("/privacy").permitAll()
-          .antMatchers("/resetpassword").permitAll()
-          .antMatchers("/chagepassword").permitAll()
-          .antMatchers("**#/resetpassword").permitAll()
-          .antMatchers("**#/chagepassword").permitAll()
           
           //APIs
           .antMatchers("/api/public/**").permitAll()
@@ -110,8 +110,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           
           //************* Any Authenticated users Objects **********
           //Pages
-          .antMatchers("/dashboard").hasAnyRole("USER", "PRESENTER", "ADMIN",
-          "SUPPORTER", "SUPERUSER")
           .antMatchers("/events").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER",
           "SUPERUSER")
           .antMatchers("/audits").hasAnyRole("USER", "PRESENTER", "ADMIN", "SUPPORTER",
@@ -144,10 +142,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           //****************** SUPERUSER & ADMIN & SUPPORTER ************************
           //pages
           .antMatchers("/services").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-          .antMatchers("/createservice").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
           .antMatchers("/users").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
           .antMatchers("/groups").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-          .antMatchers("/publicmessages").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+          .antMatchers("/notifications").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
+          .antMatchers("/accessreports").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
           
           
           //APIs
@@ -168,7 +166,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           //******************SUPERUSER Objects ONLY *******************
           //pages
           .antMatchers("/roles").hasRole("SUPERUSER")
-          .antMatchers("/configs**").hasRole("SUPERUSER")
+          .antMatchers("/settings").hasRole("SUPERUSER")
           
           //APIs
           .antMatchers("/api/configs/**").hasRole("SUPERUSER")
@@ -211,7 +209,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .formLogin()
         .loginPage("/login")
 
-        .defaultSuccessUrl("/dashboard", true)
+        .defaultSuccessUrl("/", true)
         .permitAll()
 
         .and()
@@ -220,7 +218,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
         .logout()
         .logoutUrl(casLogout)
-        .logoutSuccessUrl("/dashboard")
+        .logoutSuccessUrl("/")
         .invalidateHttpSession(true)
         .deleteCookies("JSESSIONID");
   }
