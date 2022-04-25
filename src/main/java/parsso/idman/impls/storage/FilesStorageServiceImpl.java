@@ -18,7 +18,6 @@ import java.nio.file.Paths;
 
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
-  Path photoPathRoot;
   Path servicesPathRoot;
   String serviceIcon;
   @Autowired
@@ -70,10 +69,13 @@ public class FilesStorageServiceImpl implements FilesStorageService {
   @Override
   public void saveProfilePhoto(MultipartFile file, String name) {
 
+    String photoPathRoot = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
+    Path path = Paths.get(photoPathRoot);
+
     try {
       System.out.println(photoPathRoot);
 
-      Files.copy(file.getInputStream(), this.photoPathRoot.resolve(name));
+      Files.copy(file.getInputStream(), path.resolve(name));
 
     } catch (Exception e) {
       throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
@@ -82,8 +84,11 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
   @Override
   public Resource load(String filename) {
+    String photoPathRoot = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
+    Path path = Paths.get(photoPathRoot);
+    
     try {
-      Path file = photoPathRoot.resolve(filename);
+      Path file = path.resolve(filename);
       Resource resource = new UrlResource(file.toUri());
 
       if (resource.exists() || resource.isReadable()) {

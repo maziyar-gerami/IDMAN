@@ -33,8 +33,6 @@ public class Upload {
 
     File newPic = new File(uploadedFilesPath + name + "." + extension);
     File oldPic = new File(uploadedFilesPath + userUpdate.getPhoto());
-    System.out.println("*********************************");
-    System.out.println(newPic.getAbsolutePath());
     userUpdate.setPhoto(newPic.getName());
     if (usersOpUpdate.update(userUpdate.get_id().toString(), userUpdate.get_id().toString(), userUpdate) != null) {
       try {
