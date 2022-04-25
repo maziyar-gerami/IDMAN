@@ -77,6 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
 
         
+        
           .authorizeRequests()
           //****************Public Objects*********************
           //resources
@@ -94,12 +95,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .antMatchers("/403").permitAll()
           .antMatchers("/error").permitAll()
           .antMatchers("/privacy").permitAll()
+          .antMatchers("/#/**").permitAll()
+
           
           //APIs
           .antMatchers("/api/public/**").permitAll()
           .antMatchers("/api/resetpassword**").permitAll()
           .antMatchers("/api/captcha/request").permitAll()
           .antMatchers("/api/mobile/**").permitAll()
+
           
           
           //************* Any Authenticated users Objects **********
