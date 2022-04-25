@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import net.bytebuddy.asm.Advice.Return;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -32,6 +34,12 @@ public class Audit {
   private String serverIpAddress;
   @NonNull
   private String service;
+
+  public String getActionPerformed(){
+    if (this.actionPerformed.equals("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED"))
+      return "دسترسی به سرویس";
+      return null;
+  }
 
   public static List<Audit> analyze(MongoTemplate mongoTemplate, int skip, int limit) {
     Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));

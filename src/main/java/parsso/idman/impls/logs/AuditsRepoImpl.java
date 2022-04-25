@@ -32,7 +32,7 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
   public Audit.ListAudits retrieve(String userId, String startDate, String endDate, int p, int n) {
     
     long[] range = null;
-    Query query = new Query();
+    Query query = new Query(Criteria.where("actionPerformed").is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED"));
     if (!userId.equals("")) {
       query.addCriteria(Criteria.where("principal").is(userId));
     }
