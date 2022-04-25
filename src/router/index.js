@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router"
+import { createRouter, createWebHistory } from "vue-router"
 import Dashboard from "../views/Dashboard.vue"
 
 const routes = [
@@ -110,6 +110,12 @@ const routes = [
     meta: { requiresAccessLevel: 0 }
   },
   {
+    path: "/404",
+    name: "Error",
+    component: () => import("../views/Error404.vue"),
+    meta: { requiresAccessLevel: 0 }
+  },
+  {
     path: "/:catchAll(.*)",
     name: "Error404",
     component: () => import("../views/Error404.vue"),
@@ -118,7 +124,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes
 })
 

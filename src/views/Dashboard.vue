@@ -251,7 +251,7 @@ export default {
     showServiceNotification (id) {
       const vm = this
       for (let i = 0; i < this.services.length; ++i) {
-        if (this.services[i]._id === id) {
+        if (this.services[i]._id === id && this.services[i].notification.count !== 0) {
           for (let j = 0; j < this.services[i].notification.notifications.length; ++j) {
             let position = "topLeft"
             let rtl = true
