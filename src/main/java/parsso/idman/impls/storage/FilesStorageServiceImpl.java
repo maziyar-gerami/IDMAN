@@ -71,6 +71,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
   public void saveProfilePhoto(MultipartFile file, String name) {
 
     try {
+      System.out.println(photoPathRoot);
 
       Files.copy(file.getInputStream(), this.photoPathRoot.resolve(name));
 
