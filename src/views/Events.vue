@@ -42,10 +42,14 @@
                   <div v-if="data.action === 'Successful Login'">{{ $t("successfulLogin") }}</div>
                   <div v-else-if="data.action === 'Unsuccessful Login'" style="color: red;">{{ $t("unsuccessfulLogin") }}</div>
                 </template>
-              </Column>
-              <Column field="application" :header="$t('application')" bodyClass="text-center" style="flex: 0 0 5rem">
-                <template #body="{data}">
-                  {{ data.application }}
+                <template #filter="{filterCallback}">
+                  <Dropdown v-model="eventsUserFilter.action" @keydown.enter="filterCallback(); eventsRequestMaster('getUserEvents')" :options="eventsUserActionFilterOptions" optionLabel="name" :placeholder="$t('eventType')" />
+                </template>
+                <template #filterapply="{filterCallback}">
+                  <Button type="button" icon="pi pi-check" @click="filterCallback(); eventsRequestMaster('getUserEvents')" v-tooltip.top="$t('applyFilter')" class="p-button-success"></Button>
+                </template>
+                <template #filterclear="{filterCallback}">
+                  <Button type="button" icon="pi pi-times" @click="filterCallback(); removeFilters('events', 'action')" v-tooltip.top="$t('removeFilter')" class="p-button-danger"></Button>
                 </template>
               </Column>
               <Column field="clientIP" :header="$t('clientIP')" bodyClass="text-center" style="flex: 0 0 10rem">
@@ -116,6 +120,15 @@
                   <div v-if="data.action === 'Successful Login'">{{ $t("successfulLogin") }}</div>
                   <div v-else-if="data.action === 'Unsuccessful Login'" style="color: red;">{{ $t("unsuccessfulLogin") }}</div>
                 </template>
+                <template #filter="{filterCallback}">
+                  <Dropdown v-model="eventsUsersFilter.action" @keydown.enter="filterCallback(); eventsRequestMaster('getUsersEvents')" :options="eventsUsersActionFilterOptions" optionLabel="name" :placeholder="$t('eventType')" />
+                </template>
+                <template #filterapply="{filterCallback}">
+                  <Button type="button" icon="pi pi-check" @click="filterCallback(); eventsRequestMaster('getUsersEvents')" v-tooltip.top="$t('applyFilter')" class="p-button-success"></Button>
+                </template>
+                <template #filterclear="{filterCallback}">
+                  <Button type="button" icon="pi pi-times" @click="filterCallback(); removeFilters('eventsUsers', 'action')" v-tooltip.top="$t('removeFilter')" class="p-button-danger"></Button>
+                </template>
               </Column>
               <Column field="userID" :header="$t('id')" bodyClass="text-center" style="flex: 0 0 8rem">
                 <template #body="{data}">
@@ -129,11 +142,6 @@
                 </template>
                 <template #filterclear="{filterCallback}">
                   <Button type="button" icon="pi pi-times" @click="filterCallback(); removeFilters('eventsUsers', 'userID')" v-tooltip.top="$t('removeFilter')" class="p-button-danger"></Button>
-                </template>
-              </Column>
-              <Column field="application" :header="$t('application')" bodyClass="text-center" style="flex: 0 0 5rem">
-                <template #body="{data}">
-                  {{ data.application }}
                 </template>
               </Column>
               <Column field="clientIP" :header="$t('clientIP')" bodyClass="text-center" style="flex: 0 0 10rem">
@@ -180,9 +188,33 @@ export default {
     return {
       events: [],
       eventsUsers: [],
-      eventsUsersFilter: {
-        userID: ""
+      eventsUserFilter: {
+        action: {}
       },
+      eventsUsersFilter: {
+        userID: "",
+        action: {}
+      },
+      eventsUserActionFilterOptions: [
+        {
+          value: "?",
+          name: this.$t("successfulLogin")
+        },
+        {
+          value: "?",
+          name: this.$t("unsuccessfulLogin")
+        }
+      ],
+      eventsUsersActionFilterOptions: [
+        {
+          value: "?",
+          name: this.$t("successfulLogin")
+        },
+        {
+          value: "?",
+          name: this.$t("unsuccessfulLogin")
+        }
+      ],
       rowsPerPage: 20,
       newPageNumber: 1,
       totalRecordsCount: 20,
@@ -321,6 +353,7 @@ export default {
         parameterObject = { lang: "en" }
       }
       if (command === "getUserEvents") {
+        parameterObject.action = this.eventsUserFilter.action.value
         parameterObject.startDate = this.dateSerializer(document.getElementById("eventsFilter.startDate").value)
         parameterObject.endDate = this.dateSerializer(document.getElementById("eventsFilter.endDate").value)
         parameterObject.page = String(this.newPageNumber)
@@ -389,6 +422,7 @@ export default {
         })
       } else if (command === "getUsersEvents") {
         parameterObject.userID = this.eventsUsersFilter.userID
+        parameterObject.action = this.eventsUsersFilter.action.value
         parameterObject.startDate = this.dateSerializer(document.getElementById("eventsUsersFilter.startDate").value)
         parameterObject.endDate = this.dateSerializer(document.getElementById("eventsUsersFilter.endDate").value)
         parameterObject.page = String(this.newPageNumberUsers)
@@ -546,6 +580,8 @@ export default {
           document.getElementById("eventsFilter.startDate").value = ""
         } else if (filter === "endDate") {
           document.getElementById("eventsFilter.endDate").value = ""
+        } else if (filter === "action") {
+          this.eventsUserFilter.action = ""
         }
         this.eventsRequestMaster("getUserEvents")
       } else if (scale === "eventsUsers") {
@@ -555,17 +591,23 @@ export default {
           document.getElementById("eventsUsersFilter.endDate").value = ""
         } else if (filter === "userID") {
           this.eventsUsersFilter.userID = ""
+        } else if (filter === "action") {
+          this.eventsUsersFilter.action = ""
         }
         this.eventsRequestMaster("getUsersEvents")
       } else if (scale === "all") {
         document.getElementById("eventsFilter.startDate").value = ""
         document.getElementById("eventsFilter.endDate").value = ""
+        this.eventsUserFilter = {
+          action: ""
+        }
         this.eventsRequestMaster("getUserEvents")
       } else if (scale === "allUsers") {
         document.getElementById("eventsUsersFilter.startDate").value = ""
         document.getElementById("eventsUsersFilter.endDate").value = ""
         this.eventsUsersFilter = {
-          userID: ""
+          userID: "",
+          action: ""
         }
         this.eventsRequestMaster("getUsersEvents")
       }

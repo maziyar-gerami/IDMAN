@@ -45,19 +45,9 @@
                   {{ $t("loadingRecords") }}
                 </div>
               </template>
-              <Column field="action" :header="$t('action')" bodyClass="text-center" style="flex: 0 0 20rem">
-                <template #body="{data}">
-                  {{ data.actionPerformed }}
-                </template>
-              </Column>
-              <Column field="service" :header="$t('service')" bodyClass="text-center" style="flex: 0 0 7rem">
+              <Column field="service" :header="$t('accessedService')" bodyClass="text-center" style="flex: 0 0 7rem">
                 <template #body="{data}">
                   {{ data.service }}
-                </template>
-              </Column>
-              <Column field="application" :header="$t('application')" bodyClass="text-center" style="flex: 0 0 5rem">
-                <template #body="{data}">
-                  {{ data.applicationCode }}
                 </template>
               </Column>
               <Column field="clientIpAddress" :header="$t('clientIP')" bodyClass="text-center" style="flex: 0 0 10rem">
@@ -73,13 +63,6 @@
               <Column field="timeString" :header="$t('time')" bodyClass="text-center" style="flex: 0 0 7rem">
                 <template #body="{data}">
                   {{ data.timeString }}
-                </template>
-              </Column>
-              <Column bodyClass="text-center" style="flex: 0 0 5rem">
-                <template #body="{data}">
-                  <div class="flex align-items-center justify-content-center">
-                    <Button icon="fa fa-info" class="p-button-rounded p-button-info p-button-outlined mx-1" @click="openDescription(data.resourceOperatedUpon)" v-tooltip.top="$t('description')" />
-                  </div>
                 </template>
               </Column>
             </DataTable>
@@ -120,9 +103,9 @@
                   {{ $t("loadingRecords") }}
                 </div>
               </template>
-              <Column field="action" :header="$t('action')" bodyClass="text-center" style="flex: 0 0 20rem">
+              <Column field="service" :header="$t('accessedService')" bodyClass="text-center" style="flex: 0 0 7rem">
                 <template #body="{data}">
-                  {{ data.actionPerformed }}
+                  {{ data.service }}
                 </template>
               </Column>
               <Column field="principal" :header="$t('id')" bodyClass="text-center" style="flex: 0 0 8rem">
@@ -137,16 +120,6 @@
                 </template>
                 <template #filterclear="{filterCallback}">
                   <Button type="button" icon="pi pi-times" @click="filterCallback(); removeFilters('auditsUsers', 'userID')" v-tooltip.top="$t('removeFilter')" class="p-button-danger"></Button>
-                </template>
-              </Column>
-              <Column field="service" :header="$t('service')" bodyClass="text-center" style="flex: 0 0 7rem">
-                <template #body="{data}">
-                  {{ data.service }}
-                </template>
-              </Column>
-              <Column field="application" :header="$t('application')" bodyClass="text-center" style="flex: 0 0 5rem">
-                <template #body="{data}">
-                  {{ data.applicationCode }}
                 </template>
               </Column>
               <Column field="clientIpAddress" :header="$t('clientIP')" bodyClass="text-center" style="flex: 0 0 10rem">

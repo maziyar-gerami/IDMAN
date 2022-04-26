@@ -372,7 +372,7 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="editUser.status">{{ $t("status") }}</label>
-                    <Dropdown v-model="editUserBuffer.status" :options="editUserStatusOptions" optionLabel="name" />
+                    <Dropdown v-model="editUserBuffer.status" :options="editUserStatusOptions" optionLabel="name" optionDisabled="disabled" />
                   </div>
                 </div>
                 <div class="field col">
@@ -466,15 +466,18 @@ export default {
       editUserStatusOptions: [
         {
           value: "enable",
-          name: this.$t("enable")
+          name: this.$t("enable"),
+          disabled: false
         },
         {
           value: "disable",
-          name: this.$t("disabled")
+          name: this.$t("disabled"),
+          disabled: false
         },
         {
           value: "lock",
-          name: this.$t("locked")
+          name: this.$t("locked"),
+          disabled: true
         }
       ],
       createUserErrors: {
