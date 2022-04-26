@@ -946,6 +946,7 @@ export default {
         }).then((res) => {
           if (res.data.status.code === 200) {
             vm.loadingInbox = false
+            vm.replyBodySupporter = ""
             vm.getTicket("inbox", vm.replyTicketSupporter._id)
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
@@ -1139,6 +1140,7 @@ export default {
         }).then((res) => {
           if (res.data.status.code === 200) {
             vm.loadingTickets = false
+            vm.replyBodySupporter = ""
             vm.getTicket("tickets", vm.replyTicketSupporter._id)
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
@@ -1414,6 +1416,7 @@ export default {
         }).then((res) => {
           if (res.data.status.code === 200) {
             vm.loadingUserTickets = false
+            vm.replyBodyUser = ""
             vm.getTicket("userTickets", vm.replyTicketUser._id)
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
