@@ -69,7 +69,7 @@ public class ServicesController {
   }
 
   @Value("${base.url}")
-  private String BASE_URL;
+  private String baseurl;
 
   @GetMapping("/api/services/user")
   public ResponseEntity<Response> listUserServices(HttpServletRequest request,
@@ -83,7 +83,8 @@ public class ServicesController {
   }
 
   @GetMapping("/api/services/main")
-  public ResponseEntity<Response> listServicesMain(@RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
+  public ResponseEntity<Response> listServicesMain(
+      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
         new Response(retrieveService.listServicesMain(),
@@ -114,7 +115,8 @@ public class ServicesController {
   @PostMapping("/api/services/{system}")
   public ResponseEntity<Response> createService(
         HttpServletRequest request, @RequestBody JSONObject jsonObject,
-      @PathVariable("system") String system, @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
+      @PathVariable("system") String system, @RequestParam(
+        value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, ParseException, NoSuchFieldException, IllegalAccessException {
     long id = createService.createService(request.getUserPrincipal().getName(), jsonObject, system);
     HttpStatus httpStatus = (id == 0 ? HttpStatus.FORBIDDEN : HttpStatus.OK);
@@ -143,7 +145,7 @@ public class ServicesController {
   @PostMapping("/api/services/metadata")
   public ResponseEntity<Response> uploadMetadata(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-    String result = new Metadata(storageService, BASE_URL).upload(file);
+    String result = new Metadata(storageService, baseurl).upload(file);
     HttpStatus httpStatus = (result == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     return new ResponseEntity<>(new Response(result, Variables.MODEL_SERVICE, httpStatus.value(), lang),
         HttpStatus.OK);
@@ -152,7 +154,7 @@ public class ServicesController {
   @PostMapping("/api/services/icon")
   public ResponseEntity<Response> uploadIcon(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-    String result = new ServiceIcon(storageService, BASE_URL).upload(file);
+    String result = new ServiceIcon(storageService, baseurl).upload(file);
     HttpStatus httpStatus = (result == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     return new ResponseEntity<>(new Response(result, Variables.MODEL_SERVICE, httpStatus.value(), lang),
         HttpStatus.OK);
@@ -193,7 +195,7 @@ public class ServicesController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
           throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
-        new Response(new ServiceIcon(storageService, BASE_URL).show(response, file),
+        new Response(new ServiceIcon(storageService, baseurl).show(response, file),
         Variables.MODEL_SERVICE, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
   }

@@ -48,7 +48,7 @@ public class DeletePubMessage {
       String next = iterator.next();
 
       try {
-        mongoTemplate.remove(new Query(Criteria.where("_id").is(next)), Variables.col_publicMessage);
+        mongoTemplate.remove(new Query(Criteria.where("messageId").is(next)), Variables.col_publicMessage);
         uniformLogger.info(doer, new ReportMessage(Variables.MODEL_PUBICMESSAGE, next, "",
             Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 

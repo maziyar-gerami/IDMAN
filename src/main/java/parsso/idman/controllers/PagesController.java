@@ -39,7 +39,7 @@ public class PagesController implements ErrorController {
   //************************************* Pages ****************************************
 
   @GetMapping("/notifications")
-  public String PublicMessages() {
+  public String publicMessages() {
     return "index";
   }
 
@@ -49,7 +49,7 @@ public class PagesController implements ErrorController {
   }
 
   @GetMapping("/")
-  public String Root() {
+  public String root() {
     return "index";
   }
 
@@ -84,7 +84,7 @@ public class PagesController implements ErrorController {
   }
 
   @GetMapping("/ticketing")
-  public String Reports() {
+  public String reports() {
     return "index";
   }
 
@@ -99,22 +99,22 @@ public class PagesController implements ErrorController {
   }
 
   @GetMapping("/403")
-  public String AccessDenied() {
+  public String accessDenied() {
     return "index";
   }
 
   @GetMapping("/privacy")
-  public String Privacy() {
+  public String privacy() {
     return "index";
   }
 
   @GetMapping("/errorpage")
-  public String Error() {
+  public String error() {
     return "redirect:/404";
   }
 
   @GetMapping("/login")
-  public String Login() {
+  public String login() {
     return "redirect:/login/cas";
   }
 
@@ -124,12 +124,12 @@ public class PagesController implements ErrorController {
   }
 
   @GetMapping("/users")
-  public String Users() {
+  public String users() {
     return "index";
   }
 
   @GetMapping("/profile")
-  public String Profile() {
+  public String profile() {
     return "index";
   }
 
