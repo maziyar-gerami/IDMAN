@@ -142,9 +142,9 @@ export default {
           params: {
             lang: langCode
           },
-          data: JSON.stringify({
+          data: JSON.stringify(
             editList
-          }).replace(/\\\\/g, "\\")
+          ).replace(/\\\\/g, "\\")
         }).then((res) => {
           if (res.data.status.code === 200) {
             vm.loading = false

@@ -565,7 +565,7 @@ export default {
         }
         this.loading = true
         this.axios({
-          url: "/api/users",
+          url: "/api/groups",
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           params: {

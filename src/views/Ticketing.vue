@@ -936,6 +936,7 @@ export default {
         this.axios({
           url: "/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
           method: "PUT",
+          headers: { "Content-Type": "application/json" },
           params: {
             lang: langCode
           },
@@ -959,6 +960,7 @@ export default {
         this.axios({
           url: "/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
           method: "PUT",
+          headers: { "Content-Type": "application/json" },
           params: {
             lang: langCode
           },
@@ -1127,6 +1129,7 @@ export default {
         this.axios({
           url: "/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
           method: "PUT",
+          headers: { "Content-Type": "application/json" },
           params: {
             lang: langCode
           },
@@ -1150,6 +1153,7 @@ export default {
         this.axios({
           url: "/api/user/ticket/reply/" + vm.replyTicketSupporter._id,
           method: "PUT",
+          headers: { "Content-Type": "application/json" },
           params: {
             lang: langCode
           },
@@ -1374,6 +1378,7 @@ export default {
         this.axios({
           url: "/api/user/ticket",
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           params: {
             lang: langCode
           },
@@ -1399,6 +1404,7 @@ export default {
         this.axios({
           url: "/api/user/ticket/reply/" + vm.replyTicketUser._id,
           method: "PUT",
+          headers: { "Content-Type": "application/json" },
           params: {
             lang: langCode
           },

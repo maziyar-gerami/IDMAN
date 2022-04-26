@@ -541,7 +541,9 @@ export default {
         seconds = parseInt(timer % 60, 10)
         minutes = minutes < 10 ? "0" + minutes : minutes
         seconds = seconds < 10 ? "0" + seconds : seconds
-        document.querySelector("#countdownButtonCD").textContent = " (" + minutes + ":" + seconds + ") "
+        if (typeof document.querySelector("#countdownButtonCD") !== "undefined") {
+          document.querySelector("#countdownButtonCD").textContent = " (" + minutes + ":" + seconds + ") "
+        }
         if (--timer < 0) {
           clearInterval(cd)
           document.querySelector("#countdownButtonCD").textContent = ""

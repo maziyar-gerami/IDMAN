@@ -11,7 +11,7 @@
                 <Button :label="$t('delete')" icon="pi pi-trash" class="p-button-danger mx-1" @click="notificationsToolbar('delete')" />
               </template>
             </Toolbar>
-            <DataTable :value="notifications" dataKey="id" :loading="loading" scrollDirection="vertical"
+            <DataTable :value="notifications" dataKey="messageId" :loading="loading" scrollDirection="vertical"
             v-model:selection="selectedNotifications" class="p-datatable-gridlines" :rowHover="true"
             responsiveLayout="scroll" :scrollable="false" scrollHeight="50vh" paginatorPosition="top"
             :paginator="true" :rows="20" :rowsPerPageOptions="[10,20,50,100,500]" :pageLinkSize="5">
@@ -456,7 +456,7 @@ export default {
       if (errorCount > 0) {
         this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
       } else {
-        this.groupsRequestMaster("createNotification")
+        this.notificationsRequestMaster("createNotification")
       }
     },
     editNotification (id) {
@@ -480,7 +480,7 @@ export default {
       if (errorCount > 0) {
         this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
       } else {
-        this.groupsRequestMaster("editNotification")
+        this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("editNotification"), "pi-question-circle", "#F0EAAA", this.notificationsRequestMaster, "editNotification")
       }
     },
     deleteNotification (id) {
