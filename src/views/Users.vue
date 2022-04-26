@@ -523,7 +523,7 @@ export default {
         mobile: "",
         mail: "",
         employeeNumber: "",
-        status: { value: "enable", name: this.$t("enable") },
+        status: { value: "enable", name: this.$t("enable"), disabled: false },
         unDeletable: false,
         memberOf: [],
         description: "",
@@ -647,11 +647,11 @@ export default {
         }).then((res) => {
           vm.editUserBuffer = res.data.data
           if (vm.editUserBuffer.status === "enable") {
-            vm.editUserBuffer.status = { value: "enable", name: this.$t("enable") }
+            vm.editUserBuffer.status = { value: "enable", name: this.$t("enable"), disabled: false }
           } else if (vm.editUserBuffer.status === "disable") {
-            vm.editUserBuffer.status = { value: "disable", name: this.$t("disabled") }
+            vm.editUserBuffer.status = { value: "disable", name: this.$t("disabled"), disabled: false }
           } else if (vm.editUserBuffer.status === "lock") {
-            vm.editUserBuffer.status = { value: "lock", name: this.$t("locked") }
+            vm.editUserBuffer.status = { value: "lock", name: this.$t("locked"), disabled: true }
           }
           for (const i in vm.editUserBuffer.memberOf) {
             for (const j in vm.groups) {

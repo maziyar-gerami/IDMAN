@@ -18,7 +18,7 @@
                 <Button :label="$t('filter')" class="p-button mx-1" @click="eventsRequestMaster('getUserEvents')" />
               </template>
             </Toolbar>
-            <DataTable :value="events" filterDisplay="menu" dataKey="_id" :rows="rowsPerPage" :loading="loading" scrollHeight="50vh"
+            <DataTable :value="events" filterDisplay="menu" dataKey="_id" :rows="rowsPerPage" :loading="loading" scrollHeight="50vh" :filters="filters"
             class="p-datatable-gridlines" :rowHover="true" responsiveLayout="scroll" scrollDirection="vertical" :scrollable="false">
               <template #header>
                 <div class="flex justify-content-between flex-column sm:flex-row">
@@ -96,7 +96,7 @@
                 <Button icon="pi pi-upload" class="mx-1" @click="eventsRequestMaster('export')" v-tooltip.top="'Export'" />
               </template>
             </Toolbar>
-            <DataTable :value="eventsUsers" filterDisplay="menu" dataKey="_id" :rows="rowsPerPageUsers" :loading="loadingUsers" scrollHeight="50vh" :filters="filters"
+            <DataTable :value="eventsUsers" filterDisplay="menu" dataKey="_id" :rows="rowsPerPageUsers" :loading="loadingUsers" scrollHeight="50vh" :filters="filtersUsers"
             class="p-datatable-gridlines" :rowHover="true" responsiveLayout="scroll" scrollDirection="vertical" :scrollable="false">
               <template #header>
                 <div class="flex justify-content-between flex-column sm:flex-row">
@@ -197,21 +197,21 @@ export default {
       },
       eventsUserActionFilterOptions: [
         {
-          value: "?",
+          value: "null",
           name: this.$t("successfulLogin")
         },
         {
-          value: "?",
+          value: "null",
           name: this.$t("unsuccessfulLogin")
         }
       ],
       eventsUsersActionFilterOptions: [
         {
-          value: "?",
+          value: "null",
           name: this.$t("successfulLogin")
         },
         {
-          value: "?",
+          value: "null",
           name: this.$t("unsuccessfulLogin")
         }
       ],
@@ -224,7 +224,8 @@ export default {
       tabActiveIndex: 0,
       loading: false,
       loadingUsers: false,
-      filters: null
+      filters: null,
+      filtersUsers: null
     }
   },
   mounted () {
@@ -331,6 +332,10 @@ export default {
   methods: {
     initiateFilters () {
       this.filters = {
+        action: { value: null, matchMode: FilterMatchMode.CONTAINS }
+      }
+      this.filtersUsers = {
+        action: { value: null, matchMode: FilterMatchMode.CONTAINS },
         userID: { value: null, matchMode: FilterMatchMode.CONTAINS }
       }
     },
