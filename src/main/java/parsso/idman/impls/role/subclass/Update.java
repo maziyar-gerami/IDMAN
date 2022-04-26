@@ -20,7 +20,7 @@ public class Update {
 
   public Update(MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
     this.mongoTemplate = mongoTemplate;
-
+    this.uniformLogger = uniformLogger;
   }
 
   public HttpStatus update(String doerID, String role, JSONObject users) {
