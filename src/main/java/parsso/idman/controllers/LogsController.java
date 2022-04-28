@@ -1,5 +1,7 @@
 package parsso.idman.controllers;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -128,6 +130,7 @@ public class LogsController {
         @RequestParam(name = "userID", defaultValue = "") String userID,
       @RequestParam(name = "startDate", defaultValue = "") String startDate,
       @RequestParam(name = "endDate", defaultValue = "") String endDate,
+      @RequestParam(name = "services", defaultValue = "") List<String> services,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
       @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
@@ -135,7 +138,7 @@ public class LogsController {
 
     return new ResponseEntity<>(new Response(
         reportsRepo.retrieve(userID, startDate, endDate, Integer.parseInt(page),
-            Integer.parseInt(count)),
+            Integer.parseInt(count), services),
         Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
   }
@@ -144,13 +147,14 @@ public class LogsController {
   public ResponseEntity<Response> getUserReports(HttpServletRequest request,
       @RequestParam(name = "startDate", defaultValue = "") String startDate,
       @RequestParam(name = "endDate", defaultValue = "") String endDate,
+      @RequestParam(name = "services", defaultValue = "") List<String> services,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
       @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
         reportsRepo.retrieve(request.getUserPrincipal().getName(), startDate, endDate, Integer.parseInt(page),
-            Integer.parseInt(count)),
+            Integer.parseInt(count),services),
         Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
   }

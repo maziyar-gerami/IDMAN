@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.LogTime;
 import parsso.idman.helpers.Variables;
+import parsso.idman.impls.logs.subclass.ServiceAudit;
+import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.logs.Audit;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.other.Time;
@@ -20,19 +22,19 @@ import parsso.idman.repos.ServiceRepo;
 @Service
 public class AuditsRepoImpl implements LogsRepo.AuditRepo {
   final MongoTemplate mongoTemplate;
-  final ServiceRepo.Retrieve servicerepo;
+  final RetrieveService retrieveService;
 
   @Autowired
-  public AuditsRepoImpl(MongoTemplate mongoTemplate, ServiceRepo.Retrieve servicerepo) {
+  public AuditsRepoImpl(MongoTemplate mongoTemplate, RetrieveService retrieveService) {
     this.mongoTemplate = mongoTemplate;
-    this.servicerepo = servicerepo;
+    this.retrieveService = retrieveService;
   }
 
   @Override
   public Audit.ListAudits retrieve(String userId, String startDate, String endDate, int p, int n) {
     
     long[] range = null;
-    Query query = new Query(Criteria.where("actionPerformed").is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED"));
+    Query query = new Query();
     if (!userId.equals("")) {
       query.addCriteria(Criteria.where("principal").is(userId));
     }
@@ -49,14 +51,7 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
 
     query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "_id"));
     List<Audit> audits = mongoTemplate.find(query, Audit.class, Variables.col_audit);
-    List<MicroService> services = servicerepo.listServicesMain();
-    for (Audit audit:audits) {
-      for (MicroService microservice:services) {
-        if (audit.getResourceOperatedUpon().contains(microservice.getServiceId())) {
-          audit.setService(microservice.getName());
-        }
-      }
-    }
+  
     return new Audit.ListAudits(audits, size, (int) Math.ceil((double) size / (double) n));
   }
 

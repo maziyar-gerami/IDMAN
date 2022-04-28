@@ -2,6 +2,7 @@ package parsso.idman.controllers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.http.HttpRequest;
 import java.util.LinkedList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +32,7 @@ import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.service.Position;
+import parsso.idman.impls.logs.subclass.ServiceAudit;
 import parsso.idman.impls.services.DeleteService;
 import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.impls.services.create.CreateService;
@@ -134,6 +136,13 @@ public class ServicesController {
         updateService.updateService(request.getUserPrincipal().getName(), id, jsonObject, system).value(),
         lang), HttpStatus.OK);
   }
+
+  @GetMapping("/api/service/used")
+    public ResponseEntity<Response> userService(HttpServletRequest request, @RequestParam String lang) throws NoSuchFieldException, IllegalAccessException{
+      return new ResponseEntity(new Response(
+        new ServiceAudit(retrieveService, mongoTemplate).usedService(request.getUserPrincipal().getName()),Variables.MODEL_SERVICE,HttpStatus.OK.value(),lang), HttpStatus.OK);
+    }
+  
 
   @GetMapping("/api/serviceCheck/{id}")
   public ResponseEntity<Response> serviceAccess(@PathVariable("id") long id,
