@@ -27,12 +27,23 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
   }
 
   @Override
-  public Event.ListEvents retrieve(String userId, String startDate, String endDate, int p, int n) {
+  public Event.ListEvents retrieve(String userId, String startDate, String endDate, int p, int n, String action) {
     Query query = new Query();
     long[] range = null;
 
     if (!userId.equals("")) {
       query.addCriteria(Criteria.where("principalId").is(userId));
+    }
+
+    if (!action.equals("")){
+      if (action.equals("success")){
+        query.addCriteria(Criteria.where("type").regex("CasTicketGrantingTicketCreatedEvent"));
+      } else if (action.equals("failure")){
+        query.addCriteria(Criteria.where("type").regex("CasAuthenticationTransactionFailureEvent"));
+      } else {
+        return null;
+      }
+
     }
 
     range = LogTime.rangeCreator(startDate, endDate);
@@ -52,16 +63,29 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
   }
 
   @Override
-  public Event.ListEvents retrieveListSizeEvents(int p, int n) {
-    List<Event> allEvents = analyze((p - 1) * n, n);
+  public Event.ListEvents retrieveListSizeEvents(int p, int n, String action) {
+    List<Event> allEvents = analyze((p - 1) * n, n, action);
     long size = mongoTemplate.getCollection(Variables.col_casEvent).countDocuments();
 
     return new Event.ListEvents(size, (int) Math.ceil((double) size / (double) n), eventsSetTime(allEvents));
   }
 
   @Override
-  public List<Event> analyze(int skip, int limit) {
-    Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
+  public List<Event> analyze(int skip, int limit, String action) {
+    Query query = new Query();
+
+    if (!action.equals("")){
+      if (action.equals("success")){
+        query.addCriteria(Criteria.where("type").is("CasTicketGrantingTicketCreatedEvent"));
+      } else if (action.equals("failure")){
+        query.addCriteria(Criteria.where("type").is("CasAuthenticationTransactionFailureEvent"));
+      } else {
+        return null;
+      }
+
+    }
+
+    query.skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
     List<Event> le = mongoTemplate.find(query, Event.class, Variables.col_casEvent);
     return eventsSetTime(le);
   }

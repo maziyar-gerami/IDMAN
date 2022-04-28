@@ -18,11 +18,11 @@ public class LogsRepo {
 
   public interface EventRepo {
 
-    Event.ListEvents retrieve(String userId, String startDate, String endDate, int p, int n);
+    Event.ListEvents retrieve(String userId, String startDate, String endDate, int p, int n, String action);
 
-    Event.ListEvents retrieveListSizeEvents(int page, int n);
+    Event.ListEvents retrieveListSizeEvents(int page, int n, String action);
 
-    List<Event> analyze(int skip, int limit);
+    List<Event> analyze(int skip, int limit, String action);
   }
 
   public interface ReportRepo {

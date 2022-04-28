@@ -58,8 +58,9 @@ public class MobileController {
     if (QrToken.equals(user.getUsersExtraInfo().getQrToken())) {
 
       return new ResponseEntity<>(user.getMobile(), HttpStatus.OK);
-    } else
+    } else {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
   }
 
   @PostMapping("/api/mobile/sendsms")
@@ -108,14 +109,16 @@ public class MobileController {
   public @ResponseBody ResponseEntity<Event.ListEvents> M_retrieveAllEvents(
       @RequestParam("mobileToken") String MobileToken,
       @PathVariable("page") String page, @PathVariable("n") String n,
+      @RequestParam(value = "action", defaultValue = "") String action,
       @RequestParam("uid") String uid) {
 
     User user = usersOpRetrieve.retrieveUsers(uid);
     if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
-      return new ResponseEntity<>(eventRepo.retrieveListSizeEvents(Integer.parseInt(page), Integer.parseInt(n)),
-          HttpStatus.OK);
-    else
+      return new ResponseEntity<>(eventRepo.retrieveListSizeEvents(Integer.parseInt(page),
+       Integer.parseInt(n), action), HttpStatus.OK);
+    else {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 
   }
 

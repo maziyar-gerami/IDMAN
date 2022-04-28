@@ -114,7 +114,7 @@ public class DashboardData {
     Thread loginData = new Thread(() -> {
       // __________________login data____________
 
-      List<Event> events = eventRepo.analyze(0, 0);
+      List<Event> events = eventRepo.analyze(0, 0,"");
       int nSuccessful = 0;
       int nUnSucceful = 0;
 
