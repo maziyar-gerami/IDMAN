@@ -26,7 +26,7 @@
                 <Button :label="$t('filter')" class="p-button mx-1" @click="auditsRequestMaster('getUserAudits')" />
               </template>
             </Toolbar>
-            <DataTable :value="audits" filterDisplay="menu" dataKey="_id" :rows="rowsPerPage" :loading="loading" scrollHeight="50vh"
+            <DataTable :value="audits" filterDisplay="menu" dataKey="_id" :rows="rowsPerPage" :loading="loading" scrollHeight="50vh" :filters="filtersUser"
             class="p-datatable-gridlines" :rowHover="true" responsiveLayout="scroll" scrollDirection="vertical" :scrollable="false">
               <template #header>
                 <div class="flex justify-content-between flex-column sm:flex-row">
@@ -48,6 +48,16 @@
               <Column field="service" :header="$t('accessedService')" bodyClass="text-center" style="flex: 0 0 7rem">
                 <template #body="{data}">
                   {{ data.service }}
+                </template>
+                <template #filter="{filterCallback}">
+                  <Dropdown v-model="auditsUserFilter.service" @keydown.enter="filterCallback(); auditsRequestMaster('getUserAudits')"
+                  :options="auditsUserFilterOptions" :loading="loadingUserDropdown" optionLabel="name" :placeholder="$t('service')" />
+                </template>
+                <template #filterapply="{filterCallback}">
+                  <Button type="button" icon="pi pi-check" @click="filterCallback(); auditsRequestMaster('getUserAudits')" v-tooltip.top="$t('applyFilter')" class="p-button-success"></Button>
+                </template>
+                <template #filterclear="{filterCallback}">
+                  <Button type="button" icon="pi pi-times" @click="filterCallback(); removeFilters('audits', 'service')" v-tooltip.top="$t('removeFilter')" class="p-button-danger"></Button>
                 </template>
               </Column>
               <Column field="clientIpAddress" :header="$t('clientIP')" bodyClass="text-center" style="flex: 0 0 10rem">
@@ -84,7 +94,7 @@
                 <Button icon="pi pi-upload" class="mx-1" @click="auditsRequestMaster('export')" v-tooltip.top="'Export'" />
               </template>
             </Toolbar>
-            <DataTable :value="auditsUsers" filterDisplay="menu" dataKey="_id" :rows="rowsPerPageUsers" :loading="loadingUsers" scrollHeight="50vh" :filters="filters"
+            <DataTable :value="auditsUsers" filterDisplay="menu" dataKey="_id" :rows="rowsPerPageUsers" :loading="loadingUsers" scrollHeight="50vh" :filters="filtersUsers"
             class="p-datatable-gridlines" :rowHover="true" responsiveLayout="scroll" scrollDirection="vertical" :scrollable="false">
               <template #header>
                 <div class="flex justify-content-between flex-column sm:flex-row">
@@ -106,6 +116,16 @@
               <Column field="service" :header="$t('accessedService')" bodyClass="text-center" style="flex: 0 0 7rem">
                 <template #body="{data}">
                   {{ data.service }}
+                </template>
+                <template #filter="{filterCallback}">
+                  <Dropdown v-model="auditsUsersFilter.service" @keydown.enter="filterCallback(); auditsRequestMaster('getUsersAudits')"
+                  :options="auditsUsersFilterOptions" :loading="loadingUsersDropdown" optionLabel="name" :placeholder="$t('service')" />
+                </template>
+                <template #filterapply="{filterCallback}">
+                  <Button type="button" icon="pi pi-check" @click="filterCallback(); auditsRequestMaster('getUsersAudits')" v-tooltip.top="$t('applyFilter')" class="p-button-success"></Button>
+                </template>
+                <template #filterclear="{filterCallback}">
+                  <Button type="button" icon="pi pi-times" @click="filterCallback(); removeFilters('auditsUsers', 'service')" v-tooltip.top="$t('removeFilter')" class="p-button-danger"></Button>
                 </template>
               </Column>
               <Column field="principal" :header="$t('id')" bodyClass="text-center" style="flex: 0 0 8rem">
@@ -168,9 +188,19 @@ export default {
     return {
       audits: [],
       auditsUsers: [],
-      auditsUsersFilter: {
-        userID: ""
+      auditsUserFilter: {
+        service: {
+          name: ""
+        }
       },
+      auditsUsersFilter: {
+        userID: "",
+        service: {
+          name: ""
+        }
+      },
+      auditsUserFilterOptions: [],
+      auditsUsersFilterOptions: [],
       auditDescription: "",
       rowsPerPage: 20,
       newPageNumber: 1,
@@ -181,8 +211,11 @@ export default {
       tabActiveIndex: 0,
       loading: false,
       loadingUsers: false,
+      loadingUserDropdown: false,
+      loadingUsersDropdown: false,
       displayDescription: false,
-      filters: null
+      filtersUser: null,
+      filtersUsers: null
     }
   },
   mounted () {
@@ -282,14 +315,20 @@ export default {
     })
     this.initiateFilters()
     this.auditsRequestMaster("getUserAudits")
+    this.auditsRequestMaster("getUserAuditsFilter")
     if (this.$store.state.accessLevel > 1) {
       this.auditsRequestMaster("getUsersAudits")
+      this.auditsRequestMaster("getUsersAuditsFilter")
     }
   },
   methods: {
     initiateFilters () {
-      this.filters = {
-        principal: { value: null, matchMode: FilterMatchMode.CONTAINS }
+      this.filtersUser = {
+        service: { value: null, matchMode: FilterMatchMode.CONTAINS }
+      }
+      this.filtersUsers = {
+        principal: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        service: { value: null, matchMode: FilterMatchMode.CONTAINS }
       }
     },
     onPaginatorEvent (event) {
@@ -304,22 +343,25 @@ export default {
     },
     auditsRequestMaster (command) {
       const vm = this
-      let parameterObject = null
+      let langCode = ""
       if (this.$i18n.locale === "Fa") {
-        parameterObject = { lang: "fa" }
+        langCode = "fa"
       } else if (this.$i18n.locale === "En") {
-        parameterObject = { lang: "en" }
+        langCode = "en"
       }
       if (command === "getUserAudits") {
-        parameterObject.startDate = this.dateSerializer(document.getElementById("auditsFilter.startDate").value)
-        parameterObject.endDate = this.dateSerializer(document.getElementById("auditsFilter.endDate").value)
-        parameterObject.page = String(this.newPageNumber)
-        parameterObject.count = String(this.rowsPerPage)
-        const query = new URLSearchParams(parameterObject).toString()
         this.loading = true
         this.axios({
-          url: "/api/logs/audits/user" + "?" + query,
-          method: "GET"
+          url: "/api/logs/audits/user",
+          method: "GET",
+          params: {
+            services: vm.auditsUserFilter.service.name,
+            startDate: vm.dateSerializer(document.getElementById("auditsFilter.startDate").value),
+            endDate: vm.dateSerializer(document.getElementById("auditsFilter.endDate").value),
+            page: String(vm.newPageNumber),
+            count: String(vm.rowsPerPage),
+            lang: langCode
+          }
         }).then((res) => {
           if (res.data.status.code === 200) {
             vm.audits = res.data.data.auditList
@@ -334,16 +376,19 @@ export default {
           vm.loading = false
         })
       } else if (command === "getUsersAudits") {
-        parameterObject.userID = this.auditsUsersFilter.userID
-        parameterObject.startDate = this.dateSerializer(document.getElementById("auditsUsersFilter.startDate").value)
-        parameterObject.endDate = this.dateSerializer(document.getElementById("auditsUsersFilter.endDate").value)
-        parameterObject.page = String(this.newPageNumberUsers)
-        parameterObject.count = String(this.rowsPerPageUsers)
-        const query = new URLSearchParams(parameterObject).toString()
         this.loadingUsers = true
         this.axios({
-          url: "/api/logs/audits/users" + "?" + query,
-          method: "GET"
+          url: "/api/logs/audits/users",
+          method: "GET",
+          params: {
+            services: vm.auditsUsersFilter.service.name,
+            userID: vm.auditsUsersFilter.userID,
+            startDate: vm.dateSerializer(document.getElementById("auditsUsersFilter.startDate").value),
+            endDate: vm.dateSerializer(document.getElementById("auditsUsersFilter.endDate").value),
+            page: String(vm.newPageNumberUsers),
+            count: String(vm.rowsPerPageUsers),
+            lang: langCode
+          }
         }).then((res) => {
           if (res.data.status.code === 200) {
             vm.auditsUsers = res.data.data.auditList
@@ -356,6 +401,54 @@ export default {
         }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.loadingUsers = false
+        })
+      } else if (command === "getUserAuditsFilter") {
+        this.loadingUserDropdown = true
+        this.axios({
+          url: "/api/service/used",
+          method: "GET",
+          params: {
+            lang: langCode
+          }
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            vm.auditsUserFilterOptions = res.data.data
+            vm.loadingUserDropdown = false
+          } else {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.loadingUserDropdown = false
+          }
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          vm.loadingUserDropdown = false
+        })
+      } else if (command === "getUsersAuditsFilter") {
+        this.loadingUsersDropdown = true
+        this.axios({
+          url: "/api/services/main",
+          method: "GET",
+          params: {
+            lang: langCode
+          }
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            vm.auditsUsersFilterOptions = []
+            for (const i in res.data.data) {
+              vm.auditsUsersFilterOptions.push(
+                {
+                  _id: res.data.data[i]._id,
+                  name: res.data.data[i].name
+                }
+              )
+            }
+            vm.loadingUsersDropdown = false
+          } else {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.loadingUsersDropdown = false
+          }
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          vm.loadingUsersDropdown = false
         })
       } else if (command === "export") {
         this.loadingUsers = true
@@ -448,6 +541,10 @@ export default {
           document.getElementById("auditsFilter.startDate").value = ""
         } else if (filter === "endDate") {
           document.getElementById("auditsFilter.endDate").value = ""
+        } else if (filter === "service") {
+          this.auditsUserFilter.service = {
+            name: ""
+          }
         }
         this.auditsRequestMaster("getUserAudits")
       } else if (scale === "auditsUsers") {
@@ -457,17 +554,27 @@ export default {
           document.getElementById("auditsUsersFilter.endDate").value = ""
         } else if (filter === "userID") {
           this.auditsUsersFilter.userID = ""
+        } else if (filter === "service") {
+          this.auditsUsersFilter.service = {
+            name: ""
+          }
         }
         this.auditsRequestMaster("getUsersAudits")
       } else if (scale === "all") {
         document.getElementById("auditsFilter.startDate").value = ""
         document.getElementById("auditsFilter.endDate").value = ""
+        this.auditsUserFilter.service = {
+          name: ""
+        }
         this.auditsRequestMaster("getUserAudits")
       } else if (scale === "allUsers") {
         document.getElementById("auditsUsersFilter.startDate").value = ""
         document.getElementById("auditsUsersFilter.endDate").value = ""
         this.auditsUsersFilter = {
-          userID: ""
+          userID: "",
+          service: {
+            name: ""
+          }
         }
         this.auditsRequestMaster("getUsersAudits")
       }

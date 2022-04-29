@@ -189,29 +189,33 @@ export default {
       events: [],
       eventsUsers: [],
       eventsUserFilter: {
-        action: {}
+        action: {
+          value: ""
+        }
       },
       eventsUsersFilter: {
         userID: "",
-        action: {}
+        action: {
+          value: ""
+        }
       },
       eventsUserActionFilterOptions: [
         {
-          value: "null",
+          value: "success",
           name: this.$t("successfulLogin")
         },
         {
-          value: "null",
+          value: "failure",
           name: this.$t("unsuccessfulLogin")
         }
       ],
       eventsUsersActionFilterOptions: [
         {
-          value: "null",
+          value: "success",
           name: this.$t("successfulLogin")
         },
         {
-          value: "null",
+          value: "failure",
           name: this.$t("unsuccessfulLogin")
         }
       ],
@@ -586,7 +590,9 @@ export default {
         } else if (filter === "endDate") {
           document.getElementById("eventsFilter.endDate").value = ""
         } else if (filter === "action") {
-          this.eventsUserFilter.action = ""
+          this.eventsUserFilter.action = {
+            value: ""
+          }
         }
         this.eventsRequestMaster("getUserEvents")
       } else if (scale === "eventsUsers") {
@@ -597,14 +603,18 @@ export default {
         } else if (filter === "userID") {
           this.eventsUsersFilter.userID = ""
         } else if (filter === "action") {
-          this.eventsUsersFilter.action = ""
+          this.eventsUsersFilter.action = {
+            value: ""
+          }
         }
         this.eventsRequestMaster("getUsersEvents")
       } else if (scale === "all") {
         document.getElementById("eventsFilter.startDate").value = ""
         document.getElementById("eventsFilter.endDate").value = ""
         this.eventsUserFilter = {
-          action: ""
+          action: {
+            value: ""
+          }
         }
         this.eventsRequestMaster("getUserEvents")
       } else if (scale === "allUsers") {
@@ -612,7 +622,9 @@ export default {
         document.getElementById("eventsUsersFilter.endDate").value = ""
         this.eventsUsersFilter = {
           userID: "",
-          action: ""
+          action: {
+            value: ""
+          }
         }
         this.eventsRequestMaster("getUsersEvents")
       }
