@@ -3,6 +3,7 @@ package parsso.idman.impls.logs.subclass;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.simple.JSONObject;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -23,18 +24,22 @@ public class ServiceAudit {
     services = new LinkedList<>();
   }
 
-  public List<String> usedService(String userId){
+  public List<JSONObject> usedService(String userId){
     List<MicroService> microServices = retrieveService.listServicesMain();
     Query query;
+    List<JSONObject> result = new LinkedList<>();
     for (MicroService microService : microServices) {
       query = new Query(Criteria.where("principal").is(userId));
       query.addCriteria(Criteria.where("resourceOperatedUpon").regex(microService.getServiceId()));
       if (mongoTemplate.exists(query, Variables.col_audit)) {
-        services.add(microService.getName());
+        JSONObject temp = new JSONObject();
+        temp.put("_id", microService.get_id());
+        temp.put("name", microService.getName());
+        result.add(temp);
       }
 
     }
-    return services;
+    return result;
   }
 
   
