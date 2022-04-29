@@ -53,14 +53,14 @@ public class LogsController {
         @RequestParam(value = "userID", defaultValue = "") String userID,
       @RequestParam(value  = "startDate", defaultValue = "") String startDate,
       @RequestParam(value = "endDate", defaultValue = "") String endDate,
-      @RequestParam(value = "services", defaultValue = "") List<Long> services,
+      @RequestParam(value = "service", defaultValue = "") String service,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
         auditRepo.retrieve(userID, startDate, endDate, Integer.parseInt(page),
-            Integer.parseInt(count), services),
+            Integer.parseInt(count), (service.equals("") ? 0l : Long.parseLong(service))),
                 Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
   }
 
@@ -68,7 +68,7 @@ public class LogsController {
   public ResponseEntity<Response> getUserAudits(HttpServletRequest request,
       @RequestParam(value = "startDate", defaultValue = "") String startDate,
       @RequestParam(value = "endDate", defaultValue = "") String endDate,
-      @RequestParam(value = "services", defaultValue = "") List<Long> services,
+      @RequestParam(value = "service", defaultValue = "") String service,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
       @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
@@ -80,7 +80,7 @@ public class LogsController {
         new Response(
             auditRepo.retrieve(request.getUserPrincipal().getName(), startDate,
                 endDate,
-                Integer.parseInt(page), Integer.parseInt(count),services),
+                Integer.parseInt(page), Integer.parseInt(count),(service.equals("") ? 0l : Long.parseLong(service))),
             Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
   }

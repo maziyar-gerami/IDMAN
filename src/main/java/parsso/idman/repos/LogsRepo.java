@@ -13,7 +13,7 @@ import java.util.List;
 
 public class LogsRepo {
   public interface AuditRepo {
-    Audit.ListAudits retrieve(String userId, String startDate, String endDate, int p, int n, List<Long> services);
+    Audit.ListAudits retrieve(String userId, String startDate, String endDate, int p, int n, long services);
   }
 
   public interface EventRepo {

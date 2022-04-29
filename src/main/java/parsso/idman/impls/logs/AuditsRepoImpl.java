@@ -34,7 +34,7 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
   }
 
   @Override
-  public Audit.ListAudits retrieve(String userId, String startDate, String endDate, int p, int n, List<Long> services) {
+  public Audit.ListAudits retrieve(String userId, String startDate, String endDate, int p, int n, long sid) {
     
     long[] range = null;
     Query query = new Query(Criteria.where("actionPerformed").is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED"));
@@ -42,15 +42,10 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
       query.addCriteria(Criteria.where("principal").is(userId));
     }
 
-    Criteria criteria = new Criteria();
-    if(services!=null){
-    for (long sid : services) {
+    if(sid!=(0)){
       parsso.idman.models.services.Service ms = retrieveService.retrieveService(sid);
-      Criteria temp= Criteria.where("resourceOperatedUpon").regex(ms.getServiceId());
-      criteria.orOperator(criteria,temp);
+      query.addCriteria(Criteria.where("resourceOperatedUpon").regex(ms.getServiceId()));
     }
-    query.addCriteria(criteria);
-  }
 
     range = LogTime.rangeCreator(startDate, endDate);
 
