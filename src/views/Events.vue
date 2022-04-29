@@ -37,7 +37,7 @@
                   {{ $t("loadingRecords") }}
                 </div>
               </template>
-              <Column field="action" :header="$t('action')" bodyClass="text-center" style="flex: 0 0 20rem">
+              <Column field="action" :header="$t('eventType')" bodyClass="text-center" style="flex: 0 0 20rem">
                 <template #body="{data}">
                   <div v-if="data.action === 'Successful Login'">{{ $t("successfulLogin") }}</div>
                   <div v-else-if="data.action === 'Unsuccessful Login'" style="color: red;">{{ $t("unsuccessfulLogin") }}</div>

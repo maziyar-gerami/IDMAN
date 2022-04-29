@@ -42,7 +42,8 @@
                   {{ data.instanceName }}
                 </template>
                 <template #filter="{filterCallback}">
-                  <InputText type="text" v-model="accessChangesFilters.instanceName" @keydown.enter="filterCallback(); accessReportsRequestMaster('getAccessChanges')" class="p-column-filter" :placeholder="$t('service')"/>
+                  <Dropdown v-model="accessChangesFilters.instanceName" @keydown.enter="filterCallback(); accessReportsRequestMaster('getAccessChanges')"
+                  :options="accessChangesFilterOptions" :loading="loadingAccessChangesFilter" optionLabel="name" :placeholder="$t('service')" />
                 </template>
                 <template #filterapply="{filterCallback}">
                   <Button type="button" icon="pi pi-check" @click="filterCallback(); accessReportsRequestMaster('getAccessChanges')" v-tooltip.top="$t('applyFilter')" class="p-button-success"></Button>
@@ -116,15 +117,19 @@ export default {
   data () {
     return {
       accessChanges: [],
+      accessChangesFilterOptions: [],
       accessChangesFilters: {
-        instanceName: "",
-        doerID: ""
+        doerID: "",
+        instanceName: {
+          name: ""
+        }
       },
       rowsPerPageAccessChanges: 20,
       newPageNumberAccessChanges: 1,
       totalRecordsCountAccessChanges: 20,
       tabActiveIndex: 0,
       loadingAccessChanges: false,
+      loadingAccessChangesFilter: false,
       filtersAccessChanges: null
     }
   },
@@ -225,6 +230,7 @@ export default {
     })
     this.initiateFilters()
     this.accessReportsRequestMaster("getAccessChanges")
+    this.accessReportsRequestMaster("getAccessChangesFilter")
   },
   methods: {
     initiateFilters () {
@@ -252,7 +258,7 @@ export default {
           url: "/api/logs/reports/serviceAccess",
           method: "GET",
           params: {
-            name: vm.accessChangesFilters.instanceName,
+            name: vm.accessChangesFilters.instanceName.name,
             doerId: vm.accessChangesFilters.doerID,
             startDate: vm.dateSerializer(document.getElementById("accessChangesFilters.startDate").value),
             endDate: vm.dateSerializer(document.getElementById("accessChangesFilters.endDate").value),
@@ -276,6 +282,34 @@ export default {
         }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.loadingAccessChanges = false
+        })
+      } else if (command === "getAccessChangesFilter") {
+        this.loadingAccessChangesFilter = true
+        this.axios({
+          url: "/api/services/main",
+          method: "GET",
+          params: {
+            lang: langCode
+          }
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            vm.accessChangesFilterOptions = []
+            for (const i in res.data.data) {
+              vm.accessChangesFilterOptions.push(
+                {
+                  _id: res.data.data[i]._id,
+                  name: res.data.data[i].name
+                }
+              )
+            }
+            vm.loadingAccessChangesFilter = false
+          } else {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.loadingAccessChangesFilter = false
+          }
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          vm.loadingAccessChangesFilter = false
         })
       }
     },
@@ -351,7 +385,9 @@ export default {
         } else if (filter === "endDate") {
           document.getElementById("accessChangesFilters.endDate").value = ""
         } else if (filter === "instanceName") {
-          this.accessChangesFilters.instanceName = ""
+          this.accessChangesFilters.instanceName = {
+            name: ""
+          }
         } else if (filter === "doerID") {
           this.accessChangesFilters.doerID = ""
         }
@@ -360,8 +396,10 @@ export default {
         document.getElementById("accessChangesFilters.startDate").value = ""
         document.getElementById("accessChangesFilters.endDate").value = ""
         this.accessChangesFilters = {
-          instanceName: "",
-          doerID: ""
+          doerID: "",
+          instanceName: {
+            name: ""
+          }
         }
         this.accessReportsRequestMaster("getAccessChanges")
       }
