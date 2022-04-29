@@ -91,12 +91,11 @@ public class AuditsExcelView extends AbstractXlsxView {
         Row aRow = sheet.createRow(rowCount++);
         aRow.createCell(0).setCellValue(audit.getPrincipal());
         aRow.createCell(1).setCellValue(audit.getResourceOperatedUpon());
-        aRow.createCell(2).setCellValue(audit.getActionPerformed());
-        aRow.createCell(3).setCellValue(audit.getApplicationCode());
-        aRow.createCell(4).setCellValue(audit.getDateString());
-        aRow.createCell(5).setCellValue(audit.getTimeString());
+        aRow.createCell(2).setCellValue(audit.getApplicationCode());
+        aRow.createCell(3).setCellValue(audit.getDateString());
+        aRow.createCell(4).setCellValue(audit.getTimeString());
+        aRow.createCell(5).setCellValue(audit.getClientIpAddress());
         aRow.createCell(6).setCellValue(audit.getClientIpAddress());
-        aRow.createCell(7).setCellValue(audit.getClientIpAddress());
 
       }
     }

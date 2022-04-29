@@ -1,5 +1,6 @@
 package parsso.idman.models.logs;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.lang.NonNull;
 
@@ -25,21 +26,15 @@ public class Audit {
   private String principal;
   @TextIndexed
   private String resourceOperatedUpon;
-  private String actionPerformed;
   private String applicationCode;
   private String dateString;
   private String timeString;
   private Date whenActionWasPerformed;
   private String clientIpAddress;
   private String serverIpAddress;
-  @NonNull
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private String service;
 
-  public String getActionPerformed(){
-    if (this.actionPerformed.equals("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED"))
-      return "دسترسی به سرویس";
-      return null;
-  }
 
   public static List<Audit> analyze(MongoTemplate mongoTemplate, int skip, int limit) {
     Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));

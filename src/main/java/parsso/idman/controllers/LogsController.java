@@ -50,23 +50,25 @@ public class LogsController {
 
   @GetMapping("/audits/users")
   public ResponseEntity<Response> getUsersAudits(
-        @RequestParam(name = "userID", defaultValue = "") String userID,
-      @RequestParam(name = "startDate", defaultValue = "") String startDate,
-      @RequestParam(name = "endDate", defaultValue = "") String endDate,
+        @RequestParam(value = "userID", defaultValue = "") String userID,
+      @RequestParam(value  = "startDate", defaultValue = "") String startDate,
+      @RequestParam(value = "endDate", defaultValue = "") String endDate,
+      @RequestParam(value = "services", defaultValue = "") List<Long> services,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
-      @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
+      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
         auditRepo.retrieve(userID, startDate, endDate, Integer.parseInt(page),
-            Integer.parseInt(count)),
-        Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
+            Integer.parseInt(count), services),
+                Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
   }
 
   @GetMapping("/audits/user")
   public ResponseEntity<Response> getUserAudits(HttpServletRequest request,
-      @RequestParam(name = "startDate", defaultValue = "") String startDate,
-      @RequestParam(name = "endDate", defaultValue = "") String endDate,
+      @RequestParam(value = "startDate", defaultValue = "") String startDate,
+      @RequestParam(value = "endDate", defaultValue = "") String endDate,
+      @RequestParam(value = "services", defaultValue = "") List<Long> services,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
       @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
@@ -78,9 +80,8 @@ public class LogsController {
         new Response(
             auditRepo.retrieve(request.getUserPrincipal().getName(), startDate,
                 endDate,
-                Integer.parseInt(page), Integer.parseInt(count)),
-            Variables.MODEL_LOGS, HttpStatus.OK.value(), lang),
-        HttpStatus.OK);
+                Integer.parseInt(page), Integer.parseInt(count),services),
+            Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
   }
 
