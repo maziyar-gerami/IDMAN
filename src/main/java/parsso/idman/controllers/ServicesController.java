@@ -138,9 +138,15 @@ public class ServicesController {
   }
 
   @GetMapping("/api/service/used")
-    public ResponseEntity<Response> userService(HttpServletRequest request, @RequestParam String lang) throws NoSuchFieldException, IllegalAccessException{
+    public ResponseEntity<Response> userService(HttpServletRequest request, @RequestParam (value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException{
       return new ResponseEntity(new Response(
         new ServiceAudit(retrieveService, mongoTemplate).usedService(request.getUserPrincipal().getName()),Variables.MODEL_SERVICE,HttpStatus.OK.value(),lang), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/services/used")
+    public ResponseEntity<Response> userService(@RequestParam(value = "userId") String userId, @RequestParam (value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException{
+      return new ResponseEntity(new Response(
+        new ServiceAudit(retrieveService, mongoTemplate).usedService(userId),Variables.MODEL_SERVICE,HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
   
 
