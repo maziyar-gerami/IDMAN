@@ -798,7 +798,10 @@ export default {
           data: JSON.stringify({
             names: selectedUserList
           }).replace(/\\\\/g, "\\")
-        }).then(() => {
+        }).then((res) => {
+          if (res.data.status.code === 206) {
+            vm.alertPromptMaster(vm.$t("unDeletableUsersError"), res.data.data.toString(), "pi-exclamation-triangle", "#FDB5BA")
+          }
           vm.loading = false
           vm.usersRequestMaster("getUsers")
         }).catch(() => {
@@ -821,7 +824,10 @@ export default {
           data: JSON.stringify({
             names: selectedUsersList
           }).replace(/\\\\/g, "\\")
-        }).then(() => {
+        }).then((res) => {
+          if (res.data.status.code === 206) {
+            vm.alertPromptMaster(vm.$t("unDeletableUsersError"), res.data.data.toString(), "pi-exclamation-triangle", "#FDB5BA")
+          }
           vm.loading = false
           vm.usersRequestMaster("getUsers")
         }).catch(() => {

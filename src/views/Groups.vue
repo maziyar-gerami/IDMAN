@@ -143,7 +143,7 @@
               <Button :label="$t('back')" class="p-button-danger mt-3 mx-1" @click="resetState('createGroup')" />
             </div>
           </TabPanel>
-          <TabPanel v-if="editGroupFlag" :header="$t('editGroup') + '(' + editGroupBuffer.id + ')'">
+          <TabPanel v-if="editGroupFlag" :header="$t('editGroup')">
             <div v-if="editGroupLoader" class="text-center">
               <ProgressSpinner />
             </div>
