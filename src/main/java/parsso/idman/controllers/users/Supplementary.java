@@ -204,11 +204,12 @@ public class Supplementary extends UsersOps {
   }
 
   @GetMapping("/api/public/counter")
-  public ResponseEntity<Response> getCounter(@RequestParam(name = "lang",defaultValue="fa") String lang) {
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.put("counter",counter);
-      return new ResponseEntity<>(new Response(jsonObject,lang), HttpStatus.OK);
+  public ResponseEntity<Response> getCounter(@RequestParam(name = "lang", defaultValue = "fa") String lang)
+      throws NoSuchFieldException, IllegalAccessException {
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("counter", counter);
+    return new ResponseEntity<>(new Response(jsonObject, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
+        HttpStatus.OK);
   }
-
 
 }

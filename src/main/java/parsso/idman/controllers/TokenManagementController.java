@@ -12,50 +12,36 @@ import parsso.idman.repos.TokenManagementRepo;
 @RequestMapping("/api/public/tokenManagement")
 public class TokenManagementController {
 
-  final TokenManagementRepo tokenManagement;
+    final TokenManagementRepo tokenManagement;
+    String model = Variables.MODEL_TOKEN;
 
-  @Autowired
-  TokenManagementController(TokenManagementRepo tokenManagementRepo) {
-    this.tokenManagement = tokenManagementRepo;
-  }
+    @Autowired
+    TokenManagementController(TokenManagementRepo tokenManagementRepo) {
+        this.tokenManagement = tokenManagementRepo;
+    }
 
-  @GetMapping
-  ResponseEntity<Response> retrieve(@RequestParam("username") String userId,
-      @RequestParam(value = "lang", defaultValue = "fa") String lang)
-      throws NoSuchFieldException, IllegalAccessException {
-    return new ResponseEntity<>(
-        new Response(tokenManagement.retrieve(userId), Variables.MODEL_TOKEN, HttpStatus.OK.value(), lang),
-        HttpStatus.OK);
-  }
+    @GetMapping
+    ResponseEntity<String> retrieve(@RequestParam("username") String userId) {
+        return new ResponseEntity<>(tokenManagement.retrieve(userId), HttpStatus.OK);
+    }
 
-  @DeleteMapping()
-  ResponseEntity<Response> deleteAll(@RequestParam(value = "username") String userId,
-      @RequestParam(name = "token", defaultValue = "") String token,
-      @RequestParam(value = "lang", defaultValue = "fa") String lang)
-      throws NoSuchFieldException, IllegalAccessException {
 
-    return new ResponseEntity<>(
-        new Response(null, Variables.MODEL_TOKEN, tokenManagement.delete(userId, token).value(), lang),
-        HttpStatus.OK);
+    @DeleteMapping()
+    ResponseEntity<HttpStatus> deleteAll(@RequestParam(value = "username") String userId, @RequestParam(name = "token", defaultValue = "") String token) {
+        if (token.equals(""))
+            return new ResponseEntity<>(tokenManagement.delete(userId));
+        return new ResponseEntity<>(tokenManagement.delete(userId, token));
+    }
 
-  }
 
-  @PostMapping
-  ResponseEntity<Response> create(@RequestParam("username") String userId, @RequestParam("token") String token,
-      @RequestParam(value = "lang", defaultValue = "fa") String lang)
-      throws NoSuchFieldException, IllegalAccessException {
-    return new ResponseEntity<>(
-        new Response(null, Variables.MODEL_TOKEN, tokenManagement.create(userId, token).value(), lang),
-        HttpStatus.OK);
-  }
+    @PostMapping
+    ResponseEntity<HttpStatus> create(@RequestParam("username") String userId, @RequestParam("token") String token) {
+        return new ResponseEntity<>(tokenManagement.create(userId, token));
+    }
 
-  @GetMapping("/valid")
-  ResponseEntity<Response> retrieve(@RequestParam("username") String userId, @RequestParam("token") String token,
-      @RequestParam(value = "lang", defaultValue = "fa") String lang)
-      throws NoSuchFieldException, IllegalAccessException {
-    return new ResponseEntity<>(
-        new Response(tokenManagement.valid(userId, token), Variables.MODEL_TOKEN, HttpStatus.OK.value(), lang),
-        HttpStatus.OK);
-  }
+    @GetMapping("/valid")
+    ResponseEntity<Response> retrieve(@RequestParam("username") String userId, @RequestParam("token") String token, @RequestParam(value = "lang", defaultValue = "fa") String lang) {
+        return new ResponseEntity<>(new Response(tokenManagement.valid(userId, token), lang), HttpStatus.OK);
+    }
 
 }
