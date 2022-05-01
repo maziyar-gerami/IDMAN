@@ -18,7 +18,7 @@
                   <div class="p-inputgroup mx-1">
                     <Button icon="pi pi-file" @click="importGroupsHelper()" v-tooltip.top="$t('selectFile')" />
                     <input id="importGroupsInput" type="file" @change="importGroups()" class="hidden" accept=".xlsx, .xls, .csv">
-                    <Dropdown v-model="importSelectedGroup" :options="groups" optionLabel="name" :placeholder="$t('groups')" />
+                    <Dropdown v-model="importSelectedGroup" :options="groups" optionLabel="id" :placeholder="$t('groups')" />
                   </div>
                 </OverlayPanel>
                 <Button icon="pi pi-info" class="p-button-secondary mx-1" @click="toggleSampleFile($event)" v-tooltip.top="$t('sample')" />
