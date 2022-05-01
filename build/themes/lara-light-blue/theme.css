@@ -3158,6 +3158,12 @@
   color: #3B82F6;
   background: #EFF6FF;
 }
+.p-picklist-source-controls {
+  display: none !important;
+}
+.p-picklist-target-controls {
+  display: none !important;
+}
 
 .p-timeline .p-timeline-event-marker {
   border: 2px solid #3B82F6;
