@@ -9,6 +9,9 @@ public class StringResult {
   public static String COMMON_200_EN = "Successful";
   public static String COMMON_200_FA = "موفقیت آمیز بود";
 
+  public static String COMMON_201_EN = "Successful";
+  public static String COMMON_201_FA = "موفقیت آمیز بود";
+
   public static String COMMON_206_EN = "Partially Successful";
   public static String COMMON_206_FA = "به صورت ناکامل موفقیت آمیز بود";
 
