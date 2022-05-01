@@ -1,9 +1,7 @@
 package parsso.idman.impls.logs;
 
-import java.util.LinkedList;
 import java.util.List;
 
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -12,15 +10,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.LogTime;
 import parsso.idman.helpers.Variables;
-import parsso.idman.impls.logs.subclass.ServiceAudit;
 import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.logs.Audit;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.other.Time;
-import parsso.idman.models.services.ServiceGist;
-import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.repos.LogsRepo;
-import parsso.idman.repos.ServiceRepo;
 
 @Service
 public class AuditsRepoImpl implements LogsRepo.AuditRepo {
@@ -35,16 +29,17 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
 
   @Override
   public Audit.ListAudits retrieve(String userId, String startDate, String endDate, int p, int n, long sid) {
-    
     long[] range = null;
-    Query query = new Query(Criteria.where("actionPerformed").is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED"));
+    Query query = new Query(Criteria.where("actionPerformed")
+        .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED"));
     if (!userId.equals("")) {
       query.addCriteria(Criteria.where("principal").is(userId));
     }
 
     if(sid!=(0)){
       parsso.idman.models.services.Service ms = retrieveService.retrieveService(sid);
-      query.addCriteria(Criteria.where("resourceOperatedUpon").regex(ms.getServiceId()));
+      query.addCriteria(Criteria.where(
+            "resourceOperatedUpon").regex(ms.getServiceId()));
     }
 
     range = LogTime.rangeCreator(startDate, endDate);

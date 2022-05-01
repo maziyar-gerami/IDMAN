@@ -13,6 +13,11 @@ public class Response {
   @JsonInclude(JsonInclude.Include.NON_NULL)
   Object data;
 
+  public Response(Object data, String lang) {
+    this.status = new Status(lang);
+    this.data = data;
+  }
+
   public Response(Object object, String model, int code, String lang)
       throws NoSuchFieldException, IllegalAccessException {
     this.data = object;
@@ -26,6 +31,15 @@ public class Response {
     String result;
     @JsonIgnore
     String model;
+
+    public Status(String lang) {
+      code = 200;
+      if (lang.equals("fa"))
+          this.result = StringResult.COMMON_200_FA;
+      else
+          result = StringResult.COMMON_200_EN;
+  }
+
 
     public Status(String model, int code, String lang) throws NoSuchFieldException, IllegalAccessException {
       this.code = code;
