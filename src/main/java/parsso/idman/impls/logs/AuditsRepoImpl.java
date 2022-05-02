@@ -31,11 +31,9 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
   public Audit.ListAudits retrieve(String userId, String startDate, String endDate, int p, int n, long sid) {
     long[] range = null;
     Query query = new Query(Criteria.where("actionPerformed")
-        .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED"));
+        .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED").and("principal").ne("audit:unknown").and("resourceOperatedUpon").exists(true));
     
-    query.addCriteria(Criteria.where("resourceOperatedUpon").exists(true));
-    query.addCriteria(Criteria.where("principal").ne("audit:unknown"));
-    
+
     if (!userId.equals("")) {
       query.addCriteria(Criteria.where("principal").is(userId));
     }
