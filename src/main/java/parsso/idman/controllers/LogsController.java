@@ -71,7 +71,7 @@ public class LogsController {
       @RequestParam(value = "service", defaultValue = "") String service,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
-      @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
+      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
     Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
     lt.start();
@@ -87,13 +87,13 @@ public class LogsController {
 
   @GetMapping("/events/users")
   public ResponseEntity<Response> getUsersEvents(
-        @RequestParam(name = "userID", defaultValue = "") String userID,
-      @RequestParam(name = "startDate", defaultValue = "") String startDate,
-      @RequestParam(name = "endDate", defaultValue = "") String endDate,
+        @RequestParam(value = "userID", defaultValue = "") String userID,
+      @RequestParam(value = "startDate", defaultValue = "") String startDate,
+      @RequestParam(value = "endDate", defaultValue = "") String endDate,
       @RequestParam(name = "action", defaultValue = "") String action,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
-      @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
+      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
 
     Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
@@ -109,12 +109,12 @@ public class LogsController {
 
   @GetMapping("/events/user")
   public ResponseEntity<Response> getUserEvents(HttpServletRequest request,
-      @RequestParam(name = "startDate", defaultValue = "") String startDate,
-      @RequestParam(name = "endDate", defaultValue = "") String endDate,
-      @RequestParam(name = "action", defaultValue = "") String action,
+      @RequestParam(value = "startDate", defaultValue = "") String startDate,
+      @RequestParam(value = "endDate", defaultValue = "") String endDate,
+      @RequestParam(value = "action", defaultValue = "") String action,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
-      @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
+      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
     Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
     lt.start();
@@ -128,13 +128,13 @@ public class LogsController {
 
   @GetMapping("/reports/users")
   public ResponseEntity<Response> getUsersReports(
-        @RequestParam(name = "userID", defaultValue = "") String userID,
-      @RequestParam(name = "startDate", defaultValue = "") String startDate,
-      @RequestParam(name = "endDate", defaultValue = "") String endDate,
-      @RequestParam(name = "services", defaultValue = "") List<String> services,
+        @RequestParam(value = "userID", defaultValue = "") String userID,
+      @RequestParam(value = "startDate", defaultValue = "") String startDate,
+      @RequestParam(value = "endDate", defaultValue = "") String endDate,
+      @RequestParam(value  = "services", defaultValue = "") List<String> services,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
-      @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
+      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
 
     return new ResponseEntity<>(new Response(
@@ -146,12 +146,12 @@ public class LogsController {
 
   @GetMapping("/reports/user")
   public ResponseEntity<Response> getUserReports(HttpServletRequest request,
-      @RequestParam(name = "startDate", defaultValue = "") String startDate,
-      @RequestParam(name = "endDate", defaultValue = "") String endDate,
-      @RequestParam(name = "services", defaultValue = "") List<String> services,
+      @RequestParam(value = "startDate", defaultValue = "") String startDate,
+      @RequestParam(value = "endDate", defaultValue = "") String endDate,
+      @RequestParam(value = "services", defaultValue = "") List<String> services,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
-      @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
+      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
         reportsRepo.retrieve(request.getUserPrincipal().getName(), startDate, endDate, Integer.parseInt(page),

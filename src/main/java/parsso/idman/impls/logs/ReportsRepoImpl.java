@@ -33,15 +33,13 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
 
     range = LogTime.rangeCreator(startDate, endDate);
 
-    long size = mongoTemplate.count(query, Report.class, Variables.col_Log);
-
-    range = LogTime.rangeCreator(startDate, endDate);
-
     if (range != null) {
       query.addCriteria(Criteria.where("millis")
-          .gte(new Time().convertEpochToDate(range[0]))
-          .lte(new Time().convertEpochToDate(range[1])));
+          .gte(range[0])
+          .lte(range[1]));
     }
+
+    long size = mongoTemplate.count(query, Report.class, Variables.col_Log);
 
     query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "millis"));
 
