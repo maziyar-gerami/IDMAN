@@ -32,6 +32,10 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
     long[] range = null;
     Query query = new Query(Criteria.where("actionPerformed")
         .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED"));
+    
+    query.addCriteria(Criteria.where("resourceOperatedUpon").exists(true));
+    query.addCriteria(Criteria.where("principal").ne("audit:unknown"));
+    
     if (!userId.equals("")) {
       query.addCriteria(Criteria.where("principal").is(userId));
     }
