@@ -33,7 +33,7 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
   public HttpStatus update(String doerID, String usid, User p) {
     return new parsso.idman.impls.users.oprations.update.helper.UpdateUser(ldapTemplate, mongoTemplate,
         uniformLogger,
-        userOpRetrieve, buildAttributes, new ExcelAnalyzer(ldapTemplate, mongoTemplate, userOpRetrieve, this),
+        userOpRetrieve, buildAttributes, new ExcelAnalyzer(userOpRetrieve, this),
         BASE_DN)
         .update(doerID, usid, p);
   }
@@ -43,7 +43,7 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
     return new GroupOfUsers(userOpRetrieve,
         new parsso.idman.impls.users.oprations.update.helper.UpdateUser(ldapTemplate, mongoTemplate,
             uniformLogger, userOpRetrieve,
-            buildAttributes, new ExcelAnalyzer(ldapTemplate, mongoTemplate, userOpRetrieve, this), BASE_DN))
+            buildAttributes, new ExcelAnalyzer(userOpRetrieve, this), BASE_DN))
         .massUsersGroupUpdate(doerID, groupId, gu);
   }
 
@@ -51,7 +51,7 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
   public JSONObject mass(String doerID, List<User> users) {
     return new parsso.idman.impls.users.oprations.update.helper.UpdateUser(ldapTemplate, mongoTemplate,
         uniformLogger, userOpRetrieve,
-        buildAttributes, new ExcelAnalyzer(ldapTemplate, mongoTemplate, userOpRetrieve, this), BASE_DN)
+        buildAttributes, new ExcelAnalyzer( userOpRetrieve, this), BASE_DN)
         .massUpdate(doerID, users);
   }
 
@@ -63,7 +63,7 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
 
   @Override
   public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException {
-    return new GroupUser(new ExcelAnalyzer(ldapTemplate, mongoTemplate, userOpRetrieve, this), BASE_DN)
+    return new GroupUser(new ExcelAnalyzer(userOpRetrieve, this), BASE_DN)
         .addGroupToUsers(doer, file, ou);
   }
 }

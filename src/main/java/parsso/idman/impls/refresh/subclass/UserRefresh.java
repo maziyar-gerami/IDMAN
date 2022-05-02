@@ -108,6 +108,8 @@ public class UserRefresh {
         userExtraInfo = new UsersExtraInfo(user.get_id().toString());
       }
 
+      userExtraInfo.setMobile(user.getMobile());
+
       userExtraInfo.setDisplayName(user.getDisplayName());
 
       userExtraInfo.setMemberOf(user.getMemberOf());

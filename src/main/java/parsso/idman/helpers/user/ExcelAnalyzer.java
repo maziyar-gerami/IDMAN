@@ -3,8 +3,6 @@ package parsso.idman.helpers.user;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.ldap.core.LdapTemplate;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 
@@ -16,15 +14,11 @@ import java.util.List;
 
 @SuppressWarnings("rawtyoes")
 public class ExcelAnalyzer {
-  final LdapTemplate ldapTemplate;
-  final MongoTemplate mongoTemplate;
   final UserRepo.UsersOp.Retrieve usersOpRetrieve;
   final UserRepo.UsersOp.Update usersOpUpdate;
 
-  public ExcelAnalyzer(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
+  public ExcelAnalyzer(
       UserRepo.UsersOp.Retrieve usersOpRetrieve, UserRepo.UsersOp.Update usersOpUpdate) {
-    this.ldapTemplate = ldapTemplate;
-    this.mongoTemplate = mongoTemplate;
     this.usersOpRetrieve = usersOpRetrieve;
     this.usersOpUpdate = usersOpUpdate;
   }

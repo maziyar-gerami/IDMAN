@@ -42,8 +42,8 @@ public class StringResult {
   public static String USER_204_FA = "حذف کاربر موفقیت آمیز بود.";
   public static String USER_204_EN = "Deleting the user was successful";
 
-  public static String USER_206_FA = "حذف کاربر[ان] به صورت ناقص انجام شد.";
-  public static String USER_206_EN = "Deleting the user[s] was partially successful";
+  public static String USER_206_FA = "کاربران زیر غیرقابل حذف هستند:";
+  public static String USER_206_EN = "Following users, cant be deleted:";
 
   public static String USER_207_FA = "عملیات به صورت ناقص انجام شد.";
   public static String USER_207_EN = "Opration has been done, partially";
