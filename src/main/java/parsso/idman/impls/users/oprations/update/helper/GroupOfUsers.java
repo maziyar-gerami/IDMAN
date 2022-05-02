@@ -1,6 +1,7 @@
 package parsso.idman.impls.users.oprations.update.helper;
 
 import net.minidev.json.JSONObject;
+import parsso.idman.impls.groups.RetrieveGroup;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 import parsso.idman.repos.UserRepo.UsersOp.Retrieve;
@@ -30,8 +31,11 @@ public class GroupOfUsers {
         try {
           User user = retrieveOp.retrieveUsers(uid);
           if (user.getMemberOf() != null) {
-            if (!user.getMemberOf().contains(groupId))
-              user.getMemberOf().add(groupId);
+            if (!user.getMemberOf().contains(groupId)){
+              List<String> temp = user.getMemberOf();
+              temp.add(groupId);
+              user.setMemberOf(temp);
+            }
           } else {
             groups.add(groupId);
             user.setMemberOf(groups);
@@ -57,7 +61,7 @@ public class GroupOfUsers {
       }
 
     if (addProblems.isEmpty() && removeProblems.isEmpty())
-      return null;
+      return new JSONObject();
 
     JSONObject exceptions = new JSONObject();
     exceptions.put("add", addProblems);
