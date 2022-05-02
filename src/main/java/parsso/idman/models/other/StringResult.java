@@ -72,6 +72,10 @@ public class StringResult {
   public static String GROUP_400_FA = "مشکل در پارامترهای ارسالی";
   public static String GROUP_400_EN = "Parameter Problem";
 
+  
+  public static String GROUP_404_FA = "گروهی  با این شناسه یافت نشد";
+  public static String GROUP_404_EN = "Group not found";
+
   public static String GROUP_503_FA = "مشکل در ذخیره سازی داده ها";
   public static String GROUP_503_EN = "Data saving problem";
 

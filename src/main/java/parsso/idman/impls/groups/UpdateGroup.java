@@ -24,8 +24,9 @@ import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.FilesStorageService;
 import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.UserRepo;
-
 import javax.naming.Name;
+
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,6 +62,9 @@ public class UpdateGroup implements GroupRepo.Update {
 
     List<Group> groups = retrieveGroup.retrieve();
 
+    if (groups.size()==0)
+      return HttpStatus.NOT_FOUND;
+
     for (Group group : groups)
       if (!(id.equals(ou.getId())) && group.getId().equals(ou.getId()))
         return HttpStatus.FOUND;
@@ -86,7 +90,18 @@ public class UpdateGroup implements GroupRepo.Update {
                 Variables.col_usersExtraInfo);
             if (usersExtraInfo != null) {
               usersExtraInfo.getMemberOf().remove(id);
+            }else{
+              usersExtraInfo = new UsersExtraInfo(usersOpRetrieve.retrieveUsers(user.get_id().toString()));
             }
+
+            try{
+              usersExtraInfo.getMemberOf().add(ou.getId());
+            }catch(NullPointerException nu){
+              List<String> ls = new LinkedList<>();
+              ls.add(ou.getId());
+              usersExtraInfo.setMemberOf(ls) ;
+            }
+
             Objects.requireNonNull(usersExtraInfo).getMemberOf().add(ou.getId());
             List<String> temp = usersExtraInfo.getMemberOf();
             temp.add(ou.getId());
