@@ -14,6 +14,7 @@ import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.logs.Audit;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.other.Time;
+import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.repos.LogsRepo;
 
 @Service
@@ -61,7 +62,7 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
 
     for (Audit audit : audits) {
       System.out.println("1");
-      for (parsso.idman.models.services.Service service : retrieveService.listServicesFull()) {
+      for (MicroService service : retrieveService.listServicesMain()) {
         System.out.println("2");
         if(audit.getResourceOperatedUpon().contains(service.getServiceId())){
           audit.setService(service.getName());
