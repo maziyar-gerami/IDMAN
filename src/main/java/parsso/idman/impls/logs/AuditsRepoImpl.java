@@ -52,6 +52,8 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
           .lte(new Time().convertEpochToDate(range[1])));
     }
 
+    long size = mongoTemplate.count(query, Event.class, Variables.col_audit);
+
     query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "_id"));
     List<Audit> audits = mongoTemplate.find(query, Audit.class, Variables.col_audit);
 
