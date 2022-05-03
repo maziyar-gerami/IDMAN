@@ -14,7 +14,6 @@ import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.logs.Audit;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.other.Time;
-import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.repos.LogsRepo;
 
 @Service
@@ -53,20 +52,13 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
           .lte(new Time().convertEpochToDate(range[1])));
     }
 
-    long size = mongoTemplate.count(query, Event.class, Variables.col_audit);
-
     query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "_id"));
     List<Audit> audits = mongoTemplate.find(query, Audit.class, Variables.col_audit);
 
-    System.out.println("list services size: "+retrieveService.listServicesMain().size());
-
     for (Audit audit : audits) {
-      System.out.println("1");
-      for (MicroService service : retrieveService.listServicesMain()) {
-        System.out.println("2");
+      for (parsso.idman.models.services.Service service : retrieveService.listServicesFull()) {
         if(audit.getResourceOperatedUpon().contains(service.getServiceId())){
           audit.setService(service.getName());
-          System.out.println("Service set to :"+service.getName());
           break;
         }
       }
