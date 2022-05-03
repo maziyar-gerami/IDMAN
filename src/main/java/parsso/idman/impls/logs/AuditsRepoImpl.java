@@ -61,6 +61,7 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
       for (parsso.idman.models.services.Service service : retrieveService.listServicesFull()) {
         if(audit.getResourceOperatedUpon().contains(service.getServiceId())){
           audit.setService(service.getName());
+          System.out.println("Service set to :"+service.getName());
           break;
         }
       }

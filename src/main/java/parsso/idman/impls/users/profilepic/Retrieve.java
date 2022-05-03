@@ -26,8 +26,6 @@ public class Retrieve {
     }
 
     File file = new File(uploadedFilesPath + user.getPhoto());
-    System.out.println("***************************************");
-    System.out.println(file.toPath());
 
     if (file.exists()){
       try {
