@@ -695,15 +695,10 @@ export default {
               }
             }).then((res1) => {
               if (res1.data.status.code === 200) {
-                console.log(111)
-                vm.editGroupBuffer.usersList[1] = res1.data.data.userList
-                console.log(222)
-                vm.editGroupBuffer.usersListBuffer[1] = res1.data.data.userList
-                console.log(333)
                 vm.editGroupBuffer.usersList[0] = res.data.data.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
-                console.log(444)
                 vm.editGroupBuffer.usersListBuffer[0] = res.data.data.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
-                console.log(555)
+                vm.editGroupBuffer.usersList[1] = res1.data.data.userList
+                vm.editGroupBuffer.usersListBuffer[1] = res1.data.data.userList
                 vm.editGroupUsersLoader = false
               } else {
                 vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")

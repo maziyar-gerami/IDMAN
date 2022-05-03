@@ -150,7 +150,7 @@ export default {
           }
         }).then((res) => {
           if (res.data.status.code === 200) {
-            for (let i = 0; i < res.data.data.length; ++i) {
+            for (const i in res.data.data) {
               if (res.data.data[i].role === "SUPERUSER") {
                 res.data.data[i].roleFa = "مدیر کل"
                 res.data.data[i].icon = "color: #dc3545;"
