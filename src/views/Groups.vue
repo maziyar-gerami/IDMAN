@@ -653,8 +653,6 @@ export default {
           vm.loading = false
         })
       } else if (command === "getUsersCreateGroup") {
-        this.createGroupBuffer.usersList = [[], []]
-        this.createGroupBuffer.usersListBuffer = [[], []]
         this.createGroupUsersLoader = true
         this.axios({
           url: "/api/users",
@@ -664,6 +662,8 @@ export default {
           }
         }).then((res) => {
           if (res.data.status.code === 200) {
+            vm.createGroupBuffer.usersList = [[], []]
+            vm.createGroupBuffer.usersListBuffer = [[], []]
             vm.createGroupBuffer.usersList[0] = res.data.data
             vm.createGroupBuffer.usersListBuffer[0] = res.data.data
             vm.createGroupUsersLoader = false
@@ -676,8 +676,6 @@ export default {
           vm.createGroupUsersLoader = false
         })
       } else if (command === "getUsersEditGroup") {
-        this.editGroupBuffer.usersList = [[], []]
-        this.editGroupBuffer.usersListBuffer = [[], []]
         this.editGroupUsersLoader = true
         this.axios({
           url: "/api/users",
@@ -695,10 +693,12 @@ export default {
               }
             }).then((res1) => {
               if (res1.data.status.code === 200) {
-                vm.editGroupBuffer.usersList[0] = res.data.data.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
-                vm.editGroupBuffer.usersListBuffer[0] = res.data.data.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
+                vm.editGroupBuffer.usersList = [[], []]
+                vm.editGroupBuffer.usersListBuffer = [[], []]
                 vm.editGroupBuffer.usersList[1] = res1.data.data.userList
                 vm.editGroupBuffer.usersListBuffer[1] = res1.data.data.userList
+                vm.editGroupBuffer.usersList[0] = res.data.data.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
+                vm.editGroupBuffer.usersListBuffer[0] = res.data.data.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
                 vm.editGroupUsersLoader = false
               } else {
                 vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
