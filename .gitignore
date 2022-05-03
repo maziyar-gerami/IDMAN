@@ -34,4 +34,3 @@ out/
 bin/
 src/main/resources/application.properties
 newFront.sh
-src/main/java/parsso/idman/configs/WebSecurityConfig.java
