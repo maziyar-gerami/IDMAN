@@ -492,8 +492,11 @@ export default {
       } else if (command === "editGroup") {
         this.editGroupBuffer.usersAddList = []
         this.editGroupBuffer.usersRemoveList = []
+        console.log(this.editGroupBuffer.usersListBuffer[1])
+        console.log(this.editGroupBuffer.usersList[1])
         const usersAddListTemp = this.editGroupBuffer.usersListBuffer[1].filter(a => !this.editGroupBuffer.usersList[1].map(b => b._id).includes(a._id))
         const usersRemoveListTemp = this.editGroupBuffer.usersListBuffer[0].filter(a => !this.editGroupBuffer.usersList[0].map(b => b._id).includes(a._id))
+        console.log(usersAddListTemp)
         for (const i in usersAddListTemp) {
           this.editGroupBuffer.usersAddList.push(usersAddListTemp[i]._id)
         }
@@ -529,23 +532,23 @@ export default {
             }).then((res1) => {
               if (res1.data.status.code === 200) {
                 vm.editGroupLoader = false
-                vm.resetState("editUser")
+                vm.resetState("editGroup")
                 vm.groupsRequestMaster("getGroups")
               } else if (res1.data.status.code === 207) {
                 vm.alertPromptMaster(res1.data.status.result, "", "pi-exclamation-triangle", "#FDB5BA")
                 vm.editGroupLoader = false
-                vm.resetState("editUser")
+                vm.resetState("editGroup")
                 vm.groupsRequestMaster("getGroups")
               } else {
                 vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
                 vm.editGroupLoader = false
-                vm.resetState("editUser")
+                vm.resetState("editGroup")
                 vm.groupsRequestMaster("getGroups")
               }
             }).catch(() => {
               vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
               vm.editGroupLoader = false
-              vm.resetState("editUser")
+              vm.resetState("editGroup")
               vm.groupsRequestMaster("getGroups")
             })
           } else {
