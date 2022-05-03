@@ -16,6 +16,8 @@ import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.SystemRefresh;
 
 import javax.naming.directory.SearchControls;
+
+import java.util.LinkedList;
 import java.util.List;
 
 public class MainAttributes {
@@ -57,8 +59,19 @@ public class MainAttributes {
     for (UsersExtraInfo usersExtraInfo : usersExtraInfos)
       orFilter.or(new EqualsFilter("uid", usersExtraInfo.get_id().toString()));
 
-    return ldapTemplate.search("ou=People," + BASE_DN, orFilter.encode(), searchControls,
+    List<UsersExtraInfo> temp = ldapTemplate.search("ou=People," + BASE_DN, orFilter.encode(), searchControls,
         new SimpleUserAttributeMapper());
+    List<UsersExtraInfo> list = new LinkedList<>();
+
+    for (UsersExtraInfo user : temp) {
+      if (user != null && user.getDisplayName() != null) {
+        user.setRole(mongoTemplate.findOne(new Query(Criteria.where("_id").is(user.get_id())), UsersExtraInfo.class,
+            Variables.col_usersExtraInfo).getRole());
+        list.add(user);
+      }
+
+    }
+    return list;
 
   }
 
