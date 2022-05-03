@@ -57,8 +57,12 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
     query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "_id"));
     List<Audit> audits = mongoTemplate.find(query, Audit.class, Variables.col_audit);
 
+    System.out.println(retrieveService.listServicesFull().size());
+
     for (Audit audit : audits) {
+      System.out.println("1");
       for (parsso.idman.models.services.Service service : retrieveService.listServicesFull()) {
+        System.out.println("2");
         if(audit.getResourceOperatedUpon().contains(service.getServiceId())){
           audit.setService(service.getName());
           System.out.println("Service set to :"+service.getName());
