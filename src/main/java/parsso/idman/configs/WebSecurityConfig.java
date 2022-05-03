@@ -76,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
         .and()
 
-        /*
+        
         
           .authorizeRequests()
           //****************Public Objects*********************
@@ -199,7 +199,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .and()
 
 
-*/
+
 
 
          
