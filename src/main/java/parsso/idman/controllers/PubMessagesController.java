@@ -1,5 +1,7 @@
 package parsso.idman.controllers;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -21,12 +23,10 @@ public class PubMessagesController {
   }
 
   @GetMapping("/api/public/publicMessages")
-  public ResponseEntity<Response> getVisiblePublicMessage(
-      @RequestParam(value = "lang", defaultValue = "fa") String lang)
-      throws NoSuchFieldException, IllegalAccessException {
-    return new ResponseEntity<>(new Response(pubMessageRepo.showVisiblePubicMessages(),
-        Variables.MODEL_PUBICMESSAGE, HttpStatus.OK.value(), lang), HttpStatus.OK);
-  }
+    public ResponseEntity<List<PublicMessage>> getVisiblePublicMessage() {
+        return new ResponseEntity<>(pubMessageRepo.showVisiblePubicMessages(), HttpStatus.OK);
+    }
+
 
   @GetMapping("/api/users/publicMessages")
   public ResponseEntity<Response> getAllPublicMessage(
