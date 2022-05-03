@@ -150,27 +150,27 @@ export default {
           }
         }).then((res) => {
           if (res.data.status.code === 200) {
-            for (let i = 0; i < res.data.data.userList.length; ++i) {
-              if (res.data.data.userList[i].role === "SUPERUSER") {
-                res.data.data.userList[i].roleFa = "مدیر کل"
-                res.data.data.userList[i].icon = "color: #dc3545;"
-                superAdminTempList.push(res.data.data.userList[i])
-              } else if (res.data.data.userList[i].role === "SUPPORTER") {
-                res.data.data.userList[i].roleFa = "پشتیبانی"
-                res.data.data.userList[i].icon = "color: #28a745;"
-                supporterTempList.push(res.data.data.userList[i])
-              } else if (res.data.data.userList[i].role === "ADMIN") {
-                res.data.data.userList[i].roleFa = "مدیر"
-                res.data.data.userList[i].icon = "color: #007bff;"
-                adminTempList.push(res.data.data.userList[i])
-              } else if (res.data.data.userList[i].role === "PRESENTER") {
-                res.data.data.userList[i].roleFa = "ارائه دهنده"
-                res.data.data.userList[i].icon = "color: #00f7f7;"
-                presenterTempList.push(res.data.data.userList[i])
-              } else if (res.data.data.userList[i].role === "USER") {
-                res.data.data.userList[i].roleFa = "کاربر"
-                res.data.data.userList[i].icon = "color: #ffc107;"
-                userTempList.push(res.data.data.userList[i])
+            for (let i = 0; i < res.data.data.length; ++i) {
+              if (res.data.data[i].role === "SUPERUSER") {
+                res.data.data[i].roleFa = "مدیر کل"
+                res.data.data[i].icon = "color: #dc3545;"
+                superAdminTempList.push(res.data.data[i])
+              } else if (res.data.data[i].role === "SUPPORTER") {
+                res.data.data[i].roleFa = "پشتیبانی"
+                res.data.data[i].icon = "color: #28a745;"
+                supporterTempList.push(res.data.data[i])
+              } else if (res.data.data[i].role === "ADMIN") {
+                res.data.data[i].roleFa = "مدیر"
+                res.data.data[i].icon = "color: #007bff;"
+                adminTempList.push(res.data.data[i])
+              } else if (res.data.data[i].role === "PRESENTER") {
+                res.data.data[i].roleFa = "ارائه دهنده"
+                res.data.data[i].icon = "color: #00f7f7;"
+                presenterTempList.push(res.data.data[i])
+              } else if (res.data.data[i].role === "USER") {
+                res.data.data[i].roleFa = "کاربر"
+                res.data.data[i].icon = "color: #ffc107;"
+                userTempList.push(res.data.data[i])
               }
             }
             vm.users = superAdminTempList.concat(supporterTempList, adminTempList, presenterTempList, userTempList)
