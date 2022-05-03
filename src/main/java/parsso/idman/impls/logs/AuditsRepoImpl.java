@@ -58,7 +58,7 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
     query.skip((long) (p - 1) * n).limit(n).with(Sort.by(Sort.Direction.DESC, "_id"));
     List<Audit> audits = mongoTemplate.find(query, Audit.class, Variables.col_audit);
 
-    System.out.println(retrieveService.listServicesFull().size());
+    System.out.println("list services size: "+retrieveService.listServicesMain().size());
 
     for (Audit audit : audits) {
       System.out.println("1");
