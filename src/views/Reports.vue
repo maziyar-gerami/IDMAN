@@ -17,14 +17,15 @@
                 </span>
                 <Button :label="$t('filter')" class="p-button mx-1" @click="reportsRequestMaster('getUserReports')" />
               </template>
+              <template #end>
+                <Button icon="pi pi-filter-slash" v-tooltip.top="$t('removeFilters')" class="p-button-danger mb-2 mx-1" @click="removeFilters('all')" />
+              </template>
             </Toolbar>
             <DataTable :value="reports" filterDisplay="menu" dataKey="_id" :rows="rowsPerPage" :loading="loading" scrollHeight="50vh"
             class="p-datatable-gridlines" :rowHover="true" responsiveLayout="scroll" scrollDirection="vertical" :scrollable="false">
               <template #header>
-                <div class="flex justify-content-between flex-column sm:flex-row">
-                  <div></div>
+                <div class="flex justify-content-center flex-column sm:flex-row">
                   <Paginator v-model:rows="rowsPerPage" v-model:totalRecords="totalRecordsCount" @page="onPaginatorEvent($event)" :rowsPerPageOptions="[10,20,50,100,500]"></Paginator>
-                  <Button icon="pi pi-filter-slash" v-tooltip.top="$t('removeFilters')" class="p-button-danger mb-2 mx-1" @click="removeFilters('all')" />
                 </div>
               </template>
               <template #empty>

@@ -157,7 +157,7 @@ export default {
                 headers: { "Content-Type": "multipart/form-data" },
                 data: bodyFormData
               }).then(() => {
-                vm.$router.push("/")
+                window.location.replace("/")
               }).catch(() => {
                 vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
                 vm.loading = false

@@ -17,14 +17,15 @@
                 </span>
                 <Button :label="$t('filter')" class="p-button mx-1" @click="accessReportsRequestMaster('getAccessChanges')" />
               </template>
+              <template #end>
+                <Button icon="pi pi-filter-slash" v-tooltip.top="$t('removeFilters')" class="p-button-danger mb-2 mx-1" @click="removeFilters('allAccessChanges')" />
+              </template>
             </Toolbar>
             <DataTable :value="accessChanges" filterDisplay="menu" dataKey="instance" :rows="rowsPerPageAccessChanges" :loading="loadingAccessChanges" :filters="filtersAccessChanges"
             scrollHeight="50vh" class="p-datatable-gridlines" :rowHover="true" responsiveLayout="scroll" scrollDirection="vertical" :scrollable="false">
               <template #header>
-                <div class="flex justify-content-between flex-column sm:flex-row">
-                  <div></div>
+                <div class="flex justify-content-center flex-column sm:flex-row">
                   <Paginator v-model:rows="rowsPerPageAccessChanges" v-model:totalRecords="totalRecordsCountAccessChanges" @page="onPaginatorEventAccessChanges($event)" :rowsPerPageOptions="[10,20,50,100,500]"></Paginator>
-                  <Button icon="pi pi-filter-slash" v-tooltip.top="$t('removeFilters')" class="p-button-danger mb-2 mx-1" @click="removeFilters('allAccessChanges')" />
                 </div>
               </template>
               <template #empty>

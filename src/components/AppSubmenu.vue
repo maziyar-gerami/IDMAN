@@ -12,7 +12,7 @@
               <span>{{item.label}}</span>
               <i v-if="item.items" class="pi pi-fw pi-angle-down menuitem-toggle-icon"></i>
             </router-link>
-            <a v-if="!item.to" :href="item.url||'#'" :style="item.style" :class="[item.class, 'p-ripple', {'p-disabled': item.disabled}]" @click="onMenuItemClick($event,item,i)" :target="item.target" role="menuitem" v-ripple>
+            <a v-if="!item.to" :href="item.url||'#'" :class="[item.class, 'p-ripple', {'p-disabled': item.disabled}]" :style="item.style" @click="onMenuItemClick($event,item,i)" :target="item.target" role="menuitem" v-ripple>
               <i :class="item.icon"></i>
               <span>{{item.label}}</span>
               <i v-if="item.items" class="pi pi-fw pi-angle-down menuitem-toggle-icon"></i>
@@ -54,6 +54,10 @@ export default {
 
       if (item.command) {
         item.command({ originalEvent: event, item: item })
+      }
+
+      if (this.$router.currentRoute._value.path === item.to) {
+        this.$router.go()
       }
 
       this.activeIndex = index === this.activeIndex ? null : index

@@ -800,7 +800,7 @@ export default {
           }).replace(/\\\\/g, "\\")
         }).then((res) => {
           if (res.data.status.code === 206) {
-            vm.alertPromptMaster(vm.$t("unDeletableUsersError"), res.data.data.toString(), "pi-exclamation-triangle", "#FDB5BA")
+            vm.alertPromptMaster(res.data.status.result, res.data.data.toString(), "pi-exclamation-triangle", "#FDB5BA")
           }
           vm.loading = false
           vm.usersRequestMaster("getUsers")
@@ -826,7 +826,7 @@ export default {
           }).replace(/\\\\/g, "\\")
         }).then((res) => {
           if (res.data.status.code === 206) {
-            vm.alertPromptMaster(vm.$t("unDeletableUsersError"), res.data.data.toString(), "pi-exclamation-triangle", "#FDB5BA")
+            vm.alertPromptMaster(res.data.status.result, res.data.data.toString(), "pi-exclamation-triangle", "#FDB5BA")
           }
           vm.loading = false
           vm.usersRequestMaster("getUsers")

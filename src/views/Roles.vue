@@ -8,17 +8,14 @@
             <Dropdown v-model="selectedRoleOption" :options="roleOptions" optionLabel="name" :placeholder="$t('chooseRole')" />
             <Button :label="$t('changeRole')" class="p-button-success mx-1" @click="changeRole()" />
           </template>
-        </Toolbar>
-        <DataTable :value="users" filterDisplay="menu" dataKey="_id" :rows="rowsPerPage" v-model:filters="filters" :loading="loading"
-        v-model:selection="selectedUsers" :filters="filters" class="p-datatable-gridlines" :rowHover="true"
-        responsiveLayout="scroll" :scrollable="false" scrollHeight="50vh" scrollDirection="vertical">
-          <template #header>
-            <div class="flex justify-content-between flex-column sm:flex-row">
-              <div></div>
-              <Paginator v-model:rows="rowsPerPage" v-model:totalRecords="totalRecordsCount" @page="onPaginatorEvent($event)" :rowsPerPageOptions="[10,20,50,100,500]"></Paginator>
-              <Button icon="pi pi-filter-slash" v-tooltip.top="$t('removeFilters')" class="p-button-danger mb-2 mx-1" @click="initiateFilters('clearFilters')" />
-            </div>
+          <template #end>
+            <Button icon="pi pi-filter-slash" v-tooltip.top="$t('removeFilters')" class="p-button-danger mb-2 mx-1" @click="removeFilters('all')" />
           </template>
+        </Toolbar>
+        <DataTable :value="users" filterDisplay="menu" dataKey="_id" :loading="loading" scrollDirection="vertical"
+        v-model:selection="selectedUsers" class="p-datatable-gridlines" :rowHover="true" :filters="filters"
+        responsiveLayout="scroll" :scrollable="false" scrollHeight="50vh" paginatorPosition="top"
+        :paginator="true" :rows="20" :rowsPerPageOptions="[10,20,50,100,500]" :pageLinkSize="5">
           <template #empty>
             <div class="text-right">
               {{ $t("noUsersFound") }}
@@ -41,14 +38,14 @@
             <template #body="{data}">
               {{ data._id }}
             </template>
-            <template #filter="{filterModel,filterCallback}">
-              <InputText type="text" v-model="filterModel.value" @keydown.enter="filterCallback(); onFilterEvent('_id', filterModel.value)" class="p-column-filter" :placeholder="$t('id')"/>
+            <template #filter="{filterCallback}">
+              <InputText type="text" v-model="usersFilters._id" @keydown.enter="filterCallback(); rolesRequestMaster('getUsers')" class="p-column-filter" :placeholder="$t('id')"/>
             </template>
-            <template #filterapply="{filterModel,filterCallback}">
-              <Button type="button" icon="pi pi-check" @click="filterCallback(); onFilterEvent('_id', filterModel.value)" v-tooltip.top="$t('applyFilter')" class="p-button-success"></Button>
+            <template #filterapply="{filterCallback}">
+              <Button type="button" icon="pi pi-check" @click="filterCallback(); rolesRequestMaster('getUsers')" v-tooltip.top="$t('applyFilter')" class="p-button-success"></Button>
             </template>
             <template #filterclear="{filterCallback}">
-              <Button type="button" icon="pi pi-times" @click="filterCallback(); onFilterEvent('_id', '')" v-tooltip.top="$t('removeFilter')" class="p-button-danger"></Button>
+              <Button type="button" icon="pi pi-times" @click="filterCallback(); removeFilters('_id')" v-tooltip.top="$t('removeFilter')" class="p-button-danger"></Button>
             </template>
           </Column>
           <Column field="role" :header="$t('role')" bodyClass="text-center" style="flex: 0 0 10rem">
@@ -60,14 +57,14 @@
             <template #body="{data}">
               {{ data.displayName }}
             </template>
-            <template #filter="{filterModel,filterCallback}">
-              <InputText type="text" v-model="filterModel.value" @keydown.enter="filterCallback(); onFilterEvent('displayName', filterModel.value)" class="p-column-filter" :placeholder="$t('persianName')"/>
+            <template #filter="{filterCallback}">
+              <InputText type="text" v-model="usersFilters.displayName" @keydown.enter="filterCallback(); rolesRequestMaster('getUsers')" class="p-column-filter" :placeholder="$t('persianName')"/>
             </template>
-            <template #filterapply="{filterModel,filterCallback}">
-                <Button type="button" icon="pi pi-check" @click="filterCallback(); onFilterEvent('displayName', filterModel.value)" v-tooltip.top="$t('applyFilter')" class="p-button-success"></Button>
+            <template #filterapply="{filterCallback}">
+                <Button type="button" icon="pi pi-check" @click="filterCallback(); rolesRequestMaster('getUsers')" v-tooltip.top="$t('applyFilter')" class="p-button-success"></Button>
             </template>
             <template #filterclear="{filterCallback}">
-                <Button type="button" icon="pi pi-times" @click="filterCallback(); onFilterEvent('displayName', '')" v-tooltip.top="$t('removeFilter')" class="p-button-danger"></Button>
+                <Button type="button" icon="pi pi-times" @click="filterCallback(); removeFilters('displayName')" v-tooltip.top="$t('removeFilter')" class="p-button-danger"></Button>
             </template>
           </Column>
         </DataTable>
@@ -86,6 +83,10 @@ export default {
     return {
       users: [],
       selectedUsers: [],
+      usersFilters: {
+        _id: "",
+        displayName: ""
+      },
       roleOptions: [
         {
           id: "SUPERUSER",
@@ -109,12 +110,8 @@ export default {
         }
       ],
       selectedRoleOption: {},
-      rowsPerPage: 20,
-      newPageNumber: 1,
-      totalRecordsCount: 20,
       loading: true,
-      filters: null,
-      filterValues: null
+      filters: null
     }
   },
   mounted () {
@@ -122,43 +119,19 @@ export default {
     this.rolesRequestMaster("getUsers")
   },
   methods: {
-    initiateFilters (from) {
+    initiateFilters () {
       this.filters = {
         _id: { value: null, matchMode: FilterMatchMode.CONTAINS },
         displayName: { value: null, matchMode: FilterMatchMode.CONTAINS }
       }
-      this.filterValues = {
-        _id: "",
-        displayName: ""
-      }
-      if (from === "clearFilters") {
-        this.onFilterEvent("")
-      }
     },
-    onPaginatorEvent (event) {
-      this.newPageNumber = event.page + 1
-      this.rowsPerPage = event.rows
-      this.onFilterEvent("")
-    },
-    onFilterEvent (filterName, filterValue) {
-      if (filterName !== "") {
-        this.filterValues[filterName] = filterValue
-      }
-      this.rolesRequestMaster("getUsers", {
-        searchUid: this.filterValues._id,
-        searchDisplayName: this.filterValues.displayName
-      })
-    },
-    rolesRequestMaster (command, parameterObject) {
+    rolesRequestMaster (command) {
       const vm = this
-      let parameterObjectBuffer = {}
-      if (typeof parameterObject !== "undefined") {
-        parameterObjectBuffer = parameterObject
-      }
+      let langCode = ""
       if (this.$i18n.locale === "Fa") {
-        parameterObjectBuffer.lang = "fa"
+        langCode = "fa"
       } else if (this.$i18n.locale === "En") {
-        parameterObjectBuffer.lang = "en"
+        langCode = "en"
       }
       if (command === "getUsers") {
         const superAdminTempList = []
@@ -166,11 +139,15 @@ export default {
         const adminTempList = []
         const presenterTempList = []
         const userTempList = []
-        const query = new URLSearchParams(parameterObjectBuffer).toString()
         this.loading = true
         this.axios({
-          url: "/api/users/" + String(vm.newPageNumber) + "/" + String(vm.rowsPerPage) + "?" + query,
-          method: "GET"
+          url: "/api/users",
+          method: "GET",
+          params: {
+            searchUid: vm.usersFilters._id,
+            searchDisplayName: vm.usersFilters.displayName,
+            lang: langCode
+          }
         }).then((res) => {
           if (res.data.status.code === 200) {
             for (let i = 0; i < res.data.data.userList.length; ++i) {
@@ -197,7 +174,6 @@ export default {
               }
             }
             vm.users = superAdminTempList.concat(supporterTempList, adminTempList, presenterTempList, userTempList)
-            vm.totalRecordsCount = res.data.data.size
             vm.loading = false
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
@@ -212,12 +188,14 @@ export default {
         for (const x in this.selectedUsers) {
           selectedUsersList.push(this.selectedUsers[x]._id)
         }
-        const query = new URLSearchParams(parameterObjectBuffer).toString()
         this.loading = true
         this.axios({
-          url: "/api/roles/" + vm.selectedRoleOption.id + "?" + query,
+          url: "/api/roles/" + vm.selectedRoleOption.id,
           method: "PUT",
           headers: { "Content-Type": "application/json" },
+          params: {
+            lang: langCode
+          },
           data: JSON.stringify({
             names: selectedUsersList
           }).replace(/\\\\/g, "\\")
@@ -314,6 +292,17 @@ export default {
       } else {
         this.alertPromptMaster(this.$t("noUserSelected"), "", "pi-exclamation-triangle", "#FDB5BA")
       }
+    },
+    removeFilters (filter) {
+      if (filter === "_id") {
+        this.usersFilters._id = ""
+      } else if (filter === "displayName") {
+        this.usersFilters.displayName = ""
+      } else if (filter === "all") {
+        this.usersFilters._id = ""
+        this.usersFilters.displayName = ""
+      }
+      this.rolesRequestMaster("getUsers")
     }
   }
 }

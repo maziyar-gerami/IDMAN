@@ -116,9 +116,7 @@
                     <div v-if="createGroupUsersLoader" class="text-center">
                       <ProgressSpinner />
                     </div>
-                    <PickList v-else v-model="createGroupBuffer.usersListBuffer" dataKey="_id" :dir="$store.state.reverseDirection"
-                    @move-to-target="createGroupUsersControl($event, 'moveToTarget')" @move-all-to-target="createGroupUsersControl($event, 'moveToTarget')"
-                    @move-to-source="createGroupUsersControl($event, 'moveToSource')" @move-all-to-source="createGroupUsersControl($event, 'moveToSource')">
+                    <PickList v-else v-model="createGroupBuffer.usersListBuffer" dataKey="_id" :dir="$store.state.reverseDirection">
                       <template #sourceheader>
                         {{ $t("nonMemberUsersList") }}
                         <InputText type="text" class="my-2" :placeholder="$t('search')" v-model="createGroupBuffer.nonMemberSearch" @input="createGroupUsersSearch('source')" />
@@ -256,6 +254,7 @@ export default {
         usersAddList: [],
         usersRemoveList: []
       },
+      baseGroupId: "",
       tabActiveIndex: 0,
       groupToolbarBuffer: "",
       loading: true,
@@ -411,6 +410,7 @@ export default {
         }).then((res) => {
           if (res.data.status.code === 200) {
             vm.editGroupBuffer = res.data.data
+            vm.baseGroupId = res.data.data.id
             vm.editGroupLoader = false
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
@@ -423,8 +423,16 @@ export default {
           vm.resetState("editGroup")
         })
       } else if (command === "createGroup") {
-        this.createGroupBuffer.usersRemoveList = this.createGroupBuffer.usersListBuffer[0].filter(n => !this.createGroupBuffer.usersList[0].includes(n))
-        this.createGroupBuffer.usersAddList = this.createGroupBuffer.usersListBuffer[1].filter(n => !this.createGroupBuffer.usersList[1].includes(n))
+        this.createGroupBuffer.usersAddList = []
+        this.createGroupBuffer.usersRemoveList = []
+        const usersAddListTemp = this.createGroupBuffer.usersListBuffer[1].filter(a => !this.createGroupBuffer.usersList[1].map(b => b._id).includes(a._id))
+        const usersRemoveListTemp = this.createGroupBuffer.usersListBuffer[0].filter(a => !this.createGroupBuffer.usersList[0].map(b => b._id).includes(a._id))
+        for (const i in usersAddListTemp) {
+          this.createGroupBuffer.usersAddList.push(usersAddListTemp[i]._id)
+        }
+        for (const i in usersRemoveListTemp) {
+          this.createGroupBuffer.usersRemoveList.push(usersRemoveListTemp[i]._id)
+        }
         this.createGroupLoader = true
         this.axios({
           url: "/api/groups",
@@ -452,19 +460,23 @@ export default {
               if (res1.data.status.code === 200) {
                 vm.createGroupLoader = false
                 vm.resetState("createGroup")
+                vm.groupsRequestMaster("getGroups")
               } else if (res1.data.status.code === 207) {
                 vm.alertPromptMaster(res1.data.status.result, "", "pi-exclamation-triangle", "#FDB5BA")
                 vm.createGroupLoader = false
                 vm.resetState("createGroup")
+                vm.groupsRequestMaster("getGroups")
               } else {
                 vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
                 vm.createGroupLoader = false
                 vm.resetState("createGroup")
+                vm.groupsRequestMaster("getGroups")
               }
             }).catch(() => {
               vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
               vm.createGroupLoader = false
               vm.resetState("createGroup")
+              vm.groupsRequestMaster("getGroups")
             })
           } else if (res.data.status.code === 302) {
             vm.alertPromptMaster(res.data.status.result, "", "pi-exclamation-triangle", "#FDB5BA")
@@ -478,15 +490,22 @@ export default {
           vm.createGroupLoader = false
         })
       } else if (command === "editGroup") {
-        this.editGroupBuffer.usersRemoveList = this.editGroupBuffer.usersListBuffer[0].filter(n => !this.editGroupBuffer.usersList[0].includes(n))
-        this.editGroupBuffer.usersAddList = this.editGroupBuffer.usersListBuffer[1].filter(n => !this.editGroupBuffer.usersList[1].includes(n))
+        this.editGroupBuffer.usersAddList = []
+        this.editGroupBuffer.usersRemoveList = []
+        const usersAddListTemp = this.editGroupBuffer.usersListBuffer[1].filter(a => !this.editGroupBuffer.usersList[1].map(b => b._id).includes(a._id))
+        const usersRemoveListTemp = this.editGroupBuffer.usersListBuffer[0].filter(a => !this.editGroupBuffer.usersList[0].map(b => b._id).includes(a._id))
+        for (const i in usersAddListTemp) {
+          this.editGroupBuffer.usersAddList.push(usersAddListTemp[i]._id)
+        }
+        for (const i in usersRemoveListTemp) {
+          this.editGroupBuffer.usersRemoveList.push(usersRemoveListTemp[i]._id)
+        }
         this.editGroupLoader = true
         this.axios({
-          url: "/api/groups",
+          url: "/api/groups/" + vm.baseGroupId,
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           params: {
-            id: vm.editGroupBuffer.id,
             lang: langCode
           },
           data: JSON.stringify({
@@ -511,19 +530,23 @@ export default {
               if (res1.data.status.code === 200) {
                 vm.editGroupLoader = false
                 vm.resetState("editUser")
+                vm.groupsRequestMaster("getGroups")
               } else if (res1.data.status.code === 207) {
                 vm.alertPromptMaster(res1.data.status.result, "", "pi-exclamation-triangle", "#FDB5BA")
                 vm.editGroupLoader = false
                 vm.resetState("editUser")
+                vm.groupsRequestMaster("getGroups")
               } else {
                 vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
                 vm.editGroupLoader = false
                 vm.resetState("editUser")
+                vm.groupsRequestMaster("getGroups")
               }
             }).catch(() => {
               vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
               vm.editGroupLoader = false
               vm.resetState("editUser")
+              vm.groupsRequestMaster("getGroups")
             })
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
@@ -613,7 +636,7 @@ export default {
         }
         this.loading = true
         this.axios({
-          url: "/api/users/password/expire",
+          url: "/api/groups/password/expire",
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           params: {
@@ -630,6 +653,8 @@ export default {
           vm.loading = false
         })
       } else if (command === "getUsersCreateGroup") {
+        this.createGroupBuffer.usersList = [[], []]
+        this.createGroupBuffer.usersListBuffer = [[], []]
         this.createGroupUsersLoader = true
         this.axios({
           url: "/api/users",
@@ -651,6 +676,8 @@ export default {
           vm.createGroupUsersLoader = false
         })
       } else if (command === "getUsersEditGroup") {
+        this.editGroupBuffer.usersList = [[], []]
+        this.editGroupBuffer.usersListBuffer = [[], []]
         this.editGroupUsersLoader = true
         this.axios({
           url: "/api/users",
@@ -660,8 +687,6 @@ export default {
           }
         }).then((res) => {
           if (res.data.status.code === 200) {
-            vm.editGroupBuffer.usersList = [[], []]
-            vm.editGroupBuffer.usersList[0] = res.data.data
             this.axios({
               url: "/api/users/group/" + vm.editGroupBuffer.id,
               method: "GET",
@@ -670,11 +695,10 @@ export default {
               }
             }).then((res1) => {
               if (res1.data.status.code === 200) {
-                vm.editGroupBuffer.usersListBuffer = [[], []]
                 vm.editGroupBuffer.usersList[1] = res1.data.data.userList
                 vm.editGroupBuffer.usersListBuffer[1] = res1.data.data.userList
-                vm.editGroupBuffer.usersList[0] = vm.editGroupBuffer.usersList[0].filter(a => !vm.editGroupBuffer.usersList[1].map(b => b._id).includes(a._id))
-                vm.editGroupBuffer.usersListBuffer[0] = vm.editGroupBuffer.usersList[0]
+                vm.editGroupBuffer.usersList[0] = res.data.data.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
+                vm.editGroupBuffer.usersListBuffer[0] = res.data.data.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
                 vm.editGroupUsersLoader = false
               } else {
                 vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")

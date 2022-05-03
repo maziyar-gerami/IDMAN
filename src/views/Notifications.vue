@@ -11,7 +11,7 @@
                 <Button :label="$t('delete')" icon="pi pi-trash" class="p-button-danger mx-1" @click="notificationsToolbar('delete')" />
               </template>
             </Toolbar>
-            <DataTable :value="notifications" dataKey="messageId" :loading="loading" scrollDirection="vertical"
+            <DataTable :value="notifications" filterDisplay="menu" dataKey="messageId" :loading="loading" scrollDirection="vertical"
             v-model:selection="selectedNotifications" class="p-datatable-gridlines" :rowHover="true"
             responsiveLayout="scroll" :scrollable="false" scrollHeight="50vh" paginatorPosition="top"
             :paginator="true" :rows="20" :rowsPerPageOptions="[10,20,50,100,500]" :pageLinkSize="5">
@@ -58,7 +58,7 @@
                     <Button icon="pi pi-pencil" class="p-button-rounded p-button-warning p-button-outlined mx-1" @click="editNotification(data.messageId)" v-tooltip.top="$t('edit')" />
                   </div>
                   <div class="flex align-items-center justify-content-center">
-                    <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-outlined mx-1" @click="deleteNotification(data.messageId)" v-tooltip.top="$t('delete')" />
+                    <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-outlined mx-1" @click="deleteNotification(data.messageId, data.title)" v-tooltip.top="$t('delete')" />
                   </div>
                 </template>
               </Column>
@@ -287,7 +287,9 @@ export default {
           }).replace(/\\\\/g, "\\")
         }).then((res) => {
           if (res.data.status.code === 200) {
+            vm.createNotificationLoader = false
             vm.resetState("createNotification")
+            vm.notificationsRequestMaster("getNotifications")
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.createNotificationLoader = false
@@ -312,7 +314,9 @@ export default {
           }).replace(/\\\\/g, "\\")
         }).then((res) => {
           if (res.data.status.code === 200) {
+            vm.editNotificationLoader = false
             vm.resetState("editNotification")
+            vm.notificationsRequestMaster("getNotifications")
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editNotificationLoader = false
@@ -483,9 +487,9 @@ export default {
         this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("editNotification"), "pi-question-circle", "#F0EAAA", this.notificationsRequestMaster, "editNotification")
       }
     },
-    deleteNotification (id) {
+    deleteNotification (id, title) {
       this.notificationToolbarBuffer = id
-      this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("delete") + " " + String(id), "pi-question-circle", "#F0EAAA", this.notificationsRequestMaster, "deleteNotification")
+      this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("delete") + " " + String(title), "pi-question-circle", "#F0EAAA", this.notificationsRequestMaster, "deleteNotification")
     },
     notificationsToolbar (action) {
       if (this.selectedNotifications.length > 0) {

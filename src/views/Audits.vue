@@ -25,14 +25,15 @@
                 </span>
                 <Button :label="$t('filter')" class="p-button mx-1" @click="auditsRequestMaster('getUserAudits')" />
               </template>
+              <template #end>
+                <Button icon="pi pi-filter-slash" v-tooltip.top="$t('removeFilters')" class="p-button-danger mb-2 mx-1" @click="removeFilters('all')" />
+              </template>
             </Toolbar>
             <DataTable :value="audits" filterDisplay="menu" dataKey="_id" :rows="rowsPerPage" :loading="loading" scrollHeight="50vh" :filters="filtersUser"
             class="p-datatable-gridlines" :rowHover="true" responsiveLayout="scroll" scrollDirection="vertical" :scrollable="false">
               <template #header>
-                <div class="flex justify-content-between flex-column sm:flex-row">
-                  <div></div>
+                <div class="flex justify-content-center flex-column sm:flex-row">
                   <Paginator v-model:rows="rowsPerPage" v-model:totalRecords="totalRecordsCount" @page="onPaginatorEvent($event)" :rowsPerPageOptions="[10,20,50,100,500]"></Paginator>
-                  <Button icon="pi pi-filter-slash" v-tooltip.top="$t('removeFilters')" class="p-button-danger mb-2 mx-1" @click="removeFilters('all')" />
                 </div>
               </template>
               <template #empty>
@@ -190,13 +191,13 @@ export default {
       auditsUsers: [],
       auditsUserFilter: {
         service: {
-          name: ""
+          _id: ""
         }
       },
       auditsUsersFilter: {
         userID: "",
         service: {
-          name: ""
+          _id: ""
         }
       },
       auditsUserFilterOptions: [],
@@ -355,7 +356,7 @@ export default {
           url: "/api/logs/audits/user",
           method: "GET",
           params: {
-            services: vm.auditsUserFilter.service.name,
+            service: vm.auditsUserFilter.service._id,
             startDate: vm.dateSerializer(document.getElementById("auditsFilter.startDate").value),
             endDate: vm.dateSerializer(document.getElementById("auditsFilter.endDate").value),
             page: String(vm.newPageNumber),
@@ -381,7 +382,7 @@ export default {
           url: "/api/logs/audits/users",
           method: "GET",
           params: {
-            services: vm.auditsUsersFilter.service.name,
+            service: vm.auditsUsersFilter.service._id,
             userID: vm.auditsUsersFilter.userID,
             startDate: vm.dateSerializer(document.getElementById("auditsUsersFilter.startDate").value),
             endDate: vm.dateSerializer(document.getElementById("auditsUsersFilter.endDate").value),
