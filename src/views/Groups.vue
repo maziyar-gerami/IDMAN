@@ -177,9 +177,7 @@
                     <div v-if="editGroupUsersLoader" class="text-center">
                       <ProgressSpinner />
                     </div>
-                    <PickList v-else v-model="editGroupBuffer.usersListBuffer" dataKey="_id" :dir="$store.state.reverseDirection"
-                    @move-to-target="editGroupUsersControl($event, 'moveToTarget')" @move-all-to-target="editGroupUsersControl($event, 'moveToTarget')"
-                    @move-to-source="editGroupUsersControl($event, 'moveToSource')" @move-all-to-source="editGroupUsersControl($event, 'moveToSource')">
+                    <PickList v-else v-model="editGroupBuffer.usersListBuffer" dataKey="_id" :dir="$store.state.reverseDirection">
                       <template #sourceheader>
                         {{ $t("nonMemberUsersList") }}
                         <InputText type="text" class="my-2" :placeholder="$t('search')" v-model="editGroupBuffer.nonMemberSearch" @input="editGroupUsersSearch('source')" />
@@ -297,21 +295,6 @@ export default {
         }
       }
     },
-    createGroupUsersControl ($event, command) {
-      if (command === "moveToTarget") {
-        for (const i in $event.items) {
-          this.createGroupBuffer.usersList[1].push($event.items[i])
-          const index = this.createGroupBuffer.usersList[0].indexOf($event.items[i])
-          this.createGroupBuffer.usersList[0].splice(index, 1)
-        }
-      } else if (command === "moveToSource") {
-        for (const i in $event.items) {
-          this.createGroupBuffer.usersList[0].push($event.items[i])
-          const index = this.createGroupBuffer.usersList[1].indexOf($event.items[i])
-          this.createGroupBuffer.usersList[1].splice(index, 1)
-        }
-      }
-    },
     editGroupUsersSearch (command) {
       if (command === "source") {
         if (this.editGroupBuffer.nonMemberSearch !== "") {
@@ -334,21 +317,6 @@ export default {
           this.editGroupBuffer.usersListBuffer[1] = uniqueBuffer
         } else {
           this.editGroupBuffer.usersListBuffer[1] = this.editGroupBuffer.usersList[1]
-        }
-      }
-    },
-    editGroupUsersControl ($event, command) {
-      if (command === "moveToTarget") {
-        for (const i in $event.items) {
-          this.editGroupBuffer.usersList[1].push($event.items[i])
-          const index = this.editGroupBuffer.usersList[0].indexOf($event.items[i])
-          this.editGroupBuffer.usersList[0].splice(index, 1)
-        }
-      } else if (command === "moveToSource") {
-        for (const i in $event.items) {
-          this.editGroupBuffer.usersList[0].push($event.items[i])
-          const index = this.editGroupBuffer.usersList[1].indexOf($event.items[i])
-          this.editGroupBuffer.usersList[1].splice(index, 1)
         }
       }
     },
