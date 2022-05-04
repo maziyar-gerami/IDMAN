@@ -18,6 +18,9 @@ public class StringResult {
   public static String COMMON_400_EN = "Unsuccessful";
   public static String COMMON_400_FA = "موفقیت آمیز نبود";
 
+  public static String COMMON_404_EN = "Not found";
+  public static String COMMON_404_FA = "یافت نشد";
+
   public static String USER_406_FA = "قابلیت تغییر گذرواژه وجود ندارد.";
   public static String USER_406_EN = "Changing password is not possible";
 

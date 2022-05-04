@@ -28,7 +28,7 @@ public class UpdatePubMessage {
     try {
       oldMessage = new RetrievePubMessage(mongoTemplate).showAllPubicMessages(message.getMessageId()).get(0);
     } catch (IndexOutOfBoundsException e) {
-      return HttpStatus.BAD_REQUEST;
+      return HttpStatus.NOT_FOUND;
     }
 
     message.setUpdater(doer);
@@ -37,7 +37,7 @@ public class UpdatePubMessage {
     message.setCreator(oldMessage.getCreator());
     message.setCreateDate(oldMessage.getCreateDate());
 
-    PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("_id").is(message.getMessageId())),
+    PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("messageId").is(message.getMessageId())),
         PublicMessage.class, Variables.col_publicMessage);
     message.set_id(Objects.requireNonNull(publicMessage).get_id());
     try {
