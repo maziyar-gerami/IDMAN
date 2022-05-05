@@ -166,8 +166,8 @@ public class BuildAttributes {
     }
 
     // cStatus for changing status
-    if (p.getCStatus() != null) {
-      switch (p.getCStatus()) {
+    if (p.getStatus() != null) {
+      switch (p.getStatus()) {
         case "enable":
           operations.enable(doerID, uid);
           break;

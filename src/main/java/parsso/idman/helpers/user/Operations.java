@@ -101,7 +101,8 @@ public class Operations {
     if (user.isEnabled()) {
 
       modificationItems[0] = new ModificationItem(DirContext.ADD_ATTRIBUTE,
-          new BasicAttribute("pwdAccountLockedTime", "00010101000000Z"));
+          new BasicAttribute("pwdAccountLockedTime", "000001010000Z"));
+
       userExtraInfo.setStatus("disable");
 
       try {
