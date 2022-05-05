@@ -82,6 +82,8 @@ public class BuildAttributes {
     else
       attrs.put("description", " ");
 
+    attrs.put(("pwdLockout"), "TRUE");
+
     if (p.isLocked())
       attrs.put("pwdAccountLockedTime", p.isEnabled());
 

@@ -1,5 +1,8 @@
 package parsso.idman.impls.users.oprations.update;
 
+import java.io.IOException;
+import java.util.List;
+import javax.annotation.PostConstruct;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -8,15 +11,13 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.onetime.RunOneTime;
 import parsso.idman.helpers.user.BuildAttributes;
 import parsso.idman.helpers.user.ExcelAnalyzer;
 import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.impls.users.oprations.update.helper.*;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
-
-import java.io.IOException;
-import java.util.List;
 
 @Service
 public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
@@ -65,5 +66,11 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
   public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException {
     return new GroupUser(new ExcelAnalyzer(userOpRetrieve, this), BASE_DN)
         .addGroupToUsers(doer, file, ou);
+  }
+
+  @PostConstruct
+  public void postConstruct() throws InterruptedException{
+    new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this, BASE_DN, new UserAttributeMapper(mongoTemplate)).postConstruct();
+    //new PreferenceSettings(mongoTemplate).run();
   }
 }

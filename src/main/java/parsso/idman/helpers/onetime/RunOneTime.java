@@ -74,10 +74,20 @@ public class RunOneTime {
       }
     };
 
+    val addLockout = new Runnable() {
+
+      @Override
+      public void run() {
+        new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger,
+                basedn).run();
+      }
+    };
+
     Thread sathread = new Thread(surun);
     Thread logeInUsers = new Thread(loggeInUses);
     Thread duplicated = new Thread(duplicatedUsers);
     Thread addMobile = new Thread(addMobileToMongo);
+    Thread addLockou = new Thread(addLockout);
     Thread displayName = new Thread(displayNameFix);
     logeInUsers.start();
 
@@ -108,6 +118,14 @@ public class RunOneTime {
     if (b5 == null || !b5.isRun()) {
       displayName.start();
     }
+
+    OneTime b6 = mongoTemplate.findOne(
+        new Query(Criteria.where("_id").is(Variables.PWD_LOCKOUT)),
+        OneTime.class, Variables.col_OneTime);
+    if (b6 == null || !b6.isRun()) {
+      addLockou.start();
+    }
+
     System.out.println(Variables.PARSSO_IDMAN);
 
   }

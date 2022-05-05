@@ -147,4 +147,5 @@ public class Variables {
   public static final String MODEL_REFRESH = "Refresh";
 
   public static final String MODEL_DASHBOARD = "Dashboard";
+  public static final String PWD_LOCKOUT = "PWDLockout";
 }
