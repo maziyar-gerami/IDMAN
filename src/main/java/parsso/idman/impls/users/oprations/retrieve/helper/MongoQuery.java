@@ -17,7 +17,7 @@ public class MongoQuery {
     if (!userStatus.equals("")) {
       query.addCriteria(Criteria.where("status").is(userStatus));
     }
-    if (!userStatus.equals("")) {
+    if (!mobile.equals("")) {
       query.addCriteria(Criteria.where("mobile").regex(mobile));
     }
     if (!groupFilter.equals("")) {
