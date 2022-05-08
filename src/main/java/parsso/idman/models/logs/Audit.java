@@ -14,6 +14,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.TextIndexed;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Time;
@@ -37,7 +38,8 @@ public class Audit {
 
 
   public static List<Audit> analyze(MongoTemplate mongoTemplate, int skip, int limit) {
-    Query query = new Query().skip(skip).limit(limit).with(Sort.by(Sort.Direction.DESC, "_id"));
+    Query query = new Query(Criteria.where("actionPerformed")
+    .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED").and("principal").ne("audit:unknown").and("resourceOperatedUpon").exists(true)).with(Sort.by(Sort.Direction.DESC, "_id"));
     return mongoTemplate.find(query, Audit.class, Variables.col_audit);
   }
 

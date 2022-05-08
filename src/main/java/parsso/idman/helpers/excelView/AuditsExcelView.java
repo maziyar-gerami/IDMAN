@@ -3,7 +3,9 @@ package parsso.idman.helpers.excelView;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
@@ -39,7 +41,11 @@ public class AuditsExcelView extends AbstractXlsxView {
     Sheet sheet = workbook.createSheet("Audits");
     sheet.setDefaultColumnWidth(30);
 
-    long count = mongoTemplate.count(new Query(), Variables.col_audit);
+    Query query = new Query(Criteria.where("actionPerformed")
+    .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED").and("principal").ne("audit:unknown").and("resourceOperatedUpon").exists(true)).with(Sort.by(Sort.Direction.DESC, "_id"));
+
+
+    long count = mongoTemplate.count(query, Variables.col_audit);
 
     // create style for header cells
     CellStyle style = workbook.createCellStyle();
