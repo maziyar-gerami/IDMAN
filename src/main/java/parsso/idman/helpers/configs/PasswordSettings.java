@@ -38,54 +38,54 @@ public class PasswordSettings {
 
   public boolean update(String doer, List<Property> settings) {
 
-    ModificationItem[] items = new ModificationItem[10];
-    Attribute[] attrs = new Attribute[10];
+    ModificationItem[] items = new ModificationItem[9];
+    Attribute[] attrs = new Attribute[9];
 
     PWD pwd = retrieve();
 
     for (Property setting : settings) {
       switch (setting.get_id()) {
         case "pwdCheckQuality":
-          attrs[0] = new BasicAttribute("pwdCheckQuality", setting.getValue());
+          attrs[0] = new BasicAttribute("pwdCheckQuality");
           items[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[0]);
           continue;
 
         case "pwdFailureCountInterval":
-          attrs[2] = new BasicAttribute("pwdFailureCountInterval", setting.getValue());
-          items[2] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[2]);
+          attrs[1] = new BasicAttribute("pwdFailureCountInterval", setting.getValue());
+          items[1] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[1]);
           continue;
 
         case "pwdGraceAuthNLimit":
-          attrs[3] = new BasicAttribute("pwdGraceAuthNLimit", setting.getValue());
-          items[3] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[3]);
+          attrs[2] = new BasicAttribute("pwdGraceAuthNLimit", setting.getValue());
+          items[2] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[2]);
           continue;
 
         case "pwdInHistory":
-          attrs[4] = new BasicAttribute("pwdInHistory", setting.getValue());
-          items[4] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[4]);
+          attrs[3] = new BasicAttribute("pwdInHistory", setting.getValue());
+          items[3] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[3]);
           continue;
 
         case "pwdLockout":
-          attrs[5] = new BasicAttribute("pwdLockout", setting.getValue());
-          items[5] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[5]);
+          attrs[4] = new BasicAttribute("pwdLockout", setting.getValue());
+          items[4] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[4]);
           continue;
 
         case "pwdLockoutDuration":
-          attrs[6] = new BasicAttribute("pwdLockoutDuration", setting.getValue());
-          items[6] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[6]);
+          attrs[5] = new BasicAttribute("pwdLockoutDuration", setting.getValue());
+          items[5] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[5]);
           continue;
         case "pwdMaxFailure":
-          attrs[7] = new BasicAttribute("pwdMaxFailure", setting.getValue());
-          items[7] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[7]);
+          attrs[6] = new BasicAttribute("pwdMaxFailure", setting.getValue());
+          items[6] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[6]);
           continue;
 
         case "pwdMinLength":
-          attrs[8] = new BasicAttribute("pwdMinLength", setting.getValue());
-          items[8] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[8]);
+          attrs[7] = new BasicAttribute("pwdMinLength", setting.getValue());
+          items[7] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[7]);
 
         case "pwdMaxAge":
-          attrs[9] = new BasicAttribute("pwdMaxAge", setting.getValue());
-          items[9] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[9]);
+          attrs[8] = new BasicAttribute("pwdMaxAge", setting.getValue());
+          items[8] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[8]);
       }
 
     }

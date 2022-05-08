@@ -64,8 +64,6 @@ public class CaptchaRepoImp implements CAPTCHARepo {
 
   @Override
   public boolean check(String cid, String answer) {
-    if (cid.equals("0111"))
-      return true;
 
     Query query = new Query(Criteria.where("_id").is(cid));
     CAPTCHA captcha = mongoTemplate.findOne(query, CAPTCHA.class, Variables.col_captchas);
@@ -77,7 +75,7 @@ public class CaptchaRepoImp implements CAPTCHARepo {
       return false;
     } else {
       mongoTemplate.remove(query, Variables.col_captchas);
-      return false;
+      return true;
     }
 
   }

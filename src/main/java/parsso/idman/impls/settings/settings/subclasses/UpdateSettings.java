@@ -109,6 +109,7 @@ public class UpdateSettings {
     try {
       passwordSettings.update(doer, ldapProperties);
     } catch (Exception e) {
+      e.printStackTrace();
       return HttpStatus.BAD_REQUEST;
     }
 
