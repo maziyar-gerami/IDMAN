@@ -176,11 +176,6 @@ public class PostSettings {
           mongoSettings.add(setting);
           break;
 
-        case ("pwdExpireWarning"):
-          setting.setValue(pwd.getPwdExpireWarning());
-          mongoSettings.add(setting);
-          break;
-
         case ("pwdGraceAuthNLimit"):
           setting.setValue(pwd.getPwdGraceAuthNLimit());
           mongoSettings.add(setting);

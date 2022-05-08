@@ -49,10 +49,7 @@ public class PasswordSettings {
           attrs[0] = new BasicAttribute("pwdCheckQuality", setting.getValue());
           items[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[0]);
           continue;
-        case "pwdExpireWarning":
-          attrs[1] = new BasicAttribute("pwdExpireWarning", setting.getValue());
-          items[1] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[1]);
-          continue;
+
         case "pwdFailureCountInterval":
           attrs[2] = new BasicAttribute("pwdFailureCountInterval", setting.getValue());
           items[2] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[2]);
@@ -99,9 +96,6 @@ public class PasswordSettings {
         switch (property.get_id()) {
           case "pwdCheckQuality":
             if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdCheckQuality()))
-              continue;
-          case "pwdExpireWarning":
-            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdExpireWarning()))
               continue;
           case "pwdFailureCountInterval":
             if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdFailureCountInterval()))

@@ -106,9 +106,6 @@ public class RetrieveSettings {
             }
             break;
 
-          case ("pwdExpireWarning"):
-            setting.setValue(pwd.getPwdExpireWarning());
-            break;
           default:
             break;
         }

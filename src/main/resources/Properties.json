@@ -264,19 +264,6 @@
         }
     },
     {
-        "_id": "pwdExpireWarning",
-        "value": "200",
-        "descriptionEN": "Password Expire warning",
-        "descriptionFA": "اخطار انقضای پسورد",
-        "groupFA": "گذر واژه",
-        "groupEN": "Password",
-        "helpEN": "Remaining seconds to notify the users that the password is expiring",
-        "helpFA": "زمان مورد نیاز به ثانیه برای آنکه به کاربر اطلاع داده شود که پسوردش در حال انقضاست.",
-        "type": {
-            "class": "integer"
-        }
-    },
-    {
         "_id": "pwdFailureCountInterval",
         "value": "30",
         "descriptionEN": "Password failure count interval",

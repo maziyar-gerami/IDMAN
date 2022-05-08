@@ -43,7 +43,6 @@ public class UpdateSettings {
           property.get_id().equals("pwdMinLength") ||
           property.get_id().equals("pwdMaxFailure") ||
           property.get_id().equals("pwdMaxAge") ||
-          property.get_id().equals("pwdExpireWarning") ||
           property.get_id().equals("pwdLockoutDuration")) {
         switch (property.get_id()) {
           case "pwdCheckQuality":
@@ -60,10 +59,6 @@ public class UpdateSettings {
 
           case "pwdInHistory":
             storedSetting.setValue(ldapPasswords.getPwdInHistory());
-            break;
-
-          case "pwdExpireWarning":
-            storedSetting.setValue(ldapPasswords.getPwdExpireWarning());
             break;
 
           case "pwdLockout":
