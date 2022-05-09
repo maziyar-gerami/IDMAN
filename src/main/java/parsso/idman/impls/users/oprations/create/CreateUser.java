@@ -123,7 +123,8 @@ public class CreateUser extends Parameters implements UserRepo.UsersOp.Create {
 
   @Override
   public JSONObject createUserImport(String doerID, User p) {
-    if (p.getUserPassword() == null) {
+    if (p.getUserPassword() == null || p.getUserPassword().equals("")) {
+      
       p.setUserPassword(new Settings(mongoTemplate).retrieve(Variables.DEFAULT_USER_PASSWORD).getValue());
     }
 
