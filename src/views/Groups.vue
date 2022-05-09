@@ -255,7 +255,7 @@ export default {
       baseGroupId: "",
       tabActiveIndex: 0,
       groupToolbarBuffer: "",
-      loading: true,
+      loading: false,
       createGroupFlag: false,
       editGroupFlag: false,
       createGroupLoader: false,

@@ -308,6 +308,7 @@ export default {
             lang: langCode
           },
           data: JSON.stringify({
+            messageId: vm.editNotificationBuffer.messageId,
             title: vm.editNotificationBuffer.title,
             visible: vm.editNotificationBuffer.visible,
             body: vm.editNotificationBuffer.body

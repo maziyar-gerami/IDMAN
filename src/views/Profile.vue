@@ -34,7 +34,7 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="user._id">{{ $t("id") }}<span style="color: red;"> * </span></label>
-                    <InputText id="user._id" type="text" :class="userErrors._id" v-model="user._id" @keypress="englishInputFilter($event)" @paste="englishInputFilter($event)" />
+                    <InputText id="user._id" type="text" :class="userErrors._id" v-model="user._id" @keypress="englishInputFilter($event)" @paste="englishInputFilter($event)" :readOnly="true" />
                     <small>{{ $t("inputEnglishFilterText") }}</small>
                   </div>
                 </div>
@@ -235,7 +235,6 @@ export default {
             vm.user.employeeNumber = res.data.data.employeeNumber
             vm.user.description = res.data.data.description
             if (res.data.data.profileInaccessibility) {
-              document.getElementById("user._id").readOnly = true
               document.getElementById("user.displayName").readOnly = true
               document.getElementById("user.firstName").readOnly = true
               document.getElementById("user.lastName").readOnly = true
@@ -347,9 +346,14 @@ export default {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           data: bodyFormData
-        }).then(() => {
-          vm.loading = false
-          vm.profileRequestMaster("getUserAvatar")
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            vm.loading = false
+            vm.profileRequestMaster("getUserAvatar")
+          } else {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.loading = false
+          }
         }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.loading = false
@@ -359,9 +363,14 @@ export default {
         this.axios({
           url: "/api/user/photo",
           method: "DELETE"
-        }).then(() => {
-          vm.loading = false
-          vm.profileRequestMaster("getUserAvatar")
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            vm.loading = false
+            vm.profileRequestMaster("getUserAvatar")
+          } else {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.loading = false
+          }
         }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.loading = false

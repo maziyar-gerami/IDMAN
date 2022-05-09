@@ -669,8 +669,10 @@ export default {
         })
       } else if (command === "createUser") {
         const memberOf = []
-        for (let i = 0; i < this.createUserBuffer.memberOf.length; ++i) {
-          memberOf.push(this.createUserBuffer.memberOf[i].id)
+        if (typeof this.createUserBuffer.memberOf !== "undefined") {
+          for (let i = 0; i < this.createUserBuffer.memberOf.length; ++i) {
+            memberOf.push(this.createUserBuffer.memberOf[i].id)
+          }
         }
         this.createUserLoader = true
         this.axios({
@@ -699,6 +701,7 @@ export default {
             vm.alertPromptMaster(res.data.status.result, "", "pi-exclamation-triangle", "#FDB5BA")
           } else {
             vm.resetState("createUser")
+            vm.usersRequestMaster("getUsers")
           }
           vm.createUserLoader = false
         }).catch(() => {
@@ -707,8 +710,10 @@ export default {
         })
       } else if (command === "editUser") {
         const memberOf = []
-        for (let i = 0; i < this.editUserBuffer.memberOf.length; ++i) {
-          memberOf.push(this.editUserBuffer.memberOf[i].id)
+        if (typeof this.editUserBuffer.memberOf !== "undefined") {
+          for (let i = 0; i < this.editUserBuffer.memberOf.length; ++i) {
+            memberOf.push(this.editUserBuffer.memberOf[i].id)
+          }
         }
         this.editUserLoader = true
         if (this.editUserPasswordFlag) {
@@ -736,6 +741,7 @@ export default {
           }).then(() => {
             vm.editUserLoader = false
             vm.resetState("editUser")
+            vm.usersRequestMaster("getUsers")
           }).catch((error) => {
             if (typeof error.response !== "undefined") {
               if (error.response.status === 302) {
