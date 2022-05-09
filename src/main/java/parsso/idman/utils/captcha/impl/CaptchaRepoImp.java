@@ -74,7 +74,6 @@ public class CaptchaRepoImp implements CAPTCHARepo {
       mongoTemplate.remove(query, Variables.col_captchas);
       return false;
     } else {
-      mongoTemplate.remove(query, Variables.col_captchas);
       return true;
     }
 
