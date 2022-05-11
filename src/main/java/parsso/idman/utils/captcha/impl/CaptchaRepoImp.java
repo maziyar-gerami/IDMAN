@@ -66,9 +66,9 @@ public class CaptchaRepoImp implements CAPTCHARepo {
   public boolean check(String cid, String answer) {
 
     try{
-    CAPTCHA captcha = mongoTemplate.findAndRemove(new Query(Criteria.where("_id").is(cid)),
+    CAPTCHA captcha = mongoTemplate.findOne(new Query(Criteria.where("_id").is(cid)),
      CAPTCHA.class, Variables.col_captchas);
-     return captcha.getPhrase().equals(answer);
+     return captcha.getPhrase().equalsIgnoreCase(answer);
     }catch(Exception e){
       return false;
     }
