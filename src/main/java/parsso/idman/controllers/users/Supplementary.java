@@ -3,6 +3,8 @@ package parsso.idman.controllers.users;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ldap.core.LdapTemplate;
@@ -23,6 +25,8 @@ import parsso.idman.repos.SkyroomRepo;
 import parsso.idman.repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
+
+
 import java.io.IOException;
 
 @RestController
@@ -118,6 +122,9 @@ public class Supplementary extends UsersOps {
     }
 
     ResponseEntity<Integer> response = getIntegerResponseEntity(time);
+    if(time==0 || time==-1){
+      mongoTemplate.remove(new Query(Criteria.where("_id").is("cid")),Variables.col_captchas);
+    }
     return new ResponseEntity<>(
         new Response(response.getBody(), Variables.MODEL_USER, response.getStatusCode().value(), lang),
         HttpStatus.OK);
