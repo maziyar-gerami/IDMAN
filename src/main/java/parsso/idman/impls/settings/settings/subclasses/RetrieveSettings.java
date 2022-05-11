@@ -22,7 +22,6 @@ public class RetrieveSettings {
   public List<Setting> retrieve() {
 
     List<Setting> settings = retrieveALL();
-    PWD pwd = passwordSettings.retrieve();
     Setting sms_sdk = mongoTemplate.findOne(new Query(Criteria.where("_id").is(Variables.SMS_SDK)), Setting.class,
         Variables.col_properties);
 
@@ -50,10 +49,6 @@ public class RetrieveSettings {
       settings.removeIf(s -> s.get_id().equalsIgnoreCase("skyroom.api.key"));
     }
 
-    if (Integer.parseInt(pwd.getPwdCheckQuality()) == 0) {
-      settings.removeIf(s -> s.get_id().equalsIgnoreCase("pwdMinLength"));
-    }
-
     return settings;
   }
 
@@ -64,14 +59,6 @@ public class RetrieveSettings {
     for (Setting setting : settings) {
       if (setting.getGroupEN().equalsIgnoreCase("Password") && setting.getValue() == null) {
         switch (setting.get_id()) {
-          case ("pwdCheckQuality"):
-            if (Integer.parseInt(pwd.getPwdCheckQuality()) > 0) {
-              setting.setValue("true");
-            } else {
-              setting.setValue("false");
-            }
-            break;
-
           case ("pwdFailureCountInterval"):
             setting.setValue(pwd.getPwdFailureCountInterval());
             break;
@@ -98,12 +85,6 @@ public class RetrieveSettings {
 
           case ("pwdMaxFailure"):
             setting.setValue(pwd.getPwdMaxFailure());
-            break;
-
-          case ("pwdMinLength"):
-            if (Integer.parseInt(pwd.getPwdCheckQuality()) > 0) {
-              setting.setValue(pwd.getPwdMinLength());
-            }
             break;
 
           default:

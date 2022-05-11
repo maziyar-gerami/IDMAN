@@ -10,7 +10,6 @@ import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.repos.FilesStorageService;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;

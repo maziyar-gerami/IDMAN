@@ -38,54 +38,46 @@ public class PasswordSettings {
 
   public boolean update(String doer, List<Property> settings) {
 
-    ModificationItem[] items = new ModificationItem[9];
-    Attribute[] attrs = new Attribute[9];
+    ModificationItem[] items = new ModificationItem[7];
+    Attribute[] attrs = new Attribute[7];
 
     PWD pwd = retrieve();
 
     for (Property setting : settings) {
       switch (setting.get_id()) {
-        case "pwdCheckQuality":
-          attrs[0] = new BasicAttribute("pwdCheckQuality");
+
+        case "pwdFailureCountInterval":
+          attrs[0] = new BasicAttribute("pwdFailureCountInterval", setting.getValue());
           items[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[0]);
           continue;
 
-        case "pwdFailureCountInterval":
-          attrs[1] = new BasicAttribute("pwdFailureCountInterval", setting.getValue());
+        case "pwdGraceAuthNLimit":
+          attrs[1] = new BasicAttribute("pwdGraceAuthNLimit", setting.getValue());
           items[1] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[1]);
           continue;
 
-        case "pwdGraceAuthNLimit":
-          attrs[2] = new BasicAttribute("pwdGraceAuthNLimit", setting.getValue());
+        case "pwdInHistory":
+          attrs[2] = new BasicAttribute("pwdInHistory", setting.getValue());
           items[2] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[2]);
           continue;
 
-        case "pwdInHistory":
-          attrs[3] = new BasicAttribute("pwdInHistory", setting.getValue());
+        case "pwdLockout":
+          attrs[3] = new BasicAttribute("pwdLockout",  setting.getValue().toString().toUpperCase());
           items[3] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[3]);
           continue;
 
-        case "pwdLockout":
-          attrs[4] = new BasicAttribute("pwdLockout", setting.getValue());
+        case "pwdLockoutDuration":
+          attrs[4] = new BasicAttribute("pwdLockoutDuration", setting.getValue());
           items[4] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[4]);
           continue;
-
-        case "pwdLockoutDuration":
-          attrs[5] = new BasicAttribute("pwdLockoutDuration", setting.getValue());
+        case "pwdMaxFailure":
+          attrs[5] = new BasicAttribute("pwdMaxFailure", setting.getValue());
           items[5] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[5]);
           continue;
-        case "pwdMaxFailure":
-          attrs[6] = new BasicAttribute("pwdMaxFailure", setting.getValue());
-          items[6] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[6]);
-          continue;
-
-        case "pwdMinLength":
-          attrs[7] = new BasicAttribute("pwdMinLength", setting.getValue());
-          items[7] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[7]);
 
         case "pwdMaxAge":
-          attrs[8] = new BasicAttribute("pwdMaxAge", setting.getValue());
-          items[8] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[8]);
+          attrs[6] = new BasicAttribute("pwdMaxAge", setting.getValue());
+          items[6] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[6]);
       }
 
     }
@@ -94,9 +86,6 @@ public class PasswordSettings {
       ldapTemplate.modifyAttributes(buildDn(), items);
       for (Property property : settings) {
         switch (property.get_id()) {
-          case "pwdCheckQuality":
-            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdCheckQuality()))
-              continue;
           case "pwdFailureCountInterval":
             if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdFailureCountInterval()))
               continue;
@@ -118,10 +107,6 @@ public class PasswordSettings {
               continue;
           case "pwdMaxFailure":
             if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdMaxFailure()))
-              continue;
-
-          case "pwdMinLength":
-            if (property.getValue().toString().equalsIgnoreCase(pwd.getPwdMinLength()))
               continue;
 
           case "pwdMaxAge":

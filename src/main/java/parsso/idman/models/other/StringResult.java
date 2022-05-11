@@ -54,6 +54,9 @@ public class StringResult {
   public static String USER_403_EN = "This user have changed the first password, earlier";
   public static String USER_403_FA = "کاربر اولین رمز خود را پیشتر تغییر داده است.";
 
+  public static String PASSWORD_406_EN = "Complexity of password is not enough.";
+  public static String PASSWORD_406_FA = "پیچیدگی پسورد کافی نیست.";
+
   public static String USER_417_EN = "Captcha is incorrect";
   public static String USER_417_FA = "کپچا صحیح نیست";
 
@@ -68,6 +71,9 @@ public class StringResult {
 
   public static String PASSWORD_408_EN = "Verification code is expired.";
   public static String PASSWORD_408_FA = "کد تایید منقضی شده است";
+
+  public static String PASSWORD_417_EN = "Complexity of password is not enough.";
+  public static String PASSWORD_417_FA = "پیچیدگی پسورد کافی نیست.";
 
   public static String PASSWORD_429_EN = "The number of requests to change the password in one day, is too much ";
   public static String PASSWORD_429_FA = "تعداد درخواست های تغییر گذرواژه در یک روز بیش از حد مجاز است";

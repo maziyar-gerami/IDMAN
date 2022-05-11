@@ -10,7 +10,6 @@ import org.springframework.ldap.odm.annotations.Id;
 @Entry(objectClasses = {})
 public class PWD {
   @Id
-  String pwdCheckQuality;
   String pwdFailureCountInterval;
   String pwdGraceAuthNLimit;
   String pwdInHistory;
@@ -18,5 +17,4 @@ public class PWD {
   String pwdLockoutDuration;
   String pwdMaxAge;
   String pwdMaxFailure;
-  String pwdMinLength;
 }

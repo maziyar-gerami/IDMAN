@@ -2,13 +2,11 @@ package parsso.idman.models.logs;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mongodb.lang.NonNull;
 
 import java.util.Date;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import net.bytebuddy.asm.Advice.Return;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;

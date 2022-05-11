@@ -1,7 +1,6 @@
 package parsso.idman.impls.users.oprations.update.helper;
 
 import net.minidev.json.JSONObject;
-import parsso.idman.impls.groups.RetrieveGroup;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
 import parsso.idman.repos.UserRepo.UsersOp.Retrieve;

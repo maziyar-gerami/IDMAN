@@ -93,6 +93,12 @@ public class Variables {
   public static final String SERVICES_ICON_PATH = "services.icon.path";
   public static final String PASSWORD_CHANGE_LIMIT = "password.change.limit";
   public static final String PASSWORD_CHANGE_LIMIT_NUMBER = "password.change.limit.number";
+  public static final String PASSWORD_LENGTH = "password.quality.length";
+  public static final String PASSWORD_NUMBER = "password.quality.number";
+  public static final String PASSWORD_SMALL_ALPHABET = "password.quality.smallalphabet";
+  public static final String PASSWORD_CAPITAL_ALPHABET = "password.quality.capitalalphabet";
+  public static final String PASSWORD_SPECIAL = "password.quality.specialchar";
+
   public static final String TOKEN_VALID_EMAIL = "token.valid.email";
   public static final String DISPLAY_NAME_CORRECTION = "DisplayNameCorrection";
   public static final String DUPLICATE_USER = "DuplicateUsers";
@@ -139,7 +145,8 @@ public class Variables {
         "<img style=\"vertical-align:middle;\" src=\"" + logo + "\"" + "alt= \"Parsso\">";
   }
 
-  public static final String PARSSO_IDMAN = " ___ ____  __  __  _  _   _ \n"
+  public static final String PARSSO_IDMAN = 
+        " ___ ____  __  __    _    _   _ \n"
       + "|_ _|  _ \\|  \\/  |  / \\  | \\ | |\n"
       + " | || | | | |\\/| | / _ \\ |  \\| |\n"
       + " | || |_| | |  | |/ ___ \\| |\\  |\n"
@@ -148,4 +155,5 @@ public class Variables {
 
   public static final String MODEL_DASHBOARD = "Dashboard";
   public static final String PWD_LOCKOUT = "PWDLockout";
+
 }

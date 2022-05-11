@@ -19,6 +19,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.configs.PwdAttributeMapper;
+import parsso.idman.helpers.user.Password;
 import parsso.idman.models.other.Notification;
 import parsso.idman.models.other.PWD;
 import parsso.idman.models.response.Response;
@@ -79,6 +80,12 @@ public class PasswordOp extends UsersOps {
     int pwdin = Integer.parseInt(pwd.getPwdInHistory().replaceAll("[^0-9]", ""));
     objectResult.put("pwdInHistory", pwdin);
 
+    if(!(new Password(mongoTemplate).check(newPassword))){
+      return new ResponseEntity<>(new Response(
+        null, Variables.MODEL_PASSWORD, HttpStatus.EXPECTATION_FAILED.value(), lang),
+          HttpStatus.OK);
+    }
+
     HttpStatus httpStatus = passwordOp.change(uid, newPassword, token);
 
     if (httpStatus == HttpStatus.OK) {
@@ -123,6 +130,12 @@ public class PasswordOp extends UsersOps {
     objectResult.put("pwdInHistory", pwdin);
     String password = jsonObject.getAsString("newPassword");
 
+    if(!(new Password(mongoTemplate).check(password))){
+      return new ResponseEntity<>(new Response(
+        null, Variables.MODEL_PASSWORD, HttpStatus.EXPECTATION_FAILED.value(), lang),
+          HttpStatus.OK);
+    }
+
     HttpStatus httpStatus = passwordOp.change(
         request.getUserPrincipal().getName(), password, token);
     return new ResponseEntity<>(new Response(
@@ -139,6 +152,12 @@ public class PasswordOp extends UsersOps {
     String newPassword = jsonObject.getAsString("newPassword");
     String userId = jsonObject.getAsString("userId");
     HttpStatus httpStatus = passwordOp.changePublic(userId, currentPassword, newPassword);
+
+    if(!(new Password(mongoTemplate).check(newPassword))){
+      return new ResponseEntity<>(new Response(
+        null, Variables.MODEL_PASSWORD, HttpStatus.EXPECTATION_FAILED.value(), lang),
+          HttpStatus.OK);
+    }
 
     if (Boolean
         .parseBoolean(new Settings(mongoTemplate)

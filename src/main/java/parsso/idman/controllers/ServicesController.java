@@ -2,7 +2,6 @@ package parsso.idman.controllers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.http.HttpRequest;
 import java.util.LinkedList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

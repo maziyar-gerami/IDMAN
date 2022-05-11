@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,23 +15,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Property;
 import parsso.idman.models.other.Setting;
 import parsso.idman.models.response.Response;
 import parsso.idman.repos.SettingsRepo;
 
-
-
-
 @RestController
 @RequestMapping(("/api/properties/settings"))
 public class SettingsController {
   final SettingsRepo settingsRepo;
+  final MongoTemplate mongoTemplate;
 
   @Autowired
-  SettingsController(SettingsRepo settingsRepo) {
+  SettingsController(SettingsRepo settingsRepo, MongoTemplate mongoTemplate) {
     this.settingsRepo = settingsRepo;
+    this.mongoTemplate = mongoTemplate;
   }
 
   @GetMapping
@@ -87,5 +88,16 @@ public class SettingsController {
     return new ResponseEntity<>(new Response(null, Variables.MODEL_SETTINGS,
         settingsRepo.restore(request.getUserPrincipal().getName(), id).value(), lang), HttpStatus.OK);
 
+  }
+
+  @RestController
+  @RequestMapping(("/api/public/properties/settings"))
+  public class PublicSettingsController {
+
+    @GetMapping
+    public ResponseEntity<Response> password(@RequestParam(value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+      return new ResponseEntity<>(
+        new Response(new Settings(mongoTemplate).password(), Variables.MODEL_SETTINGS, HttpStatus.OK.value(), lang),HttpStatus.OK);
+    }
   }
 }

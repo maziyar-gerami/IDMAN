@@ -14,6 +14,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildAttributes;
 import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.helpers.user.ExcelAnalyzer;
+import parsso.idman.helpers.user.Password;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.Time;
 import parsso.idman.models.users.User;
@@ -114,6 +115,9 @@ public class UpdateUser {
     usersExtraInfo.setTimeStamp(new Date().getTime());
 
     if (p.getUserPassword() != null && !p.getUserPassword().equals("")) {
+      if(new Password(mongoTemplate).check(p.getUserPassword())){
+        return HttpStatus.NOT_ACCEPTABLE;}
+
       context.setAttributeValue("userPassword", p.getUserPassword());
       p.setPasswordChangedTime(
           Long.parseLong(new Time().epochToDateLdapFormat(new Date().getTime()).substring(0, 14)));

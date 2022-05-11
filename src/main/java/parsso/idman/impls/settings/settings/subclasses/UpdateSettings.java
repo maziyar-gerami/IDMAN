@@ -35,20 +35,14 @@ public class UpdateSettings {
     for (Property property : properties) {
       Setting storedSetting = mongoTemplate.findOne(new Query(Criteria.where("_id").is(property.get_id())),
           Setting.class, Variables.col_properties);
-      if (property.get_id().equals("pwdCheckQuality") ||
-          property.get_id().equals("pwdFailureCountInterval") ||
+      if (property.get_id().equals("pwdFailureCountInterval") ||
           property.get_id().equals("pwdGraceAuthNLimit") ||
           property.get_id().equals("pwdInHistory") ||
           property.get_id().equals("pwdLockout") ||
-          property.get_id().equals("pwdMinLength") ||
           property.get_id().equals("pwdMaxFailure") ||
           property.get_id().equals("pwdMaxAge") ||
           property.get_id().equals("pwdLockoutDuration")) {
         switch (property.get_id()) {
-          case "pwdCheckQuality":
-            storedSetting.setValue(ldapPasswords.getPwdCheckQuality());
-            break;
-
           case "pwdFailureCountInterval":
             storedSetting.setValue(ldapPasswords.getPwdFailureCountInterval());
             break;
@@ -65,9 +59,7 @@ public class UpdateSettings {
             storedSetting.setValue(ldapPasswords.getPwdLockout());
             break;
 
-          case "pwdMinLength":
-            storedSetting.setValue(ldapPasswords.getPwdMinLength());
-            break;
+
 
           case "pwdMaxFailure":
             storedSetting.setValue(ldapPasswords.getPwdMaxFailure());
@@ -82,17 +74,9 @@ public class UpdateSettings {
             break;
 
         }
-
-        if (property.get_id().equals("pwdCheckQuality")
-            && property.getValue().toString().equalsIgnoreCase("true"))
-          property.setValue("1");
-        else if (property.get_id().equals("pwdCheckQuality")
-            && property.getValue().toString().equalsIgnoreCase("false"))
-          property.setValue("0");
-
         ldapProperties.add(property);
       }
-      if (!storedSetting.getValue().equalsIgnoreCase(property.getValue().toString()))
+      else if (storedSetting!=null&&!storedSetting.getValue().equalsIgnoreCase(property.getValue().toString()))
         mongoProperties.add(property);
     }
 

@@ -167,10 +167,6 @@ public class PostSettings {
 
           break;
 
-        case ("pwdCheckQuality"):
-          mongoSettings.add(setting);
-          break;
-
         case ("pwdFailureCountInterval"):
           setting.setValue(pwd.getPwdFailureCountInterval());
           mongoSettings.add(setting);
@@ -188,11 +184,6 @@ public class PostSettings {
 
         case ("pwdLockout"):
           setting.setValue(pwd.getPwdLockout());
-          mongoSettings.add(setting);
-          break;
-
-        case ("pwdMinLength"):
-          setting.setValue(pwd.getPwdMinLength());
           mongoSettings.add(setting);
           break;
 
