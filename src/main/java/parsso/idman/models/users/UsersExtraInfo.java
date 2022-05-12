@@ -50,6 +50,7 @@ public class UsersExtraInfo {
   private int nPassChanged;
   private ChangePassword changePassword;
   Role roleClass;
+  int roleID;
 
   public int getNPassChanged() {
     try {
@@ -58,12 +59,8 @@ public class UsersExtraInfo {
       return 0;
     }
   }
-  
-  public void setRole(String role){
-    this.role = roleClass.getRole();
-    this.roleClass = RoleClass.getRoleClass(role);
-  }
 
+  
   public Time getExpiredTime() {
     if (endTimeEpoch != 0) {
       return Time.longToPersianTime(endTimeEpoch);

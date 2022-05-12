@@ -38,14 +38,29 @@ public class MainAttributes {
     BASE_DN = base_dn;
   }
 
-  public List<UsersExtraInfo> get(int page, int number, String sort) {
+  public List<UsersExtraInfo> get(int page, int number, String sort, String role, String userId, String displayName) {
     Query query = new Query();
-    if(sort.equalsIgnoreCase("role")){
-      query.addCriteria(Criteria.where("_id").exists(true)).with(Sort.by(Sort.Direction.ASC,"roleClass._id"));
+
+    if (!userId.equals("")) {
+      query.addCriteria(Criteria.where("_id").regex(userId));
     }
-    if (page == -1 && number == -1){
+
+    if (!displayName.equals("")) {
+      query.addCriteria(Criteria.where("displayName").regex(displayName));
+    }
+
+    if (!role.equals("")) {
+      query.addCriteria(Criteria.where("roleClass.role").is(role));
+    }
+
+    if (sort.equalsIgnoreCase("role")) {
+      query.with(Sort.by(Sort.Direction.ASC, "roleClass._id"));
+    }
+
+    if (page == -1 && number == -1) {
       return mongoTemplate.find(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
     }
+
     else
       return mongoTemplate.find(query.skip((page - 1) * number).limit(number), UsersExtraInfo.class,
           Variables.col_usersExtraInfo);
