@@ -58,13 +58,6 @@ public class UsersExtraInfo {
     }
   }
 
-  public String getRole(){
-    return roleClass.role;
-  }
-  
-  public void setRole(String role){
-    this.role = roleClass.getRole();
-  }
 
   public Time getExpiredTime() {
     if (endTimeEpoch != 0) {

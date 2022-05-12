@@ -2,6 +2,7 @@ package parsso.idman.controllers.users;
 
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -48,10 +49,9 @@ public class Supplementary extends UsersOps {
     this.instantMessage = instantMessage;
     this.authenticate = authenticate;
     this.supplementary = supplementary;
-    this.counter = "3";
   }
 
-  //@Value("${cas.authn.passwordless.tokens.expireInSeconds}")
+  @Value("${cas.authn.passwordless.tokens.expireInSeconds}")
   private String counter;
 
   @GetMapping("/api/skyroom")
