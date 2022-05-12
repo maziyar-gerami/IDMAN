@@ -48,6 +48,7 @@ public class UsersExtraInfo {
   @JsonIgnore
   private int nPassChanged;
   private ChangePassword changePassword;
+  Role roleClass;
 
   public int getNPassChanged() {
     try {
@@ -55,6 +56,14 @@ public class UsersExtraInfo {
     } catch (Exception e) {
       return 0;
     }
+  }
+
+  public String getRole(){
+    return roleClass.role;
+  }
+  
+  public void setRole(String role){
+    this.role = roleClass.getRole();
   }
 
   public Time getExpiredTime() {

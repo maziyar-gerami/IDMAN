@@ -74,6 +74,14 @@ public class RunOneTime {
       }
     };
 
+    val reoleFix = new Runnable() {
+
+      @Override
+      public void run() {
+        new RoleFix(mongoTemplate).run();
+      }
+    };
+
     val addLockout = new Runnable() {
 
       @Override
@@ -89,6 +97,7 @@ public class RunOneTime {
     Thread addMobile = new Thread(addMobileToMongo);
     Thread addLockou = new Thread(addLockout);
     Thread displayName = new Thread(displayNameFix);
+    Thread roleFixt = new Thread(reoleFix);
     logeInUsers.start();
 
     OneTime b1 = mongoTemplate.findOne(
@@ -124,6 +133,13 @@ public class RunOneTime {
         OneTime.class, Variables.col_OneTime);
     if (b6 == null || !b6.isRun()) {
       addLockou.start();
+    }
+
+    OneTime b7 = mongoTemplate.findOne(
+        new Query(Criteria.where("_id").is(Variables.ROLE_CORRECTION)),
+        OneTime.class, Variables.col_OneTime);
+    if (b7 == null || !b7.isRun()) {
+      roleFixt.start();
     }
 
     System.out.println(Variables.PARSSO_IDMAN);

@@ -155,5 +155,6 @@ public class Variables {
 
   public static final String MODEL_DASHBOARD = "Dashboard";
   public static final String PWD_LOCKOUT = "PWDLockout";
+  public static final String ROLE_CORRECTION = "RoleFix";
 
 }
