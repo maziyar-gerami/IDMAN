@@ -9,6 +9,8 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.RoleClass;
 import parsso.idman.models.other.OneTime;
 import parsso.idman.models.users.Role;
+import parsso.idman.models.users.UsersExtraInfo;
+
 import java.util.Date;
 import java.util.List;
 
@@ -24,20 +26,20 @@ public class RoleFix {
     int c = 0;
     char[] animationChars = new char[] { '|', '/', '-', '\\' };
 
-    List<JSONObject> users = mongoTemplate.find(new Query(), JSONObject.class,Variables.col_usersExtraInfo);
+    List<JSONObject> users = mongoTemplate.find(new Query(), JSONObject.class, Variables.col_usersExtraInfo);
 
     for (JSONObject user : users) {
-     
+
       Object rolet = user.get("role");
-      
-      String role = (rolet!=null) ? user.get("role").toString().toString(): "USER";
-      
-      if (role!=null)
-        user.put("role", RoleClass.getRoleClass(role));
+
+      String role = (rolet != null) ? user.get("role").toString().toString() : "USER";
+
+      if (role != null)
+        user.put("roleClass", RoleClass.getRoleClass(role));
       else
-        user.put("role", RoleClass.getRoleClass("USER"));
-      
-      mongoTemplate.save(user,Variables.col_usersExtraInfo);
+        user.put("roleClass", RoleClass.getRoleClass("USER"));
+
+      mongoTemplate.save(user, Variables.col_usersExtraInfo);
 
       int i = (++c * 100 / users.size());
 
@@ -52,7 +54,4 @@ public class RoleFix {
 
   }
 
-  
 }
-
-  
