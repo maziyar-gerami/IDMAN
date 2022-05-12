@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.user.RoleClass;
 import parsso.idman.models.other.OneTime;
 import parsso.idman.models.users.Role;
 import java.util.Date;
@@ -30,11 +31,11 @@ public class RoleFix {
       Object rolet = user.get("role");
       
       String role = (rolet!=null) ? user.get("role").toString().toString(): "USER";
-      user.remove("role");
+      
       if (role!=null)
-        user.put("role", getRoleClass(role));
+        user.put("role", RoleClass.getRoleClass(role));
       else
-        user.put("role", getRoleClass("USER"));
+        user.put("role", RoleClass.getRoleClass("USER"));
       
       mongoTemplate.save(user,Variables.col_usersExtraInfo);
 
@@ -51,29 +52,7 @@ public class RoleFix {
 
   }
 
-  private Role getRoleClass(String role) {
-    int _id=0;
-    switch(role){
-      case "SUPERUSER":
-      _id = 0;
-      break;
-      case "SUPPORTER":
-      _id = 1;
-      break;
-      case "ADMIN":
-      _id = 2;
-      break;
-      case "PRESENTER":
-      _id = 3;
-      break;
-      case "USER":
-      _id = 4;
-      break;
-      default:
-      _id = 4;
-    }
-    return new Role(_id,role);
-  }
+  
 }
 
   

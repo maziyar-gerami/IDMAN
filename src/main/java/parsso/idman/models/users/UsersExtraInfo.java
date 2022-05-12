@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Getter;
 import lombok.Setter;
+import parsso.idman.helpers.user.RoleClass;
 import parsso.idman.models.other.Time;
 import java.util.Date;
 import java.util.List;
@@ -57,7 +58,11 @@ public class UsersExtraInfo {
       return 0;
     }
   }
-
+  
+  public void setRole(String role){
+    this.role = roleClass.getRole();
+    this.roleClass = RoleClass.getRoleClass(role);
+  }
 
   public Time getExpiredTime() {
     if (endTimeEpoch != 0) {
