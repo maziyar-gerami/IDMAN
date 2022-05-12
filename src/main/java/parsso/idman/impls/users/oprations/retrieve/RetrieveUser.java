@@ -24,8 +24,8 @@ public class RetrieveUser extends Parameters implements UserRepo.UsersOp.Retriev
   }
 
   @Override
-  public List<UsersExtraInfo> mainAttributes(int page, int number) {
-    return new MainAttributes(mongoTemplate, ldapTemplate, BASE_DN).get(page, number);
+  public List<UsersExtraInfo> mainAttributes(int page, int number, String sort) {
+    return new MainAttributes(mongoTemplate, ldapTemplate, BASE_DN).get(page, number, sort);
   }
 
   @Override

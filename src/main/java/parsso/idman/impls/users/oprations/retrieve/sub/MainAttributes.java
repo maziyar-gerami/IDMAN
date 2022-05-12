@@ -38,41 +38,17 @@ public class MainAttributes {
     BASE_DN = base_dn;
   }
 
-  public List<UsersExtraInfo> get(int page, int number) {
-    SearchControls searchControls = new SearchControls();
-    searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
-    String[] array = { "uid", "displayName", "ou", "createtimestamp", "pwdAccountLockedTime" };
-    searchControls.setReturningAttributes(array);
-
-    int skip = (page - 1) * number;
-    List<UsersExtraInfo> usersExtraInfos;
-
-    if (page == -1 && number == -1) {
-      usersExtraInfos = mongoTemplate.find(new Query(), UsersExtraInfo.class, Variables.col_usersExtraInfo);
-    } else {
-      usersExtraInfos = mongoTemplate.find(new Query().skip(skip).limit(number), UsersExtraInfo.class,
+  public List<UsersExtraInfo> get(int page, int number, String sort) {
+    Query query = new Query();
+    if(sort.equalsIgnoreCase("role")){
+      query.addCriteria(Criteria.where("_id").exists(true)).with(Sort.by(Sort.Direction.ASC,"roleClass._id"));
+    }
+    if (page == -1 && number == -1){
+      return mongoTemplate.find(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
+    }
+    else
+      return mongoTemplate.find(query.skip((page - 1) * number).limit(number), UsersExtraInfo.class,
           Variables.col_usersExtraInfo);
-    }
-
-    OrFilter orFilter = new OrFilter();
-
-    for (UsersExtraInfo usersExtraInfo : usersExtraInfos)
-      orFilter.or(new EqualsFilter("uid", usersExtraInfo.get_id().toString()));
-
-    List<UsersExtraInfo> temp = ldapTemplate.search("ou=People," + BASE_DN, orFilter.encode(), searchControls,
-        new SimpleUserAttributeMapper());
-    List<UsersExtraInfo> list = new LinkedList<>();
-
-    for (UsersExtraInfo user : temp) {
-      if (user != null && user.getDisplayName() != null) {
-        user.setRole(mongoTemplate.findOne(new Query(Criteria.where("_id").is(user.get_id())), UsersExtraInfo.class,
-            Variables.col_usersExtraInfo).getRole());
-        list.add(user);
-      }
-
-    }
-    return list;
-
   }
 
   public UsersExtraInfo get(String userId) {

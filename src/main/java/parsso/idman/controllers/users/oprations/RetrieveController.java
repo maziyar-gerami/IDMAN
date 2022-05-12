@@ -64,10 +64,13 @@ public class RetrieveController extends UsersOps {
 
   @GetMapping("/api/users")
   public ResponseEntity<Response> retrieveUsersMain(
-      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
+      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang,
+      @RequestParam(value = "page", defaultValue = "-1") String page,
+      @RequestParam(value = "count", defaultValue = "-1") String count,
+      @RequestParam(value = "sort", defaultValue = "") String sort)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
-        new Response(usersOpRetrieve.mainAttributes(-1, -1),
+        new Response(usersOpRetrieve.mainAttributes(Integer.valueOf(page), Integer.valueOf(count),sort),
           Variables.MODEL_USER, HttpStatus.OK.value(), lang),
         HttpStatus.OK);
   }
