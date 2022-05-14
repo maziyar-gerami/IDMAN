@@ -1453,14 +1453,14 @@ export default {
       }
     },
     editService (id) {
-      this.editServiceBuffer.id = id
+      /* this.editServiceBuffer.id = id
       this.editServiceFlag = true
       if (this.createServiceFlag) {
         this.tabActiveIndex = 2
       } else {
         this.tabActiveIndex = 1
       }
-      /* this.servicesRequestMaster("getService")
+      this.servicesRequestMaster("getService")
       this.servicesRequestMaster("getUsersEditService") */
     },
     editServiceCheckup () {
