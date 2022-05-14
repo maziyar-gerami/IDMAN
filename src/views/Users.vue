@@ -653,13 +653,17 @@ export default {
           } else if (vm.editUserBuffer.status === "lock") {
             vm.editUserBuffer.status = { value: "lock", name: this.$t("locked"), disabled: true }
           }
-          for (const i in vm.editUserBuffer.memberOf) {
-            for (const j in vm.groups) {
-              if (vm.groups[j].id === vm.editUserBuffer.memberOf[i]) {
-                vm.editUserBuffer.memberOf[i] = vm.groups[j]
-                break
+          if (vm.editUserBuffer.memberOf !== null) {
+            for (const i in vm.editUserBuffer.memberOf) {
+              for (const j in vm.groups) {
+                if (vm.groups[j].id === vm.editUserBuffer.memberOf[i]) {
+                  vm.editUserBuffer.memberOf[i] = vm.groups[j]
+                  break
+                }
               }
             }
+          } else {
+            vm.editUserBuffer.memberOf = []
           }
           vm.editUserLoader = false
         }).catch(() => {

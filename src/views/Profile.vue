@@ -33,16 +33,24 @@
               <div class="formgrid grid">
                 <div class="field col">
                   <div class="field p-fluid">
-                    <label for="user._id">{{ $t("id") }}<span style="color: red;"> * </span></label>
-                    <InputText id="user._id" type="text" :class="userErrors._id" v-model="user._id" @keypress="englishInputFilter($event)" @paste="englishInputFilter($event)" :readOnly="true" />
-                    <small>{{ $t("inputEnglishFilterText") }}</small>
+                    <label for="user._id">{{ $t("id") }}</label>
+                    <InputText id="user._id" type="text" :class="userErrors._id" v-model="user._id" @keypress="englishInputFilter($event)" @paste="englishInputFilter($event)" :disabled="true" />
                   </div>
                 </div>
+                <div class="field col"></div>
+              </div>
+              <div class="formgrid grid">
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="user.displayName">{{ $t("persianName") }}<span style="color: red;"> * </span></label>
                     <InputText id="user.displayName" type="text" :class="userErrors.displayName" v-model="user.displayName" @keypress="persianInputFilter($event)" @paste="persianInputFilter($event)" />
                     <small>{{ $t("inputPersianFilterText") }}</small>
+                  </div>
+                </div>
+                <div class="field col">
+                  <div class="field p-fluid">
+                    <label for="user.employeeNumber">{{ $t("employeeNumber") }}</label>
+                    <InputText id="user.employeeNumber" type="text" v-model="user.employeeNumber" />
                   </div>
                 </div>
               </div>
@@ -75,15 +83,6 @@
                     <InputText id="user.mail" type="text" :class="userErrors.mail" v-model="user.mail" />
                   </div>
                 </div>
-              </div>
-              <div class="formgrid grid">
-                <div class="field col">
-                  <div class="field p-fluid">
-                    <label for="user.employeeNumber">{{ $t("employeeNumber") }}</label>
-                    <InputText id="user.employeeNumber" type="text" v-model="user.employeeNumber" />
-                  </div>
-                </div>
-                <div class="field col"></div>
               </div>
               <div class="formgrid grid">
                 <div class="field col">
@@ -131,7 +130,7 @@
                 </div>
               </div>
               <div class="formgrid grid">
-                <div class="field col">
+                <div class="field col-6">
                   <div class="field p-fluid">
                     <div class="p-inputgroup">
                       <InputText v-model="user.verificationCode" :placeholder="$t('verificationCode')" v-tooltip.top="$t('profileText1')" />
@@ -141,7 +140,6 @@
                     </div>
                   </div>
                 </div>
-                <div class="field col"></div>
               </div>
               <Button :label="$t('confirm')" class="p-button-success mx-1" @click="editUserPasswordCheckup()" />
             </div>
@@ -235,13 +233,13 @@ export default {
             vm.user.employeeNumber = res.data.data.employeeNumber
             vm.user.description = res.data.data.description
             if (res.data.data.profileInaccessibility) {
-              document.getElementById("user.displayName").readOnly = true
-              document.getElementById("user.firstName").readOnly = true
-              document.getElementById("user.lastName").readOnly = true
-              document.getElementById("user.mobile").readOnly = true
-              document.getElementById("user.mail").readOnly = true
-              document.getElementById("user.employeeNumber").readOnly = true
-              document.getElementById("user.description").readOnly = true
+              document.getElementById("user.displayName").disabled = true
+              document.getElementById("user.firstName").disabled = true
+              document.getElementById("user.lastName").disabled = true
+              document.getElementById("user.mobile").disabled = true
+              document.getElementById("user.mail").disabled = true
+              document.getElementById("user.employeeNumber").disabled = true
+              document.getElementById("user.description").disabled = true
               document.getElementById("user.editButton").style = "display: none;"
             }
           } else {

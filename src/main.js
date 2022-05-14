@@ -57,6 +57,9 @@ import Steps from "primevue/steps"
 import Dialog from "primevue/dialog"
 import InputSwitch from "primevue/inputswitch"
 import Editor from "primevue/editor"
+import FileUpload from "primevue/fileupload"
+import RadioButton from "primevue/radiobutton"
+import SelectButton from "primevue/selectbutton"
 
 window.$ = jQuery
 window.jQuery = jQuery
@@ -208,6 +211,9 @@ function runApp () {
   app.component("Steps", Steps)
   app.component("InputSwitch", InputSwitch)
   app.component("Editor", Editor)
+  app.component("FileUpload", FileUpload)
+  app.component("RadioButton", RadioButton)
+  app.component("SelectButton", SelectButton)
 
   app.mount("#app")
 }

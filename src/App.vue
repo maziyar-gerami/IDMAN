@@ -192,7 +192,7 @@ export default {
                   label: this.$t("settings"), icon: "bx bx-fw bxs-cog", to: "/settings"
                 },
                 {
-                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy"
+                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy", target: "_blank"
                 },
                 {
                   label: this.$t("guide"), icon: "bx bx-fw bxs-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
@@ -247,7 +247,7 @@ export default {
                   label: this.$t("profile"), icon: "bx bx-fw bxs-id-card", to: "/profile"
                 },
                 {
-                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy"
+                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy", target: "_blank"
                 },
                 {
                   label: this.$t("guide"), icon: "bx bx-fw bxs-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
@@ -287,7 +287,7 @@ export default {
                   label: this.$t("profile"), icon: "bx bx-fw bxs-id-card", to: "/profile"
                 },
                 {
-                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy"
+                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy", target: "_blank"
                 },
                 {
                   label: this.$t("guide"), icon: "bx bx-fw bxs-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
@@ -306,7 +306,7 @@ export default {
                   label: this.$t("resetPassword"), icon: "bx bx-fw bxs-key", to: "/resetpassword"
                 },
                 {
-                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy"
+                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy", target: "_blank"
                 },
                 {
                   label: this.$t("guide"), icon: "bx bx-fw bxs-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"
